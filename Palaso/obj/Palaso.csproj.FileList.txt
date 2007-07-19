@@ -1,5 +1,0 @@
-bin\Debug\Palaso.dll
-bin\Debug\Palaso.pdb
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\Palaso.dll
-obj\Debug\Palaso.pdb
