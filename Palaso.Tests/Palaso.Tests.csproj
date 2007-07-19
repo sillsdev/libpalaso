@@ -41,19 +41,10 @@
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-	<Content Include="data\singleTag.txt">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-  </ItemGroup>
-  <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>
 	</ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-	<Content Include="data\multilineMultiTag.txt" />
-	<Content Include="data\multipleTags.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
