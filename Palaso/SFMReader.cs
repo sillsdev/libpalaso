@@ -72,8 +72,26 @@ namespace Palaso
 			int c = buffer.Read(); // advance input stream over the initial \
 			Debug.Assert(c == '\\' || c == -1);
 
-			string tag;
 			bool hasReadNextChar = false;
+			string tag = GetTagFromBuffer(ref hasReadNextChar);
+
+			if (tag == null)
+			{
+				_parseState = State.Finished;
+				return null;
+			}
+			if (buffer.Peek() != '\\' && !hasReadNextChar)
+			{
+				c = buffer.Read(); // advance input stream over the terminating whitespace
+				Debug.Assert(c == -1 || char.IsWhiteSpace((char) c));
+			}
+			_parseState = State.Text;
+			return tag;
+		}
+
+		private string GetTagFromBuffer(ref bool hasReadNextChar)
+		{
+			string tag;
 			if (Mode == ParseMode.Usfm)
 			{
 				tag = GetNextToken(delegate(char ch) { return Char.IsWhiteSpace(ch) || ch == '\\' || ch == '*'; });
@@ -87,18 +105,6 @@ namespace Palaso
 			{
 				tag = GetNextToken(delegate(char ch) { return Char.IsWhiteSpace(ch) || ch == '\\'; });
 			}
-
-			if (tag == null)
-			{
-				_parseState = State.Finished;
-				return null;
-			}
-			if (buffer.Peek() != '\\' && !hasReadNextChar)
-			{
-				c = buffer.Read(); // advance input stream over the terminating whitespace
-				Debug.Assert(c == -1 || char.IsWhiteSpace((char) c));
-			}
-			_parseState = State.Text;
 			return tag;
 		}
 
@@ -152,6 +158,18 @@ namespace Palaso
 		{
 			if (_parseState == State.Finished)
 				return null;
+			string text = ReadTextAccordingToMode();
+			if (text == null)
+			{
+				_parseState = State.Finished;
+				return "";
+			}
+			_parseState = State.Tag;
+			return text;
+		}
+
+		private string ReadTextAccordingToMode()
+		{
 			string text = string.Empty;
 			do
 			{
@@ -168,12 +186,6 @@ namespace Palaso
 					else break;
 				}
 			} while (Mode == ParseMode.Shoebox);
-			if (text == null)
-			{
-				_parseState = State.Finished;
-				return "";
-			}
-			_parseState = State.Tag;
 			return text;
 		}
 
