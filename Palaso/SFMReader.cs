@@ -72,8 +72,13 @@ namespace Palaso
 			int c = buffer.Read(); // advance input stream over the initial \
 			Debug.Assert(c == '\\' || c == -1);
 
+			return AlterStateAndReturnNextTag();
+		}
+
+		private string AlterStateAndReturnNextTag()
+		{
 			bool hasReadNextChar = false;
-			string tag = GetTagFromBuffer(ref hasReadNextChar);
+			string tag = ProcessNextTokenAccordingToMode(ref hasReadNextChar);
 
 			if (tag == null)
 			{
@@ -82,14 +87,14 @@ namespace Palaso
 			}
 			if (buffer.Peek() != '\\' && !hasReadNextChar)
 			{
-				c = buffer.Read(); // advance input stream over the terminating whitespace
+				int c = buffer.Read();
 				Debug.Assert(c == -1 || char.IsWhiteSpace((char) c));
 			}
 			_parseState = State.Text;
 			return tag;
 		}
 
-		private string GetTagFromBuffer(ref bool hasReadNextChar)
+		private string ProcessNextTokenAccordingToMode(ref bool hasReadNextChar)
 		{
 			string tag;
 			if (Mode == ParseMode.Usfm)
