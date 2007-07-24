@@ -22,6 +22,7 @@ namespace Palaso
 
 		private ParseMode _parseMode;
 		private State _parseState = State.Init;
+		private string _currentTag = string.Empty;
 
 		/// <summary>
 		/// Construct a new SFMReader with filename
@@ -78,9 +79,9 @@ namespace Palaso
 		private string AlterStateAndReturnNextTag()
 		{
 			bool hasReadNextChar = false;
-			string tag = ProcessNextTokenAccordingToMode(ref hasReadNextChar);
+			_currentTag = ProcessNextTokenAccordingToMode(ref hasReadNextChar);
 
-			if (tag == null)
+			if (_currentTag == null)
 			{
 				_parseState = State.Finished;
 				return null;
@@ -91,7 +92,7 @@ namespace Palaso
 				Debug.Assert(c == -1 || char.IsWhiteSpace((char) c));
 			}
 			_parseState = State.Text;
-			return tag;
+			return _currentTag;
 		}
 
 		private string ProcessNextTokenAccordingToMode(ref bool hasReadNextChar)
