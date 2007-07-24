@@ -64,6 +64,10 @@
 	<Compile Include="WritingSystem.Propery.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
+	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
+	  <Name>Palaso.Tests</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\WritingSystemSetup\WritingSystemSetup.csproj">
 	  <Project>{6D41F396-12C1-4272-9AD0-D26BE614B669}</Project>
 	  <Name>WritingSystemSetup</Name>

@@ -70,6 +70,7 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystemDefinition.cs" />
 	<Compile Include="WSListDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
