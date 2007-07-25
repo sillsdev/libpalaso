@@ -23,19 +23,32 @@ namespace Palaso.Tests
 			AssertXPathNotNull(doc, xpath);
 		}
 
+
+
+		public static void AssertXPathNotNull(string documentPath, string xpath, XmlNamespaceManager nameSpaceManager )
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.Load(documentPath);
+			AssertXPathNotNull(doc, xpath, nameSpaceManager);
+		}
+
+		public static void AssertXPathNotNull(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager)
+		{
+			Assert.IsNotNull(GetNode(nodeOrDoc, xpath, nameSpaceManager));
+		}
+
 		public static void AssertXPathNotNull(XmlNode nodeOrDoc, string xpath)
 		{
-			Assert.IsNotNull(GetNode(nodeOrDoc, xpath));
+			Assert.IsNotNull(GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable())));
 		}
-
 		public static void AssertXPathIsNull(XmlNode nodeOrDoc, string xpath)
 		{
-			Assert.IsNull(GetNode(nodeOrDoc, xpath));
+			Assert.IsNull(GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable())));
 		}
 
-		private static XmlNode GetNode(XmlNode nodeOrDoc, string xpath)
+		private static XmlNode GetNode(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager  )
 		{
-			XmlNode node = nodeOrDoc.SelectSingleNode(xpath);
+			XmlNode node = nodeOrDoc.SelectSingleNode(xpath, nameSpaceManager);
 			if (node == null)
 			{
 				XmlWriterSettings settings = new XmlWriterSettings();

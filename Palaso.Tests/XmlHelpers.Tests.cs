@@ -8,9 +8,13 @@ namespace Palaso.Tests
 	[TestFixture]
 	public class XmlHelpers
 	{
+		private XmlNamespaceManager _nameSpaceManager;
+
 		[SetUp]
 		public void Setup()
 		{
+			_nameSpaceManager = new XmlNamespaceManager(new NameTable());
+			_nameSpaceManager.AddNamespace("palaso", "http://palaso.org");
 
 		}
 
@@ -25,7 +29,7 @@ namespace Palaso.Tests
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml("<world><thailand/></world>");
-			XmlNode node= Palaso.XmlHelpers.GetOrCreateElement(doc, "world/thailand", "chiangmai");
+			XmlNode node= Palaso.XmlHelpers.GetOrCreateElement(doc, "world/thailand", "chiangmai", null, _nameSpaceManager);
 			Assert.IsNotNull(node);
 			Assert.AreEqual("chiangmai", node.Name);
 			TestUtilities.AssertXPathNotNull(doc, "world/thailand/chiangmai");
@@ -36,8 +40,17 @@ namespace Palaso.Tests
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml("<world><thailand/></world>");
-			XmlNode node = Palaso.XmlHelpers.GetOrCreateElement(doc, "world", "thailand");
+			XmlNode node = Palaso.XmlHelpers.GetOrCreateElement(doc, "world", "thailand", null, _nameSpaceManager);
 			Assert.AreEqual("thailand",node.Name);
+		}
+
+		[Test]
+		public void GetUsingNameSpace()
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml("<ldml><special><foo>one</foo></special><special><foo xmlns='http://palaso.org'>two</foo></special><special><foo>three</foo></special></ldml>");
+			XmlNode node = Palaso.XmlHelpers.GetOrCreateElement(doc, "ldml/special[palaso:foo]", "foo", "palaso", _nameSpaceManager);
+			Assert.AreEqual("two", node.InnerText);
 		}
 
 		[Test]

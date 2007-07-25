@@ -20,10 +20,11 @@ namespace WritingSystemSetup.Tests
 		}
 
 		[Test]
-		public void RemovesUnusedIdentityNodes()
+		public void Test()
 		{
 
 		}
+
 
 	}
 

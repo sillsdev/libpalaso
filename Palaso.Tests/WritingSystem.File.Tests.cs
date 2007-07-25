@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using NUnit.Framework;
 using Palaso;
+using Palaso.Tests;
 
 namespace WritingSystemSetup.Tests
 {
@@ -106,6 +108,84 @@ namespace WritingSystemSetup.Tests
 			Assert.IsFalse(File.Exists(path));
 			 path = Path.Combine(_repository.PathToWritingSystems, "blah-foo.ldml");
 			Assert.IsTrue(File.Exists(path));
+		}
+
+		[Test]
+		public void MakesNewFileIfNeeded()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "blah";
+			ws.SaveToRepository(_repository);
+			string path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			TestUtilities.AssertXPathNotNull(path, "ldml/identity/language[@type='blah']");
+		}
+
+		[Test]
+		public void CanAddVariantToLDMLUsingSameWS()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SaveToRepository(_repository);
+			ws.Variant = "piglatin";
+			ws.SaveToRepository(_repository);
+			string path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
+		}
+
+		[Test]
+		public void CanAddVariantToExistingLDML()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "blah";
+			ws.Abbreviation = "bl";//crucially, abbreviation isn't part of the name of the file
+			ws.SaveToRepository(_repository);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = new WritingSystemDefinition(_repository, "blah");
+			ws2.Variant = "piglatin";
+			ws2.SaveToRepository(_repository);
+			string path = Path.Combine(_repository.PathToWritingSystems, ws2.FileName);
+			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
+			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']",WritingSystemDefinition.MakeNameSpaceManager());
+		}
+
+		[Test]
+		public void CanReadVariant()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "en";
+			ws.Variant = "piglatin";
+			ws.SaveToRepository(_repository);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = new WritingSystemDefinition(_repository, "en-piglatin");
+			Assert.AreEqual("piglatin", ws2.Variant);
+		 }
+
+		[Test]
+		public void WritesAbbreviationToLDML()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "blah";
+			ws.Abbreviation = "bl";
+			ws.SaveToRepository(_repository);
+			string path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", WritingSystemDefinition.MakeNameSpaceManager());
+		}
+
+		[Test, Ignore()]
+		public void ReadsAbbreviationFromLDML()
+		{
+		}
+
+		[Test, Ignore()]
+		public void CanAddModifyVariantInLDML()
+		{
+
+		}
+		[Test, Ignore()]
+		public void CanAddRemoveVariantInLDML()
+		{
+
 		}
 	}
 
