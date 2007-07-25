@@ -40,6 +40,9 @@
 	<Compile Include="SFMReaderTest.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="TestUtilities.cs" />
+	<Compile Include="WritingSystem.File.Tests.cs" />
+	<Compile Include="WritingSystem.Property.Tests.cs" />
+	<Compile Include="XmlHelpers.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
