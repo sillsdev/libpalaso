@@ -70,7 +70,12 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystemDefinition.cs" />
+	<Compile Include="WSListControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WSListControl.Designer.cs">
+	  <DependentUpon>WSListControl.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WSListDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -102,6 +107,10 @@
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="WSListControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSListControl.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="WSListDialog.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>WSListDialog.cs</DependentUpon>
@@ -110,6 +119,12 @@
 	  <SubType>Designer</SubType>
 	  <DependentUpon>WSListItem.cs</DependentUpon>
 	</EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
+	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -28,55 +28,70 @@ namespace Palaso
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._closeButton = new System.Windows.Forms.Button();
-			this._writingSystemList = new WeSay.UI.ControlListBox();
+			this._okButton = new System.Windows.Forms.Button();
+			this._writingSystemListControl = new Palaso.WSListControl();
+			this._cancelButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
-			// _closeButton
+			// _okButton
 			//
-			this._closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._closeButton.Location = new System.Drawing.Point(500, 290);
-			this._closeButton.Name = "_closeButton";
-			this._closeButton.Size = new System.Drawing.Size(75, 23);
-			this._closeButton.TabIndex = 1;
-			this._closeButton.Text = "&Close";
-			this._closeButton.UseVisualStyleBackColor = true;
-			this._closeButton.Click += new System.EventHandler(this._okButton_Click);
+			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._okButton.Location = new System.Drawing.Point(412, 290);
+			this._okButton.Name = "_okButton";
+			this._okButton.Size = new System.Drawing.Size(75, 23);
+			this._okButton.TabIndex = 1;
+			this._okButton.Text = "&OK";
+			this._okButton.UseVisualStyleBackColor = true;
+			this._okButton.Click += new System.EventHandler(this._okButton_Click);
 			//
-			// _writingSystemList
+			// wsListControl1
 			//
-			this._writingSystemList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this._writingSystemListControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._writingSystemList.Location = new System.Drawing.Point(12, 22);
-			this._writingSystemList.Name = "_writingSystemList";
-			this._writingSystemList.Size = new System.Drawing.Size(563, 262);
-			this._writingSystemList.TabIndex = 0;
-			this._writingSystemList.Load += new System.EventHandler(this.controlListBox1_Load);
+			this._writingSystemListControl.Location = new System.Drawing.Point(7, 12);
+			this._writingSystemListControl.Name = "_writingSystemListControl";
+			this._writingSystemListControl.Size = new System.Drawing.Size(568, 272);
+			this._writingSystemListControl.TabIndex = 2;
+			//
+			// _cancelButton
+			//
+			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._cancelButton.Location = new System.Drawing.Point(493, 290);
+			this._cancelButton.Name = "_cancelButton";
+			this._cancelButton.Size = new System.Drawing.Size(75, 23);
+			this._cancelButton.TabIndex = 1;
+			this._cancelButton.Text = "&Cancel";
+			this._cancelButton.UseVisualStyleBackColor = true;
+			this._cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
 			//
 			// WSListDialog
 			//
+			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.CancelButton = this._cancelButton;
 			this.ClientSize = new System.Drawing.Size(587, 325);
 			this.ControlBox = false;
-			this.Controls.Add(this._closeButton);
-			this.Controls.Add(this._writingSystemList);
+			this.Controls.Add(this._writingSystemListControl);
+			this.Controls.Add(this._cancelButton);
+			this.Controls.Add(this._okButton);
 			this.Name = "WSListDialog";
 			this.ShowIcon = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.Text = "Setup Writing Systems...";
-			this.ResizeBegin += new System.EventHandler(this.WSListDialog_ResizeBegin);
-			this.Resize += new System.EventHandler(this.WSListDialog_Resize);
+			this.Load += new System.EventHandler(this.WSListDialog_Load);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private WeSay.UI.ControlListBox _writingSystemList;
-		private System.Windows.Forms.Button _closeButton;
+		private System.Windows.Forms.Button _okButton;
+		private WSListControl _writingSystemListControl;
+		private System.Windows.Forms.Button _cancelButton;
 	}
 }

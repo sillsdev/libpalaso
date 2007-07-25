@@ -41,9 +41,9 @@ namespace Palaso
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this._abbreviationLabel = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.textBox1 = new System.Windows.Forms.TextBox();
+			this._language = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textBox2 = new System.Windows.Forms.TextBox();
+			this._iso = new System.Windows.Forms.TextBox();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel3 = new System.Windows.Forms.LinkLabel();
@@ -58,9 +58,9 @@ namespace Palaso
 			this.label5 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this._scriptBox = new System.Windows.Forms.ComboBox();
-			this.comboBox2 = new System.Windows.Forms.ComboBox();
-			this.textBox3 = new System.Windows.Forms.TextBox();
-			this.textBox4 = new System.Windows.Forms.TextBox();
+			this._countryBox = new System.Windows.Forms.ComboBox();
+			this._variant = new System.Windows.Forms.TextBox();
+			this._abbreviation = new System.Windows.Forms.TextBox();
 			this.superToolTip1 = new Elsehemy.SuperToolTip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
@@ -96,12 +96,12 @@ namespace Palaso
 			this.label1.TabIndex = 1;
 			this.label1.Text = "Language Name";
 			//
-			// textBox1
+			// _language
 			//
-			this.textBox1.Location = new System.Drawing.Point(114, 41);
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(83, 20);
-			this.textBox1.TabIndex = 2;
+			this._language.Location = new System.Drawing.Point(114, 41);
+			this._language.Name = "_language";
+			this._language.Size = new System.Drawing.Size(83, 20);
+			this._language.TabIndex = 2;
 			//
 			// label2
 			//
@@ -113,11 +113,11 @@ namespace Palaso
 			this.label2.TabIndex = 1;
 			this.label2.Text = "ISO Code";
 			//
-			// textBox2
+			// _iso
 			//
-			this.textBox2.Location = new System.Drawing.Point(114, 66);
-			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(83, 20);
+			this._iso.Location = new System.Drawing.Point(114, 66);
+			this._iso.Name = "_iso";
+			this._iso.Size = new System.Drawing.Size(83, 20);
 			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
 			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
@@ -128,9 +128,8 @@ namespace Palaso
 			superToolTipInfo1.HeaderText = "ISO Code";
 			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
 			superToolTipInfoWrapper1.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this.textBox2, superToolTipInfoWrapper1);
-			this.textBox2.TabIndex = 2;
-			this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+			this.superToolTip1.SetSuperStuff(this._iso, superToolTipInfoWrapper1);
+			this._iso.TabIndex = 2;
 			//
 			// linkLabel1
 			//
@@ -284,12 +283,12 @@ namespace Palaso
 			this._scriptBox.Size = new System.Drawing.Size(88, 21);
 			this._scriptBox.TabIndex = 6;
 			//
-			// comboBox2
+			// _countryBox
 			//
-			this.comboBox2.FormattingEnabled = true;
-			this.comboBox2.Location = new System.Drawing.Point(262, 65);
-			this.comboBox2.Name = "comboBox2";
-			this.comboBox2.Size = new System.Drawing.Size(88, 21);
+			this._countryBox.FormattingEnabled = true;
+			this._countryBox.Location = new System.Drawing.Point(262, 65);
+			this._countryBox.Name = "_countryBox";
+			this._countryBox.Size = new System.Drawing.Size(88, 21);
 			superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
 			superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
@@ -301,14 +300,14 @@ namespace Palaso
 			superToolTipInfo2.HeaderText = "Country / Region";
 			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
 			superToolTipInfoWrapper2.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this.comboBox2, superToolTipInfoWrapper2);
-			this.comboBox2.TabIndex = 6;
+			this.superToolTip1.SetSuperStuff(this._countryBox, superToolTipInfoWrapper2);
+			this._countryBox.TabIndex = 6;
 			//
-			// textBox3
+			// _variant
 			//
-			this.textBox3.Location = new System.Drawing.Point(446, 40);
-			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(73, 20);
+			this._variant.Location = new System.Drawing.Point(446, 40);
+			this._variant.Name = "_variant";
+			this._variant.Size = new System.Drawing.Size(73, 20);
 			superToolTipInfo3.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
 			superToolTipInfo3.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo3.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
@@ -317,14 +316,14 @@ namespace Palaso
 			superToolTipInfo3.HeaderText = "Variant";
 			superToolTipInfoWrapper3.SuperToolTipInfo = superToolTipInfo3;
 			superToolTipInfoWrapper3.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this.textBox3, superToolTipInfoWrapper3);
-			this.textBox3.TabIndex = 2;
+			this.superToolTip1.SetSuperStuff(this._variant, superToolTipInfoWrapper3);
+			this._variant.TabIndex = 2;
 			//
-			// textBox4
+			// _abbreviation
 			//
-			this.textBox4.Location = new System.Drawing.Point(447, 65);
-			this.textBox4.Name = "textBox4";
-			this.textBox4.Size = new System.Drawing.Size(42, 20);
+			this._abbreviation.Location = new System.Drawing.Point(447, 65);
+			this._abbreviation.Name = "_abbreviation";
+			this._abbreviation.Size = new System.Drawing.Size(42, 20);
 			superToolTipInfo4.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
 			superToolTipInfo4.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo4.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
@@ -332,15 +331,15 @@ namespace Palaso
 			superToolTipInfo4.HeaderText = "Abbreviation";
 			superToolTipInfoWrapper4.SuperToolTipInfo = superToolTipInfo4;
 			superToolTipInfoWrapper4.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this.textBox4, superToolTipInfoWrapper4);
-			this.textBox4.TabIndex = 2;
+			this.superToolTip1.SetSuperStuff(this._abbreviation, superToolTipInfoWrapper4);
+			this._abbreviation.TabIndex = 2;
 			//
 			// WSListItem
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Window;
-			this.Controls.Add(this.comboBox2);
+			this.Controls.Add(this._countryBox);
 			this.Controls.Add(this._scriptBox);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
@@ -350,10 +349,10 @@ namespace Palaso
 			this.Controls.Add(this.linkLabel3);
 			this.Controls.Add(this.linkLabel2);
 			this.Controls.Add(this.linkLabel1);
-			this.Controls.Add(this.textBox2);
-			this.Controls.Add(this.textBox4);
-			this.Controls.Add(this.textBox3);
-			this.Controls.Add(this.textBox1);
+			this.Controls.Add(this._iso);
+			this.Controls.Add(this._abbreviation);
+			this.Controls.Add(this._variant);
+			this.Controls.Add(this._language);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label7);
@@ -378,9 +377,9 @@ namespace Palaso
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label _abbreviationLabel;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.TextBox _language;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.TextBox _iso;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.LinkLabel linkLabel2;
 		private System.Windows.Forms.LinkLabel linkLabel3;
@@ -395,9 +394,9 @@ namespace Palaso
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.ComboBox _scriptBox;
-		private System.Windows.Forms.ComboBox comboBox2;
-		private System.Windows.Forms.TextBox textBox3;
-		private System.Windows.Forms.TextBox textBox4;
+		private System.Windows.Forms.ComboBox _countryBox;
+		private System.Windows.Forms.TextBox _variant;
+		private System.Windows.Forms.TextBox _abbreviation;
 		private Elsehemy.SuperToolTip superToolTip1;
 	}
 }

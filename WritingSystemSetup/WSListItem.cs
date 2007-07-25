@@ -5,18 +5,53 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.UI;
 
 namespace Palaso
 {
-	public partial class WSListItem : UserControl
+	public partial class WSListItem : UserControl, ControlListBox.ISelectableControl
 	{
+		private readonly WritingSystemDefinition _writingSystemDefinition;
 		private bool _isSelected = false;
 		public event EventHandler Selecting;
 
-		public WSListItem()
+
+		public WSListItem(WritingSystemDefinition writingSystemDefinition)
 		{
+			_writingSystemDefinition = writingSystemDefinition;
 			InitializeComponent();
 			SetHeight(false);
+		}
+
+		public bool SaveToWritingSystemDefinition()
+		{
+			bool wasChanged = false;
+			Definition.ISO = SaveToProperty(_iso, Definition.ISO, ref wasChanged);
+			Definition.Region = SaveToProperty(_countryBox, Definition.Region, ref wasChanged);
+			Definition.Variant = SaveToProperty(_variant, Definition.Variant, ref wasChanged);
+			Definition.Script = SaveToProperty(_scriptBox, Definition.Abbreviation, ref wasChanged);
+			Definition.Abbreviation = SaveToProperty(_abbreviation, Definition.Abbreviation, ref wasChanged);
+			return wasChanged;
+		}
+
+		private string SaveToProperty(TextBox box, string property, ref bool wasChanged)
+		{
+			box.Text = box.Text.Trim();
+			if (property != box.Text)
+			{
+				wasChanged = true;
+			}
+			return box.Text;
+		}
+
+		private string SaveToProperty(ComboBox box, string property, ref bool wasChanged)
+		{
+			box.Text = box.Text.Trim();
+			if (property != box.Text)
+			{
+				wasChanged = true;
+			}
+			return box.Text;
 		}
 
 		public bool Selected
@@ -36,6 +71,14 @@ namespace Palaso
 				}
 				_isSelected = value;
 				 this.Invalidate();
+			}
+		}
+
+		public WritingSystemDefinition Definition
+		{
+			get
+			{
+				return _writingSystemDefinition;
 			}
 		}
 
@@ -84,10 +127,6 @@ namespace Palaso
 			Selected = true;
 		}
 
-		private void textBox2_TextChanged(object sender, EventArgs e)
-		{
-
-		}
 
 		private void WSListItem_Load(object sender, EventArgs e)
 		{

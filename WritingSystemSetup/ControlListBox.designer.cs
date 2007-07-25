@@ -1,4 +1,4 @@
-namespace WeSay.UI
+namespace Palaso.UI
 {
 	partial class ControlListBox
 	{
@@ -81,12 +81,6 @@ namespace WeSay.UI
 
 		private System.Windows.Forms.Panel _panel;
 
-		public void Clear()
-		{
-			_table.Controls.Clear();
-			_table.RowStyles.Clear();
-			_firstOne = true;
-		}
 
 		private System.Windows.Forms.TableLayoutPanel _table;
 	}

@@ -1,10 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace WeSay.UI
+namespace Palaso.UI
 {
 	public partial class ControlListBox : UserControl
 	{
+		public interface ISelectableControl
+		{
+			event EventHandler Selecting;
+
+			bool Selected
+			{
+				get;
+				set;
+			}
+		}
 		private bool _firstOne = true;//a hack to cover my lack of understanding
 
 		public ControlListBox()
@@ -15,6 +26,19 @@ namespace WeSay.UI
 		public void AddControlToBottom(Control control)
 		{
 			AddControl(control, -1);
+		}
+
+		void OnItemSelecting(object sender, EventArgs e)
+		{
+			foreach (ISelectableControl item in Items)
+			{
+				if (item != sender && item.Selected)
+				{
+					item.Selected = false;
+					break;
+				}
+			}
+			LayoutRows();
 		}
 
 		/// <summary>
@@ -51,6 +75,10 @@ namespace WeSay.UI
 			_table.Invalidate();
 			_table.Visible = false;
 			_table.Visible = true;
+			if (control is ISelectableControl)
+			{
+				((ISelectableControl) control).Selecting +=OnItemSelecting;
+			}
 		}
 
 		public void LayoutRows()
@@ -60,9 +88,12 @@ namespace WeSay.UI
 			for (int r = 0; r < _table.RowCount; r++)
 			{
 				Control c = _table.GetControlFromPosition(0, r);
-				RowStyle style = new RowStyle(SizeType.Absolute, c.Height + _table.Margin.Vertical);
-				_table.RowStyles.Add(style);
-				h += style.Height;
+				if (c != null)// null happens at design time
+				{
+					RowStyle style = new RowStyle(SizeType.Absolute, c.Height + _table.Margin.Vertical);
+					_table.RowStyles.Add(style);
+					h += style.Height;
+				}
 			}
 			_table.Height = (int)h;
 			//_table.Invalidate();
@@ -78,6 +109,14 @@ namespace WeSay.UI
 					yield return  _table.GetControlFromPosition(0, r);
 				}
 			}
+		}
+
+
+		public void Clear()
+		{
+			_table.Controls.Clear();
+			_table.RowStyles.Clear();
+			_firstOne = true;
 		}
 	}
 }

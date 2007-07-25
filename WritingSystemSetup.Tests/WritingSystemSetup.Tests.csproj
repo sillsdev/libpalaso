@@ -60,8 +60,6 @@
 	  <DependentUpon>Settings.settings</DependentUpon>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	</Compile>
-	<Compile Include="WritingSystem.File.Tests.cs" />
-	<Compile Include="WritingSystem.Propery.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
