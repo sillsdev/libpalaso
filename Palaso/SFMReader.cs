@@ -23,6 +23,7 @@ namespace Palaso
 		private ParseMode _parseMode;
 		private State _parseState = State.Init;
 		private string _currentTag = string.Empty;
+		private int _lineNumber = 1;
 
 		/// <summary>
 		/// Construct a new SFMReader with filename
@@ -46,6 +47,11 @@ namespace Palaso
 		{
 			get { return _parseMode; }
 			set { _parseMode = value; }
+		}
+
+		public int LineNumber
+		{
+			get { return _lineNumber; }
 		}
 
 		/// <summary>
@@ -130,7 +136,15 @@ namespace Palaso
 				if (isTokenTerminator((char) peekedChar))
 					break;
 
-				token.Append((char) buffer.Read());
+				char read = (char)peekedChar;
+				buffer.Read();
+				if (read == '\n' || read == '\r')
+				{
+					if (read == '\r' && ((char)buffer.Peek()) == '\n')
+						buffer.Read(); // eat it
+					_lineNumber++;
+				}
+				token.Append(read);
 			}
 			return token.ToString();
 		}

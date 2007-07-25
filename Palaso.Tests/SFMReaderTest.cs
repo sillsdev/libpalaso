@@ -768,5 +768,44 @@ namespace Palaso.Tests
 			string token = test.ReadNextTag();
 			Assert.IsNull(token);
 		}
+		[Test]
+		public void LineNumber_SingleLine_1()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag text\nmore text"));
+			SFMReader test = new SFMReader(stream);
+
+			Assert.AreEqual(1, test.LineNumber);
+		}
+		[Test]
+		public void LineNumber_TextWithLF()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag text\nmore text"));
+			SFMReader test = new SFMReader(stream);
+
+			test.ReadNextText();
+			Assert.AreEqual(2, test.LineNumber);
+		}
+		[Test]
+		public void LineNumber_TextWithCR()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag text\rmore text"));
+			SFMReader test = new SFMReader(stream);
+
+			test.ReadNextText();
+			Assert.AreEqual(2, test.LineNumber);
+		}
+		[Test]
+		public void LineNumber_TextWithCRLF()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag text\r\nmore text"));
+			SFMReader test = new SFMReader(stream);
+
+			test.ReadNextText();
+			Assert.AreEqual(2, test.LineNumber);
+		}
 	}
 }
