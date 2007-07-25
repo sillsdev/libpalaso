@@ -16,6 +16,7 @@ namespace Palaso.Tests
 			return  dirProject.FullName;
 		}
 
+		//--------------
 		public static void AssertXPathNotNull(string documentPath, string xpath)
 		{
 			XmlDocument doc = new XmlDocument();
@@ -23,41 +24,81 @@ namespace Palaso.Tests
 			AssertXPathNotNull(doc, xpath);
 		}
 
-
-
 		public static void AssertXPathNotNull(string documentPath, string xpath, XmlNamespaceManager nameSpaceManager )
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(documentPath);
 			AssertXPathNotNull(doc, xpath, nameSpaceManager);
 		}
-
 		public static void AssertXPathNotNull(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager)
 		{
-			Assert.IsNotNull(GetNode(nodeOrDoc, xpath, nameSpaceManager));
+			XmlNode node = GetNode(nodeOrDoc, xpath, nameSpaceManager);
+			if (node == null)
+			{
+				PrintNodeToConsole(nodeOrDoc);
+			}
+			Assert.IsNotNull(node);
 		}
 
 		public static void AssertXPathNotNull(XmlNode nodeOrDoc, string xpath)
 		{
-			Assert.IsNotNull(GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable())));
+			XmlNode node = GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable()));
+			if (node == null)
+			{
+				PrintNodeToConsole(nodeOrDoc);
+			}
+			Assert.IsNotNull(node);
 		}
+
+		//------------
+
+		public static void AssertXPathIsNull(string documentPath, string xpath, XmlNamespaceManager nameSpaceManager)
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.Load(documentPath);
+			AssertXPathIsNull(doc, xpath, nameSpaceManager);
+		}
+		public static void AssertXPathIsNull(string documentPath, string xpath)
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.Load(documentPath);
+			AssertXPathIsNull(doc, xpath, new XmlNamespaceManager(new NameTable()));
+		}
+
 		public static void AssertXPathIsNull(XmlNode nodeOrDoc, string xpath)
 		{
-			Assert.IsNull(GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable())));
+			XmlNode node = GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable()));
+			if (node != null)
+			{
+				PrintNodeToConsole(nodeOrDoc);
+			}
+			Assert.IsNull(node);
 		}
+
+		public static void AssertXPathIsNull(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager)
+		{
+			XmlNode node = GetNode(nodeOrDoc, xpath, nameSpaceManager);
+			if (node != null)
+			{
+				PrintNodeToConsole(nodeOrDoc);
+			}
+			Assert.IsNull(node);
+		}
+
+		private static void PrintNodeToConsole(XmlNode nodeOrDoc)
+		{
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.ConformanceLevel = ConformanceLevel.Fragment;
+			XmlWriter writer = XmlTextWriter.Create(Console.Out, settings);
+			nodeOrDoc.WriteContentTo(writer);
+			writer.Flush();
+		}
+
 
 		private static XmlNode GetNode(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager  )
 		{
 			XmlNode node = nodeOrDoc.SelectSingleNode(xpath, nameSpaceManager);
-			if (node == null)
-			{
-				XmlWriterSettings settings = new XmlWriterSettings();
-				settings.Indent = true;
-				settings.ConformanceLevel = ConformanceLevel.Fragment;
-				XmlWriter writer = XmlTextWriter.Create(Console.Out, settings);
-				nodeOrDoc.WriteContentTo(writer);
-				writer.Flush();
-			}
 			return node;
 		}
 

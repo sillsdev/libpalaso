@@ -161,6 +161,37 @@ namespace WritingSystemSetup.Tests
 			Assert.AreEqual("piglatin", ws2.Variant);
 		 }
 
+		 [Test]
+		 public void CanRemoveVariant()
+		 {
+			 WritingSystemDefinition ws = new WritingSystemDefinition();
+			 ws.ISO = "en";
+			 ws.Variant = "piglatin";
+			 ws.SaveToRepository(_repository);
+			 string path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			 TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant");
+			 ws.Variant = string.Empty;
+			 ws.SaveToRepository(_repository);
+				path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			 TestUtilities.AssertXPathIsNull(path, "ldml/identity/variant");
+		 }
+
+
+		[Test]
+		public void CanRemoveAbbreviation()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "en";
+			ws.Abbreviation = "abbrev";
+			ws.SaveToRepository(_repository);
+			string path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation", WritingSystemDefinition.MakeNameSpaceManager());
+			ws.Abbreviation = string.Empty;
+			ws.SaveToRepository(_repository);
+			path = Path.Combine(_repository.PathToWritingSystems, ws.FileName);
+			TestUtilities.AssertXPathIsNull(path, "ldml/special/palaso:abbreviation", WritingSystemDefinition.MakeNameSpaceManager());
+		}
+
 		[Test]
 		public void WritesAbbreviationToLDML()
 		{
@@ -179,11 +210,6 @@ namespace WritingSystemSetup.Tests
 
 		[Test, Ignore()]
 		public void CanAddModifyVariantInLDML()
-		{
-
-		}
-		[Test, Ignore()]
-		public void CanAddRemoveVariantInLDML()
 		{
 
 		}

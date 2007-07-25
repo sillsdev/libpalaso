@@ -44,6 +44,15 @@ namespace Palaso
 			return n;
 		}
 
+		public static void RemoveElement(XmlNode node, string xpath, XmlNamespaceManager nameSpaceManager)
+		{
+			XmlNode found = node.SelectSingleNode(xpath, nameSpaceManager);
+			if (found != null)
+			{
+				found.ParentNode.RemoveChild(found);
+			}
+
+		}
 		private static XmlDocument GetDocument(XmlNode nodeOrDoc)
 		{
 				if (nodeOrDoc is XmlDocument)

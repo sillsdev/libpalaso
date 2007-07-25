@@ -8,12 +8,13 @@ using System.Xml.Schema;
 
 namespace Palaso
 {
-	public class WritingSystemDefinition : System.Xml.Serialization.IXmlSerializable
+	public class WritingSystemDefinition
 	{
 		private const string _kExtension = ".ldml";
 		private string _iso;
 		private string _region;
 		private string _variant;
+		private string _languageName;
 
 		/// <summary>
 		/// The file names we should try to delete when next we are saved,
@@ -46,6 +47,7 @@ namespace Palaso
 			_script = GetIdentityValue(doc, "script");
 
 			_abbreviation = GetSpecialValue(doc, "abbreviation");
+			_languageName = GetSpecialValue(doc, "languageName");
 		}
 
 		private string GetSpecialValue(XmlDocument doc, string field)
@@ -150,7 +152,7 @@ namespace Palaso
 
 		private void RemoveOldFileIfNeeded(WritingSystemRepository repository)
 		{
-			if (!String.IsNullOrEmpty(_oldFileName))
+			if (!String.IsNullOrEmpty(_oldFileName) && _oldFileName != FileName)
 			{
 				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
 				if (File.Exists(oldGuyPath))
@@ -228,47 +230,6 @@ namespace Palaso
 			}
 		}
 
-		#region IXmlSerializable Members
-
-		///<summary>
-		///This property is reserved, apply the <see cref="T:System.Xml.Serialization.XmlSchemaProviderAttribute"></see> to the class instead.
-		///</summary>
-		///
-		///<returns>
-		///An <see cref="T:System.Xml.Schema.XmlSchema"></see> that describes the XML representation of the object that is produced by the <see cref="M:System.Xml.Serialization.IXmlSerializable.WriteXml(System.Xml.XmlWriter)"></see> method and consumed by the <see cref="M:System.Xml.Serialization.IXmlSerializable.ReadXml(System.Xml.XmlReader)"></see> method.
-		///</returns>
-		///
-		public XmlSchema GetSchema()
-		{
-			throw new NotImplementedException();
-		}
-
-		///<summary>
-		///Generates an object from its XML representation.
-		///</summary>
-		///
-		///<param name="reader">The <see cref="T:System.Xml.XmlReader"></see> stream from which the object is deserialized. </param>
-		public void ReadXml(XmlReader reader)
-		{
-
-		}
-		#endregion
-		///<summary>
-		///Converts an object into its XML representation.
-		///</summary>
-		///
-		///<param name="writer">The <see cref="T:System.Xml.XmlWriter"></see> stream to which the object is serialized. </param>
-		public void WriteXml(XmlWriter writer)
-		{
-			writer.WriteStartElement("language");
-			writer.WriteAttributeString("type", _iso);
-			writer.WriteAttributeString("script", _script);
-			writer.WriteAttributeString("territory", _region);
-			writer.WriteAttributeString("variant", _variant);
-
-			writer.WriteEndElement();
-		}
-
 		public void UpdateDOM(XmlDocument dom)
 		{
 			SetSubIdentityNode(dom, "language", _iso);
@@ -276,20 +237,35 @@ namespace Palaso
 			SetSubIdentityNode(dom, "territory", _region);
 			SetSubIdentityNode(dom, "variant", _variant);
 
+			SetTopLevelSpecialNode(dom, "languageName", _languageName);
 			SetTopLevelSpecialNode(dom, "abbreviation", _abbreviation);
 		}
 
 		public void SetSubIdentityNode(XmlDocument dom, string field, string value)
 		{
+		   if (!String.IsNullOrEmpty(value))
+			{
 			XmlNode node = XmlHelpers.GetOrCreateElement(dom,"ldml/identity",field, null, _nameSpaceManager);
 			Palaso.XmlHelpers.AddOrUpdateAttribute(node, "type", value);
+			}
+			else
+			{
+				XmlHelpers.RemoveElement(dom, "ldml/identity/" + field, _nameSpaceManager);
+			}
 		}
 
 		public void SetTopLevelSpecialNode(XmlDocument dom, string field, string value)
 		{
-			XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml", "special", null, _nameSpaceManager);
-			node = XmlHelpers.GetOrCreateElement(dom, "ldml/special", field, "palaso", _nameSpaceManager);
-			Palaso.XmlHelpers.AddOrUpdateAttribute(node, "value", value);
+			if (!String.IsNullOrEmpty(value))
+			{
+				XmlHelpers.GetOrCreateElement(dom, "ldml", "special", null, _nameSpaceManager);
+				XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/special", field, "palaso", _nameSpaceManager);
+				Palaso.XmlHelpers.AddOrUpdateAttribute(node, "value", value);
+			}
+			else
+			{
+				XmlHelpers.RemoveElement(dom, "ldml/special/palaso:" + field, _nameSpaceManager);
+			}
 		}
 	}
 }

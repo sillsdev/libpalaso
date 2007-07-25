@@ -53,6 +53,16 @@ namespace Palaso.Tests
 			Assert.AreEqual("two", node.InnerText);
 		}
 
+
+		[Test]
+		public void RemoveUsingNameSpace()
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml("<ldml><special><foo>one</foo></special><special><foo xmlns='http://palaso.org'>two</foo></special><special><foo>three</foo></special></ldml>");
+			Palaso.XmlHelpers.RemoveElement(doc, "ldml/special/palaso:foo",_nameSpaceManager);
+			Assert.IsNull(doc.SelectSingleNode("ldml/special/palaso:foo", _nameSpaceManager));
+		}
+
 		[Test]
 		public void AddOrUpdateAttribute_Adds()
 		{
