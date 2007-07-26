@@ -1,31 +1,20 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using NUnit.Framework;
-using Palaso;
-using Palaso.Tests;
 
-namespace WritingSystemSetup.Tests
+namespace Palaso.Tests
 {
-	/// <summary>
-	/// These are tests about things related to the file system,
-	/// not the contents of the ldml file.
-	/// </summary>
+
 	[TestFixture]
-	public class WritingSystemFileTests
+	public class RepositoryWithLdmlAdaptorTests
 	{
 		private string _testDir;
 		private WritingSystemRepository _repository;
 		private WritingSystemDefinition _writingSystem;
-		private LdmlAdaptor _adaptor;
-
 
 		[SetUp]
 		public void Setup()
 		{
 			_writingSystem = new WritingSystemDefinition();
-			_adaptor = new LdmlAdaptor(_writingSystem);
 			_testDir = Palaso.Tests.TestUtilities.GetTempTestDirectory();
 			_repository = new WritingSystemRepository(_testDir);
 		}
@@ -33,14 +22,13 @@ namespace WritingSystemSetup.Tests
 		[TearDown]
 		public void TearDown()
 		{
-			//Palaso.Tests.TestUtilities.DeleteFolderThatMayBeInUse(_testDir);
 			Directory.Delete(_testDir,true);
 		}
 
 		[Test]
 		public void SavesWhenNotPreexisting()
 		{
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
 			AssertWritingSystemFileExists(_writingSystem);
 		}
 
@@ -50,13 +38,13 @@ namespace WritingSystemSetup.Tests
 		}
 		private void AssertWritingSystemFileExists(WritingSystemDefinition _writingSystem, WritingSystemRepository repository)
 		{
-			string path = Path.Combine(repository.PathToWritingSystems, _adaptor.FileName);
+			string path = Path.Combine(repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			Assert.IsTrue(File.Exists(path));
 		}
 		[Test]
 		public void FileNameWhenNothingKnown()
 		{
-			Assert.AreEqual("unknown.ldml", _adaptor.FileName);
+			Assert.AreEqual("unknown.ldml", _repository.GetFileName(_writingSystem));
 		}
 
 		[Test]
@@ -64,7 +52,7 @@ namespace WritingSystemSetup.Tests
 		{
 
 			_writingSystem.ISO = "en";
-			Assert.AreEqual("en.ldml", _adaptor.FileName);
+			Assert.AreEqual("en.ldml", _repository.GetFileName(_writingSystem));
 		}
 		[Test]
 		public void FileNameWhenHaveIsoAndRegion()
@@ -72,41 +60,39 @@ namespace WritingSystemSetup.Tests
 
 			_writingSystem.ISO = "en";
 			_writingSystem.Region = "us";
-			Assert.AreEqual("en-us.ldml", _adaptor.FileName);
+			Assert.AreEqual("en-us.ldml", _repository.GetFileName(_writingSystem));
 		}
 
 		[Test]
 		public void SavesWhenPreexisting()
 		{
 			_writingSystem.ISO = "en";
-			_adaptor.SaveToRepository(_repository);
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
+			_repository.SaveDefinition(_writingSystem);
 
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			LdmlAdaptor adaptor2 = new LdmlAdaptor(ws2);
 			_writingSystem.ISO = "en";
-			adaptor2.SaveToRepository(_repository);
+			_repository.SaveDefinition(ws2);
 		}
 
 		[Test]
 		public void SavesWhenDirectoryNotFound()
 		{
-			WritingSystemRepository newGuy = new WritingSystemRepository(Path.Combine(_testDir, "newguy"));
-
-			_adaptor.SaveToRepository(newGuy);
-			AssertWritingSystemFileExists(_writingSystem,newGuy);
+			WritingSystemRepository newRepository = new WritingSystemRepository(Path.Combine(_testDir, "newguy"));
+			newRepository.SaveDefinition(_writingSystem);
+			AssertWritingSystemFileExists(_writingSystem,newRepository);
 		}
 
 		[Test]
 		public void UpdatesFileNameWhenComponentsChange()
 		{
 			_writingSystem.ISO = "en";
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
 			string path = Path.Combine(_repository.PathToWritingSystems, "en.ldml");
 			Assert.IsTrue(File.Exists(path));
 			_writingSystem.ISO = "blah";
 			_writingSystem.Region = "foo";
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
 			Assert.IsFalse(File.Exists(path));
 			 path = Path.Combine(_repository.PathToWritingSystems, "blah-foo.ldml");
 			Assert.IsTrue(File.Exists(path));
@@ -117,8 +103,8 @@ namespace WritingSystemSetup.Tests
 		{
 
 			_writingSystem.ISO = "blah";
-			_adaptor.SaveToRepository(_repository);
-			string path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			_repository.SaveDefinition(_writingSystem);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			TestUtilities.AssertXPathNotNull(path, "ldml/identity/language[@type='blah']");
 		}
 
@@ -126,10 +112,10 @@ namespace WritingSystemSetup.Tests
 		public void CanAddVariantToLDMLUsingSameWS()
 		{
 
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
 			_writingSystem.Variant = "piglatin";
-			_adaptor.SaveToRepository(_repository);
-			string path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			_repository.SaveDefinition(_writingSystem);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
 		}
 
@@ -139,15 +125,14 @@ namespace WritingSystemSetup.Tests
 
 			_writingSystem.ISO = "blah";
 			_writingSystem.Abbreviation = "bl";//crucially, abbreviation isn't part of the name of the file
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			LdmlAdaptor adaptor2 = new LdmlAdaptor(ws2);
-			adaptor2.Load(_repository, "blah");
+			ws2 = _repository.LoadDefinition("blah");
 			ws2.Variant = "piglatin";
-			adaptor2.SaveToRepository(_repository);
-			string path = Path.Combine(_repository.PathToWritingSystems, adaptor2.FileName);
+			_repository.SaveDefinition(ws2);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(ws2));
 			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
 			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
 		}
@@ -157,27 +142,24 @@ namespace WritingSystemSetup.Tests
 		{
 			_writingSystem.ISO = "en";
 			_writingSystem.Variant = "piglatin";
-			_adaptor.SaveToRepository(_repository);
+			_repository.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			LdmlAdaptor adaptor2 = new LdmlAdaptor(ws2);
-			adaptor2.Load(_repository, "en-piglatin");
+			WritingSystemDefinition ws2 =_repository.LoadDefinition("en-piglatin");
 			Assert.AreEqual("piglatin", ws2.Variant);
 		 }
 
 		 [Test]
 		 public void CanRemoveVariant()
 		 {
-
 			 _writingSystem.ISO = "en";
 			 _writingSystem.Variant = "piglatin";
-			 _adaptor.SaveToRepository(_repository);
-			 string path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			 _repository.SaveDefinition(_writingSystem);
+			 string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			 TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant");
 			 _writingSystem.Variant = string.Empty;
-			 _adaptor.SaveToRepository(_repository);
-				path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			 _repository.SaveDefinition(_writingSystem);
+				path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			 TestUtilities.AssertXPathIsNull(path, "ldml/identity/variant");
 		 }
 
@@ -188,12 +170,12 @@ namespace WritingSystemSetup.Tests
 
 			_writingSystem.ISO = "en";
 			_writingSystem.Abbreviation = "abbrev";
-			_adaptor.SaveToRepository(_repository);
-			string path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			_repository.SaveDefinition(_writingSystem);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
 			_writingSystem.Abbreviation = string.Empty;
-			_adaptor.SaveToRepository(_repository);
-			path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			_repository.SaveDefinition(_writingSystem);
+			path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			TestUtilities.AssertXPathIsNull(path, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
 		}
 
@@ -203,8 +185,8 @@ namespace WritingSystemSetup.Tests
 
 			_writingSystem.ISO = "blah";
 			_writingSystem.Abbreviation = "bl";
-			_adaptor.SaveToRepository(_repository);
-			string path = Path.Combine(_repository.PathToWritingSystems, _adaptor.FileName);
+			_repository.SaveDefinition(_writingSystem);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
 		}
 

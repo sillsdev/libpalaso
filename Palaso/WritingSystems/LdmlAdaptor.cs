@@ -6,18 +6,15 @@ namespace Palaso
 {
 	public class LdmlAdaptor
 	{
-		private WritingSystemDefinition _ws;
 		private const string _kExtension = ".ldml";
-		private string _oldFileName;
 		private XmlNamespaceManager _nameSpaceManager;
 
-		public LdmlAdaptor(WritingSystemDefinition ws)
+		internal LdmlAdaptor()
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
-			_ws = ws;
 		}
 
-		public void Load(WritingSystemRepository repository, string identifier)
+		internal void Load(WritingSystemRepository repository, string identifier, WritingSystemDefinition ws)
 		{
 			XmlDocument doc = new XmlDocument();
 			string path = Path.Combine(repository.PathToWritingSystems, identifier + _kExtension);
@@ -25,46 +22,43 @@ namespace Palaso
 			{
 				doc.Load(path);
 			}
-			_ws.ISO = GetIdentityValue(doc, "language");
-			_ws.Variant = GetIdentityValue(doc, "variant");
-			_ws.Region = GetIdentityValue(doc, "region");
-			_ws.Script = GetIdentityValue(doc, "script");
+			ws.ISO = GetIdentityValue(doc, "language");
+			ws.Variant = GetIdentityValue(doc, "variant");
+			ws.Region = GetIdentityValue(doc, "region");
+			ws.Script = GetIdentityValue(doc, "script");
 
-			_ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
-			_ws.LanguageName = GetSpecialValue(doc, "languageName");
+			ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
+			ws.LanguageName = GetSpecialValue(doc, "languageName");
 		}
 
-		public string FileName
+		 internal string GetFileName(WritingSystemDefinition ws)
 		{
-			get
+			string name;
+			if (String.IsNullOrEmpty(ws.ISO))
 			{
-				string name;
-				if (String.IsNullOrEmpty(_ws.ISO))
-				{
-					name = "unknown";
-				}
-				else
-				{
-					name = _ws.ISO;
-				}
-				if (!String.IsNullOrEmpty(_ws.Script))
-				{
-					name += "-" + _ws.Script;
-				}
-				if (!String.IsNullOrEmpty(_ws.Region))
-				{
-					name += "-" + _ws.Region;
-				}
-				if (!String.IsNullOrEmpty(_ws.Variant))
-				{
-					name += "-" + _ws.Variant;
-				}
-
-				return name + _kExtension;
+				name = "unknown";
 			}
+			else
+			{
+				name = ws.ISO;
+			}
+			if (!String.IsNullOrEmpty(ws.Script))
+			{
+				name += "-" + ws.Script;
+			}
+			if (!String.IsNullOrEmpty(ws.Region))
+			{
+				name += "-" + ws.Region;
+			}
+			if (!String.IsNullOrEmpty(ws.Variant))
+			{
+				name += "-" + ws.Variant;
+			}
+
+			return name + _kExtension;
 		}
 
-	   private string GetSpecialValue(XmlDocument doc, string field)
+		private string GetSpecialValue(XmlDocument doc, string field)
 		{
 			XmlNode node = doc.SelectSingleNode("ldml/special/palaso:"+field, _nameSpaceManager);
 			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
@@ -76,14 +70,14 @@ namespace Palaso
 			return XmlHelpers.GetOptionalAttributeValue(node, "type", string.Empty);
 		}
 
-		public void SaveToRepository(WritingSystemRepository repository)
+		internal void SaveToRepository(WritingSystemRepository repository, WritingSystemDefinition ws)
 		{
 			XmlDocument doc = new XmlDocument();
-			string savePath = Path.Combine(repository.PathToWritingSystems,FileName);
+			string savePath = Path.Combine(repository.PathToWritingSystems,GetFileName(ws));
 			string incomingPath;
-			if (!String.IsNullOrEmpty(_oldFileName))
+			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier))
 			{
-				incomingPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
+				incomingPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier);
 			}
 			else
 			{
@@ -98,13 +92,13 @@ namespace Palaso
 				XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
 				XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
 			}
-			UpdateDOM(doc);
+			UpdateDOM(doc, ws);
 			doc.Save(savePath);
 
-			RemoveOldFileIfNeeded(repository);
+			RemoveOldFileIfNeeded(repository, ws);
 			//save this so that if the user makes a name-changing change and saves again, we
 			//can remove or rename to this version
-			_oldFileName = FileName;
+			ws.PreviousRepositoryIdentifier = GetFileName(ws);
 		}
 		public static XmlNamespaceManager MakeNameSpaceManager()
 		{
@@ -112,11 +106,11 @@ namespace Palaso
 			 m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			return m;
 		}
-		private void RemoveOldFileIfNeeded(WritingSystemRepository repository)
+		private void RemoveOldFileIfNeeded(WritingSystemRepository repository, WritingSystemDefinition ws)
 		{
-			if (!String.IsNullOrEmpty(_oldFileName) && _oldFileName != FileName)
+			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier) && ws.PreviousRepositoryIdentifier != GetFileName(ws))
 			{
-				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
+				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier);
 				if (File.Exists(oldGuyPath))
 				{
 					try
@@ -132,23 +126,23 @@ namespace Palaso
 			}
 		}
 
-		public void UpdateDOM(XmlDocument dom)
+		private void UpdateDOM(XmlDocument dom, WritingSystemDefinition ws)
 		{
-			SetSubIdentityNode(dom, "language", _ws.ISO);
-			SetSubIdentityNode(dom, "script", _ws.Script);
-			SetSubIdentityNode(dom, "territory", _ws.Region);
-			SetSubIdentityNode(dom, "variant", _ws.Variant);
+			SetSubIdentityNode(dom, "language", ws.ISO);
+			SetSubIdentityNode(dom, "script", ws.Script);
+			SetSubIdentityNode(dom, "territory", ws.Region);
+			SetSubIdentityNode(dom, "variant", ws.Variant);
 
-			SetTopLevelSpecialNode(dom, "languageName", _ws.LanguageName);
-			SetTopLevelSpecialNode(dom, "abbreviation", _ws.Abbreviation);
+			SetTopLevelSpecialNode(dom, "languageName", ws.LanguageName);
+			SetTopLevelSpecialNode(dom, "abbreviation", ws.Abbreviation);
 		}
 
-		public void SetSubIdentityNode(XmlDocument dom, string field, string value)
+		private void SetSubIdentityNode(XmlDocument dom, string field, string value)
 		{
-		   if (!String.IsNullOrEmpty(value))
+			if (!String.IsNullOrEmpty(value))
 			{
-			XmlNode node = XmlHelpers.GetOrCreateElement(dom,"ldml/identity",field, null, _nameSpaceManager);
-			Palaso.XmlHelpers.AddOrUpdateAttribute(node, "type", value);
+				XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/identity", field, null, _nameSpaceManager);
+				Palaso.XmlHelpers.AddOrUpdateAttribute(node, "type", value);
 			}
 			else
 			{
@@ -156,7 +150,7 @@ namespace Palaso
 			}
 		}
 
-		public void SetTopLevelSpecialNode(XmlDocument dom, string field, string value)
+		private void SetTopLevelSpecialNode(XmlDocument dom, string field, string value)
 		{
 			if (!String.IsNullOrEmpty(value))
 			{

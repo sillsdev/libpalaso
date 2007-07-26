@@ -70,7 +70,22 @@ namespace Palaso
 
 		public void SaveDefinition(WritingSystemDefinition definition)
 		{
-			throw new NotImplementedException();
+			LdmlAdaptor adaptor = new LdmlAdaptor();
+			adaptor.SaveToRepository(this, definition);
+		}
+
+		public WritingSystemDefinition LoadDefinition(string identifier)
+		{
+			LdmlAdaptor adaptor = new LdmlAdaptor();
+			WritingSystemDefinition definition = new WritingSystemDefinition();
+			adaptor.Load(this, identifier, definition);
+			return definition;
+		}
+
+		public string GetFileName(WritingSystemDefinition definition)
+		{
+			LdmlAdaptor adaptor = new LdmlAdaptor();
+			return adaptor.GetFileName(definition);
 		}
 	}
 }

@@ -23,6 +23,7 @@ namespace Palaso
 
 		private string _abbreviation;
 		private string _script;
+		private string _previousRepositoryIdentifier;
 
 		public WritingSystemDefinition()
 		{
@@ -109,6 +110,18 @@ namespace Palaso
 			set
 			{
 				_languageName = value;
+			}
+		}
+
+		public string PreviousRepositoryIdentifier
+		{
+			get
+			{
+				return _previousRepositoryIdentifier;
+			}
+			set
+			{
+				_previousRepositoryIdentifier = value;
 			}
 		}
 	}
