@@ -50,25 +50,6 @@ namespace Palaso
 			_languageName = GetSpecialValue(doc, "languageName");
 		}
 
-		private string GetSpecialValue(XmlDocument doc, string field)
-		{
-			XmlNode node = doc.SelectSingleNode("ldml/special/palaso:"+field, _nameSpaceManager);
-			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
-		}
-
-		private string GetIdentityValue(XmlDocument doc, string field)
-		{
-			XmlNode node = doc.SelectSingleNode("ldml/identity/"+field);
-			return XmlHelpers.GetOptionalAttributeValue(node, "type", string.Empty);
-		}
-
-		public static XmlNamespaceManager MakeNameSpaceManager()
-		{
-			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
-			 m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
-			return m;
-		}
-
 		public string Variant
 		{
 			get
@@ -79,14 +60,8 @@ namespace Palaso
 			{
 				if(_variant == value)
 					return;
-				RecordOldName();
 				_variant = value;
 			}
-		}
-
-		private void RecordOldName()
-		{
-			//_oldFileNames.Add(FileName);
 		}
 
 		public string Region
@@ -99,7 +74,6 @@ namespace Palaso
 			{
 				if (_region == value)
 					return;
-				RecordOldName();
 				_region = value;
 			}
 		}
@@ -114,59 +88,36 @@ namespace Palaso
 			{
 				if (_iso == value)
 					return;
-				RecordOldName();
 				_iso = value;
 			}
 		}
 
-		public void SaveToRepository(WritingSystemRepository repository)
+		public string Abbreviation
 		{
-			XmlDocument doc = new XmlDocument();
-			string savePath = Path.Combine(repository.PathToWritingSystems,FileName);
-			string incomingPath;
-			if (!String.IsNullOrEmpty(_oldFileName))
+			get
 			{
-				incomingPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
+				return _abbreviation;
 			}
-			else
+			set
 			{
-				incomingPath = savePath;
+				if (_abbreviation == value)
+					return;
+				//no, abbreviation is not part of the name: RecordOldName();
+				_abbreviation = value;
 			}
-			if (File.Exists(incomingPath))
-			{
-				doc.Load(incomingPath);
-			}
-			else
-			{
-				XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
-				XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
-			}
-			UpdateDOM(doc);
-			doc.Save(savePath);
-
-			RemoveOldFileIfNeeded(repository);
-			//save this so that if the user makes a name-changing change and saves again, we
-			//can remove or rename to this version
-			_oldFileName = FileName;
 		}
 
-		private void RemoveOldFileIfNeeded(WritingSystemRepository repository)
+		public string Script
 		{
-			if (!String.IsNullOrEmpty(_oldFileName) && _oldFileName != FileName)
+			get
 			{
-				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
-				if (File.Exists(oldGuyPath))
-				{
-					try
-					{
-						File.Delete(oldGuyPath);
-					}
-					catch (Exception )
-					{
-						//swallow. It's ok, we're just trying to clean up.
-					}
-
-				}
+				return _script;
+			}
+			set
+			{
+				if (_script == value)
+					return;
+				_script = value;
 			}
 		}
 
@@ -200,33 +151,71 @@ namespace Palaso
 			}
 		}
 
-		public string Abbreviation
+	   private string GetSpecialValue(XmlDocument doc, string field)
 		{
-			get
-			{
-				return _abbreviation;
-			}
-			set
-			{
-				if (_abbreviation == value)
-					return;
-				//no, abbreviation is not part of the name: RecordOldName();
-				_abbreviation = value;
-			}
+			XmlNode node = doc.SelectSingleNode("ldml/special/palaso:"+field, _nameSpaceManager);
+			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
 		}
 
-		public string Script
+		private string GetIdentityValue(XmlDocument doc, string field)
 		{
-			get
+			XmlNode node = doc.SelectSingleNode("ldml/identity/"+field);
+			return XmlHelpers.GetOptionalAttributeValue(node, "type", string.Empty);
+		}
+
+		public void SaveToRepository(WritingSystemRepository repository)
+		{
+			XmlDocument doc = new XmlDocument();
+			string savePath = Path.Combine(repository.PathToWritingSystems,FileName);
+			string incomingPath;
+			if (!String.IsNullOrEmpty(_oldFileName))
 			{
-				return _script;
+				incomingPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
 			}
-			set
+			else
 			{
-				if (_script == value)
-					return;
-				RecordOldName();
-				_script = value;
+				incomingPath = savePath;
+			}
+			if (File.Exists(incomingPath))
+			{
+				doc.Load(incomingPath);
+			}
+			else
+			{
+				XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
+				XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
+			}
+			UpdateDOM(doc);
+			doc.Save(savePath);
+
+			RemoveOldFileIfNeeded(repository);
+			//save this so that if the user makes a name-changing change and saves again, we
+			//can remove or rename to this version
+			_oldFileName = FileName;
+		}
+		public static XmlNamespaceManager MakeNameSpaceManager()
+		{
+			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
+			 m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			return m;
+		}
+		private void RemoveOldFileIfNeeded(WritingSystemRepository repository)
+		{
+			if (!String.IsNullOrEmpty(_oldFileName) && _oldFileName != FileName)
+			{
+				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, _oldFileName);
+				if (File.Exists(oldGuyPath))
+				{
+					try
+					{
+						File.Delete(oldGuyPath);
+					}
+					catch (Exception )
+					{
+						//swallow. It's ok, we're just trying to clean up.
+					}
+
+				}
 			}
 		}
 
