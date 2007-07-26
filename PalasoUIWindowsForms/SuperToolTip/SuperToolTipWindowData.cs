@@ -206,5 +206,10 @@ namespace Elsehemy
 			pnlHeaderSeparator.Width = this.Width * 95 / 100;
 			pnlFooterSeparator.Width = this.Width * 95 / 100;
 		}
+
+		private void SuperToolTipWindowData_MouseMove(object sender, MouseEventArgs e)
+		{
+
+		}
 	}
 }

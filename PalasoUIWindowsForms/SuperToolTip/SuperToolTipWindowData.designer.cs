@@ -168,6 +168,7 @@ namespace Elsehemy
 			this.Controls.Add(this.tblPnl);
 			this.Name = "SuperToolTipWindowData";
 			this.Size = new System.Drawing.Size(130, 143);
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SuperToolTipWindowData_MouseMove);
 			this.SizeChanged += new System.EventHandler(this.SuperToolTipWindowData_SizeChanged);
 			((System.ComponentModel.ISupportInitialize)(this.picBody)).EndInit();
 			this.flwPnlBody.ResumeLayout(false);

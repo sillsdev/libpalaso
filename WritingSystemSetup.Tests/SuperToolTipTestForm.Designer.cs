@@ -31,6 +31,7 @@ namespace WritingSystemSetup.Tests
 			this.components = new System.ComponentModel.Container();
 			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new Elsehemy.SuperToolTipInfoWrapper();
 			Elsehemy.SuperToolTipInfo superToolTipInfo1 = new Elsehemy.SuperToolTipInfo();
+			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new Elsehemy.SuperToolTipInfoWrapper();
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.superToolTip1 = new Elsehemy.SuperToolTip(this.components);
 			this.button1 = new System.Windows.Forms.Button();
@@ -48,17 +49,21 @@ namespace WritingSystemSetup.Tests
 			superToolTipInfo1.BodyText = "hello\r\nalsdkjfsaldjk\r\nasdlfjasl\r\n\r\nsalkdjflk\r\n";
 			superToolTipInfo1.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
 			superToolTipInfo1.HeaderText = "Test";
+			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
 			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
 			superToolTipInfoWrapper1.UseSuperToolTip = true;
 			this.superToolTip1.SetSuperStuff(this.richTextBox1, superToolTipInfoWrapper1);
 			this.richTextBox1.TabIndex = 0;
 			this.richTextBox1.Text = "one\n\n\ntwo\n\n\nthree\n\n\nfour";
+			this.richTextBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseMove);
 			//
 			// button1
 			//
 			this.button1.Location = new System.Drawing.Point(146, 198);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(75, 23);
+			superToolTipInfoWrapper2.SuperToolTipInfo = null;
+			this.superToolTip1.SetSuperStuff(this.button1, superToolTipInfoWrapper2);
 			this.button1.TabIndex = 1;
 			this.button1.Text = "button1";
 			this.button1.UseVisualStyleBackColor = true;
