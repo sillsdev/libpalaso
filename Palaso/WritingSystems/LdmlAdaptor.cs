@@ -1,150 +1,63 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Xml;
-using System.Xml.Schema;
 
 namespace Palaso
 {
-	public class WritingSystemDefinition
+	public class LdmlAdaptor
 	{
+		private WritingSystemDefinition _ws;
 		private const string _kExtension = ".ldml";
-		private string _iso;
-		private string _region;
-		private string _variant;
-		private string _languageName;
-
-		/// <summary>
-		/// The file names we should try to delete when next we are saved,
-		/// caused by a change in properties used to construct the name.
-		/// </summary>
-		//private List<string> _oldFileNames = new List<string>();
-
-		private string _abbreviation;
-		private string _script;
 		private string _oldFileName;
 		private XmlNamespaceManager _nameSpaceManager;
 
-		public WritingSystemDefinition()
+		public LdmlAdaptor(WritingSystemDefinition ws)
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
-
+			_ws = ws;
 		}
 
-		public WritingSystemDefinition(WritingSystemRepository repository, string identifier):this()
+		public void Load(WritingSystemRepository repository, string identifier)
 		{
 			XmlDocument doc = new XmlDocument();
 			string path = Path.Combine(repository.PathToWritingSystems, identifier + _kExtension);
-			if(File.Exists(path))
+			if (File.Exists(path))
 			{
 				doc.Load(path);
 			}
-			_iso = GetIdentityValue(doc, "language");
-			_variant = GetIdentityValue(doc, "variant");
-			_region = GetIdentityValue(doc, "region");
-			_script = GetIdentityValue(doc, "script");
+			_ws.ISO = GetIdentityValue(doc, "language");
+			_ws.Variant = GetIdentityValue(doc, "variant");
+			_ws.Region = GetIdentityValue(doc, "region");
+			_ws.Script = GetIdentityValue(doc, "script");
 
-			_abbreviation = GetSpecialValue(doc, "abbreviation");
-			_languageName = GetSpecialValue(doc, "languageName");
-		}
-
-		public string Variant
-		{
-			get
-			{
-				return _variant;
-			}
-			set
-			{
-				if(_variant == value)
-					return;
-				_variant = value;
-			}
-		}
-
-		public string Region
-		{
-			get
-			{
-				return _region;
-			}
-			set
-			{
-				if (_region == value)
-					return;
-				_region = value;
-			}
-		}
-
-		public string ISO
-		{
-			get
-			{
-				return _iso;
-			}
-			set
-			{
-				if (_iso == value)
-					return;
-				_iso = value;
-			}
-		}
-
-		public string Abbreviation
-		{
-			get
-			{
-				return _abbreviation;
-			}
-			set
-			{
-				if (_abbreviation == value)
-					return;
-				//no, abbreviation is not part of the name: RecordOldName();
-				_abbreviation = value;
-			}
-		}
-
-		public string Script
-		{
-			get
-			{
-				return _script;
-			}
-			set
-			{
-				if (_script == value)
-					return;
-				_script = value;
-			}
+			_ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
+			_ws.LanguageName = GetSpecialValue(doc, "languageName");
 		}
 
 		public string FileName
 		{
 			get
 			{
-				string name = "";
-				if (String.IsNullOrEmpty(_iso))
+				string name;
+				if (String.IsNullOrEmpty(_ws.ISO))
 				{
 					name = "unknown";
 				}
 				else
 				{
-					name = _iso;
+					name = _ws.ISO;
 				}
-				if (!String.IsNullOrEmpty(_script))
+				if (!String.IsNullOrEmpty(_ws.Script))
 				{
-					name += "-" + _script;
+					name += "-" + _ws.Script;
 				}
-				if (!String.IsNullOrEmpty(_region))
+				if (!String.IsNullOrEmpty(_ws.Region))
 				{
-					name += "-" + _region;
+					name += "-" + _ws.Region;
 				}
-				if (!String.IsNullOrEmpty(_variant))
+				if (!String.IsNullOrEmpty(_ws.Variant))
 				{
-					name += "-" + _variant;
+					name += "-" + _ws.Variant;
 				}
 
 				return name + _kExtension;
@@ -221,13 +134,13 @@ namespace Palaso
 
 		public void UpdateDOM(XmlDocument dom)
 		{
-			SetSubIdentityNode(dom, "language", _iso);
-			SetSubIdentityNode(dom, "script", _script);
-			SetSubIdentityNode(dom, "territory", _region);
-			SetSubIdentityNode(dom, "variant", _variant);
+			SetSubIdentityNode(dom, "language", _ws.ISO);
+			SetSubIdentityNode(dom, "script", _ws.Script);
+			SetSubIdentityNode(dom, "territory", _ws.Region);
+			SetSubIdentityNode(dom, "variant", _ws.Variant);
 
-			SetTopLevelSpecialNode(dom, "languageName", _languageName);
-			SetTopLevelSpecialNode(dom, "abbreviation", _abbreviation);
+			SetTopLevelSpecialNode(dom, "languageName", _ws.LanguageName);
+			SetTopLevelSpecialNode(dom, "abbreviation", _ws.Abbreviation);
 		}
 
 		public void SetSubIdentityNode(XmlDocument dom, string field, string value)

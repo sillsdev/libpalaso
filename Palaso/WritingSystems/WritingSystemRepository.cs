@@ -68,5 +68,9 @@ namespace Palaso
 		}
 
 
+		public void SaveDefinition(WritingSystemDefinition definition)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

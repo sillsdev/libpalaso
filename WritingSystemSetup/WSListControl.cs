@@ -26,7 +26,7 @@ namespace Palaso
 			foreach (WSListItem item in _writingSystemList.Items)
 			{
 				item.SaveToWritingSystemDefinition();
-				item.Definition.SaveToRepository(_repository);
+				_repository.SaveDefinition(item.Definition);
 			}
 		}
 
