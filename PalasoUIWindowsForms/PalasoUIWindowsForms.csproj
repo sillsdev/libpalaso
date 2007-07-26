@@ -1,0 +1,80 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>8.0.50727</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace>Palaso.UI.WindowsForms</RootNamespace>
+	<AssemblyName>PalasoUIWindowsForms</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>..\output\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+	<Reference Include="System.Data" />
+	<Reference Include="System.Design" />
+	<Reference Include="System.Drawing" />
+	<Reference Include="System.Drawing.Design" />
+	<Reference Include="System.Windows.Forms" />
+	<Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.designer.cs">
+	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
+	</Compile>
+	<Compile Include="SuperToolTip\SuperToolTip.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="SuperToolTip\SuperToolTip.designer.cs">
+	  <DependentUpon>SuperToolTip.cs</DependentUpon>
+	</Compile>
+	<Compile Include="SuperToolTip\SuperToolTipInfo.cs" />
+	<Compile Include="SuperToolTip\SuperToolTipInfoWrapper.cs" />
+	<Compile Include="SuperToolTip\SuperToolTipWindowData.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
+	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
+	</Compile>
+  </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
+	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="SuperToolTip\SuperToolTipWindowData.resx">
+	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

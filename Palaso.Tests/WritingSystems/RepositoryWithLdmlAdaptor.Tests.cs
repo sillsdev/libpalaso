@@ -189,16 +189,5 @@ namespace Palaso.Tests.WritingSystems
 			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
 		}
-
-		[Test, Ignore()]
-		public void ReadsAbbreviationFromLDML()
-		{
-		}
-
-		[Test, Ignore()]
-		public void CanAddModifyVariantInLDML()
-		{
-
-		}
 	}
 }
