@@ -31,9 +31,19 @@ namespace Palaso
 			Definition.ISO = SaveToProperty(_iso, Definition.ISO, ref wasChanged);
 			Definition.Region = SaveToProperty(_countryBox, Definition.Region, ref wasChanged);
 			Definition.Variant = SaveToProperty(_variant, Definition.Variant, ref wasChanged);
-			Definition.Script = SaveToProperty(_scriptBox, Definition.Abbreviation, ref wasChanged);
+			Definition.Script = SaveToProperty(CurrentScriptCode, Definition.Script, ref wasChanged);
 			Definition.Abbreviation = SaveToProperty(_abbreviation, Definition.Abbreviation, ref wasChanged);
 			return wasChanged;
+		}
+
+		private string SaveToProperty(string value, string property, ref bool wasChanged)
+		{
+			value = value.Trim();
+			if (property != value)
+			{
+				wasChanged = true;
+			}
+			return value;
 		}
 
 		private string SaveToProperty(TextBox box, string property, ref bool wasChanged)
@@ -130,29 +140,47 @@ namespace Palaso
 		}
 
 
-		private void WSListItem_Load(object sender, EventArgs e)
+		private void OnLoad(object sender, EventArgs e)
 		{
+			LoadScriptBox();
+
 			_language.Text = Definition.LanguageName;
 			_iso.Text = Definition.ISO;
 			_variant.Text = Definition.Variant;
 			_abbreviation.Text = Definition.Abbreviation;
 			_countryBox.Text = Definition.Region;
-			_scriptBox.Text = Definition.Script;
 
-			LoadScriptBox();
-
+			SelectCorrectScriptComboItem();
 			UpdateDisplay();
+		}
+
+		private void SelectCorrectScriptComboItem()
+		{
+			string script = Definition.Script;
+			if (String.IsNullOrEmpty(script))
+			{
+				script = "latn";
+			}
+			foreach (ScriptOption option in _scriptBox.Items)
+			{
+				if(option.Code == script)
+				{
+					_scriptBox.SelectedItem = option;
+					break;
+				}
+			}
 		}
 
 		private void UpdateDisplay()
 		{
+
 			_abbreviationLabel.Text = GetBestLabel();
 
 			StringBuilder identifier = new StringBuilder();
 			identifier.Append(_iso.Text);
-			if (!String.IsNullOrEmpty(_scriptBox.Text))
+			if (!String.IsNullOrEmpty(CurrentScriptCode))
 			{
-				identifier.AppendFormat("-{0}", _scriptBox.Text);
+				identifier.AppendFormat("-{0}", CurrentScriptCode);
 			}
 			if (!String.IsNullOrEmpty(_countryBox.Text))
 			{
@@ -167,20 +195,34 @@ namespace Palaso
 			summary.AppendFormat("The");
 			if (!String.IsNullOrEmpty(_variant.Text))
 			{
-				summary.AppendFormat(" {0} variant of", _variant.Text);
+				summary.AppendFormat(" {0} variant of ", _variant.Text);
 			}
-			summary.AppendFormat(" {0} language", _language.Text);
+
+			summary.AppendFormat(" {0}", _language.Text);
 			if (!String.IsNullOrEmpty(_countryBox.Text))
 			{
-				summary.AppendFormat(" in {0}", _variant.Text);
+				summary.AppendFormat(" in {0}", _countryBox.Text);
 			}
 			if (!String.IsNullOrEmpty(_scriptBox.Text))
 			{
-				summary.AppendFormat(" written in {0} script", _variant.Text);
+				summary.AppendFormat(" written in {0} script", _scriptBox.Text);
 			}
 
 			summary.AppendFormat(". ({0})",identifier.ToString());
 			_labelSummary.Text = summary.ToString();
+		}
+
+		private string CurrentScriptCode
+		{
+			get
+			{
+				ScriptOption script = _scriptBox.SelectedItem as ScriptOption;
+				if (script == null)
+				{
+					return string.Empty;
+				}
+				return script.Code;
+			}
 		}
 
 		private string GetBestLabel()
@@ -215,15 +257,10 @@ namespace Palaso
 			_scriptBox.Items.Add(new ScriptOption("Khmer", "khmr"));
 			_scriptBox.Items.Add(new ScriptOption("Korean", "Kore"));
 			_scriptBox.Items.Add(new ScriptOption("Lao", "Laoo"));
-			_scriptBox.Items.Add(new ScriptOption("Latin (Roman)", "Latn"));
+			_scriptBox.Items.Add(new ScriptOption("Latin", "Latn"));
 			_scriptBox.SelectedIndex = _scriptBox.Items.Count - 1;
 			_scriptBox.Items.Add(new ScriptOption("Lanna", "Lana"));
 			_scriptBox.Items.Add(new ScriptOption("Myanmar (Burmese)", "Mymr"));
-		}
-
-		private void AddScriptOption(string s, string s1)
-		{
-
 		}
 
 		class ScriptOption
@@ -260,6 +297,17 @@ namespace Palaso
 
 		private void OnSomethingChanged(object sender, EventArgs e)
 		{
+			UpdateDisplay();
+		}
+
+		private void OnFontLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+
+		}
+
+		private void _iso_TextChanged(object sender, EventArgs e)
+		{
+
 			UpdateDisplay();
 		}
 	}

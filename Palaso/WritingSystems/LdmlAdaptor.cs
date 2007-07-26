@@ -25,7 +25,7 @@ namespace Palaso.WritingSystems
 			}
 			ws.ISO = GetIdentityValue(doc, "language");
 			ws.Variant = GetIdentityValue(doc, "variant");
-			ws.Region = GetIdentityValue(doc, "region");
+			ws.Region = GetIdentityValue(doc, "territory");
 			ws.Script = GetIdentityValue(doc, "script");
 
 			ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
