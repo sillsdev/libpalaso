@@ -31,13 +31,15 @@ namespace Palaso
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WSListItem));
 			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfo superToolTipInfo1 = new Elsehemy.SuperToolTipInfo();
 			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfo superToolTipInfo2 = new Elsehemy.SuperToolTipInfo();
+			Elsehemy.SuperToolTipInfo superToolTipInfo1 = new Elsehemy.SuperToolTipInfo();
 			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper3 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfo superToolTipInfo3 = new Elsehemy.SuperToolTipInfo();
+			Elsehemy.SuperToolTipInfo superToolTipInfo2 = new Elsehemy.SuperToolTipInfo();
 			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper4 = new Elsehemy.SuperToolTipInfoWrapper();
+			Elsehemy.SuperToolTipInfo superToolTipInfo3 = new Elsehemy.SuperToolTipInfo();
+			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper5 = new Elsehemy.SuperToolTipInfoWrapper();
 			Elsehemy.SuperToolTipInfo superToolTipInfo4 = new Elsehemy.SuperToolTipInfo();
+			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper6 = new Elsehemy.SuperToolTipInfoWrapper();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this._abbreviationLabel = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
@@ -49,7 +51,7 @@ namespace Palaso
 			this.linkLabel3 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel4 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel5 = new System.Windows.Forms.LinkLabel();
-			this.label3 = new System.Windows.Forms.Label();
+			this._labelSummary = new System.Windows.Forms.Label();
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -101,7 +103,10 @@ namespace Palaso
 			this._language.Location = new System.Drawing.Point(114, 41);
 			this._language.Name = "_language";
 			this._language.Size = new System.Drawing.Size(83, 20);
+			superToolTipInfoWrapper1.SuperToolTipInfo = null;
+			this.superToolTip1.SetSuperStuff(this._language, superToolTipInfoWrapper1);
 			this._language.TabIndex = 2;
+			this._language.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// label2
 			//
@@ -126,10 +131,12 @@ namespace Palaso
 				"h. \n\nSee http://www.ethnologue.com/site_search.asp to search for the one you nee" +
 				"d.";
 			superToolTipInfo1.HeaderText = "ISO Code";
-			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
-			superToolTipInfoWrapper1.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this._iso, superToolTipInfoWrapper1);
+			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo1;
+			superToolTipInfoWrapper2.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this._iso, superToolTipInfoWrapper2);
 			this._iso.TabIndex = 2;
+			this._iso.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// linkLabel1
 			//
@@ -197,17 +204,17 @@ namespace Palaso
 			this.linkLabel5.TabStop = true;
 			this.linkLabel5.Text = "Transducers";
 			//
-			// label3
+			// _labelSummary
 			//
-			this.label3.AutoSize = true;
-			this.label3.ForeColor = System.Drawing.SystemColors.ControlDark;
-			this.label3.Location = new System.Drawing.Point(116, 10);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(378, 13);
-			this.label3.TabIndex = 4;
-			this.label3.Text = "The western variant of the Foo language written in Latin script. (bin-ltn-western" +
+			this._labelSummary.AutoSize = true;
+			this._labelSummary.ForeColor = System.Drawing.SystemColors.ControlDark;
+			this._labelSummary.Location = new System.Drawing.Point(116, 10);
+			this._labelSummary.Name = "_labelSummary";
+			this._labelSummary.Size = new System.Drawing.Size(378, 13);
+			this._labelSummary.TabIndex = 4;
+			this._labelSummary.Text = "The western variant of the Foo language written in Latin script. (bin-ltn-western" +
 				")";
-			this.label3.Click += new System.EventHandler(this.WSListItem_Click);
+			this._labelSummary.Click += new System.EventHandler(this.WSListItem_Click);
 			//
 			// button1
 			//
@@ -282,6 +289,7 @@ namespace Palaso
 			this._scriptBox.Name = "_scriptBox";
 			this._scriptBox.Size = new System.Drawing.Size(88, 21);
 			this._scriptBox.TabIndex = 6;
+			this._scriptBox.SelectedIndexChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// _countryBox
 			//
@@ -298,10 +306,12 @@ namespace Palaso
 				"llings.";
 			superToolTipInfo2.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
 			superToolTipInfo2.HeaderText = "Country / Region";
-			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
-			superToolTipInfoWrapper2.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this._countryBox, superToolTipInfoWrapper2);
+			superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfoWrapper3.SuperToolTipInfo = superToolTipInfo2;
+			superToolTipInfoWrapper3.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this._countryBox, superToolTipInfoWrapper3);
 			this._countryBox.TabIndex = 6;
+			this._countryBox.SelectedIndexChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// _variant
 			//
@@ -314,10 +324,12 @@ namespace Palaso
 			superToolTipInfo3.BodyText = "Variant subtags are values used to indicate dialects or script variations not alr" +
 				"eady covered by combinations of language, script and region subtag.";
 			superToolTipInfo3.HeaderText = "Variant";
-			superToolTipInfoWrapper3.SuperToolTipInfo = superToolTipInfo3;
-			superToolTipInfoWrapper3.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this._variant, superToolTipInfoWrapper3);
+			superToolTipInfo3.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfoWrapper4.SuperToolTipInfo = superToolTipInfo3;
+			superToolTipInfoWrapper4.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this._variant, superToolTipInfoWrapper4);
 			this._variant.TabIndex = 2;
+			this._variant.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// _abbreviation
 			//
@@ -329,10 +341,12 @@ namespace Palaso
 			superToolTipInfo4.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
 			superToolTipInfo4.BodyText = "Programs will use this short label on-screen.";
 			superToolTipInfo4.HeaderText = "Abbreviation";
-			superToolTipInfoWrapper4.SuperToolTipInfo = superToolTipInfo4;
-			superToolTipInfoWrapper4.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this._abbreviation, superToolTipInfoWrapper4);
+			superToolTipInfo4.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfoWrapper5.SuperToolTipInfo = superToolTipInfo4;
+			superToolTipInfoWrapper5.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this._abbreviation, superToolTipInfoWrapper5);
 			this._abbreviation.TabIndex = 2;
+			this._abbreviation.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// WSListItem
 			//
@@ -343,7 +357,7 @@ namespace Palaso
 			this.Controls.Add(this._scriptBox);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
-			this.Controls.Add(this.label3);
+			this.Controls.Add(this._labelSummary);
 			this.Controls.Add(this.linkLabel5);
 			this.Controls.Add(this.linkLabel4);
 			this.Controls.Add(this.linkLabel3);
@@ -363,6 +377,8 @@ namespace Palaso
 			this.Controls.Add(this.pictureBox1);
 			this.Name = "WSListItem";
 			this.Size = new System.Drawing.Size(529, 116);
+			superToolTipInfoWrapper6.SuperToolTipInfo = null;
+			this.superToolTip1.SetSuperStuff(this, superToolTipInfoWrapper6);
 			this.Load += new System.EventHandler(this.WSListItem_Load);
 			this.Click += new System.EventHandler(this.WSListItem_Click);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.WSListItem_Paint);
@@ -385,7 +401,7 @@ namespace Palaso
 		private System.Windows.Forms.LinkLabel linkLabel3;
 		private System.Windows.Forms.LinkLabel linkLabel4;
 		private System.Windows.Forms.LinkLabel linkLabel5;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label _labelSummary;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Button button2;

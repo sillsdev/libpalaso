@@ -55,11 +55,27 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public IEnumerable WritingSystemDefinitions
+		public IList<WritingSystemDefinition> WritingSystemDefinitions
 		{
 			get
 			{
-				return new List<WritingSystemDefinition>();
+				List <WritingSystemDefinition> defs = new List<WritingSystemDefinition>();
+				foreach(string defPath in Directory.GetFiles(_path, "*.ldml"))
+				{
+					try
+					{
+						string identifier = Path.GetFileNameWithoutExtension(defPath);
+
+						defs.Add(LoadDefinition(identifier));
+					}
+					catch (Exception error)
+					{
+#if DEBUG
+						throw new ApplicationException("problem loading " + defPath, error);
+#endif
+					}
+				}
+				return defs;
 			}
 		}
 

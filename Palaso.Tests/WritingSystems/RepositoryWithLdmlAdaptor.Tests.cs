@@ -28,8 +28,13 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void FindExistingWritingSystems()
 		{
+			_writingSystem.ISO = "one";
 			_repository.SaveDefinition(_writingSystem);
-			AssertWritingSystemFileExists(_writingSystem);
+			WritingSystemDefinition ws2 = new WritingSystemDefinition();
+			ws2.ISO = "two";
+			_repository.SaveDefinition(ws2);
+
+			Assert.AreEqual(2, _repository.WritingSystemDefinitions.Count);
 		}
 
 		[Test]

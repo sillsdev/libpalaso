@@ -27,6 +27,7 @@ namespace Palaso
 		public bool SaveToWritingSystemDefinition()
 		{
 			bool wasChanged = false;
+			Definition.LanguageName = SaveToProperty(_language, Definition.LanguageName, ref wasChanged);
 			Definition.ISO = SaveToProperty(_iso, Definition.ISO, ref wasChanged);
 			Definition.Region = SaveToProperty(_countryBox, Definition.Region, ref wasChanged);
 			Definition.Variant = SaveToProperty(_variant, Definition.Variant, ref wasChanged);
@@ -131,7 +132,79 @@ namespace Palaso
 
 		private void WSListItem_Load(object sender, EventArgs e)
 		{
+			_language.Text = Definition.LanguageName;
+			_iso.Text = Definition.ISO;
+			_variant.Text = Definition.Variant;
+			_abbreviation.Text = Definition.Abbreviation;
+			_countryBox.Text = Definition.Region;
+			_scriptBox.Text = Definition.Script;
+
 			LoadScriptBox();
+
+			UpdateDisplay();
+		}
+
+		private void UpdateDisplay()
+		{
+			_abbreviationLabel.Text = GetBestLabel();
+
+			StringBuilder identifier = new StringBuilder();
+			identifier.Append(_iso.Text);
+			if (!String.IsNullOrEmpty(_scriptBox.Text))
+			{
+				identifier.AppendFormat("-{0}", _scriptBox.Text);
+			}
+			if (!String.IsNullOrEmpty(_countryBox.Text))
+			{
+				identifier.AppendFormat("-{0}", _countryBox.Text);
+			}
+			if (!String.IsNullOrEmpty(_variant.Text))
+			{
+				identifier.AppendFormat("-{0}", _variant.Text);
+			}
+
+			StringBuilder summary = new StringBuilder();
+			summary.AppendFormat("The");
+			if (!String.IsNullOrEmpty(_variant.Text))
+			{
+				summary.AppendFormat(" {0} variant of", _variant.Text);
+			}
+			summary.AppendFormat(" {0} language", _language.Text);
+			if (!String.IsNullOrEmpty(_countryBox.Text))
+			{
+				summary.AppendFormat(" in {0}", _variant.Text);
+			}
+			if (!String.IsNullOrEmpty(_scriptBox.Text))
+			{
+				summary.AppendFormat(" written in {0} script", _variant.Text);
+			}
+
+			summary.AppendFormat(". ({0})",identifier.ToString());
+			_labelSummary.Text = summary.ToString();
+		}
+
+		private string GetBestLabel()
+		{
+			if (!String.IsNullOrEmpty(_abbreviation.Text))
+			{
+			   return _abbreviation.Text;
+			}
+			else
+			{
+				if (!String.IsNullOrEmpty(_iso.Text))
+				{
+					return _iso.Text;
+				}
+				else
+				{
+					if (!String.IsNullOrEmpty(_language.Text))
+					{
+						string n = _language.Text;
+						return n.Substring(0, n.Length>4? 4: n.Length);
+					}
+				}
+			}
+			return "???";
 		}
 
 		private void LoadScriptBox()
@@ -183,6 +256,11 @@ namespace Palaso
 			{
 				return _label;
 			}
+		}
+
+		private void OnSomethingChanged(object sender, EventArgs e)
+		{
+			UpdateDisplay();
 		}
 	}
 }

@@ -21,6 +21,8 @@ namespace Palaso.UI
 		public ControlListBox()
 		{
 			InitializeComponent();
+			_table.Controls.Clear();
+			_table.RowCount = 0;
 		}
 
 		public void AddControlToBottom(Control control)
