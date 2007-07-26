@@ -47,6 +47,10 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="SuperToolTipTestForm.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
+	</EmbeddedResource>
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Resources.resx</DependentUpon>
@@ -60,11 +64,21 @@
 	  <DependentUpon>Settings.settings</DependentUpon>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	</Compile>
+	<Compile Include="SuperToolTipTestForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SuperToolTipTestForm.Designer.cs">
+	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
+	</Compile>
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
 	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
 	  <Name>Palaso.Tests</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
+	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
+	  <Name>PalasoUIWindowsForms</Name>
 	</ProjectReference>
 	<ProjectReference Include="..\WritingSystemSetup\WritingSystemSetup.csproj">
 	  <Project>{6D41F396-12C1-4272-9AD0-D26BE614B669}</Project>

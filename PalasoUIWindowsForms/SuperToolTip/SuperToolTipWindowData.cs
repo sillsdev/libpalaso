@@ -27,6 +27,10 @@ namespace Elsehemy
 			get { return _superToolTipInfo; }
 			set
 			{
+				//palaso additions
+
+				_superToolTipInfo.OffsetForWhereToDisplay = value.OffsetForWhereToDisplay;
+
 				bool redrawBackground = false;
 				// if (!_superToolTipInfo.Equals(value))
 				{

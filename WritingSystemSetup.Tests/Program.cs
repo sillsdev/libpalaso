@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using WritingSystemSetup.Tests;
 
 namespace Palaso
 {
@@ -14,7 +15,8 @@ namespace Palaso
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Palaso.WSListDialog());
+			Application.Run(new SuperToolTipTestForm());
+		   // Application.Run(new Palaso.WSListDialog());
 		}
 	}
 }

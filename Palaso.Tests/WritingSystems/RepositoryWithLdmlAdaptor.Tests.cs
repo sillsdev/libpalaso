@@ -26,6 +26,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void FindExistingWritingSystems()
+		{
+			_repository.SaveDefinition(_writingSystem);
+			AssertWritingSystemFileExists(_writingSystem);
+		}
+
+		[Test]
 		public void SavesWhenNotPreexisting()
 		{
 			_repository.SaveDefinition(_writingSystem);

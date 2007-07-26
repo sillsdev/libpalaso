@@ -73,7 +73,6 @@ namespace Elsehemy
 		}
 
 
-
 		#endregion
 
 		#region Public Provided Properties
@@ -157,7 +156,14 @@ namespace Elsehemy
 					FadeIn();
 				}
 
-				window.Show(owner, new Point(0, owner.Height), ToolStripDropDownDirection.BelowRight);
+				if (winData.SuperInfo.OffsetForWhereToDisplay != default(Point))
+				{
+					window.Show(owner, winData.SuperInfo.OffsetForWhereToDisplay, ToolStripDropDownDirection.BelowRight);
+				}
+				else
+				{
+					window.Show(owner, new Point(0, owner.Height), ToolStripDropDownDirection.BelowRight);
+				}
 			}
 		}
 

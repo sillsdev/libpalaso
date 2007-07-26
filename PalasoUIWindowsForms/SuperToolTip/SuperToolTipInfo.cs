@@ -12,6 +12,10 @@ namespace Elsehemy
 	public class SuperToolTipInfo
 	{
 		#region Private Members
+
+		//palaso additions
+		private Point _offsetForWhereToDisplay;
+
 		//Background Color
 		private Color _backgroundGradientBegin;
 		private Color _backgroundGradientMiddle;
@@ -238,6 +242,21 @@ namespace Elsehemy
 		{
 			get { return _showFooterSeparator; }
 			set { _showFooterSeparator = value; }
+		}
+
+		/// <summary>
+		/// Set this when you need to control just where the tt is going to display
+		/// </summary>
+		public Point OffsetForWhereToDisplay
+		{
+			get
+			{
+				return _offsetForWhereToDisplay;
+			}
+			set
+			{
+				_offsetForWhereToDisplay = value;
+			}
 		}
 
 		#endregion
