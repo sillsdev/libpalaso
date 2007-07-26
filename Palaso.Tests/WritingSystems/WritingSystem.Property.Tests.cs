@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace WritingSystemSetup.Tests
+namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
 	public class WritingSystemPropertyTests
@@ -27,5 +27,4 @@ namespace WritingSystemSetup.Tests
 
 
 	}
-
 }

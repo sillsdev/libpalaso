@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using System.Xml;
+using Palaso.WritingSystems;
 
-namespace Palaso
+namespace Palaso.WritingSystems
 {
 	public class LdmlAdaptor
 	{
@@ -14,7 +15,7 @@ namespace Palaso
 			_nameSpaceManager = MakeNameSpaceManager();
 		}
 
-		internal void Load(WritingSystemRepository repository, string identifier, WritingSystemDefinition ws)
+		internal void Load(LdmlInFolderWritingSystemRepository repository, string identifier, WritingSystemDefinition ws)
 		{
 			XmlDocument doc = new XmlDocument();
 			string path = Path.Combine(repository.PathToWritingSystems, identifier + _kExtension);
@@ -31,7 +32,7 @@ namespace Palaso
 			ws.LanguageName = GetSpecialValue(doc, "languageName");
 		}
 
-		 internal string GetFileName(WritingSystemDefinition ws)
+		internal string GetFileName(WritingSystemDefinition ws)
 		{
 			string name;
 			if (String.IsNullOrEmpty(ws.ISO))
@@ -70,7 +71,7 @@ namespace Palaso
 			return XmlHelpers.GetOptionalAttributeValue(node, "type", string.Empty);
 		}
 
-		internal void SaveToRepository(WritingSystemRepository repository, WritingSystemDefinition ws)
+		internal void SaveToRepository(LdmlInFolderWritingSystemRepository repository, WritingSystemDefinition ws)
 		{
 			XmlDocument doc = new XmlDocument();
 			string savePath = Path.Combine(repository.PathToWritingSystems,GetFileName(ws));
@@ -103,10 +104,10 @@ namespace Palaso
 		public static XmlNamespaceManager MakeNameSpaceManager()
 		{
 			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
-			 m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			return m;
 		}
-		private void RemoveOldFileIfNeeded(WritingSystemRepository repository, WritingSystemDefinition ws)
+		private void RemoveOldFileIfNeeded(LdmlInFolderWritingSystemRepository repository, WritingSystemDefinition ws)
 		{
 			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier) && ws.PreviousRepositoryIdentifier != GetFileName(ws))
 			{

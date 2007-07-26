@@ -1,14 +1,14 @@
 using System.IO;
 using NUnit.Framework;
+using Palaso.WritingSystems;
 
-namespace Palaso.Tests
+namespace Palaso.Tests.WritingSystems
 {
-
 	[TestFixture]
 	public class RepositoryWithLdmlAdaptorTests
 	{
 		private string _testDir;
-		private WritingSystemRepository _repository;
+		private LdmlInFolderWritingSystemRepository _repository;
 		private WritingSystemDefinition _writingSystem;
 
 		[SetUp]
@@ -16,7 +16,7 @@ namespace Palaso.Tests
 		{
 			_writingSystem = new WritingSystemDefinition();
 			_testDir = Palaso.Tests.TestUtilities.GetTempTestDirectory();
-			_repository = new WritingSystemRepository(_testDir);
+			_repository = new LdmlInFolderWritingSystemRepository(_testDir);
 		}
 
 		[TearDown]
@@ -34,9 +34,9 @@ namespace Palaso.Tests
 
 		private void AssertWritingSystemFileExists(WritingSystemDefinition _writingSystem)
 		{
-		   AssertWritingSystemFileExists(_writingSystem,_repository);
+			AssertWritingSystemFileExists(_writingSystem,_repository);
 		}
-		private void AssertWritingSystemFileExists(WritingSystemDefinition _writingSystem, WritingSystemRepository repository)
+		private void AssertWritingSystemFileExists(WritingSystemDefinition _writingSystem, LdmlInFolderWritingSystemRepository repository)
 		{
 			string path = Path.Combine(repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
 			Assert.IsTrue(File.Exists(path));
@@ -78,7 +78,7 @@ namespace Palaso.Tests
 		[Test]
 		public void SavesWhenDirectoryNotFound()
 		{
-			WritingSystemRepository newRepository = new WritingSystemRepository(Path.Combine(_testDir, "newguy"));
+			LdmlInFolderWritingSystemRepository newRepository = new LdmlInFolderWritingSystemRepository(Path.Combine(_testDir, "newguy"));
 			newRepository.SaveDefinition(_writingSystem);
 			AssertWritingSystemFileExists(_writingSystem,newRepository);
 		}
@@ -94,7 +94,7 @@ namespace Palaso.Tests
 			_writingSystem.Region = "foo";
 			_repository.SaveDefinition(_writingSystem);
 			Assert.IsFalse(File.Exists(path));
-			 path = Path.Combine(_repository.PathToWritingSystems, "blah-foo.ldml");
+			path = Path.Combine(_repository.PathToWritingSystems, "blah-foo.ldml");
 			Assert.IsTrue(File.Exists(path));
 		}
 
@@ -147,21 +147,21 @@ namespace Palaso.Tests
 			//here, the task is not to overwrite what was in ther already
 			WritingSystemDefinition ws2 =_repository.LoadDefinition("en-piglatin");
 			Assert.AreEqual("piglatin", ws2.Variant);
-		 }
+		}
 
-		 [Test]
-		 public void CanRemoveVariant()
-		 {
-			 _writingSystem.ISO = "en";
-			 _writingSystem.Variant = "piglatin";
-			 _repository.SaveDefinition(_writingSystem);
-			 string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
-			 TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant");
-			 _writingSystem.Variant = string.Empty;
-			 _repository.SaveDefinition(_writingSystem);
-				path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
-			 TestUtilities.AssertXPathIsNull(path, "ldml/identity/variant");
-		 }
+		[Test]
+		public void CanRemoveVariant()
+		{
+			_writingSystem.ISO = "en";
+			_writingSystem.Variant = "piglatin";
+			_repository.SaveDefinition(_writingSystem);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
+			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant");
+			_writingSystem.Variant = string.Empty;
+			_repository.SaveDefinition(_writingSystem);
+			path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
+			TestUtilities.AssertXPathIsNull(path, "ldml/identity/variant");
+		}
 
 
 		[Test]
@@ -201,5 +201,4 @@ namespace Palaso.Tests
 
 		}
 	}
-
 }

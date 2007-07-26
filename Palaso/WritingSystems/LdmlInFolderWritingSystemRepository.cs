@@ -2,17 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Palaso.WritingSystems;
 
-namespace Palaso
+namespace Palaso.WritingSystems
 {
-	public class WritingSystemRepository
+	public class LdmlInFolderWritingSystemRepository
 	{
 		private string _path;
 
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		public WritingSystemRepository()
+		public LdmlInFolderWritingSystemRepository()
 		{
 			string p =
 				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
@@ -26,7 +27,7 @@ namespace Palaso
 		/// use a special path for the repository
 		/// </summary>
 		/// <param name="path"></param>
-		public WritingSystemRepository(string path)
+		public LdmlInFolderWritingSystemRepository(string path)
 		{
 			PathToWritingSystems = path;
 		}

@@ -1,12 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
-using System.Xml.Schema;
-
-namespace Palaso
+namespace Palaso.WritingSystems
 {
 	public class WritingSystemDefinition
 	{
@@ -14,21 +6,14 @@ namespace Palaso
 		private string _region;
 		private string _variant;
 		private string _languageName;
+		private string _script;
+		private string _abbreviation;
 
 		/// <summary>
-		/// The file names we should try to delete when next we are saved,
-		/// caused by a change in properties used to construct the name.
+		/// Other classes that persist this need to know when our id changed, so the can
+		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		//private List<string> _oldFileNames = new List<string>();
-
-		private string _abbreviation;
-		private string _script;
 		private string _previousRepositoryIdentifier;
-
-		public WritingSystemDefinition()
-		{
-
-		}
 
 		public string Variant
 		{
@@ -82,7 +67,6 @@ namespace Palaso
 			{
 				if (_abbreviation == value)
 					return;
-				//no, abbreviation is not part of the name: RecordOldName();
 				_abbreviation = value;
 			}
 		}
@@ -113,6 +97,10 @@ namespace Palaso
 			}
 		}
 
+		/// <summary>
+		/// Other classes that persist this need to know when our id changed, so the can
+		/// clean up the old copy which is based on the old name.
+		/// </summary>
 		public string PreviousRepositoryIdentifier
 		{
 			get

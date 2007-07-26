@@ -6,6 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.UI;
+using Palaso.WritingSystems;
 
 namespace Palaso
 {

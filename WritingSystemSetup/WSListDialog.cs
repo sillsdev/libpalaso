@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Palaso.WritingSystems;
 
 namespace Palaso
 {
@@ -22,7 +23,7 @@ namespace Palaso
 
 		private void WSListDialog_Load(object sender, EventArgs e)
 		{
-			WritingSystemRepository repository = new WritingSystemRepository();
+			LdmlInFolderWritingSystemRepository repository = new LdmlInFolderWritingSystemRepository();
 
 			_writingSystemListControl.LoadFromRepository(repository);
 		}

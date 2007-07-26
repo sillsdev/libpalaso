@@ -5,12 +5,13 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.WritingSystems;
 
 namespace Palaso
 {
 	public partial class WSListControl : UserControl
 	{
-		private WritingSystemRepository _repository;
+		private LdmlInFolderWritingSystemRepository _repository;
 
 		public WSListControl()
 		{
@@ -30,7 +31,7 @@ namespace Palaso
 			}
 		}
 
-		public void LoadFromRepository(WritingSystemRepository repository)
+		public void LoadFromRepository(LdmlInFolderWritingSystemRepository repository)
 		{
 			_repository = repository;
 			_writingSystemList.Clear();
