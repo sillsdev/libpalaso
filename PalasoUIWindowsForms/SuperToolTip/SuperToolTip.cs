@@ -134,9 +134,12 @@ namespace Elsehemy
 			{
 				return;
 			}
-			if (!window.HasMouse)
+			if (controlTable[(Control)sender].UseSuperToolTip)
 			{
-				Close();
+			   // if (!window.HasMouse)
+				{
+					Close();
+				}
 			}
 		}
 
@@ -189,6 +192,7 @@ namespace Elsehemy
 		{
 			fadingTimer.Stop();
 			window.MouseLeave -= OnToolTipMouseLeave;
+			window.Hide();
 			window.Close();
 			window = null;
 			CreateTooltipWindows();
@@ -205,7 +209,7 @@ namespace Elsehemy
 
 		private void OnWindowSizeChanged(object sender, EventArgs e)
 		{
-			window.Size = winData.Size;
+		   window.Size = winData.Size;
 		}
 
 		#endregion
@@ -284,7 +288,7 @@ namespace Elsehemy
 		{
 			if (window.Visible)
 			{
-				window.Opacity = 1;
+				window.Opacity = 0;
 				fadingDirection = FadingDirection.FadeOut;
 				fadingTimer.Start();
 			}
@@ -334,31 +338,119 @@ namespace Elsehemy
 	internal class SuperToolTipWindow : Form
 	{
 		private bool _hasMouse;
+		private Timer _checkMouseLeftTimer;
 
 		public SuperToolTipWindow()
 		{
 			FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			ShowInTaskbar = false;
 			ControlBox = false;
+			_checkMouseLeftTimer = new Timer();
+			_checkMouseLeftTimer.Interval = 100;
+			_checkMouseLeftTimer.Tick += OnCheckMouseLeftTimer_Tick;
 
 			StartPosition = FormStartPosition.Manual;
+			ControlAdded += Control_ControlAdded;
+			ControlRemoved += Control_ControlRemoved;
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			if(disposing)
+			{
+				_checkMouseLeftTimer.Dispose();
+			}
+			base.Dispose(disposing);
+		}
 		public bool HasMouse
 		{
 			get { return _hasMouse; }
 		}
 
+		// changing semantics of this to mean that the mouse has entered this control or a contained control
 		protected override void OnMouseEnter(EventArgs e)
 		{
-			base.OnMouseEnter(e);
+			if (!_hasMouse)
+			{
+				base.OnMouseEnter(e);
+			}
 			_hasMouse = true;
 		}
 
+		// changing semantics of this to mean that the mouse has left this control (not for a contained control)
 		protected override void OnMouseLeave(EventArgs e)
 		{
-			base.OnMouseLeave(e);
+			Point point = PointToClient(MousePosition);
+			if (!ClientRectangle.Contains(point))
+			{
+				base.OnMouseLeave(e);
+			}
+			else
+			{
+				_checkMouseLeftTimer.Start();
+			}
 			_hasMouse = false;
 		}
+
+
+		void OnCheckMouseLeftTimer_Tick(object sender, EventArgs e)
+		{
+			if (this._hasMouse)
+			{
+				_checkMouseLeftTimer.Stop();
+			}
+			else
+			{
+				Point point = PointToClient(MousePosition);
+				if (!ClientRectangle.Contains(point))
+				{
+					base.OnMouseLeave(e);
+					_hasMouse = false;
+					_checkMouseLeftTimer.Stop();
+				}
+			}
+		}
+
+		private void RegisterControl(Control control)
+		{
+			control.ControlAdded += Control_ControlAdded;
+			control.ControlRemoved += Control_ControlRemoved;
+			control.MouseEnter += new EventHandler(Control_MouseEnter);
+			control.MouseLeave += new EventHandler(Control_MouseLeave);
+		}
+
+		private void UnregisterControl(Control control)
+		{
+			control.ControlAdded -= Control_ControlAdded;
+			control.ControlRemoved -= Control_ControlRemoved;
+			control.MouseEnter -= new EventHandler(Control_MouseEnter);
+			control.MouseLeave -= new EventHandler(Control_MouseLeave);
+		}
+
+		void Control_ControlAdded(object sender, ControlEventArgs e)
+		{
+			RegisterControl(e.Control);
+			foreach (Control c in e.Control.Controls)
+			{
+				RegisterControl(c);
+			}
+		}
+
+		void Control_ControlRemoved(object sender, ControlEventArgs e)
+		{
+			Control control = e.Control;
+			UnregisterControl(control);
+		}
+
+		void Control_MouseLeave(object sender, EventArgs e)
+		{
+			OnMouseLeave(e);
+		}
+
+		void Control_MouseEnter(object sender, EventArgs e)
+		{
+			OnMouseEnter(e);
+		}
+
 	}
 }

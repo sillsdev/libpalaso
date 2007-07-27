@@ -16,7 +16,7 @@ namespace Palaso
 			Application.SetCompatibleTextRenderingDefault(false);
 			//Application.Run(new SuperToolTipTestForm());
 			//Application.Run(new Palaso.UI.WritingSystems.WSListDialog());
-			Application.Run(new WritingSystemChooserTestForm());
+			//Application.Run(new WritingSystemChooserTestForm());
 		}
 	}
 }
