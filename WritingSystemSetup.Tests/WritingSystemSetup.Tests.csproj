@@ -51,6 +51,10 @@
 	  <SubType>Designer</SubType>
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystemChooserTestForm.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WritingSystemChooserTestForm.cs</DependentUpon>
+	</EmbeddedResource>
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Resources.resx</DependentUpon>
@@ -69,6 +73,12 @@
 	</Compile>
 	<Compile Include="SuperToolTipTestForm.Designer.cs">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystemChooserTestForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="WritingSystemChooserTestForm.Designer.cs">
+	  <DependentUpon>WritingSystemChooserTestForm.cs</DependentUpon>
 	</Compile>
   </ItemGroup>
   <ItemGroup>

@@ -64,6 +64,12 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\PickerUsingListView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\PickerUsingListView.Designer.cs">
+	  <DependentUpon>PickerUsingListView.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\WSListControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -95,6 +101,10 @@
 	<EmbeddedResource Include="Widgets\ControlListBox.resx">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\PickerUsingListView.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>PickerUsingListView.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSListControl.resx">
 	  <DependentUpon>WSListControl.cs</DependentUpon>
