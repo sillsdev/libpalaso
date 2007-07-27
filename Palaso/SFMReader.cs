@@ -18,7 +18,7 @@ namespace Palaso
 
 		#endregion
 
-		private readonly StreamReader buffer;
+		private readonly TextReader buffer;
 
 		private ParseMode _parseMode;
 		private State _parseState = State.Init;
@@ -41,6 +41,11 @@ namespace Palaso
 		public SFMReader(Stream stream)
 		{
 			buffer = new StreamReader(stream);
+		}
+
+		public SFMReader(TextReader reader)
+		{
+			buffer = reader;
 		}
 
 		public ParseMode Mode
