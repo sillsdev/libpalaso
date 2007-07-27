@@ -1,18 +1,16 @@
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing.Design;
 using System.Drawing;
-
+using System.Drawing.Design;
+using System.Windows.Forms;
 
 namespace Elsehemy
 {
-	[ProvideProperty("SuperStuff", typeof(Control))]
+	[ProvideProperty("SuperStuff", typeof (Control))]
 	[ToolboxItemFilter("System.Windows.Forms")]
-	[ToolboxBitmap(typeof(SuperToolTip), "SuperToolTip.jpg")]
+	[ToolboxBitmap(typeof (SuperToolTip), "SuperToolTip.jpg")]
 	public partial class SuperToolTip : Component, IExtenderProvider
 	{
 		#region Private Members
@@ -20,12 +18,16 @@ namespace Elsehemy
 		private Dictionary<Control, SuperToolTipInfoWrapper> controlTable;
 
 		private SuperToolTipWindow window;
-		private SuperToolTipControlHost host;
 		private SuperToolTipWindowData winData;
-		private Timer timer;
+		private Timer fadingTimer;
 
-		private int fadingDirection;
-		private bool isFadding;
+		private enum FadingDirection
+		{
+			FadeIn,
+			FadeOut
+		} ;
+
+		private FadingDirection fadingDirection;
 		private bool _useFadding;
 
 		#endregion
@@ -60,26 +62,29 @@ namespace Elsehemy
 		}
 
 		[DefaultValue(50)]
-
 		public int FadingInterval
 		{
-			get { return timer.Interval; }
+			get { return fadingTimer.Interval; }
 			set
 			{
-				if (value > 0) timer.Interval = value;
-				else throw new ArgumentException("Value must be greater than 0.!");
+				if (value > 0)
+				{
+					fadingTimer.Interval = value;
+				}
+				else
+				{
+					throw new ArgumentException("Value must be greater than 0.!");
+				}
 			}
-
 		}
-
 
 		#endregion
 
 		#region Public Provided Properties
 
 		[DisplayName("SuperStuff")]
-		[TypeConverter(typeof(ExpandableObjectConverter))]
-		[Editor(typeof(Elsehemy.SuperToolTipEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof (ExpandableObjectConverter))]
+		[Editor(typeof (SuperToolTipEditor), typeof (UITypeEditor))]
 		public SuperToolTipInfoWrapper GetSuperStuff(Control control)
 		{
 			return GetControlInfo(control);
@@ -87,20 +92,23 @@ namespace Elsehemy
 
 		public void SetSuperStuff(Control control, SuperToolTipInfoWrapper info)
 		{
-			SetContolInfo(control, info);
+			SetControlInfo(control, info);
 		}
 
 		public void ResetSuperStuff(Control control)
 		{
-			controlTable[control].UseSuperToolTip = false;
-			controlTable[control].SuperToolTipInfo = null;
+			SetControlInfo(control, null);
 		}
 
 		public bool ShouldSerializeSuperStuff(Control control)
 		{
-			return controlTable[control].UseSuperToolTip;
+			SuperToolTipInfoWrapper wrapper;
+			if (controlTable.TryGetValue(control, out wrapper))
+			{
+				return wrapper.UseSuperToolTip;
+			}
+			return false;
 		}
-
 
 		#endregion
 
@@ -116,9 +124,23 @@ namespace Elsehemy
 		#region Control Event Handlers
 
 		private void MouseEntered(object sender, EventArgs e)
-		{ Show((Control)sender); }
+		{
+			Show((Control) sender);
+		}
 
 		private void MouseLeft(object sender, EventArgs e)
+		{
+			if (window.Bounds.Contains(Control.MousePosition))
+			{
+				return;
+			}
+			if (!window.HasMouse)
+			{
+				Close();
+			}
+		}
+
+		private void OnToolTipMouseLeave(object sender, EventArgs e)
 		{
 			Close();
 		}
@@ -131,12 +153,11 @@ namespace Elsehemy
 		{
 			if (_useFadding)
 			{
-				isFadding = true;
 				FadeOut();
 			}
 			else
 			{
-				window.Close();
+				CloseTooltip();
 			}
 		}
 
@@ -144,27 +165,47 @@ namespace Elsehemy
 		{
 			if (controlTable[owner].UseSuperToolTip)
 			{
-
-				winData.SuperInfo = controlTable[owner].SuperToolTipInfo;
-				if (isFadding)
-				{
-					window.Close();
-				}
+				CloseTooltip();
 				if (_useFadding)
 				{
-					isFadding = true;
 					FadeIn();
 				}
 
+				winData.SuperInfo = controlTable[owner].SuperToolTipInfo;
+				window.Size = winData.Size;
 				if (winData.SuperInfo.OffsetForWhereToDisplay != default(Point))
 				{
-					window.Show(owner, winData.SuperInfo.OffsetForWhereToDisplay, ToolStripDropDownDirection.BelowRight);
+					window.Location = owner.PointToScreen(winData.SuperInfo.OffsetForWhereToDisplay);
 				}
 				else
 				{
-					window.Show(owner, new Point(0, owner.Height), ToolStripDropDownDirection.BelowRight);
+					window.Location = owner.PointToScreen(new Point(0, owner.Height));
 				}
+				window.Show(owner);
 			}
+		}
+
+		private void CloseTooltip()
+		{
+			fadingTimer.Stop();
+			window.MouseLeave -= OnToolTipMouseLeave;
+			window.Close();
+			window = null;
+			CreateTooltipWindows();
+		}
+
+		private void CreateTooltipWindows()
+		{
+			window = new SuperToolTipWindow();
+			window.MouseLeave += OnToolTipMouseLeave;
+			winData = new SuperToolTipWindowData();
+			winData.SizeChanged += OnWindowSizeChanged;
+			window.Controls.Add(winData);
+		}
+
+		private void OnWindowSizeChanged(object sender, EventArgs e)
+		{
+			window.Size = winData.Size;
 		}
 
 		#endregion
@@ -173,51 +214,49 @@ namespace Elsehemy
 
 		private void InternalInitialize()
 		{
-			timer = new Timer();
-			timer.Interval = 50;
 			_useFadding = true;
-			fadingDirection = 1;
-			timer.Tick += delegate
-			{
-				if (window.Opacity == 1 && fadingDirection == 1)
-				{
-					timer.Enabled = false;
-					isFadding = false;
-				}
-				if (window.Opacity == 0 && fadingDirection == -1)
-				{
-					timer.Enabled = false;
-					isFadding = false;
-					window.Close();
-				}
-				isFadding = true;
-				window.Opacity = window.Opacity + 0.5 * fadingDirection;
-			};
 
-			winData = new SuperToolTipWindowData();
-			window = new SuperToolTipWindow();
-			host = new SuperToolTipControlHost(winData, "windowHost");
+			fadingTimer = new Timer();
+			fadingTimer.Interval = 10;
+			fadingTimer.Tick += FadeOnTick;
+
+			CreateTooltipWindows();
 			controlTable = new Dictionary<Control, SuperToolTipInfoWrapper>();
-			host.Margin = window.Margin = host.Padding = window.Padding = new Padding(0);
-			window.Items.Add(host);
+		}
+
+		private void FadeOnTick(object obj, EventArgs e)
+		{
+			if (window.Opacity == 1 && fadingDirection == FadingDirection.FadeIn)
+			{
+				fadingTimer.Stop();
+			}
+			if (window.Opacity == 0 && fadingDirection == FadingDirection.FadeOut)
+			{
+				fadingTimer.Stop();
+				window.Close();
+			}
+			window.Opacity = window.Opacity + (fadingDirection == FadingDirection.FadeOut ? -.1 : .1);
 		}
 
 		private SuperToolTipInfoWrapper GetControlInfo(Control control)
 		{
 			if (!controlTable.ContainsKey(control))
+			{
 				controlTable.Add(control, new SuperToolTipInfoWrapper());
+			}
 			return controlTable[control];
 		}
 
-		private void SetContolInfo(Control control, SuperToolTipInfoWrapper info)
+		private void SetControlInfo(Control control, SuperToolTipInfoWrapper info)
 		{
 			if (controlTable.ContainsKey(control))
 			{
 				if (info == null)
-				//hook events to our event handlers;
+						//hook events to our event handlers;
 				{
-					control.MouseEnter -= new EventHandler(this.MouseEntered);
-					control.MouseLeave -= new EventHandler(this.MouseLeft);
+					control.MouseEnter -= new EventHandler(MouseEntered);
+					control.MouseLeave -= new EventHandler(MouseLeft);
+
 					controlTable.Remove(control);
 					return;
 				}
@@ -227,8 +266,8 @@ namespace Elsehemy
 			{
 				controlTable.Add(control, info);
 				//hook events to our event handlers;
-				control.MouseEnter += new EventHandler(this.MouseEntered);
-				control.MouseLeave += new EventHandler(this.MouseLeft);
+				control.MouseEnter += new EventHandler(MouseEntered);
+				control.MouseLeave += new EventHandler(MouseLeft);
 			}
 		}
 
@@ -237,15 +276,18 @@ namespace Elsehemy
 		private void FadeIn()
 		{
 			window.Opacity = 0;
-			fadingDirection = 1;
-			timer.Enabled = true;
+			fadingDirection = FadingDirection.FadeIn;
+			fadingTimer.Start();
 		}
 
 		private void FadeOut()
 		{
-			window.Opacity = 1;
-			fadingDirection = -1;
-			timer.Enabled = true;
+			if (window.Visible)
+			{
+				window.Opacity = 1;
+				fadingDirection = FadingDirection.FadeOut;
+				fadingTimer.Start();
+			}
 		}
 
 		#endregion
@@ -253,10 +295,11 @@ namespace Elsehemy
 		#endregion
 
 		#region Designer
+
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -283,25 +326,39 @@ namespace Elsehemy
 		}
 
 		#endregion
+
 		#endregion
 	}
 
 	[ToolboxItem(false)]
-	class SuperToolTipWindow : ToolStripDropDown
-	{ }
-
-	[ToolboxItem(false)]
-	class SuperToolTipControlHost : ToolStripControlHost
+	internal class SuperToolTipWindow : Form
 	{
-		public SuperToolTipControlHost(Control c)
-			: base(c)
-		{
+		private bool _hasMouse;
 
+		public SuperToolTipWindow()
+		{
+			FormBorderStyle = FormBorderStyle.FixedToolWindow;
+			ShowInTaskbar = false;
+			ControlBox = false;
+
+			StartPosition = FormStartPosition.Manual;
 		}
-		public SuperToolTipControlHost(Control c, string name)
-			: base(c, name)
-		{
 
+		public bool HasMouse
+		{
+			get { return _hasMouse; }
+		}
+
+		protected override void OnMouseEnter(EventArgs e)
+		{
+			base.OnMouseEnter(e);
+			_hasMouse = true;
+		}
+
+		protected override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			_hasMouse = false;
 		}
 	}
 }

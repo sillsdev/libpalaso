@@ -196,20 +196,14 @@ namespace Elsehemy
 
 		private void DrawSeparator(Graphics graphics, Panel p)
 		{
-
 			graphics.DrawLine(Pens.White, new Point(0, p.Height / 2), new Point(p.Width, p.Height / 2));
 			graphics.DrawLine(Pens.Black, new Point(0, p.Height / 2 + 1), new Point(p.Width, p.Height / 2 + 1));
 		}
-
-		private void SuperToolTipWindowData_SizeChanged(object sender, EventArgs e)
+		protected override void OnSizeChanged(EventArgs e)
 		{
 			pnlHeaderSeparator.Width = this.Width * 95 / 100;
 			pnlFooterSeparator.Width = this.Width * 95 / 100;
-		}
-
-		private void SuperToolTipWindowData_MouseMove(object sender, MouseEventArgs e)
-		{
-
+			base.OnSizeChanged(e);
 		}
 	}
 }

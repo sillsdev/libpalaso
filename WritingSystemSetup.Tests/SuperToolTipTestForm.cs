@@ -33,7 +33,7 @@ namespace WritingSystemSetup.Tests
 		   info.SuperToolTipInfo.BodyText = e.Y.ToString();
 		   info.SuperToolTipInfo.OffsetForWhereToDisplay = new Point(10,e.Y);
 			this.superToolTip1.SetSuperStuff(this.richTextBox1, info);
-			Debug.WriteLine(e.Y);
+			Debug.WriteLine(e.Location);
 		}
 	}
 }
