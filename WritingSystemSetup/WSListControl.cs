@@ -24,11 +24,12 @@ namespace Palaso
 
 		public void SaveChangesToWSFiles()
 		{
-			foreach (WSListItem item in _writingSystemList.Items)
-			{
-				item.SaveToWritingSystemDefinition();
-				_repository.SaveDefinition(item.Definition);
-			}
+//            foreach (WSListItem item in _writingSystemList.Items)
+//            {
+//                item.PushToWritingSystemDefinition();
+//            }
+
+			_repository.SaveDefinitions();
 		}
 
 		public void LoadFromRepository(LdmlInFolderWritingSystemRepository repository)
@@ -37,17 +38,30 @@ namespace Palaso
 			_writingSystemList.Clear();
 			foreach (WritingSystemDefinition ws in repository.WritingSystemDefinitions)
 			{
-				WSListItem item = new WSListItem(ws);
-				_writingSystemList.AddControlToBottom(item);
+				AddControl(new WSListItem(ws));
 			}
 			_writingSystemList.LayoutRows();
 		}
 
+		private void AddControl(WSListItem item)
+		{
+			item.DuplicateRequested += new EventHandler(OnDuplicateRequested);
+			_writingSystemList.AddControlToBottom(item);
+		}
+
+		void OnDuplicateRequested(object sender, EventArgs e)
+		{
+			WritingSystemDefinition ws= _repository.MakeDuplicate(((WSListItem) sender).Definition);
+			WSListItem item = new WSListItem(ws);
+			AddControl(item);
+			item.Selected = true;
+		}
+
 		private void OnAddNewClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			WritingSystemDefinition ws = _repository.CreateNewDefinition();
+			WritingSystemDefinition ws = _repository.AddNewDefinition();
 			WSListItem item = new WSListItem(ws);
-			_writingSystemList.AddControlToBottom(item);
+			AddControl(item);
 			item.Selected = true;
 			this.ScrollControlIntoView(item);
 		}

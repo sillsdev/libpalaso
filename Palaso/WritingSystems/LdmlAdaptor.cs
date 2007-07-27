@@ -30,33 +30,13 @@ namespace Palaso.WritingSystems
 
 			ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
 			ws.LanguageName = GetSpecialValue(doc, "languageName");
+			ws.PreviousRepositoryIdentifier = identifier;
+			ws.Modified = false;
 		}
 
 		internal string GetFileName(WritingSystemDefinition ws)
 		{
-			string name;
-			if (String.IsNullOrEmpty(ws.ISO))
-			{
-				name = "unknown";
-			}
-			else
-			{
-				name = ws.ISO;
-			}
-			if (!String.IsNullOrEmpty(ws.Script))
-			{
-				name += "-" + ws.Script;
-			}
-			if (!String.IsNullOrEmpty(ws.Region))
-			{
-				name += "-" + ws.Region;
-			}
-			if (!String.IsNullOrEmpty(ws.Variant))
-			{
-				name += "-" + ws.Variant;
-			}
-
-			return name + _kExtension;
+			return ws.RFC4646 + _kExtension;
 		}
 
 		private string GetSpecialValue(XmlDocument doc, string field)
@@ -76,6 +56,10 @@ namespace Palaso.WritingSystems
 			XmlDocument doc = new XmlDocument();
 			string savePath = Path.Combine(repository.PathToWritingSystems,GetFileName(ws));
 			string incomingPath;
+			if (!ws.Modified && File.Exists(savePath))
+			{
+				return; // no need to save (better to preserve the modified date)
+			}
 			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier))
 			{
 				incomingPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier);
@@ -95,6 +79,7 @@ namespace Palaso.WritingSystems
 			}
 			UpdateDOM(doc, ws);
 			doc.Save(savePath);
+			ws.Modified = false;
 
 			RemoveOldFileIfNeeded(repository, ws);
 			//save this so that if the user makes a name-changing change and saves again, we
@@ -109,9 +94,9 @@ namespace Palaso.WritingSystems
 		}
 		private void RemoveOldFileIfNeeded(LdmlInFolderWritingSystemRepository repository, WritingSystemDefinition ws)
 		{
-			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier) && ws.PreviousRepositoryIdentifier != GetFileName(ws))
+			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier) && ws.PreviousRepositoryIdentifier != ws.RFC4646)
 			{
-				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier);
+				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier+_kExtension);
 				if (File.Exists(oldGuyPath))
 				{
 					try

@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.UI;
 using Palaso.WritingSystems;
@@ -14,7 +10,9 @@ namespace Palaso
 	{
 		private readonly WritingSystemDefinition _writingSystemDefinition;
 		private bool _isSelected = false;
+		private bool _doingLoading=false;
 		public event EventHandler Selecting;
+		public event EventHandler DuplicateRequested;
 
 
 		public WSListItem(WritingSystemDefinition writingSystemDefinition)
@@ -24,12 +22,12 @@ namespace Palaso
 			SetHeight(false);
 		}
 
-		public bool SaveToWritingSystemDefinition()
+		public bool PushToWritingSystemDefinition()
 		{
 			bool wasChanged = false;
 			Definition.LanguageName = SaveToProperty(_language, Definition.LanguageName, ref wasChanged);
 			Definition.ISO = SaveToProperty(_iso, Definition.ISO, ref wasChanged);
-			Definition.Region = SaveToProperty(_countryBox, Definition.Region, ref wasChanged);
+			Definition.Region = SaveToProperty(_regionBox, Definition.Region, ref wasChanged);
 			Definition.Variant = SaveToProperty(_variant, Definition.Variant, ref wasChanged);
 			Definition.Script = SaveToProperty(CurrentScriptCode, Definition.Script, ref wasChanged);
 			Definition.Abbreviation = SaveToProperty(_abbreviation, Definition.Abbreviation, ref wasChanged);
@@ -56,15 +54,6 @@ namespace Palaso
 			return box.Text;
 		}
 
-		private string SaveToProperty(ComboBox box, string property, ref bool wasChanged)
-		{
-			box.Text = box.Text.Trim();
-			if (property != box.Text)
-			{
-				wasChanged = true;
-			}
-			return box.Text;
-		}
 
 		public bool Selected
 		{
@@ -107,26 +96,31 @@ namespace Palaso
 		}
 
 
-		private void WSListItem_Paint(object sender, PaintEventArgs e)
+		protected override void OnPaint(PaintEventArgs e)
 		{
-			if (!this.Selected)
+			base.OnPaint(e);
+//            if (_markedForDeletion)
+//            {
+//                e.Graphics.DrawLine(Pens.Red, ClientRectangle.Left + 15, 15, ClientRectangle.Right - 15, 15);
+//            }
+			if (this.Selected)
 			{
-				return;
+				Rectangle baseRect = base.ClientRectangle;
+				baseRect.Inflate(-2, -2);
+				float radius = 14;
+
+				System.Drawing.Drawing2D.GraphicsPath gp = new System.Drawing.Drawing2D.GraphicsPath();
+				gp.StartFigure();
+				gp.AddArc(baseRect.X, baseRect.Y, radius, radius, 180, 90);
+				gp.AddArc(baseRect.X + baseRect.Width - radius, baseRect.Y, radius, radius, 270, 90);
+				gp.AddArc(baseRect.X + baseRect.Width - radius, baseRect.Y + baseRect.Height - radius, radius, radius, 0,
+						  90);
+				gp.AddArc(baseRect.X, baseRect.Y + baseRect.Height - radius, radius, radius, 90, 90);
+				gp.CloseFigure();
+
+				e.Graphics.DrawPath(new Pen(Color.RoyalBlue), gp);
+				gp.Dispose();
 			}
-			Rectangle baseRect = base.ClientRectangle;
-			baseRect.Inflate(-2, -2);
-			float radius = 14;
-
-			System.Drawing.Drawing2D.GraphicsPath gp = new System.Drawing.Drawing2D.GraphicsPath();
-			gp.StartFigure();
-			gp.AddArc(baseRect.X, baseRect.Y, radius, radius, 180, 90);
-			gp.AddArc(baseRect.X + baseRect.Width - radius, baseRect.Y, radius, radius, 270, 90);
-			gp.AddArc(baseRect.X + baseRect.Width - radius, baseRect.Y + baseRect.Height - radius, radius, radius, 0, 90);
-			gp.AddArc(baseRect.X, baseRect.Y + baseRect.Height - radius, radius, radius, 90, 90);
-			gp.CloseFigure();
-
-			e.Graphics.DrawPath(new Pen(Color.RoyalBlue), gp);
-			gp.Dispose();
 		}
 
 		private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -142,81 +136,42 @@ namespace Palaso
 
 		private void OnLoad(object sender, EventArgs e)
 		{
+			_doingLoading = true;
 			LoadScriptBox();
 
 			_language.Text = Definition.LanguageName;
 			_iso.Text = Definition.ISO;
 			_variant.Text = Definition.Variant;
 			_abbreviation.Text = Definition.Abbreviation;
-			_countryBox.Text = Definition.Region;
+			_regionBox.Text = Definition.Region;
 
 			SelectCorrectScriptComboItem();
 			UpdateDisplay();
+			_doingLoading = false;
 		}
 
 		private void SelectCorrectScriptComboItem()
 		{
-			string script = Definition.Script;
-			if (String.IsNullOrEmpty(script))
-			{
-				script = "latn";
-			}
-			foreach (ScriptOption option in _scriptBox.Items)
-			{
-				if(option.Code == script)
-				{
-					_scriptBox.SelectedItem = option;
-					break;
-				}
-			}
+			 _scriptBox.SelectedItem = Definition.CurrentScriptOption;
+			 if (_scriptBox.SelectedItem == null)
+			 {
+				 _scriptBox.Text = Definition.Script; //not an expected script
+			 }
 		}
 
 		private void UpdateDisplay()
 		{
-
-			_abbreviationLabel.Text = GetBestLabel();
-
-			StringBuilder identifier = new StringBuilder();
-			identifier.Append(_iso.Text);
-			if (!String.IsNullOrEmpty(CurrentScriptCode))
-			{
-				identifier.AppendFormat("-{0}", CurrentScriptCode);
-			}
-			if (!String.IsNullOrEmpty(_countryBox.Text))
-			{
-				identifier.AppendFormat("-{0}", _countryBox.Text);
-			}
-			if (!String.IsNullOrEmpty(_variant.Text))
-			{
-				identifier.AppendFormat("-{0}", _variant.Text);
-			}
-
-			StringBuilder summary = new StringBuilder();
-			summary.AppendFormat("The");
-			if (!String.IsNullOrEmpty(_variant.Text))
-			{
-				summary.AppendFormat(" {0} variant of ", _variant.Text);
-			}
-
-			summary.AppendFormat(" {0}", _language.Text);
-			if (!String.IsNullOrEmpty(_countryBox.Text))
-			{
-				summary.AppendFormat(" in {0}", _countryBox.Text);
-			}
-			if (!String.IsNullOrEmpty(_scriptBox.Text))
-			{
-				summary.AppendFormat(" written in {0} script", _scriptBox.Text);
-			}
-
-			summary.AppendFormat(". ({0})",identifier.ToString());
-			_labelSummary.Text = summary.ToString();
+			_deletionIndicator.Visible = Definition.MarkedForDeletion;
+			this.Enabled = !Definition.MarkedForDeletion;
+			_writingSystemLabel.Text = Definition.DisplayLabel;
+			_labelSummary.Text = Definition.VerboseDescription;
 		}
 
 		private string CurrentScriptCode
 		{
 			get
 			{
-				ScriptOption script = _scriptBox.SelectedItem as ScriptOption;
+				WritingSystemDefinition.ScriptOption script = _scriptBox.SelectedItem as WritingSystemDefinition.ScriptOption;
 				if (script == null)
 				{
 					return string.Empty;
@@ -225,78 +180,27 @@ namespace Palaso
 			}
 		}
 
-		private string GetBestLabel()
-		{
-			if (!String.IsNullOrEmpty(_abbreviation.Text))
-			{
-			   return _abbreviation.Text;
-			}
-			else
-			{
-				if (!String.IsNullOrEmpty(_iso.Text))
-				{
-					return _iso.Text;
-				}
-				else
-				{
-					if (!String.IsNullOrEmpty(_language.Text))
-					{
-						string n = _language.Text;
-						return n.Substring(0, n.Length>4? 4: n.Length);
-					}
-				}
-			}
-			return "???";
-		}
+
+
 
 		private void LoadScriptBox()
 		{
 			_scriptBox.Items.Clear();
-
-			_scriptBox.Items.Add(new ScriptOption("Thai", "Thai"));
-			_scriptBox.Items.Add(new ScriptOption("Khmer", "khmr"));
-			_scriptBox.Items.Add(new ScriptOption("Korean", "Kore"));
-			_scriptBox.Items.Add(new ScriptOption("Lao", "Laoo"));
-			_scriptBox.Items.Add(new ScriptOption("Latin", "Latn"));
-			_scriptBox.SelectedIndex = _scriptBox.Items.Count - 1;
-			_scriptBox.Items.Add(new ScriptOption("Lanna", "Lana"));
-			_scriptBox.Items.Add(new ScriptOption("Myanmar (Burmese)", "Mymr"));
-		}
-
-		class ScriptOption
-		{
-			private string _label;
-			private string _code;
-
-			public ScriptOption(string label, string code)
+			foreach (WritingSystemDefinition.ScriptOption option in Definition.ScriptOptions)
 			{
-				_label = label;
-				_code = code;
-			}
-
-			public string Code
-			{
-				get
+				_scriptBox.Items.Add(option);
+				if (option.Code == "latn")
 				{
-					return _code;
+					_scriptBox.SelectedIndex = _scriptBox.Items.Count - 1;
 				}
 			}
-
-			public string Label
-			{
-				get
-				{
-					return _label;
-				}
-			}
-			public override string ToString()
-			{
-				return _label;
-			}
-		}
+		 }
 
 		private void OnSomethingChanged(object sender, EventArgs e)
 		{
+			if(_doingLoading)
+				return;
+			PushToWritingSystemDefinition();
 			UpdateDisplay();
 		}
 
@@ -305,10 +209,19 @@ namespace Palaso
 
 		}
 
-		private void _iso_TextChanged(object sender, EventArgs e)
+		private void _deleteButton_Click(object sender, EventArgs e)
 		{
-
+			Definition.MarkedForDeletion = true;
+			Invalidate();
 			UpdateDisplay();
+		}
+
+		private void _duplicateButton_Click(object sender, EventArgs e)
+		{
+			 if(DuplicateRequested!=null)
+			 {
+				 DuplicateRequested.Invoke(this, null);
+			 }
 		}
 	}
 }
