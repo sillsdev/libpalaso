@@ -1,4 +1,4 @@
-namespace Palaso.UI
+namespace Palaso.UI.Widgets
 {
 	partial class ControlListBox
 	{

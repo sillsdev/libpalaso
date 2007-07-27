@@ -1,4 +1,4 @@
-namespace Palaso
+namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	partial class WSListItem
 	{
@@ -206,7 +206,7 @@ namespace Palaso
 			this._labelSummary.Size = new System.Drawing.Size(378, 13);
 			this._labelSummary.TabIndex = 4;
 			this._labelSummary.Text = "The western variant of the Foo language written in Latin script. (bin-ltn-western" +
-				")";
+									  ")";
 			this._labelSummary.Click += new System.EventHandler(this.WSListItem_Click);
 			//
 			// _deleteButton
@@ -296,7 +296,7 @@ namespace Palaso
 			superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
 			superToolTipInfo2.BodyText = "Variant subtags are values used to indicate dialects or script variations not alr" +
-				"eady covered by combinations of language, script and region subtag.";
+										 "eady covered by combinations of language, script and region subtag.";
 			superToolTipInfo2.HeaderText = "Variant";
 			superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
 			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;

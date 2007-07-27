@@ -38,58 +38,18 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="ControlListBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ControlListBox.designer.cs">
-	  <DependentUpon>ControlListBox.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resources.resx</DependentUpon>
 	</Compile>
-	<Compile Include="WSListControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WSListControl.Designer.cs">
-	  <DependentUpon>WSListControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WSListDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WSListDialog.Designer.cs">
-	  <DependentUpon>WSListDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WSListItem.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WSListItem.Designer.cs">
-	  <DependentUpon>WSListItem.cs</DependentUpon>
-	</Compile>
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="ControlListBox.resx">
-	  <DependentUpon>ControlListBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Properties\Resources.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WSListControl.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>WSListControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WSListDialog.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>WSListDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WSListItem.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>WSListItem.cs</DependentUpon>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -80,10 +80,6 @@
 	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
 	  <Name>PalasoUIWindowsForms</Name>
 	</ProjectReference>
-	<ProjectReference Include="..\WritingSystemSetup\WritingSystemSetup.csproj">
-	  <Project>{6D41F396-12C1-4272-9AD0-D26BE614B669}</Project>
-	  <Name>WritingSystemSetup</Name>
-	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

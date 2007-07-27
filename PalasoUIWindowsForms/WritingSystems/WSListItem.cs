@@ -1,12 +1,12 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.UI;
+using Palaso.UI.Widgets;
 using Palaso.WritingSystems;
 
-namespace Palaso
+namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public partial class WSListItem : UserControl, ControlListBox.ISelectableControl
+	internal partial class WSListItem : UserControl, ControlListBox.ISelectableControl
 	{
 		private readonly WritingSystemDefinition _writingSystemDefinition;
 		private bool _isSelected = false;
@@ -65,13 +65,13 @@ namespace Palaso
 			{
 				if (_isSelected == value)
 					return;
-			   SetHeight(value);
+				SetHeight(value);
 				if (value && Selecting!=null)
 				{
 					Selecting.Invoke(this, null);
 				}
 				_isSelected = value;
-				 this.Invalidate();
+				this.Invalidate();
 			}
 		}
 
@@ -152,11 +152,11 @@ namespace Palaso
 
 		private void SelectCorrectScriptComboItem()
 		{
-			 _scriptBox.SelectedItem = Definition.CurrentScriptOption;
-			 if (_scriptBox.SelectedItem == null)
-			 {
-				 _scriptBox.Text = Definition.Script; //not an expected script
-			 }
+			_scriptBox.SelectedItem = Definition.CurrentScriptOption;
+			if (_scriptBox.SelectedItem == null)
+			{
+				_scriptBox.Text = Definition.Script; //not an expected script
+			}
 		}
 
 		private void UpdateDisplay()
@@ -194,7 +194,7 @@ namespace Palaso
 					_scriptBox.SelectedIndex = _scriptBox.Items.Count - 1;
 				}
 			}
-		 }
+		}
 
 		private void OnSomethingChanged(object sender, EventArgs e)
 		{
@@ -218,10 +218,10 @@ namespace Palaso
 
 		private void _duplicateButton_Click(object sender, EventArgs e)
 		{
-			 if(DuplicateRequested!=null)
-			 {
-				 DuplicateRequested.Invoke(this, null);
-			 }
+			if(DuplicateRequested!=null)
+			{
+				DuplicateRequested.Invoke(this, null);
+			}
 		}
 	}
 }

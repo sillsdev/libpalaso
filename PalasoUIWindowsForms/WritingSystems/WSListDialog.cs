@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 
-namespace Palaso
+namespace Palaso.UI.WritingSystems
 {
 	public partial class WSListDialog : Form
 	{

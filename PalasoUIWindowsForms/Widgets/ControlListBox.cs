@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Palaso.UI
+namespace Palaso.UI.Widgets
 {
 	public partial class ControlListBox : UserControl
 	{

@@ -1,4 +1,6 @@
-namespace Palaso
+using Palaso.UI.Widgets;
+
+namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	partial class WSListControl
 	{
@@ -28,15 +30,15 @@ namespace Palaso
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._writingSystemList = new Palaso.UI.ControlListBox();
+			this._writingSystemList = new Palaso.UI.Widgets.ControlListBox();
 			this._linkAddNew = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			//
 			// _writingSystemList
 			//
 			this._writingSystemList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+																					| System.Windows.Forms.AnchorStyles.Left)
+																				   | System.Windows.Forms.AnchorStyles.Right)));
 			this._writingSystemList.Location = new System.Drawing.Point(0, 3);
 			this._writingSystemList.Name = "_writingSystemList";
 			this._writingSystemList.Size = new System.Drawing.Size(564, 184);
@@ -69,7 +71,7 @@ namespace Palaso
 
 		#endregion
 
-		private Palaso.UI.ControlListBox _writingSystemList;
+		private ControlListBox _writingSystemList;
 		private System.Windows.Forms.LinkLabel _linkAddNew;
 	}
 }

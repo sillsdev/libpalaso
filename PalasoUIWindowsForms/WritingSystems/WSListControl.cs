@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 
-namespace Palaso
+namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public partial class WSListControl : UserControl
+	internal partial class WSListControl : UserControl
 	{
 		private LdmlInFolderWritingSystemRepository _repository;
 

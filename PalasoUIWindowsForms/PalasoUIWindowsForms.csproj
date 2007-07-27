@@ -45,7 +45,7 @@
 	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.cs">
-	  <SubType>Form</SubType>
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.designer.cs">
 	  <DependentUpon>SuperToolTip.cs</DependentUpon>
@@ -58,6 +58,30 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\ControlListBox.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="Widgets\ControlListBox.designer.cs">
+	  <DependentUpon>ControlListBox.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSListControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSListControl.Designer.cs">
+	  <DependentUpon>WSListControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSListDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSListDialog.Designer.cs">
+	  <DependentUpon>WSListDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSListItem.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSListItem.Designer.cs">
+	  <DependentUpon>WSListItem.cs</DependentUpon>
+	</Compile>
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
@@ -68,6 +92,28 @@
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="Widgets\ControlListBox.resx">
+	  <DependentUpon>ControlListBox.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSListControl.resx">
+	  <DependentUpon>WSListControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSListDialog.resx">
+	  <DependentUpon>WSListDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSListItem.resx">
+	  <DependentUpon>WSListItem.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
+	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

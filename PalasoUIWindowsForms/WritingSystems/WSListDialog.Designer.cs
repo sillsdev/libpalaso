@@ -1,4 +1,6 @@
-namespace Palaso
+using Palaso.UI.WindowsForms.WritingSystems;
+
+namespace Palaso.UI.WritingSystems
 {
 	partial class WSListDialog
 	{
@@ -29,7 +31,7 @@ namespace Palaso
 		private void InitializeComponent()
 		{
 			this._okButton = new System.Windows.Forms.Button();
-			this._writingSystemListControl = new Palaso.WSListControl();
+			this._writingSystemListControl = new WSListControl();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
