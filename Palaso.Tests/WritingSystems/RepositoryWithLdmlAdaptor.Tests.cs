@@ -172,6 +172,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void CanSaveAndReadDefaultFont()
+		{
+			_writingSystem.ISO = "en";
+			_writingSystem.DefaultFontName = "Courier";
+			_repository.SaveDefinition(_writingSystem);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = _repository.LoadDefinition("en");
+			Assert.AreEqual("Courier", ws2.DefaultFontName);
+		}
+
+		[Test]
 		public void CanRemoveVariant()
 		{
 			_writingSystem.ISO = "en";

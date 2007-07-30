@@ -206,7 +206,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnFontLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-
+			FontDialog dialog = new FontDialog();
+			dialog.FontFamily = _writingSystemDefinition.DefaultFontName;
+			if (dialog.ShowDialog() == DialogResult.OK)
+			{
+				_writingSystemDefinition.DefaultFontName = dialog.FontFamily;
+			}
 		}
 
 		private void _deleteButton_Click(object sender, EventArgs e)

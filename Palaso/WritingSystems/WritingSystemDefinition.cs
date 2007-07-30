@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace Palaso.WritingSystems
@@ -13,6 +14,7 @@ namespace Palaso.WritingSystems
 		private string _languageName;
 		private string _script;
 		private string _abbreviation;
+		private string _defaultFontName;
 		private bool _modified;
 
 		/// <summary>
@@ -309,6 +311,18 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_markedForDeletion = value;
+			}
+		}
+
+		public string DefaultFontName
+		{
+			get
+			{
+				return _defaultFontName;
+			}
+			set
+			{
+				UpdateString(ref _defaultFontName, value);
 			}
 		}
 

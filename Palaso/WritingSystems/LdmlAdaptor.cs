@@ -30,6 +30,7 @@ namespace Palaso.WritingSystems
 
 			ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
 			ws.LanguageName = GetSpecialValue(doc, "languageName");
+			ws.DefaultFontName = GetSpecialValue(doc, "defaultFontFamily");
 			ws.PreviousRepositoryIdentifier = identifier;
 			ws.Modified = false;
 		}
@@ -121,6 +122,7 @@ namespace Palaso.WritingSystems
 
 			SetTopLevelSpecialNode(dom, "languageName", ws.LanguageName);
 			SetTopLevelSpecialNode(dom, "abbreviation", ws.Abbreviation);
+			SetTopLevelSpecialNode(dom, "defaultFontFamily", ws.DefaultFontName);
 		}
 
 		private void SetSubIdentityNode(XmlDocument dom, string field, string value)
