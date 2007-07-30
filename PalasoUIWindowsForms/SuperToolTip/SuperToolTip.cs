@@ -123,12 +123,12 @@ namespace Elsehemy
 
 		#region Control Event Handlers
 
-		private void MouseEntered(object sender, EventArgs e)
+		protected virtual void MouseEntered(object sender, EventArgs e)
 		{
 			Show((Control) sender);
 		}
 
-		private void MouseLeft(object sender, EventArgs e)
+		protected virtual void MouseLeft(object sender, EventArgs e)
 		{
 			if (window.Bounds.Contains(Control.MousePosition))
 			{
@@ -176,6 +176,7 @@ namespace Elsehemy
 
 				winData.SuperInfo = controlTable[owner].SuperToolTipInfo;
 				window.Size = winData.Size;
+
 				if (winData.SuperInfo.OffsetForWhereToDisplay != default(Point))
 				{
 					window.Location = owner.PointToScreen(winData.SuperInfo.OffsetForWhereToDisplay);
@@ -184,9 +185,18 @@ namespace Elsehemy
 				{
 					window.Location = owner.PointToScreen(new Point(0, owner.Height));
 				}
+
+				winData.GotFocus += OnGotFocus;
 				window.Show(owner);
+				winData.GotFocus -= OnGotFocus;
 			}
 		}
+
+		void OnGotFocus(object sender, EventArgs e)
+		{
+			window.Owner.Focus();
+		}
+
 
 		private void CloseTooltip()
 		{
