@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Palaso.WritingSystems;
@@ -17,6 +18,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem = new WritingSystemDefinition();
 			_testDir = Palaso.Tests.TestUtilities.GetTempTestDirectory();
 			_repository = new LdmlInFolderWritingSystemRepository(_testDir);
+			_repository.DontAddDefaultDefinitions = true;
 		}
 
 		[TearDown]
@@ -282,6 +284,43 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsFalse(_writingSystem.Modified);
 			_writingSystem.ISO = "foo";
 			Assert.IsTrue(_writingSystem.Modified);
+		}
+
+		[Test]
+		public void LoadDefinitionCanFabricateEnglish()
+		{
+			_repository.DontAddDefaultDefinitions = false;
+			Assert.AreEqual("English",_repository.LoadDefinition("en-Latn").LanguageName);
+		}
+		[Test]
+		public void DefaultDefinitionListIncludesActiveOSLanguages()
+		{
+			_repository.DontAddDefaultDefinitions = false;
+			_repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
+			IList<WritingSystemDefinition> list = _repository.WritingSystemDefinitions;
+			Assert.IsTrue(ContainsLanguageWithName(list, "test"));
+		}
+
+		private bool ContainsLanguageWithName(IList<WritingSystemDefinition> list, string name)
+		{
+			foreach (WritingSystemDefinition definition in list)
+			{
+				if(definition.LanguageName == name)
+					return true;
+			}
+			return false;
+		}
+
+		class DummyWritingSystemProvider : IWritingSystemProvider
+		{
+			#region IWritingSystemProvider Members
+
+			public IEnumerable<WritingSystemDefinition> ActiveOSLanguages()
+			{
+				yield return new WritingSystemDefinition("tst", "", "", "", "test", "");
+			}
+
+			#endregion
 		}
 	}
 }

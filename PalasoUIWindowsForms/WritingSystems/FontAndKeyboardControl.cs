@@ -9,6 +9,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class FontAndKeyboardControl : UserControl
 	{
+		private string _sampleText="type here to test the font and keyboard";
+
 		public FontAndKeyboardControl()
 		{
 			InitializeComponent();
@@ -86,7 +88,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_fontFamilyCombo.Items.Add(family.Name);
 			}
-			_sampleTextBox.Text = "type here to test the font and keyboard";
+				_sampleTextBox.Text =SampleText ;
+
 			UpdateDisplay();
 			AssignKeyboard();
 		}
@@ -158,6 +161,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					keyboards.Add(lang.LayoutName);
 				}
 				return keyboards;
+			}
+		}
+
+		public string SampleText
+		{
+			get
+			{
+				return _sampleText;
+			}
+			set
+			{
+				_sampleText = value;
 			}
 		}
 

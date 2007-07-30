@@ -122,7 +122,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
 			superToolTipInfo1.BodyFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			superToolTipInfo1.BodyText = resources.GetString("superToolTipInfo1.BodyText");
+			superToolTipInfo1.BodyText = null;
 			superToolTipInfo1.HeaderText = "ISO Code";
 			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
 			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
@@ -264,7 +264,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _scriptBox
 			//
-			this._scriptBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+			this._scriptBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
 			this._scriptBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this._scriptBox.FormattingEnabled = true;
 			this._scriptBox.Location = new System.Drawing.Point(262, 41);

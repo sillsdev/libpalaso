@@ -11,6 +11,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 		}
 
+		public string SampleText
+		{
+			set
+			{
+				_FontAndKeyboardControl.SampleText = value;
+			}
+		}
+
 		public string FontFamily
 		{
 			get

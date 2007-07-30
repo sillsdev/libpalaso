@@ -209,6 +209,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			FontDialog dialog = new FontDialog();
 			dialog.FontFamily = _writingSystemDefinition.DefaultFontName;
 			dialog.Keyboard = _writingSystemDefinition.Keyboard;
+
+			//if we know one native word, that'd make a better sample text
+			if (!String.IsNullOrEmpty(_writingSystemDefinition.NativeName))
+			{
+				dialog.SampleText = _writingSystemDefinition.NativeName;
+			}
 			if (dialog.ShowDialog() == DialogResult.OK)
 			{
 				_writingSystemDefinition.DefaultFontName = dialog.FontFamily;

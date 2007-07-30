@@ -115,6 +115,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void HasLotsOfScriptOptions()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			Assert.Greater(ws.ScriptOptions.Count, 40);
+		}
+
+
+		[Test]
 		public void CurrentScriptOptionReturnCorrectScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "Kore", "", "", "", "");

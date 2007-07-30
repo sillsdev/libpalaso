@@ -7,8 +7,8 @@
 	<ProjectGuid>{6E16866F-FF8D-4136-AD67-36AFE3626432}</ProjectGuid>
 	<OutputType>WinExe</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>WritingSystemSetup.Tests</RootNamespace>
-	<AssemblyName>WritingSystemSetup.Tests</AssemblyName>
+	<RootNamespace>PalasoUIWindowsForms.Tests</RootNamespace>
+	<AssemblyName>PalasoUIWindowsForms.Tests</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -58,6 +58,7 @@
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Resources.resx</DependentUpon>
+	  <DesignTime>True</DesignTime>
 	</Compile>
 	<None Include="Properties\Settings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
@@ -74,6 +75,7 @@
 	<Compile Include="SuperToolTipTestForm.Designer.cs">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystemChooserTestForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -89,6 +91,10 @@
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
 	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
 	  <Name>PalasoUIWindowsForms</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
 	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

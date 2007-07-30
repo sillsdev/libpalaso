@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PalasoUIWindowsForms.Tests.Properties {
+namespace Palaso {
 	using System;
 
 
@@ -22,14 +22,14 @@ namespace PalasoUIWindowsForms.Tests.Properties {
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
 	[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-	internal class Resources {
+	internal class Resource {
 
 		private static global::System.Resources.ResourceManager resourceMan;
 
 		private static global::System.Globalization.CultureInfo resourceCulture;
 
 		[global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal Resources() {
+		internal Resource() {
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace PalasoUIWindowsForms.Tests.Properties {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PalasoUIWindowsForms.Tests.Properties.Resources", typeof(Resources).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.Resource", typeof(Resource).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
@@ -57,6 +57,29 @@ namespace PalasoUIWindowsForms.Tests.Properties {
 			}
 			set {
 				resourceCulture = value;
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized string similar to #
+		///# ISO 15924 - Codes for the representation of names of scripts
+		///#             Codes pour la représentation des noms d’écritures
+		///# Format:
+		///#             Code;N°;English Name;Nom français;PVA;Date
+		///#
+		///
+		///Arab;160;Arabic;arabe;Arabic;2004-05-01
+		///Armn;230;Armenian;arménien;Armenian;2004-05-01
+		///Avst;134;Avestan;avestique;;2007-07-15
+		///Bali;360;Balinese;balinais;Balinese;2006-10-10
+		///Batk;365;Batak;batak;;2004-05-01
+		///Beng;325;Bengali;bengalî;Bengali;2004-05-01
+		///Blis;550;Blissymbols;symboles Bliss;;2004-05-01
+		///B [rest of string was truncated]&quot;;.
+		/// </summary>
+		internal static string scriptNames {
+			get {
+				return ResourceManager.GetString("scriptNames", resourceCulture);
 			}
 		}
 	}

@@ -9,7 +9,9 @@ namespace Palaso.WritingSystems
 	public class LdmlInFolderWritingSystemRepository
 	{
 		private string _path;
+		private bool _dontAddDefaultDefinitions;
 		private List<WritingSystemDefinition> _writingSystems;
+		private IWritingSystemProvider _systemWritingSystemProvider;
 
 		/// <summary>
 		/// Use the default repository
@@ -86,6 +88,75 @@ namespace Palaso.WritingSystems
 #endif
 				}
 			}
+
+
+			 if (!_dontAddDefaultDefinitions )
+			 {
+				 AddActiveOSLanguages();
+			 }
+
+//
+//            if (!_dontAddDefaultDefinitions && FindAlreadyLoadedWritingSystem("en") == null)
+//            {
+//                WritingSystemDefinition def = new WritingSystemDefinition();
+//                LdmlAdaptor adaptor = new LdmlAdaptor();
+//                adaptor.FillWithDefaults("en", def);
+//                this.WritingSystemDefinitions.Add(def);
+//            }
+		}
+
+		private void AddActiveOSLanguages()
+		{
+			if (_systemWritingSystemProvider != null)
+			{
+				foreach (WritingSystemDefinition language in _systemWritingSystemProvider.ActiveOSLanguages( ))
+				{
+					if(null==FindAlreadyLoadedWritingSystem(language.RFC4646))
+					{
+						WritingSystemDefinitions.Add(language);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// useful for unit tests
+		/// </summary>
+		public bool DontAddDefaultDefinitions
+		{
+			get
+			{
+				return _dontAddDefaultDefinitions;
+			}
+			set
+			{
+				_dontAddDefaultDefinitions = value;
+			}
+		}
+
+		/// <summary>
+		/// Provides writing systems from a repository that comes, for example, with the OS
+		/// </summary>
+		public IWritingSystemProvider SystemWritingSystemProvider
+		{
+			get
+			{
+				return _systemWritingSystemProvider;
+			}
+			set
+			{
+				_systemWritingSystemProvider = value;
+			}
+		}
+
+		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
+		{
+			foreach (WritingSystemDefinition definition in _writingSystems)
+			{
+				if(definition.RFC4646 == rfc4646 )
+					return definition;
+			}
+			return null;
 		}
 
 		public WritingSystemDefinition AddNewDefinition()

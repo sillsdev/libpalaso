@@ -35,6 +35,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.label2 = new System.Windows.Forms.Label();
 			this._keyboardCombo = new System.Windows.Forms.ComboBox();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			//
 			// _fontDialog
@@ -102,6 +103,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.label3.TabIndex = 5;
 			this.label3.Text = "Keyboard:";
 			//
+			// label4
+			//
+			this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(164, 100);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(159, 13);
+			this.label4.TabIndex = 5;
+			this.label4.Text = "You can test the keyboard here.";
+			//
 			// FontAndKeyboardControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -111,6 +122,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this._sampleTextBox);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label1);
 			this.Name = "FontAndKeyboardControl";
 			this.Size = new System.Drawing.Size(326, 178);
@@ -129,5 +141,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ComboBox _keyboardCombo;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label4;
 	}
 }

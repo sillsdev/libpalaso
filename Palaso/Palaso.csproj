@@ -34,12 +34,31 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="Resource.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>Resource.resx</DependentUpon>
+	</Compile>
+	<Compile Include="SFMReader.cs">
+	  <SubType>Code</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\IWritingSystemProvider.cs" />
 	<Compile Include="WritingSystems\LdmlAdaptor.cs" />
-	<Compile Include="SFMReader.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepository.cs" />
 	<Compile Include="XmlHelpers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="Resource.resx">
+	  <SubType>Designer</SubType>
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\scriptNames.txt" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\scriptNames.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

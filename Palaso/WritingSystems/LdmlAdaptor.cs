@@ -23,6 +23,14 @@ namespace Palaso.WritingSystems
 			{
 				doc.Load(path);
 			}
+			else
+			{
+				if (identifier.ToLower() == "en-latn")
+				{
+					FillWithDefaults("en-Latn", ws);
+					return;
+				}
+			}
 			ws.ISO = GetIdentityValue(doc, "language");
 			ws.Variant = GetIdentityValue(doc, "variant");
 			ws.Region = GetIdentityValue(doc, "territory");
@@ -34,6 +42,23 @@ namespace Palaso.WritingSystems
 			ws.Keyboard = GetSpecialValue(doc, "keyboard");
 			ws.PreviousRepositoryIdentifier = identifier;
 			ws.Modified = false;
+		}
+
+		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
+		{
+			string id = rfc4646.ToLower();
+			switch (id)
+			{
+				case "en-latn":
+					ws.ISO = "en";
+					ws.LanguageName = "English";
+					ws.Abbreviation = "eng";
+					ws.Script = "Latn";
+					break;
+				 default:
+					ws.Script = "Latn";
+					break;
+			}
 		}
 
 		internal string GetFileName(WritingSystemDefinition ws)

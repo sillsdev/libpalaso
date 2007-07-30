@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
 	Microsoft ResX Schema
@@ -117,46 +117,8 @@
   <resheader name="writer">
 	<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-	<value>
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-		YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAN1QAA
-		DdUBPdZY8QAAAKZJREFUOE9j/P//PwMyeLVhgxqQHwXExlAMkj4LxcvEAgJuoWgAGQDCL9evZwTiAiD+
-		BsT/cWCQHEgNI0wfsuateDSiGwhSCzYEZgDIVFy24hIvABsA1KhGwNn4vKMGMqCBDNthhtaDDNhMgQGb
-		QQY8o8CAZ1QxgGIvUByIlEUjNBmTn5CQ8gH5SZnizATLWVCDQGECClhQ7IDSCAiD2CAxNWS1IDYA9N78
-		nZpSthIAAAAASUVORK5CYII=
-</value>
-  </data>
-  <metadata name="superToolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-	<value>109, 17</value>
-  </metadata>
-  <data name="_deleteButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-	<value>
-		iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-		YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAN1QAA
-		DdUBPdZY8QAAATBJREFUOE9j/P//P8NCXd1cBgYGRyAOj798+TeQJg4s0NGZC8T/oXgNkGYGGUgMZgAq
-		NgLiZ0gGLAGymXBpBsr5APF1IO4A2wBkyAHxZSQDZgPZjMgGAPnaQLwTyYV8cOcBBfmBeDeSAZOgBjMD
-		xZqA+DcQ/wLifJihKH4DSrCihUE/kH8AauAHIG2F7BqsAQNUVIPkAlBgvgNiE/RwwKUZFAYgm0Aa/wKx
-		C7YAxNAM9fsVqMZvUBoUUCgBCDIM3c9sQEX7kGx0A7JBIQ9yQQleZwMVLEbyazU0tFmAYtuhIY3ib+So
-		akHSuAnZmUA2DxCfB+LbQMyLElVAAXUkjSAF/OhOBIpJAfEjkOsw4hkoeBSIvwKxHp6kqQONhViUAAMK
-		ugNxDKEMAXI2EHOC1AEApcjnEnzLnP8AAAAASUVORK5CYII=
-</value>
-  </data>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-	<value>17, 17</value>
-  </metadata>
-  <data name="_duplicateButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-	<value>
-		iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-		YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAN1QAA
-		DdUBPdZY8QAAAWdJREFUOE+l1L9qwlAUBvBWn6M+gHTsu3QSBXUQR0WHoJLJwT9IVkFCQFGEZMrkK7RT
-		09LWUq22ajbd7HT6neCVGLREE/gIubnnl9ybe3NNRFfuw0okori+R+52+cX5EXlAtFtVnR8UiAuGOE/x
-		eAgpIFuETmSN9piocZ8FEkaHkbvYSqVoXC7TtNmk706HflSVpq0WfVQq9JLNal5MQEU38pbP06LXI9sw
-		jmY5GNCXoigHbwQg6h7OZ7V6EvDCq+FQFxjPjSze5jWXo5Wu+4Z2cNr5YEBMhqxkkhbd7rkI998gEYZs
-		ht4l6RJE1EgMzRia1GpBIIMhg6F5ux0EmjEkMcRr5dTn9tFuMxRBNpNGIwhkigWZHpdKQSDZgTjPmYy+
-		7PcvwbYYenQPMTap1xUf8+F9WNFZkN7Nh32knYGN0Dd8FOJG3Iwh639AHk4BCe332rF/yw67QUcJMZAZ
-		YiMmIvOceOv+ABnKq/+OusxTAAAAAElFTkSuQmCC
-</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="scriptNames" type="System.Resources.ResXFileRef, System.Windows.Forms">
+	<value>Resources\scriptNames.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

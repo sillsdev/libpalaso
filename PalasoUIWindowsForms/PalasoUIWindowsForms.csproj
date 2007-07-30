@@ -86,6 +86,7 @@
 	<Compile Include="WritingSystems\PickerUsingListView.Designer.cs">
 	  <DependentUpon>PickerUsingListView.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProvider.cs" />
 	<Compile Include="WritingSystems\WSListControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>

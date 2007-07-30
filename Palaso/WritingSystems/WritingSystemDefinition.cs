@@ -30,6 +30,8 @@ namespace Palaso.WritingSystems
 
 		private bool _markedForDeletion;
 		private string _keyboard;
+		private string _nativeName;
+
 
 		public WritingSystemDefinition()
 		{
@@ -37,17 +39,31 @@ namespace Palaso.WritingSystems
 			Modified = false;
 		}
 
+		/// <summary>
+		/// parse in the text of the script registry we get from http://unicode.org/iso15924/iso15924-text.html
+		/// </summary>
 		private static void LoadScriptOptions()
 		{
-			if (_scriptOptions.Count == 0)
+		  if (_scriptOptions.Count > 0)
+			  return;
+
+			string[] scripts = Resource.scriptNames.Split('\n');
+			foreach (string line in scripts)
 			{
-				_scriptOptions.Add(new ScriptOption("Thai", "Thai"));
-				_scriptOptions.Add(new ScriptOption("Khmer", "khmr"));
-				_scriptOptions.Add(new ScriptOption("Korean", "Kore"));
-				_scriptOptions.Add(new ScriptOption("Lao", "Laoo"));
-				_scriptOptions.Add(new ScriptOption("Latin", "Latn"));
-				_scriptOptions.Add(new ScriptOption("Lanna", "Lana"));
-				_scriptOptions.Add(new ScriptOption("Myanmar (Burmese)", "Mymr"));
+				string tline = line.Trim();
+				if (tline.Length==0 || (tline.Length > 0 && tline[0]=='#'))
+					continue;
+				string[] fields = tline.Split(';');
+				string label = fields[2];
+
+				//these looks awful: "Korean (alias for Hangul + Han)"
+				// and "Japanese (alias for Han + Hiragana + Katakana"
+				if (label.IndexOf(" (alias") > -1)
+				{
+					label = label.Substring(0, fields[2].IndexOf(" (alias "));
+				}
+				_scriptOptions.Add(new ScriptOption(label, fields[0]));
+
 			}
 		}
 
@@ -338,6 +354,19 @@ namespace Palaso.WritingSystems
 				UpdateString(ref _keyboard, value);
 			}
 		}
+
+		public string NativeName
+		{
+			get
+			{
+				return _nativeName;
+			}
+			set
+			{
+				UpdateString(ref _nativeName, value);
+			}
+		}
+
 
 		public class ScriptOption
 		{

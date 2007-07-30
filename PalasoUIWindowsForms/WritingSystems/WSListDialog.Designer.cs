@@ -31,7 +31,7 @@ namespace Palaso.UI.WritingSystems
 		private void InitializeComponent()
 		{
 			this._okButton = new System.Windows.Forms.Button();
-			this._writingSystemListControl = new WSListControl();
+			this._writingSystemListControl = new Palaso.UI.WindowsForms.WritingSystems.WSListControl();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
@@ -47,7 +47,7 @@ namespace Palaso.UI.WritingSystems
 			this._okButton.UseVisualStyleBackColor = true;
 			this._okButton.Click += new System.EventHandler(this._okButton_Click);
 			//
-			// wsListControl1
+			// _writingSystemListControl
 			//
 			this._writingSystemListControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
@@ -71,7 +71,6 @@ namespace Palaso.UI.WritingSystems
 			//
 			// WSListDialog
 			//
-			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlLight;
