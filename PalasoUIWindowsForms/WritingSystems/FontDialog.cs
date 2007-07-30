@@ -15,14 +15,48 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return _fontControl.FontFamilyName;
+				return _FontAndKeyboardControl.FontFamilyName;
 			}
 
 			set
 			{
-				_fontControl.FontFamilyName = value;
+				if (String.IsNullOrEmpty(value))
+				{
+					if (HasFont("Doulos SIL"))
+					{
+						value = "Doulos SIL";
+					}
+					else
+					{
+						value = System.Drawing.FontFamily.GenericSansSerif.Name;
+					}
+				}
+				_FontAndKeyboardControl.FontFamilyName = value;
 			}
 		}
+
+		private bool HasFont(string name)
+		{
+			foreach (FontFamily family in System.Drawing.FontFamily.Families)
+			{
+				if(family.Name == name)
+					return true;
+			}
+			return false;
+		}
+
+		public string Keyboard
+		{
+			get
+			{
+				return _FontAndKeyboardControl.KeyboardName;
+			}
+			set
+			{
+				  _FontAndKeyboardControl.KeyboardName = value;
+			}
+		}
+
 		private void OnCancelClick(object sender, EventArgs e)
 		{
 			this.DialogResult = System.Windows.Forms.DialogResult.Cancel;

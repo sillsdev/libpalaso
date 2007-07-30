@@ -42,8 +42,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._language = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this._iso = new System.Windows.Forms.TextBox();
-			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+			this._fontAndKeboardLink = new System.Windows.Forms.LinkLabel();
 			this.linkLabel3 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel4 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel5 = new System.Windows.Forms.LinkLabel();
@@ -131,31 +130,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.superToolTip1.SetSuperStuff(this._iso, superToolTipInfoWrapper1);
 			this._iso.TabIndex = 1;
 			//
-			// linkLabel1
+			// _fontAndKeboardLink
 			//
-			this.linkLabel1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.linkLabel1.AutoSize = true;
-			this.linkLabel1.Enabled = false;
-			this.linkLabel1.LinkColor = System.Drawing.Color.RoyalBlue;
-			this.linkLabel1.Location = new System.Drawing.Point(10, 99);
-			this.linkLabel1.Name = "linkLabel1";
-			this.linkLabel1.Size = new System.Drawing.Size(57, 13);
-			this.linkLabel1.TabIndex = 6;
-			this.linkLabel1.TabStop = true;
-			this.linkLabel1.Text = "Keyboards";
-			//
-			// linkLabel2
-			//
-			this.linkLabel2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.linkLabel2.AutoSize = true;
-			this.linkLabel2.LinkColor = System.Drawing.Color.RoyalBlue;
-			this.linkLabel2.Location = new System.Drawing.Point(73, 99);
-			this.linkLabel2.Name = "linkLabel2";
-			this.linkLabel2.Size = new System.Drawing.Size(33, 13);
-			this.linkLabel2.TabIndex = 7;
-			this.linkLabel2.TabStop = true;
-			this.linkLabel2.Text = "Fonts";
-			this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnFontLinkClicked);
+			this._fontAndKeboardLink.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this._fontAndKeboardLink.AutoSize = true;
+			this._fontAndKeboardLink.LinkColor = System.Drawing.Color.RoyalBlue;
+			this._fontAndKeboardLink.Location = new System.Drawing.Point(10, 99);
+			this._fontAndKeboardLink.Name = "_fontAndKeboardLink";
+			this._fontAndKeboardLink.Size = new System.Drawing.Size(85, 13);
+			this._fontAndKeboardLink.TabIndex = 7;
+			this._fontAndKeboardLink.TabStop = true;
+			this._fontAndKeboardLink.Text = "Font && Keyboard";
+			this._fontAndKeboardLink.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this._fontAndKeboardLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnFontAndKeyboardLinkClicked);
 			//
 			// linkLabel3
 			//
@@ -206,7 +193,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._labelSummary.Size = new System.Drawing.Size(378, 13);
 			this._labelSummary.TabIndex = 4;
 			this._labelSummary.Text = "The western variant of the Foo language written in Latin script. (bin-ltn-western" +
-									  ")";
+				")";
 			this._labelSummary.Click += new System.EventHandler(this.WSListItem_Click);
 			//
 			// _deleteButton
@@ -296,7 +283,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
 			superToolTipInfo2.BodyText = "Variant subtags are values used to indicate dialects or script variations not alr" +
-										 "eady covered by combinations of language, script and region subtag.";
+				"eady covered by combinations of language, script and region subtag.";
 			superToolTipInfo2.HeaderText = "Variant";
 			superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
 			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
@@ -321,6 +308,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.superToolTip1.SetSuperStuff(this._abbreviation, superToolTipInfoWrapper3);
 			this._abbreviation.TabIndex = 5;
 			this._abbreviation.TextChanged += new System.EventHandler(this.OnSomethingChanged);
+			//
+			// superToolTip1
+			//
+			this.superToolTip1.FadingInterval = 10;
 			//
 			// _regionBox
 			//
@@ -353,8 +344,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this.linkLabel5);
 			this.Controls.Add(this.linkLabel4);
 			this.Controls.Add(this.linkLabel3);
-			this.Controls.Add(this.linkLabel2);
-			this.Controls.Add(this.linkLabel1);
+			this.Controls.Add(this._fontAndKeboardLink);
 			this.Controls.Add(this._regionBox);
 			this.Controls.Add(this._iso);
 			this.Controls.Add(this._abbreviation);
@@ -386,8 +376,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.TextBox _language;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox _iso;
-		private System.Windows.Forms.LinkLabel linkLabel1;
-		private System.Windows.Forms.LinkLabel linkLabel2;
+		private System.Windows.Forms.LinkLabel _fontAndKeboardLink;
 		private System.Windows.Forms.LinkLabel linkLabel3;
 		private System.Windows.Forms.LinkLabel linkLabel4;
 		private System.Windows.Forms.LinkLabel linkLabel5;

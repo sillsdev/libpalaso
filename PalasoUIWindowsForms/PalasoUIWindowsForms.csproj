@@ -28,6 +28,10 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\KeymanLink.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Design" />
@@ -64,11 +68,11 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\FontControl.cs">
+	<Compile Include="WritingSystems\FontAndKeyboardControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="WritingSystems\FontControl.designer.cs">
-	  <DependentUpon>FontControl.cs</DependentUpon>
+	<Compile Include="WritingSystems\FontAndKeyboardControl.designer.cs">
+	  <DependentUpon>FontAndKeyboardControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\FontDialog.cs">
 	  <SubType>Form</SubType>
@@ -114,8 +118,8 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\FontControl.resx">
-	  <DependentUpon>FontControl.cs</DependentUpon>
+	<EmbeddedResource Include="WritingSystems\FontAndKeyboardControl.resx">
+	  <DependentUpon>FontAndKeyboardControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\FontDialog.resx">

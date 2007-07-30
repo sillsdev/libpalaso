@@ -1,6 +1,6 @@
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	partial class FontControl
+	partial class FontAndKeyboardControl
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -33,6 +33,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._sampleTextBox = new System.Windows.Forms.TextBox();
 			this._fontFamilyCombo = new System.Windows.Forms.ComboBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this._keyboardCombo = new System.Windows.Forms.ComboBox();
+			this.label3 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			//
 			// _fontDialog
@@ -42,7 +44,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// label1
 			//
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(10, 59);
+			this.label1.Location = new System.Drawing.Point(10, 100);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(94, 13);
 			this.label1.TabIndex = 5;
@@ -56,42 +58,63 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._sampleTextBox.BackColor = System.Drawing.Color.White;
 			this._sampleTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this._sampleTextBox.Location = new System.Drawing.Point(13, 75);
+			this._sampleTextBox.Location = new System.Drawing.Point(13, 116);
 			this._sampleTextBox.Multiline = true;
 			this._sampleTextBox.Name = "_sampleTextBox";
-			this._sampleTextBox.Size = new System.Drawing.Size(242, 20);
-			this._sampleTextBox.TabIndex = 6;
+			this._sampleTextBox.Size = new System.Drawing.Size(310, 48);
+			this._sampleTextBox.TabIndex = 2;
+			this._sampleTextBox.Enter += new System.EventHandler(this._sampleTextBox_Enter);
 			//
 			// _fontFamilyCombo
 			//
 			this._fontFamilyCombo.FormattingEnabled = true;
-			this._fontFamilyCombo.Location = new System.Drawing.Point(13, 25);
+			this._fontFamilyCombo.Location = new System.Drawing.Point(89, 25);
 			this._fontFamilyCombo.Name = "_fontFamilyCombo";
-			this._fontFamilyCombo.Size = new System.Drawing.Size(242, 21);
-			this._fontFamilyCombo.TabIndex = 7;
+			this._fontFamilyCombo.Size = new System.Drawing.Size(166, 21);
+			this._fontFamilyCombo.TabIndex = 0;
 			this._fontFamilyCombo.SelectedIndexChanged += new System.EventHandler(this._fontFamilyCombo_SelectedIndexChanged);
 			this._fontFamilyCombo.TextChanged += new System.EventHandler(this._fontFamilyCombo_TextChanged);
 			//
 			// label2
 			//
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(10, 9);
+			this.label2.Location = new System.Drawing.Point(10, 28);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(63, 13);
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Font Family:";
 			//
-			// FontControl
+			// _keyboardCombo
+			//
+			this._keyboardCombo.FormattingEnabled = true;
+			this._keyboardCombo.Location = new System.Drawing.Point(89, 52);
+			this._keyboardCombo.Name = "_keyboardCombo";
+			this._keyboardCombo.Size = new System.Drawing.Size(166, 21);
+			this._keyboardCombo.TabIndex = 1;
+			this._keyboardCombo.SelectedIndexChanged += new System.EventHandler(this._keyboardCombo_SelectedIndexChanged);
+			//
+			// label3
+			//
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(10, 56);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(55, 13);
+			this.label3.TabIndex = 5;
+			this.label3.Text = "Keyboard:";
+			//
+			// FontAndKeyboardControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._keyboardCombo);
 			this.Controls.Add(this._fontFamilyCombo);
 			this.Controls.Add(this._sampleTextBox);
+			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
-			this.Name = "FontControl";
-			this.Size = new System.Drawing.Size(258, 150);
-			this.Load += new System.EventHandler(this.FontControl_Load);
+			this.Name = "FontAndKeyboardControl";
+			this.Size = new System.Drawing.Size(326, 178);
+			this.Load += new System.EventHandler(this.OnLoad);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -104,5 +127,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.TextBox _sampleTextBox;
 		private System.Windows.Forms.ComboBox _fontFamilyCombo;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.ComboBox _keyboardCombo;
+		private System.Windows.Forms.Label label3;
 	}
 }

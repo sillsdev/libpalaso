@@ -29,6 +29,7 @@ namespace Palaso.WritingSystems
 		private static List<ScriptOption> _scriptOptions = new List<ScriptOption>();
 
 		private bool _markedForDeletion;
+		private string _keyboard;
 
 		public WritingSystemDefinition()
 		{
@@ -323,6 +324,18 @@ namespace Palaso.WritingSystems
 			set
 			{
 				UpdateString(ref _defaultFontName, value);
+			}
+		}
+
+		public string Keyboard
+		{
+			get
+			{
+				return _keyboard;
+			}
+			set
+			{
+				UpdateString(ref _keyboard, value);
 			}
 		}
 

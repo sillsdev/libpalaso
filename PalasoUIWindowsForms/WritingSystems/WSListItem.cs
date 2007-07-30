@@ -204,13 +204,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			UpdateDisplay();
 		}
 
-		private void OnFontLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		private void OnFontAndKeyboardLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			FontDialog dialog = new FontDialog();
 			dialog.FontFamily = _writingSystemDefinition.DefaultFontName;
+			dialog.Keyboard = _writingSystemDefinition.Keyboard;
 			if (dialog.ShowDialog() == DialogResult.OK)
 			{
 				_writingSystemDefinition.DefaultFontName = dialog.FontFamily;
+				_writingSystemDefinition.Keyboard = dialog.Keyboard;
 			}
 		}
 
@@ -227,6 +229,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				DuplicateRequested.Invoke(this, null);
 			}
+		}
+
+		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+
 		}
 	}
 }

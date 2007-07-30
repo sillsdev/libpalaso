@@ -184,6 +184,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void CanSaveAndReadKeyboardName()
+		{
+			_writingSystem.ISO = "en";
+			_writingSystem.Keyboard = "Thai";
+			_repository.SaveDefinition(_writingSystem);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = _repository.LoadDefinition("en");
+			Assert.AreEqual("Thai", ws2.Keyboard);
+		}
+
+		[Test]
 		public void CanRemoveVariant()
 		{
 			_writingSystem.ISO = "en";
