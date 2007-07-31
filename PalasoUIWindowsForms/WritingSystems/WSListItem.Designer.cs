@@ -36,6 +36,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Elsehemy.SuperToolTipInfo superToolTipInfo2 = new Elsehemy.SuperToolTipInfo();
 			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper3 = new Elsehemy.SuperToolTipInfoWrapper();
 			Elsehemy.SuperToolTipInfo superToolTipInfo3 = new Elsehemy.SuperToolTipInfo();
+			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper4 = new Elsehemy.SuperToolTipInfoWrapper();
+			Elsehemy.SuperToolTipInfo superToolTipInfo4 = new Elsehemy.SuperToolTipInfo();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this._writingSystemLabel = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
@@ -60,6 +62,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.superToolTip1 = new Elsehemy.SuperToolTip(this.components);
 			this._regionBox = new System.Windows.Forms.TextBox();
 			this._deletionIndicator = new System.Windows.Forms.Panel();
+			this._findISOCodeLabel = new System.Windows.Forms.LinkLabel();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -122,7 +125,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
 			superToolTipInfo1.BodyFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			superToolTipInfo1.BodyText = null;
 			superToolTipInfo1.HeaderText = "ISO Code";
 			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
 			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
@@ -266,12 +268,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._scriptBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
 			this._scriptBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+			this._scriptBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._scriptBox.DropDownWidth = 200;
 			this._scriptBox.FormattingEnabled = true;
 			this._scriptBox.Location = new System.Drawing.Point(262, 41);
 			this._scriptBox.Name = "_scriptBox";
 			this._scriptBox.Size = new System.Drawing.Size(88, 21);
 			this._scriptBox.TabIndex = 2;
-			this._scriptBox.SelectedIndexChanged += new System.EventHandler(this.OnSomethingChanged);
+			this._scriptBox.SelectedIndexChanged += new System.EventHandler(this.OnScriptChanged);
 			this._scriptBox.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// _variant
@@ -318,6 +322,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._regionBox.Location = new System.Drawing.Point(262, 68);
 			this._regionBox.Name = "_regionBox";
 			this._regionBox.Size = new System.Drawing.Size(83, 20);
+			superToolTipInfo4.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+			superToolTipInfo4.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
+			superToolTipInfo4.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+			superToolTipInfo4.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfo4.ShowHeader = false;
+			superToolTipInfoWrapper4.SuperToolTipInfo = superToolTipInfo4;
+			superToolTipInfoWrapper4.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this._regionBox, superToolTipInfoWrapper4);
 			this._regionBox.TabIndex = 3;
 			this._regionBox.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
@@ -331,6 +343,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._deletionIndicator.TabIndex = 13;
 			this._deletionIndicator.Visible = false;
 			//
+			// _findISOCodeLabel
+			//
+			this._findISOCodeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this._findISOCodeLabel.AutoSize = true;
+			this._findISOCodeLabel.LinkColor = System.Drawing.Color.RoyalBlue;
+			this._findISOCodeLabel.Location = new System.Drawing.Point(151, 71);
+			this._findISOCodeLabel.Name = "_findISOCodeLabel";
+			this._findISOCodeLabel.Size = new System.Drawing.Size(43, 13);
+			this._findISOCodeLabel.TabIndex = 10;
+			this._findISOCodeLabel.TabStop = true;
+			this._findISOCodeLabel.Text = "Lookup";
+			this._findISOCodeLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._findISOCodeLabel_LinkClicked);
+			//
 			// WSListItem
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -341,6 +366,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this._duplicateButton);
 			this.Controls.Add(this._deleteButton);
 			this.Controls.Add(this._labelSummary);
+			this.Controls.Add(this._findISOCodeLabel);
 			this.Controls.Add(this.linkLabel5);
 			this.Controls.Add(this.linkLabel4);
 			this.Controls.Add(this.linkLabel3);
@@ -394,5 +420,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private Elsehemy.SuperToolTip superToolTip1;
 		private System.Windows.Forms.TextBox _regionBox;
 		private System.Windows.Forms.Panel _deletionIndicator;
+		private System.Windows.Forms.LinkLabel _findISOCodeLabel;
 	}
 }

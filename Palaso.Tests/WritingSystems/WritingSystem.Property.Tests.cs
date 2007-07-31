@@ -80,12 +80,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void GivesMultipleScriptOptions()
+		public void ReadsScriptRegistry()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			Assert.Greater(ws.ScriptOptions.Count,4);
 		}
 
+
+		[Test]
+		public void ReadsISORegistry()
+		{
+			Assert.Greater(WritingSystemDefinition.LanguageCodes.Count, 100);
+		}
 
 
 		[Test]

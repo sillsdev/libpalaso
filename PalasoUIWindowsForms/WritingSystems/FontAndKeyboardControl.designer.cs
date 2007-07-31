@@ -65,6 +65,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._sampleTextBox.Size = new System.Drawing.Size(310, 48);
 			this._sampleTextBox.TabIndex = 2;
 			this._sampleTextBox.Enter += new System.EventHandler(this._sampleTextBox_Enter);
+			this._sampleTextBox.Leave += new System.EventHandler(this._sampleTextBox_Leave);
 			//
 			// _fontFamilyCombo
 			//

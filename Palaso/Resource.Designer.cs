@@ -61,6 +61,36 @@ namespace Palaso {
 		}
 
 		/// <summary>
+		///   Looks up a localized string similar to Id	Part2B	Part2T	Part1	Scope	Type	Ref_Name
+		///aaa				I	L	Ghotuo
+		///aab				I	L	Alumu-Tesu
+		///aac				I	L	Ari
+		///aad				I	L	Amal
+		///aae				I	L	Arbëreshë Albanian
+		///aaf				I	L	Aranadan
+		///aag				I	L	Ambrak
+		///aai				I	L	Arifama-Miniafia
+		///aak				I	L	Ankave
+		///aal				I	L	Afade
+		///aam				I	L	Aramanik
+		///aan				I	L	Anambé
+		///aao				I	L	Algerian Saharan Arabic
+		///aap				I	L	Pará Arára
+		///aaq				I	E	Eastern Abnaki
+		///aar	aar	aar	aa	I	L	Afar
+		///aas				I	L	Aasáx
+		///aat				I	L	Arvanitika Albanian
+		///aau				I	L	Abau
+		///aaw				I	L	Solong
+		///aax				I	L	Mandobo  [rest of string was truncated]&quot;;.
+		/// </summary>
+		internal static string languageCodes {
+			get {
+				return ResourceManager.GetString("languageCodes", resourceCulture);
+			}
+		}
+
+		/// <summary>
 		///   Looks up a localized string similar to #
 		///# ISO 15924 - Codes for the representation of names of scripts
 		///#             Codes pour la représentation des noms d’écritures

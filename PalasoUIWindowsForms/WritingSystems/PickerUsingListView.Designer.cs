@@ -28,41 +28,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.listView1 = new System.Windows.Forms.ListView();
-			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-			this._indentifierColumn = new System.Windows.Forms.ColumnHeader();
+			this.components = new System.ComponentModel.Container();
+			System.Windows.Forms.ColumnHeader _descriptionColumnHeader;
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Don\'t remove this");
+			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("");
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PickerUsingListView));
 			this._editListLink = new System.Windows.Forms.LinkLabel();
+			this.listView1 = new System.Windows.Forms.ListView();
+			this._labelColumnHeader = new System.Windows.Forms.ColumnHeader();
+			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			_descriptionColumnHeader = new System.Windows.Forms.ColumnHeader();
 			this.SuspendLayout();
 			//
-			// listView1
+			// _descriptionColumnHeader
 			//
-			this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.columnHeader2,
-			this._indentifierColumn});
-			this.listView1.FullRowSelect = true;
-			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point(0, 0);
-			this.listView1.MultiSelect = false;
-			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(278, 135);
-			this.listView1.Sorting = System.Windows.Forms.SortOrder.Descending;
-			this.listView1.TabIndex = 0;
-			this.listView1.UseCompatibleStateImageBehavior = false;
-			this.listView1.View = System.Windows.Forms.View.Details;
-			this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
-			//
-			// columnHeader2
-			//
-			this.columnHeader2.Text = "Name";
-			this.columnHeader2.Width = 120;
-			//
-			// _indentifierColumn
-			//
-			this._indentifierColumn.Text = "Identifier";
-			this._indentifierColumn.Width = 140;
+			_descriptionColumnHeader.Text = "Description";
+			_descriptionColumnHeader.Width = 133;
 			//
 			// _editListLink
 			//
@@ -76,12 +58,52 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._editListLink.Text = "More...";
 			this._editListLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._editListLink_LinkClicked);
 			//
+			// listView1
+			//
+			this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.listView1.CheckBoxes = true;
+			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this._labelColumnHeader,
+			_descriptionColumnHeader});
+			this.listView1.FullRowSelect = true;
+			listViewItem1.StateImageIndex = 0;
+			listViewItem2.Checked = true;
+			listViewItem2.StateImageIndex = 1;
+			this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+			listViewItem1,
+			listViewItem2});
+			this.listView1.Location = new System.Drawing.Point(6, 3);
+			this.listView1.Name = "listView1";
+			this.listView1.ShowItemToolTips = true;
+			this.listView1.Size = new System.Drawing.Size(260, 132);
+			this.listView1.StateImageList = this.imageList1;
+			this.listView1.TabIndex = 2;
+			this.listView1.UseCompatibleStateImageBehavior = false;
+			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.listView1_ItemChecked);
+			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
+			this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+			//
+			// _labelColumnHeader
+			//
+			this._labelColumnHeader.Text = "Label";
+			this._labelColumnHeader.Width = 108;
+			//
+			// imageList1
+			//
+			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageList1.Images.SetKeyName(0, "wsIcon.png");
+			this.imageList1.Images.SetKeyName(1, "wsIconChecked16.png");
+			//
 			// PickerUsingListView
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this._editListLink);
 			this.Controls.Add(this.listView1);
+			this.Controls.Add(this._editListLink);
 			this.Name = "PickerUsingListView";
 			this.Size = new System.Drawing.Size(278, 158);
 			this.Load += new System.EventHandler(this.PickerUsingListView_Load);
@@ -92,9 +114,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#endregion
 
-		private System.Windows.Forms.ListView listView1;
-		private System.Windows.Forms.ColumnHeader columnHeader2;
-		private System.Windows.Forms.ColumnHeader _indentifierColumn;
 		private System.Windows.Forms.LinkLabel _editListLink;
+		private System.Windows.Forms.ListView listView1;
+		private System.Windows.Forms.ColumnHeader _labelColumnHeader;
+		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.ImageList imageList1;
 	}
 }

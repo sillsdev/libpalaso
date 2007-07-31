@@ -13,11 +13,18 @@ namespace WritingSystemSetup.Tests
 		public WritingSystemChooserTestForm()
 		{
 			InitializeComponent();
+			this.pickerUsingListView1.IdentifierOfSelectedWritingSystem = "en";
+			this.pickerUsingComboBox1.IdentifierOfSelectedWritingSystem = "en";
 		}
 
 		private void WritingSystemChooserTestForm_Load(object sender, EventArgs e)
 		{
 
+		}
+
+		private void pickerUsingListView1_DoubleClicked(object sender, EventArgs e)
+		{
+			this.Close();
 		}
 	}
 }

@@ -20,6 +20,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemDefinition = writingSystemDefinition;
 			InitializeComponent();
 			SetHeight(false);
+
+			//I've had these get lost from the designer, so I set them here now.
+			superToolTip1.GetSuperStuff(_variant).SuperToolTipInfo.BodyText = "Variant subtags are values used to indicate dialects or script variations not already covered by combinations of language, script and region subtag.";
+			superToolTip1.GetSuperStuff(_iso).SuperToolTipInfo.BodyText = "A code defined by iso 639-3 (Ethnologue code)";
+
+			superToolTip1.GetSuperStuff(_regionBox).SuperToolTipInfo.HeaderText = "Region";
+			superToolTip1.GetSuperStuff(_regionBox).SuperToolTipInfo.BodyText = "Enter something here if you need to distinguish between writing systems of the same language in different places.  For example, English is spelled differently in the USA and UK.";
 		}
 
 		public bool PushToWritingSystemDefinition()
@@ -240,6 +247,64 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 
+		}
+
+		private void OnScriptChanged(object sender, EventArgs e)
+		{
+			if (string.IsNullOrEmpty(_writingSystemDefinition.Keyboard))
+			{
+				TryToGuessCorrectKeyboard();
+			}
+			OnSomethingChanged(sender,e);
+		}
+
+		private void TryToGuessCorrectKeyboard()
+		{
+			if (_writingSystemDefinition.Script == "Zipa")
+			{
+				_writingSystemDefinition.Keyboard = SearchForKeyboard("IPA");
+			}
+			else
+			{
+				if (!String.IsNullOrEmpty(_writingSystemDefinition.Script))
+				{
+					 _writingSystemDefinition.Keyboard = SearchForKeyboard(_writingSystemDefinition.Script);
+				}
+			}
+		}
+
+		private string SearchForKeyboard(string s)
+		{
+			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
+			if (keymanLink.Initialize(false))
+			{
+				foreach (KeymanLink.KeymanLink.KeymanKeyboard keyboard in keymanLink.Keyboards)
+				{
+					if(keyboard.KbdName.Contains(s))
+						return keyboard.KbdName;
+				}
+			}
+
+			foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
+			{
+				if (lang.LayoutName.Contains(s))
+					return lang.LayoutName;
+			}
+			return string.Empty;
+		}
+
+		private void _findISOCodeLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			LookupISOCodeDialog dialog = new LookupISOCodeDialog();
+			dialog.ISOCode = _iso.Text;
+			Cursor.Current = Cursors.WaitCursor;
+			if (dialog.ShowDialog() == DialogResult.OK)
+			{
+				if (!String.IsNullOrEmpty(dialog.ISOCode))
+				{
+					_iso.Text = dialog.ISOCode;
+				}
+			}
 		}
 	}
 }

@@ -91,7 +91,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_sampleTextBox.Text =SampleText ;
 
 			UpdateDisplay();
-			AssignKeyboard();
+		   // AssignKeyboard();
 		}
 
 		private void _fontFamilyCombo_TextChanged(object sender, EventArgs e)
@@ -183,6 +183,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void _sampleTextBox_Enter(object sender, EventArgs e)
 		{
 			AssignKeyboard();
+		}
+
+		private void _sampleTextBox_Leave(object sender, EventArgs e)
+		{
+			InputLanguage.CurrentInputLanguage = InputLanguage.DefaultInputLanguage;
 		}
 
 

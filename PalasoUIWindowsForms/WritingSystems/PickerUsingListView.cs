@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using Palaso.UI.WritingSystems;
 using Palaso.WritingSystems;
@@ -8,6 +9,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class PickerUsingListView : UserControl
 	{
 		private string _identifierOfSelectedWritingSystem;
+		private static bool _ignoreCheckEvents = false;
+
+		/// <summary>
+		/// THe container can use this, for example, as a signal to close the containing box.
+		/// </summary>
+		public event EventHandler DoubleClicked;
 
 		public PickerUsingListView()
 		{
@@ -29,10 +36,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void PickerUsingListView_Load(object sender, EventArgs e)
 		{
 			LoadDefinitions();
+
 		}
 
+		private Font _normalItemFont;
 		private void LoadDefinitions()
 		{
+			_ignoreCheckEvents = true;
+			_normalItemFont = listView1.Items[0].Font;
 			listView1.Items.Clear();
 			Palaso.WritingSystems.LdmlInFolderWritingSystemRepository repository =
 				new LdmlInFolderWritingSystemRepository();
@@ -41,12 +52,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				ListViewItem item = new ListViewItem(definition.DisplayLabel);
 				item.Tag = definition;
 				item.SubItems.Add(definition.RFC4646);
+				item.Checked = false;
 				listView1.Items.Add(item);
 				if (definition.RFC4646 == IdentifierOfSelectedWritingSystem)
 				{
-					item.Selected = true;
+					_ignoreCheckEvents = false;
+					item.Checked = true;
+					_ignoreCheckEvents = true;
 				}
+				item.ToolTipText = definition.VerboseDescription;
 			}
+
+			_ignoreCheckEvents = false;
 		}
 
 		private void _editListLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -60,8 +77,41 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (listView1.SelectedItems != null && listView1.SelectedItems.Count == 1)
 			{
-				WritingSystemDefinition def = (WritingSystemDefinition)listView1.SelectedItems[0].Tag;
+				ListViewItem item = listView1.SelectedItems[0];
+				item.Selected = false;
+				item.Checked = true;
+			}
+		}
+
+		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
+		{
+			if(_ignoreCheckEvents )
+				return;
+			_ignoreCheckEvents = true;
+			foreach (ListViewItem item in listView1.Items)
+			{
+				if (item != e.Item && item.Checked == true)
+				{
+					item.Checked = false;
+					item.Font = _normalItemFont;
+				}
+			}
+			if (_normalItemFont != null)
+			{
+				e.Item.Font = new Font(_normalItemFont, FontStyle.Bold);
+				e.Item.Checked = true;//needed for some reason on first display
+				WritingSystemDefinition def = (WritingSystemDefinition)e.Item.Tag;
 				IdentifierOfSelectedWritingSystem = def.RFC4646;
+			}
+
+			_ignoreCheckEvents = false;
+		}
+
+		private void listView1_DoubleClick(object sender, EventArgs e)
+		{
+			if (DoubleClicked != null)
+			{
+				DoubleClicked.Invoke(this,null);
 			}
 		}
 	}

@@ -27,6 +27,10 @@ namespace Palaso.WritingSystems
 		/// singleton
 		/// </summary>
 		private static List<ScriptOption> _scriptOptions = new List<ScriptOption>();
+	   /// <summary>
+		/// singleton
+		/// </summary>
+		 private static List<LanguageCode> _languageCodes;
 
 		private bool _markedForDeletion;
 		private string _keyboard;
@@ -47,6 +51,11 @@ namespace Palaso.WritingSystems
 		  if (_scriptOptions.Count > 0)
 			  return;
 
+		  //this one isn't an official script
+		  _scriptOptions.Add(new ScriptOption("IPA", "Zipa"));
+			//to help people find Latin
+		  _scriptOptions.Add(new ScriptOption("Roman (Latin)", "Latn"));
+
 			string[] scripts = Resource.scriptNames.Split('\n');
 			foreach (string line in scripts)
 			{
@@ -65,6 +74,98 @@ namespace Palaso.WritingSystems
 				_scriptOptions.Add(new ScriptOption(label, fields[0]));
 
 			}
+
+			_scriptOptions.Sort(ScriptOption.CompareScriptOptions);
+		}
+
+
+		public static IList<LanguageCode> LanguageCodes
+		{
+			get
+			{
+				if (_languageCodes != null)
+				{
+					return _languageCodes;
+				}
+				_languageCodes = new List<LanguageCode>();
+				string[] languages = Resource.languageCodes.Split('\n');
+				foreach (string line in languages)
+				{
+					if(line.Contains("Ref_Name"))//skip first line
+						continue;
+					string tline = line.Trim();
+					if (tline.Length == 0)
+						continue;
+					string[] fields = tline.Split('\t');
+					_languageCodes.Add(new LanguageCode(fields[0], fields[6]));
+				}
+				_languageCodes.Sort(LanguageCode.CompareByName);
+				return _languageCodes;
+			}
+		}
+
+		public class LanguageCode
+		{
+			private string _code;
+			private string _name;
+
+			public LanguageCode(string code, string name)
+			{
+				Code = code;
+				Name = name;
+			}
+
+
+			public string Name
+			{
+				get
+				{
+					return _name;
+				}
+				set
+				{
+					_name = value;
+				}
+			}
+
+			public string Code
+			{
+				get
+				{
+					return _code;
+				}
+				set
+				{
+					_code = value;
+				}
+			}
+
+			public static int CompareByName(LanguageCode x, LanguageCode y)
+			{
+				if (x == null)
+				{
+					if (y == null)
+					{
+						return 0;
+					}
+					else
+					{
+						return -1;
+					}
+				}
+				else
+				{
+					if (y == null)
+					{
+						return 1;
+					}
+					else
+					{
+						return x._name.CompareTo(y._name);
+					}
+				}
+			}
+
 		}
 
 		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation)
@@ -397,6 +498,32 @@ namespace Palaso.WritingSystems
 			public override string ToString()
 			{
 				return _label;
+			}
+
+			public static int CompareScriptOptions(ScriptOption x, ScriptOption y)
+			{
+				if (x == null)
+				{
+					if (y == null)
+					{
+						return 0;
+					}
+					else
+					{
+						return -1;
+					}
+				}
+				else
+				{
+					if (y == null)
+					{
+						return 1;
+					}
+					else
+					{
+						return x.Label.CompareTo(y.Label);
+					}
+				}
 			}
 		}
 

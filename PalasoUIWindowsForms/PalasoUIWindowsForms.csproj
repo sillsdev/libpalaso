@@ -80,6 +80,18 @@
 	<Compile Include="WritingSystems\FontDialog.Designer.cs">
 	  <DependentUpon>FontDialog.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\LookupISOCodeDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
+	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\PickerUsingComboBox.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\PickerUsingComboBox.Designer.cs">
+	  <DependentUpon>PickerUsingComboBox.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\PickerUsingListView.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -126,6 +138,14 @@
 	<EmbeddedResource Include="WritingSystems\FontDialog.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>FontDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\PickerUsingComboBox.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>PickerUsingComboBox.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\PickerUsingListView.resx">
 	  <SubType>Designer</SubType>
