@@ -32,6 +32,7 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\KeymanLink.dll</HintPath>
 	</Reference>
+	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Design" />
@@ -49,7 +50,7 @@
 	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.cs">
-	  <SubType>Form</SubType>
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.designer.cs">
 	  <DependentUpon>SuperToolTip.cs</DependentUpon>

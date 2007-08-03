@@ -28,23 +28,30 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //            return null;
 //        }
 
-		public IEnumerable<Palaso.WritingSystems.WritingSystemDefinition> ActiveOSLanguages()
+		public IEnumerable<WritingSystemDefinition> ActiveOSLanguages
 		{
+			get
+			{
 //            foreach (CultureInfo info in CultureInfo.GetCultures(CultureTypes.AllCultures ))
 //            {
 //                Debug.WriteLine(string.Format("{0} {1}", info.Name, info.EnglishName));
 //            }
 
-			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
-			{
-				if (true)
+				foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 				{
-					WritingSystemDefinition def =
-						new WritingSystemDefinition(language.Culture.TwoLetterISOLanguageName, "", "", "",
-													language.Culture.EnglishName, "");
-					def.NativeName = language.Culture.NativeName;
-					def.Keyboard = language.LayoutName;
-					yield return def;
+					if (true)
+					{
+						System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
+						b.LoadDataFromCultureInfo(language.Culture);
+						string region = b.TwoLetterISORegionName;
+
+						WritingSystemDefinition def =
+							new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, region, "", "",
+														language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName);
+						def.NativeName = language.Culture.NativeName;
+						def.Keyboard = language.LayoutName;
+						yield return def;
+					}
 				}
 			}
 		}

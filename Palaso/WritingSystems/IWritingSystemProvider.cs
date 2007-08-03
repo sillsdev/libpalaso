@@ -9,6 +9,9 @@ namespace Palaso.WritingSystems
 	/// </summary>
 	public interface IWritingSystemProvider
 	{
-		IEnumerable<Palaso.WritingSystems.WritingSystemDefinition> ActiveOSLanguages();
+		IEnumerable<WritingSystemDefinition> ActiveOSLanguages
+		{
+			get;
+		}
 	}
 }

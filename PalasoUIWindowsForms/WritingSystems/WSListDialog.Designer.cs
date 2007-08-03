@@ -39,7 +39,7 @@ namespace Palaso.UI.WritingSystems
 			//
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._okButton.Location = new System.Drawing.Point(412, 290);
+			this._okButton.Location = new System.Drawing.Point(469, 290);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 1;
@@ -54,14 +54,14 @@ namespace Palaso.UI.WritingSystems
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._writingSystemListControl.Location = new System.Drawing.Point(7, 12);
 			this._writingSystemListControl.Name = "_writingSystemListControl";
-			this._writingSystemListControl.Size = new System.Drawing.Size(568, 272);
+			this._writingSystemListControl.Size = new System.Drawing.Size(625, 272);
 			this._writingSystemListControl.TabIndex = 2;
 			//
 			// _cancelButton
 			//
 			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._cancelButton.Location = new System.Drawing.Point(493, 290);
+			this._cancelButton.Location = new System.Drawing.Point(550, 290);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 1;
@@ -75,7 +75,7 @@ namespace Palaso.UI.WritingSystems
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(587, 325);
+			this.ClientSize = new System.Drawing.Size(644, 325);
 			this.ControlBox = false;
 			this.Controls.Add(this._writingSystemListControl);
 			this.Controls.Add(this._cancelButton);

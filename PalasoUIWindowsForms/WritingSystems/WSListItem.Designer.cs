@@ -61,7 +61,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._abbreviation = new System.Windows.Forms.TextBox();
 			this.superToolTip1 = new Elsehemy.SuperToolTip(this.components);
 			this._regionBox = new System.Windows.Forms.TextBox();
-			this._deletionIndicator = new System.Windows.Forms.Panel();
 			this._findISOCodeLabel = new System.Windows.Forms.LinkLabel();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
@@ -131,13 +130,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			superToolTipInfoWrapper1.UseSuperToolTip = true;
 			this.superToolTip1.SetSuperStuff(this._iso, superToolTipInfoWrapper1);
 			this._iso.TabIndex = 1;
+			this._iso.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
 			// _fontAndKeboardLink
 			//
 			this._fontAndKeboardLink.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this._fontAndKeboardLink.AutoSize = true;
 			this._fontAndKeboardLink.LinkColor = System.Drawing.Color.RoyalBlue;
-			this._fontAndKeboardLink.Location = new System.Drawing.Point(10, 99);
+			this._fontAndKeboardLink.Location = new System.Drawing.Point(10, 106);
 			this._fontAndKeboardLink.Name = "_fontAndKeboardLink";
 			this._fontAndKeboardLink.Size = new System.Drawing.Size(85, 13);
 			this._fontAndKeboardLink.TabIndex = 7;
@@ -152,12 +152,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.linkLabel3.AutoSize = true;
 			this.linkLabel3.Enabled = false;
 			this.linkLabel3.LinkColor = System.Drawing.Color.RoyalBlue;
-			this.linkLabel3.Location = new System.Drawing.Point(112, 99);
+			this.linkLabel3.Location = new System.Drawing.Point(112, 106);
 			this.linkLabel3.Name = "linkLabel3";
 			this.linkLabel3.Size = new System.Drawing.Size(115, 13);
 			this.linkLabel3.TabIndex = 8;
 			this.linkLabel3.TabStop = true;
 			this.linkLabel3.Text = "Characters and Sorting";
+			this.linkLabel3.Visible = false;
 			this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel3_LinkClicked);
 			//
 			// linkLabel4
@@ -166,12 +167,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.linkLabel4.AutoSize = true;
 			this.linkLabel4.Enabled = false;
 			this.linkLabel4.LinkColor = System.Drawing.Color.RoyalBlue;
-			this.linkLabel4.Location = new System.Drawing.Point(238, 99);
+			this.linkLabel4.Location = new System.Drawing.Point(238, 106);
 			this.linkLabel4.Name = "linkLabel4";
 			this.linkLabel4.Size = new System.Drawing.Size(78, 13);
 			this.linkLabel4.TabIndex = 9;
 			this.linkLabel4.TabStop = true;
 			this.linkLabel4.Text = "Spell Checking";
+			this.linkLabel4.Visible = false;
 			//
 			// linkLabel5
 			//
@@ -179,12 +181,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.linkLabel5.AutoSize = true;
 			this.linkLabel5.Enabled = false;
 			this.linkLabel5.LinkColor = System.Drawing.Color.RoyalBlue;
-			this.linkLabel5.Location = new System.Drawing.Point(324, 99);
+			this.linkLabel5.Location = new System.Drawing.Point(324, 106);
 			this.linkLabel5.Name = "linkLabel5";
 			this.linkLabel5.Size = new System.Drawing.Size(66, 13);
 			this.linkLabel5.TabIndex = 10;
 			this.linkLabel5.TabStop = true;
 			this.linkLabel5.Text = "Transducers";
+			this.linkLabel5.Visible = false;
 			//
 			// _labelSummary
 			//
@@ -200,25 +203,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _deleteButton
 			//
+			this._deleteButton.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this._deleteButton.FlatAppearance.BorderSize = 0;
 			this._deleteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._deleteButton.Image = ((System.Drawing.Image)(resources.GetObject("_deleteButton.Image")));
-			this._deleteButton.Location = new System.Drawing.Point(447, 89);
+			this._deleteButton.Location = new System.Drawing.Point(451, 101);
 			this._deleteButton.Name = "_deleteButton";
-			this._deleteButton.Size = new System.Drawing.Size(27, 23);
+			this._deleteButton.Size = new System.Drawing.Size(15, 18);
 			this._deleteButton.TabIndex = 11;
 			this.toolTip1.SetToolTip(this._deleteButton, "Delete Writing System");
 			this._deleteButton.UseVisualStyleBackColor = true;
-			this._deleteButton.Click += new System.EventHandler(this._deleteButton_Click);
+			this._deleteButton.Click += new System.EventHandler(this.OnDeleteButton);
 			//
 			// _duplicateButton
 			//
+			this._duplicateButton.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this._duplicateButton.FlatAppearance.BorderSize = 0;
 			this._duplicateButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._duplicateButton.Image = ((System.Drawing.Image)(resources.GetObject("_duplicateButton.Image")));
-			this._duplicateButton.Location = new System.Drawing.Point(492, 89);
+			this._duplicateButton.Location = new System.Drawing.Point(488, 95);
 			this._duplicateButton.Name = "_duplicateButton";
-			this._duplicateButton.Size = new System.Drawing.Size(27, 23);
+			this._duplicateButton.Size = new System.Drawing.Size(31, 28);
 			this._duplicateButton.TabIndex = 12;
 			this.toolTip1.SetToolTip(this._duplicateButton, "Duplicate Writing System");
 			this._duplicateButton.UseVisualStyleBackColor = true;
@@ -333,22 +338,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._regionBox.TabIndex = 3;
 			this._regionBox.TextChanged += new System.EventHandler(this.OnSomethingChanged);
 			//
-			// _deletionIndicator
-			//
-			this._deletionIndicator.BackColor = System.Drawing.Color.Red;
-			this._deletionIndicator.ForeColor = System.Drawing.Color.Red;
-			this._deletionIndicator.Location = new System.Drawing.Point(17, 17);
-			this._deletionIndicator.Name = "_deletionIndicator";
-			this._deletionIndicator.Size = new System.Drawing.Size(470, 2);
-			this._deletionIndicator.TabIndex = 13;
-			this._deletionIndicator.Visible = false;
-			//
 			// _findISOCodeLabel
 			//
-			this._findISOCodeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this._findISOCodeLabel.AutoSize = true;
 			this._findISOCodeLabel.LinkColor = System.Drawing.Color.RoyalBlue;
-			this._findISOCodeLabel.Location = new System.Drawing.Point(151, 71);
+			this._findISOCodeLabel.Location = new System.Drawing.Point(151, 73);
 			this._findISOCodeLabel.Name = "_findISOCodeLabel";
 			this._findISOCodeLabel.Size = new System.Drawing.Size(43, 13);
 			this._findISOCodeLabel.TabIndex = 10;
@@ -361,7 +355,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Window;
-			this.Controls.Add(this._deletionIndicator);
 			this.Controls.Add(this._scriptBox);
 			this.Controls.Add(this._duplicateButton);
 			this.Controls.Add(this._deleteButton);
@@ -385,7 +378,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this._writingSystemLabel);
 			this.Controls.Add(this.pictureBox1);
 			this.Name = "WSListItem";
-			this.Size = new System.Drawing.Size(529, 116);
+			this.Size = new System.Drawing.Size(529, 130);
 			this.Load += new System.EventHandler(this.OnLoad);
 			this.Click += new System.EventHandler(this.WSListItem_Click);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -419,7 +412,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.TextBox _abbreviation;
 		private Elsehemy.SuperToolTip superToolTip1;
 		private System.Windows.Forms.TextBox _regionBox;
-		private System.Windows.Forms.Panel _deletionIndicator;
 		private System.Windows.Forms.LinkLabel _findISOCodeLabel;
 	}
 }

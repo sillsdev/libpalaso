@@ -63,7 +63,12 @@ namespace Palaso.WritingSystems
 
 		internal string GetFileName(WritingSystemDefinition ws)
 		{
-			return ws.RFC4646 + _kExtension;
+			return GetFileNameFromIdentifier(ws.RFC4646);
+		}
+
+		public static string GetFileNameFromIdentifier(string identifier)
+		{
+			return identifier + _kExtension;
 		}
 
 		private string GetSpecialValue(XmlDocument doc, string field)

@@ -105,15 +105,25 @@ namespace Palaso.WritingSystems
 //            }
 		}
 
+		private bool HaveMatchingDefinitionInTrash(string identifier)
+		{
+			string path = PathToWritingSystemTrash();
+			path = Path.Combine(path, LdmlAdaptor.GetFileNameFromIdentifier(identifier));
+			return File.Exists(path);
+		}
+
 		private void AddActiveOSLanguages()
 		{
 			if (_systemWritingSystemProvider != null)
 			{
-				foreach (WritingSystemDefinition language in _systemWritingSystemProvider.ActiveOSLanguages( ))
+				foreach (WritingSystemDefinition language in _systemWritingSystemProvider.ActiveOSLanguages)
 				{
-					if(null==FindAlreadyLoadedWritingSystem(language.RFC4646))
+					if (null == FindAlreadyLoadedWritingSystem(language.RFC4646))
 					{
-						WritingSystemDefinitions.Add(language);
+						if (!HaveMatchingDefinitionInTrash(language.RFC4646))
+						{
+							WritingSystemDefinitions.Add(language);
+						}
 					}
 				}
 			}
@@ -194,10 +204,29 @@ namespace Palaso.WritingSystems
 
 		public void DeleteDefinition(WritingSystemDefinition def)
 		{
+			//we really need to get it in the trash, else, if was auto-provided,
+			//it'll keep coming back!
+			if (!File.Exists(PathToWritingSystem(def)))
+			{
+				SaveDefinition(def);
+			}
+
 			if (File.Exists(PathToWritingSystem(def)))
 			{
-				File.Delete(PathToWritingSystem(def));
+				Directory.CreateDirectory(PathToWritingSystemTrash());
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileName(def));
+				//clear out any old on already in the trash
+				if (File.Exists(destination))
+				{
+					File.Delete(destination);
+				}
+				File.Move(PathToWritingSystem(def), destination);
 			}
+		}
+
+		private string PathToWritingSystemTrash()
+		{
+			return Path.Combine(_path, "trash");
 		}
 
 		public WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition)

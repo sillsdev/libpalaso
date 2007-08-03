@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.WritingSystems;
 
 namespace Palaso.UI.Widgets
 {
@@ -67,10 +68,7 @@ namespace Palaso.UI.Widgets
 			_table.SetCellPosition(control, new TableLayoutPanelCellPosition(0, insertAtRow));
 			_table.RowCount++;
 			_table.Controls.SetChildIndex(control, insertAtRow);
-			foreach (Control c in _table.Controls)
-			{
-				c.TabIndex = _table.Controls.GetChildIndex(c);
-			}
+
 
 			LayoutRows();
 			_table.ResumeLayout();
@@ -83,8 +81,32 @@ namespace Palaso.UI.Widgets
 			}
 		}
 
+
+		public void RemoveControl(Control control)
+		{
+			this.SuspendLayout();
+			if (control is ISelectableControl)
+			{
+				((ISelectableControl)control).Selecting -= OnItemSelecting;
+			}
+			int nowEmptyRow = _table.Controls.GetChildIndex(control);
+			_table.Controls.Remove(control);
+			for (int r = nowEmptyRow; r < _table.RowCount-1; r++)
+			{
+				_table.SetCellPosition(_table.GetControlFromPosition(0,r+1),new TableLayoutPanelCellPosition(0,r));
+			}
+			_table.RowCount--;
+			LayoutRows();
+			this.ResumeLayout(true);
+		}
+
 		public void LayoutRows()
 		{
+			foreach (Control c in _table.Controls)
+			{
+				c.TabIndex = _table.Controls.GetChildIndex(c);
+			}
+
 			float h = 0;
 			_table.RowStyles.Clear();
 			for (int r = 0; r < _table.RowCount; r++)
@@ -120,5 +142,6 @@ namespace Palaso.UI.Widgets
 			_table.RowStyles.Clear();
 			_firstOne = true;
 		}
+
 	}
 }

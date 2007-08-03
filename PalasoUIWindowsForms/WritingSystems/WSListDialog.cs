@@ -10,7 +10,7 @@ namespace Palaso.UI.WritingSystems
 		public WSListDialog()
 		{
 			InitializeComponent();
-			MinimumSize = new Size(ClientSize.Width, 200);
+			MinimumSize = new Size(ClientSize.Width, 260);
 			MaximumSize = new Size(ClientSize.Width, 2000);
 		}
 

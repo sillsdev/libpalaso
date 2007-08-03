@@ -12,6 +12,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private bool _isSelected = false;
 		private bool _doingLoading=false;
 		public event EventHandler Selecting;
+		public event EventHandler DeleteRequested;
 		public event EventHandler DuplicateRequested;
 
 
@@ -79,6 +80,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				_isSelected = value;
 				this.Invalidate();
+				_fontAndKeboardLink.Focus();
+				_language.Focus();
 			}
 		}
 
@@ -168,11 +171,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void UpdateDisplay()
 		{
-			_deletionIndicator.Visible = Definition.MarkedForDeletion;
-			this.Enabled = !Definition.MarkedForDeletion;
+			//SetEnabledStates(Definition.MarkedForDeletion);
+			//_labelSummary.Visible = !Definition.MarkedForDeletion;
+
 			_writingSystemLabel.Text = Definition.DisplayLabel;
 			_labelSummary.Text = Definition.VerboseDescription;
 		}
+
+//        private void SetEnabledStates(bool markedForDeletion)
+//        {
+//            foreach (Control control in this.Controls)
+//            {
+//                control.Enabled = !markedForDeletion;
+//            }
+//        }
 
 		private string CurrentScriptCode
 		{
@@ -229,12 +241,26 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		private void _deleteButton_Click(object sender, EventArgs e)
+		private void OnDeleteButton(object sender, EventArgs e)
 		{
-			Definition.MarkedForDeletion = true;
-			Invalidate();
-			UpdateDisplay();
+			if (DeleteRequested != null)
+			{
+				DeleteRequested.Invoke(this, null);
+			}
+
+//            Definition.MarkedForDeletion = true;
+//           // Invalidate();
+//            UpdateDisplay();
 		}
+
+
+//        private void OnUndoDeletion(object sender, LinkLabelLinkClickedEventArgs e)
+//        {
+//            Definition.MarkedForDeletion = false;
+//            //Invalidate();
+//            UpdateDisplay();
+//
+//        }
 
 		private void _duplicateButton_Click(object sender, EventArgs e)
 		{
@@ -306,5 +332,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 			}
 		}
+
 	}
 }

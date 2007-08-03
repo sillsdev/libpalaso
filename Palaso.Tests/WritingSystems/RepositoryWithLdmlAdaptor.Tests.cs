@@ -245,12 +245,38 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void CanDeleteFile()
+		public void CanDeleteFileThatIsNotInTrash()
+		{
+			_writingSystem.ISO = "blah";
+			_repository.SaveDefinition(_writingSystem);
+			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
+			Assert.IsTrue(File.Exists(path));
+			_repository.DeleteDefinition(_writingSystem);
+			Assert.IsFalse(File.Exists(path));
+			AssertFileIsInTrash(_writingSystem);
+		}
+
+		private void AssertFileIsInTrash(WritingSystemDefinition definition)
+		{
+			string path = Path.Combine(_repository.PathToWritingSystems, "trash");
+			path = Path.Combine(path,_repository.GetFileName(definition));
+			Assert.IsTrue(File.Exists(path));
+		}
+
+		[Test]
+		public void CanDeleteFileMatchingOneThatWasPreviouslyTrashed()
 		{
 			_writingSystem.ISO = "blah";
 			_repository.SaveDefinition(_writingSystem);
 			_repository.DeleteDefinition(_writingSystem);
+			AssertFileIsInTrash(_writingSystem);
+			WritingSystemDefinition ws2 = new WritingSystemDefinition();
+			ws2.ISO = "blah";
+			_repository.SaveDefinition(ws2);
+			_repository.DeleteDefinition(ws2);
 			string path = Path.Combine(_repository.PathToWritingSystems, _repository.GetFileName(_writingSystem));
+			Assert.IsFalse(File.Exists(path));
+			AssertFileIsInTrash(_writingSystem);
 		}
 
 		[Test]
@@ -301,6 +327,24 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(ContainsLanguageWithName(list, "test"));
 		}
 
+		[Test]
+		public void DefaultLanguageNotAddedIfInTrash()
+		{
+			_repository.DontAddDefaultDefinitions = false;
+			_repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
+			IList<WritingSystemDefinition> list = _repository.WritingSystemDefinitions;
+			Assert.IsTrue(ContainsLanguageWithName(list, "test"));
+			WritingSystemDefinition ws2 = _repository.WritingSystemDefinitions[0];
+			Assert.IsNotNull(ws2);
+			_repository.DeleteDefinition(ws2);
+
+			Palaso.WritingSystems.LdmlInFolderWritingSystemRepository repository = new LdmlInFolderWritingSystemRepository(_testDir);
+			 repository.DontAddDefaultDefinitions = false;
+		   repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
+		   Assert.IsFalse(ContainsLanguageWithName(repository.WritingSystemDefinitions, "test"));
+
+		}
+
 		private bool ContainsLanguageWithName(IList<WritingSystemDefinition> list, string name)
 		{
 			foreach (WritingSystemDefinition definition in list)
@@ -315,9 +359,12 @@ namespace Palaso.Tests.WritingSystems
 		{
 			#region IWritingSystemProvider Members
 
-			public IEnumerable<WritingSystemDefinition> ActiveOSLanguages()
+			public IEnumerable<WritingSystemDefinition> ActiveOSLanguages
 			{
-				yield return new WritingSystemDefinition("tst", "", "", "", "test", "");
+				get
+				{
+					yield return new WritingSystemDefinition("tst", "", "", "", "test", "");
+				}
 			}
 
 			#endregion
