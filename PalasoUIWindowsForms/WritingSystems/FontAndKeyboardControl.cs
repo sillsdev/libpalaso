@@ -63,6 +63,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void UpdateDisplay()
 		{
+			if(_rightToLeftBox.Checked)
+			{
+				_sampleTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			}
+			else
+			{
+				_sampleTextBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			}
 
 			try
 			{
@@ -201,6 +209,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void _sampleTextBox_Leave(object sender, EventArgs e)
 		{
 			InputLanguage.CurrentInputLanguage = InputLanguage.DefaultInputLanguage;
+		}
+
+		private void _rightToLeftBox_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateDisplay();
 		}
 
 

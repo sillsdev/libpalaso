@@ -124,6 +124,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._rightToLeftBox.TabIndex = 6;
 			this._rightToLeftBox.Text = "Script is right to left";
 			this._rightToLeftBox.UseVisualStyleBackColor = true;
+			this._rightToLeftBox.CheckedChanged += new System.EventHandler(this._rightToLeftBox_CheckedChanged);
 			//
 			// FontAndKeyboardControl
 			//
