@@ -198,6 +198,20 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void CanSaveAndReadRightToLeft()
+		{
+			_writingSystem.ISO = "en";
+			Assert.IsFalse(_writingSystem.RightToLeftScript);
+			_writingSystem.RightToLeftScript = true;
+			Assert.IsTrue(_writingSystem.RightToLeftScript);
+			_repository.SaveDefinition(_writingSystem);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = _repository.LoadDefinition("en");
+			Assert.IsTrue(ws2.RightToLeftScript);
+		}
+
+		[Test]
 		public void CanRemoveVariant()
 		{
 			_writingSystem.ISO = "en";
@@ -363,7 +377,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				get
 				{
-					yield return new WritingSystemDefinition("tst", "", "", "", "test", "");
+					yield return new WritingSystemDefinition("tst", "", "", "", "test", "", false);
 				}
 			}
 

@@ -35,6 +35,7 @@ namespace Palaso.WritingSystems
 		private bool _markedForDeletion;
 		private string _keyboard;
 		private string _nativeName;
+		private bool _rightToLeftScript;
 
 
 		public WritingSystemDefinition()
@@ -168,7 +169,7 @@ namespace Palaso.WritingSystems
 
 		}
 
-		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation)
+		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
 			:this()
 		{
 			_region = region;
@@ -177,6 +178,7 @@ namespace Palaso.WritingSystems
 			_script = script;
 			_languageName = languageName;
 			_variant = variant;
+			_rightToLeftScript = rightToLeftScript;
 		}
 
 
@@ -456,6 +458,22 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public bool RightToLeftScript
+		{
+			get
+			{
+				return _rightToLeftScript;
+			}
+			set
+			{
+				if(value != _rightToLeftScript)
+				{
+					Modified = true;
+					_rightToLeftScript = value;
+				}
+			}
+		}
+
 		public string NativeName
 		{
 			get
@@ -530,7 +548,7 @@ namespace Palaso.WritingSystems
 		public WritingSystemDefinition Clone()
 		{
 			WritingSystemDefinition ws =
-				new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation);
+				new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
 			return ws;
 		}
 	}

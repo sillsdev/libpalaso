@@ -40,6 +40,8 @@ namespace Palaso.WritingSystems
 			ws.LanguageName = GetSpecialValue(doc, "languageName");
 			ws.DefaultFontName = GetSpecialValue(doc, "defaultFontFamily");
 			ws.Keyboard = GetSpecialValue(doc, "keyboard");
+			string rtl = GetSpecialValue(doc, "rightToLeft");
+			ws.RightToLeftScript = rtl == "true";
 			ws.PreviousRepositoryIdentifier = identifier;
 			ws.Modified = false;
 		}
@@ -155,6 +157,7 @@ namespace Palaso.WritingSystems
 			SetTopLevelSpecialNode(dom, "abbreviation", ws.Abbreviation);
 			SetTopLevelSpecialNode(dom, "defaultFontFamily", ws.DefaultFontName);
 			SetTopLevelSpecialNode(dom, "keyboard", ws.Keyboard);
+			SetTopLevelSpecialNode(dom, "rightToLeft", ws.RightToLeftScript ? "true": "false");
 		}
 
 		private void SetSubIdentityNode(XmlDocument dom, string field, string value)

@@ -15,7 +15,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			set
 			{
-				_FontAndKeyboardControl.SampleText = value;
+				_fontAndKeyboardControl.SampleText = value;
 			}
 		}
 
@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return _FontAndKeyboardControl.FontFamilyName;
+				return _fontAndKeyboardControl.FontFamilyName;
 			}
 
 			set
@@ -39,7 +39,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						value = System.Drawing.FontFamily.GenericSansSerif.Name;
 					}
 				}
-				_FontAndKeyboardControl.FontFamilyName = value;
+				_fontAndKeyboardControl.FontFamilyName = value;
 			}
 		}
 
@@ -57,14 +57,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return _FontAndKeyboardControl.KeyboardName;
+				return _fontAndKeyboardControl.KeyboardName;
 			}
 			set
 			{
-				  _FontAndKeyboardControl.KeyboardName = value;
+				  _fontAndKeyboardControl.KeyboardName = value;
 			}
 		}
 
+		public bool RightToLeftScript
+		{
+			get
+			{
+				return _fontAndKeyboardControl.RightToLeftScript;
+			}
+
+
+			set
+			{
+				_fontAndKeyboardControl.RightToLeftScript = value;
+			}
+		}
 		private void OnCancelClick(object sender, EventArgs e)
 		{
 			this.DialogResult = System.Windows.Forms.DialogResult.Cancel;

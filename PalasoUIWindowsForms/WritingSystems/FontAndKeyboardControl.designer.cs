@@ -36,6 +36,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._keyboardCombo = new System.Windows.Forms.ComboBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
+			this._rightToLeftBox = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			//
 			// _fontDialog
@@ -45,7 +46,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// label1
 			//
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(10, 100);
+			this.label1.Location = new System.Drawing.Point(10, 122);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(94, 13);
 			this.label1.TabIndex = 5;
@@ -59,10 +60,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._sampleTextBox.BackColor = System.Drawing.Color.White;
 			this._sampleTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this._sampleTextBox.Location = new System.Drawing.Point(13, 116);
+			this._sampleTextBox.Location = new System.Drawing.Point(13, 146);
 			this._sampleTextBox.Multiline = true;
 			this._sampleTextBox.Name = "_sampleTextBox";
-			this._sampleTextBox.Size = new System.Drawing.Size(310, 48);
+			this._sampleTextBox.Size = new System.Drawing.Size(310, 54);
 			this._sampleTextBox.TabIndex = 2;
 			this._sampleTextBox.Enter += new System.EventHandler(this._sampleTextBox_Enter);
 			this._sampleTextBox.Leave += new System.EventHandler(this._sampleTextBox_Leave);
@@ -108,16 +109,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(164, 100);
+			this.label4.Location = new System.Drawing.Point(164, 122);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(159, 13);
 			this.label4.TabIndex = 5;
 			this.label4.Text = "You can test the keyboard here.";
 			//
+			// _rightToLeftBox
+			//
+			this._rightToLeftBox.AutoSize = true;
+			this._rightToLeftBox.Location = new System.Drawing.Point(89, 88);
+			this._rightToLeftBox.Name = "_rightToLeftBox";
+			this._rightToLeftBox.Size = new System.Drawing.Size(115, 17);
+			this._rightToLeftBox.TabIndex = 6;
+			this._rightToLeftBox.Text = "Script is right to left";
+			this._rightToLeftBox.UseVisualStyleBackColor = true;
+			//
 			// FontAndKeyboardControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._rightToLeftBox);
 			this.Controls.Add(this._keyboardCombo);
 			this.Controls.Add(this._fontFamilyCombo);
 			this.Controls.Add(this._sampleTextBox);
@@ -126,7 +138,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label1);
 			this.Name = "FontAndKeyboardControl";
-			this.Size = new System.Drawing.Size(326, 178);
+			this.Size = new System.Drawing.Size(326, 214);
 			this.Load += new System.EventHandler(this.OnLoad);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -143,5 +155,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.ComboBox _keyboardCombo;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.CheckBox _rightToLeftBox;
 	}
 }

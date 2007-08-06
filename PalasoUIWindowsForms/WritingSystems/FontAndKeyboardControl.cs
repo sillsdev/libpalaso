@@ -16,6 +16,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 		}
 
+		public bool RightToLeftScript
+		{
+			get
+			{
+				return _rightToLeftBox.Checked;
+			}
+
+			set
+			{
+				_rightToLeftBox.Checked = value;
+			}
+		}
+
 		public string KeyboardName
 		{
 			get

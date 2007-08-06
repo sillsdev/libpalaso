@@ -228,6 +228,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			FontDialog dialog = new FontDialog();
 			dialog.FontFamily = _writingSystemDefinition.DefaultFontName;
 			dialog.Keyboard = _writingSystemDefinition.Keyboard;
+			dialog.RightToLeftScript = _writingSystemDefinition.RightToLeftScript;
 
 			//if we know one native word, that'd make a better sample text
 			if (!String.IsNullOrEmpty(_writingSystemDefinition.NativeName))
@@ -238,6 +239,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_writingSystemDefinition.DefaultFontName = dialog.FontFamily;
 				_writingSystemDefinition.Keyboard = dialog.Keyboard;
+				_writingSystemDefinition.RightToLeftScript = dialog.RightToLeftScript;
 			}
 		}
 

@@ -28,25 +28,26 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._FontAndKeyboardControl = new Palaso.UI.WindowsForms.WritingSystems.FontAndKeyboardControl();
+			this._fontAndKeyboardControl = new Palaso.UI.WindowsForms.WritingSystems.FontAndKeyboardControl();
 			this._CancelButton = new System.Windows.Forms.Button();
 			this._OkButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// _FontAndKeyboardControl
 			//
-			this._FontAndKeyboardControl.FontFamilyName = "";
-			this._FontAndKeyboardControl.KeyboardName = "";
-			this._FontAndKeyboardControl.Location = new System.Drawing.Point(3, 7);
-			this._FontAndKeyboardControl.Name = "_FontAndKeyboardControl";
-			this._FontAndKeyboardControl.Size = new System.Drawing.Size(277, 163);
-			this._FontAndKeyboardControl.TabIndex = 0;
+			this._fontAndKeyboardControl.FontFamilyName = "";
+			this._fontAndKeyboardControl.KeyboardName = "";
+			this._fontAndKeyboardControl.Location = new System.Drawing.Point(3, 7);
+			this._fontAndKeyboardControl.Name = "_fontAndKeyboardControl";
+			this._fontAndKeyboardControl.SampleText = "type here to test the font and keyboard";
+			this._fontAndKeyboardControl.Size = new System.Drawing.Size(277, 195);
+			this._fontAndKeyboardControl.TabIndex = 0;
 			//
 			// _CancelButton
 			//
 			this._CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._CancelButton.Location = new System.Drawing.Point(205, 176);
+			this._CancelButton.Location = new System.Drawing.Point(205, 208);
 			this._CancelButton.Name = "_CancelButton";
 			this._CancelButton.Size = new System.Drawing.Size(75, 23);
 			this._CancelButton.TabIndex = 2;
@@ -57,7 +58,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _OkButton
 			//
 			this._OkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._OkButton.Location = new System.Drawing.Point(124, 176);
+			this._OkButton.Location = new System.Drawing.Point(124, 208);
 			this._OkButton.Name = "_OkButton";
 			this._OkButton.Size = new System.Drawing.Size(75, 23);
 			this._OkButton.TabIndex = 1;
@@ -71,10 +72,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._CancelButton;
-			this.ClientSize = new System.Drawing.Size(292, 211);
+			this.ClientSize = new System.Drawing.Size(292, 243);
 			this.Controls.Add(this._OkButton);
 			this.Controls.Add(this._CancelButton);
-			this.Controls.Add(this._FontAndKeyboardControl);
+			this.Controls.Add(this._fontAndKeyboardControl);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FontDialog";
@@ -88,7 +89,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#endregion
 
-		private FontAndKeyboardControl _FontAndKeyboardControl;
+		private FontAndKeyboardControl _fontAndKeyboardControl;
 		private System.Windows.Forms.Button _CancelButton;
 		private System.Windows.Forms.Button _OkButton;
 	}
