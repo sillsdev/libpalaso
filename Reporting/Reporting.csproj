@@ -16,7 +16,7 @@
 	</ApplicationIcon>
 	<AssemblyKeyContainerName>
 	</AssemblyKeyContainerName>
-	<AssemblyName>Reporting</AssemblyName>
+	<AssemblyName>PalasoReporting</AssemblyName>
 	<AssemblyOriginatorKeyFile>
 	</AssemblyOriginatorKeyFile>
 	<DefaultClientScript>JScript</DefaultClientScript>
@@ -24,7 +24,7 @@
 	<DefaultTargetSchema>IE50</DefaultTargetSchema>
 	<DelaySign>false</DelaySign>
 	<OutputType>Library</OutputType>
-	<RootNamespace>Reporting</RootNamespace>
+	<RootNamespace>Palaso.Reporting</RootNamespace>
 	<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	<StartupObject>
 	</StartupObject>
@@ -36,7 +36,7 @@
 	</SccAuxPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-	<OutputPath>..\..\output\debug\</OutputPath>
+	<OutputPath>..\output\debug\</OutputPath>
 	<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	<BaseAddress>285212672</BaseAddress>
 	<CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>

@@ -43,7 +43,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void LoadDefinitions()
 		{
 			_ignoreCheckEvents = true;
-			_normalItemFont = listView1.Items[0].Font;
+			if (listView1.Items.Count > 0)
+			{
+				//this can be empty when there are no defs and this control is re-used.
+				_normalItemFont = listView1.Items[0].Font;
+			}
 			listView1.Items.Clear();
 			Palaso.WritingSystems.LdmlInFolderWritingSystemRepository repository =
 				new LdmlInFolderWritingSystemRepository();

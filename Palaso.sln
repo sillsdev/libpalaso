@@ -25,6 +25,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms", "Pal
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting", "Reporting\Reporting.csproj", "{9CCBECEC-513C-4DA4-A4CE-F5361B633760}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +53,10 @@ Global
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CCBECEC-513C-4DA4-A4CE-F5361B633760}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CCBECEC-513C-4DA4-A4CE-F5361B633760}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CCBECEC-513C-4DA4-A4CE-F5361B633760}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CCBECEC-513C-4DA4-A4CE-F5361B633760}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
