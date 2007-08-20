@@ -769,43 +769,113 @@ namespace Palaso.Tests
 			Assert.IsNull(token);
 		}
 		[Test]
-		public void LineNumber_SingleLine_1()
+		public void Offset_BeforeAnyTextIsRead_0()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
-					"\\tag text\nmore text"));
+					"\\tag text more text"));
 			SFMReader test = new SFMReader(stream);
 
-			Assert.AreEqual(1, test.LineNumber);
+			Assert.AreEqual(0, test.Offset);
 		}
 		[Test]
-		public void LineNumber_TextWithLF()
+		public void Offset_After3LetterTagThenSpace_5()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
-					"\\tag text\nmore text"));
+					"\\tag "));
 			SFMReader test = new SFMReader(stream);
+			test.ReadNextTag();
 
-			test.ReadNextText();
-			Assert.AreEqual(2, test.LineNumber);
+			Assert.AreEqual(5, test.Offset);
 		}
 		[Test]
-		public void LineNumber_TextWithCR()
+		public void Offset_After3LetterTagAnd4LetterWord_9()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
-					"\\tag text\rmore text"));
+					"\\tag text"));
 			SFMReader test = new SFMReader(stream);
-
+			test.ReadNextTag();
 			test.ReadNextText();
-			Assert.AreEqual(2, test.LineNumber);
+
+			Assert.AreEqual(9, test.Offset);
 		}
 		[Test]
-		public void LineNumber_TextWithCRLF()
+		public void Offset_After3LetterTagAnd4LetterWordAnd4LetterTag_14()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
-					"\\tag text\r\nmore text"));
+					"\\tag text\\tag2"));
 			SFMReader test = new SFMReader(stream);
-
+			test.ReadNextTag();
 			test.ReadNextText();
-			Assert.AreEqual(2, test.LineNumber);
+			test.ReadNextTag();
+
+			Assert.AreEqual(14, test.Offset);
+		}
+		[Test]
+		public void Offset_After3LetterTagAnd4LetterWordASpaceThen4LetterTag_15()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag text \\tag2"));
+			SFMReader test = new SFMReader(stream);
+			test.ReadNextTag();
+			test.ReadNextText();
+			test.ReadNextTag();
+
+			Assert.AreEqual(15, test.Offset);
+		}
+		[Test]
+		public void Offset_After5CharactersOfInitialText_5()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"hello"));
+			SFMReader test = new SFMReader(stream);
+			test.ReadInitialText();
+
+			Assert.AreEqual(5, test.Offset);
+		}
+		[Test]
+		public void Offset_After3LetterTag2SpacesAnd4LetterWord_10()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag  text"));
+			SFMReader test = new SFMReader(stream);
+			test.ReadNextTag();
+			test.ReadNextText();
+
+			Assert.AreEqual(10, test.Offset);
+		}
+		[Test]
+		public void Offset_After3LetterTag4LetterWordAndASpace_10()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag text "));
+			SFMReader test = new SFMReader(stream);
+			test.ReadNextTag();
+			test.ReadNextText();
+
+			Assert.AreEqual(10, test.Offset);
+		}
+		[Test]
+		public void Offset_After3LetterTagAfterEOF_4()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag"));
+			SFMReader test = new SFMReader(stream);
+			test.ReadNextTag();
+			test.ReadNextText();
+
+			Assert.AreEqual(4, test.Offset);
+		}
+		[Test]
+		public void Offset_ShoeboxModeAfter4LetterTagWithStarAfterEOF_5()
+		{
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
+					"\\tag*"));
+			SFMReader test = new SFMReader(stream);
+			test.Mode = SFMReader.ParseMode.Shoebox;
+			test.ReadNextTag();
+			test.ReadNextText();
+
+			Assert.AreEqual(5, test.Offset);
 		}
 	}
 }

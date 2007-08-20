@@ -23,7 +23,7 @@ namespace Palaso
 		private ParseMode _parseMode;
 		private State _parseState = State.Init;
 		private string _currentTag = string.Empty;
-		private int _lineNumber = 1;
+		private int _offset = 0;
 
 		/// <summary>
 		/// Construct a new SFMReader with filename
@@ -54,9 +54,9 @@ namespace Palaso
 			set { _parseMode = value; }
 		}
 
-		public int LineNumber
+		public int Offset
 		{
-			get { return _lineNumber; }
+			get { return _offset; }
 		}
 
 		/// <summary>
@@ -83,6 +83,7 @@ namespace Palaso
 
 			int c = buffer.Read(); // advance input stream over the initial \
 			Debug.Assert(c == '\\' || c == -1);
+			_offset++;
 
 			return AlterStateAndReturnNextTag();
 		}
@@ -100,6 +101,10 @@ namespace Palaso
 			if (buffer.Peek() != '\\' && !hasReadNextChar)
 			{
 				int c = buffer.Read();
+				if(c != -1)
+				{
+					_offset++;
+				}
 				Debug.Assert(c == -1 || char.IsWhiteSpace((char) c));
 			}
 			_parseState = State.Text;
@@ -115,6 +120,7 @@ namespace Palaso
 				if (buffer.Peek() == '*')
 				{
 					tag += (char) buffer.Read();
+					_offset++;
 					hasReadNextChar = true;
 				}
 			}
@@ -143,11 +149,14 @@ namespace Palaso
 
 				char read = (char)peekedChar;
 				buffer.Read();
+				_offset++;
 				if (read == '\n' || read == '\r')
 				{
 					if (read == '\r' && ((char)buffer.Peek()) == '\n')
+					{
 						buffer.Read(); // eat it
-					_lineNumber++;
+						_offset++;
+					}
 				}
 				token.Append(read);
 			}
@@ -207,6 +216,7 @@ namespace Palaso
 					if (text.Length > 0 && text[text.Length - 1] != '\n' && buffer.Peek() != -1)
 					{
 						text += (char) buffer.Read();
+						_offset++;
 					}
 					else break;
 				}
