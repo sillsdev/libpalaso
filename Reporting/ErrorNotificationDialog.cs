@@ -20,6 +20,7 @@ namespace Palaso.Reporting
 		private bool _isLethal;
 
 		private Button _closeButton;
+		 private LinkLabel _linkJustExit;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -94,8 +95,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources =
-					new System.ComponentModel.ComponentResourceManager(typeof (ErrorNotificationDialog));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorNotificationDialog));
 			this.label2 = new System.Windows.Forms.Label();
 			this.m_reproduce = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
@@ -103,6 +103,7 @@ namespace Palaso.Reporting
 			this._closeButton = new System.Windows.Forms.Button();
 			this.m_notification = new System.Windows.Forms.TextBox();
 			this._attemptToContinueLabel = new System.Windows.Forms.Label();
+			this._linkJustExit = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			//
 			// label2
@@ -129,9 +130,9 @@ namespace Palaso.Reporting
 			this.m_details.Name = "m_details";
 			this.m_details.ReadOnly = true;
 			//
-			// btnClose
+			// _closeButton
 			//
-			resources.ApplyResources(this._closeButton, "btnClose");
+			resources.ApplyResources(this._closeButton, "_closeButton");
 			this._closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._closeButton.Name = "_closeButton";
 			this._closeButton.Click += new System.EventHandler(this.btnClose_Click);
@@ -139,31 +140,33 @@ namespace Palaso.Reporting
 			// m_notification
 			//
 			resources.ApplyResources(this.m_notification, "m_notification");
-			this.m_notification.BackColor =
-					System.Drawing.Color.FromArgb(((int) (((byte) (192)))),
-												  ((int) (((byte) (255)))),
-												  ((int) (((byte) (192)))));
+			this.m_notification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.m_notification.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.m_notification.ForeColor = System.Drawing.Color.Black;
 			this.m_notification.Name = "m_notification";
 			this.m_notification.ReadOnly = true;
 			//
-			// labelAttemptToContinue
+			// _attemptToContinueLabel
 			//
-			resources.ApplyResources(this._attemptToContinueLabel, "labelAttemptToContinue");
+			resources.ApplyResources(this._attemptToContinueLabel, "_attemptToContinueLabel");
 			this._attemptToContinueLabel.ForeColor = System.Drawing.Color.Firebrick;
 			this._attemptToContinueLabel.Name = "_attemptToContinueLabel";
 			//
-			// ErrorReporter
+			// _linkJustExit
+			//
+			resources.ApplyResources(this._linkJustExit, "_linkJustExit");
+			this._linkJustExit.Name = "_linkJustExit";
+			this._linkJustExit.TabStop = true;
+			this._linkJustExit.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnJustExit_LinkClicked);
+			//
+			// ErrorNotificationDialog
 			//
 			this.AcceptButton = this._closeButton;
 			resources.ApplyResources(this, "$this");
-			this.BackColor =
-					System.Drawing.Color.FromArgb(((int) (((byte) (192)))),
-												  ((int) (((byte) (255)))),
-												  ((int) (((byte) (192)))));
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.CancelButton = this._closeButton;
 			this.ControlBox = false;
+			this.Controls.Add(this._linkJustExit);
 			this.Controls.Add(this.m_reproduce);
 			this.Controls.Add(this.m_notification);
 			this.Controls.Add(this.m_details);
@@ -174,9 +177,10 @@ namespace Palaso.Reporting
 			this.KeyPreview = true;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "ErrorReporter";
+			this.Name = "ErrorNotificationDialog";
 			this.ResumeLayout(false);
 			this.PerformLayout();
+
 		}
 
 		#endregion
@@ -401,6 +405,11 @@ namespace Palaso.Reporting
 			}
 			base.OnKeyUp(e);
 		}
+
+		 private void OnJustExit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		 {
+			 CloseUp();
+		 }
 
 	}
 }
