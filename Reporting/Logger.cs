@@ -10,7 +10,7 @@ namespace Palaso.Reporting
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Logs stuff to a file created in
-	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 Productname\Log.txt
+	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\Productname\Log.txt
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	public class Logger : IDisposable
@@ -200,6 +200,10 @@ namespace Palaso.Reporting
 
 			//get the old
 			StringBuilder contents = new StringBuilder();
+			if (!File.Exists(LogPath))
+			{
+				File.Create(LogPath);
+			}
 			using (StreamReader reader = File.OpenText(LogPath))
 			{
 				contents.Append(reader.ReadToEnd());
@@ -238,8 +242,12 @@ namespace Palaso.Reporting
 
 		private void WriteEventCore(string message, params object[] args)
 		{
+#if !DEBUG
+				try
+				{
+#endif
 			CheckDisposed();
-			if (m_out != null)
+			if (m_out != null && m_out.BaseStream.CanWrite)
 			{
 				m_out.Write(DateTime.Now.ToLongTimeString() + "\t");
 				m_out.WriteLine(message,args);
@@ -250,6 +258,13 @@ namespace Palaso.Reporting
 
 				//Debug.WriteLine("-----"+"\r\n"+m_minorEvents.ToString());
 			}
+#if !DEBUG
+				}
+				catch(Exception)
+				{
+				 //swallow
+				}
+#endif
 		}
 
 		/// <summary>
@@ -264,7 +279,7 @@ namespace Palaso.Reporting
 		private void WriteMinorEventCore(string message, params object[] args)
 		{
 			CheckDisposed();
-			if (m_minorEvents != null)
+			if (m_minorEvents != null )
 			{
 #if !DEBUG
 				try
