@@ -25,19 +25,18 @@
 ///
 
 using System;
+using NUnit.Framework;
+using Spart.Parsers;
+using Spart.Parsers.Primitives;
 
 namespace Spart.Tests.Parsers.Primitives
 {
-	using NUnit.Framework;
-	using Spart.Parsers.Primitives.Testers;
-	using Spart.Parsers.Primitives;
-
 	public class Helper
 	{
-		public static void Test(ICharTester test, Char success, Char failed)
+		public static void Test(CharParser test, Char success, Char failed)
 		{
-			Assertion.Assert(test.Test(success));
-			Assertion.Assert(!test.Test(failed));
+			Assert.IsTrue(test.Accepts(success));
+			Assert.IsFalse(test.Accepts(failed));
 		}
 	}
 
@@ -47,77 +46,75 @@ namespace Spart.Tests.Parsers.Primitives
 		[Test]
 		public void AnyCharTest()
 		{
-			AnyCharTester test = new AnyCharTester();
-			Assertion.Assert(test.Test('a'));
+			CharParser test = Prims.AnyChar;
+			Assert.IsTrue(test.Accepts('a'));
 		}
 
 		[Test]
 		public void DigitCharTest()
 		{
-			Helper.Test(new DigitCharTester(),'1',' ');
+			Helper.Test(Prims.Digit, '1', ' ');
 		}
 
 		[Test]
 		public void LetterCharTest()
 		{
-			Helper.Test(new LetterCharTester(),'a','1');
+			Helper.Test(Prims.Letter, 'a', '1');
 		}
 
 		[Test]
 		public void LetterOrDigitCharTest()
 		{
-			Helper.Test(new LetterOrDigitCharTester(),'a',' ');
-			Helper.Test(new LetterOrDigitCharTester(),'1',',');
+			Helper.Test(Prims.LetterOrDigit, 'a', ' ');
+			Helper.Test(Prims.LetterOrDigit, '1', ',');
 		}
 
 		[Test]
 		public void LitteralCharTest()
 		{
-			Helper.Test(new LitteralCharTester('a'),'a',' ');
+			Helper.Test(Prims.Ch('a'), 'a', ' ');
 		}
-
 
 		[Test]
 		public void LowerCharTest()
 		{
-			Helper.Test(new LowerCharTester(),'a','A');
+			Helper.Test(Prims.Lower, 'a', 'A');
 		}
 
 		[Test]
 		public void PunctuationCharTest()
 		{
-			Helper.Test(new PunctuationCharTester(),'.','A');
+			Helper.Test(Prims.Punctuation, '.', 'A');
 		}
 
 		[Test]
 		public void RangeCharTest()
 		{
-			Helper.Test(new RangeCharTester('a','z'),'c','1');
+			Helper.Test(Prims.Range('a', 'z'), 'c', '1');
 		}
 
 		[Test]
 		public void SeparatorCharTest()
 		{
-			Helper.Test(new SeparatorCharTester(),' ','1');
+			Helper.Test(Prims.Separator, ' ', '1');
 		}
 
 		[Test]
 		public void SymbolCharTest()
 		{
-			Helper.Test(new SymbolCharTester(),'+','1');
+			Helper.Test(Prims.Symbol, '+', '1');
 		}
 
 		[Test]
 		public void UpperCharTest()
 		{
-			Helper.Test(new UpperCharTester(),'A','a');
+			Helper.Test(Prims.Upper, 'A', 'a');
 		}
 
 		[Test]
 		public void WhiteSpaceCharTest()
 		{
-			Helper.Test(new WhiteSpaceCharTester(),' ','a');
+			Helper.Test(Prims.WhiteSpace, ' ', 'a');
 		}
-
 	}
 }

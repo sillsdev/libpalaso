@@ -55,50 +55,50 @@ namespace Spart.Tests.Parsers.Primitives
 		[Test]
 		public void SuccessParse()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			CharParser parser = Prims.Ch(MatchedChar);
 
 			ParserMatch m = parser.Parse(scanner);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Offset,0);
-			Assertion.Equals(m.Length,1);
-			Assertion.Equals(scanner.Offset,1);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(m.Offset,0);
+			Assert.AreEqual(m.Length,1);
+			Assert.AreEqual(scanner.Offset,1);
 		}
 
 		[Test]
 		public void FailParse()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			CharParser parser = Prims.Ch(NonMatchedChar);
 
 			ParserMatch m = parser.Parse(scanner);
-			Assertion.Assert(!m.Success);
-			Assertion.Equals(scanner.Offset,0);
+			Assert.IsFalse(m.Success);
+			Assert.AreEqual(scanner.Offset,0);
 		}
 
 
 		[Test]
 		public void NegateSuccessParse()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			NegatableParser parser = ~Prims.Ch(NonMatchedChar);
 
 			ParserMatch m = parser.Parse(scanner);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Offset,0);
-			Assertion.Equals(m.Length,1);
-			Assertion.Equals(scanner.Offset,1);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(m.Offset,0);
+			Assert.AreEqual(m.Length,1);
+			Assert.AreEqual(scanner.Offset,1);
 		}
 
 		[Test]
 		public void NegateFailParse()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			NegatableParser parser = ~Prims.Ch(MatchedChar);
 
 			ParserMatch m = parser.Parse(scanner);
-			Assertion.Assert(!m.Success);
-			Assertion.Equals(scanner.Offset,0);
+			Assert.IsFalse(m.Success);
+			Assert.AreEqual(scanner.Offset,0);
 		}
 
 	}

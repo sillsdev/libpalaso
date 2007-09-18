@@ -25,12 +25,12 @@
 ///
 
 using System;
+using NUnit.Framework;
+using Spart.Parsers;
+using Spart.Scanners;
 
 namespace Spart.Tests.Parsers
 {
-	using NUnit.Framework;
-	using Spart.Scanners;
-	using Spart.Parsers;
 
 	[TestFixture]
 	public class ParserMatchTest
@@ -39,7 +39,7 @@ namespace Spart.Tests.Parsers
 		{
 			get
 			{
-				return new ParserMatch(Provider.Scanner,0,-1);
+				return Provider.NewScanner.NoMatch;
 			}
 		}
 
@@ -47,29 +47,96 @@ namespace Spart.Tests.Parsers
 		{
 			get
 			{
-				return new ParserMatch(Provider.Scanner,0,0);
+				return Provider.NewScanner.EmptyMatch;
 			}
 		}
 
 		[Test]
 		public void NoMatchTest()
 		{
-			Assertion.Equals(NoMatch.Success,false);
+			Assert.AreEqual(NoMatch.Success,false);
 		}
 
 		[Test]
-		[ExpectedException(typeof(Exception))]
+		[ExpectedException(typeof(InvalidOperationException))]
 		public void NoMatchEmpty()
 		{
 			bool b=NoMatch.Empty;
 		}
 
 		[Test]
-		[ExpectedException(typeof(Exception))]
+		[ExpectedException(typeof(InvalidOperationException))]
 		public void NoMatchValue()
 		{
 			String o = NoMatch.Value;
 		}
+
+		[Test]
+		public void Concat_MatchOntoEmpty_Match()
+		{
+			IScanner scanner = Provider.NewScanner;
+			scanner.Read();
+
+			ParserMatch emptyMatch = scanner.EmptyMatch;
+
+			long startOffset = scanner.Offset;
+			scanner.Read();
+			long endOffset = scanner.Offset;
+			ParserMatch match = new ParserMatch(scanner, startOffset, (int) (endOffset - startOffset));
+			emptyMatch.Concat(match);
+
+			Assert.AreEqual(startOffset, emptyMatch.Offset);
+			Assert.AreEqual(endOffset - startOffset, emptyMatch.Length);
+			Assert.IsFalse(emptyMatch.Empty);
+		}
+
+		[Test]
+		public void Concat_EmptyToMatch_Match()
+		{
+			IScanner scanner = Provider.NewScanner;
+			scanner.Read();
+
+			long startOffset = scanner.Offset;
+			scanner.Read();
+			long endOffset = scanner.Offset;
+
+			ParserMatch emptyMatch = scanner.EmptyMatch;
+
+			ParserMatch match = new ParserMatch(scanner, startOffset, (int)(endOffset - startOffset));
+			match.Concat(emptyMatch);
+
+			Assert.AreEqual(startOffset, match.Offset);
+			Assert.AreEqual(endOffset - startOffset, match.Length);
+			Assert.IsFalse(match.Empty);
+		}
+
+		[Test]
+		public void Concat()
+		{
+			IScanner scanner = Provider.NewScanner;
+			scanner.Read();
+
+			long startOffset1 = scanner.Offset;
+			scanner.Read();
+			long endOffset1 = scanner.Offset;
+
+			ParserMatch match1 = new ParserMatch(scanner, startOffset1, (int)(endOffset1 - startOffset1));
+
+			long startOffset2 = scanner.Offset;
+			scanner.Read();
+			scanner.Read();
+			long endOffset2 = scanner.Offset;
+
+			ParserMatch match2 = new ParserMatch(scanner, startOffset2, (int)(endOffset2 - startOffset2));
+
+			match1.Concat(match2);
+
+			Assert.AreEqual(startOffset1, match1.Offset);
+			Assert.AreEqual(endOffset2 - startOffset1, match1.Length);
+			Assert.IsFalse(match1.Empty);
+		}
+
+
 
 	}
 }

@@ -1,33 +1,33 @@
-/// Spart License (zlib/png)
-///
-///
-/// Copyright (c) 2003 Jonathan de Halleux
-///
-/// This software is provided 'as-is', without any express or implied warranty.
-/// In no event will the authors be held liable for any damages arising from
-/// the use of this software.
-///
-/// Permission is granted to anyone to use this software for any purpose,
-/// including commercial applications, and to alter it and redistribute it
-/// freely, subject to the following restrictions:
-///
-/// 1. The origin of this software must not be misrepresented; you must not
-/// claim that you wrote the original software. If you use this software in a
-/// product, an acknowledgment in the product documentation would be
-/// appreciated but is not required.
-///
-/// 2. Altered source versions must be plainly marked as such, and must not be
-/// misrepresented as being the original software.
-///
-/// 3. This notice may not be removed or altered from any source distribution.
-///
-/// Author: Jonathan de Halleuxusing System;
+// Spart License (zlib/png)
+//
+//
+// Copyright (c) 2003 Jonathan de Halleux
+//
+// This software is provided 'as-is', without any express or implied warranty.
+// In no event will the authors be held liable for any damages arising from
+// the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+// claim that you wrote the original software. If you use this software in a
+// product, an acknowledgment in the product documentation would be
+// appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not be
+// misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source distribution.
+//
+// Author: Jonathan de Halleuxusing System;
+
+using System;
+using Spart.Parsers.Primitives;
 
 namespace Spart.Parsers
 {
-	using System;
-	using Spart.Parsers.Primitives;
-	using Spart.Parsers.Primitives.Testers;
 
 	/// <summary>
 	/// Static helper class to create primitive parsers
@@ -37,11 +37,14 @@ namespace Spart.Parsers
 		/// <summary>
 		/// Creates a parser that matches a single character
 		/// </summary>
-		/// <param name="c">character to match</param>
+		/// <param name="matchCharacter">character to match</param>
 		/// <returns></returns>
-		public static CharParser Ch(Char c)
+		public static CharParser Ch(Char matchCharacter)
 		{
-			return new CharParser(new LitteralCharTester(c));
+			return new CharParser(delegate(Char c)
+			{
+				return matchCharacter == c;
+			});
 		}
 
 		/// <summary>
@@ -62,7 +65,15 @@ namespace Spart.Parsers
 		/// <returns></returns>
 		public static CharParser Range(Char first, Char last)
 		{
-			return new CharParser(new RangeCharTester(first, last));
+			if (last < first)
+			{
+				throw new ArgumentOutOfRangeException("last character < first character");
+			}
+
+			return new CharParser(delegate(char c)
+			{
+				return c >= first && c <= last;
+			});
 		}
 
 		/// <summary>
@@ -72,9 +83,20 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new AnyCharTester());
+				return new CharParser(AnyCharTester);
 			}
 		}
+
+		/// <summary>
+		/// Recognizes all characters
+		/// </summary>
+		/// <param name="c">the character to try to recognize</param>
+		/// <returns>always true</returns>
+		static private bool AnyCharTester(Char c)
+		{
+			return true;
+		}
+
 
 		/// <summary>
 		/// Creates a parser that matches control characters
@@ -83,7 +105,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new ControlCharTester());
+				return new CharParser(Char.IsControl);
 			}
 		}
 
@@ -94,8 +116,31 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new DigitCharTester());
+				return new CharParser(Char.IsDigit);
 			}
+		}
+
+		/// <summary>
+		/// Creates a parser that matches hexadecimal digit characters
+		/// </summary>
+		public static CharParser HexDigit
+		{
+			get
+			{
+				return new CharParser(HexDigitCharTester);
+			}
+		}
+
+		/// <summary>
+		/// Recognizes a hexadecimal digit (0..9 a..f A..F)
+		/// </summary>
+		/// <param name="c">the character to try to recognize</param>
+		/// <returns>true if recognized, false if not</returns>
+		static private bool HexDigitCharTester(char c)
+		{
+			return Char.IsDigit(c) ||
+				(c >= 'a' && c <= 'f') ||
+				(c >= 'A' && c <= 'F');
 		}
 
 		/// <summary>
@@ -105,7 +150,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new LetterCharTester());
+				return new CharParser(Char.IsLetter);
 			}
 		}
 
@@ -116,7 +161,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new LetterOrDigitCharTester());
+				return new CharParser(Char.IsLetterOrDigit);
 			}
 		}
 
@@ -127,7 +172,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new LowerCharTester());
+				return new CharParser(Char.IsLower);
 			}
 		}
 
@@ -138,7 +183,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new PunctuationCharTester());
+				return new CharParser(Char.IsPunctuation);
 			}
 		}
 
@@ -149,7 +194,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new SeparatorCharTester());
+				return new CharParser(Char.IsSeparator);
 			}
 		}
 
@@ -160,7 +205,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new SymbolCharTester());
+				return new CharParser(Char.IsSymbol);
 			}
 		}
 
@@ -171,7 +216,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new UpperCharTester());
+				return new CharParser(Char.IsUpper);
 			}
 		}
 
@@ -182,7 +227,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return new CharParser(new WhiteSpaceCharTester());
+				return new CharParser(Char.IsWhiteSpace);
 			}
 		}
 

@@ -1,21 +1,21 @@
 using System;
+using System.Collections.Generic;
+using Spart.Actions;
+using Spart.Debug;
+using Spart.Parsers;
+using Spart.Parsers.NonTerminal;
+using Spart.Scanners;
 
 namespace Spart.Demo
 {
-	using Spart.Parsers.NonTerminal;
-	using Spart.Parsers;
-	using Spart.Scanners;
-	using Spart.Actions;
-	using Spart.Debug;
-
 	public class Calculator
 	{
-		Rule group;
-		Rule term;
-		Rule factor;
-		Rule expression;
-		Rule integer;
-		Debugger debug;
+		private Rule group;
+		private Rule term;
+		private Rule factor;
+		private Rule expression;
+		private Rule integer;
+		private Debugger debug;
 
 		/// <summary>
 		/// A very simple calculator parser
@@ -23,38 +23,35 @@ namespace Spart.Demo
 		public Calculator()
 		{
 			// creating rules and assigning names (for debugging)
-			group = new Rule(); group.ID = "group";
-			term = new Rule(); term.ID ="term";
-			factor = new Rule(); factor.ID="factor";
-			expression = new Rule(); expression.ID="expression";
-			integer  = new Rule(); integer.ID="integer";
+			group = new Rule("Group");
+			term = new Rule("Term");
+			factor = new Rule("Factor");
+			expression = new Rule("Expression");
+			integer = new Rule("Integer", Prims.Digit) [OnInteger];
+
+			// creating sub parsers
+			Parser add = Ops.Sequence('+', term);
+			// attaching semantic action
+			add.Act += OnAdd;
+
+			// creating sub parsers and attaching semantic action in one swoop
+			Parser sub = Ops.Sequence('-', term)[OnSub];
+			Parser mult = Ops.Sequence('*', factor)[OnMult];
+			Parser div = Ops.Sequence('/', factor)[OnDiv];
+
+			// assigning parsers to rules
+			group.Parser = Ops.Sequence('(', expression, ')');
+			factor.Parser = group | integer;
+			term.Parser = Ops.Sequence(factor, Ops.ZeroOrMore(mult | div));
+			expression.Parser = Ops.Sequence(term, Ops.ZeroOrMore(add | sub)) [OnExpression];
 
 			// debuggger
 			debug = new Debugger(Console.Out);
 			debug += factor;
-			debug+=term;
-			debug+=group;
+			debug += term;
+			debug += group;
 			debug += expression;
 			debug += integer;
-
-			// creating sub parsers
-			Parser add = Ops.Seq('+',term);
-			// attaching semantic action
-			add.Act += new ActionHandler(this.Add);
-			Parser sub = Ops.Seq('-',term);
-			sub.Act += new ActionHandler(this.Sub);
-			Parser mult = Ops.Seq('*',factor);
-			mult.Act += new ActionHandler(this.Mult);
-			Parser div = Ops.Seq('/',factor);
-			div.Act += new ActionHandler(this.Div);
-
-			// assigning parsers to rules
-			integer.Parser = Prims.Digit;
-
-			group.Parser       = Ops.Seq('(',Ops.Seq(expression,')'));
-			factor.Parser      = group | integer;
-			term.Parser        = Ops.Seq( factor, Ops.Klenee(mult	| div ));
-			expression.Parser  = Ops.Seq(term,Ops.Klenee(add | mult ));
 		}
 
 		/// <summary>
@@ -65,31 +62,62 @@ namespace Spart.Demo
 		public ParserMatch Parse(String s)
 		{
 			StringScanner sc = new StringScanner(s);
-			return expression.Parse(sc);
+			ParserMatch match = this.expression.Parse(sc);
+			if(!sc.AtEnd)
+			{
+				return sc.NoMatch;
+			}
+			return match;
 		}
 
 		#region Semantic Actions
-		public void Add(Object sender, ActionEventArgs args)
+
+		private Stack<int> numberStack = new Stack<int>();
+
+		private void OnAdd(Object sender, ActionEventArgs args)
 		{
 			Console.Out.WriteLine("add");
+			int second = numberStack.Pop();
+			int first = numberStack.Pop();
+			numberStack.Push(first + second);
 		}
 
-
-		public void Sub(Object sender, ActionEventArgs args)
+		private void OnSub(Object sender, ActionEventArgs args)
 		{
 			Console.Out.WriteLine("sub");
+			int second = numberStack.Pop();
+			int first = numberStack.Pop();
+			numberStack.Push(first - second);
 		}
 
-
-		public void Mult(Object sender, ActionEventArgs args)
+		private void OnMult(Object sender, ActionEventArgs args)
 		{
 			Console.Out.WriteLine("mult");
+			int second = numberStack.Pop();
+			int first = numberStack.Pop();
+			numberStack.Push(first * second);
 		}
 
-		public void Div(Object sender, ActionEventArgs args)
+		private void OnDiv(Object sender, ActionEventArgs args)
 		{
 			Console.Out.WriteLine("div");
+			int second = numberStack.Pop();
+			int first = numberStack.Pop();
+			numberStack.Push(first / second);
 		}
+
+		private void OnExpression(object sender, ActionEventArgs args)
+		{
+			Console.Out.WriteLine("expression: {0} = {1}", args.Value, numberStack.Peek());
+		}
+
+		private void OnInteger(object sender, ActionEventArgs args)
+		{
+			Console.Out.WriteLine("integer: {0}", args.Value);
+			numberStack.Push(int.Parse(args.Value));
+		}
+
+
 		#endregion
 	}
 }

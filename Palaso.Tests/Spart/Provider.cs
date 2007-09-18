@@ -40,7 +40,7 @@ namespace Spart.Tests
 			}
 		}
 
-		public static IScanner Scanner
+		public static IScanner NewScanner
 		{
 			get
 			{

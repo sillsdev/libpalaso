@@ -55,7 +55,7 @@ namespace Spart.Tests.Scanners
 		public void Constructor()
 		{
 			StringScanner scanner = new StringScanner(Text);
-			Assertion.Equals(Text, scanner.InputString);
+			Assert.AreEqual(Text, scanner.InputString);
 		}
 
 
@@ -63,15 +63,15 @@ namespace Spart.Tests.Scanners
 		public void Constructor2()
 		{
 			StringScanner scanner = new StringScanner(Text,Offset);
-			Assertion.Equals(Text, scanner.InputString);
-			Assertion.Equals(Offset, scanner.Offset);
+			Assert.AreEqual(Text, scanner.InputString);
+			Assert.AreEqual(Offset, scanner.Offset);
 		}
 
 		[Test]
 		public void Substring()
 		{
 			StringScanner scanner = new StringScanner(Text,Offset);
-			Assertion.Equals(Text.Substring(3, 6), scanner.Substring(3,6));
+			Assert.AreEqual(Text.Substring(3, 6), scanner.Substring(3, 6));
 		}
 
 		[Test]
@@ -82,13 +82,13 @@ namespace Spart.Tests.Scanners
 
 			while (!scanner.AtEnd)
 			{
-				Assertion.Assert(i < Text.Length);
-				Assertion.Equals(scanner.Peek(), Text[i]);
+				Assert.Less(i, Text.Length);
+				Assert.AreEqual(Text[i], scanner.Peek());
 				scanner.Read();
 				++i;
 			}
 
-			Assertion.Assert(i == Text.Length);
+			Assert.AreEqual(Text.Length, i);
 		}
 
 		[Test]
@@ -99,13 +99,13 @@ namespace Spart.Tests.Scanners
 
 			while (!scanner.AtEnd)
 			{
-				Assertion.Assert(i < Text.Length);
-				Assertion.Equals(scanner.Peek(), Text[i]);
+				Assert.Less(i, Text.Length);
+				Assert.AreEqual(Text[i], scanner.Peek());
 				scanner.Read();
 				++i;
 			}
 
-			Assertion.Assert(i == Text.Length);
+			Assert.AreEqual(Text.Length, i);
 		}
 
 		[Test]
@@ -117,13 +117,13 @@ namespace Spart.Tests.Scanners
 
 			while (!scanner.AtEnd)
 			{
-				Assertion.Assert(i < Text.Length);
-				Assertion.Equals(scanner.Peek(), Text[i]);
+				Assert.Less(i, Text.Length);
+				Assert.AreEqual(Text[i], scanner.Peek());
 				scanner.Read();
 				++i;
 			}
 
-			Assertion.Assert(i == Text.Length);
+			Assert.AreEqual(Text.Length,i);
 		}
 
 		[Test]
@@ -131,7 +131,7 @@ namespace Spart.Tests.Scanners
 		{
 			StringScanner scanner = new StringScanner(Text);
 			ParserMatch m = scanner.NoMatch;
-			Assertion.Assert(!m.Success);
+			Assert.IsFalse(m.Success);
 		}
 
 		[Test]
@@ -139,8 +139,8 @@ namespace Spart.Tests.Scanners
 		{
 			StringScanner scanner = new StringScanner(Text);
 			ParserMatch m = scanner.EmptyMatch;
-			Assertion.Assert(m.Success);
-			Assertion.Assert(m.Empty);
+			Assert.IsTrue(m.Success);
+			Assert.IsTrue(m.Empty);
 		}
 
 
@@ -149,12 +149,63 @@ namespace Spart.Tests.Scanners
 		{
 			StringScanner scanner = new StringScanner(Text);
 			ParserMatch m = scanner.CreateMatch(Offset, 2);
-			Assertion.Assert(m.Success);
-			Assertion.Assert(!m.Empty);
-			Assertion.Equals(m.Length,2);
+			Assert.IsTrue(m.Success);
+			Assert.IsFalse(m.Empty);
+			Assert.AreEqual(2, m.Length);
 
-			Assertion.Equals(m.Value,Text.Substring((int)Offset,2));
+			Assert.AreEqual(Text.Substring((int)Offset,2),m.Value);
 		}
+
+		[Test]
+		public void Peek_AtEnd_NullChar()
+		{
+			StringScanner scanner = new StringScanner(Text);
+			scanner.Seek(Text.Length);
+			Assert.IsTrue(scanner.AtEnd);
+			Assert.AreEqual('\0', scanner.Peek());
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Read_AtEnd_Throws()
+		{
+			StringScanner scanner = new StringScanner(Text);
+			scanner.Seek(Text.Length);
+			Assert.IsTrue(scanner.AtEnd);
+			scanner.Read();
+		}
+
+		[Test]
+		public void Offset_InitiallyZero()
+		{
+			StringScanner scanner = new StringScanner(Text);
+			Assert.AreEqual(0, scanner.Offset);
+		}
+
+		[Test]
+		public void Offset_Initialized()
+		{
+			StringScanner scanner = new StringScanner(Text, 4);
+			Assert.AreEqual(4, scanner.Offset);
+		}
+
+		[Test]
+		public void Offset_IncrementedAfterRead()
+		{
+			StringScanner scanner = new StringScanner(Text);
+			scanner.Read();
+			Assert.AreEqual(1,scanner.Offset);
+		}
+
+		[Test]
+		public void Offset_NotIncrementedAfterPeek()
+		{
+			StringScanner scanner = new StringScanner(Text);
+			scanner.Peek();
+			Assert.AreEqual(0, scanner.Offset);
+
+		}
+
 
 	}
 }

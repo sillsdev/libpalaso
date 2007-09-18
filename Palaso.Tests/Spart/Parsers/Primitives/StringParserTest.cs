@@ -55,33 +55,32 @@ namespace Spart.Tests.Parsers.Primitives
 		[Test]
 		public void Constructor()
 		{
-			IScanner scanner = Provider.Scanner;
 			StringParser parser = Prims.Str(MatchedString);
-			Assertion.Equals( parser.MatchedString, MatchedString);
+			Assert.AreEqual( parser.MatchedString, MatchedString);
 		}
 
 		[Test]
 		public void SuccessParse()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			StringParser parser = Prims.Str(MatchedString);
 
 			ParserMatch m = parser.Parse(scanner);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Offset,0);
-			Assertion.Equals(m.Length,3);
-			Assertion.Equals(scanner.Offset,4);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(0,m.Offset);
+			Assert.AreEqual(3,m.Length);
+			Assert.AreEqual(3,scanner.Offset);
 		}
 
 		[Test]
 		public void FailParse()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			StringParser parser = Prims.Str(NonMatchedString);
 
 			ParserMatch m = parser.Parse(scanner);
-			Assertion.Assert(!m.Success);
-			Assertion.Equals(scanner.Offset,0);
+			Assert.IsFalse(m.Success);
+			Assert.AreEqual(0,scanner.Offset);
 		}
 	}
 }

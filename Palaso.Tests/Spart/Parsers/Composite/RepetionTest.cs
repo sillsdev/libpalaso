@@ -25,48 +25,48 @@
 ///
 
 using System;
+using NUnit.Framework;
+using Spart.Parsers;
+using Spart.Parsers.Composite;
+using Spart.Scanners;
 
 namespace Spart.Tests.Parsers.Composite
 {
-	using NUnit.Framework;
-	using Spart.Parsers;
-	using Spart.Parsers.Composite;
-	using Spart.Parsers.Primitives;
-	using Spart.Scanners;
-
 	[TestFixture]
 	public class RepetionTest
 	{
 		public Parser Parser
 		{
-			get
-			{
-				return Prims.Ch('a');
-			}
+			get { return Prims.Ch('a'); }
+		}
+
+		public Parser SequenceParser
+		{
+			get { return Ops.Sequence('a', 'b'); }
 		}
 
 		[Test]
 		public void Constructor()
 		{
 			Parser p = Parser;
-			RepetitionParser rp = new RepetitionParser(p,10,20);
-			Assertion.Equals(rp.LowerBound,10);
-			Assertion.Equals(rp.UpperBound,20);
-			Assertion.Equals(rp.Parser, p);
+			RepetitionParser rp = new RepetitionParser(p, 10, 20);
+			Assert.AreEqual(rp.LowerBound, 10);
+			Assert.AreEqual(rp.UpperBound, 20);
+			Assert.AreEqual(rp.Parser, p);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[ExpectedException(typeof (ArgumentNullException))]
 		public void Constructor2()
 		{
-			RepetitionParser rp = new RepetitionParser(null,0,1);
+			RepetitionParser rp = new RepetitionParser(null, 0, 1);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
+		[ExpectedException(typeof (ArgumentOutOfRangeException))]
 		public void Constructor3()
 		{
-			RepetitionParser rp = new RepetitionParser(Parser,1,0);
+			RepetitionParser rp = new RepetitionParser(Parser, 1, 0);
 		}
 
 		[Test]
@@ -76,9 +76,9 @@ namespace Spart.Tests.Parsers.Composite
 			String s = "a";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,1);
-			Assertion.Assert(scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(1, m.Length);
+			Assert.IsTrue(scan.AtEnd);
 		}
 
 		[Test]
@@ -88,9 +88,9 @@ namespace Spart.Tests.Parsers.Composite
 			String s = "aa";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,2);
-			Assertion.Assert(scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(2,m.Length);
+			Assert.IsTrue(scan.AtEnd);
 		}
 
 		[Test]
@@ -100,9 +100,49 @@ namespace Spart.Tests.Parsers.Composite
 			String s = "aaa ";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,3);
-			Assertion.Assert(!scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(3,m.Length);
+			Assert.IsFalse(scan.AtEnd);
+		}
+
+
+		[Test]
+		public void PositiveSequenceSuccess1AtEnd()
+		{
+			RepetitionParser rp = +SequenceParser;
+			String s = "ab";
+			StringScanner scan = new StringScanner(s);
+			ParserMatch m = rp.Parse(scan);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(0, m.Offset);
+			Assert.AreEqual(2, m.Length);
+			Assert.IsTrue(scan.AtEnd);
+		}
+
+		[Test]
+		public void PositiveSequenceSuccess2AtEnd()
+		{
+			RepetitionParser rp = +SequenceParser;
+			String s = "abab";
+			StringScanner scan = new StringScanner(s);
+			ParserMatch m = rp.Parse(scan);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(0, m.Offset);
+			Assert.AreEqual(4, m.Length);
+			Assert.IsTrue(scan.AtEnd);
+		}
+
+		[Test]
+		public void PositiveSequenceSuccessNotAtEnd()
+		{
+			RepetitionParser rp = +SequenceParser;
+			String s = "ababab ";
+			StringScanner scan = new StringScanner(s);
+			ParserMatch m = rp.Parse(scan);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(0, m.Offset);
+			Assert.AreEqual(6, m.Length);
+			Assert.IsFalse(scan.AtEnd);
 		}
 
 		[Test]
@@ -112,55 +152,55 @@ namespace Spart.Tests.Parsers.Composite
 			String s = "b";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(!m.Success);
+			Assert.IsFalse(m.Success);
 		}
 
 		[Test]
 		public void KleneeSuccess1AtEnd()
 		{
-			RepetitionParser rp = Ops.Klenee(Parser);
+			RepetitionParser rp = Ops.ZeroOrMore(Parser);
 			String s = "a";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,1);
-			Assertion.Assert(scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(1,m.Length);
+			Assert.IsTrue(scan.AtEnd);
 		}
 
 		[Test]
 		public void KleneeSuccess2AtEnd()
 		{
-			RepetitionParser rp = Ops.Klenee(Parser);
+			RepetitionParser rp = Ops.ZeroOrMore(Parser);
 			String s = "aa";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,2);
-			Assertion.Assert(scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(2,m.Length);
+			Assert.IsTrue(scan.AtEnd);
 		}
 
 		[Test]
 		public void KleneeSuccessNotAtEnd()
 		{
-			RepetitionParser rp = Ops.Klenee(Parser);
+			RepetitionParser rp = Ops.ZeroOrMore(Parser);
 			String s = "aaa ";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,3);
-			Assertion.Assert(!scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(3,m.Length);
+			Assert.IsFalse(scan.AtEnd);
 		}
 
 		[Test]
 		public void KleneeSuccess0()
 		{
-			RepetitionParser rp = Ops.Klenee(Parser);
+			RepetitionParser rp = Ops.ZeroOrMore(Parser);
 			String s = "b";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Assert(m.Empty);
-			Assertion.Assert(!scan.AtEnd);
+			Assert.IsTrue(m.Success);
+			Assert.IsTrue(m.Empty);
+			Assert.IsFalse(scan.AtEnd);
 		}
 
 		[Test]
@@ -170,9 +210,9 @@ namespace Spart.Tests.Parsers.Composite
 			String s = "aa";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Equals(m.Length,1);
-			Assertion.Equals(scan.Offset,1);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual(1,m.Length);
+			Assert.AreEqual(1,scan.Offset);
 		}
 
 		[Test]
@@ -182,8 +222,8 @@ namespace Spart.Tests.Parsers.Composite
 			String s = "";
 			StringScanner scan = new StringScanner(s);
 			ParserMatch m = rp.Parse(scan);
-			Assertion.Assert(m.Success);
-			Assertion.Assert(m.Empty);
+			Assert.IsTrue(m.Success);
+			Assert.IsTrue(m.Empty);
 		}
 	}
 }

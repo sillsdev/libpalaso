@@ -24,39 +24,47 @@
 /// Author: Jonathan de Halleux
 ///
 
-using System;
+using System.Collections;
+using NUnit.Framework;
+using Spart.Actions;
+using Spart.Parsers;
+using Spart.Parsers.Primitives;
+using Spart.Scanners;
 
 namespace Spart.Tests.Actions.Actors
 {
-	using System.Collections;
-	using Spart.Scanners;
-	using Spart.Parsers;
-	using Spart.Parsers.Primitives;
-	using Spart.Actions;
-
-	using NUnit.Framework;
-
 	[TestFixture]
 	public class AppendActorTest
 	{
-		public ArrayList List
+		public ArrayList NewList
 		{
-			get
-			{
-				return new ArrayList();
-			}
+			get { return new ArrayList(); }
 		}
+
 		[Test]
 		public void AppendString()
 		{
-			IScanner scanner = Provider.Scanner;
+			IScanner scanner = Provider.NewScanner;
 			StringParser parser = new StringParser(Provider.Text);
-			IList list = List;
-			parser.Act += Actor.Append(list);
+			IList list = NewList;
+			parser.Act += ActionHandlers.Append(list);
 			parser.Parse(scanner);
 
-			Assertion.Equals(list.Count, 1);
-			Assertion.Equals(list[0], Provider.Text);
+			Assert.AreEqual(list.Count, 1);
+			Assert.AreEqual(list[0], Provider.Text);
+		}
+
+		[Test]
+		public void AppendStringShorthand()
+		{
+			IScanner scanner = Provider.NewScanner;
+			ArrayList list = NewList;
+			Parser parser = new StringParser(Provider.Text)[ActionHandlers.Append(list)];
+			parser.Parse(scanner);
+
+			Assert.AreEqual(list.Count, 1);
+			Assert.AreEqual(list[0], Provider.Text);
+
 		}
 	}
 }

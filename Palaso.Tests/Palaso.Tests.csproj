@@ -39,8 +39,24 @@
   <ItemGroup>
 	<Compile Include="SFMReaderTest.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="Spart\Actions\Actors\AppendActorTest.cs" />
+	<Compile Include="Spart\Actions\Actors\AssignActorTests.cs" />
+	<Compile Include="Spart\Calculator.cs" />
+	<Compile Include="Spart\Parsers\Composite\AlternativeTest.cs" />
+	<Compile Include="Spart\Parsers\Composite\DifferenceParserTests.cs" />
+	<Compile Include="Spart\Parsers\Composite\RepetionTest.cs" />
+	<Compile Include="Spart\Parsers\Composite\SequenceTest.cs" />
+	<Compile Include="Spart\Parsers\MiscellaneousParserTests.cs" />
+	<Compile Include="Spart\Parsers\ParserMatchTest.cs" />
+	<Compile Include="Spart\Parsers\Primitives\CharParserTest.cs" />
+	<Compile Include="Spart\Parsers\Primitives\EndParserTests.cs" />
+	<Compile Include="Spart\Parsers\Primitives\StringParserTest.cs" />
+	<Compile Include="Spart\Parsers\Primitives\TestersTest.cs" />
+	<Compile Include="Spart\Provider.cs" />
+	<Compile Include="Spart\Scanners\StringScannerTest.cs" />
 	<Compile Include="TestUtilities.cs" />
 	<Compile Include="WritingSystems\RepositoryWithLdmlAdaptor.Tests.cs" />
+	<Compile Include="WritingSystems\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
 	<Compile Include="XmlHelpers.Tests.cs" />
   </ItemGroup>
@@ -58,4 +74,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+	<PreBuildEvent>copy "$(SolutionDir)\lib\icuin38.dll" "$(TargetDir)"
+copy "$(SolutionDir)\lib\icuuc38.dll" "$(TargetDir)"
+copy "$(SolutionDir)\lib\icudt38.dll" "$(TargetDir)"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
