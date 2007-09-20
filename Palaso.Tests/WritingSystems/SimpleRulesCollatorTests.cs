@@ -649,7 +649,7 @@ namespace Palaso.WritingSystems.Collation.Tests
 		}
 
 		[Test]
-		public void Compare()
+		public void Compare_CapsAsSecondaryDistinction()
 		{
 			//naive sort
 			string[] list = new string[] {"ana",
@@ -682,6 +682,50 @@ namespace Palaso.WritingSystems.Collation.Tests
 			Assert.AreEqual(list.Length, expected.Length );
 
 			SimpleRulesCollator collator = new SimpleRulesCollator("A a\nN n\nNG Ng ng\nO o");
+			Array.Sort(list, collator);
+
+
+			for (int i = 0; i < list.Length; i++)
+			{
+				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
+			}
+		}
+
+		[Test]
+		public void Compare_CapsAsPrimaryDistinction()
+		{
+			//naive sort
+			string[] list = new string[] {"ana",
+										  "anga",
+										  "ango",
+										  "ano",
+										  "na",
+										  "Na",
+										  "nga",
+										  "Nga",
+										  "ngo",
+										  "Ngo",
+										  "NGo",
+										  "no",
+										  "No"};
+
+			string[] expected = new string[] {
+											   "ana",
+											   "ano",
+											   "anga",
+											   "ango",
+											   "Na",
+											   "No",
+											   "na",
+											   "no",
+											   "NGo",
+											   "Nga",
+											   "Ngo",
+											   "nga",
+											   "ngo"};
+			Assert.AreEqual(list.Length, expected.Length);
+
+			SimpleRulesCollator collator = new SimpleRulesCollator("A\na\nN\nn\nNG\nNg\nng\nO\no");
 			Array.Sort(list, collator);
 
 
