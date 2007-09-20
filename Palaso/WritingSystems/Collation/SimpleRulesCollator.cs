@@ -21,7 +21,14 @@ namespace Palaso.WritingSystems.Collation
 		public SimpleRulesCollator(string rules)
 		{
 			string icuRules = ConvertToIcuRules(rules);
-			_collator = new RuleBasedCollator(icuRules);
+			try
+			{
+				_collator = new RuleBasedCollator(icuRules);
+			}
+			catch (DllNotFoundException e)
+			{
+				throw new NotSupportedException("Currently SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
+			}
 		}
 
 		static public string ConvertToIcuRules(string rules)
