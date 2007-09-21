@@ -36,15 +36,15 @@ namespace Spart.Parsers.Primitives
 		/// <summary>
 		/// Inner parse method
 		/// </summary>
-		/// <param name="scan">scanner</param>
+		/// <param name="scanner">scanner</param>
 		/// <returns>the match</returns>
-		protected override ParserMatch ParseMain(IScanner scan)
+		protected override ParserMatch ParseMain(IScanner scanner)
 		{
-			if (scan.AtEnd)
+			if (scanner.AtEnd)
 			{
-				return scan.EmptyMatch;
+				return ParserMatch.CreateSuccessfulEmptyMatch(scanner);
 			}
-			return scan.NoMatch;
+			return ParserMatch.CreateFailureMatch(scanner);
 		}
 	}
 }

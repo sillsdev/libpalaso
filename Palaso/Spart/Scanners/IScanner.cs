@@ -73,23 +73,5 @@ namespace Spart.Scanners
 		/// Sets the input filter
 		/// </summary>
 		IFilter Filter{get;set;}
-
-		/// <summary>
-		/// Create a failure match
-		/// </summary>
-		ParserMatch NoMatch      {get;}
-
-		/// <summary>
-		/// Create an empty match
-		/// </summary>
-		ParserMatch EmptyMatch   {get;}
-
-		/// <summary>
-		/// Create a match out of the intput
-		/// </summary>
-		/// <param name="offset"></param>
-		/// <param name="length"></param>
-		/// <returns></returns>
-		ParserMatch CreateMatch(long offset, int length);
 	}
 }

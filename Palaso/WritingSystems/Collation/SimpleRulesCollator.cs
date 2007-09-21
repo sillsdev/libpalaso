@@ -27,7 +27,7 @@ namespace Palaso.WritingSystems.Collation
 			}
 			catch (DllNotFoundException e)
 			{
-				throw new NotSupportedException("Currently SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
+				throw new DllNotFoundException("Currently SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
 			}
 		}
 
@@ -291,10 +291,8 @@ namespace Palaso.WritingSystems.Collation
 				string collationElement = _currentCollationElement.ToString();
 				if (_usedCollationElements.Contains(collationElement))
 				{
-					// rewind to begin of match so error points to begin
-					args.Match.Scanner.Offset = args.Match.Offset;
 					throw new ParserErrorException(
-							new ParserError(args.Match.Scanner, "scr0100", "Duplicate collation element"));
+							new ParserError(args.Match, "scr0100", "Duplicate collation element"));
 				}
 				else
 				{

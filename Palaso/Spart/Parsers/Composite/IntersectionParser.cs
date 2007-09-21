@@ -60,7 +60,7 @@ namespace Spart.Parsers.Composite
 			}
 
 			scanner.Seek(offset);
-			return scanner.NoMatch;
+			return ParserMatch.CreateFailureMatch(scanner);
 		}
 
 	}

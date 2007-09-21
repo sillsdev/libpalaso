@@ -61,7 +61,7 @@ namespace Spart.Parsers
 		/// </summary>
 		/// <param name="scanner"></param>
 		/// <returns></returns>
-		internal ParserMatch Accepts(IScanner scanner)
+		internal ParserMatch TryAccept(IScanner scanner)
 		{
 			long offset = scanner.Offset;
 			ParserMatch m = ParseMain(scanner);

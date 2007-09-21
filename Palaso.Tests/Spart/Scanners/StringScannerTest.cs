@@ -127,36 +127,6 @@ namespace Spart.Tests.Scanners
 		}
 
 		[Test]
-		public void NoMatch()
-		{
-			StringScanner scanner = new StringScanner(Text);
-			ParserMatch m = scanner.NoMatch;
-			Assert.IsFalse(m.Success);
-		}
-
-		[Test]
-		public void EmptyMatch()
-		{
-			StringScanner scanner = new StringScanner(Text);
-			ParserMatch m = scanner.EmptyMatch;
-			Assert.IsTrue(m.Success);
-			Assert.IsTrue(m.Empty);
-		}
-
-
-		[Test]
-		public void Match()
-		{
-			StringScanner scanner = new StringScanner(Text);
-			ParserMatch m = scanner.CreateMatch(Offset, 2);
-			Assert.IsTrue(m.Success);
-			Assert.IsFalse(m.Empty);
-			Assert.AreEqual(2, m.Length);
-
-			Assert.AreEqual(Text.Substring((int)Offset,2),m.Value);
-		}
-
-		[Test]
 		public void Peek_AtEnd_NullChar()
 		{
 			StringScanner scanner = new StringScanner(Text);

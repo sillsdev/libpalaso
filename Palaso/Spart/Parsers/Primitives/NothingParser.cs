@@ -44,7 +44,7 @@ namespace Spart.Parsers.Primitives
 			if (scanner == null)
 				throw new ArgumentNullException("scanner");
 
-			return scanner.NoMatch;
+			return ParserMatch.CreateFailureMatch(scanner);
 		}
 	}
 }

@@ -47,19 +47,19 @@ namespace Spart.Parsers.Composite
 		/// <returns>the match</returns>
 		protected override ParserMatch ParseMain(Scanners.IScanner scanner)
 		{
-			ParserMatch m = FirstParser.Accepts(scanner);
+			ParserMatch m = FirstParser.TryAccept(scanner);
 			if (!m.Success)
 			{
-				return scanner.NoMatch;
+				return m;
 			}
 
 			// doing difference
-			ParserMatch d = SecondParser.Accepts(scanner);
+			ParserMatch d = SecondParser.TryAccept(scanner);
 			if (d.Success)
 			{
 				if (d.Length >= m.Length)
 				{
-					return scanner.NoMatch;
+					return ParserMatch.CreateFailureMatch(scanner, m.Offset, 0);
 				}
 			}
 

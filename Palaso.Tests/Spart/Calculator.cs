@@ -65,7 +65,7 @@ namespace Spart.Demo
 			ParserMatch match = this.expression.Parse(sc);
 			if(!sc.AtEnd)
 			{
-				return sc.NoMatch;
+				return ParserMatch.CreateFailureMatch(sc,0);
 			}
 			return match;
 		}

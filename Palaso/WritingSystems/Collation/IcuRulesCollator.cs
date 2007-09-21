@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems.Collation
 			}
 			catch (DllNotFoundException e)
 			{
-				throw new NotSupportedException("IcuRulesCollator requires the ICU dlls to be present",e);
+				throw new DllNotFoundException("IcuRulesCollator requires the ICU dlls to be present", e);
 			}
 		}
 

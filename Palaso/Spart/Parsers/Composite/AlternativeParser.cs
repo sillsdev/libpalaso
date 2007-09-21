@@ -42,15 +42,15 @@ namespace Spart.Parsers.Composite
 				/// <summary>
 				/// Inner parse method
 				/// </summary>
-				/// <param name="scan">scanner</param>
+				/// <param name="scanner">scanner</param>
 				/// <returns>the match</returns>
-				protected override ParserMatch ParseMain(IScanner scan)
+				protected override ParserMatch ParseMain(IScanner scanner)
 		{
 			// save scanner state
-			long offset = scan.Offset;
+			long offset = scanner.Offset;
 
 			// apply the first parser
-			ParserMatch m = FirstParser.Parse(scan);
+			ParserMatch m = FirstParser.Parse(scanner);
 			// if m1 successful, do m2
 			if (m.Success)
 			{
@@ -58,17 +58,17 @@ namespace Spart.Parsers.Composite
 			}
 
 			// not found try the next
-			scan.Seek(offset);
+			scanner.Seek(offset);
 
 			// apply the second parser
-			m = SecondParser.Parse(scan);
+			m = SecondParser.Parse(scanner);
 			if (m.Success)
 			{
 				return m;
 			}
 
-			scan.Seek(offset);
-			return scan.NoMatch;
+			scanner.Seek(offset);
+			return ParserMatch.CreateFailureMatch(scanner);
 		}
 
 	}

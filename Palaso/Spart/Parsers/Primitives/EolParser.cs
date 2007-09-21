@@ -35,33 +35,32 @@ namespace Spart.Parsers.Primitives
 		/// <summary>
 		/// Inner parse method
 		/// </summary>
-		/// <param name="scan">scanner</param>
+		/// <param name="scanner">scanner</param>
 		/// <returns>the match</returns>
-		protected override ParserMatch ParseMain(IScanner scan)
+		protected override ParserMatch ParseMain(IScanner scanner)
 		{
-			long offset = scan.Offset;
+			long offset = scanner.Offset;
 			int len = 0;
 
-			if (scan.Peek() == '\r')    // CR
+			if (scanner.Peek() == '\r')    // CR
 			{
-				scan.Read();
+				scanner.Read();
 				++len;
 			}
 
-			if (scan.Peek() == '\n')    // LF
+			if (scanner.Peek() == '\n')    // LF
 			{
-				scan.Read();
+				scanner.Read();
 				++len;
 			}
 
 			if (len>0)
 			{
-				ParserMatch m = scan.CreateMatch(offset,len);
+				ParserMatch m = ParserMatch.CreateSuccessfulMatch(scanner, offset, len);
 				return m;
 			}
-
-			scan.Seek(offset);
-			return scan.NoMatch;
+			scanner.Seek(offset);
+			return ParserMatch.CreateFailureMatch(scanner);
 		}
 	}
 }

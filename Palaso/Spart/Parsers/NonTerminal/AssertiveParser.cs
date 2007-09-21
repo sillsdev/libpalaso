@@ -95,7 +95,7 @@ namespace Spart.Parsers.NonTerminal
 				return m;
 			}
 
-			throw new ParserErrorException(new ParserError(scanner, ID, Message));
+			throw new ParserErrorException(new ParserError(m, ID, Message));
 		}
 	}
 }

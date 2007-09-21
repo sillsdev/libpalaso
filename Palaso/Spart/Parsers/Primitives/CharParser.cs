@@ -78,13 +78,13 @@ namespace Spart.Parsers.Primitives
 			bool isAccepted = Accepts(scanner.Peek());
 			if (isAccepted && Negate || !isAccepted && !Negate)
 			{
-				return scanner.NoMatch;
+				return ParserMatch.CreateFailureMatch(scanner);
 			}
 
 			// match character
 			scanner.Peek();
 			// if we arrive at this point, we have a match
-			ParserMatch m = scanner.CreateMatch(offset, 1);
+			ParserMatch m = ParserMatch.CreateSuccessfulMatch(scanner, offset, 1);
 
 			// updating offset
 			scanner.Read();

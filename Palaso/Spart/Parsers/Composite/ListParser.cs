@@ -45,33 +45,33 @@ namespace Spart.Parsers.Composite
 		/// <summary>
 		/// Inner parse method
 		/// </summary>
-		/// <param name="scan">scanner</param>
+		/// <param name="scanner">scanner</param>
 		/// <returns>the match</returns>
-		protected override ParserMatch ParseMain(IScanner scan)
+		protected override ParserMatch ParseMain(IScanner scanner)
 		{
-			long offset = scan.Offset;
+			long offset = scanner.Offset;
 
-			ParserMatch m = FirstParser.Parse(scan);
+			ParserMatch m = FirstParser.Parse(scanner);
 			if (!m.Success)
 			{
-				scan.Seek(offset);
-				return scan.NoMatch;
+				scanner.Seek(offset);
+				return m;
 			}
 
-			while (!scan.AtEnd)
+			while (!scanner.AtEnd)
 			{
-				offset = scan.Offset;
+				offset = scanner.Offset;
 
-				ParserMatch b = SecondParser.Parse(scan);
+				ParserMatch b = SecondParser.Parse(scanner);
 				if (!b.Success)
 				{
-					scan.Seek(offset);
+					scanner.Seek(offset);
 					return m;
 				}
-				ParserMatch a = FirstParser.Parse(scan);
+				ParserMatch a = FirstParser.Parse(scanner);
 				if (!a.Success)
 				{
-					scan.Seek(offset);
+					scanner.Seek(offset);
 					return m;
 				}
 

@@ -181,32 +181,5 @@ namespace Spart.Scanners
 			get { return m_Filter; }
 			set { m_Filter = value; }
 		}
-
-		/// <summary>
-		/// Failure match
-		/// </summary>
-		public ParserMatch NoMatch
-		{
-			get { return new ParserMatch(this, 0, -1); }
-		}
-
-		/// <summary>
-		/// Empty match
-		/// </summary>
-		public ParserMatch EmptyMatch
-		{
-			get { return new ParserMatch(this, Offset, 0); }
-		}
-
-		/// <summary>
-		/// Creates a successful match
-		/// </summary>
-		/// <param name="offset"></param>
-		/// <param name="length"></param>
-		/// <returns></returns>
-		public ParserMatch CreateMatch(long offset, int length)
-		{
-			return new ParserMatch(this, offset, length);
-		}
 	}
 }

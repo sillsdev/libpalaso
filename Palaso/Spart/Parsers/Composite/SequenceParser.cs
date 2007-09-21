@@ -61,7 +61,7 @@ namespace Spart.Parsers.Composite
 				}
 				else
 				{
-					m = scanner.NoMatch;
+					m = ParserMatch.CreateFailureMatch(scanner, offset);
 				}
 			}
 

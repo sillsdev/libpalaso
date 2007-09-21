@@ -14,7 +14,7 @@ namespace Spart
 		private string _errorId;
 		private string _errorText;
 
-		public ParserError(IScanner scanner, string errorId, string errorMessage)
+		public ParserError(ParserMatch noMatch, string errorId, string errorMessage)
 		{
 		  if (errorId == null)
 		  {
@@ -26,8 +26,11 @@ namespace Spart
 			throw new ArgumentNullException("errorMessage");
 		  }
 
-		  long originalOffset = scanner.Offset;
-		  long lastLineOffset = 0;
+			long errorOffset = noMatch.Offset + noMatch.Length;
+
+			IScanner scanner = noMatch.Scanner;
+			long originalOffset = scanner.Offset;
+			long lastLineOffset = 0;
 			scanner.Offset = 0;
 			Parser eol = Prims.Eol;
 			Parser notEol = new CharParser(delegate(Char c)
@@ -43,7 +46,7 @@ namespace Spart
 				  break;
 				}
 				ParserMatch match = eol.Parse(scanner);
-				if(scanner.Offset > originalOffset)
+				if (scanner.Offset > errorOffset)
 				{
 					break;
 				}
@@ -54,10 +57,10 @@ namespace Spart
 				}
 			}
 
-			_column = originalOffset - lastLineOffset + 1; // 1 based not 0 based
+			_column = errorOffset - lastLineOffset + 1; // 1 based not 0 based
 			scanner.Offset = originalOffset;
 			_errorText = errorMessage;
-		  _errorId = errorId;
+			_errorId = errorId;
 		}
 
 

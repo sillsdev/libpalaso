@@ -88,9 +88,8 @@ namespace Spart.Parsers.Composite
 		protected override ParserMatch ParseMain(IScanner scanner)
 		{
 			// save scanner state
-			long offset = scanner.Offset;
-
-			ParserMatch m = scanner.EmptyMatch;
+			long startOffset = scanner.Offset;
+			ParserMatch m = ParserMatch.CreateSuccessfulEmptyMatch(scanner);
 			ParserMatch m_temp;
 
 			// execution bound
@@ -129,13 +128,13 @@ namespace Spart.Parsers.Composite
 			}
 			else
 			{
-				m = scanner.NoMatch;
+				m = ParserMatch.CreateFailureMatch(scanner, startOffset);
 			}
 
 			// restoring parser failed, rewind scanner
 			if (!m.Success)
 			{
-				scanner.Seek(offset);
+				scanner.Seek(startOffset);
 			}
 
 			return m;

@@ -36,14 +36,9 @@ namespace Spart.Parsers
 		private IScanner m_Scanner;
 		private long m_Offset;
 		private int m_Length;
+		private bool m_Successful;
 
-		/// <summary>
-		/// Builds a new match
-		/// </summary>
-		/// <param name="scanner"></param>
-		/// <param name="offset"></param>
-		/// <param name="length"></param>
-		public ParserMatch(IScanner scanner, long offset, int length)
+		private ParserMatch(bool isSuccessful, IScanner scanner, long offset, int length)
 		{
 			if (scanner == null)
 				throw new ArgumentNullException("scanner");
@@ -51,7 +46,126 @@ namespace Spart.Parsers
 			m_Scanner = scanner;
 			m_Offset = offset;
 			m_Length = length;
+			m_Successful = isSuccessful;
 		}
+
+		/// <summary>
+		/// Builds a new successful match
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="startOffset">The position at which the match started</param>
+		/// <param name="length">The lenthg of the stream successfully matched</param>
+		public static ParserMatch CreateSuccessfulMatch(IScanner scanner, long startOffset, int length)
+		{
+			return new ParserMatch(true, scanner, startOffset, length);
+		}
+
+		/// <summary>
+		/// Builds a new successful match ending at the current position of the scanner
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="startOffset">The position at which the match started</param>
+		/// <param name="endOffset">The position at which the match ends</param>
+		public static ParserMatch CreateSuccessfulMatch(IScanner scanner, long startOffset, long endOffset)
+		{
+			int length = (int) (endOffset - startOffset);
+			if (length < 0)
+			{
+				throw new ArgumentOutOfRangeException("start Offset must be before the end offset of the scanner");
+			}
+			return new ParserMatch(true, scanner, startOffset, length);
+		}
+
+		/// <summary>
+		/// Builds a new successful match ending at the current position of the scanner
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="startOffset">The position at which the match started</param>
+		public static ParserMatch CreateSuccessfulMatch(IScanner scanner, long startOffset)
+		{
+			if (scanner == null)
+				throw new ArgumentNullException("scanner");
+
+			return CreateSuccessfulMatch(scanner, startOffset, scanner.Offset);
+		}
+
+
+		/// <summary>
+		/// Builds a new successful empty match
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="offset">The position at which the match started</param>
+		public static ParserMatch CreateSuccessfulEmptyMatch(IScanner scanner, long offset)
+		{
+			return new ParserMatch(true, scanner, offset, 0);
+		}
+
+		/// <summary>
+		/// Builds a new successful empty match at the current position of the scanner
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		public static ParserMatch CreateSuccessfulEmptyMatch(IScanner scanner)
+		{
+			return new ParserMatch(true, scanner, scanner.Offset, 0);
+		}
+
+
+		/// <summary>
+		/// Create a failure match
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="startOffset">The position at which the match started</param>
+		/// <param name="length">The end of the stream successfully matched</param>
+		public static ParserMatch CreateFailureMatch(IScanner scanner, long startOffset, int length)
+		{
+			return new ParserMatch(false, scanner, startOffset, length);
+		}
+
+		/// <summary>
+		/// Create a failure match
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="startOffset">The position at which the match started</param>
+		/// <param name="endOffset">The position of the end of the stream successfully matched before failure</param>
+		public static ParserMatch CreateFailureMatch(IScanner scanner, long startOffset, long endOffset)
+		{
+			int length = (int)(endOffset - startOffset);
+			if (length < 0)
+			{
+				throw new ArgumentOutOfRangeException("start Offset must be before the end offset");
+			}
+
+			return new ParserMatch(false, scanner, startOffset, length);
+		}
+
+
+		/// <summary>
+		/// Create a failure match ending at the current position of the scanner
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		/// <param name="startOffset">The position at which the match started</param>
+		public static ParserMatch CreateFailureMatch(IScanner scanner, long startOffset)
+		{
+		   if (scanner == null)
+				throw new ArgumentNullException("scanner");
+
+			return CreateFailureMatch(scanner, startOffset, scanner.Offset);
+		}
+
+
+		/// <summary>
+		/// Create a failure match beginning and ending at the current position of the scanner
+		/// </summary>
+		/// <param name="scanner">The scanner used while matching</param>
+		public static ParserMatch CreateFailureMatch(IScanner scanner)
+		{
+			if (scanner == null)
+				throw new ArgumentNullException("scanner");
+
+			return CreateFailureMatch(scanner, scanner.Offset, scanner.Offset);
+		}
+
+
 
 		/// <summary>
 		/// Scanner
@@ -93,7 +207,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				if (Length<0)
+				if (!Success)
 					throw new InvalidOperationException("no match");
 				return Scanner.Substring(Offset, Length);
 			}
@@ -106,7 +220,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				return Length >= 0;
+				return m_Successful;
 			}
 		}
 
@@ -117,7 +231,7 @@ namespace Spart.Parsers
 		{
 			get
 			{
-				if (Length<0)
+				if (!Success)
 					throw new InvalidOperationException("no match");
 				return Length == 0;
 			}

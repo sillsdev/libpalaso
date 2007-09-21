@@ -74,8 +74,9 @@ namespace Spart.Parsers.Primitives
 				// if input consummed return null
 				if (scanner.AtEnd || c != scanner.Peek()  )
 				{
+					ParserMatch noMatch = ParserMatch.CreateFailureMatch(scanner, offset);
 					scanner.Seek(offset);
-					return scanner.NoMatch;
+					return noMatch;
 				}
 
 				// read next characted
@@ -83,7 +84,7 @@ namespace Spart.Parsers.Primitives
 			}
 
 			// if we arrive at this point, we have a match
-			ParserMatch m = scanner.CreateMatch(offset, MatchedString.Length);
+			ParserMatch m = ParserMatch.CreateSuccessfulMatch(scanner, offset, MatchedString.Length);
 
 			// return match
 			return m;
