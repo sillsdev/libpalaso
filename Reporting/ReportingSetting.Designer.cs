@@ -60,13 +60,25 @@ namespace Palaso.Reporting {
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("False")]
+		[global::System.Configuration.DefaultSettingValueAttribute("True")]
 		public bool OkToPingBasicUsageData {
 			get {
 				return ((bool)(this["OkToPingBasicUsageData"]));
 			}
 			set {
 				this["OkToPingBasicUsageData"] = value;
+			}
+		}
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("False")]
+		public bool HaveShowRegistrationDialog {
+			get {
+				return ((bool)(this["HaveShowRegistrationDialog"]));
+			}
+			set {
+				this["HaveShowRegistrationDialog"] = value;
 			}
 		}
 	}

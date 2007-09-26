@@ -12,6 +12,9 @@
 	  <Value Profile="(Default)" />
 	</Setting>
 	<Setting Name="OkToPingBasicUsageData" Type="System.Boolean" Scope="User">
+	  <Value Profile="(Default)">True</Value>
+	</Setting>
+	<Setting Name="HaveShowRegistrationDialog" Type="System.Boolean" Scope="User">
 	  <Value Profile="(Default)">False</Value>
 	</Setting>
   </Settings>

@@ -46,6 +46,7 @@ namespace Palaso.Reporting
 			if (_okToPingBasicUsage.Checked)
 			{
 				_okButton.Enabled = _emailAddress.Text.Trim().Length > 4;
+				_emailAddress.Enabled = true;
 			}
 			else
 			{
@@ -62,6 +63,11 @@ namespace Palaso.Reporting
 		private void _okToPingBasicUsage_CheckedChanged(object sender, EventArgs e)
 		{
 			UpdateDisplay();
+		}
+
+		private void label3_Click(object sender, EventArgs e)
+		{
+			_okToPingBasicUsage.Checked = ! _okToPingBasicUsage.Checked;
 		}
 
 	}

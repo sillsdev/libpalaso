@@ -42,22 +42,20 @@ namespace Palaso.Reporting
 			Directory.CreateDirectory(dir);
 			string path = Path.Combine(dir, "UserIdentifier.txt");
 		   // ReportingSetting.Default.Identifier = "";
-			if (string.IsNullOrEmpty(ReportingSetting.Default.UserIdentifier))
+			if (!ReportingSetting.Default.HaveShowRegistrationDialog)
 			{
-				if (File.Exists(path))
-				{
-					ReportingSetting.Default.UserIdentifier = File.ReadAllText(path);
-				}
-				else
-				{
+					ReportingSetting.Default.HaveShowRegistrationDialog = true;
 					UserRegistrationDialog dlg = new UserRegistrationDialog();
+					if (File.Exists(path))
+					{
+						ReportingSetting.Default.UserIdentifier = File.ReadAllText(path);
+					}
 					dlg.ShowDialog();
 					ReportingSetting.Default.UserIdentifier = dlg.EmailAddress;
 					ReportingSetting.Default.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
 
 				   ReportingSetting.Default.Save();
 					File.WriteAllText(path, ReportingSetting.Default.UserIdentifier);
-				}
 			}
 
 		}
