@@ -124,4 +124,7 @@ If you don't have an email address,  please enter your name instead.
 
 If you have a firewall, please give {0} permission to access the internet.</value>
   </data>
+  <data name="_thePitchLabel.Text" xml:space="preserve">
+	<value>The development of this free program is done (and funded by) people who want to "Do some good".  Please allow {0} to tell us that someone is using it, so we can know a bit of what Good is being Done, and know whether to continue to improve it.</value>
+  </data>
 </root>

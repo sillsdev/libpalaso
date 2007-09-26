@@ -660,4 +660,8 @@
 		////////////////////////////////v7+/h4eHr6+vAA==
 </value>
   </data>
+  <data name="richTextBox2.Text" xml:space="preserve">
+	<value>May we ask you a favor? We would like to send a tiny e-mail back to the software developers telling us of your progress.
+You will be able to view the e-mail before it goes out. You do not need to be connected to the Internet right now...the e-mail will just open and you can save it in your outbox.</value>
+  </data>
 </root>

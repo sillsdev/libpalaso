@@ -53,7 +53,9 @@ namespace Palaso.Reporting
 					UserRegistrationDialog dlg = new UserRegistrationDialog();
 					dlg.ShowDialog();
 					ReportingSetting.Default.UserIdentifier = dlg.EmailAddress;
-					ReportingSetting.Default.Save();
+					ReportingSetting.Default.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
+
+				   ReportingSetting.Default.Save();
 					File.WriteAllText(path, ReportingSetting.Default.UserIdentifier);
 				}
 			}
@@ -190,6 +192,9 @@ namespace Palaso.Reporting
 		{
 			try
 			{
+				if(!ReportingSetting.Default.OkToPingBasicUsageData)
+					return false;
+
 				Dictionary<string, string> parameters = new Dictionary<string, string>();
 				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
 				parameters.Add("version", ErrorReport.VersionNumberString);

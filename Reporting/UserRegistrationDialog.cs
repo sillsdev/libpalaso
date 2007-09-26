@@ -8,7 +8,8 @@ namespace Palaso.Reporting
 		public UserRegistrationDialog()
 		{
 			InitializeComponent();
-			UpdateThings();
+			UpdateDisplay();
+			_thePitchLabel.Text = string.Format(_thePitchLabel.Text, UsageReporter.AppNameToUseInDialogs);
 			_noticeLabel.Text = string.Format(_noticeLabel.Text, UsageReporter.AppNameToUseInDialogs);
 			_welcomeLabel.Text = string.Format(_welcomeLabel.Text, UsageReporter.AppNameToUseInDialogs);
 		}
@@ -27,19 +28,40 @@ namespace Palaso.Reporting
 			}
 		}
 
-		private void _emailAddress_TextChanged(object sender, EventArgs e)
+		public bool OkToCollectBasicStats
 		{
-			UpdateThings();
+			get
+			{
+				return _okToPingBasicUsage.Checked;
+			}
 		}
 
-		private void UpdateThings()
+		private void _emailAddress_TextChanged(object sender, EventArgs e)
 		{
-			_okButton.Enabled = _emailAddress.Text.Trim().Length > 4;
+			UpdateDisplay();
+		}
+
+		private void UpdateDisplay()
+		{
+			if (_okToPingBasicUsage.Checked)
+			{
+				_okButton.Enabled = _emailAddress.Text.Trim().Length > 4;
+			}
+			else
+			{
+				_okButton.Enabled = true;
+				_emailAddress.Enabled = false;
+			}
 		}
 
 		private void UserRegistrationDialog_Load(object sender, EventArgs e)
 		{
 
+		}
+
+		private void _okToPingBasicUsage_CheckedChanged(object sender, EventArgs e)
+		{
+			UpdateDisplay();
 		}
 
 	}

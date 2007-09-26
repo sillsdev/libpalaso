@@ -34,11 +34,14 @@ namespace Palaso.Reporting
 			this.label2 = new System.Windows.Forms.Label();
 			this._okButton = new System.Windows.Forms.Button();
 			this._welcomeLabel = new System.Windows.Forms.Label();
+			this._okToPingBasicUsage = new System.Windows.Forms.CheckBox();
+			this._thePitchLabel = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			//
 			// _emailAddress
 			//
-			this._emailAddress.Location = new System.Drawing.Point(26, 77);
+			this._emailAddress.Location = new System.Drawing.Point(114, 150);
 			this._emailAddress.Name = "_emailAddress";
 			this._emailAddress.Size = new System.Drawing.Size(228, 20);
 			this._emailAddress.TabIndex = 0;
@@ -47,17 +50,17 @@ namespace Palaso.Reporting
 			// _noticeLabel
 			//
 			this._noticeLabel.AutoSize = true;
-			this._noticeLabel.Location = new System.Drawing.Point(23, 117);
-			this._noticeLabel.MaximumSize = new System.Drawing.Size(230, 0);
+			this._noticeLabel.Location = new System.Drawing.Point(23, 187);
+			this._noticeLabel.MaximumSize = new System.Drawing.Size(330, 0);
 			this._noticeLabel.Name = "_noticeLabel";
-			this._noticeLabel.Size = new System.Drawing.Size(225, 143);
+			this._noticeLabel.Size = new System.Drawing.Size(330, 104);
 			this._noticeLabel.TabIndex = 1;
 			this._noticeLabel.Text = resources.GetString("_noticeLabel.Text");
 			//
 			// label2
 			//
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(23, 61);
+			this.label2.Location = new System.Drawing.Point(23, 150);
 			this.label2.MaximumSize = new System.Drawing.Size(200, 0);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(73, 13);
@@ -66,7 +69,7 @@ namespace Palaso.Reporting
 			//
 			// _okButton
 			//
-			this._okButton.Location = new System.Drawing.Point(178, 291);
+			this._okButton.Location = new System.Drawing.Point(291, 305);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 1;
@@ -85,12 +88,48 @@ namespace Palaso.Reporting
 			this._welcomeLabel.TabIndex = 3;
 			this._welcomeLabel.Text = "Welcome To {0}!";
 			//
+			// _okToPingBasicUsage
+			//
+			this._okToPingBasicUsage.AutoSize = true;
+			this._okToPingBasicUsage.Checked = true;
+			this._okToPingBasicUsage.CheckState = System.Windows.Forms.CheckState.Checked;
+			this._okToPingBasicUsage.Location = new System.Drawing.Point(26, 105);
+			this._okToPingBasicUsage.Name = "_okToPingBasicUsage";
+			this._okToPingBasicUsage.Size = new System.Drawing.Size(15, 14);
+			this._okToPingBasicUsage.TabIndex = 4;
+			this._okToPingBasicUsage.UseVisualStyleBackColor = true;
+			this._okToPingBasicUsage.CheckedChanged += new System.EventHandler(this._okToPingBasicUsage_CheckedChanged);
+			//
+			// _thePitchLabel
+			//
+			this._thePitchLabel.AutoSize = true;
+			this._thePitchLabel.Location = new System.Drawing.Point(23, 37);
+			this._thePitchLabel.MaximumSize = new System.Drawing.Size(330, 0);
+			this._thePitchLabel.Name = "_thePitchLabel";
+			this._thePitchLabel.Size = new System.Drawing.Size(330, 52);
+			this._thePitchLabel.TabIndex = 5;
+			this._thePitchLabel.Text = resources.GetString("_thePitchLabel.Text");
+			//
+			// label3
+			//
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(47, 105);
+			this.label3.MaximumSize = new System.Drawing.Size(330, 0);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(319, 26);
+			this.label3.TabIndex = 5;
+			this.label3.Text = "Allow the developers to receive usage statistics when I happen to use this tool a" +
+				"nd be online at the same time.";
+			//
 			// UserRegistrationDialog
 			//
 			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(291, 327);
+			this.ClientSize = new System.Drawing.Size(388, 360);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this._thePitchLabel);
+			this.Controls.Add(this._okToPingBasicUsage);
 			this.Controls.Add(this._welcomeLabel);
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this.label2);
@@ -113,5 +152,8 @@ namespace Palaso.Reporting
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Label _welcomeLabel;
+		private System.Windows.Forms.CheckBox _okToPingBasicUsage;
+		private System.Windows.Forms.Label _thePitchLabel;
+		private System.Windows.Forms.Label label3;
 	}
 }

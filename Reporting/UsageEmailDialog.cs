@@ -147,7 +147,7 @@ namespace Palaso.Reporting
 			this.m_topLineText.Name = "m_topLineText";
 			this.m_topLineText.Size = new System.Drawing.Size(339, 31);
 			this.m_topLineText.TabIndex = 1;
-			this.m_topLineText.Text = "Thank you for checking out this preview version of {0}.";
+			this.m_topLineText.Text = "Thank you for checking out {0}.";
 			//
 			// pictureBox1
 			//
@@ -165,8 +165,7 @@ namespace Palaso.Reporting
 			this.richTextBox2.Name = "richTextBox2";
 			this.richTextBox2.Size = new System.Drawing.Size(339, 147);
 			this.richTextBox2.TabIndex = 1;
-			this.richTextBox2.Text = "May we ask you a favor? We would like to send a tiny e-mail back to the software developers telling us of your progress.\nYou will be able to view the e-mail before it goes out. You do not need to be connected to the Internet right now...the e-mail will just open and you can save it in your outbox.";
-
+			this.richTextBox2.Text = resources.GetString("richTextBox2.Text");
 			//
 			// btnSend
 			//

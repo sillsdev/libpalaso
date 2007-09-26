@@ -57,5 +57,17 @@ namespace Palaso.Reporting {
 				this["LastLaunchDate"] = value;
 			}
 		}
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("False")]
+		public bool OkToPingBasicUsageData {
+			get {
+				return ((bool)(this["OkToPingBasicUsageData"]));
+			}
+			set {
+				this["OkToPingBasicUsageData"] = value;
+			}
+		}
 	}
 }
