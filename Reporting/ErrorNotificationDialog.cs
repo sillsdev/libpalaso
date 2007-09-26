@@ -178,6 +178,7 @@ namespace Palaso.Reporting
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ErrorNotificationDialog";
+			this.Load += new System.EventHandler(this.ErrorNotificationDialog_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -409,6 +410,11 @@ namespace Palaso.Reporting
 		 private void OnJustExit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		 {
 			 CloseUp();
+		 }
+
+		 private void ErrorNotificationDialog_Load(object sender, EventArgs e)
+		 {
+
 		 }
 
 	}
