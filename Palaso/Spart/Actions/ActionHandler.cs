@@ -22,10 +22,10 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 // Author: Jonathan de Halleuxnamespace Spart.Actions
+using System;
+
 namespace Spart.Actions
 {
-	using System;
-
 	/// <summary>
 	/// Action handler delegate
 	/// </summary>

@@ -41,6 +41,12 @@ namespace Spart.Parsers
 			return new AssertiveParser(p, id, message);
 		}
 
+		public static AssertiveParser Expect(AssertiveParser.AssertDelegate assert,
+										string id, string message, Parser p)
+		{
+			return new AssertiveParser(assert, p, id, message);
+		}
+
 		/// <summary>
 		/// &gt;&gt; operator
 		/// </summary>
@@ -174,5 +180,6 @@ namespace Spart.Parsers
 
 			return new RepetitionParser(parser, 0, 1);
 		}
+
 	}
 }

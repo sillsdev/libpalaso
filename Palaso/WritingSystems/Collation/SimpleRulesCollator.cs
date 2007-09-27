@@ -33,20 +33,6 @@ namespace Palaso.WritingSystems.Collation
 
 		static public string ConvertToIcuRules(string rules)
 		{
-			// parse:
-			// ShoeboxRules ::= (<PrimaryRule> | <whitespace>) ('\n' (<PrimaryRule> | <whitespace>))*
-			// PrimaryRule ::= <whitespace>* (<SecondaryRule> | <TertiaryRule>) (<whitespace> (<SecondaryRule> | <TertiaryRule>))*
-			// TertiaryRule ::= <whitespace>* '(' <whitespace>* <CollatingElement> <whitespace>* ')' <whitespace>*
-			// whitespace ::= (' ' | '\t')+
-			// CollatingElement ::= any character other than ' \n\t()'
-
-			// generate:
-			// IcuRules ::= ('&' <PrimaryRule> (' < ' <PrimaryRule>)*)?
-			// PrimaryRule ::= <SecondaryRule> (' << ' <SecondaryRule>)*
-			// SecondaryRule ::= <TertiaryRule> (' <<< ' <TertiaryRule>)*
-
-			// each ICU rule starts with an ampersand followed by an anchor point.
-			// the rest of the rules specifies how characters are collated compared to the anchor point.
 			SimpleCollationRuleParser ruleConverter = new SimpleCollationRuleParser();
 			return ruleConverter.ConvertToIcuTailoringRule(rules);
 		}
@@ -140,7 +126,8 @@ namespace Palaso.WritingSystems.Collation
 
 				// assigning parsers to rules
 				// collationElement ::= (unicodeEscapeCharacter | character)+
-				_collationElement.Parser = Ops.OneOrMore(unicodeEscapeCharacter | character);
+				_collationElement.Parser = Ops.Expect(CollationElementIsUnique, "scr0100", "Duplicate collation element",
+													  Ops.OneOrMore(unicodeEscapeCharacter | character));
 
 				// collationGroup ::= '(' WS* collationElement WS+ (collationElement WS?)+ ')'
 				_collationGroup.Parser = Ops.Sequence('(',
@@ -286,18 +273,24 @@ namespace Palaso.WritingSystems.Collation
 				_currentCollationElement.Append(IcuEscape(args.Value));
 			}
 
+			private bool CollationElementIsUnique(ParserMatch match)
+			{
+				// we don't want to have an error if it didn't match
+				// only if it matched but we have already declared this collation element
+				if (match.Success)
+				{
+					string collationElement = _currentCollationElement.ToString();
+					if (_usedCollationElements.Contains(collationElement))
+					{
+						return false;
+					}
+				}
+				return true;
+			}
 			private void OnCollationElement(object sender, ActionEventArgs args)
 			{
 				string collationElement = _currentCollationElement.ToString();
-				if (_usedCollationElements.Contains(collationElement))
-				{
-					throw new ParserErrorException(
-							new ParserError(args.Match, "scr0100", "Duplicate collation element"));
-				}
-				else
-				{
-					_usedCollationElements.Add(collationElement);
-				}
+				_usedCollationElements.Add(collationElement);
 				if (inCollationGroup)
 				{
 					_currentCollationElements.Enqueue(collationElement);
