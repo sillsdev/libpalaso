@@ -282,13 +282,32 @@ namespace Palaso.Reporting
 				m_details.Text += label + ": " + ErrorReport.Properties[label] + "\r\n";
 			}
 
-			m_details.Text += Logger.LogText;
+			try
+			{
+				m_details.Text += Logger.LogText;
+			}
+			catch(Exception err)
+			{
+				//We have more than one report of dieing while logging an exception.
+				m_details.Text += "****Could not read from log: " + err.Message;
+			}
+
 			Debug.WriteLine(m_details.Text);
 			if (innerMostException != null)
 			{
 				error = innerMostException;
 			}
-			Logger.WriteEvent("Got exception " + error.GetType().Name);
+
+			try
+			{
+				Logger.WriteEvent("Got exception " + error.GetType().Name);
+			}
+			catch(Exception err)
+			{
+				//We have more than one report of dieing while logging an exception.
+				m_details.Text += "****Could not write to log: " + err.Message;
+			}
+
 
 			if (ErrorReport.IsOkToInteractWithUser)
 			{
