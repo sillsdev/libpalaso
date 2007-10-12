@@ -336,7 +336,7 @@ namespace Palaso.WritingSystems.Collation
 				StringBuilder sb = new StringBuilder();
 				if (_currentCollationLines.Count > 0)
 				{
-					sb.Append("&[before 1] first regular < ");
+					sb.Append("&[before 1] [first regular] < ");
 				}
 				while (_currentCollationLines.Count != 0)
 				{

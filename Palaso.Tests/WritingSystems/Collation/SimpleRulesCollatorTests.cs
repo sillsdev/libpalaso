@@ -7,7 +7,7 @@ namespace Palaso.WritingSystems.Collation.Tests
 	[TestFixture]
 	public class SimpleRulesCollatorTests
 	{
-		private const string ICUstart = "&[before 1] first regular < ";
+		private const string ICUstart = "&[before 1] [first regular] < ";
 		static private void VerifyIcuRules(string icuRules)
 		{
 			new IcuRulesCollator(icuRules);
@@ -763,6 +763,44 @@ namespace Palaso.WritingSystems.Collation.Tests
 			Assert.AreEqual(list.Length, expected.Length);
 
 			SimpleRulesCollator collator = new SimpleRulesCollator("ph (Ph  e)\na A\nb B\nc C\nd D");
+			Array.Sort(list, collator);
+
+
+			for (int i = 0; i < list.Length; i++)
+			{
+				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
+			}
+
+
+		}
+
+
+		[Test]
+		public void UndefinedCollatingSequencesSortToBottom()
+		{
+			//naive sort
+			string[] list = new string[] {"hello",
+										  "me",
+										  "phone",
+										  "\u0268lo",
+										  "igloo",
+										  "test",
+										  "alpha",
+										  "echo",
+										  "world"};
+
+			string[] expected = new string[] { "igloo",
+												"\u0268lo",
+												"alpha",
+												"echo",
+												"hello",
+												"me",
+												"phone",
+												"test",
+												"world"};
+			Assert.AreEqual(list.Length, expected.Length);
+
+			SimpleRulesCollator collator = new SimpleRulesCollator("i \\u0268");
 			Array.Sort(list, collator);
 
 
