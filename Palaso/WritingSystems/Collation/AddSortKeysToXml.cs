@@ -85,7 +85,14 @@ namespace Palaso.WritingSystems.Collation
 				byte[] sortKeyData = sortKeyGenerator(sortKeySource.Value).KeyData;
 				string sortKeyBase32 = Base32Convert.ToBase32HexString(sortKeyData, Base32FormattingOptions.None);
 				XPathNavigator elementToPutSortKeyAttributeIn = sortKeySource.SelectSingleNode(compiledXpathElementToPutSortKeyAttributeIn);
-				elementToPutSortKeyAttributeIn.CreateAttribute(prefix, attribute, namespaceUri, sortKeyBase32);
+				if (elementToPutSortKeyAttributeIn.MoveToAttribute(attribute, namespaceUri??string.Empty))
+				{
+				   elementToPutSortKeyAttributeIn.DeleteSelf();
+				}
+				elementToPutSortKeyAttributeIn.CreateAttribute(prefix,
+															   attribute,
+															   namespaceUri,
+															   sortKeyBase32);
 			}
 		}
 

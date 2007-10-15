@@ -236,6 +236,26 @@ namespace Palaso.Tests.WritingSystems.Collation
 			"\">q</node>\r\n</test>";
 			Assert.AreEqual(expectedXml, _document.InnerXml);
 		}
+
+	  [Test]
+	  public void AddSortKeys_AlreadyHasSortKeys()
+	  {
+		AddSortKeysToXml.AddSortKeys(_document,
+				   _xpathSortKeySource,
+				   _sortKeyGenerator,
+				   _xpathElementToPutSortKeyAttributeIn,
+				   _attribute);
+
+		AddSortKeysToXml.AddSortKeys(_document,
+				   _xpathSortKeySource,
+				   _sortKeyGenerator,
+				   _xpathElementToPutSortKeyAttributeIn,
+				   _attribute);
+
+		string expectedXml = "<test>\r\n  <node sort-key=\"1QKG20810400\">z</node>\r\n  <node sort-key=\"1O1020810400\">a</node>\r\n  <node sort-key=\"1O4G20810400\">b</node>\r\n  <node sort-key=\"1Q4G20810400\">q</node>\r\n</test>";
+		Assert.AreEqual(expectedXml, _document.InnerXml);
+	  }
+
 	}
 
 }
