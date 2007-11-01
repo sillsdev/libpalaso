@@ -388,6 +388,7 @@ namespace Palaso.Reporting
 			if (!_isLethal || ModifierKeys.Equals(Keys.Shift))
 			{
 				Logger.WriteEvent("Continuing...");
+				this.Close();
 				return;
 			}
 			Logger.WriteEvent("Exiting...");

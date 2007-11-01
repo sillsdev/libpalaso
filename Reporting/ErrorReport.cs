@@ -261,11 +261,15 @@ namespace Palaso.Reporting
 		{
 			if (ErrorReport.OkToInteractWithUser)
 			{
-				MessageBox.Show(
-					String.Format(message, args),
-					UsageReporter.AppNameToUseInDialogs + " Error",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Exclamation);
+				NonFatalErrorDialog.Show(String.Format(message, args),
+										 UsageReporter.AppNameToUseInDialogs + " Error",
+										 "&OK");
+
+//                MessageBox.Show(
+//                    String.Format(message, args),
+//                    UsageReporter.AppNameToUseInDialogs + " Error",
+//                    MessageBoxButtons.OK,
+//                    MessageBoxIcon.Exclamation);
 			}
 			else
 			{

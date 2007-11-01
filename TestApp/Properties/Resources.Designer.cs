@@ -8,8 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.Reporting {
-	using System;
+namespace TestApp.Properties
+{
 
 
 	/// <summary>
@@ -22,24 +22,29 @@ namespace Palaso.Reporting {
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
 	[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-	internal class ReportingStrings {
+	internal class Resources
+	{
 
 		private static global::System.Resources.ResourceManager resourceMan;
 
 		private static global::System.Globalization.CultureInfo resourceCulture;
 
 		[global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal ReportingStrings() {
+		internal Resources()
+		{
 		}
 
 		/// <summary>
 		///   Returns the cached ResourceManager instance used by this class.
 		/// </summary>
 		[global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-		internal static global::System.Resources.ResourceManager ResourceManager {
-			get {
-				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.Reporting.ReportingStrings", typeof(ReportingStrings).Assembly);
+		internal static global::System.Resources.ResourceManager ResourceManager
+		{
+			get
+			{
+				if ((resourceMan == null))
+				{
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TestApp.Properties.Resources", typeof(Resources).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
@@ -51,50 +56,15 @@ namespace Palaso.Reporting {
 		///   resource lookups using this strongly typed resource class.
 		/// </summary>
 		[global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-		internal static global::System.Globalization.CultureInfo Culture {
-			get {
+		internal static global::System.Globalization.CultureInfo Culture
+		{
+			get
+			{
 				return resourceCulture;
 			}
-			set {
+			set
+			{
 				resourceCulture = value;
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to &amp;Ok.
-		/// </summary>
-		internal static string ks_Ok {
-			get {
-				return ResourceManager.GetString("ks_Ok", resourceCulture);
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to Please e-mail this to {0}
-		///
-		///{1}.
-		/// </summary>
-		internal static string ksPleaseEMailThisToUs {
-			get {
-				return ResourceManager.GetString("ksPleaseEMailThisToUs", resourceCulture);
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to Error.
-		/// </summary>
-		internal static string kstidFieldWorksErrorCaption {
-			get {
-				return ResourceManager.GetString("kstidFieldWorksErrorCaption", resourceCulture);
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to This application must exit..
-		/// </summary>
-		internal static string kstidFieldWorksErrorExitInfo {
-			get {
-				return ResourceManager.GetString("kstidFieldWorksErrorExitInfo", resourceCulture);
 			}
 		}
 	}

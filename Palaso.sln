@@ -37,6 +37,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSortKey", "AddSortKey\Ad
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{13B5E313-1B26-4DAE-9E96-133768B62FD2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +73,10 @@ Global
 		{3D4F73A8-DB05-4580-98A0-DEE34C010636}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D4F73A8-DB05-4580-98A0-DEE34C010636}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D4F73A8-DB05-4580-98A0-DEE34C010636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
