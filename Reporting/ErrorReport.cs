@@ -14,7 +14,7 @@ namespace Palaso.Reporting
 	public class ErrorReport
 	{
 		protected static string s_emailAddress = null;
-		protected static string s_emailSubject = "Automated Error Report";
+		protected static string s_emailSubject = "Exception Report";
 
 		/// <summary>
 		/// a list of name, string value pairs that will be included in the details of the error report.
@@ -33,6 +33,9 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetExceptionText(Exception error)
 		{
+			StringBuilder subject = new StringBuilder();
+			subject.AppendFormat("Exception: {0}", error.Message);
+
 			StringBuilder txt = new StringBuilder();
 
 			txt.Append("Msg: ");
@@ -52,6 +55,7 @@ namespace Palaso.Reporting
 			{
 				txt.Append("\r\nSource: ");
 				txt.Append(error.Source);
+				subject.AppendFormat(" in {0}", error.Source);
 			}
 			catch {}
 
@@ -71,6 +75,9 @@ namespace Palaso.Reporting
 				txt.Append(error.StackTrace);
 			}
 			catch {}
+
+			s_emailSubject = subject.ToString();
+
 			txt.Append("\r\n");
 			return txt.ToString();
 		}

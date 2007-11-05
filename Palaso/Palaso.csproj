@@ -41,6 +41,12 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="Progress\AsyncCommand.cs" />
+	<Compile Include="Progress\BackgroundWorkerState.cs" />
+	<Compile Include="Progress\BasicCommand.cs" />
+	<Compile Include="Progress\ConsoleProgressState.cs" />
+	<Compile Include="Progress\NullProgressState.cs" />
+	<Compile Include="Progress\ProgressState.cs" />
 	<Compile Include="Resource.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>

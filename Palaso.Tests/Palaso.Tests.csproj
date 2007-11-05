@@ -40,6 +40,8 @@
 	<Compile Include="Base32Tests\Base32HexTests.cs" />
 	<Compile Include="Base32Tests\Base32Tests.cs" />
 	<Compile Include="Base32Tests\Permuter.cs" />
+	<Compile Include="Progress\CommandTests.cs" />
+	<Compile Include="Progress\ConsoleProgressTests.cs" />
 	<Compile Include="SFMReaderTest.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="Spart\Actions\Actors\AppendActorTest.cs" />
