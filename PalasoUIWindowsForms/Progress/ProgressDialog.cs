@@ -2,6 +2,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -27,6 +28,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		private IContainer components;
 		private BackgroundWorker _backgroundWorker;
 		private ProgressState _lastHeardFromProgressState;
+		private ProgressState _initialProgressState;
 
 		/// <summary>
 		/// Standard constructor
@@ -41,6 +43,9 @@ namespace Palaso.UI.WindowsForms.Progress
 			_progressLabel.BackColor = SystemColors.Control;
 			_overviewLabel.BackColor = SystemColors.Control;
 
+			//avoids the client getting null errors if he checks this when there
+			//has yet to be a callback from the worker
+			_lastHeardFromProgressState = new NullProgressState();
 		}
 
 		/// <summary>
@@ -130,6 +135,16 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 			set
 			{
+				Debug.Assert(value <= _progressBar.Maximum);
+				Debug.Assert(value >= _progressBar.Minimum);
+				if (value > _progressBar.Maximum)
+				{
+					_progressBar.Maximum = value;//not worth crashing over in Release build
+				}
+				if (value < _progressBar.Minimum)
+				{
+					return; //not worth crashing over in Release build
+				}
 				_progressBar.Value = value;
 			}
 		}
@@ -171,6 +186,38 @@ namespace Palaso.UI.WindowsForms.Progress
 			get
 			{
 				return _lastHeardFromProgressState;
+			}
+		}
+
+		/// <summary>
+		/// Optional; one will be created (of some class or subclass) if you don't set it.
+		/// E.g. dlg.InitialProgressState = new BackgroundWorkerState(dlg.BackgroundWorker);
+		/// Also, you can use the getter to gain access to the progressstate, in order to add arguments
+		/// which the worker method can get at.
+		/// </summary>
+		public ProgressState InitialProgressState
+		{
+			get
+			{
+				if(_initialProgressState ==null)
+				{
+					if(_backgroundWorker == null)
+					{
+						throw new ArgumentException("You must set BackgroundWorker before accessing this property.");
+					}
+					InitialProgressState  = new BackgroundWorkerState(_backgroundWorker);
+				}
+				return _initialProgressState;
+			}
+
+			set
+			{
+				if (_initialProgressState!=null)
+				{
+					CancelRequested -= _initialProgressState.CancelRequested;
+				}
+				_initialProgressState = value;
+				CancelRequested += _initialProgressState.CancelRequested;
 			}
 		}
 
@@ -484,9 +531,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			if (_backgroundWorker != null)
 			{
-				ProgressState progressState = new BackgroundWorkerState(_backgroundWorker);
-
-				//BW uses percentages (unless it's using our custom ProgressState in the UserState member)
+				 //BW uses percentages (unless it's using our custom ProgressState in the UserState member)
 				ProgressRangeMinimum = 0;
 				ProgressRangeMaximum = 100;
 
@@ -495,7 +540,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 				_backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(OnBackgroundWorker_ProgressChanged);
 				_backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnBackgroundWorker_RunWorkerCompleted);
-				_backgroundWorker.RunWorkerAsync(progressState);
+				_backgroundWorker.RunWorkerAsync(InitialProgressState);
 			}
 		}
 	}

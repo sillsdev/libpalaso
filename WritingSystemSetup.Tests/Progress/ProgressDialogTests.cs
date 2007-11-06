@@ -17,6 +17,7 @@ namespace PalasoUIWindowsForms.Tests
 		private ProgressDialog _dialog;
 		private StringBuilder _logBuilder;
 		private bool _commandFinishedCalled;
+		private object _argumentReceivedFromProgressState;
 
 
 		[SetUp]
@@ -47,20 +48,31 @@ namespace PalasoUIWindowsForms.Tests
 			Assert.AreEqual(DialogResult.OK, _dialog.DialogResult);
 		}
 
-	   /* [Test]
-		public void UseConsoleState()
+
+		[Test]
+		public void NewDialogHasNonNullStates()
+		{
+			//avoids the client getting null errors if he checks this when there
+			//has yet to be a callback from the worker
+
+			_dialog.BackgroundWorker = new BackgroundWorker();
+			Assert.IsNotNull(_dialog.InitialProgressState);
+			Assert.IsNotNull(_dialog.ProgressStateResult);
+		}
+
+		[Test]
+		public void SendArgumentsToWorker()
 		{
 			BackgroundWorker worker = new BackgroundWorker();
 			worker.DoWork += OnDoSomeWork;
 			_dialog.BackgroundWorker = worker;
-			_dialog.CanCancel = true;
-			ProgressState _progress = new ConsoleProgress();// ProgressState(_progressHandler);
-			_progress.Log += new EventHandler<ProgressState.LogEvent>(OnProgressStateLog);
-
+			_dialog.InitialProgressState.Arguments = "testing";
+			Assert.AreNotEqual("testing", _argumentReceivedFromProgressState);
 			_dialog.ShowDialog();
+			Assert.AreEqual("testing", _argumentReceivedFromProgressState);
 			Assert.AreEqual(DialogResult.OK, _dialog.DialogResult);
-			Assert.AreEqual("hello", _logBuilder.ToString());
-		}*/
+		}
+
 
 
 		private void OnProgressStateLog(object sender, ProgressState.LogEvent e)
@@ -70,18 +82,31 @@ namespace PalasoUIWindowsForms.Tests
 
 		private void OnDoSomeWork(object sender, DoWorkEventArgs e)
 		{
-			ProgressState state = (ProgressState) e.Argument;
-			DateTime end = DateTime.Now.AddSeconds(1);
-			while(DateTime.Now < end)
+			ProgressState state = (ProgressState)e.Argument;
+			try
 			{
-				state.WriteToLog(_countForWork.ToString());
-				Thread.Sleep(100);
-
+				_argumentReceivedFromProgressState = state.Arguments;
+				DateTime end = DateTime.Now.AddSeconds(1);
+				while (DateTime.Now < end)
+				{
+					state.WriteToLog(_countForWork.ToString());
+					Thread.Sleep(100);
+				}
+				_countForWork++;
+				if (_countForWork > (int) 100)
+				{
+					e.Result = "all done";
+				}
 			}
-			_countForWork++;
-			if (_countForWork > (int)100)
+			catch (Exception err)
 			{
-				e.Result = "all done";
+				//currently, error reporter can choke because this is
+				//being called from a non sta thread.
+				//so let's leave it to the progress dialog to report the error
+				//                Reporting.ErrorReporter.ReportException(e,null, false);
+				state.ExceptionThatWasEncountered = err;
+				state.WriteToLog(err.Message);
+				state.State = ProgressState.StateValue.StoppedWithError;
 			}
 		}
 	}

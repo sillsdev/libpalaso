@@ -2,6 +2,8 @@ using System;
 using System.Windows.Forms;
 using Palaso.Progress;
 
+//For UML diagram, see ProgressSystem.uml (done in StarUML)
+
 namespace Palaso.UI.WindowsForms.Progress
 {
 	public class ProgressDialogHandler

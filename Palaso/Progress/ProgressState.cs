@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 
+//For UML diagram, see ProgressSystem.uml (done in StarUML)
+
 namespace Palaso.Progress
 {
 	/// <summary>
@@ -8,6 +10,7 @@ namespace Palaso.Progress
 	/// </summary>
 	public class ProgressState : IDisposable
 	{
+		private object _arguments;
 		private int _totalNumberOfSteps;
 		private int _numberOfStepsCompleted;
 		private string _statusLabel;
@@ -160,6 +163,13 @@ namespace Palaso.Progress
 		public string LogString
 		{
 			get { return _logBuilder.ToString(); }
+		}
+
+		//set this to and object containing any info your worker method will need
+		public object Arguments
+		{
+			get { return _arguments; }
+			set { _arguments = value; }
 		}
 
 		/// <summary>

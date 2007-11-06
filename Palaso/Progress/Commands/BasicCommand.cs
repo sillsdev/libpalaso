@@ -2,6 +2,8 @@ using System;
 using System.Runtime.Remoting.Messaging;
 using Palaso.Progress;
 
+//For UML diagram, see ProgressSystem.uml (done in StarUML)
+
 namespace Palaso.Progress
 {
 	/// <summary>

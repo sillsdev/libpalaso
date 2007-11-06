@@ -1,5 +1,7 @@
 using System;
 
+//For UML diagram, see ProgressSystem.uml (done in StarUML)
+
 namespace Palaso.Progress
 {
 	/// <summary>
