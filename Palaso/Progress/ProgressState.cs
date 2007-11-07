@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
@@ -94,7 +95,10 @@ namespace Palaso.Progress
 
 		public virtual int TotalNumberOfSteps
 		{
-			get { return _totalNumberOfSteps; }
+			get {
+			   // return 50;// disables freeze
+				return _totalNumberOfSteps;
+			}
 			set
 			{
 				_totalNumberOfSteps = value;

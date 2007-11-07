@@ -11,6 +11,7 @@ namespace Palaso.Progress
 	public class BackgroundWorkerState : ProgressState
 	{
 		private BackgroundWorker _worker;
+		private int _maxPercentageReachedBefore=0;
 
 		public BackgroundWorkerState(BackgroundWorker worker )
 			: base()
@@ -48,7 +49,9 @@ namespace Palaso.Progress
 				{
 					return 0;
 				}
-				return (this.NumberOfStepsCompleted / this.TotalNumberOfSteps) * 100;
+				//limit to 100
+				int p = Math.Min(100, (int)(((double)this.NumberOfStepsCompleted) / ((double)this.TotalNumberOfSteps)) * 100);
+				return p;
 			}
 		}
 
@@ -57,7 +60,12 @@ namespace Palaso.Progress
 			set
 			{
 				base.NumberOfStepsCompleted = value;
-				_worker.ReportProgress(this.PercentCompleted, this);
+				//see the unit test "FreezeBugRegression" for details on the BAD bug this check avoids
+				if (this.PercentCompleted > _maxPercentageReachedBefore)
+				{
+					_maxPercentageReachedBefore = this.PercentCompleted;
+					_worker.ReportProgress(this.PercentCompleted, this);
+				}
 			}
 		}
 
@@ -65,8 +73,14 @@ namespace Palaso.Progress
 		{
 			set
 			{
-				base.TotalNumberOfSteps= value;
-				_worker.ReportProgress(this.PercentCompleted, this);
+				base.TotalNumberOfSteps= value;// disabling this removes the freeze
+				int percentage= this.PercentCompleted;
+
+				if (percentage > _maxPercentageReachedBefore)
+				{
+					_maxPercentageReachedBefore = percentage;
+					_worker.ReportProgress(percentage, this);
+				}
 			}
 		}
 	}
