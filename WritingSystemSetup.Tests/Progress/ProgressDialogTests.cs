@@ -53,6 +53,23 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 
+		/* not yet supported. The problem is that our worker reports progress,
+		 * and we die because of a begininvoke with no window yet
+		 * [Test]
+		public void DelaysShowingWhenItShould()
+		{
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.DoWork += OnDoSomeWork;
+			_dialog.BackgroundWorker = worker;
+			WorkArguments args = new WorkArguments();
+			args.doMakeProgressCalls = true;
+			args.secondsToUseUp = 10;
+			_dialog.ShowDialogIfTakesLongTime();
+			//  if (_dialog.ProgressStateResult.ExceptionThatWasEncountered != null)
+			Assert.AreEqual(DialogResult.OK, _dialog.DialogResult);
+		}*/
+
+
 		[Test]
 		public void NewDialogHasNonNullStates()
 		{
@@ -60,7 +77,7 @@ namespace PalasoUIWindowsForms.Tests
 			//has yet to be a callback from the worker
 
 			_dialog.BackgroundWorker = new BackgroundWorker();
-			Assert.IsNotNull(_dialog.InitialProgressState);
+			Assert.IsNotNull(_dialog.ProgressState);
 			Assert.IsNotNull(_dialog.ProgressStateResult);
 		}
 
@@ -73,7 +90,7 @@ namespace PalasoUIWindowsForms.Tests
 			WorkArguments args  = new WorkArguments();
 			args.dummy = "testing";
 
-			_dialog.InitialProgressState.Arguments = args;
+			_dialog.ProgressState.Arguments = args;
 			Assert.AreNotEqual("testing", _argumentReceivedFromProgressState);
 			_dialog.ShowDialog();
 			Assert.AreEqual("testing", _argumentReceivedFromProgressState);
@@ -100,6 +117,19 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 		[Test]
+		public void DontDieIfWorkerTriesToReportExcessSteps()
+		{
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.DoWork += OnDoSomeWork;
+			_dialog.BackgroundWorker = worker;
+			WorkArguments args = new WorkArguments();
+			args.doMakeProgressCalls = true;
+			args.doClaimExtraSteps = true;
+			_dialog.ProgressState.Arguments = args;
+			_dialog.ShowDialog();
+	   }
+
+		[Test]
 		public void FreezeBugRegression()
 		{
 			//this used to have this behavior:  this line would run fine and fast
@@ -124,7 +154,7 @@ namespace PalasoUIWindowsForms.Tests
 			args.doMakeProgressCalls = doMakeProgressCalls;
 			args.secondsToUseUp = 0;
 			args.iterationsToDo = iterationsToDo;
-			_dialog.InitialProgressState.Arguments = args;
+			_dialog.ProgressState.Arguments = args;
 			Stopwatch w = new Stopwatch();
 			w.Start();
 			_dialog.ShowDialog();
@@ -143,6 +173,7 @@ namespace PalasoUIWindowsForms.Tests
 			public string dummy;
 			public bool doMakeProgressCalls = false;
 			public int iterationsToDo = 9000;
+			public bool doClaimExtraSteps = false;
 		}
 
 		private void OnProgressStateLog(object sender, ProgressState.LogEvent e)
@@ -189,6 +220,10 @@ namespace PalasoUIWindowsForms.Tests
 						}
 					}
 				   Debug.WriteLine(a);
+				}
+				if(args.doClaimExtraSteps)
+				{
+					state.NumberOfStepsCompleted = state.TotalNumberOfSteps + 5;
 				}
 				e.Result = "all done";
 			}

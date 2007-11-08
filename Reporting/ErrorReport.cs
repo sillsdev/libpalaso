@@ -23,6 +23,8 @@ namespace Palaso.Reporting
 			new StringDictionary();
 
 		private static bool s_isOkToInteractWithUser = true;
+		private static bool s_justRecordNonFatalMessagesForTesting=false;
+		private static string s_previousNonFatalMessage;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -166,6 +168,21 @@ namespace Palaso.Reporting
 		}
 
 		/// <summary>
+		/// this overrides OkToInteractWithUser
+		/// The test can then retrieve from PreviousNonFatalMessage
+		/// </summary>
+		public static bool JustRecordNonFatalMessagesForTesting
+		{
+			set { s_justRecordNonFatalMessagesForTesting = value; }
+			get { return s_justRecordNonFatalMessagesForTesting; }
+		}
+
+		public static string PreviousNonFatalMessage
+		{
+			get { return s_previousNonFatalMessage; }
+		}
+
+		/// <summary>
 		/// set this property if you want the dialog to offer to create an e-mail message.
 		/// </summary>
 		public static string EmailAddress
@@ -266,17 +283,16 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalMessage(string message, params object[] args)
 		{
-			if (ErrorReport.OkToInteractWithUser)
+			if(JustRecordNonFatalMessagesForTesting)
+			{
+				ErrorReport.s_previousNonFatalMessage = String.Format(message, args);
+			}
+			else if (ErrorReport.OkToInteractWithUser)
 			{
 				NonFatalErrorDialog.Show(String.Format(message, args),
 										 UsageReporter.AppNameToUseInDialogs + " Error",
 										 "&OK");
 
-//                MessageBox.Show(
-//                    String.Format(message, args),
-//                    UsageReporter.AppNameToUseInDialogs + " Error",
-//                    MessageBoxButtons.OK,
-//                    MessageBoxIcon.Exclamation);
 			}
 			else
 			{

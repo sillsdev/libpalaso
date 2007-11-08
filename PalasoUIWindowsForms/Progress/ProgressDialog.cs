@@ -1,4 +1,4 @@
-//originally from Matthew Adams
+//originally from Matthew Adams, who was a thorough blog on these things at http://mwadams.spaces.live.com/blog/cns!652A0FB566F633D5!133.entry
 
 using System;
 using System.ComponentModel;
@@ -27,8 +27,8 @@ namespace Palaso.UI.WindowsForms.Progress
 		private DateTime _startTime = DateTime.Now;
 		private IContainer components;
 		private BackgroundWorker _backgroundWorker;
-		private ProgressState _lastHeardFromProgressState;
-		private ProgressState _initialProgressState;
+//        private ProgressState _lastHeardFromProgressState;
+		private ProgressState _progressState;
 
 		/// <summary>
 		/// Standard constructor
@@ -45,14 +45,14 @@ namespace Palaso.UI.WindowsForms.Progress
 
 			//avoids the client getting null errors if he checks this when there
 			//has yet to be a callback from the worker
-			_lastHeardFromProgressState = new NullProgressState();
+//            _lastHeardFromProgressState = new NullProgressState();
 		}
 
 		/// <summary>
 		/// Get / set the time in ms to delay
 		/// before showing the dialog
 		/// </summary>
-		public int DelayShowInterval
+		private/*doesn't work yet public*/ int DelayShowInterval
 		{
 			get
 			{
@@ -135,7 +135,13 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 			set
 			{
-				Debug.Assert(value <= _progressBar.Maximum);
+				/* these were causing weird, hard to debug (because of threads)
+				 * failures. The debugger would reprot that value == max, so why fail?
+
+				 * Debug.Assert(value <= _progressBar.Maximum);
+				 */
+				Debug.WriteLineIf(value >  _progressBar.Maximum,
+					"***Warning progres was " + value + " but max is " + _progressBar.Maximum);
 				Debug.Assert(value >= _progressBar.Minimum);
 				if (value > _progressBar.Maximum)
 				{
@@ -185,39 +191,39 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			get
 			{
-				return _lastHeardFromProgressState;
+				return _progressState;// return _lastHeardFromProgressState;
 			}
 		}
 
 		/// <summary>
 		/// Optional; one will be created (of some class or subclass) if you don't set it.
-		/// E.g. dlg.InitialProgressState = new BackgroundWorkerState(dlg.BackgroundWorker);
+		/// E.g. dlg.ProgressState = new BackgroundWorkerState(dlg.BackgroundWorker);
 		/// Also, you can use the getter to gain access to the progressstate, in order to add arguments
 		/// which the worker method can get at.
 		/// </summary>
-		public ProgressState InitialProgressState
+		public ProgressState ProgressState
 		{
 			get
 			{
-				if(_initialProgressState ==null)
+				if(_progressState ==null)
 				{
 					if(_backgroundWorker == null)
 					{
 						throw new ArgumentException("You must set BackgroundWorker before accessing this property.");
 					}
-					InitialProgressState  = new BackgroundWorkerState(_backgroundWorker);
+					ProgressState  = new BackgroundWorkerState(_backgroundWorker);
 				}
-				return _initialProgressState;
+				return _progressState;
 			}
 
 			set
 			{
-				if (_initialProgressState!=null)
+				if (_progressState!=null)
 				{
-					CancelRequested -= _initialProgressState.CancelRequested;
+					CancelRequested -= _progressState.CancelRequested;
 				}
-				_initialProgressState = value;
-				CancelRequested += _initialProgressState.CancelRequested;
+				_progressState = value;
+				CancelRequested += _progressState.CancelRequested;
 			}
 		}
 
@@ -251,7 +257,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			ProgressState state = e.UserState as ProgressState;
 			if (state != null)
 			{
-				_lastHeardFromProgressState = state;
+ //               _lastHeardFromProgressState = state;
 				ProgressRangeMaximum = state.TotalNumberOfSteps;
 				Progress = state.NumberOfStepsCompleted;
 				StatusText = state.StatusLabel;
@@ -267,13 +273,23 @@ namespace Palaso.UI.WindowsForms.Progress
 		/// Show the control, but honor the
 		/// <see cref="DelayShowInterval"/>.
 		/// </summary>
-		public void DelayShow()
+		private/*doesn't work yet public*/  void DelayShow()
 		{
 			// This creates the control, but doesn't
 			// show it; you can't use CreateControl()
 			// here, because it will return because
 			// the control is not visible
 			CreateHandle();
+		}
+
+
+		//************
+		//the problem is that our worker reports progress, and we die because of a begininvoke with no window yet
+
+		private/*doesn't work yet public*/  void ShowDialogIfTakesLongTime()
+		{
+			DelayShow();
+			OnStartWorker(this, null);
 		}
 
 		/// <summary>
@@ -436,7 +452,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			this.Name = "ProgressDialog";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "Palaso";
-			this.Shown += new System.EventHandler(this.OnShow);
+			this.Shown += new System.EventHandler(this.OnStartWorker);
 			this.ResumeLayout(false);
 
 		}
@@ -527,7 +543,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			Refresh();
 		}
 
-		private void OnShow(object sender, EventArgs e)
+		private void OnStartWorker(object sender, EventArgs e)
 		{
 			if (_backgroundWorker != null)
 			{
@@ -540,7 +556,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 				_backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(OnBackgroundWorker_ProgressChanged);
 				_backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnBackgroundWorker_RunWorkerCompleted);
-				_backgroundWorker.RunWorkerAsync(InitialProgressState);
+				_backgroundWorker.RunWorkerAsync(ProgressState);
 			}
 		}
 	}
