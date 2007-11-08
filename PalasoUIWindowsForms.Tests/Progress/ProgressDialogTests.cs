@@ -9,7 +9,7 @@ using NUnit.Framework;
 using Palaso.Progress;
 using Palaso.UI.WindowsForms.Progress;
 
-namespace PalasoUIWindowsForms.Tests
+namespace PalasoUIWindowsForms.Tests.Progress
 {
 	[TestFixture]
 	public class ProgressDialogTests
@@ -48,7 +48,7 @@ namespace PalasoUIWindowsForms.Tests
 			_dialog.BackgroundWorker = worker;
 			_dialog.CanCancel = true;
 			_dialog.ShowDialog();
-		  //  if (_dialog.ProgressStateResult.ExceptionThatWasEncountered != null)
+			//  if (_dialog.ProgressStateResult.ExceptionThatWasEncountered != null)
 			Assert.AreEqual(DialogResult.OK, _dialog.DialogResult);
 		}
 
@@ -127,7 +127,7 @@ namespace PalasoUIWindowsForms.Tests
 			args.doClaimExtraSteps = true;
 			_dialog.ProgressState.Arguments = args;
 			_dialog.ShowDialog();
-	   }
+		}
 
 		[Test]
 		public void FreezeBugRegression()
@@ -212,14 +212,14 @@ namespace PalasoUIWindowsForms.Tests
 					double a = 0;
 					for (int i = 0; i < state.TotalNumberOfSteps; i++)
 					{
-					   //adding this makes freeze not happen Thread.Sleep(1);
+						//adding this makes freeze not happen Thread.Sleep(1);
 						a += Math.Sqrt(987987+i);
 						if (args.doMakeProgressCalls)
 						{
 							state.NumberOfStepsCompleted++;
 						}
 					}
-				   Debug.WriteLine(a);
+					Debug.WriteLine(a);
 				}
 				if(args.doClaimExtraSteps)
 				{
