@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.Remoting.Messaging;
 using Palaso.Progress;
 
@@ -104,6 +105,7 @@ namespace Palaso.Progress
 		}
 		private void EndWork2(IAsyncResult result)
 		{
+			Debug.WriteLine("BasicCOmmand:EndWork2");
 			AsyncResult asyncResult = (AsyncResult)result;
 			WorkInvoker2 asyncDelegate = (WorkInvoker2)asyncResult.AsyncDelegate;
 			try

@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
+using System.Threading;
 using System.Windows.Forms;
 using Palaso.Progress;
+using Timer=System.Windows.Forms.Timer;
 
 namespace Palaso.UI.WindowsForms.Progress
 {
@@ -42,6 +44,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			_statusLabel.BackColor = SystemColors.Control;
 			_progressLabel.BackColor = SystemColors.Control;
 			_overviewLabel.BackColor = SystemColors.Control;
+			Text = Reporting.UsageReporter.AppNameToUseInDialogs;
 
 			//avoids the client getting null errors if he checks this when there
 			//has yet to be a callback from the worker
@@ -52,7 +55,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		/// Get / set the time in ms to delay
 		/// before showing the dialog
 		/// </summary>
-		private/*doesn't work yet public*/ int DelayShowInterval
+	   private/*doesn't work yet public*/ int DelayShowInterval
 		{
 			get
 			{
@@ -234,6 +237,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			if(e.Cancelled )
 			{
 				DialogResult = DialogResult.Cancel;
+				//_progressState.State = ProgressState.StateValue.Finished;
 			}
 				//NB: I don't know how to actually let the BW know there was an error
 				//else if (e.Error != null ||
@@ -243,10 +247,12 @@ namespace Palaso.UI.WindowsForms.Progress
 				//this dialog really can't know whether this was an unexpected exception or not
 				//so don't do this:  Reporting.ErrorReporter.ReportException(ProgressStateResult.ExceptionThatWasEncountered, this, false);
 				DialogResult = DialogResult.Abort;//not really matching semantics
+			   // _progressState.State = ProgressState.StateValue.StoppedWithError;
 			}
 			else
 			{
 				DialogResult = DialogResult.OK;
+			  //  _progressState.State = ProgressState.StateValue.Finished;
 			}
 			_isClosing = true;
 			Close();
@@ -273,7 +279,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		/// Show the control, but honor the
 		/// <see cref="DelayShowInterval"/>.
 		/// </summary>
-		private/*doesn't work yet public*/  void DelayShow()
+	   private/*doesn't work yet public*/  void DelayShow()
 		{
 			// This creates the control, but doesn't
 			// show it; you can't use CreateControl()
@@ -284,12 +290,19 @@ namespace Palaso.UI.WindowsForms.Progress
 
 
 		//************
-		//the problem is that our worker reports progress, and we die because of a begininvoke with no window yet
+		//the problem is that our worker reports progress, and we die (only in some circumstance not nailed-down yet)
+		//because of a begininvoke with no window yet. Sometimes, we don't get the callback to
+		//the very important OnBackgroundWorker_RunWorkerCompleted
 
-		private/*doesn't work yet public*/  void ShowDialogIfTakesLongTime()
+	   private/*doesn't work yet public*/  void ShowDialogIfTakesLongTime()
 		{
 			DelayShow();
 			OnStartWorker(this, null);
+		   while((_progressState.State == ProgressState.StateValue.NotStarted
+				  || _progressState.State == ProgressState.StateValue.Busy) && !this.Visible)
+		   {
+			   Application.DoEvents();
+		   }
 		}
 
 		/// <summary>
@@ -357,8 +370,11 @@ namespace Palaso.UI.WindowsForms.Progress
 		/// <param name="e">Event data</param>
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			Debug.WriteLine("Dialog:OnClosing");
+
 			if( !_isClosing )
 			{
+				Debug.WriteLine("   Dialog:_isClosing=false, doing cancel click");
 				e.Cancel = true;
 				_cancelButton.PerformClick();
 			}
@@ -468,13 +484,15 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void OnCancelButton_Click(object sender, EventArgs e)
 		{
+			Debug.WriteLine("Dialog:OnCancelButton_Click");
+
 			// Prevent further cancellation
 			_cancelButton.Enabled = false;
 			_progressTimer.Stop();
 			_progressLabel.Text =  "Canceling...";
 			// Tell people we're canceling
 			OnCancelled( e );
-			if (_backgroundWorker != null)
+			if (_backgroundWorker != null && _backgroundWorker.WorkerSupportsCancellation)
 			{
 				_backgroundWorker.CancelAsync();
 			}
@@ -545,6 +563,8 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void OnStartWorker(object sender, EventArgs e)
 		{
+			Debug.WriteLine("Dialog:StartWorker");
+
 			if (_backgroundWorker != null)
 			{
 				 //BW uses percentages (unless it's using our custom ProgressState in the UserState member)

@@ -50,7 +50,7 @@ namespace Palaso.Progress
 					return 0;
 				}
 				//limit to 100
-				int p = Math.Min(100, (int)(((double)this.NumberOfStepsCompleted) / ((double)this.TotalNumberOfSteps)) * 100);
+				int p = Math.Min(100, (int)((((double)this.NumberOfStepsCompleted) / ((double)this.TotalNumberOfSteps)) * 100));
 				return p;
 			}
 		}
@@ -67,6 +67,10 @@ namespace Palaso.Progress
 					_worker.ReportProgress(this.PercentCompleted, this);
 				}
 			}
+			get
+			{
+				return base.NumberOfStepsCompleted;//helps the debugger
+			}
 		}
 
 		public override int TotalNumberOfSteps
@@ -81,6 +85,10 @@ namespace Palaso.Progress
 					_maxPercentageReachedBefore = percentage;
 					_worker.ReportProgress(percentage, this);
 				}
+			}
+			get
+			{
+				return base.TotalNumberOfSteps;//helps the debugger
 			}
 		}
 	}

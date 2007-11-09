@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
@@ -155,6 +156,8 @@ namespace Palaso.Progress
 		/// <param name="e">Event data</param>
 		protected void OnFinish( EventArgs e )
 		{
+			Debug.WriteLine("AsyncCommand:Finish");
+
 			EventHandler finish = Finish;
 			if( finish != null )
 			{

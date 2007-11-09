@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Palaso.Progress;
 
@@ -29,6 +30,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			_currentCommand.Finish += new EventHandler(OnCommand_Finish);
 
 			_progressDialog = new ProgressDialog();
+			_progressDialog.Text = "From Handler for"+command.GetType().ToString();
 			_progressDialog.CancelRequested += new EventHandler(_progressDialog_Cancelled);
 			_progressDialog.Owner = parentForm ;
 			_progressDialog.CanCancel = true;
@@ -40,10 +42,25 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		}
 
+	   /* what was this about?
+		*
 		public bool ParentFormIsClosing
 		{
 			get { return _parentFormIsClosing; }
 			set { _parentFormIsClosing = value; }
+		}
+		*/
+
+		/// <summary>
+		/// tests (or anything else that is rapidly chaining these things together)
+		/// should use this to make sure we're ready to go on to the next activity
+		/// </summary>
+		public bool TestEverythingClosedUp
+		{
+			get
+			{
+				return _progressDialog == null || _progressDialog.Visible == false;
+			}
 		}
 
 		public void InitializeProgress(int minimum, int maximum)
@@ -137,18 +154,22 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void Finish()
 		{
+			Debug.WriteLine("ProgressDialogHandler:Finish");
+
 			_progressDialog.ForceClose();
 			_progressDialog = null;
 			if (Finished != null)
 			{
 				Finished.BeginInvoke(this, null, null, null);//jh changed this from Invoke()
+			   // Finished.Invoke(this, null);//jh changed this from Invoke()
 			}
 
-			if (ParentFormIsClosing)
+		   /* if (ParentFormIsClosing)
 			{
 				_parentForm.Close();
 			}
 			else
+			*/
 			{
 				_currentCommand.Enabled = true;
 			}
@@ -183,6 +204,8 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public void Close()
 		{
+			Debug.WriteLine("ProgressDialogHandler:Close");
+
 			_progressDialog.Close();
 		}
 
@@ -227,14 +250,23 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void OnCommand_Finish(object sender, EventArgs e)
 		{
+			Debug.WriteLine("ProgressDialogHandler:OnCommand_Finish");
 			if (NeedInvoke())
 			{
-				_parentForm.BeginInvoke(new MethodInvoker(Finish));
+				Debug.WriteLine("ProgressDialogHandler: begin(Finish)");
+				_parentForm.Invoke(new MethodInvoker(Finish));
+			   // _parentForm.BeginInvoke(new MethodInvoker(Finish));
+				Debug.WriteLine("ProgressDialogHandler: end(Finish)");
 			}
 			else
 			{
+				Debug.WriteLine("ProgressDialogHandler: RAW(Finish)");
 				Finish();
 			}
+
+			// trying disable a weird bug
+		  //  _currentCommand.Finish -= new EventHandler(OnCommand_Finish);
+
 		}
 
 		public void CloseByCancellingThenCloseParent()

@@ -17,16 +17,20 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		private ProgressDialogHandler _progressHandler;
 		private ProgressState _progressState;
 		private TestCommand _command;
+		private Form _dummyParentForm;
 
 		[SetUp]
 		public void Setup()
 		{
+			_dummyParentForm = new Form();
+			_dummyParentForm.Name = "dummy form";
+			_dummyParentForm.Text = "Dummy Form";
 			_logBuilder = new StringBuilder();
-			Form dummyParentForm = new Form();
-			dummyParentForm.Show();
+			_dummyParentForm.Show();
+			Application.DoEvents();
 			_command = new TestCommand();
 			//_progressLog = "";
-			_progressHandler = new ProgressDialogHandler(dummyParentForm, _command);
+			_progressHandler = new ProgressDialogHandler(_dummyParentForm, _command);
 			_progressState = new ProgressDialogProgressState(_progressHandler);
 			_commandFinishedCalled = false;
 		}
@@ -34,13 +38,17 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		[TearDown]
 		public void TearDown()
 		{
+			WaitForHandlerToFinishUp();
+
+			_dummyParentForm.Close();
+			_dummyParentForm.Dispose();
 		}
 
 
 		[Test]
 		public void EndsInFinishedState()
 		{
-			_progressHandler.Finished += new EventHandler(OnCommandFinished);
+		  _progressHandler.Finished += new EventHandler(OnCommandFinished);
 			_command.BeginInvoke(_progressState);
 			WaitOnProgressState(ref _progressState, ProgressState.StateValue.Finished);
 		}
@@ -82,6 +90,19 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			_logBuilder.AppendLine(e.message);
 		}
 
+		private void WaitForHandlerToFinishUp()
+		{
+			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
+			while (!_progressHandler.TestEverythingClosedUp )
+			{
+				if (DateTime.Now > giveUpTime)
+				{
+					Assert.IsTrue(_progressHandler.TestEverythingClosedUp,"Gave up waiting");
+				}
+				Application.DoEvents();
+			}
+		}
+
 		private void WaitOnBool(ref bool waitForThisToBeTrue)
 		{
 			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
@@ -103,7 +124,8 @@ namespace PalasoUIWindowsForms.Tests.Progress
 				{
 					Assert.AreEqual(expectedState, _progressState.State);
 				}
-				Thread.Sleep(10);
+			  //  Thread.Sleep(10);
+				Application.DoEvents();
 			}
 		}
 	}
@@ -117,7 +139,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 									   StatusCallback primaryStatusTextCallback,
 									   StatusCallback secondaryStatusTextCallback)
 		{
-			int countForWork = 0;
+		   int countForWork = 0;
 			while (countForWork < 100)
 			{
 				if (this.Canceling)
@@ -132,6 +154,8 @@ namespace PalasoUIWindowsForms.Tests.Progress
 
 		private void DoPretendWork()
 		{
+
+
 			DateTime end = DateTime.Now.AddMilliseconds(2);
 			while (DateTime.Now < end)
 			{
@@ -141,6 +165,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 
 		protected override void DoWork2(ProgressState progress)
 		{
+
 			int countForWork = 0;
 			progress.TotalNumberOfSteps = 100;
 			while (countForWork < 100)

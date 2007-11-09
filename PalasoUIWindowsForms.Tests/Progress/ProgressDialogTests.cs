@@ -41,12 +41,27 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		}
 
 		[Test]
+		public void Regression()
+		{
+			ProgressDialogHandlerTests x=new ProgressDialogHandlerTests();
+			x.Setup();
+			x.EndsInFinishedState();
+			x.TearDown();
+			Thread.Sleep(3000);
+			TypicalUsage();
+		}
+
+		[Test]
 		public void TypicalUsage()
 		{
 			BackgroundWorker worker = new BackgroundWorker();
 			worker.DoWork += OnDoSomeWork;
 			_dialog.BackgroundWorker = worker;
 			_dialog.CanCancel = true;
+			_dialog.Text = "TypicalUsageTest";
+
+			Debug.WriteLine("TypicalUsage:ShowDialog");
+
 			_dialog.ShowDialog();
 			//  if (_dialog.ProgressStateResult.ExceptionThatWasEncountered != null)
 			Assert.AreEqual(DialogResult.OK, _dialog.DialogResult);
@@ -219,7 +234,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 							state.NumberOfStepsCompleted++;
 						}
 					}
-					Debug.WriteLine(a);
 				}
 				if(args.doClaimExtraSteps)
 				{
