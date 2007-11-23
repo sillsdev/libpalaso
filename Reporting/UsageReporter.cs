@@ -14,7 +14,7 @@ namespace Palaso.Reporting
 		private static string s_appNameToUseInReporting;
 
 		/// <summary>
-		/// call this each time the application is launched if you have launch count-based reporting
+		/// call this each time the application is launched
 		/// </summary>
 		public static void RecordLaunch()
 		{
@@ -143,12 +143,17 @@ namespace Palaso.Reporting
 		{
 			MakeLaunchDateSafe();
 
-			foreach (int launch in intervals)
+			//avoid asking the user more than once on the special reporting days
+			if (DateTime.UtcNow.Date != ReportingSetting.Default.LastLaunchDate.Date)
 			{
-				if (launch == ReportingSetting.Default.Launches)
+
+				foreach (int launch in intervals)
 				{
-					SendReport(emailAddress, topMessage);
-					break;
+					if (launch == ReportingSetting.Default.Launches)
+					{
+						SendReport(emailAddress, topMessage);
+						break;
+					}
 				}
 			}
 		}
