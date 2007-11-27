@@ -10,7 +10,8 @@
   </ItemGroup>
 
   <Target Name="Build">
-	<CallTarget Targets ="MakePotFilesTest"/>
+<!--    <CallTarget Targets ="MakePotFilesTest"/>-->
+	<CallTarget Targets ="MakeWixForFilesTest"/>
   </Target>
 
   <UsingTask AssemblyFile="C:\PalasoLib\output\Debug\Palaso.BuildTasks.dll" TaskName="MakePot" />
@@ -23,4 +24,16 @@
 			 CSharpFiles="@(CSharpFiles)">
 	  </MakePot>
   </Target>
+
+  <UsingTask AssemblyFile="C:\PalasoLib\output\Debug\Palaso.BuildTasks.dll" TaskName="MakeWixForDirTree" />
+  <Target Name="MakeWixForFilesTest">
+	<MakeWixForDirTree
+				RootDirectory="..\Palaso.MSBuildTasks"
+				Exclude="MakePot"
+				OutputFileName="ExcerciseTasksTest.wxs"
+				MatchRegExPattern="\.cs$">
+	  <Output TaskParameter="OutputFileName" ItemName="Compile" />
+	</MakeWixForDirTree>
+  </Target>
+
 </Project>
