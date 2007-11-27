@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<SourceFolder>c:\wesay\src</SourceFolder>
+	<CSharpFiles>c:\wesay\src</CSharpFiles>
+  </PropertyGroup>
+  <ItemGroup>
+	<CSharpFiles Include="c:\wesay\src\**\*.cs"/>
+	<XmlFiles Include="c:\wesay\common\**\*.WeSayConfig"/>
+  </ItemGroup>
+
+  <Target Name="Build">
+	<CallTarget Targets ="MakePotFilesTest"/>
+  </Target>
+
+  <UsingTask AssemblyFile="C:\PalasoLib\output\Debug\Palaso.BuildTasks.dll" TaskName="MakePot" />
+  <Target Name="MakePotFilesTest">
+	<MakePot ProjectId="testProject"
+			 OutputFile="testMakePot.txt"
+			 MsdIdBugsTo="me@testing.org"
+			 XmlFiles="@(XmlFiles)"
+			 XPathToStrings="//label | //description[not(@UseInConstructor='false')]"
+			 CSharpFiles="@(CSharpFiles)">
+	  </MakePot>
+  </Target>
+</Project>
