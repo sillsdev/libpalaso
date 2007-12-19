@@ -43,6 +43,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.Tests"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryService.Client", "Palaso.DictionaryService.Client\Palaso.DictionaryService.Client.csproj", "{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryService.Client.Tests", "Palaso.DictionaryService.Client.Tests\Palaso.DictionaryService.Client.Tests.csproj", "{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +89,14 @@ Global
 		{6E16866F-FF8D-4136-AD67-36AFE3626432}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E16866F-FF8D-4136-AD67-36AFE3626432}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E16866F-FF8D-4136-AD67-36AFE3626432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

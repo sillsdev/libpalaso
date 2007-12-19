@@ -95,6 +95,10 @@
 	<Compile Include="Spart\Scanners\IScanner.cs" />
 	<Compile Include="Spart\Scanners\StringScanner.cs" />
 	<Compile Include="Spart\Scanners\ToLowerFilter.cs" />
+	<Compile Include="Annotations\Annotation.cs" />
+	<Compile Include="Annotations\IAnnotatable.cs" />
+	<Compile Include="Text\LanguageForm.cs" />
+	<Compile Include="Text\MultiTextBase.cs" />
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXml.cs" />
