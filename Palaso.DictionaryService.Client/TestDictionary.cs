@@ -6,7 +6,7 @@ namespace Palaso.DictionaryService.Client
 {
 	internal class TestDictionary : IDictionary
 	{
-		private List<Entry> _entries = new List<Entry>();
+		private List<IEntry> _entries = new List<IEntry>();
 		private bool _isDisposed;
 
 		/// <summary>
@@ -16,7 +16,7 @@ namespace Palaso.DictionaryService.Client
 		{
 			foreach (string s in new string[] { "apple", "pear", "mango", "orange", "banana", "papaya" })
 			{
-				Entry e = new Entry();
+				TestEntry e = new TestEntry();
 				e.AddLexemeForm(writingSystemId, s);
 				e.AddPrimaryDefinition("en", string.Format("A kind of fruit."));
 				e.AddPrimaryExampleSentence(writingSystemId, string.Format("I want to drink a {0} shake", s));
@@ -29,12 +29,12 @@ namespace Palaso.DictionaryService.Client
 			get { return true; }
 		}
 
-		public Entry CreateEntryLocally()
+		public IEntry CreateEntryLocally()
 		{
-			return new Entry();
+			return new TestEntry();
 		}
 
-		public void AddEntry(Entry entry)
+		public void AddEntry(IEntry entry)
 		{
 			_entries.Add(entry);
 		}
@@ -90,12 +90,12 @@ namespace Palaso.DictionaryService.Client
 
 
 
-		public IList<Entry> FindEntries(string writingSystemId, string form, FindMethods method)
+		public IList<IEntry> FindEntries(string writingSystemId, string form, FindMethods method)
 		{
-			List<Entry> matches = new List<Entry>();
-			foreach (Entry entry in _entries)
+			List<IEntry> matches = new List<IEntry>();
+			foreach (TestEntry entry in _entries)
 			{
-				if(entry.LexemeForms.GetExactAlternative(writingSystemId) == form)
+				if( entry.IsMatch(writingSystemId, form, method))
 				{
 					matches.Add(entry);
 				}

@@ -7,10 +7,10 @@ namespace Palaso.DictionaryService.Client
 	{
 		bool CanAddEntries { get; }
 
-		Entry CreateEntryLocally();
-		void AddEntry(Entry entry);
+		IEntry CreateEntryLocally();
+		void AddEntry(IEntry entry);
 		void Dispose();
-		IList<Entry> FindEntries(string writingSystemId, string form, FindMethods method);
+		IList<IEntry> FindEntries(string writingSystemId, string form, FindMethods method);
 	}
 	public enum FindMethods
 	{
