@@ -14,6 +14,14 @@ namespace Palaso.DictionaryService.Client
 		/// </summary>
 		internal TestDictionary(string writingSystemId)
 		{
+			Init(writingSystemId);
+		}
+		internal TestDictionary()
+		{
+		}
+
+		public void Init(string writingSystemId)
+		{
 			foreach (string s in new string[] { "apple", "pear", "mango", "orange", "banana", "papaya" })
 			{
 				TestEntry e = new TestEntry();
@@ -24,9 +32,9 @@ namespace Palaso.DictionaryService.Client
 			}
 		}
 
-		public bool CanAddEntries
+		public bool CanAddEntries()
 		{
-			get { return true; }
+		   return true;
 		}
 
 		public IEntry CreateEntryLocally()

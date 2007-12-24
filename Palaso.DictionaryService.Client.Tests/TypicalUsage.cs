@@ -20,7 +20,7 @@ namespace Palaso.DictionaryService.Client.Tests
 			using (ServiceFinder finder = new ServiceFinder())
 			{
 				finder.Init();
-				finder.LoadTestDictionary("qTest");
+				finder.LoadTestDictionary("qTest", false);
 
 				using (IDictionary dict = finder.GetDictionaryService("qTest"))
 				{
@@ -42,7 +42,7 @@ namespace Palaso.DictionaryService.Client.Tests
 			using (ServiceFinder finder = new ServiceFinder())
 			{
 				finder.Init();
-				finder.LoadTestDictionary("qTest");
+				finder.LoadTestDictionary("qTest", false);
 
 				using (IDictionary dict = finder.GetDictionaryService("qTest"))
 				{
@@ -62,12 +62,12 @@ namespace Palaso.DictionaryService.Client.Tests
 			using (ServiceFinder finder = new ServiceFinder())
 			{
 				finder.Init();
-				finder.LoadTestDictionary("qTest");
+				finder.LoadTestDictionary("qTest", false);
 
 				using (IDictionary dict = finder.GetDictionaryService("qTest"))
 				{
 					IList<IEntry> matches = dict.FindEntries("qTest", "kumquat", FindMethods.Exact);
-					if (matches.Count == 0 && dict.CanAddEntries)
+					if (matches.Count == 0 && dict.CanAddEntries())
 					{
 						IEntry kumquat = dict.CreateEntryLocally();
 						kumquat.AddLexemeForm("qTest", "kumquat");

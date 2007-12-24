@@ -16,7 +16,7 @@ namespace Palaso.DictionaryService.Client.Tests
 		{
 			_finder = new ServiceFinder();
 			_finder.Init();
-			_finder.LoadTestDictionary(_dictionaryWritingSystemId);
+			_finder.LoadTestDictionary(_dictionaryWritingSystemId, false);
 			_dictionary =  _finder.GetDictionaryService(_primaryVernacularWritingSystemId);
 		}
 

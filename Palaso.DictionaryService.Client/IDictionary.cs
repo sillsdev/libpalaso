@@ -1,15 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.ServiceModel;
 
 namespace Palaso.DictionaryService.Client
 {
+	[ServiceContract]
 	public interface IDictionary : IDisposable
 	{
-		bool CanAddEntries { get; }
+		[OperationContract]
+		bool CanAddEntries();
 
+		[OperationContract]
 		IEntry CreateEntryLocally();
+
+		[OperationContract]
 		void AddEntry(IEntry entry);
+
 		void Dispose();
+
+		[OperationContract]
 		IList<IEntry> FindEntries(string writingSystemId, string form, FindMethods method);
 	}
 	public enum FindMethods

@@ -15,7 +15,7 @@ namespace Palaso.DictionaryService.Client.Tests
 		{
 			_finder = new ServiceFinder();
 			_finder.Init();
-			_finder.LoadTestDictionary("qPretend");
+			_finder.LoadTestDictionary("qPretend", false);
 		}
 
 		[TearDown]
