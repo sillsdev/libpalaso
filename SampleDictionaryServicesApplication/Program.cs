@@ -10,7 +10,7 @@ namespace SampleDictionaryServicesApplication
 {
 	static class Program
 	{
-		private static ServiceAppSingletonHelper _serviceAppSingletonHelper;
+		private static IServiceAppSingletonHelper _serviceAppSingletonHelper;
 
 		[STAThread]
 		static void Main(string[] args)

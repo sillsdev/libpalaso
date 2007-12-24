@@ -8,8 +8,16 @@ using Palaso.Services;
 namespace Palaso.Tests.Services
 {
 	[TestFixture]
-	public class ServiceAppSingletonHelperTests
+	public class IServiceAppSingletonHelperTests
 	{
+		private bool _bringToFrontRequestCalled;
+
+		[SetUp]
+		public void Setup()
+		{
+			_bringToFrontRequestCalled = false;
+		}
+
 		[Test]
 		public void FirstStartReturnsService()
 		{
@@ -31,20 +39,36 @@ namespace Palaso.Tests.Services
 		[Test]
 		public void InitiallyInServerModeWhenRequested()
 		{
-			ServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo2", false);
+			IServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo2", false);
 			Assert.IsFalse(helper.InServerMode);
 		}
 		[Test]
 		public void InitiallyNotInServerModeWhenRequested()
 		{
-			ServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo3", true);
+			IServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo3", true);
 			Assert.IsTrue(helper.InServerMode);
 		}
 		[Test]
 		public void SecondAttemptCallsBringToFront()
 		{
-			ServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo4", true);
-			helper.BringToFrontRequest
+			IServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo4", false);
+			helper.BringToFrontRequest += new EventHandler(helper_BringToFrontRequest);
+			Assert.IsFalse(_bringToFrontRequestCalled);
+			ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo4", false);
+			Assert.IsTrue(_bringToFrontRequestCalled);
+		}
+		[Test]
+		public void SecondAttemptDoesNotCallBringToFrontIfServerModeRequested()
+		{
+			IServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo5", false);
+			helper.BringToFrontRequest += new EventHandler(helper_BringToFrontRequest);
+			Assert.IsFalse(_bringToFrontRequestCalled);
+			ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo5", true);
+			Assert.IsFalse(_bringToFrontRequestCalled);
+		}
+		void helper_BringToFrontRequest(object sender, EventArgs e)
+		{
+			_bringToFrontRequestCalled = true;
 		}
 	}
 }

@@ -6,9 +6,9 @@ namespace SampleDictionaryServicesApplication
 {
 	public partial class Form1 : Form
 	{
-		private readonly ServiceAppSingletonHelper _serviceAppSingletonHelper;
+		private readonly IServiceAppSingletonHelper _serviceAppSingletonHelper;
 		delegate void BringToFrontRequestCallback(object sender, EventArgs args);
-		public Form1(ServiceAppSingletonHelper serviceAppSingletonHelper)
+		public Form1(IServiceAppSingletonHelper serviceAppSingletonHelper)
 		{
 			_serviceAppSingletonHelper = serviceAppSingletonHelper;
 			_serviceAppSingletonHelper.BringToFrontRequest += On_BringToFrontRequest;

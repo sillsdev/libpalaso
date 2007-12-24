@@ -11,14 +11,14 @@ namespace Palaso.Services
 	/// ensuring that only one instance of the application is running.
 	/// </summary>
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-	public class ServiceAppSingletonHelper : IServiceAppSingletonHelper
+	public class ServiceAppSingletonHelper : IServiceAppSingletonHelper, IServiceApp
 	{
 		private bool _inServerMode;
 		private static ServiceHost _singletonAppHost;
 		private readonly string _pipeName;
 		public event EventHandler BringToFrontRequest;
 
-		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
+		public static IServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
 		{
 			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(pipeName, startInServerMode);
 			if (!helper.StartupIfAppropriate())
@@ -49,7 +49,7 @@ namespace Palaso.Services
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
-			IServiceAppSingletonHelper alreadyExistingInstance = IPCUtils.GetExistingService<IServiceAppSingletonHelper>(SingletonAppAddress);
+			IServiceApp alreadyExistingInstance = IPCUtils.GetExistingService<IServiceApp>(SingletonAppAddress);
 			if (alreadyExistingInstance != null)
 			{
 				if (!InServerMode)
@@ -87,7 +87,7 @@ namespace Palaso.Services
 
 			_singletonAppHost = new ServiceHost(this, new Uri[] { new Uri(SingletonAppAddress), });
 
-			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppSingletonHelper), new NetNamedPipeBinding(),
+			_singletonAppHost.AddServiceEndpoint(typeof(IServiceApp), new NetNamedPipeBinding(),
 												 SingletonAppAddress);
 			_singletonAppHost.Open();
 		}
@@ -122,10 +122,25 @@ namespace Palaso.Services
 		}
 	}
 
+	/// <summary>
+	/// this is the outward-facing contract. Other apps talk to this one through these methods
+	/// </summary>
 	[ServiceContract]
-	public interface IServiceAppSingletonHelper
+	public interface IServiceApp
 	{
 		[OperationContract]
 		void BringToFront();
+	}
+
+	/// <summary>
+	/// this in the inward-facing contract.  The program that uses this helper uses this one
+	/// </summary>
+	public interface IServiceAppSingletonHelper
+	{
+		event EventHandler BringToFrontRequest;
+
+		bool InServerMode { get; }
+
+		void HandleRequestsUntilExitOrUIStart(ServiceAppSingletonHelper.StartUI uiStarter);
 	}
 }

@@ -57,6 +57,7 @@
 	  <DependentUpon>Resource.resx</DependentUpon>
 	</Compile>
 	<Compile Include="Services\IPCUtils.cs" />
+	<Compile Include="Services\IServiceAppSingletonHelper.cs" />
 	<Compile Include="Services\ServiceAppSingletonHelper.cs" />
 	<Compile Include="SFMReader.cs">
 	  <SubType>Code</SubType>
