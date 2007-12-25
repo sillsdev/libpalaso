@@ -4,13 +4,15 @@ using System.Diagnostics;
 using System.ServiceModel;
 using System.Threading;
 using System.Windows.Forms;
+using Palaso.DictionaryService.Client;
 using Palaso.Services;
 
 namespace SampleDictionaryServicesApplication
 {
 	static class Program
 	{
-		private static IServiceAppSingletonHelper _serviceAppSingletonHelper;
+		private static ServiceAppSingletonHelper _serviceAppSingletonHelper;
+		private static TestDictionary _dictionary;
 
 		[STAThread]
 		static void Main(string[] args)
@@ -22,13 +24,31 @@ namespace SampleDictionaryServicesApplication
 				return; // there's already an instance of this app running
 			}
 
-			StartMathServices();
+		   using(_dictionary = new TestDictionary("qTest"))
+		   {
+			   StartDictionaryServices();
 
-		   _serviceAppSingletonHelper.HandleRequestsUntilExitOrUIStart(StartUI);
-	   }
+			   _serviceAppSingletonHelper.HandleRequestsUntilExitOrUIStart(StartUI);
+		   }
+		}
 
-		private static void StartMathServices()
+		private static void StartDictionaryServices()
 		{
+
+			ServiceHost _dictionaryHost = new ServiceHost(_dictionary, new Uri[] { new Uri(DictionaryServiceAddress), });
+
+			_dictionaryHost.AddServiceEndpoint(typeof(ILookup), new NetNamedPipeBinding(),
+												 DictionaryServiceAddress);
+			_dictionaryHost.Open();
+
+		}
+
+		private static string DictionaryServiceAddress
+		{
+			get
+			{
+				return "net.pipe://localhost/DictionaryServices/" + "qTest";
+			}
 		}
 
 		private static void StartUI()
@@ -46,10 +66,5 @@ namespace SampleDictionaryServicesApplication
 
 
 
-	[ServiceContract]
-	public interface ILookup
-	{
-		[OperationContract]
-		string GetHmtlForWord(string word);
-	}
+
 }

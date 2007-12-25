@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.ServiceModel;
 using System.Text;
 
 namespace Palaso.DictionaryService.Client
 {
-	internal class TestDictionary : IDictionary
+	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+	public class TestDictionary : IDictionary, ILookup
 	{
 		private List<IEntry> _entries = new List<IEntry>();
 		private bool _isDisposed;
 
-		/// <summary>
-		/// clients must use a factory method
-		/// </summary>
-		internal TestDictionary(string writingSystemId)
+
+		public TestDictionary(string writingSystemId)
 		{
 			Init(writingSystemId);
 		}
@@ -91,7 +91,7 @@ namespace Palaso.DictionaryService.Client
 		{
 			if (!this._isDisposed)
 			{
-				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName + ".");
+				throw new InvalidOperationException("Dispose not explicitly called on " + GetType().FullName + ".");
 			}
 
 		}
@@ -110,5 +110,14 @@ namespace Palaso.DictionaryService.Client
 			}
 			return matches;
 		}
+
+		#region ILookup Members
+
+		public string GetHmtlForWord(string word)
+		{
+			return string.Format("<html><body>Definition for {0}</body></html>", word);
+		}
+
+		#endregion
 	}
 }

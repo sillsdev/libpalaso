@@ -14,7 +14,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>bin\Debug\</OutputPath>
+	<OutputPath>..\output\debug\</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -68,6 +68,10 @@
 	</Compile>
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\Palaso.DictionaryService.Client\Palaso.DictionaryService.Client.csproj">
+	  <Project>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</Project>
+	  <Name>Palaso.DictionaryService.Client</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>

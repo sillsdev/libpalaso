@@ -14,7 +14,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>bin\Debug\</OutputPath>
+	<OutputPath>..\output\debug\</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -57,7 +57,7 @@
 	  <DependentUpon>Resource.resx</DependentUpon>
 	</Compile>
 	<Compile Include="Services\IPCUtils.cs" />
-	<Compile Include="Services\IServiceAppSingletonHelper.cs" />
+	<Compile Include="Services\ServiceAppConnector.cs" />
 	<Compile Include="Services\ServiceAppSingletonHelper.cs" />
 	<Compile Include="SFMReader.cs">
 	  <SubType>Code</SubType>

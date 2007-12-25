@@ -5,20 +5,22 @@ using System.ServiceModel;
 namespace Palaso.DictionaryService.Client
 {
 	[ServiceContract]
-	public interface IDictionary : IDisposable
+	public interface ILookup
 	{
 		[OperationContract]
+		string GetHmtlForWord(string word);
+	}
+
+	public interface IDictionary : IDisposable
+	{
 		bool CanAddEntries();
 
-		[OperationContract]
 		IEntry CreateEntryLocally();
 
-		[OperationContract]
 		void AddEntry(IEntry entry);
 
 		void Dispose();
 
-		[OperationContract]
 		IList<IEntry> FindEntries(string writingSystemId, string form, FindMethods method);
 	}
 	public enum FindMethods

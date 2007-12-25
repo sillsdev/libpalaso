@@ -10,15 +10,15 @@ namespace Palaso.Services
 	/// with handling the states of being invisible, becoming visible, and
 	/// ensuring that only one instance of the application is running.
 	/// </summary>
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-	public class ServiceAppSingletonHelper : IServiceAppSingletonHelper, IServiceApp
+	public class ServiceAppSingletonHelper
 	{
 		private bool _inServerMode;
+		private static ServiceAppConnector _connector;
 		private static ServiceHost _singletonAppHost;
 		private readonly string _pipeName;
 		public event EventHandler BringToFrontRequest;
 
-		public static IServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
+		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
 		{
 			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(pipeName, startInServerMode);
 			if (!helper.StartupIfAppropriate())
@@ -49,7 +49,7 @@ namespace Palaso.Services
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
-			IServiceApp alreadyExistingInstance = IPCUtils.GetExistingService<IServiceApp>(SingletonAppAddress);
+			IServiceAppConnector alreadyExistingInstance = IPCUtils.GetExistingService<IServiceAppConnector>(SingletonAppAddress);
 			if (alreadyExistingInstance != null)
 			{
 				if (!InServerMode)
@@ -83,11 +83,11 @@ namespace Palaso.Services
 		/// </summary>
 		private  void StartServeAppSingletonService()
 		{
-			BringToFrontRequest += On_BringToFrontRequest;
+			_connector = new    ServiceAppConnector();
+			_connector.BringToFrontRequest+=On_BringToFrontRequest;
+			_singletonAppHost = new ServiceHost(_connector, new Uri[] { new Uri(SingletonAppAddress), });
 
-			_singletonAppHost = new ServiceHost(this, new Uri[] { new Uri(SingletonAppAddress), });
-
-			_singletonAppHost.AddServiceEndpoint(typeof(IServiceApp), new NetNamedPipeBinding(),
+			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), new NetNamedPipeBinding(),
 												 SingletonAppAddress);
 			_singletonAppHost.Open();
 		}
@@ -96,21 +96,33 @@ namespace Palaso.Services
 		{
 			_inServerMode = false;
 
-		}
-		public void BringToFront()
-		{
+			//now pass it on
+
 			if (BringToFrontRequest != null)
 			{
 				BringToFrontRequest.Invoke(this, null);
 			}
 			_inServerMode = false;
+
 		}
+
 
 		public delegate void StartUI();
 		public void HandleRequestsUntilExitOrUIStart(StartUI uiStarter)
 		{
+			bool someoneHasAttached=false;
 			while (true)
 			{
+				if (_connector.ClientIds.Count > 1)
+				{
+					someoneHasAttached = true;
+				}
+				//once at least one client has registered (attached), quit
+				//when none are attached anymore
+				if (someoneHasAttached && _connector.ClientIds.Count == 0)
+				{
+					break;
+				}
 				if (!InServerMode)
 				{
 					uiStarter();
@@ -120,27 +132,8 @@ namespace Palaso.Services
 				Thread.Sleep(10);
 			}
 		}
+
 	}
 
-	/// <summary>
-	/// this is the outward-facing contract. Other apps talk to this one through these methods
-	/// </summary>
-	[ServiceContract]
-	public interface IServiceApp
-	{
-		[OperationContract]
-		void BringToFront();
-	}
 
-	/// <summary>
-	/// this in the inward-facing contract.  The program that uses this helper uses this one
-	/// </summary>
-	public interface IServiceAppSingletonHelper
-	{
-		event EventHandler BringToFrontRequest;
-
-		bool InServerMode { get; }
-
-		void HandleRequestsUntilExitOrUIStart(ServiceAppSingletonHelper.StartUI uiStarter);
-	}
 }
