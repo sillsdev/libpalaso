@@ -16,6 +16,7 @@ namespace Palaso.Services
 		private static ServiceAppConnector _connector;
 		private static ServiceHost _singletonAppHost;
 		private readonly string _pipeName;
+		private bool _exitRequested=false;
 		public event EventHandler BringToFrontRequest;
 
 		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
@@ -31,6 +32,10 @@ namespace Palaso.Services
 			}
 		}
 
+		public void OnExitIfInServerMode(object sender, EventArgs e)
+		{
+			_exitRequested = true;
+		}
 
 		private ServiceAppSingletonHelper(string pipeName, bool startInServerMode)
 		{
@@ -92,6 +97,7 @@ namespace Palaso.Services
 			_singletonAppHost.Open();
 		}
 
+
 		private void On_BringToFrontRequest(object sender, EventArgs args)
 		{
 			_inServerMode = false;
@@ -111,7 +117,7 @@ namespace Palaso.Services
 		public void HandleRequestsUntilExitOrUIStart(StartUI uiStarter)
 		{
 			bool someoneHasAttached=false;
-			while (true)
+			while (!_exitRequested)
 			{
 				if (_connector.ClientIds.Count > 1)
 				{

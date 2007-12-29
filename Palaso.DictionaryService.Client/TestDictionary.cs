@@ -6,7 +6,7 @@ using System.Text;
 namespace Palaso.DictionaryService.Client
 {
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-	public class TestDictionary : IDictionary, ILookup
+	public class TestDictionary : IDictionary, IDictionaryService
 	{
 		private List<IEntry> _entries = new List<IEntry>();
 		private bool _isDisposed;
@@ -111,11 +111,38 @@ namespace Palaso.DictionaryService.Client
 			return matches;
 		}
 
-		#region ILookup Members
+		#region IDictionaryService Members
 
-		public string GetHmtlForWord(string word)
+
+
+		public string[] GetIdsOfMatchingEntries(string writingSystemId, string form, FindMethods method)
 		{
-			return string.Format("<html><body>Definition for {0}</body></html>", word);
+			return new string[0];
+		}
+
+		public string GetHmtlForEntry(string entryId)
+		{
+			return string.Format("<html><body>Definition for entry with id: {0}</body></html>", entryId);
+		}
+
+		public void RegisterClient(int clientProcessId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DeregisterClient(int clientProcessId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void JumpToEntry(string entryId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsInServerMode()
+		{
+			throw new NotImplementedException();
 		}
 
 		#endregion

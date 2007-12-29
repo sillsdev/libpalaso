@@ -5,10 +5,28 @@ using System.ServiceModel;
 namespace Palaso.DictionaryService.Client
 {
 	[ServiceContract]
-	public interface ILookup
+	public interface IDictionaryService
 	{
 		[OperationContract]
-		string GetHmtlForWord(string word);
+		string[] GetIdsOfMatchingEntries(string writingSystemId, string form, FindMethods method);
+
+		[OperationContract]
+		string GetHmtlForEntry(string entryId);
+
+		[OperationContract]
+		void RegisterClient(int clientProcessId);
+
+		[OperationContract]
+		void DeregisterClient(int clientProcessId);
+
+		[OperationContract]
+		void JumpToEntry(string entryId);
+
+		/// <summary>
+		/// mostly for unit testing
+		/// </summary>
+		[OperationContract]
+		bool IsInServerMode();
 	}
 
 	public interface IDictionary : IDisposable

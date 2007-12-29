@@ -37,12 +37,12 @@ namespace Palaso.Reporting
 			// _message
 			//
 			this._message.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._message.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._message.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._message.Location = new System.Drawing.Point(85, 40);
 			this._message.Multiline = true;
 			this._message.Name = "_message";
 			this._message.ReadOnly = true;
-			this._message.Size = new System.Drawing.Size(275, 126);
+			this._message.Size = new System.Drawing.Size(275, 167);
 			this._message.TabIndex = 0;
 			this._message.Text = "Blah blah";
 			//
@@ -58,7 +58,7 @@ namespace Palaso.Reporting
 			//
 			this._acceptButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._acceptButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._acceptButton.Location = new System.Drawing.Point(285, 188);
+			this._acceptButton.Location = new System.Drawing.Point(285, 228);
 			this._acceptButton.Name = "_acceptButton";
 			this._acceptButton.Size = new System.Drawing.Size(75, 23);
 			this._acceptButton.TabIndex = 0;
@@ -73,7 +73,7 @@ namespace Palaso.Reporting
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.CancelButton = this._acceptButton;
-			this.ClientSize = new System.Drawing.Size(372, 223);
+			this.ClientSize = new System.Drawing.Size(372, 263);
 			this.ControlBox = false;
 			this.Controls.Add(this._acceptButton);
 			this.Controls.Add(this._icon);

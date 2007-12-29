@@ -37,7 +37,7 @@ namespace SampleDictionaryServicesApplication
 
 			ServiceHost _dictionaryHost = new ServiceHost(_dictionary, new Uri[] { new Uri(DictionaryServiceAddress), });
 
-			_dictionaryHost.AddServiceEndpoint(typeof(ILookup), new NetNamedPipeBinding(),
+			_dictionaryHost.AddServiceEndpoint(typeof(IDictionaryService), new NetNamedPipeBinding(),
 												 DictionaryServiceAddress);
 			_dictionaryHost.Open();
 
