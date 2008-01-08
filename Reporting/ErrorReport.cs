@@ -156,16 +156,16 @@ namespace Palaso.Reporting
 			}
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		///make this false during automated testing
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static bool OkToInteractWithUser
-		{
-			set { s_isOkToInteractWithUser = value; }
-			get { return s_isOkToInteractWithUser; }
-		}
+//        /// ------------------------------------------------------------------------------------
+//        /// <summary>
+//        ///make this false during automated testing
+//        /// </summary>
+//        /// ------------------------------------------------------------------------------------
+//        public static bool OkToInteractWithUser
+//        {
+//            set { s_isOkToInteractWithUser = value; }
+//            get { return s_isOkToInteractWithUser; }
+//        }
 
 		/// <summary>
 		/// this overrides OkToInteractWithUser
@@ -287,7 +287,7 @@ namespace Palaso.Reporting
 			{
 				ErrorReport.s_previousNonFatalMessage = String.Format(message, args);
 			}
-			else if (ErrorReport.OkToInteractWithUser)
+			else if (ErrorReport.IsOkToInteractWithUser)
 			{
 				NonFatalErrorDialog.Show(String.Format(message, args),
 										 UsageReporter.AppNameToUseInDialogs + " Error",

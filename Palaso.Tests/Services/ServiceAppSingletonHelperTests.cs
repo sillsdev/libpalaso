@@ -49,17 +49,12 @@ namespace Palaso.Tests.Services
 		}
 
 		[Test]
-		public void InitiallyInServerModeWhenRequested()
+		public void StateIsStartingBeforeRunIsCalled()
 		{
 			ServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo2", false);
-			Assert.IsFalse(helper.InServerMode);
+			Assert.AreEqual(ServiceAppSingletonHelper.State.Starting, helper.CurrentState);
 		}
-		[Test]
-		public void InitiallyNotInServerModeWhenRequested()
-		{
-			ServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo3", true);
-			Assert.IsTrue(helper.InServerMode);
-		}
+
 		[Test]
 		public void SecondAttemptCallsBringToFront()
 		{
@@ -93,7 +88,7 @@ namespace Palaso.Tests.Services
 			System.Threading.Thread simulateFutureOpeningInUIMode = new Thread(new ThreadStart(MakeCall));
 			simulateFutureOpeningInUIMode.Start();
 			giveUpThread.Start();
-			helper.HandleRequestsUntilExitOrUIStart(On_StartUI);
+			helper.HandleEventsUntilExit(On_StartUI);
 			giveUpThread.Abort();
 			Assert.IsTrue(_startUICalled);
 		}

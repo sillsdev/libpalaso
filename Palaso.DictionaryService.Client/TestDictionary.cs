@@ -140,6 +140,22 @@ namespace Palaso.DictionaryService.Client
 			throw new NotImplementedException();
 		}
 
+		public string AddEntry(string lexemeFormWritingSystemId, string lexemeForm, string definitionWritingSystemId,
+							   string definition, string exampleWritingSystemId, string example)
+		{
+			throw new NotImplementedException();
+		}
+
+		public string GetCurrentUrl()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ShowUIWithUrl(string url)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool IsInServerMode()
 		{
 			throw new NotImplementedException();

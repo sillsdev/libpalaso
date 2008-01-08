@@ -5,10 +5,12 @@
 	<ProductVersion>8.0.50727</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{6E16866F-FF8D-4136-AD67-36AFE3626432}</ProjectGuid>
-	<OutputType>WinExe</OutputType>
+	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>PalasoUIWindowsForms.Tests</RootNamespace>
 	<AssemblyName>PalasoUIWindowsForms.Tests</AssemblyName>
+	<StartupObject>
+	</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -40,7 +42,6 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="Program.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
@@ -49,11 +50,11 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="SuperToolTipTestForm.resx">
+	<EmbeddedResource Include="SuperToolTip\SuperToolTipTestForm.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystemChooserTestForm.resx">
+	<EmbeddedResource Include="WritingSystems\WritingSystemChooserTestForm.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>WritingSystemChooserTestForm.cs</DependentUpon>
 	</EmbeddedResource>
@@ -71,17 +72,17 @@
 	  <DependentUpon>Settings.settings</DependentUpon>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	</Compile>
-	<Compile Include="SuperToolTipTestForm.cs">
+	<Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="SuperToolTipTestForm.Designer.cs">
+	<Compile Include="SuperToolTip\SuperToolTipTestForm.Designer.cs">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WindowsForms-SpecificWritingSystemTest.cs" />
-	<Compile Include="WritingSystemChooserTestForm.cs">
+	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
+	<Compile Include="WritingSystems\WritingSystemChooserTestForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="WritingSystemChooserTestForm.Designer.cs">
+	<Compile Include="WritingSystems\WritingSystemChooserTestForm.Designer.cs">
 	  <DependentUpon>WritingSystemChooserTestForm.cs</DependentUpon>
 	</Compile>
   </ItemGroup>

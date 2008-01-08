@@ -1,13 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.DictionaryService.Client;
-using Palaso.Services;
 using SampleDictionaryServicesApplication;
 
 namespace SampleDictionaryClientApp
@@ -23,7 +16,7 @@ namespace SampleDictionaryClientApp
 		{
 			try
 			{
-				IDictionaryService dictionaryService = GetDictionaryService();
+				IDictionaryService dictionaryService = GetDictionaryService(_dictionaryPath.Text);
 				if (dictionaryService == null)
 				{
 					_entryViewer.DocumentText = "Failed Get Dictionary Service";
@@ -46,19 +39,25 @@ namespace SampleDictionaryClientApp
 			}
 		}
 
-		private IDictionaryService GetDictionaryService()
+		private static string GetServiceAddress(string liftPath)
 		{
-			IDictionaryService dictionaryService = IPCUtils.GetExistingService<IDictionaryService>("net.pipe://localhost/DictionaryServices/qTest");
+			return "net.pipe://localhost/DictionaryServices/"
+				   + Uri.EscapeDataString(liftPath);
+		}
+
+		private IDictionaryService GetDictionaryService(string pathToLift)
+		{
+			IDictionaryService dictionaryService = IPCUtils.GetExistingService<IDictionaryService>(GetServiceAddress(pathToLift));
 			if (dictionaryService == null)
 			{
 				Cursor.Current = Cursors.WaitCursor;
 			   // System.Diagnostics.Process.Start("SampleDictionaryServicesApplication.exe", "-server");
 				string arguments = '"'+_dictionaryPath.Text +'"'+ " -server";
 				System.Diagnostics.Process.Start(@"c:\wesay\output\debug\wesay.app.exe", arguments);
-				for (int i = 0; i < 10; i++)
+				for (int i = 0; i < 20; i++)
 				{
 					System.Threading.Thread.Sleep(500);
-					dictionaryService = IPCUtils.GetExistingService<IDictionaryService>("net.pipe://localhost/DictionaryServices/"+_writingSystemId.Text);
+					dictionaryService = IPCUtils.GetExistingService<IDictionaryService>(GetServiceAddress(pathToLift));
 					if (dictionaryService != null)
 					{
 						break;
@@ -72,6 +71,58 @@ namespace SampleDictionaryClientApp
 		private void Form1_Load(object sender, EventArgs e)
 		{
 
+		}
+
+		private void _jumpButton_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				IDictionaryService dictionaryService = GetDictionaryService(_dictionaryPath.Text);
+				if (dictionaryService == null)
+				{
+					_entryViewer.DocumentText = "Failed Get Dictionary Service";
+					return;
+				}
+				string[] ids =
+					dictionaryService.GetIdsOfMatchingEntries(_writingSystemId.Text, _word.Text, FindMethods.Exact);
+				if (ids.Length == 0)
+				{
+					_entryViewer.DocumentText = "Not Found";
+				}
+				else
+				{
+					_entryViewer.DocumentText = "jumping to "+ids[0];
+					dictionaryService.JumpToEntry(ids[0]);
+				}
+			}
+			catch (Exception error)
+			{
+				_entryViewer.DocumentText = error.Message;
+			}
+		}
+
+		private void _addEntryButton_Click(object sender, EventArgs e)
+		{
+			IDictionaryService dictionaryService = GetDictionaryService(_dictionaryPath.Text);
+			if (dictionaryService == null)
+			{
+				_entryViewer.DocumentText = "Failed Get Dictionary Service";
+				return;
+			}
+
+			_entryViewer.DocumentText = "Adding";
+			string id =
+				dictionaryService.AddEntry(_writingSystemId.Text, _word.Text, "en",
+										   "Pretend definition of " + _word.Text,
+										   _writingSystemId.Text, "So I said '" + _word.Text + "'!");
+			if (string.IsNullOrEmpty(id))
+			{
+				_entryViewer.DocumentText = "Error adding";
+			}
+			else
+			{
+				_entryViewer.DocumentText = "New Entry id is " + id;
+			}
 		}
 	}
 }

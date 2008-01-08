@@ -23,6 +23,25 @@ namespace Palaso.DictionaryService.Client
 		void JumpToEntry(string entryId);
 
 		/// <summary>
+		/// Add a new entry to the lexicon
+		/// </summary>
+		/// <returns>the id that was assigned to the new entry</returns>
+		[OperationContract]
+		string AddEntry(string lexemeFormWritingSystemId, string lexemeForm,
+			string definitionWritingSystemId, string definition,
+			string exampleWritingSystemId, string example);
+
+		/// <summary>
+		/// this is useful for unit tests, to see if the app went where we asked
+		/// </summary>
+		/// <returns></returns>
+		[OperationContract]
+		string GetCurrentUrl();
+
+		[OperationContract]
+		void ShowUIWithUrl(string url);
+
+		/// <summary>
 		/// mostly for unit testing
 		/// </summary>
 		[OperationContract]

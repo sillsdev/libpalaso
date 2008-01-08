@@ -28,7 +28,7 @@ namespace SampleDictionaryServicesApplication
 		   {
 			   StartDictionaryServices();
 
-			   _serviceAppSingletonHelper.HandleRequestsUntilExitOrUIStart(StartUI);
+			   _serviceAppSingletonHelper.HandleEventsUntilExit(StartUI);
 		   }
 		}
 

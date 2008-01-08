@@ -35,6 +35,8 @@ namespace SampleDictionaryClientApp
 			this._writingSystemId = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
+			this._jumpButton = new System.Windows.Forms.Button();
+			this._addEntryButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// _lookupButton
@@ -55,16 +57,18 @@ namespace SampleDictionaryClientApp
 			this._entryViewer.Location = new System.Drawing.Point(8, 95);
 			this._entryViewer.MinimumSize = new System.Drawing.Size(20, 20);
 			this._entryViewer.Name = "_entryViewer";
-			this._entryViewer.Size = new System.Drawing.Size(272, 202);
+			this._entryViewer.Size = new System.Drawing.Size(444, 202);
 			this._entryViewer.TabIndex = 1;
 			//
 			// _word
 			//
+			this._word.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+			this._word.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.HistoryList;
 			this._word.Location = new System.Drawing.Point(102, 62);
 			this._word.Name = "_word";
 			this._word.Size = new System.Drawing.Size(97, 20);
 			this._word.TabIndex = 2;
-			this._word.Text = "mango";
+			this._word.Text = "aari";
 			//
 			// _dictionaryPath
 			//
@@ -100,18 +104,40 @@ namespace SampleDictionaryClientApp
 			this.label2.TabIndex = 3;
 			this.label2.Text = "Word";
 			//
+			// _jumpButton
+			//
+			this._jumpButton.Location = new System.Drawing.Point(286, 59);
+			this._jumpButton.Name = "_jumpButton";
+			this._jumpButton.Size = new System.Drawing.Size(75, 23);
+			this._jumpButton.TabIndex = 0;
+			this._jumpButton.Text = "Jump";
+			this._jumpButton.UseVisualStyleBackColor = true;
+			this._jumpButton.Click += new System.EventHandler(this._jumpButton_Click);
+			//
+			// _addEntryButton
+			//
+			this._addEntryButton.Location = new System.Drawing.Point(367, 60);
+			this._addEntryButton.Name = "_addEntryButton";
+			this._addEntryButton.Size = new System.Drawing.Size(75, 23);
+			this._addEntryButton.TabIndex = 4;
+			this._addEntryButton.Text = "Add";
+			this._addEntryButton.UseVisualStyleBackColor = true;
+			this._addEntryButton.Click += new System.EventHandler(this._addEntryButton_Click);
+			//
 			// Form1
 			//
 			this.AcceptButton = this._lookupButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(297, 322);
+			this.ClientSize = new System.Drawing.Size(469, 322);
+			this.Controls.Add(this._addEntryButton);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this._dictionaryPath);
 			this.Controls.Add(this._writingSystemId);
 			this.Controls.Add(this._word);
 			this.Controls.Add(this._entryViewer);
+			this.Controls.Add(this._jumpButton);
 			this.Controls.Add(this._lookupButton);
 			this.Name = "Form1";
 			this.Text = "Sample Dictionary Client";
@@ -130,5 +156,7 @@ namespace SampleDictionaryClientApp
 		private System.Windows.Forms.TextBox _writingSystemId;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button _jumpButton;
+		private System.Windows.Forms.Button _addEntryButton;
 	}
 }
