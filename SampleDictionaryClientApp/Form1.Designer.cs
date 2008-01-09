@@ -1,4 +1,4 @@
-namespace SampleDictionaryClientApp
+namespace Palaso.DictionaryService.SampleClient
 {
 	partial class Form1
 	{

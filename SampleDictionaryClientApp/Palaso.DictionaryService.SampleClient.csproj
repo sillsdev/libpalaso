@@ -7,8 +7,8 @@
 	<ProjectGuid>{06FD1066-C3C6-4132-A820-5CC501375B91}</ProjectGuid>
 	<OutputType>WinExe</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>SampleDictionaryClientApp</RootNamespace>
-	<AssemblyName>SampleDictionaryClientApp</AssemblyName>
+	<RootNamespace>Palaso.DictionaryService.SampleClient</RootNamespace>
+	<AssemblyName>Palaso.DictionaryService.SampleClient</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -56,6 +56,7 @@
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Resources.resx</DependentUpon>
+	  <DesignTime>True</DesignTime>
 	</Compile>
 	<None Include="Properties\Settings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>

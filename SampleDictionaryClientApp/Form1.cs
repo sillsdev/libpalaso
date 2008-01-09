@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Palaso.DictionaryService.Client;
 using SampleDictionaryServicesApplication;
 
-namespace SampleDictionaryClientApp
+namespace Palaso.DictionaryService.SampleClient
 {
 	public partial class Form1 : Form
 	{

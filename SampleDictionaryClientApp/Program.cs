@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace SampleDictionaryClientApp
+namespace Palaso.DictionaryService.SampleClient
 {
 	static class Program
 	{
