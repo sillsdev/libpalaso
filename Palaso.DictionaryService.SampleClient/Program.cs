@@ -1,20 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Palaso.DictionaryService.SampleClient
 {
 	static class Program
 	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
+		public static ServiceMinder serviceMinder;
+
 		[STAThread]
 		static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Form1());
+
+			serviceMinder = new ServiceMinder();
+			Application.Run(new MainWindow());
 		}
 	}
 }

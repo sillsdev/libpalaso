@@ -22,5 +22,53 @@ namespace Palaso.DictionaryService.SampleClient.Properties {
 				return defaultInstance;
 			}
 		}
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("en")]
+		public string WritingSystemIdForDefinitions {
+			get {
+				return ((string)(this["WritingSystemIdForDefinitions"]));
+			}
+			set {
+				this["WritingSystemIdForDefinitions"] = value;
+			}
+		}
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("xgs")]
+		public string WritingSystemIdForWords {
+			get {
+				return ((string)(this["WritingSystemIdForWords"]));
+			}
+			set {
+				this["WritingSystemIdForWords"] = value;
+			}
+		}
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("E:\\Users\\John\\Documents\\WeSay\\NooSupu\\noosupu.lift")]
+		public string PathToDictionary {
+			get {
+				return ((string)(this["PathToDictionary"]));
+			}
+			set {
+				this["PathToDictionary"] = value;
+			}
+		}
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("c:\\wesay\\output\\debug\\wesay.app.exe")]
+		public string PathToApplication {
+			get {
+				return ((string)(this["PathToApplication"]));
+			}
+			set {
+				this["PathToApplication"] = value;
+			}
+		}
 	}
 }
