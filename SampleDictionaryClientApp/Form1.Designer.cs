@@ -37,11 +37,13 @@ namespace SampleDictionaryClientApp
 			this.label2 = new System.Windows.Forms.Label();
 			this._jumpButton = new System.Windows.Forms.Button();
 			this._addEntryButton = new System.Windows.Forms.Button();
+			this._choicesList = new System.Windows.Forms.ListBox();
+			this._findSimilarButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// _lookupButton
 			//
-			this._lookupButton.Location = new System.Drawing.Point(205, 59);
+			this._lookupButton.Location = new System.Drawing.Point(171, 58);
 			this._lookupButton.Name = "_lookupButton";
 			this._lookupButton.Size = new System.Drawing.Size(75, 23);
 			this._lookupButton.TabIndex = 0;
@@ -54,17 +56,17 @@ namespace SampleDictionaryClientApp
 			this._entryViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._entryViewer.Location = new System.Drawing.Point(8, 95);
+			this._entryViewer.Location = new System.Drawing.Point(171, 95);
 			this._entryViewer.MinimumSize = new System.Drawing.Size(20, 20);
 			this._entryViewer.Name = "_entryViewer";
-			this._entryViewer.Size = new System.Drawing.Size(444, 202);
+			this._entryViewer.Size = new System.Drawing.Size(281, 202);
 			this._entryViewer.TabIndex = 1;
 			//
 			// _word
 			//
 			this._word.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
 			this._word.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.HistoryList;
-			this._word.Location = new System.Drawing.Point(102, 62);
+			this._word.Location = new System.Drawing.Point(48, 61);
 			this._word.Name = "_word";
 			this._word.Size = new System.Drawing.Size(97, 20);
 			this._word.TabIndex = 2;
@@ -106,7 +108,7 @@ namespace SampleDictionaryClientApp
 			//
 			// _jumpButton
 			//
-			this._jumpButton.Location = new System.Drawing.Point(286, 59);
+			this._jumpButton.Location = new System.Drawing.Point(264, 58);
 			this._jumpButton.Name = "_jumpButton";
 			this._jumpButton.Size = new System.Drawing.Size(75, 23);
 			this._jumpButton.TabIndex = 0;
@@ -116,7 +118,7 @@ namespace SampleDictionaryClientApp
 			//
 			// _addEntryButton
 			//
-			this._addEntryButton.Location = new System.Drawing.Point(367, 60);
+			this._addEntryButton.Location = new System.Drawing.Point(357, 58);
 			this._addEntryButton.Name = "_addEntryButton";
 			this._addEntryButton.Size = new System.Drawing.Size(75, 23);
 			this._addEntryButton.TabIndex = 4;
@@ -124,12 +126,31 @@ namespace SampleDictionaryClientApp
 			this._addEntryButton.UseVisualStyleBackColor = true;
 			this._addEntryButton.Click += new System.EventHandler(this._addEntryButton_Click);
 			//
+			// _choicesList
+			//
+			this._choicesList.FormattingEnabled = true;
+			this._choicesList.Location = new System.Drawing.Point(48, 165);
+			this._choicesList.Name = "_choicesList";
+			this._choicesList.Size = new System.Drawing.Size(97, 134);
+			this._choicesList.TabIndex = 5;
+			//
+			// _findSimilarButton
+			//
+			this._findSimilarButton.Location = new System.Drawing.Point(48, 136);
+			this._findSimilarButton.Name = "_findSimilarButton";
+			this._findSimilarButton.Size = new System.Drawing.Size(97, 23);
+			this._findSimilarButton.TabIndex = 0;
+			this._findSimilarButton.Text = "Find Similar";
+			this._findSimilarButton.UseVisualStyleBackColor = true;
+			this._findSimilarButton.Click += new System.EventHandler(this._findSimilarButton_Click);
+			//
 			// Form1
 			//
 			this.AcceptButton = this._lookupButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(469, 322);
+			this.Controls.Add(this._choicesList);
 			this.Controls.Add(this._addEntryButton);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -138,6 +159,7 @@ namespace SampleDictionaryClientApp
 			this.Controls.Add(this._word);
 			this.Controls.Add(this._entryViewer);
 			this.Controls.Add(this._jumpButton);
+			this.Controls.Add(this._findSimilarButton);
 			this.Controls.Add(this._lookupButton);
 			this.Name = "Form1";
 			this.Text = "Sample Dictionary Client";
@@ -158,5 +180,7 @@ namespace SampleDictionaryClientApp
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button _jumpButton;
 		private System.Windows.Forms.Button _addEntryButton;
+		private System.Windows.Forms.ListBox _choicesList;
+		private System.Windows.Forms.Button _findSimilarButton;
 	}
 }

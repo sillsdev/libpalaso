@@ -22,8 +22,9 @@ namespace SampleDictionaryClientApp
 					_entryViewer.DocumentText = "Failed Get Dictionary Service";
 					return;
 				}
-				string[] ids =
-					dictionaryService.GetIdsOfMatchingEntries(_writingSystemId.Text, _word.Text, FindMethods.Exact);
+				string[] ids;
+				string[] forms;
+				dictionaryService.GetMatchingEntries(_writingSystemId.Text, _word.Text, FindMethods.Exact, out ids, out forms);
 				if (ids.Length == 0)
 				{
 					_entryViewer.DocumentText = "Not Found";
@@ -83,8 +84,9 @@ namespace SampleDictionaryClientApp
 					_entryViewer.DocumentText = "Failed Get Dictionary Service";
 					return;
 				}
-				string[] ids =
-					dictionaryService.GetIdsOfMatchingEntries(_writingSystemId.Text, _word.Text, FindMethods.Exact);
+				string[] ids;
+				string[] forms;
+			   dictionaryService.GetMatchingEntries(_writingSystemId.Text, _word.Text, FindMethods.Exact, out ids, out forms);
 				if (ids.Length == 0)
 				{
 					_entryViewer.DocumentText = "Not Found";
@@ -123,6 +125,42 @@ namespace SampleDictionaryClientApp
 			{
 				_entryViewer.DocumentText = "New Entry id is " + id;
 			}
+		}
+
+		private void _findSimilarButton_Click(object sender, EventArgs e)
+		{
+			_choicesList.Items.Clear();
+			try
+			{
+				IDictionaryService dictionaryService = GetDictionaryService(_dictionaryPath.Text);
+				if (dictionaryService == null)
+				{
+					_entryViewer.DocumentText = "Failed Get Dictionary Service";
+					return;
+				}
+				string[] ids;
+				string[] forms;
+				dictionaryService.GetMatchingEntries(_writingSystemId.Text, _word.Text, FindMethods.DefaultApproximate, out ids, out forms);
+				if (ids.Length == 0)
+				{
+					_entryViewer.DocumentText = "Not Found";
+				}
+				else
+				{
+					_entryViewer.DocumentText = "Found " + ids.Length;
+//                    string[] forms =
+//                        dictionaryService.GetFormsFromIds(_writingSystemId.Text, ids);
+					foreach (string form in forms)
+					{
+							_choicesList.Items.Add(form);
+					}
+				}
+			}
+			catch (Exception error)
+			{
+				_entryViewer.DocumentText = error.Message;
+			}
+
 		}
 	}
 }

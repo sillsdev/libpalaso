@@ -115,9 +115,10 @@ namespace Palaso.DictionaryService.Client
 
 
 
-		public string[] GetIdsOfMatchingEntries(string writingSystemId, string form, FindMethods method)
+		public void GetMatchingEntries(string writingSystemId, string form, FindMethods method, out string[] ids,
+									   out string[] forms)
 		{
-			return new string[0];
+			throw new NotImplementedException();
 		}
 
 		public string GetHmtlForEntry(string entryId)
@@ -157,6 +158,11 @@ namespace Palaso.DictionaryService.Client
 		}
 
 		public bool IsInServerMode()
+		{
+			throw new NotImplementedException();
+		}
+
+		public string[] GetFormsFromIds(string text, string[] ids)
 		{
 			throw new NotImplementedException();
 		}

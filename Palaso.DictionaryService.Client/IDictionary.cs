@@ -8,7 +8,7 @@ namespace Palaso.DictionaryService.Client
 	public interface IDictionaryService
 	{
 		[OperationContract]
-		string[] GetIdsOfMatchingEntries(string writingSystemId, string form, FindMethods method);
+		void GetMatchingEntries(string writingSystemId, string form, FindMethods method, out string[] ids, out string[] forms);
 
 		[OperationContract]
 		string GetHmtlForEntry(string entryId);
@@ -46,6 +46,15 @@ namespace Palaso.DictionaryService.Client
 		/// </summary>
 		[OperationContract]
 		bool IsInServerMode();
+
+		/// <summary>
+		/// Given an array of ids, get an array of forms to show
+		/// </summary>
+		/// <param name="writingSytemId">The writing system you want the form in</param>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		[OperationContract]
+		string[] GetFormsFromIds(string writingSytemId, string[] ids);
 	}
 
 	public interface IDictionary : IDisposable
