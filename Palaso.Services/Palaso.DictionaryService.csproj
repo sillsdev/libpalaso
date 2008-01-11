@@ -38,8 +38,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="DictionaryAccessor.cs" />
-	<Compile Include="IEntry.cs" />
-	<Compile Include="IDictionary.cs" />
+	<Compile Include="IDictionaryService.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
