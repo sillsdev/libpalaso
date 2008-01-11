@@ -7,8 +7,8 @@
 	<ProjectGuid>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.DictionaryService</RootNamespace>
-	<AssemblyName>Palaso.DictionaryService</AssemblyName>
+	<RootNamespace>Palaso.Services</RootNamespace>
+	<AssemblyName>Palaso.Services</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -37,8 +37,8 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="DictionaryAccessor.cs" />
-	<Compile Include="IDictionaryService.cs" />
+	<Compile Include="Dictionary\DictionaryAccessor.cs" />
+	<Compile Include="Dictionary\IDictionaryService.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -37,14 +37,14 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="DictionaryAccessorTests.cs" />
+	<Compile Include="Dictionary\DictionaryAccessorTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="TypicalUsage.cs" />
+	<Compile Include="Dictionary\TypicalUsage.cs" />
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\Palaso.DictionaryService\Palaso.DictionaryService.csproj">
+	<ProjectReference Include="..\Palaso.Services\Palaso.Services.csproj">
 	  <Project>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</Project>
-	  <Name>Palaso.DictionaryService</Name>
+	  <Name>Palaso.Services</Name>
 	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
