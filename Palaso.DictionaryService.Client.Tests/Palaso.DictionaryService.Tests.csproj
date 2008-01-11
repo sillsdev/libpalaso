@@ -37,12 +37,12 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="DictionaryTests.cs" />
+	<Compile Include="DictionaryAccessorTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="TypicalUsage.cs" />
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\Palaso.DictionaryService.Client\Palaso.DictionaryService.csproj">
+	<ProjectReference Include="..\Palaso.DictionaryService\Palaso.DictionaryService.csproj">
 	  <Project>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</Project>
 	  <Name>Palaso.DictionaryService</Name>
 	</ProjectReference>
