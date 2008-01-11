@@ -7,8 +7,8 @@
 	<ProjectGuid>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.DictionaryService.Client</RootNamespace>
-	<AssemblyName>Palaso.DictionaryService.Client</AssemblyName>
+	<RootNamespace>Palaso.DictionaryService</RootNamespace>
+	<AssemblyName>Palaso.DictionaryService</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>

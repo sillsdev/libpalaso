@@ -37,13 +37,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp", "TestAp
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryService.Client", "Palaso.DictionaryService.Client\Palaso.DictionaryService.Client.csproj", "{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryService", "Palaso.DictionaryService.Client\Palaso.DictionaryService.csproj", "{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryService.Client.Tests", "Palaso.DictionaryService.Client.Tests\Palaso.DictionaryService.Client.Tests.csproj", "{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryService.Tests", "Palaso.DictionaryService.Client.Tests\Palaso.DictionaryService.Tests.csproj", "{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
