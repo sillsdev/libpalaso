@@ -1,11 +1,11 @@
 using System;
 using System.Windows.Forms;
+using Palaso.DictionaryService.SampleClient.Properties;
 
 namespace Palaso.DictionaryService.SampleClient
 {
 	static class Program
 	{
-		public static ServiceMinder serviceMinder;
 
 		[STAThread]
 		static void Main()
@@ -13,8 +13,9 @@ namespace Palaso.DictionaryService.SampleClient
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			serviceMinder = new ServiceMinder();
+
 			Application.Run(new MainWindow());
+			Settings.Default.Save();
 		}
 	}
 }

@@ -8,6 +8,7 @@ namespace Palaso.DictionaryService.SampleClient
 	public partial class LookupControl : UserControl
 	{
 		private bool _pauseListChangeDetection;
+		private DictionaryAccessor _dictionaryAccessor;
 
 		public LookupControl()
 		{
@@ -37,6 +38,16 @@ namespace Palaso.DictionaryService.SampleClient
 			}
 		}
 
+		public DictionaryAccessor DictionaryAccessor
+		{
+			get { return _dictionaryAccessor; }
+			set
+			{
+				_dictionaryAccessor = value;
+				this.Enabled = (_dictionaryAccessor != null);
+			}
+		}
+
 		private void OnChoicesList_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if(_pauseListChangeDetection)
@@ -53,8 +64,7 @@ namespace Palaso.DictionaryService.SampleClient
 			string html;
 			try
 			{
-				IDictionaryService service = Program.serviceMinder.GetDictionaryService();
-				html = service.GetHmtlForEntry(item.Id);
+				html = _dictionaryAccessor.GetHmtlForEntry(item.Id);
 			}
 			catch (Exception error)
 			{
@@ -85,8 +95,7 @@ namespace Palaso.DictionaryService.SampleClient
 
 			try
 			{
-				IDictionaryService service = Program.serviceMinder.GetDictionaryService();
-				service.GetMatchingEntries(Settings.Default.WritingSystemIdForWords, _word.Text,
+				_dictionaryAccessor.GetMatchingEntries(Settings.Default.WritingSystemIdForWords, _word.Text,
 										   FindMethods.DefaultApproximate, out ids, out forms);
 			}
 			catch (Exception error)
@@ -124,8 +133,7 @@ namespace Palaso.DictionaryService.SampleClient
 
 			try
 			{
-				IDictionaryService service = Program.serviceMinder.GetDictionaryService();
-				service.JumpToEntry(item.Id);
+				_dictionaryAccessor.JumpToEntry(item.Id);
 			}
 			catch (Exception error)
 			{

@@ -37,13 +37,10 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="DictionaryAccessor.cs" />
 	<Compile Include="IEntry.cs" />
-	<Compile Include="TestDictionary.cs" />
-	<Compile Include="TestDictionaryServer.cs" />
-	<Compile Include="TestEntry.cs" />
 	<Compile Include="IDictionary.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="ServiceFinder.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">

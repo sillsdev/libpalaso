@@ -13,7 +13,7 @@ namespace Palaso.DictionaryService.Client.Tests
 	[TestFixture]
 	public class TypicalUsage
 	{
-
+		/*
 		[Test]
 		public void LookupAWordAndDisplayArticle()
 		{
@@ -98,5 +98,6 @@ namespace Palaso.DictionaryService.Client.Tests
 			htmlBuilder.Append("</body></html>");
 			Debug.WriteLine(htmlBuilder.ToString());
 		}
+		 * */
 	}
 }

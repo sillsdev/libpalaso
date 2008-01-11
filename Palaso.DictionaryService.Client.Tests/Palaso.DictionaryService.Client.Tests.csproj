@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="DictionaryTests.cs" />
-	<Compile Include="ServiceFinderTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="TypicalUsage.cs" />
   </ItemGroup>

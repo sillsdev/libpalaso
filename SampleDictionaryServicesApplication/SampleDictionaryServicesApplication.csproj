@@ -77,6 +77,10 @@
 	  <Project>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</Project>
 	  <Name>Palaso.DictionaryService.Client</Name>
 	</ProjectReference>
+	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
+	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
+	  <Name>PalasoUIWindowsForms</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>

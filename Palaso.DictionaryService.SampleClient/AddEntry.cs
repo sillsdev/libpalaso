@@ -7,9 +7,21 @@ namespace Palaso.DictionaryService.SampleClient
 {
 	public partial class AddEntry : UserControl
 	{
+		private DictionaryAccessor _dictionaryAccessor;
+
 		public AddEntry()
 		{
 			InitializeComponent();
+		}
+
+		public DictionaryAccessor DictionaryAccessor
+		{
+			get { return _dictionaryAccessor; }
+			set
+			{
+				_dictionaryAccessor = value;
+				this.Enabled = (_dictionaryAccessor != null);
+			}
 		}
 
 		private void OnAddButton_Click(object sender, EventArgs e)
@@ -17,12 +29,9 @@ namespace Palaso.DictionaryService.SampleClient
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				IDictionaryService service = Program.serviceMinder.GetDictionaryService();
-
-
 				MainWindow.Logger.Log("Adding");
 				string id =
-					service.AddEntry(Settings.Default.WritingSystemIdForWords, this._word.Text,
+					_dictionaryAccessor.AddEntry(Settings.Default.WritingSystemIdForWords, this._word.Text,
 									 Settings.Default.WritingSystemIdForDefinitions,
 									 _definition.Text.Trim(),
 									 Settings.Default.WritingSystemIdForWords, _example.Text.Trim());
