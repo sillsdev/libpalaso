@@ -1,8 +1,9 @@
 using System;
 using System.Windows.Forms;
-using Palaso.DictionaryService.SampleClient.Properties;
+using Palaso.Services.Dictionary.SampleClient;
+using Palaso.Services.Dictionary.SampleClient.Properties;
 
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	static class Program
 	{

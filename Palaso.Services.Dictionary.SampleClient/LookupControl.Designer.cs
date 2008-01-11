@@ -1,4 +1,4 @@
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	partial class LookupControl
 	{
@@ -39,7 +39,7 @@ namespace Palaso.DictionaryService.SampleClient
 			// _choicesList
 			//
 			this._choicesList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)));
+																			 | System.Windows.Forms.AnchorStyles.Left)));
 			this._choicesList.FormattingEnabled = true;
 			this._choicesList.Location = new System.Drawing.Point(53, 40);
 			this._choicesList.Name = "_choicesList";
@@ -71,8 +71,8 @@ namespace Palaso.DictionaryService.SampleClient
 			//
 			this._entryViewer.AllowWebBrowserDrop = false;
 			this._entryViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+																			  | System.Windows.Forms.AnchorStyles.Left)
+																			 | System.Windows.Forms.AnchorStyles.Right)));
 			this._entryViewer.Location = new System.Drawing.Point(176, 43);
 			this._entryViewer.MinimumSize = new System.Drawing.Size(20, 20);
 			this._entryViewer.Name = "_entryViewer";

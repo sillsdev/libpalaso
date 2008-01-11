@@ -7,8 +7,8 @@
 	<ProjectGuid>{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.DictionaryService.Tests</RootNamespace>
-	<AssemblyName>Palaso.DictionaryService.Tests</AssemblyName>
+	<RootNamespace>Palaso.Services.Tests</RootNamespace>
+	<AssemblyName>Palaso.Services.Tests</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>

@@ -55,7 +55,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Services.Tests", "Pa
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Service.Dictionary.SampleClient", "Palaso.Services.Dictionary.SampleClient\Palaso.Service.Dictionary.SampleClient.csproj", "{06FD1066-C3C6-4132-A820-5CC501375B91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Services.Dictionary.SampleClient", "Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.csproj", "{06FD1066-C3C6-4132-A820-5CC501375B91}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTasks", "Palaso.MSBuildTasks\Palaso.BuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -107,6 +113,10 @@ Global
 		{06FD1066-C3C6-4132-A820-5CC501375B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06FD1066-C3C6-4132-A820-5CC501375B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06FD1066-C3C6-4132-A820-5CC501375B91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,10 +2,10 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
-using Palaso.DictionaryService.Client;
-using Palaso.DictionaryService.SampleClient.Properties;
+using Palaso.Services.Dictionary;
+using Palaso.Services.Dictionary.SampleClient.Properties;
 
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	public partial class MainWindow : Form
 	{
@@ -14,8 +14,8 @@ namespace Palaso.DictionaryService.SampleClient
 
 		public MainWindow()
 		{
-		   InitializeComponent();
-		 }
+			InitializeComponent();
+		}
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
@@ -45,7 +45,7 @@ namespace Palaso.DictionaryService.SampleClient
 			bool dictionaryPathLooksReasonable = !string.IsNullOrEmpty(Settings.Default.PathToDictionary) &&
 												 File.Exists(Settings.Default.PathToDictionary);
 			bool applicationPathLooksReasonable = !string.IsNullOrEmpty(Settings.Default.PathToApplication) &&
-												 File.Exists(Settings.Default.PathToApplication);
+												  File.Exists(Settings.Default.PathToApplication);
 			if (dictionaryPathLooksReasonable && applicationPathLooksReasonable)
 			{
 				this.Text = Path.GetFileName(Settings.Default.PathToDictionary) + " - " + Application.ProductName;
@@ -74,5 +74,4 @@ namespace Palaso.DictionaryService.SampleClient
 
 
 	}
-
 }

@@ -1,9 +1,8 @@
 using System;
 using System.Diagnostics;
-using Palaso.DictionaryService.Client;
 using SampleDictionaryServicesApplication;
 
-namespace Palaso.DictionaryService.Client
+namespace Palaso.Services.Dictionary
 {
 	public class DictionaryAccessor : IDisposable
 	{

@@ -2,11 +2,11 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
-using Palaso.DictionaryService.SampleClient.Properties;
+using Palaso.Services.Dictionary.SampleClient.Properties;
 using Palaso.UI.WindowsForms;
 using Palaso.UI.WindowsForms.PropertyBag_NoTests;
 
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	public partial class SettingsControl : UserControl
 	{

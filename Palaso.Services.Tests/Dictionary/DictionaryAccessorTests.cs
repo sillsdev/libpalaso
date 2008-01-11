@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.DictionaryService.Client;
+using Palaso.Services.Dictionary;
 
-namespace Palaso.DictionaryService.Tests
+namespace Palaso.Services.Dictionary.Tests
 {
 	[TestFixture]
 	public class DictionaryAccessorTests

@@ -7,8 +7,8 @@
 	<ProjectGuid>{06FD1066-C3C6-4132-A820-5CC501375B91}</ProjectGuid>
 	<OutputType>WinExe</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.DictionaryService.SampleClient</RootNamespace>
-	<AssemblyName>Palaso.DictionaryService.SampleClient</AssemblyName>
+	<RootNamespace>Palaso.Services.Dictionary.SampleClient</RootNamespace>
+	<AssemblyName>Palaso.Services.Dictionary.SampleClient</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>

@@ -1,9 +1,9 @@
 using System;
 using System.Windows.Forms;
-using Palaso.DictionaryService.Client;
+using Palaso.Services.Dictionary;
 using SampleDictionaryServicesApplication;
 
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	public partial class Form1 : Form
 	{

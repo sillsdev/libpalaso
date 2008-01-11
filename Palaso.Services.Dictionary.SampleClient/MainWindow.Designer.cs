@@ -1,4 +1,6 @@
-namespace Palaso.DictionaryService.SampleClient
+using Palaso.Services.Dictionary.SampleClient;
+
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	partial class MainWindow
 	{
@@ -30,11 +32,11 @@ namespace Palaso.DictionaryService.SampleClient
 		{
 			this._tabControl = new System.Windows.Forms.TabControl();
 			this._lookupTabPage = new System.Windows.Forms.TabPage();
-			this.lookupControl1 = new Palaso.DictionaryService.SampleClient.LookupControl();
+			this.lookupControl1 = new Palaso.Services.Dictionary.SampleClient.LookupControl();
 			this._addEntryTabPage = new System.Windows.Forms.TabPage();
-			this.addEntry1 = new Palaso.DictionaryService.SampleClient.AddEntry();
+			this.addEntry1 = new Palaso.Services.Dictionary.SampleClient.AddEntry();
 			this._settingsTabPage = new System.Windows.Forms.TabPage();
-			this.settingsControl1 = new Palaso.DictionaryService.SampleClient.SettingsControl();
+			this.settingsControl1 = new Palaso.Services.Dictionary.SampleClient.SettingsControl();
 			this._logText = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this._tabControl.SuspendLayout();
@@ -46,8 +48,8 @@ namespace Palaso.DictionaryService.SampleClient
 			// _tabControl
 			//
 			this._tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+																			 | System.Windows.Forms.AnchorStyles.Left)
+																			| System.Windows.Forms.AnchorStyles.Right)));
 			this._tabControl.Controls.Add(this._lookupTabPage);
 			this._tabControl.Controls.Add(this._addEntryTabPage);
 			this._tabControl.Controls.Add(this._settingsTabPage);

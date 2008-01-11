@@ -1,9 +1,9 @@
 using System;
 using System.Windows.Forms;
-using Palaso.DictionaryService.Client;
-using Palaso.DictionaryService.SampleClient.Properties;
+using Palaso.Services.Dictionary.SampleClient;
+using Palaso.Services.Dictionary.SampleClient.Properties;
 
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	public partial class LookupControl : UserControl
 	{
@@ -96,7 +96,7 @@ namespace Palaso.DictionaryService.SampleClient
 			try
 			{
 				_dictionaryAccessor.GetMatchingEntries(Settings.Default.WritingSystemIdForWords, _word.Text,
-										   FindMethods.DefaultApproximate, out ids, out forms);
+													   FindMethods.DefaultApproximate, out ids, out forms);
 			}
 			catch (Exception error)
 			{
@@ -146,23 +146,23 @@ namespace Palaso.DictionaryService.SampleClient
 
 		private void UpdateDisplay()
 		{
-		   WordListItem item = _choicesList.SelectedItem as WordListItem;
-		   if (item == null)
-		   {
-			   _jumpLink.Enabled = false;
-			   _jumpLink.Text = "";
-		   }
-		   else
-		   {
-			   _jumpLink.Text = string.Format("Jump to {0} in dictionary application", item);
-			   _jumpLink.Enabled = true;
-		   }
+			WordListItem item = _choicesList.SelectedItem as WordListItem;
+			if (item == null)
+			{
+				_jumpLink.Enabled = false;
+				_jumpLink.Text = "";
+			}
+			else
+			{
+				_jumpLink.Text = string.Format("Jump to {0} in dictionary application", item);
+				_jumpLink.Enabled = true;
+			}
 			_findSimilarButton.Enabled = !string.IsNullOrEmpty(_word.Text);
-	   }
+		}
 
 		private void LookupControl_Load(object sender, EventArgs e)
 		{
-		   //not working!
+			//not working!
 			_entryViewer.Refresh();
 			_entryViewer.DocumentText = string.Format(@"<html><body></body></html>");
 			_entryViewer.Refresh();

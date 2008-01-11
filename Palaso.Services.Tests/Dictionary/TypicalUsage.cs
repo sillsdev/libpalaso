@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using NUnit.Framework;
 
-namespace Palaso.DictionaryService.Client.Tests
+namespace Palaso.Services.Dictionary.Client.Tests
 {
 	/// <summary>
 	/// These are not really testing much. Rather, they are working

@@ -1,9 +1,9 @@
 using System;
 using System.Windows.Forms;
-using Palaso.DictionaryService.Client;
-using Palaso.DictionaryService.SampleClient.Properties;
+using Palaso.Services.Dictionary.SampleClient;
+using Palaso.Services.Dictionary.SampleClient.Properties;
 
-namespace Palaso.DictionaryService.SampleClient
+namespace Palaso.Services.Dictionary.SampleClient
 {
 	public partial class AddEntry : UserControl
 	{
@@ -32,9 +32,9 @@ namespace Palaso.DictionaryService.SampleClient
 				MainWindow.Logger.Log("Adding");
 				string id =
 					_dictionaryAccessor.AddEntry(Settings.Default.WritingSystemIdForWords, this._word.Text,
-									 Settings.Default.WritingSystemIdForDefinitions,
-									 _definition.Text.Trim(),
-									 Settings.Default.WritingSystemIdForWords, _example.Text.Trim());
+												 Settings.Default.WritingSystemIdForDefinitions,
+												 _definition.Text.Trim(),
+												 Settings.Default.WritingSystemIdForWords, _example.Text.Trim());
 
 
 				if (string.IsNullOrEmpty(id))

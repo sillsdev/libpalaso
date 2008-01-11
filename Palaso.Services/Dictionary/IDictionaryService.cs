@@ -1,6 +1,6 @@
 using System.ServiceModel;
 
-namespace Palaso.DictionaryService.Client
+namespace Palaso.Services.Dictionary
 {
 	[ServiceContract]
 	public interface IDictionaryService
@@ -54,8 +54,8 @@ namespace Palaso.DictionaryService.Client
 		/// <returns>the id that was assigned to the new entry</returns>
 		[OperationContract]
 		string AddEntry(string lexemeFormWritingSystemId, string lexemeForm,
-			string definitionWritingSystemId, string definition,
-			string exampleWritingSystemId, string example);
+						string definitionWritingSystemId, string definition,
+						string exampleWritingSystemId, string example);
 
 		/// <summary>
 		/// this is useful for unit tests, to see if the app went where we asked
@@ -86,20 +86,9 @@ namespace Palaso.DictionaryService.Client
 
 	}
 
-
 	public enum FindMethods
 	{
 		Exact,
 		DefaultApproximate
 	}
-//    public enum ArticleCompositionFlags
-//    {
-//        Simple = 3,
-//        Definition = 1,
-//        Example = 2,
-//        Synonyms = 4,
-//        Antonyms = 8,
-//        RelatedByDomain = 16,
-//        Everything = 255
-//    } ;
 }
