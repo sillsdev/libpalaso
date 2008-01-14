@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 
-namespace Palaso.Services
+namespace Palaso.Services.ForServers
 {
 	/// <summary>
 	/// this is the outward-facing contract. Other apps talk to this one through these methods.
@@ -15,12 +15,6 @@ namespace Palaso.Services
 	{
 		[OperationContract]
 		void BringToFront();
-// TODO move this to actual service?
-//        [OperationContract]
-//        void ClientAttach(string clientId);
-//
-//        [OperationContract]
-//        void ClientDetach(string clientId);
 	}
 
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
@@ -41,20 +35,5 @@ namespace Palaso.Services
 				BringToFrontRequest.Invoke(this, null);
 			}
 		}
-		//// TODO move this to actual service?
-//        public void ClientAttach(string clientId)
-//        {
-//            if(!ClientIds.Contains(clientId))
-//            {
-//                ClientIds.Add(clientId);
-//            }
-//        }
-//        public void ClientDetach(string clientId)
-//        {
-//            if (ClientIds.Contains(clientId))
-//            {
-//                ClientIds.Remove(clientId);
-//            }
-//        }
 	}
 }

@@ -39,7 +39,10 @@
   <ItemGroup>
 	<Compile Include="Dictionary\DictionaryAccessor.cs" />
 	<Compile Include="Dictionary\IDictionaryService.cs" />
+	<Compile Include="ForClients\IPCUtils.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="ForServers\ServiceAppConnector.cs" />
+	<Compile Include="ForServers\ServiceAppSingletonHelper.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using SampleDictionaryServicesApplication;
+using Palaso.Services.ForClients;
 
 namespace Palaso.Services.Dictionary
 {
@@ -121,15 +121,13 @@ namespace Palaso.Services.Dictionary
 		}
 
 		/// <summary>
-		/// Get an HTML representation of the entry, suitable for concatenating
-		/// with other stuff (or other entries). In other words, this will not
-		/// come surrounded by an <html> tag
+		/// Get an HTML representation of one or more entries.
 		/// </summary>
-		/// <param name="entryId"></param>
+		/// <param name="entryIds"></param>
 		/// <returns></returns>
-		public string GetHmtlForEntry(string entryId)
+		public string GetHtmlForEntries(string[] entryIds)
 		{
-			return Service.GetHmtlForEntry(entryId);
+			return Service.GetHtmlForEntries(entryIds);
 		}
 
 

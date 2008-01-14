@@ -32,10 +32,6 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\icu.net.dll</HintPath>
 	</Reference>
-	<Reference Include="Mono.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Mono.ServiceModel.dll</HintPath>
-	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.XML" />
@@ -56,9 +52,6 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resource.resx</DependentUpon>
 	</Compile>
-	<Compile Include="Services\IPCUtils.cs" />
-	<Compile Include="Services\ServiceAppConnector.cs" />
-	<Compile Include="Services\ServiceAppSingletonHelper.cs" />
 	<Compile Include="SFMReader.cs">
 	  <SubType>Code</SubType>
 	</Compile>

@@ -64,7 +64,7 @@ namespace Palaso.Services.Dictionary.SampleClient
 			string html;
 			try
 			{
-				html = _dictionaryAccessor.GetHmtlForEntry(item.Id);
+				html = _dictionaryAccessor.GetHtmlForEntries(new string[] { item.Id });
 			}
 			catch (Exception error)
 			{

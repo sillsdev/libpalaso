@@ -2,9 +2,10 @@ using System;
 using System.Diagnostics;
 using System.ServiceModel;
 using System.Threading;
-using SampleDictionaryServicesApplication;
+using Palaso.Services.ForClients;
+using Palaso.Services.ForServers;
 
-namespace Palaso.Services
+namespace Palaso.Services.ForServers
 {
 	/// <summary>
 	/// Use this class to export services from a user application.  It helps
@@ -60,6 +61,10 @@ namespace Palaso.Services
 		public void UiReadyForEvents()
 		{
 			_state = State.UiMode;
+			if (BringToFrontRequest != null)
+			{
+				BringToFrontRequest.Invoke(this, null);
+			}
 		}
 
 		public void EnsureUIRunningAndInFront()
@@ -210,6 +215,4 @@ namespace Palaso.Services
 		}
 
 	}
-
-
 }

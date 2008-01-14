@@ -42,12 +42,6 @@
 	<Compile Include="AddEntry.Designer.cs">
 	  <DependentUpon>AddEntry.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Form1.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Form1.Designer.cs">
-	  <DependentUpon>Form1.cs</DependentUpon>
-	</Compile>
 	<Compile Include="LookupControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -65,10 +59,6 @@
 	<EmbeddedResource Include="AddEntry.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>AddEntry.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Form1.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>Form1.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="LookupControl.resx">
 	  <SubType>Designer</SubType>

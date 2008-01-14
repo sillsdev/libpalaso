@@ -18,14 +18,15 @@ namespace Palaso.Services.Dictionary
 		void GetMatchingEntries(string writingSystemId, string form, FindMethods method, out string[] ids, out string[] forms);
 
 		/// <summary>
-		/// Get an HTML representation of the entry, suitable for concatenating
-		/// with other stuff (or other entries). In other words, this will not
-		/// come surrounded by an <html> tag
+		/// Get an HTML representation of one or more entries.
 		/// </summary>
-		/// <param name="entryId"></param>
+		/// <remarks>I had originally planned this to just be a fragment, which is more composable,
+		/// but that then left us with the problem of where to get the style definitions, if we
+		/// don't have an html header.</remarks>
+		/// <param name="entryIds"></param>
 		/// <returns></returns>
 		[OperationContract]
-		string GetHmtlForEntry(string entryId);
+		string GetHtmlForEntries(string[] entryIds);
 
 		/// <summary>
 		/// Used to help the dictionary service app know when to quit

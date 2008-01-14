@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.ServiceModel;
-using System.Text;
 
-namespace SampleDictionaryServicesApplication
+namespace Palaso.Services.ForClients
 {
 	public class IPCUtils
 	{
@@ -14,7 +11,7 @@ namespace SampleDictionaryServicesApplication
 			ChannelFactory<ServiceInterface> channelFactory;
 			channelFactory = new ChannelFactory<ServiceInterface>(
 				new NetNamedPipeBinding(),
-			   address);
+				address);
 
 			ServiceInterface helper = channelFactory.CreateChannel();
 			try

@@ -4,9 +4,9 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
-using Palaso.Services;
+using Palaso.Services.ForServers;
 
-namespace Palaso.Tests.Services
+namespace Palaso.Services.Tests.ForServers
 {
 	[TestFixture]
 	public class ServiceAppSingletonHelperTests
@@ -51,7 +51,7 @@ namespace Palaso.Tests.Services
 		[Test]
 		public void StateIsStartingBeforeRunIsCalled()
 		{
-			ServiceAppSingletonHelper helper = Palaso.Services.ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo2", false);
+			ServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo2", false);
 			Assert.AreEqual(ServiceAppSingletonHelper.State.Starting, helper.CurrentState);
 		}
 
