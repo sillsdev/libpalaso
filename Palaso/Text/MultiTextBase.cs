@@ -285,10 +285,9 @@ namespace Palaso.Text
 		{
 			get
 			{
-				Debug.Assert(_forms != null, "Forms was null. Is this an old cache?");
 				if (_forms == null)
 				{
-					_forms = new LanguageForm[0];
+					 throw new ApplicationException("The LanguageForms[] attribute of this entry was null.  This is a symptom of a mismatch between a cache and WeSay model.  Please delete the cache.");
 				}
 				return _forms;
 			}
