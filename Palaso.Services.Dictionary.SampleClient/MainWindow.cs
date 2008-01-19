@@ -19,7 +19,11 @@ namespace Palaso.Services.Dictionary.SampleClient
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			_dictionaryAccessor.Dispose();
+			if(_dictionaryAccessor !=null)
+			{
+				_dictionaryAccessor.Dispose();
+			}
+
 			base.OnClosing(e);
 		}
 
