@@ -17,7 +17,8 @@ namespace Palaso.Services.ForServers
 		void BringToFront();
 	}
 
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
+		IncludeExceptionDetailInFaults = true)]
 	public class ServiceAppConnector : IServiceAppConnector
 	{
 		public event EventHandler BringToFrontRequest;

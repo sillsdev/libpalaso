@@ -29,6 +29,14 @@ namespace Palaso.Services.ForServers
 		private readonly string _pipeName;
 		public event EventHandler BringToFrontRequest;
 
+		/// <summary>
+		/// Attempts to locate an already-running instance of the program with the given pipe
+		/// (e.g., open on the same document).  If it finds one, it asks it to come to the front.
+		/// If it can't find one, it claims that pipe and returns a new ServiceAppSingletonHelper
+		/// </summary>
+		/// <param name="pipeName"></param>
+		/// <param name="startInServerMode"></param>
+		/// <returns>null if an application is already open with that pipe, otherwise a helper object</returns>
 		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
 		{
 			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(pipeName, startInServerMode);
