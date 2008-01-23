@@ -81,7 +81,7 @@ namespace Palaso.Tests.Progress
 			//no: it doesn't do this            Assert.IsTrue(cmd.Enabled);
 
 			//todo: I can't see a way to know that it ended, if you cancel it.
-			//finish isn't called. Should it be?
+			//finish isn't called. Should it be ?
 		}
 
 		private void OnBeginCancel(object sender, EventArgs e)
