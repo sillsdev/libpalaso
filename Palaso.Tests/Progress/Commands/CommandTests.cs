@@ -77,10 +77,8 @@ namespace Palaso.Tests.Progress
 			Assert.IsFalse(cmd.Enabled);
 			cmd.Cancel();
 			Assert.IsTrue(cmd.Canceling);
-			//WaitOnBool(ref _onFinishCalled);
-			Thread.Sleep(10);
-			Assert.IsTrue(cmd.wasCancelled);
-//no: it doesn't do this            Assert.IsTrue(cmd.Enabled);
+			WaitOnBool(ref cmd.wasCancelled);
+			//no: it doesn't do this            Assert.IsTrue(cmd.Enabled);
 
 			//todo: I can't see a way to know that it ended, if you cancel it.
 			//finish isn't called. Should it be?
