@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Palaso.BuildTasks
+namespace Palaso.BuildTasks.MakePot
 {
-
 	public class MakePot: Task
 	{
 		Dictionary<string, List<string>> _entries = new Dictionary<string, List<string>>();
@@ -31,8 +29,6 @@ namespace Palaso.BuildTasks
 				_csharpFiles = value;
 			}
 		}
-
-
 
 		public ITaskItem[] XmlFiles
 		{
@@ -76,18 +72,6 @@ namespace Palaso.BuildTasks
 		{
 			using (StreamWriter writer = File.CreateText(_outputFile))
 			{
-//                if (_xmlDirectories != null)
-//                {
-//                    foreach (ITaskItem directory in _xmlDirectories)
-//                    {
-//                        string xpathToStrings = "//label | //description[not(@UseInConstructor='false')]";
-//                        if (!string.IsNullOrEmpty(directory.GetMetadata("xpath")))
-//                        {
-//                            xpathToStrings = directory.GetMetadata("xpath");
-//                        }
-//                        ProcessXmlFiles(directory.ItemSpec, xpathToStrings);
-//                    }
-//                }
 				if (_xmlFiles != null)
 				{
 					foreach (ITaskItem file in _xmlFiles)
@@ -131,14 +115,6 @@ namespace Palaso.BuildTasks
 			writer.WriteLine("\"Content-Transfer-Encoding: 8bit\n\"");
 		}
 
-//        private void ProcessXmlFiles(string rootDirectory, string xpathToStrings)
-//        {
-//            string commonDir = Path.Combine(rootDirectory, "common");
-//            foreach (string filePath in Directory.GetFiles(commonDir, "*.WeSayConfig"))
-//            {
-//                ProcessXmlFile(filePath, xpathToStrings);
-//            }
-//        }
 
 		private void ProcessXmlFile(ITaskItem  fileSpec)
 		{
@@ -166,27 +142,12 @@ namespace Palaso.BuildTasks
 			_entries[stringToTranslate].Add(commentsForTranslator);//add this reference
 		}
 
-//        private void ProcessSourceDirectory(string rootSourceDirectory)
-//        {
-//            foreach (string d in Directory.GetDirectories(rootSourceDirectory))
-//            {
-//                foreach (string filePath in Directory.GetFiles(d, "*.cs"))
-//                {
-//                    if (!Path.GetFileName(filePath).ToLower().Contains("test"))
-//                    {
-//                        ProcessSrcFile(filePath);
-//                    }
-//                }
-//                ProcessSourceDirectory(d);
-//            }
-//        }
-
 		private void ProcessSrcFile(string filePath)
 		{
 			this.Log.LogMessage("Processing {0}", filePath);
 			string contents = File.ReadAllText(filePath);
 			System.Text.RegularExpressions.Regex pattern =
-			new System.Text.RegularExpressions.Regex(@"""~([^""]*)""\s*(,\s*""(.*)"")?", System.Text.RegularExpressions.RegexOptions.Compiled);
+				new System.Text.RegularExpressions.Regex(@"""~([^""]*)""\s*(,\s*""(.*)"")?", System.Text.RegularExpressions.RegexOptions.Compiled);
 
 			foreach (System.Text.RegularExpressions.Match match in pattern.Matches(contents))
 			{
@@ -216,23 +177,7 @@ namespace Palaso.BuildTasks
 			}
 			key = key.Replace("\"", "\\\"");
 			writer.WriteLine("msgid \"" + key + "\"");
-//            if (_makeEnglishPo)
-//            {
-//                string val = key;
-//                if (key == "fontFamily")
-//                {
-//                    val = "Arial";
-//                }
-//                if (key == "fontSize")
-//                {
-//                    val = "9";
-//                }
-//                writer.WriteLine("msgstr \"{0}\"", val);
-//            }
-//            else
-			{
-				writer.WriteLine("msgstr \"\"");
-			}
+			writer.WriteLine("msgstr \"\"");
 		}
 	}
 }
