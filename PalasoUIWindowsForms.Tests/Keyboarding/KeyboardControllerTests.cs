@@ -48,7 +48,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(d.name, KeyboardController.GetActiveKeyboard());
 		}
 	   [Test]
-		public void GetWindowsKeyboards_WindowsEngine_GivesSeveralButOnlyWindowsOnes()
+		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
 			Assert.AreEqual(PlatformID.Win32NT, Environment.OSVersion.Platform);
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
@@ -81,6 +81,17 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.ActivateKeyboard(d.name);
 			Assert.AreEqual(d.name, KeyboardController.GetActiveKeyboard());
 		}
+
+		[Test, Ignore("must have keyman 6")]
+		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
+		{
+			RequiresKeyman6();
+			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
+			KeyboardController.ActivateKeyboard(d.name);
+			KeyboardController.DeactivateKeyboard();
+			Assert.AreNotEqual(d.name, KeyboardController.GetActiveKeyboard());
+		}
+
 		[Test, Ignore("must have keyman 7")]
 		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
 		{
@@ -91,7 +102,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 
-
+		[Test, Ignore("must have keyman 7")]
+		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
+		{
+			RequiresKeyman7();
+			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
+			KeyboardController.ActivateKeyboard(d.name);
+			KeyboardController.DeactivateKeyboard();
+			Assert.AreNotEqual(d.name, KeyboardController.GetActiveKeyboard());
+		}
 
 		[Test, Ignore("must have keyman 7")]
 		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()

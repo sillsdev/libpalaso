@@ -25,7 +25,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					return;
 				}
 				keymanLink.SelectKeymanKeyboard(name, true);
-				keymanLink.SelectKeymanKeyboard("Myanmar2", true);
+
+				//fail fast if that didn't work
 				KeymanLink.KeymanLink.KeymanKeyboard keyboard = keymanLink.ActiveKeymanKeyboard();
 				if (keyboard.KbdName != name)
 				{
