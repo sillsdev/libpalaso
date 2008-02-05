@@ -157,6 +157,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 		}
 
+
 		 /// <summary>
 		/// The main thing here is that it doesn't crash doing a LoadLibrary()
 		/// </summary>
