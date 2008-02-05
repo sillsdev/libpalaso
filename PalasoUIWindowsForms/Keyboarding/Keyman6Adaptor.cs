@@ -26,12 +26,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				keymanLink.SelectKeymanKeyboard(name, true);
 
-				//fail fast if that didn't work
-				KeymanLink.KeymanLink.KeymanKeyboard keyboard = keymanLink.ActiveKeymanKeyboard();
-				if (keyboard.KbdName != name)
-				{
-					throw new ApplicationException();
-				}
+				//Wanted to fail fast if that didn't work, but it turns out that it takes a turn through
+				//Application.DoEvents before the keyboard is actually active, and it is unsafe of us
+				//to call that here.  Unit tests, however, do need to call that to ensure this meathod works.
 			}
 			catch (Exception err)
 			{
@@ -53,7 +50,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 							keymanLink.Keyboards)
 						{
 							KeyboardController.KeyboardDescriptor d = new KeyboardController.KeyboardDescriptor();
-							d.name = keyboard.KbdName;
+							d.Name = keyboard.KbdName;
 							d.engine = KeyboardController.Engines.Keyman6;
 							descriptors.Add(d);
 						}

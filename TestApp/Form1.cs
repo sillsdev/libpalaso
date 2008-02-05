@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace TestApp
 {
@@ -29,6 +30,22 @@ namespace TestApp
 		{
 			Palaso.Reporting.ErrorNotificationDialog.ReportException(new Exception("test"),this);
 
+		}
+
+		private void _keyman7TestBox_Enter(object sender, EventArgs e)
+		{
+			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].Name;
+			KeyboardController.ActivateKeyboard(name);
+		}
+
+		private void _keyman6TestBox_Enter(object sender, EventArgs e)
+		{
+			if(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6))
+			{
+				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].Name;
+				KeyboardController.ActivateKeyboard(name);
+			}
+			MessageBox.Show("keyman 6 not available");
 		}
 	}
 }

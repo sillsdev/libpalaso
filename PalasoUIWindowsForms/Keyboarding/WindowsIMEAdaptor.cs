@@ -63,7 +63,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 					{
 						KeyboardController.KeyboardDescriptor d = new KeyboardController.KeyboardDescriptor();
-						d.name = lang.LayoutName;
+						d.Name = lang.LayoutName;
 						d.engine = KeyboardController.Engines.Windows;
 						descriptors.Add(d);
 					}

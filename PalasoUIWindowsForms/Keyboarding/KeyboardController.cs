@@ -17,7 +17,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public class KeyboardDescriptor
 		{
-			public string name;
+			public string Name;
 			public Engines engine;
 		}
 		public static List<KeyboardDescriptor> GetAvailableKeyboards(Engines engineKinds)
