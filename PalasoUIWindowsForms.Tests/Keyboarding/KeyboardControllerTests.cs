@@ -45,7 +45,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void GetAllKeyboards_GivesSeveral()
 		{
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
-			Assert.Greater(keyboards.Count, 2, "This test requires that the Windows IME ahs at least two languages installed.");
+			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME ahs at least two languages installed.");
 		}
 
 		[Test, ExpectedException(typeof(ErrorReport.NonFatalMessageSentToUserException))]
@@ -77,7 +77,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			Assert.AreEqual(PlatformID.Win32NT, Environment.OSVersion.Platform);
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
-			Assert.Greater(keyboards.Count, 2);
+			Assert.Greater(keyboards.Count,1 , "This test requires that the Windows IME ahs at least two languages installed.");
 			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
 			{
 				Assert.AreEqual(KeyboardController.Engines.Windows, keyboard.engine);
