@@ -147,7 +147,7 @@ namespace Palaso.Services.ForServers
 		{
 			get
 			{
-				return "net.pipe://localhost/" + _pipeName;
+				return "net.tcp://localhost/" + _pipeName;
 			}
 		}
 
@@ -162,7 +162,7 @@ namespace Palaso.Services.ForServers
 			_connector.BringToFrontRequest+=On_BringToFrontRequest;
 			_singletonAppHost = new ServiceHost(_connector, new Uri[] { new Uri(SingletonAppAddress), });
 
-			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), new NetNamedPipeBinding(),
+			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), new NetTcpBinding(),
 												 SingletonAppAddress);
 			_singletonAppHost.Open();
 		}

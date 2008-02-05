@@ -10,7 +10,7 @@ namespace Palaso.Services.ForClients
 		{
 			ChannelFactory<ServiceInterface> channelFactory;
 			channelFactory = new ChannelFactory<ServiceInterface>(
-				new NetNamedPipeBinding(),
+				new NetTcpBinding(),
 				address);
 
 			ServiceInterface helper = channelFactory.CreateChannel();

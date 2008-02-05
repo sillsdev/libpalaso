@@ -68,7 +68,7 @@ namespace Palaso.Services.Dictionary
 		{
 			get
 			{
-				return "net.pipe://localhost/DictionaryServices/"
+				return "net.tcp://localhost/DictionaryServices/"
 					   + Uri.EscapeDataString(_dictionaryPath);
 			}
 		}
