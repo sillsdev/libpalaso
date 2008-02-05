@@ -45,6 +45,7 @@
 	<Compile Include="Keyboarding\KeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
+	<Compile Include="Progress\TransformWithProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<EmbeddedResource Include="Properties\Resources.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
