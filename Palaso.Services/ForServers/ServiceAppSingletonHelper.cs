@@ -58,7 +58,15 @@ namespace Palaso.Services.ForServers
 
 			_pipeName = pipeName;
 			_state = State.Starting;
-			_requestedState = startInServerMode ? State.ServerMode : State.UiMode;
+
+			if (!IPCUtils.IsWcfAvailable)
+			{
+				_requestedState = State.UiMode;
+			}
+			else
+			{
+				_requestedState = startInServerMode ? State.ServerMode : State.UiMode;
+			}
 		}
 
 		public State CurrentState
@@ -128,6 +136,10 @@ namespace Palaso.Services.ForServers
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
+			if (!IPCUtils.IsWcfAvailable)
+			{
+				return true;
+			}
 			IServiceAppConnector alreadyExistingInstance = IPCUtils.GetExistingService<IServiceAppConnector>(SingletonAppAddress);
 			if (alreadyExistingInstance != null)
 			{
@@ -147,9 +159,10 @@ namespace Palaso.Services.ForServers
 		{
 			get
 			{
-				return "net.tcp://localhost/" + _pipeName;
+				return IPCUtils.URLPrefix + _pipeName;
 			}
 		}
+
 
 
 		/// <summary>
@@ -162,7 +175,9 @@ namespace Palaso.Services.ForServers
 			_connector.BringToFrontRequest+=On_BringToFrontRequest;
 			_singletonAppHost = new ServiceHost(_connector, new Uri[] { new Uri(SingletonAppAddress), });
 
-			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), new NetTcpBinding(),
+			NetNamedPipeBinding binding = new NetNamedPipeBinding();
+
+			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), binding,
 												 SingletonAppAddress);
 			_singletonAppHost.Open();
 		}
@@ -194,16 +209,19 @@ namespace Palaso.Services.ForServers
 			_state = State.ServerMode;
 			while (true)
 			{
-				if (_connector.ClientIds.Count > 1)
+				if (IPCUtils.IsWcfAvailable)
 				{
-					someoneHasAttached = true;
-				}
-				//once at least one client has registered (attached), quit
-				//when none are attached anymore
-				if (someoneHasAttached && _connector.ClientIds.Count == 0)
-				{
-					_state = State.Exitting;
-					break;
+					if (_connector.ClientIds.Count > 1)
+					{
+						someoneHasAttached = true;
+					}
+					//once at least one client has registered (attached), quit
+					//when none are attached anymore
+					if (someoneHasAttached && _connector.ClientIds.Count == 0)
+					{
+						_state = State.Exitting;
+						break;
+					}
 				}
 				if (_requestedState == State.UiMode)
 				{

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using Palaso.Services.ForClients;
 using Palaso.Services.ForServers;
 
 namespace Palaso.Services.Tests.ForServers
@@ -90,6 +91,15 @@ namespace Palaso.Services.Tests.ForServers
 			giveUpThread.Start();
 			helper.HandleEventsUntilExit(On_StartUI);
 			giveUpThread.Abort();
+			Assert.IsTrue(_startUICalled);
+		}
+
+		[Test]
+		public void Startup_WithoutWCF_OK()
+		{
+			IPCUtils.IsWcfAvailable = false;
+			ServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded("foo6", false);
+			helper.HandleEventsUntilExit(On_StartUI);
 			Assert.IsTrue(_startUICalled);
 		}
 
