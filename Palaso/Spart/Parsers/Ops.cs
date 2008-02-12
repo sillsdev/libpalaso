@@ -119,9 +119,9 @@ namespace Spart.Parsers
 		public static DifferenceParser Difference(Parser first, Parser second)
 		{
 			if (first == null)
-				throw new ArgumentNullException("first parser is null");
+				throw new ArgumentNullException("first");
 			if (second == null)
-				throw new ArgumentNullException("second parser is null");
+				throw new ArgumentNullException("second");
 
 			return new DifferenceParser(first, second);
 		}
@@ -136,9 +136,9 @@ namespace Spart.Parsers
 		public static ListParser List(Parser first, Parser second)
 		{
 			if (first == null)
-				throw new ArgumentNullException("first parser is null");
+				throw new ArgumentNullException("first");
 			if (second == null)
-				throw new ArgumentNullException("second parser is null");
+				throw new ArgumentNullException("second");
 
 			return new ListParser(first, second);
 		}
@@ -151,9 +151,9 @@ namespace Spart.Parsers
 		public static RepetitionParser ZeroOrMore(Parser parser)
 		{
 			if (parser == null)
-				throw new ArgumentNullException("parser is null");
+				throw new ArgumentNullException("parser");
 
-			return new RepetitionParser(parser, 0, uint.MaxValue);
+			return new RepetitionParser(parser, 0, int.MaxValue);
 		}
 
 		/// <summary>
@@ -164,8 +164,8 @@ namespace Spart.Parsers
 		public static RepetitionParser OneOrMore(Parser parser)
 		{
 			if (parser == null)
-				throw new ArgumentNullException("parser is null");
-			return new RepetitionParser(parser, 1, uint.MaxValue);
+				throw new ArgumentNullException("parser");
+			return new RepetitionParser(parser, 1, int.MaxValue);
 		}
 
 		/// <summary>
@@ -176,7 +176,7 @@ namespace Spart.Parsers
 		public static RepetitionParser Optional(Parser parser)
 		{
 			if (parser == null)
-				throw new ArgumentNullException("parser is null");
+				throw new ArgumentNullException("parser");
 
 			return new RepetitionParser(parser, 0, 1);
 		}

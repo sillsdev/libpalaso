@@ -33,8 +33,8 @@ namespace Spart.Actions
 	/// </summary>
 	public class ActionEventArgs : EventArgs
 	{
-		private ParserMatch m_Match;
-		private Object m_TypeValue;
+		private readonly ParserMatch m_Match;
+		private readonly Object m_TypeValue;
 
 		/// <summary>
 		/// Construct a new event argument instance
@@ -43,7 +43,7 @@ namespace Spart.Actions
 		public ActionEventArgs(ParserMatch match)
 		{
 			if (match == null)
-				throw new ArgumentNullException("match is null");
+				throw new ArgumentNullException("match");
 			if (!match.Success)
 				throw new ArgumentException("Match is not successfull");
 			m_Match = match;
@@ -58,11 +58,11 @@ namespace Spart.Actions
 		public ActionEventArgs(ParserMatch match, Object typedValue)
 		{
 			if (match == null)
-				throw new ArgumentNullException("match is null");
+				throw new ArgumentNullException("match");
 			if (!match.Success)
 				throw new ArgumentException("Match is not successfull");
 			if (typedValue==null)
-				throw new ArgumentNullException("typed value");
+				throw new ArgumentNullException("typedValue");
 			m_Match = match;
 			m_TypeValue = typedValue;
 		}

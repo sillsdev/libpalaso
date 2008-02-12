@@ -67,7 +67,7 @@ namespace Spart.Parsers
 		{
 			if (last < first)
 			{
-				throw new ArgumentOutOfRangeException("last character < first character");
+				throw new ArgumentOutOfRangeException("last", "last character < first character");
 			}
 
 			return new CharParser(delegate(char c)

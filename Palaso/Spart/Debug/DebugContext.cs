@@ -75,7 +75,7 @@ namespace Spart.Debug
 			{
 				if (value == null)
 				{
-					throw new ArgumentNullException("output writer is null");
+					throw new ArgumentNullException("value");
 				}
 				m_Output = value;
 			}

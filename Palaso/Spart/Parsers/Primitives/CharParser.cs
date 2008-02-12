@@ -59,7 +59,7 @@ namespace Spart.Parsers.Primitives
 				}
 				if (value == null)
 				{
-					throw new ArgumentNullException("character tester");
+					throw new ArgumentNullException("value", "character tester cannot accept null");
 				}
 				m_Tester = value;
 			}

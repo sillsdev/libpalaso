@@ -56,7 +56,7 @@ namespace Spart.Parsers.Primitives
 			set
 			{
 				if (value == null)
-					throw new ArgumentNullException("matched string is null");
+					throw new ArgumentNullException("value", "matched string cannot be null");
 				m_MatchedString = value;
 			}
 		}

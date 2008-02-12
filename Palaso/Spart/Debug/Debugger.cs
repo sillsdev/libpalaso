@@ -33,7 +33,7 @@ namespace Spart.Debug
 	/// </summary>
 	public class Debugger
 	{
-		private IParserContext m_Context;
+		private readonly IParserContext m_Context;
 		/// <summary>
 		/// constructor
 		/// </summary>

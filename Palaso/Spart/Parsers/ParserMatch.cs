@@ -33,10 +33,10 @@ namespace Spart.Parsers
 	/// </summary>
 	public class ParserMatch
 	{
-		private IScanner m_Scanner;
-		private long m_Offset;
+		private readonly IScanner m_Scanner;
+		private readonly long m_Offset;
 		private int m_Length;
-		private bool m_Successful;
+		private readonly bool m_Successful;
 
 		private ParserMatch(bool isSuccessful, IScanner scanner, long offset, int length)
 		{
@@ -71,7 +71,7 @@ namespace Spart.Parsers
 			int length = (int) (endOffset - startOffset);
 			if (length < 0)
 			{
-				throw new ArgumentOutOfRangeException("start Offset must be before the end offset of the scanner");
+				throw new ArgumentOutOfRangeException("endOffset", "end Offset must be after the start offset of the scanner");
 			}
 			return new ParserMatch(true, scanner, startOffset, length);
 		}
@@ -132,7 +132,7 @@ namespace Spart.Parsers
 			int length = (int)(endOffset - startOffset);
 			if (length < 0)
 			{
-				throw new ArgumentOutOfRangeException("start Offset must be before the end offset");
+				throw new ArgumentOutOfRangeException("startOffset","start Offset must be before the end offset");
 			}
 
 			return new ParserMatch(false, scanner, startOffset, length);
@@ -244,7 +244,7 @@ namespace Spart.Parsers
 		public void Concat(ParserMatch m)
 		{
 			if(m==null)
-				throw new ArgumentNullException("Cannot concatenate null match");
+				throw new ArgumentNullException("m", "Cannot concatenate null match");
 			if(!m.Success)
 				throw new ArgumentException("Non-successful matches cannot be concatenated onto matches");
 

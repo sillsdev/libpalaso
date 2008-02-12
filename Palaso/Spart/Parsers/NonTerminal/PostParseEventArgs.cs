@@ -32,9 +32,9 @@ namespace Spart.Parsers.NonTerminal
 	/// </summary>
 	public class PostParseEventArgs : EventArgs
 	{
-		private ParserMatch m_Match;
-		private NonTerminalParser m_Parser;
-		private IScanner m_Scanner;
+		private readonly ParserMatch m_Match;
+		private readonly NonTerminalParser m_Parser;
+		private readonly IScanner m_Scanner;
 
 		/// <summary>
 		/// Constructs a post parse event args

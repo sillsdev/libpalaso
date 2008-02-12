@@ -32,8 +32,8 @@ namespace Spart.Parsers.Composite
 	/// </summary>
 	public class RepetitionParser : UnaryTerminalParser
 	{
-		private uint m_LowerBound;
-		private uint m_UpperBound;
+		private int m_LowerBound;
+		private int m_UpperBound;
 
 		/// <summary>
 		/// constructor
@@ -41,7 +41,7 @@ namespace Spart.Parsers.Composite
 		/// <param name="parser">the parser to match</param>
 		/// <param name="lowerBound">the least number of valid occurrences</param>
 		/// <param name="upperBound">the most number of valid occurrences</param>
-		public RepetitionParser(Parser parser, uint lowerBound, uint upperBound)
+		public RepetitionParser(Parser parser, int lowerBound, int upperBound)
 				: base(parser)
 		{
 			SetBounds(lowerBound, upperBound);
@@ -49,14 +49,14 @@ namespace Spart.Parsers.Composite
 		/// <summary>
 		/// the least amount of occurrences of the parser allowed
 		/// </summary>
-		public uint LowerBound
+		public int LowerBound
 		{
 			get { return m_LowerBound; }
 		}
 		/// <summary>
 		/// the most amount of occurrences of the parser allowed
 		/// </summary>
-		public uint UpperBound
+		public int UpperBound
 		{
 			get { return m_UpperBound; }
 		}
@@ -64,20 +64,20 @@ namespace Spart.Parsers.Composite
 		/// <summary>
 		/// set the range of the amount of occurrences of the parser allowed
 		/// </summary>
-		/// <param name="lb">the least amount of occurrences allowed</param>
-		/// <param name="ub">the most amount of occurrences allowed</param>
-		public void SetBounds(uint lb, uint ub)
+		/// <param name="lower_bound">the least amount of occurrences allowed</param>
+		/// <param name="upper_bound">the most amount of occurrences allowed</param>
+		public void SetBounds(int lower_bound, int upper_bound)
 		{
-			if (ub < lb)
+			if (upper_bound < lower_bound)
 			{
-				throw new ArgumentOutOfRangeException("lower bound must be smaller than upper bound");
+				throw new ArgumentOutOfRangeException("upper_bound", "upper bound must be greater than lower bound");
 			}
-			if (lb < 0)
+			if (lower_bound < 0)
 			{
-				throw new ArgumentOutOfRangeException("bounds must be positive");
+				throw new ArgumentOutOfRangeException("lower_bound", "bounds must be positive");
 			}
-			m_LowerBound = lb;
-			m_UpperBound = ub;
+			m_LowerBound = lower_bound;
+			m_UpperBound = upper_bound;
 		}
 
 		/// <summary>

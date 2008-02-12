@@ -32,8 +32,8 @@ namespace Spart.Parsers.NonTerminal
 	/// </summary>
 	public class PreParseEventArgs : EventArgs
 	{
-		private NonTerminalParser m_Parser;
-		private IScanner m_Scanner;
+		private readonly NonTerminalParser m_Parser;
+		private readonly IScanner m_Scanner;
 		/// <summary>
 		/// construct a preparse event args from parser and scanner
 		/// </summary>
