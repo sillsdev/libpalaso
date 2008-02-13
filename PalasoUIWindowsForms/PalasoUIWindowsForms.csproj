@@ -46,6 +46,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="i8n\StringCatalog.cs" />
 	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
 	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
