@@ -20,7 +20,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		private readonly string _xpathToCountSteps;
 		private XsltArgumentList _xsltArguments;
 
-		private string _outputPath;
+		private readonly string _outputPath;
 		private static ProgressState _staticProgressStateForWorker;
 		private string _taskMessage;
 
@@ -103,10 +103,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			public XsltArgumentList xsltArguments;
 			public Stream outputStream;
 			public Stream xsltStream;
-			public FileManipulationMethod postTransformMethod;
 			public string outputFilePath;
-			public object postTransformArgument;
-			public int postTransformSteps;
 			private string _xpathForStepCount;
 
 			public string XpathForStepCount
@@ -147,7 +144,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 				progressState.StatusLabel = "Processing...";
 				int entriesCount = workerArguments.inputDocument.SelectNodes(workerArguments.XpathForStepCount).Count;
-				progressState.TotalNumberOfSteps = entriesCount + workerArguments.postTransformSteps;
+				progressState.TotalNumberOfSteps = entriesCount;
 				_staticProgressStateForWorker = progressState;
 				workerArguments.xsltArguments.XsltMessageEncountered += new XsltMessageEncounteredEventHandler(OnXsltMessageEncountered);
 				transform.Transform(workerArguments.inputDocument, workerArguments.xsltArguments,
@@ -156,13 +153,9 @@ namespace Palaso.UI.WindowsForms.Progress
 				workerArguments.outputStream.Close();//let the next guy get at the file
 				System.Diagnostics.Debug.Assert(progressState.NumberOfStepsCompleted <= entriesCount, "Should use up more than we reserved for ourselves");
 				progressState.NumberOfStepsCompleted = entriesCount;
-				if(workerArguments.postTransformMethod != null)
-				{
-					workerArguments.postTransformMethod.Invoke(sender, args);
-				}
 				progressState.State = ProgressState.StateValue.Finished;
 			}
-			catch(CancelingException notAnErr)
+			catch(CancelingException)//not an error
 			{
 				progressState.State = ProgressState.StateValue.Finished;
 			}

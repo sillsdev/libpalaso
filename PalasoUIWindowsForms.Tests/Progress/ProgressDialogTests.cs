@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -16,8 +14,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 	{
 		private int _countForWork;
 		private ProgressDialog _dialog;
-		private StringBuilder _logBuilder;
-		private bool _commandFinishedCalled;
 		private object _argumentReceivedFromProgressState;
 
 
@@ -25,7 +21,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		public void Setup()
 		{
 			_dialog = new ProgressDialog();
-			_logBuilder = new StringBuilder();
 			_dialog.Text = "Unit Test";
 			_dialog.Overview = "Pretending to do some work...";
 			_countForWork = 0;
@@ -178,7 +173,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			_dialog = null;
 			w.Stop();
 			worker.Dispose();
-			Debug.WriteLine("Took "+ w.Elapsed.ToString());
+			Debug.WriteLine("Took "+ w.Elapsed);
 			return w.ElapsedMilliseconds;
 		}
 
@@ -189,11 +184,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			public bool doMakeProgressCalls = false;
 			public int iterationsToDo = 9000;
 			public bool doClaimExtraSteps = false;
-		}
-
-		private void OnProgressStateLog(object sender, ProgressState.LogEvent e)
-		{
-			_logBuilder.AppendLine(e.message);
 		}
 
 		private void OnDoSomeWork(object sender, DoWorkEventArgs e)

@@ -105,14 +105,12 @@ namespace Palaso.Services.ForServers
 			{
 				case State.Exitting:
 					throw new Exception(Process.GetCurrentProcess().ProcessName + " is in the process of Exitting.");
-					break;
 				case State.UiMode:
 					return;
 				case State.Starting:
 					throw new Exception(
 						string.Format("Gave up trying to get {0} To switch to ui mode (still Starting app).",
 									  Process.GetCurrentProcess().ProcessName));
-					break;
 				case State.UiModeStarting:
 					throw new Exception(
 						string.Format("Gave up trying to get {0} To switch to ui mode (still Starting UI).",

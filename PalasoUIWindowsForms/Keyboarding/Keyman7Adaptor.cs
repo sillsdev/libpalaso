@@ -37,7 +37,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
                 {
                     return InnerKeyman7Wrapper.EngineAvailable;
                 }
-                catch (Exception err)
+				catch (Exception)
                 {
                 }
                 return false;
@@ -54,7 +54,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
             {
                 throw error; // needed for tests to know that a message box would have been shown
             }
-            catch (Exception err)
+			catch (Exception)
             {
             }
         }
@@ -65,7 +65,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
             {
                 InnerKeyman7Wrapper.Deactivate();
             }
-            catch (Exception err)
+			catch (Exception)
             {
             }
         }
@@ -76,7 +76,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
             {
                 return InnerKeyman7Wrapper.HasKeyboardNamed(name);
             }
-            catch (Exception err)
+			catch (Exception)
             {
                 return false;
             }
@@ -88,7 +88,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
             {
                 return InnerKeyman7Wrapper.GetActiveKeyboard();
             }
-            catch (Exception err)
+			catch (Exception)
             {
                 return null;
             }

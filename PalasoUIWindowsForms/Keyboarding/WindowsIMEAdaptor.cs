@@ -27,7 +27,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					Palaso.Reporting.NonFatalErrorDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
 				}
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was an error trying to access the windows ime.");
 			}
@@ -87,7 +87,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				InputLanguage.CurrentInputLanguage = InputLanguage.DefaultInputLanguage;
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating windows ime.");
 			}
@@ -103,7 +103,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				else
 					return lang.LayoutName;
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show(
 					"There was a problem retrieving the active keyboard in from windows ime.");

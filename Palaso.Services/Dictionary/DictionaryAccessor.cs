@@ -91,7 +91,7 @@ namespace Palaso.Services.Dictionary
 				{
 					service.DeregisterClient(Process.GetCurrentProcess().Id);
 				}
-				catch (Exception swallow)
+				catch (Exception)//swallow
 				{
 				}
 			}

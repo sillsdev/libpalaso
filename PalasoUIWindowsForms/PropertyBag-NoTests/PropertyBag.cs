@@ -27,7 +27,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Drawing.Drawing2D;
 
 using System.Reflection;
 
@@ -47,7 +46,7 @@ namespace Palaso.UI.WindowsForms
 				return m_sID;
 			}
 		}
-		private string m_sID;
+		private readonly string m_sID;
 		#endregion
 		#region Attr{g/s}: string Name - Gets or sets the name of this property.
 		public string Name
@@ -112,8 +111,12 @@ namespace Palaso.UI.WindowsForms
 			{
 				return enumValues;
 			}
+			protected set
+			{
+				enumValues = value;
+			}
 		}
-		protected string[] enumValues;
+		private string[] enumValues;
 		#endregion
 
 		#region Attr{g/s}: bool DontLocalizeName
@@ -395,7 +398,7 @@ namespace Palaso.UI.WindowsForms
 		#region Method: bool IsTrue(string sValue) - T if a Bool Property and the value matches enum[0]
 		public bool IsTrue(string sValue)
 		{
-			if (m_bIsBoolProperty && sValue == enumValues[0])
+			if (m_bIsBoolProperty && sValue == EnumValues[0])
 				return true;
 			return false;
 		}
@@ -406,7 +409,7 @@ namespace Palaso.UI.WindowsForms
 			if (!m_bIsBoolProperty)
 				return null;
 
-			return (b) ? enumValues[0] : enumValues[1];
+			return (b) ? EnumValues[0] : EnumValues[1];
 		}
 		#endregion
 
@@ -424,7 +427,7 @@ namespace Palaso.UI.WindowsForms
 			Debug.Assert(null != vsValues);
 			Debug.Assert(vsValues.Length == 2);
 
-			this.enumValues = vsValues;
+			EnumValues = vsValues;
 
 			m_bIsBoolProperty = true;
 		}
@@ -511,7 +514,7 @@ namespace Palaso.UI.WindowsForms
 
 			// The English Values
 			Debug.Assert(null != vsValues);
-			this.enumValues = vsValues;
+			EnumValues = vsValues;
 
 			// The numbers (e.g., (int)kLeft, (int)kCentered, (int)kRight)
 			Debug.Assert(null != vnNumbers);

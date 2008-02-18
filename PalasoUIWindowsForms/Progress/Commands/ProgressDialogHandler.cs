@@ -10,9 +10,8 @@ namespace Palaso.UI.WindowsForms.Progress
 	public class ProgressDialogHandler
 	{
 		private ProgressDialog _progressDialog;
-		private System.Windows.Forms.Form _parentForm;
-		private AsyncCommand _currentCommand;
-		private bool _parentFormIsClosing = false;
+		private readonly System.Windows.Forms.Form _parentForm;
+		private readonly AsyncCommand _currentCommand;
 		public event EventHandler Finished;
 
 		public ProgressDialogHandler(System.Windows.Forms.Form parentForm, BasicCommand  command)
@@ -41,15 +40,6 @@ namespace Palaso.UI.WindowsForms.Progress
 			_progressDialog.Show();
 
 		}
-
-	   /* what was this about?
-		*
-		public bool ParentFormIsClosing
-		{
-			get { return _parentFormIsClosing; }
-			set { _parentFormIsClosing = value; }
-		}
-		*/
 
 		/// <summary>
 		/// tests (or anything else that is rapidly chaining these things together)
@@ -271,7 +261,6 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public void CloseByCancellingThenCloseParent()
 		{
-			_parentFormIsClosing = true;
 			Close();
 		}
 	}

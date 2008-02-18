@@ -30,7 +30,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				//Application.DoEvents before the keyboard is actually active, and it is unsafe of us
 				//to call that here.  Unit tests, however, do need to call that to ensure this meathod works.
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("The keyboard '" + name + "' could not be activated using Keyman 6.");
 			}
@@ -83,7 +83,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					keymanLink.SelectKeymanKeyboard(null, false);
 				}
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating keyman 6.");
 			}
@@ -107,7 +107,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				return false;
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem looking for a keybaord in keyman 6.");
 			}
@@ -129,7 +129,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				else
 					return keyboard.KbdName;
 			}
-			catch (Exception err)
+			catch (Exception )
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show(
 					"There was a problem retrieving the active keyboard in keyman 6.");

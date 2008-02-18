@@ -7,7 +7,7 @@ namespace Palaso.Services.Dictionary.Tests
 	[TestFixture]
 	public class DictionaryAccessorTests
 	{
-		private DictionaryAccessor _accessor;
+	   // private DictionaryAccessor _accessor;
 
 
 		/*       private string _dictionaryWritingSystemId = "qPretend";

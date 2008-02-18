@@ -12,18 +12,13 @@ namespace Palaso.Tests.Progress
 	public class CommandTests
 	{
 		private static int _countForWork;
-		private StringBuilder _logBuilder;
-		private bool _onInitializeCalled;
 		private bool _onFinishCalled;
-		private bool _beginCancelCalled;
 
 		[SetUp]
 		public void Setup()
 		{
-			_logBuilder = new StringBuilder();
 			_countForWork = 0;
 			_onFinishCalled = false;
-			_beginCancelCalled = false;
 		}
 
 		[TearDown]
@@ -59,7 +54,6 @@ namespace Palaso.Tests.Progress
 		[Test]
 		public void CommandCallsFinalize()
 		{
-			_onInitializeCalled = false;
 			TestCommand cmd = new TestCommand();
 			cmd.Finish += new EventHandler(OnFinish);
 			cmd.BeginInvoke();
@@ -69,9 +63,7 @@ namespace Palaso.Tests.Progress
 		[Test]
 		public void CommandCanBeCancelled()
 		{
-			_onInitializeCalled = false;
 			TestCommand cmd = new TestCommand();
-			cmd.BeginCancel += new EventHandler(OnBeginCancel);
 			cmd.BeginInvoke();
 			Thread.Sleep(10);
 			Assert.IsFalse(cmd.Enabled);
@@ -84,12 +76,7 @@ namespace Palaso.Tests.Progress
 			//finish isn't called. Should it be ?
 		}
 
-		private void OnBeginCancel(object sender, EventArgs e)
-		{
-			_beginCancelCalled = true;
-		}
-
-		private void WaitOnBool(ref bool waitForThisToBeTrue)
+		private static void WaitOnBool(ref bool waitForThisToBeTrue)
 		{
 			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
 			while (!waitForThisToBeTrue)
@@ -122,7 +109,7 @@ namespace Palaso.Tests.Progress
 			{
 				while (_countForWork < 100)
 				{
-					if(this.Canceling )
+					if(Canceling )
 					{
 						wasCancelled = true;
 						return;
@@ -132,7 +119,7 @@ namespace Palaso.Tests.Progress
 				}
 			}
 
-			private void DoPretendWork()
+			private static void DoPretendWork()
 			{
 				DateTime end = DateTime.Now.AddMilliseconds(2);
 				while (DateTime.Now < end)

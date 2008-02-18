@@ -47,7 +47,7 @@ namespace Palaso.Services.ForClients
 			{
 				(helper as ICommunicationObject).Open(); // will throw exception if can't find it
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				return null;
 			}

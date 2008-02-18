@@ -81,7 +81,11 @@ namespace Palaso.WritingSystems
 
 					_writingSystems.Add(LoadDefinition(identifier));
 				}
-				catch (Exception error)
+				catch (Exception
+#if DEBUG
+					error
+#endif
+					)
 				{
 #if DEBUG
 					throw new ApplicationException("problem loading " + defPath, error);

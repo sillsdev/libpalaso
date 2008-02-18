@@ -1,6 +1,4 @@
 using System;
-using System.ComponentModel;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -12,7 +10,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 	[TestFixture]
 	public class ProgressDialogHandlerTests
 	{
-		private StringBuilder _logBuilder;
 		private bool _commandFinishedCalled;
 		private ProgressDialogHandler _progressHandler;
 		private ProgressState _progressState;
@@ -25,7 +22,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			_dummyParentForm = new Form();
 			_dummyParentForm.Name = "dummy form";
 			_dummyParentForm.Text = "Dummy Form";
-			_logBuilder = new StringBuilder();
 			_dummyParentForm.Show();
 			Application.DoEvents();
 			_command = new TestCommand();
@@ -85,11 +81,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		}
 
 
-		private void OnProgressStateLog(object sender, ProgressState.LogEvent e)
-		{
-			_logBuilder.AppendLine(e.message);
-		}
-
 		private void WaitForHandlerToFinishUp()
 		{
 			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
@@ -103,7 +94,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			}
 		}
 
-		private void WaitOnBool(ref bool waitForThisToBeTrue)
+		private static void WaitOnBool(ref bool waitForThisToBeTrue)
 		{
 			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
 			while (!waitForThisToBeTrue)
@@ -133,8 +124,6 @@ namespace PalasoUIWindowsForms.Tests.Progress
 	internal class TestCommand : BasicCommand
 	{
 		public bool wasCancelled = false;
-		public event EventHandler FinishBypassForTests;
-
 		protected override void DoWork(InitializeProgressCallback initializeCallback, ProgressCallback progressCallback,
 									   StatusCallback primaryStatusTextCallback,
 									   StatusCallback secondaryStatusTextCallback)
@@ -142,7 +131,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		   int countForWork = 0;
 			while (countForWork < 100)
 			{
-				if (this.Canceling)
+				if (Canceling)
 				{
 					wasCancelled = true;
 					return;
@@ -152,7 +141,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			}
 		}
 
-		private void DoPretendWork()
+		private static void DoPretendWork()
 		{
 
 
