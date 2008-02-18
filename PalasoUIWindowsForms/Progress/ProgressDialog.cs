@@ -339,7 +339,11 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			if( disposing )
 			{
-				if(components != null)
+				if (_showWindowIfTakingLongTimeTimer != null)
+				{
+					_showWindowIfTakingLongTimeTimer.Stop();
+				}
+				if (components != null)
 				{
 					components.Dispose();
 				}
@@ -371,6 +375,10 @@ namespace Palaso.UI.WindowsForms.Progress
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			Debug.WriteLine("Dialog:OnClosing");
+			if (_showWindowIfTakingLongTimeTimer != null)
+			{
+				_showWindowIfTakingLongTimeTimer.Stop();
+			}
 
 			if( !_isClosing )
 			{
@@ -484,6 +492,10 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void OnCancelButton_Click(object sender, EventArgs e)
 		{
+			_showWindowIfTakingLongTimeTimer.Stop();
+			if(_isClosing)
+				return;
+
 			Debug.WriteLine("Dialog:OnCancelButton_Click");
 
 			// Prevent further cancellation
