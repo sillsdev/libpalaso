@@ -82,8 +82,7 @@
   </Target>
   -->
   <PropertyGroup>
-	<PreBuildEvent>copy "$(SolutionDir)\lib\icuin38.dll" "$(TargetDir)"
-copy "$(SolutionDir)\lib\icuuc38.dll" "$(TargetDir)"
-copy "$(SolutionDir)\lib\icudt38.dll" "$(TargetDir)"</PreBuildEvent>
+	<PreBuildEvent>
+	</PreBuildEvent>
   </PropertyGroup>
 </Project>
