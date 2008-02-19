@@ -11,7 +11,7 @@ namespace Palaso.Services.ForClients
 
 
 		//this is exposed for tests to simulate the Feb 2008 linux situation, with no wcf that we can use
-		internal static bool IsWcfAvailable
+		public static bool IsWcfAvailable
 		{
 			get { return _isWcfAvailable; }
 			set { _isWcfAvailable = value; }

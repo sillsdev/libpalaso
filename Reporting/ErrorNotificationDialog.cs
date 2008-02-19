@@ -305,8 +305,8 @@ namespace Palaso.Reporting
 			catch(Exception err)
 			{
 				//We have more than one report of dieing while logging an exception.
-				m_details.Text += "****Could not write to log: " + err.Message + Environment.NewLine;
-			   //does this make sense here? do we already have this info? m_details.Text +="Log event was " + error.GetType().Name + err.Message + Environment.NewLine;
+				m_details.Text += "****Could not write to log (" + err.Message+")" + Environment.NewLine;
+				m_details.Text += "Was try to log the exception: " + error.Message + Environment.NewLine;
 			}
 
 

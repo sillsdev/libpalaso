@@ -31,6 +31,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		private BackgroundWorker _backgroundWorker;
 //        private ProgressState _lastHeardFromProgressState;
 		private ProgressState _progressState;
+		private bool _workerStarted;
 
 		/// <summary>
 		/// Standard constructor
@@ -355,39 +356,39 @@ namespace Palaso.UI.WindowsForms.Progress
 		/// Custom handle creation code
 		/// </summary>
 		/// <param name="e">Event data</param>
-		protected override void OnHandleCreated(EventArgs e)
-		{
-			base.OnHandleCreated (e);
-			if( !_showOnce )
-			{
-				// First, we don't want this to happen again
-				_showOnce = true;
-				// Then, start the timer which will determine whether
-				// we are going to show this again
-				_showWindowIfTakingLongTimeTimer.Start();
-			}
-		}
+//        protected override void OnHandleCreated(EventArgs e)
+//        {
+//            base.OnHandleCreated (e);
+//            if( !_showOnce )
+//            {
+//                // First, we don't want this to happen again
+//                _showOnce = true;
+//                // Then, start the timer which will determine whether
+//                // we are going to show this again
+//                _showWindowIfTakingLongTimeTimer.Start();
+//            }
+//        }
 
 		/// <summary>
 		/// Custom close handler
 		/// </summary>
 		/// <param name="e">Event data</param>
-		protected override void OnClosing(CancelEventArgs e)
-		{
-			Debug.WriteLine("Dialog:OnClosing");
-			if (_showWindowIfTakingLongTimeTimer != null)
-			{
-				_showWindowIfTakingLongTimeTimer.Stop();
-			}
-
-			if( !_isClosing )
-			{
-				Debug.WriteLine("   Dialog:_isClosing=false, doing cancel click");
-				e.Cancel = true;
-				_cancelButton.PerformClick();
-			}
-			base.OnClosing( e );
-		}
+//        protected override void OnClosing(CancelEventArgs e)
+//        {
+//            Debug.WriteLine("Dialog:OnClosing");
+//            if (_showWindowIfTakingLongTimeTimer != null)
+//            {
+//                _showWindowIfTakingLongTimeTimer.Stop();
+//            }
+//
+//            if( !_isClosing )
+//            {
+//                Debug.WriteLine("Warning: OnClosing called but _isClosing=false, attempting cancel click");
+//                e.Cancel = true;
+//                _cancelButton.PerformClick();
+//            }
+//            base.OnClosing( e );
+//        }
 
 
 		#region Windows Form Designer generated code
@@ -476,7 +477,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			this.Name = "ProgressDialog";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "Palaso";
-			this.Shown += new System.EventHandler(this.OnStartWorker);
+			this.Shown += new System.EventHandler(this.ProgressDialog_Shown);
+			this.Load += new System.EventHandler(this.ProgressDialog_Load);
 			this.ResumeLayout(false);
 
 		}
@@ -487,7 +489,10 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			// Show the window now the timer has elapsed, and stop the timer
 			_showWindowIfTakingLongTimeTimer.Stop();
-			Show();
+			if (!this.Visible)
+			{
+				Show();
+			}
 		}
 
 		private void OnCancelButton_Click(object sender, EventArgs e)
@@ -575,6 +580,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void OnStartWorker(object sender, EventArgs e)
 		{
+			_workerStarted = true;
 			Debug.WriteLine("Dialog:StartWorker");
 
 			if (_backgroundWorker != null)
@@ -589,6 +595,28 @@ namespace Palaso.UI.WindowsForms.Progress
 				_backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(OnBackgroundWorker_ProgressChanged);
 				_backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnBackgroundWorker_RunWorkerCompleted);
 				_backgroundWorker.RunWorkerAsync(ProgressState);
+			}
+		}
+
+		//this is here, in addition to the OnShown handler, because of a weird bug were a certain,
+		//completely unrelated test (which doesn't use this class at all) can cause tests using this to
+		//fail because the OnShown event is never fired.
+		//I don't know why  the orginal code we copied this from was using onshown instead of onload,
+		//but it may have something to do with its "delay show" feature (which I couldn't get to work,
+		//but which would be a terrific thing to have)
+		private void ProgressDialog_Load(object sender, EventArgs e)
+		{
+			if(!_workerStarted)
+			{
+				OnStartWorker(this, null);
+			}
+		}
+
+		private void ProgressDialog_Shown(object sender, EventArgs e)
+		{
+			if(!_workerStarted)
+			{
+				OnStartWorker(this, null);
 			}
 		}
 	}

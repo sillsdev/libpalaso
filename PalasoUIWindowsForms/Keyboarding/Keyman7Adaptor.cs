@@ -146,7 +146,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
         public static bool HasKeyboardNamed(string name)
         {
             TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
-            return(keyman.Keyboards.IndexOf(name) > -1);
+			return(keyman.Keyboards.IndexOf(name) > 0 /*remember, keyman indices are 1-based*/);
         }
 
         public static string GetActiveKeyboard()
