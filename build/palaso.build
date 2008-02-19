@@ -1,5 +1,6 @@
 <project name="Solid Build" default="build">
 	<property name="configuration" value="release"/>
+	<property name="nant.settings.currentframework" value="net-2.0" />
 
 	<target name="clean" description="Delete all previously compiled binaries.">
 		<delete>
