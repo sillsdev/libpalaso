@@ -1,0 +1,5 @@
+open palaso.org
+user bob@palaso.org bob23
+type binary
+#put ../release/Output/x.exe htdocs/install/palaso/...
+quit
