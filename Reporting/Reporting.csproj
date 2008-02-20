@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
 	<ProjectType>Local</ProjectType>
 	<ProductVersion>8.0.50727</ProductVersion>
@@ -102,13 +102,11 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="app.config" />
-	<None Include="AssemblyInfo.cs">
-	  <SubType>Code</SubType>
-	</None>
 	<None Include="ReportingSetting.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>ReportingSetting.Designer.cs</LastGenOutput>
 	</None>
+	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="ConfigurationException.cs" />
 	<Compile Include="EmailMessage.cs" />
 	<Compile Include="ErrorNotificationDialog.cs">
@@ -120,9 +118,6 @@
 	</Compile>
 	<Compile Include="ExceptionHandler.cs" />
 	<Compile Include="ExceptionHelper.cs" />
-	<Compile Include="GeneratedAssemblyInfo.cs">
-	  <SubType>Code</SubType>
-	</Compile>
 	<Compile Include="Logger.cs">
 	  <SubType>Code</SubType>
 	</Compile>
