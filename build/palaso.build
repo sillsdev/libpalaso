@@ -81,7 +81,7 @@
 
 	<target name="rebuild" depends="clean, build" />
 
-	<target name="build.solution" depends="assemblyinfo">
+	<target name="build.solution" depends="">
 		<solution configuration="${configuration}" solutionfile="../palaso.sln">
 		</solution>
 		<property name="expected.output" value="../output/${configuration}/Palaso.dll"/>
@@ -94,13 +94,12 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
 
-	<target name="test" depends="build">
+	<target name="test" depends="">
 		<nunit2>
 			<formatter type="Plain" usefile="true" />
 			<test>
 				<assemblies>
-					<include name="../output/${configuration}/*Tests.*" />
-					<include name="../output/${configuration}/*Test.*" />
+					<include name="../output/${configuration}/*.Tests.dll" />
 				</assemblies>
 			</test>
 		</nunit2>
