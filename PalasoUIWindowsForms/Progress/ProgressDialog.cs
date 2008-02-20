@@ -26,7 +26,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		private Timer _progressTimer;
 		private bool _isClosing;
 		private Label _overviewLabel;
-		private DateTime _startTime = DateTime.Now;
+		private DateTime _startTime;
 		private IContainer components;
 		private BackgroundWorker _backgroundWorker;
 //        private ProgressState _lastHeardFromProgressState;
@@ -45,6 +45,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			_statusLabel.BackColor = SystemColors.Control;
 			_progressLabel.BackColor = SystemColors.Control;
 			_overviewLabel.BackColor = SystemColors.Control;
+			_startTime = default(DateTime);
 			Text = Reporting.UsageReporter.AppNameToUseInDialogs;
 
 			//avoids the client getting null errors if he checks this when there
@@ -228,6 +229,7 @@ namespace Palaso.UI.WindowsForms.Progress
 				}
 				_progressState = value;
 				CancelRequested += _progressState.CancelRequested;
+				_progressState.TotalNumberOfStepsChanged += OnTotalNumberOfStepsChanged;
 			}
 		}
 
@@ -526,19 +528,22 @@ namespace Palaso.UI.WindowsForms.Progress
 			{
 				return;
 			}
-			TimeSpan elapsed = DateTime.Now - _startTime;
-			double estimatedSeconds = (elapsed.TotalSeconds * range) / _progressBar.Value;
-			TimeSpan estimatedToGo = new TimeSpan(0,0,0,(int)(estimatedSeconds - elapsed.TotalSeconds),0);
-//			_progressLabel.Text = String.Format(
-//				System.Globalization.CultureInfo.CurrentUICulture,
-//                "Elapsed: {0} Remaining: {1}",
-//				GetStringFor(elapsed),
-//				GetStringFor(estimatedToGo) );
-			_progressLabel.Text = String.Format(
-				CultureInfo.CurrentUICulture,
-				"{0}",
-				//GetStringFor(elapsed),
-				GetStringFor(estimatedToGo));
+			if (_startTime != default(DateTime))
+			{
+				TimeSpan elapsed = DateTime.Now - _startTime;
+				double estimatedSeconds = (elapsed.TotalSeconds * range) / _progressBar.Value;
+				TimeSpan estimatedToGo = new TimeSpan(0, 0, 0, (int)(estimatedSeconds - elapsed.TotalSeconds), 0);
+				//_progressLabel.Text = String.Format(
+				//    System.Globalization.CultureInfo.CurrentUICulture,
+				//    "Elapsed: {0} Remaining: {1}",
+				//    GetStringFor(elapsed),
+				//    GetStringFor(estimatedToGo));
+				_progressLabel.Text = String.Format(
+					CultureInfo.CurrentUICulture,
+					"{0}",
+					//GetStringFor(elapsed),
+					GetStringFor(estimatedToGo));
+			}
 		}
 
 		private static string GetStringFor( TimeSpan span )
@@ -568,6 +573,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public void OnTotalNumberOfStepsChanged(object sender, EventArgs e)
 		{
+			_startTime = DateTime.Now;
 			ProgressRangeMaximum = ((ProgressState)sender).TotalNumberOfSteps;
 			Refresh();
 		}
