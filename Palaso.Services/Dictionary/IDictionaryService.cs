@@ -74,14 +74,6 @@ namespace Palaso.Services.Dictionary
 		[OperationContract]
 		bool IsInServerMode();
 
-//        /// <summary>
-//        /// Given an array of ids, get an array of forms to show
-//        /// </summary>
-//        /// <param name="writingSytemId">The writing system you want the form in</param>
-//        /// <param name="ids"></param>
-//        /// <returns></returns>
-//        [OperationContract]
-//        string[] GetFormsFromIds(string writingSytemId, string[] ids);
 
 //todo        void AddInflectionalVariant(string writingSystemId, string variant);
 

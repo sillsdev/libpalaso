@@ -58,7 +58,17 @@ namespace Palaso.Reporting
 				m_out = null;
 				if (startWithNewFile)
 				{
-					m_out = File.CreateText(LogPath);
+					try
+					{
+						m_out = File.CreateText(LogPath);
+					}
+					catch (Exception err)
+					{
+						//try again with a different file.  We loose the history, but oh well.
+						SetActualLogPath("Log-"+Path.GetTempFileName() + ".txt");
+						m_out = File.CreateText(LogPath);
+
+					}
 					m_out.WriteLine(DateTime.Now.ToLongDateString());
 				}
 				else
@@ -92,6 +102,8 @@ namespace Palaso.Reporting
 		/// True, if the object has been disposed.
 		/// </summary>
 		private bool m_isDisposed = false;
+
+		private static string _actualLogPath;
 
 		/// <summary>
 		/// See if the object has been disposed.
@@ -219,12 +231,20 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				string path = Path.Combine(Path.GetTempPath(),
-					Path.Combine(Application.CompanyName, UsageReporter.AppNameToUseInReporting));
-				Directory.CreateDirectory(path);
-				path = Path.Combine(path, "Log.txt");
-				return path;
+				if(string.IsNullOrEmpty(_actualLogPath))
+				{
+					SetActualLogPath("Log.txt");
+				}
+				return _actualLogPath;
 			}
+		}
+
+		private static void SetActualLogPath(string filename)
+		{
+			_actualLogPath = Path.Combine(Path.GetTempPath(),
+										  Path.Combine(Application.CompanyName, UsageReporter.AppNameToUseInReporting));
+			Directory.CreateDirectory(_actualLogPath);
+			_actualLogPath = Path.Combine(_actualLogPath, filename);
 		}
 
 		/// ------------------------------------------------------------------------------------
