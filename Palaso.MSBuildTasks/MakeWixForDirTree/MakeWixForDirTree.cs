@@ -323,7 +323,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			{
 				elemFile.SetAttribute("KeyPath", "yes");
 			}
-			string relativePath = PathUtil.RelativePathTo(_outputFilePath, path);
+			string relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_outputFilePath), path);
 			elemFile.SetAttribute("Source", relativePath);
 			elemComp.AppendChild(elemFile);
 
