@@ -28,7 +28,7 @@
   <UsingTask AssemblyFile="C:\PalasoLib\output\Debug\Palaso.BuildTasks.dll" TaskName="MakeWixForDirTree" />
   <Target Name="MakeWixForFilesTest">
 	<MakeWixForDirTree
-				DirectoryRefId="common"
+				DirectoryReferenceId="common"
 				ComponentGroupId="PoFiles"
 				RootDirectory="..\Palaso.MSBuildTasks"
 				Exclude="MakePot"

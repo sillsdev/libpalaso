@@ -285,6 +285,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 		private void ProcessFile(XmlElement parent, string path, XmlDocument doc, IdToGuidDatabase guidDatabase, bool isFirst)
 		{
+
 			string guid;
 			string name = Path.GetFileName(path);
 			string id = name;
@@ -322,7 +323,8 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			{
 				elemFile.SetAttribute("KeyPath", "yes");
 			}
-			elemFile.SetAttribute("Source", path);
+			string relativePath = PathUtil.RelativePathTo(Directory.GetCurrentDirectory(), path);
+			elemFile.SetAttribute("Source", relativePath);
 			elemComp.AppendChild(elemFile);
 
 			m_components.Add(id);
