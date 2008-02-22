@@ -32,7 +32,7 @@
 				ComponentGroupId="PoFiles"
 				RootDirectory="..\Palaso.MSBuildTasks"
 				Exclude="MakePot"
-				OutputFileName="ExcerciseTasksTest.wxs"
+				OutputFilePath="ExcerciseTasksTest.wxs"
 				MatchRegExPattern="\.cs$">
 	  <Output TaskParameter="OutputFileName" ItemName="Compile" />
 	</MakeWixForDirTree>
