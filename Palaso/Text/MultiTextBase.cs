@@ -372,7 +372,7 @@ namespace Palaso.Text
 			return GetFirstAlternative();
 		}
 
-		public LanguageForm[] GetOrderedAndFilteredForms(string[] writingSystemIdsInOrder)
+		public LanguageForm[] GetOrderedAndFilteredForms(IEnumerable<string> writingSystemIdsInOrder)
 		{
 			List<LanguageForm> forms = new List<LanguageForm>();
 			foreach (string id in writingSystemIdsInOrder)
