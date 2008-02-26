@@ -372,6 +372,21 @@ namespace Palaso.Text
 			return GetFirstAlternative();
 		}
 
+		public LanguageForm[] GetOrderedAndFilteredForms(string[] writingSystemIdsInOrder)
+		{
+			List<LanguageForm> forms = new List<LanguageForm>();
+			foreach (string id in writingSystemIdsInOrder)
+			{
+				LanguageForm form = Find(id);
+				if(form!=null)
+				{
+					forms.Add(form);
+				}
+			}
+			return forms.ToArray();
+		}
+
+
 		public void MergeInWithAppend(MultiTextBase incoming, string separator)
 		{
 			foreach (LanguageForm form in incoming)

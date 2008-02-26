@@ -11,6 +11,7 @@ using System.Collections;
 
 namespace Palaso.Tests.Text
 {
+	[TestFixture]
 	public class MultiTextBaseTests
 	{
 
@@ -166,22 +167,22 @@ namespace Palaso.Tests.Text
 		}
 
 
-		[Test]
-		public void SerializeWithXmlSerializer()
-		{
-			MultiTextBase text = new MultiTextBase();
-			text["foo"] = "alpha";
-			text["boo"] = "beta";
-			string answer =
-				@"<?xml version='1.0' encoding='utf-16'?>
-<TestMultiTextHolder xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
-  <name>
-	<form lang='foo'>alpha</form>
-	<form lang='boo'>beta</form>
-  </name>
-</TestMultiTextHolder>";
-			CheckSerializeWithXmlSerializer(text, answer);
-		}
+//        [Test]
+//        public void SerializeWithXmlSerializer()
+//        {
+//            MultiTextBase text = new MultiTextBase();
+//            text["foo"] = "alpha";
+//            text["boo"] = "beta";
+//            string answer =
+//                @"<?xml version='1.0' encoding='utf-16'?>
+//<TestMultiTextHolder xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+//  <name>
+//    <form starred='false' lang='foo'>alpha</form>
+//    <form starred='false' lang='boo'>beta</form>
+//  </name>
+//</TestMultiTextHolder>";
+//            CheckSerializeWithXmlSerializer(text, answer);
+//        }
 
 		[Test]
 		public void SerializeEmptyWithXmlSerializer()
@@ -237,56 +238,56 @@ namespace Palaso.Tests.Text
 		//            Assert.AreEqual("verbo",h._name["es"]);
 		//        }
 
-		[Test]
-		public void DeSerializesWithOldWsAttributes()
-		{
-			MultiTextBase t = DeserializeWithXmlSerialization(
-				@"<TestMultiTextHolder>
-					 <name>
-						<form ws='en'>verb</form>
-						<form ws='fr'>verbe</form>
-						<form ws='es'>verbo</form>
-					</name>
-					</TestMultiTextHolder>
-				");
-			Assert.AreEqual(3, t.Forms.Length);
-			Assert.AreEqual("verbo", t["es"]);
-		}
+//        [Test]
+//        public void DeSerializesWithOldWsAttributes()
+//        {
+//            MultiTextBase t = DeserializeWithXmlSerialization(
+//                @"<TestMultiTextHolder>
+//                     <name>
+//				        <form ws='en'>verb</form>
+//				        <form ws='fr'>verbe</form>
+//				        <form ws='es'>verbo</form>
+//			        </name>
+//                    </TestMultiTextHolder>
+//                ");
+//            Assert.AreEqual(3, t.Forms.Length);
+//            Assert.AreEqual("verbo", t["es"]);
+//        }
+//
+//        [Test]
+//        public void DeSerializesWithNewWsAttributes()
+//        {
+//            MultiTextBase t = DeserializeWithXmlSerialization(
+//                @"<TestMultiTextHolder>
+//                     <name>
+//				        <form lang='en'>verb</form>
+//				        <form lang='fr'>verbe</form>
+//				        <form lang='es'>verbo</form>
+//			        </name>
+//                    </TestMultiTextHolder>
+//                ");
+//            Assert.AreEqual(3, t.Forms.Length);
+//            Assert.AreEqual("verbo", t["es"]);
+//        }
 
-		[Test]
-		public void DeSerializesWithNewWsAttributes()
-		{
-			MultiTextBase t = DeserializeWithXmlSerialization(
-				@"<TestMultiTextHolder>
-					 <name>
-						<form lang='en'>verb</form>
-						<form lang='fr'>verbe</form>
-						<form lang='es'>verbo</form>
-					</name>
-					</TestMultiTextHolder>
-				");
-			Assert.AreEqual(3, t.Forms.Length);
-			Assert.AreEqual("verbo", t["es"]);
-		}
-
-		[Test]
-		public void DeSerializesWhenEmpty()
-		{
-			MultiTextBase t = DeserializeWithXmlSerialization(
-				@"  <TestMultiTextHolder>
-						<name/>
-					</TestMultiTextHolder>");
-			Assert.AreEqual(0, t.Forms.Length);
-		}
-
-
-		private MultiTextBase DeserializeWithXmlSerialization(string answer)
-		{
-			StringReader r = new StringReader(answer);
-			System.Xml.Serialization.XmlSerializer serializer = new XmlSerializer(typeof(TestMultiTextHolder));
-			TestMultiTextHolder holder = serializer.Deserialize(r) as TestMultiTextHolder;
-			return holder.Name;
-		}
+//        [Test]
+//        public void DeSerializesWhenEmpty()
+//        {
+//            MultiTextBase t = DeserializeWithXmlSerialization(
+//                @"  <TestMultiTextHolder>
+//                        <name/>
+//			        </TestMultiTextHolder>");
+//            Assert.AreEqual(0, t.Forms.Length);
+//        }
+//
+//
+//        private MultiTextBase DeserializeWithXmlSerialization(string answer)
+//        {
+//            StringReader r = new StringReader(answer);
+//            System.Xml.Serialization.XmlSerializer serializer = new XmlSerializer(typeof(TestMultiTextHolder));
+//            TestMultiTextHolder holder = serializer.Deserialize(r) as TestMultiTextHolder;
+//            return holder.Name;
+//        }
 
 		//  [ReflectorType("testMultiTextHolder")]
 		public class TestMultiTextHolder
@@ -535,5 +536,47 @@ namespace Palaso.Tests.Text
 			Assert.IsFalse(y.HasFormWithSameContent(x));
 		}
 
+		[Test]
+		public void GetOrderedAndFilteredForms_EmptyIdList_GivesEmptyList()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["one"] = "test";
+			Assert.AreEqual(0, x.GetOrderedAndFilteredForms(new string[] { }).Length);
+		}
+
+		[Test]
+		public void GetOrderedAndFilteredForms_EmptyMultiText_GivesEmptyList()
+		{
+			MultiTextBase x = new MultiTextBase();
+			LanguageForm[] forms = x.GetOrderedAndFilteredForms(new string[] { "one", "three" });
+			Assert.AreEqual(0, forms.Length);
+		}
+
+		[Test]
+		public void GetOrderedAndFilteredForms_GivesFormsInOrder()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["one"] = "1";
+			x["two"] = "2";
+			x["three"] = "3";
+			LanguageForm[] forms = x.GetOrderedAndFilteredForms(new string[] {"one", "three","two" });
+			Assert.AreEqual(3, forms.Length);
+			Assert.AreEqual("1", forms[0].Form);
+			Assert.AreEqual("3", forms[1].Form);
+			Assert.AreEqual("2", forms[2].Form);
+		}
+
+		[Test]
+		public void GetOrderedAndFilteredForms_DropsUnlistedForms()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["one"] = "1";
+			x["two"] = "2";
+			x["three"] = "3";
+			LanguageForm[] forms = x.GetOrderedAndFilteredForms(new string[] { "one", "three" });
+			Assert.AreEqual(2, forms.Length);
+			Assert.AreEqual("1", forms[0].Form);
+			Assert.AreEqual("3", forms[1].Form);
+		}
 	}
 }
