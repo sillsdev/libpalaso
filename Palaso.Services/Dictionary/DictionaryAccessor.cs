@@ -9,6 +9,8 @@ namespace Palaso.Services.Dictionary
 		private bool _isDisposed;
 		private string _dictionaryPath;
 		private string  _pathToDictionaryServicesApp;
+		private bool _isRegisteredWithService=false;
+
 		public delegate void LogEventHandler(string s, params object[] arguments);
 		public event LogEventHandler ErrorLog;
 
@@ -51,6 +53,7 @@ namespace Palaso.Services.Dictionary
 					if (dictionaryService != null)
 					{
 						dictionaryService.RegisterClient(Process.GetCurrentProcess().Id);
+						_isRegisteredWithService = true;
 						break;
 					}
 				}
@@ -83,16 +86,19 @@ namespace Palaso.Services.Dictionary
 		protected virtual void Dispose(bool disposing)
 		{
 			_isDisposed = true;
-			IDictionaryService service = IPCUtils.GetExistingService<IDictionaryService>(ServiceAddress);
-
-			if (service != null)
+			if (_isRegisteredWithService)
 			{
-				try
+				IDictionaryService service = IPCUtils.GetExistingService<IDictionaryService>(ServiceAddress);
+				if (service != null)
 				{
-					service.DeregisterClient(Process.GetCurrentProcess().Id);
-				}
-				catch (Exception)//swallow
-				{
+					try
+					{
+						service.DeregisterClient(Process.GetCurrentProcess().Id);
+						_isRegisteredWithService = false;
+					}
+					catch (Exception) //swallow
+					{
+					}
 				}
 			}
 		}

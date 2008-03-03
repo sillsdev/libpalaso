@@ -34,10 +34,19 @@ namespace Palaso.UI.WindowsForms.Progress
 			_xpathToCountSteps = xpathToCountSteps;
 		}
 
-		public XsltArgumentList XsltArguments
+//        public XsltArgumentList XsltArguments
+//        {
+//            get { return _xsltArguments; }
+//            set { _xsltArguments = value; }
+//        }
+
+		public void AddArgument(string name, string value)
 		{
-			get { return _xsltArguments; }
-			set { _xsltArguments = value; }
+			if (_xsltArguments == null)
+			{
+				_xsltArguments = new XsltArgumentList();
+			}
+			_xsltArguments.AddParam(name, string.Empty, value);
 		}
 
 		public string TaskMessage
@@ -58,11 +67,11 @@ namespace Palaso.UI.WindowsForms.Progress
 				targs.inputDocument.Load(_pathToLift);
 
 				targs.xsltStream = _xsltStream;
-				if (XsltArguments == null)
+				if (_xsltArguments == null)
 				{
 					_xsltArguments = new XsltArgumentList();
 				}
-				targs.xsltArguments = XsltArguments;
+				targs.xsltArguments = _xsltArguments;
 				if(!DoTransformWithProgressDialog(targs))
 				{
 					return ;
