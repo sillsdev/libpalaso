@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if !MONO
 using Keyman7Interop;
+#endif
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -104,7 +106,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
                 List<KeyboardController.KeyboardDescriptor> keyboards =
                     new List<KeyboardController.KeyboardDescriptor>();
 
-
+#if !MONO
                 Keyman7Interop.TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
                 foreach (Keyman7Interop.IKeymanKeyboard keyboard in keyman.Keyboards)
                 {
@@ -113,17 +115,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding
                     descriptor.engine = KeyboardController.Engines.Keyman7;
                     keyboards.Add(descriptor);
                 }
+#endif
                 return keyboards;
             }
         }
 
         public static bool EngineAvailable
         {
-            get { return null != new Keyman7Interop.TavultesoftKeymanClass(); } //if we were able to load the libarry, we assume it is installed
+			get
+			{
+#if MONO
+				return false;
+#else
+				//if we were able to load the libarry, we assume it is installed
+				return null != new Keyman7Interop.TavultesoftKeymanClass();
+#endif
+			}
         }
 
         public static void ActivateKeyboard(string name)
         {
+#if !MONO
             TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
             int oneBasedIndex = keyman.Keyboards.IndexOf(name);
 
@@ -134,29 +146,36 @@ namespace Palaso.UI.WindowsForms.Keyboarding
             }
             string s = keyman.Keyboards[oneBasedIndex].Name;
             keyman.Control.ActiveKeyboard = keyman.Keyboards[oneBasedIndex];
+#endif
         }
 
         public static void Deactivate()
         {
-
+#if !MONO
             TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
             keyman.Control.ActiveKeyboard = null;
+#endif
         }
 
         public static bool HasKeyboardNamed(string name)
         {
+#if MONO
+			return false;
+#else
             TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
 			return(keyman.Keyboards.IndexOf(name) > 0 /*remember, keyman indices are 1-based*/);
+#endif
         }
 
         public static string GetActiveKeyboard()
         {
+#if !MONO
             TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
             if (keyman.Control.ActiveKeyboard != null)
             {
                 return keyman.Control.ActiveKeyboard.Name;
             }
-
+#endif
             return null;
         }
     }

@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
+#if !MONO
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+#endif
 
 namespace Palaso.Services.ForClients
 {
@@ -17,10 +19,20 @@ namespace Palaso.Services.ForClients
 			set { _isWcfAvailable = value; }
 		}
 
+#if MONO
+		public class Binding
+		{
+
+		}
+#endif
 		public  static Binding  CreateBinding()
 		{
 			AssertWcfAvailable();
+#if MONO
+			return null;
+#else
 			return new NetNamedPipeBinding();
+#endif
 		}
 
 		public static string URLPrefix
@@ -35,6 +47,9 @@ namespace Palaso.Services.ForClients
 			where ServiceInterface : class
 		{
 			AssertWcfAvailable();
+#if MONO
+			return null;
+#else
 			ChannelFactory<ServiceInterface> channelFactory;
 			Binding binding = CreateBinding();
 
@@ -52,6 +67,7 @@ namespace Palaso.Services.ForClients
 				return null;
 			}
 			return helper;
+#endif
 		}
 
 		private static void AssertWcfAvailable()

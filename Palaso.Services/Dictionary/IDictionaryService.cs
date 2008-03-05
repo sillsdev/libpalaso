@@ -1,8 +1,12 @@
+#if !MONO
 using System.ServiceModel;
+#endif
 
 namespace Palaso.Services.Dictionary
 {
+#if !MONO
 	[ServiceContract]
+#endif
 	public interface IDictionaryService
 	{
 		/// <summary>
@@ -14,7 +18,9 @@ namespace Palaso.Services.Dictionary
 		/// <param name="method">Controls how matching should happen</param>
 		/// <param name="ids">The ids of the returned elements, for use in other calls.</param>
 		/// <param name="forms">The headwords of the matched elements.</param>
+#if !MONO
 		[OperationContract]
+#endif
 		void GetMatchingEntries(string writingSystemId, string form, FindMethods method, out string[] ids, out string[] forms);
 
 		/// <summary>
@@ -25,35 +31,45 @@ namespace Palaso.Services.Dictionary
 		/// don't have an html header.</remarks>
 		/// <param name="entryIds"></param>
 		/// <returns></returns>
+#if !MONO
 		[OperationContract]
+#endif
 		string GetHtmlForEntries(string[] entryIds);
 
 		/// <summary>
 		/// Used to help the dictionary service app know when to quit
 		/// </summary>
 		/// <param name="clientProcessId"></param>
+#if !MONO
 		[OperationContract]
+#endif
 		void RegisterClient(int clientProcessId);
 
 		/// <summary>
 		/// Used to help the dictionary service app know when to quit
 		/// </summary>
 		/// <param name="clientProcessId"></param>
+#if !MONO
 		[OperationContract]
+#endif
 		void DeregisterClient(int clientProcessId);
 
 		/// <summary>
 		/// Cause a gui application to come to the front, focussed on this entry, read to edit
 		/// </summary>
 		/// <param name="entryId"></param>
+#if !MONO
 		[OperationContract]
+#endif
 		void JumpToEntry(string entryId);
 
 		/// <summary>
 		/// Add a new entry to the lexicon
 		/// </summary>
 		/// <returns>the id that was assigned to the new entry</returns>
+#if !MONO
 		[OperationContract]
+#endif
 		string AddEntry(string lexemeFormWritingSystemId, string lexemeForm,
 						string definitionWritingSystemId, string definition,
 						string exampleWritingSystemId, string example);
@@ -62,16 +78,22 @@ namespace Palaso.Services.Dictionary
 		/// this is useful for unit tests, to see if the app went where we asked
 		/// </summary>
 		/// <returns></returns>
+#if !MONO
 		[OperationContract]
+#endif
 		string GetCurrentUrl();
 
+#if !MONO
 		[OperationContract]
+#endif
 		void ShowUIWithUrl(string url);
 
 		/// <summary>
 		/// mostly for unit testing
 		/// </summary>
+#if !MONO
 		[OperationContract]
+#endif
 		bool IsInServerMode();
 
 

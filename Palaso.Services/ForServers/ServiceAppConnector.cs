@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if !MONO
 using System.ServiceModel;
+#endif
 
 namespace Palaso.Services.ForServers
 {
@@ -10,15 +12,21 @@ namespace Palaso.Services.ForServers
 	/// will be launched to provide the service, regardless of how many times the  user or another
 	/// program tells it to open.
 	/// </summary>
+#if !MONO
 	[ServiceContract]
+#endif
 	public interface IServiceAppConnector
 	{
+#if !MONO
 		[OperationContract]
+#endif
 		void BringToFront();
 	}
 
+#if !MONO
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
 		IncludeExceptionDetailInFaults = true)]
+#endif
 	public class ServiceAppConnector : IServiceAppConnector
 	{
 		public event EventHandler BringToFrontRequest;

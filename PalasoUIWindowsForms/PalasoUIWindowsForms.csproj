@@ -27,7 +27,23 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>..\output\Mono Debug\</OutputPath>
+	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Release|AnyCPU' ">
+	<OutputPath>..\output\Mono Release\</OutputPath>
+	<DefineConstants>TRACE;MONO</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' != 'Mono Debug' And '$(Configuration)' != 'Mono Release' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Keyman7Interop.dll</HintPath>
@@ -36,6 +52,8 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\KeymanLink.dll</HintPath>
 	</Reference>
+  </ItemGroup>
+  <ItemGroup>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />

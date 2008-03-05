@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
+#if !MONO
 using System.ServiceModel;
+#endif
 using System.Threading;
 using Palaso.Services.ForClients;
 using Palaso.Services.ForServers;
@@ -25,7 +27,9 @@ namespace Palaso.Services.ForServers
 		private State _state;
 		private State _requestedState;
 		private static ServiceAppConnector _connector;
+#if !MONO
 		private static ServiceHost _singletonAppHost;
+#endif
 		private readonly string _pipeName;
 		public event EventHandler BringToFrontRequest;
 
@@ -171,6 +175,7 @@ namespace Palaso.Services.ForServers
 		{
 			_connector = new    ServiceAppConnector();
 			_connector.BringToFrontRequest+=On_BringToFrontRequest;
+#if !MONO
 			_singletonAppHost = new ServiceHost(_connector, new Uri[] { new Uri(SingletonAppAddress), });
 
 			NetNamedPipeBinding binding = new NetNamedPipeBinding();
@@ -178,6 +183,7 @@ namespace Palaso.Services.ForServers
 			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), binding,
 												 SingletonAppAddress);
 			_singletonAppHost.Open();
+#endif
 		}
 
 

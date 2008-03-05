@@ -8,7 +8,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 {
 	internal class Keyman6Adaptor
 	{
-
 		public static void ActivateKeyboard(string name)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -16,6 +15,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				return;
 			}
 
+#if !MONO
 			try
 			{
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
@@ -34,6 +34,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("The keyboard '" + name + "' could not be activated using Keyman 6.");
 			}
+#endif
 		}
 
 		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
@@ -41,6 +42,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			get
 			{
 				List<KeyboardController.KeyboardDescriptor> descriptors = new List<KeyboardController.KeyboardDescriptor>();
+#if !MONO
 				try
 				{
 					KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
@@ -60,6 +62,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					Debug.Fail(err.Message);
 				}
+#endif
 				return descriptors;
 			}
 		}
@@ -68,13 +71,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			get
 			{
+#if MONO
+				return false;
+#else
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 				return keymanLink.Initialize(false);
+#endif
 			}
 		}
 
 		static public void Deactivate()
 		{
+#if !MONO
 			try
 			{
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
@@ -87,10 +95,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating keyman 6.");
 			}
+#endif
 		}
 
 		public static bool HasKeyboardNamed(string name)
 		{
+#if !MONO
 			try
 			{
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
@@ -111,11 +121,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem looking for a keybaord in keyman 6.");
 			}
+#endif
 			return false;
 		}
 
 		public static string GetActiveKeyboard()
 		{
+#if !MONO
 			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 			if (!keymanLink.Initialize(false))
 			{
@@ -134,6 +146,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Palaso.Reporting.NonFatalErrorDialog.Show(
 					"There was a problem retrieving the active keyboard in keyman 6.");
 			}
+#endif
 			return null;
 		}
 	}
