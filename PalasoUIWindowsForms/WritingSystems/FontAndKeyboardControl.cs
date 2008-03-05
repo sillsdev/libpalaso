@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -74,8 +75,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			try
 			{
-				KeymanLink.KeymanLink link = new KeymanLink.KeymanLink();
-
 				_sampleTextBox.Font = new Font(_fontFamilyCombo.Text, 12);
 				_sampleTextBox.ForeColor = Color.Black;
 				if (_sampleTextBox.Font.FontFamily.Name != _fontFamilyCombo.Text.Trim())
@@ -122,64 +121,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void AssignKeyboard()
 		{
-			try
-			{
-				InputLanguage inputLanguage = FindInputLanguage(this.KeyboardName);
-				if (inputLanguage != null)
-				{
-					InputLanguage.CurrentInputLanguage = inputLanguage;
-				}
-				else
-				{
-					//set the windows back to default so it doesn't interfere
-					//nice idea but is unneeded... perhaps keyman is calling this too
-					//InputLanguage.CurrentInputLanguage = InputLanguage.DefaultInputLanguage;
-					KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
-					if (!string.IsNullOrEmpty(KeyboardName))
-					{
-						keymanLink.SelectKeymanKeyboard(KeyboardName, true);
-					}
-				}
-			}
-			catch (Exception error)
-			{
-				MessageBox.Show("There was an error trying to set the keyboard. " + error.Message);
-			}
+			KeyboardController.ActivateKeyboard(KeyboardName);
 		}
 
-		static private InputLanguage FindInputLanguage(string name)
-		{
-			if (InputLanguage.InstalledInputLanguages != null) // as is the case on Linux
-			{
-				foreach (InputLanguage l in InputLanguage.InstalledInputLanguages)
-				{
-					if (l.LayoutName == name)
-					{
-						return l;
-					}
-				}
-			}
-			return null;
-		}
-		private  IEnumerable<String> KeyboardNames
+		static private  IEnumerable<String> KeyboardNames
 		{
 		  get
 			{
 				List<String> keyboards = new List<string>();
 				keyboards.Add("(default)");
-
-				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
-				if (keymanLink.Initialize(false))
+				List<KeyboardController.KeyboardDescriptor> systemKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
+				foreach (KeyboardController.KeyboardDescriptor keyboard in systemKeyboards)
 				{
-					foreach (KeymanLink.KeymanLink.KeymanKeyboard keyboard in keymanLink.Keyboards)
-					{
-						keyboards.Add(keyboard.KbdName);
-					}
-				}
-
-				foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
-				{
-					keyboards.Add(lang.LayoutName);
+					keyboards.Add(keyboard.Name);
 				}
 				return keyboards;
 			}

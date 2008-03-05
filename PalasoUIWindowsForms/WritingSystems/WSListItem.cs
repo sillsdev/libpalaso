@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Palaso.UI.Widgets;
+using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -303,20 +305,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private string SearchForKeyboard(string s)
 		{
-			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
-			if (keymanLink.Initialize(false))
+			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
+			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
 			{
-				foreach (KeymanLink.KeymanLink.KeymanKeyboard keyboard in keymanLink.Keyboards)
+				if(keyboard.Name.Contains(s))
 				{
-					if(keyboard.KbdName.Contains(s))
-						return keyboard.KbdName;
+					return keyboard.Name;
 				}
-			}
-
-			foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
-			{
-				if (lang.LayoutName.Contains(s))
-					return lang.LayoutName;
 			}
 			return string.Empty;
 		}
