@@ -412,6 +412,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			//
 			// _statusLabel
 			//
+			this._statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._statusLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this._statusLabel.Location = new System.Drawing.Point(9, 52);
 			this._statusLabel.Name = "_statusLabel";
@@ -420,6 +422,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			//
 			// _progressBar
 			//
+			this._progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._progressBar.Location = new System.Drawing.Point(9, 75);
 			this._progressBar.Name = "_progressBar";
 			this._progressBar.Size = new System.Drawing.Size(279, 18);
@@ -428,16 +432,19 @@ namespace Palaso.UI.WindowsForms.Progress
 			//
 			// _cancelButton
 			//
+			this._cancelButton.AutoSize = true;
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._cancelButton.Location = new System.Drawing.Point(234, 99);
 			this._cancelButton.Name = "_cancelButton";
-			this._cancelButton.Size = new System.Drawing.Size(54, 22);
+			this._cancelButton.Size = new System.Drawing.Size(54, 23);
 			this._cancelButton.TabIndex = 10;
 			this._cancelButton.Text = "&Cancel";
 			this._cancelButton.Click += new System.EventHandler(this.OnCancelButton_Click);
 			//
 			// _progressLabel
 			//
+			this._progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._progressLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this._progressLabel.Location = new System.Drawing.Point(9, 99);
 			this._progressLabel.Name = "_progressLabel";
@@ -457,6 +464,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			//
 			// _overviewLabel
 			//
+			this._overviewLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._overviewLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
 			this._overviewLabel.Location = new System.Drawing.Point(9, 7);
 			this._overviewLabel.Name = "_overviewLabel";
@@ -465,7 +474,9 @@ namespace Palaso.UI.WindowsForms.Progress
 			//
 			// ProgressDialog
 			//
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(298, 130);
 			this.ControlBox = false;
 			this.Controls.Add(this._overviewLabel);
@@ -473,15 +484,14 @@ namespace Palaso.UI.WindowsForms.Progress
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._progressBar);
 			this.Controls.Add(this._statusLabel);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ProgressDialog";
-			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "Palaso";
 			this.Shown += new System.EventHandler(this.ProgressDialog_Shown);
 			this.Load += new System.EventHandler(this.ProgressDialog_Load);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion

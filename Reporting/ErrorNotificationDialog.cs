@@ -163,6 +163,7 @@ namespace Palaso.Reporting
 			//
 			this.AcceptButton = this._closeButton;
 			resources.ApplyResources(this, "$this");
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.CancelButton = this._closeButton;
 			this.ControlBox = false;
