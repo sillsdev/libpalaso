@@ -394,8 +394,6 @@ namespace Palaso.Reporting
 				return;
 			}
 			Logger.WriteEvent("Exiting...");
-			Application.Exit();
-			//still didn't work? Sheesh.
 			Process.GetCurrentProcess().Kill();
 		}
 

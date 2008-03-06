@@ -17,6 +17,9 @@ namespace Palaso.UI.WindowsForms.Progress
 	/// </summary>
 	public class ProgressDialog : Form
 	{
+
+		public delegate void ProgressCallback(int progress);
+
 		private Label _statusLabel;
 		private ProgressBar _progressBar;
 		private Label _progressLabel;
@@ -125,8 +128,20 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 			set
 			{
-				_progressBar.Maximum = value;
+				if (InvokeRequired)
+				{
+					Invoke(new ProgressCallback(SetMaximumCrossThread), new object[] { value });
+				}
+				else
+				{
+					_progressBar.Maximum = value;
+				}
 			}
+		}
+
+		private void SetMaximumCrossThread(int amount)
+		{
+			ProgressRangeMaximum = amount;
 		}
 
 		/// <summary>
@@ -583,8 +598,20 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public void OnTotalNumberOfStepsChanged(object sender, EventArgs e)
 		{
+			if (InvokeRequired)
+			{
+				Invoke(new ProgressCallback(UpdateTotal), new object[] { ((ProgressState)sender).TotalNumberOfSteps });
+			}
+			else
+			{
+				UpdateTotal(((ProgressState) sender).TotalNumberOfSteps);
+			}
+		}
+
+		private void UpdateTotal(int steps)
+		{
 			_startTime = DateTime.Now;
-			ProgressRangeMaximum = ((ProgressState)sender).TotalNumberOfSteps;
+			ProgressRangeMaximum = steps;
 			Refresh();
 		}
 

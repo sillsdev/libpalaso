@@ -47,7 +47,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 					TransformWithProgressDialog transformer =
 						new TransformWithProgressDialog(sourceFilePath, outputPath, xsltStream, "//number");
 					transformer.TaskMessage = "Testing...";
-					transformer.Transform();
+					transformer.Transform(true);
 					string output = File.ReadAllText(outputPath);
 					Assert.IsTrue(output.Contains("1000"));
 				}

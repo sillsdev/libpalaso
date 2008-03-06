@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.Xsl;
@@ -55,7 +56,11 @@ namespace Palaso.UI.WindowsForms.Progress
 			set { _taskMessage = value; }
 		}
 
-		public void Transform()
+		/// <summary>
+		///
+		/// </summary>
+		/// <returns>true if succeeded</returns>
+		public bool Transform(bool failureWouldBeFatal)
 		{
 			TransformWorkerArguments targs = new TransformWorkerArguments();
 			targs.outputFilePath = _outputPath;
@@ -72,20 +77,31 @@ namespace Palaso.UI.WindowsForms.Progress
 					_xsltArguments = new XsltArgumentList();
 				}
 				targs.xsltArguments = _xsltArguments;
-				if(!DoTransformWithProgressDialog(targs))
+				if (!DoTransformWithProgressDialog(targs, failureWouldBeFatal))
 				{
-					return ;
+					try
+					{
+						if (File.Exists(_outputPath))
+						{
+							File.Delete(_outputPath);
+						}
+					}
+					catch (Exception err )
+					{
+						Debug.Fail(err.Message);
+					}
+					return false;
 				}
 			}
+			return true;
 		}
 
 
 		/// <summary>
 		///
 		/// </summary>
-		/// <param name="arguments"></param>
 		/// <returns>false if not successful or cancelled</returns>
-		private bool DoTransformWithProgressDialog(TransformWorkerArguments arguments)
+		private bool DoTransformWithProgressDialog(TransformWorkerArguments arguments, bool failureWouldBeFatal)
 		{
 			using (ProgressDialog dlg = new ProgressDialog())
 			{
@@ -99,7 +115,7 @@ namespace Palaso.UI.WindowsForms.Progress
 				dlg.ShowDialog();
 				if (dlg.ProgressStateResult!=null && dlg.ProgressStateResult.ExceptionThatWasEncountered != null)
 				{
-					Palaso.Reporting.ErrorNotificationDialog.ReportException(dlg.ProgressStateResult.ExceptionThatWasEncountered,null,false);
+					Palaso.Reporting.ErrorNotificationDialog.ReportException(dlg.ProgressStateResult.ExceptionThatWasEncountered, null, failureWouldBeFatal);
 					return false;
 				}
 				return !dlg.ProgressState.Cancel;
