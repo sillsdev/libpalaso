@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -39,11 +40,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 				{
-					if (true)
+					if (Environment.OSVersion.Platform != PlatformID.Unix)
 					{
-						System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
-						b.LoadDataFromCultureInfo(language.Culture);
-						string region = b.TwoLetterISORegionName;
+						string region = GetRegion(language);
 
 						WritingSystemDefinition def =
 							new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, region, "", "",
@@ -54,6 +53,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					}
 				}
 			}
+		}
+
+		private static string GetRegion(InputLanguage language) {
+#if MONO // CultureAndRegionInfoBuilder not supported by Mono
+			return string.Empty;
+#else
+			System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
+			b.LoadDataFromCultureInfo(language.Culture);
+			return b.TwoLetterISORegionName;
+#endif
 		}
 	}
 }
