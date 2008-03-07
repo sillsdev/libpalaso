@@ -8,8 +8,8 @@ namespace Palaso.Reporting
 	public class EmailMessage
 	{
 		private string _body= "";
-		protected string _address = "";
-		protected string _subject = "";
+		private string _address = "";
+		private string _subject = "";
 	  //  private string _attachmentPath;
 
 		public void Send()

@@ -25,7 +25,6 @@ namespace Palaso.UI.WindowsForms.Progress
 		private Label _progressLabel;
 		private Button _cancelButton;
 		private Timer _showWindowIfTakingLongTimeTimer;
-		private bool _showOnce;
 		private Timer _progressTimer;
 		private bool _isClosing;
 		private Label _overviewLabel;
