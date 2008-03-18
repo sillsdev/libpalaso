@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Palaso.UI.WindowsForms.i8n;
 
 
-namespace Palaso.UI.WindowsForms.Tests.i8n
+namespace PalasoUIWindowsForms.Tests.i8n
 {
 	[TestFixture]
 	public class StringCatalogTests
