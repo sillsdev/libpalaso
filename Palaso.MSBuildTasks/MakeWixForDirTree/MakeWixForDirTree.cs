@@ -25,7 +25,10 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 {
 	public class MakeWixForDirTree : Task, ILogger
 	{
-		#region Private data
+
+		static public string kFileNameOfGuidDatabase = ".guidsForInstaller.xml";
+
+	#region Private data
 
 		private string _rootDir;
 		private string _outputFilePath;
@@ -143,6 +146,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				}
 			}
 
+
 			try
 			{
 				XmlDocument doc = new XmlDocument();
@@ -245,11 +249,13 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 			XmlDocument doc = parent.OwnerDocument;
 			List<string> files = new List<string>();
-			IdToGuidDatabase metadata = IdToGuidDatabase.Create(Path.Combine(dirName, ".guidsForInstaller.xml"), this); ;
+
+			IdToGuidDatabase metadata = IdToGuidDatabase.Create(Path.Combine(dirName, kFileNameOfGuidDatabase), this); ;
 			// Build a list of the files in this directory removing any that have been exluded
 			foreach (string f in Directory.GetFiles(dirName))
 			{
-				if (_fileMatchPattern.IsMatch(f) && !m_exclude.ContainsKey(f.ToLower()))
+				if (_fileMatchPattern.IsMatch(f) && !m_exclude.ContainsKey(f.ToLower())
+					&& !f.Contains(kFileNameOfGuidDatabase) )
 					files.Add(f);
 			}
 
