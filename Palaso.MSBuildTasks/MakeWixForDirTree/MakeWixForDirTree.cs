@@ -107,7 +107,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				return false;
 			}
 
-			LogMessage(MessageImportance.Low, "Walking " + _rootDir);
+			LogMessage(MessageImportance.High, "Creating Wix fragment for " + _rootDir);
 			//make it an absolute path
 			_outputFilePath = Path.GetFullPath(_outputFilePath);
 
@@ -299,7 +299,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				id = '_' + id;
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 
-			Log.LogMessage(MessageImportance.Low, "Adding file {0} with id {1}", path, id);
+			Log.LogMessage(MessageImportance.Normal, "Adding file {0} with id {1}", path, id);
 			string key = id.ToLower();
 			if (m_suffixes.ContainsKey(key))
 			{
