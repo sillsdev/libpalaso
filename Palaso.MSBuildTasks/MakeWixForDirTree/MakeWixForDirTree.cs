@@ -47,6 +47,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		private bool _hasLoggedErrors=false;
 		private string _directoryReferenceId;
 		private string _componentGroupId;
+		private bool _giveAllPermissions;
 
 		private const string XMLNS = "http://schemas.microsoft.com/wix/2006/wi";
 
@@ -73,6 +74,16 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			set { _filesAndDirsToExclude = value; }
 		}
 
+		/// <summary>
+		/// Allow normal non-administrators to write and delete the files
+		/// </summary>
+		public bool GiveAllPermissions
+		{
+			get { return _giveAllPermissions; }
+			set { _giveAllPermissions = value; }
+		}
+
+
 		/*
 		 * Regex pattern to match files. Defaults to .*
 		 */
@@ -90,6 +101,9 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			get { return m_checkOnly; }
 			set { m_checkOnly = value; }
 		}
+
+
+
 
 		[Output, Required]
 		public string OutputFilePath
@@ -331,6 +345,16 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			}
 			string relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_outputFilePath), path);
 			elemFile.SetAttribute("Source", relativePath);
+
+			if (GiveAllPermissions)
+			{
+				XmlElement persmission = doc.CreateElement("Permission", XMLNS);
+				persmission.SetAttribute("GenericAll", "yes");
+				persmission.SetAttribute("User", "Everyone");
+				elemFile.AppendChild(persmission);
+			}
+
+
 			elemComp.AppendChild(elemFile);
 
 			m_components.Add(id);

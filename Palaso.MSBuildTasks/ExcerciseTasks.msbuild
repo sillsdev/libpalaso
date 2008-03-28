@@ -21,7 +21,8 @@
 			 MsdIdBugsTo="me@testing.org"
 			 XmlFiles="@(XmlFiles)"
 			 XPathToStrings="//label | //description[not(@UseInConstructor='false')]"
-			 CSharpFiles="@(CSharpFiles)">
+			 CSharpFiles="@(CSharpFiles)"
+		   >
 	  </MakePot>
   </Target>
 
@@ -33,7 +34,8 @@
 				RootDirectory="..\Palaso.MSBuildTasks"
 				Exclude="MakePot"
 				OutputFilePath="ExcerciseTasksTest.wxs"
-				MatchRegExPattern="\.cs$">
+				MatchRegExPattern="\.cs$"
+				  GiveAllPermissions="true">
 	  <Output TaskParameter="OutputFileName" ItemName="Compile" />
 	</MakeWixForDirTree>
   </Target>
