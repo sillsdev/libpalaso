@@ -146,20 +146,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				File.Delete(_outputFilePath);
 			}
 
-			// Set up the exclusion lookup table if necessary
-			if (_filesAndDirsToExclude != null)
-			{
-				foreach (string s in _filesAndDirsToExclude)
-				{
-					string key;
-					if (Path.IsPathRooted(s))
-						key = s.ToLower();
-					else
-						key = Path.GetFullPath(Path.Combine(_rootDir, s)).ToLower();
-					m_exclude.Add(key, s);
-				}
-			}
-
+			SetupExclusions();
 
 			try
 			{
@@ -182,25 +169,9 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				elemGroup.SetAttribute("Id", _componentGroupId);
 				elemFrag.AppendChild(elemGroup);
 
-				foreach (string c in m_components)
-				{
-					XmlElement elem = doc.CreateElement("ComponentRef", XMLNS);
-					elem.SetAttribute("Id", c);
-					elemGroup.AppendChild(elem);
-				}
+				AddComponentRefsToDom(doc, elemGroup);
 
-				// write the XML out onlystringles have been modified
-				if (!m_checkOnly && m_filesChanged)
-				{
-					XmlWriterSettings settings = new XmlWriterSettings();
-					settings.Indent = true;
-					settings.IndentChars = "    ";
-					settings.Encoding = Encoding.UTF8;
-					using (XmlWriter xmlWriter = XmlWriter.Create(_outputFilePath, settings))
-					{
-						doc.WriteTo(xmlWriter);
-					}
-				}
+				WriteDomToFile(doc);
 			}
 			catch (IOException e)
 			{
@@ -209,6 +180,48 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			}
 
 			return !HasLoggedErrors;
+		}
+
+		private void WriteDomToFile(XmlDocument doc)
+		{
+// write the XML out onlystringles have been modified
+			if (!m_checkOnly && m_filesChanged)
+			{
+				XmlWriterSettings settings = new XmlWriterSettings();
+				settings.Indent = true;
+				settings.IndentChars = "    ";
+				settings.Encoding = Encoding.UTF8;
+				using (XmlWriter xmlWriter = XmlWriter.Create(_outputFilePath, settings))
+				{
+					doc.WriteTo(xmlWriter);
+				}
+			}
+		}
+
+		private void AddComponentRefsToDom(XmlDocument doc, XmlElement elemGroup)
+		{
+			foreach (string c in m_components)
+			{
+				XmlElement elem = doc.CreateElement("ComponentRef", XMLNS);
+				elem.SetAttribute("Id", c);
+				elemGroup.AppendChild(elem);
+			}
+		}
+
+		private void SetupExclusions()
+		{
+			if (_filesAndDirsToExclude != null)
+			{
+				foreach (string s in _filesAndDirsToExclude)
+				{
+					string key;
+					if (Path.IsPathRooted(s))
+						key = s.ToLower();
+					else
+						key = Path.GetFullPath(Path.Combine(_rootDir, s)).ToLower();
+					m_exclude.Add(key, s);
+				}
+			}
 		}
 
 		public void LogMessage(MessageImportance messageImportance, string s)
@@ -257,16 +270,19 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 
 
-		private void ProcessDir(XmlElement parent, string dirName, string compPrefix)
+		private void ProcessDir(XmlElement parent, string dirPath, string compPrefix)
 		{
-			Log.LogMessage(MessageImportance.Low, "Processing dir {0}", dirName);
+			Log.LogMessage(MessageImportance.Low, "Processing dir {0}", dirPath);
 
 			XmlDocument doc = parent.OwnerDocument;
 			List<string> files = new List<string>();
 
-			IdToGuidDatabase metadata = IdToGuidDatabase.Create(Path.Combine(dirName, kFileNameOfGuidDatabase), this); ;
+			IdToGuidDatabase guidDatabase = IdToGuidDatabase.Create(Path.Combine(dirPath, kFileNameOfGuidDatabase), this); ;
+
+			SetupDirectoryPermissions(dirPath, parent, compPrefix, doc, guidDatabase);
+
 			// Build a list of the files in this directory removing any that have been exluded
-			foreach (string f in Directory.GetFiles(dirName))
+			foreach (string f in Directory.GetFiles(dirPath))
 			{
 				if (_fileMatchPattern.IsMatch(f) && !m_exclude.ContainsKey(f.ToLower())
 					&& !f.Contains(kFileNameOfGuidDatabase) )
@@ -277,18 +293,17 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			bool isFirst = true;
 			foreach (string path in files)
 			{
-				ProcessFile(parent, path, doc, metadata, isFirst);
+				ProcessFile(parent, path, doc, guidDatabase, isFirst);
 				isFirst = false;
 			}
 
 			// Recursively process any subdirectories
-			foreach (string d in Directory.GetDirectories(dirName))
+			foreach (string d in Directory.GetDirectories(dirPath))
 			{
 				string shortName = Path.GetFileName(d);
 				if (!m_exclude.ContainsKey(d.ToLower()) && shortName != ".svn" && shortName != "CVS")
 				{
-					string id = compPrefix + "." + shortName;
-					id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
+					string id = GetSafeDirectoryId(d, compPrefix);
 
 					XmlElement elemDir = doc.CreateElement("Directory", XMLNS);
 					elemDir.SetAttribute("Id", id);
@@ -301,6 +316,40 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 						parent.RemoveChild(elemDir);
 				}
 			}
+		}
+
+		private void SetupDirectoryPermissions(string dirPath, XmlElement parent, string compPrefix, XmlDocument doc, IdToGuidDatabase guidDatabase)
+		{
+			if (_giveAllPermissions)
+			{
+				/*	Need to add one of these in order to set the permissions on the directory
+					 * <Component Id="biatahCacheDir" Guid="492F2725-9DF9-46B1-9ACE-E84E70AFEE99">
+							<CreateFolder Directory="biatahCacheDir">
+								<Permission GenericAll="yes" User="Everyone" />
+							</CreateFolder>
+						</Component>
+					 */
+
+				string id = GetSafeDirectoryId(dirPath, compPrefix);
+
+				XmlElement componentElement = doc.CreateElement("Component", XMLNS);
+				componentElement.SetAttribute("Id", id);
+				componentElement.SetAttribute("Guid", guidDatabase.GetGuid(id, this.CheckOnly));
+
+				XmlElement createFolderElement = doc.CreateElement("CreateFolder", XMLNS);
+				createFolderElement.SetAttribute("Directory", id);
+				AddPermissionElement(doc, createFolderElement);
+
+				componentElement.AppendChild(createFolderElement);
+				parent.AppendChild(componentElement);
+			}
+		}
+
+		private string GetSafeDirectoryId(string directoryPath, string compPrefix)
+		{
+			string id = compPrefix + "." + Path.GetFileName(directoryPath);
+			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
+			return id;
 		}
 
 		private void ProcessFile(XmlElement parent, string path, XmlDocument doc, IdToGuidDatabase guidDatabase, bool isFirst)
@@ -348,10 +397,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 			if (GiveAllPermissions)
 			{
-				XmlElement persmission = doc.CreateElement("Permission", XMLNS);
-				persmission.SetAttribute("GenericAll", "yes");
-				persmission.SetAttribute("User", "Everyone");
-				elemFile.AppendChild(persmission);
+				AddPermissionElement(doc, elemFile);
 			}
 
 
@@ -362,6 +408,14 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			// check whether the file is newer
 			if (File.GetLastWriteTime(path) > m_refDate)
 				m_filesChanged = true;
+		}
+
+		private void AddPermissionElement(XmlDocument doc, XmlElement elementToAddPermissionTo)
+		{
+			XmlElement persmission = doc.CreateElement("Permission", XMLNS);
+			persmission.SetAttribute("GenericAll", "yes");
+			persmission.SetAttribute("User", "Everyone");
+			elementToAddPermissionTo.AppendChild(persmission);
 		}
 
 		#endregion
