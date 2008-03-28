@@ -162,7 +162,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				elemFrag.AppendChild(elemDirRef);
 
 				// recurse through the tree add elements
-				ProcessDir(elemDirRef, Path.GetFullPath(_rootDir), "Lib");//review (jdh): what does this "lib" do and what should it really be?
+				ProcessDir(elemDirRef, Path.GetFullPath(_rootDir), DirectoryReferenceId);
 
 				// write out components into a group
 				XmlElement elemGroup = doc.CreateElement("ComponentGroup", XMLNS);
@@ -270,7 +270,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 
 
-		private void ProcessDir(XmlElement parent, string dirPath, string compPrefix)
+		private void ProcessDir(XmlElement parent, string dirPath, string outerDirectoryId)
 		{
 			Log.LogMessage(MessageImportance.Low, "Processing dir {0}", dirPath);
 
@@ -279,7 +279,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 			IdToGuidDatabase guidDatabase = IdToGuidDatabase.Create(Path.Combine(dirPath, kFileNameOfGuidDatabase), this); ;
 
-			SetupDirectoryPermissions(dirPath, parent, compPrefix, doc, guidDatabase);
+			SetupDirectoryPermissions(dirPath, parent, outerDirectoryId, doc, guidDatabase);
 
 			// Build a list of the files in this directory removing any that have been exluded
 			foreach (string f in Directory.GetFiles(dirPath))
@@ -303,7 +303,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				string shortName = Path.GetFileName(d);
 				if (!m_exclude.ContainsKey(d.ToLower()) && shortName != ".svn" && shortName != "CVS")
 				{
-					string id = GetSafeDirectoryId(d, compPrefix);
+					string id = GetSafeDirectoryId(d, outerDirectoryId);
 
 					XmlElement elemDir = doc.CreateElement("Directory", XMLNS);
 					elemDir.SetAttribute("Id", id);
@@ -318,7 +318,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			}
 		}
 
-		private void SetupDirectoryPermissions(string dirPath, XmlElement parent, string compPrefix, XmlDocument doc, IdToGuidDatabase guidDatabase)
+		private void SetupDirectoryPermissions(string dirPath, XmlElement parent, string parentDirectoryId, XmlDocument doc, IdToGuidDatabase guidDatabase)
 		{
 			if (_giveAllPermissions)
 			{
@@ -330,7 +330,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 						</Component>
 					 */
 
-				string id = GetSafeDirectoryId(dirPath, compPrefix);
+				string id = GetSafeDirectoryId(dirPath, parentDirectoryId);
 
 				XmlElement componentElement = doc.CreateElement("Component", XMLNS);
 				componentElement.SetAttribute("Id", id);
@@ -342,12 +342,25 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 				componentElement.AppendChild(createFolderElement);
 				parent.AppendChild(componentElement);
+
+				m_components.Add(id);
 			}
 		}
 
-		private string GetSafeDirectoryId(string directoryPath, string compPrefix)
+		private string GetSafeDirectoryId(string directoryPath, string parentDirectoryId)
 		{
-			string id = compPrefix + "." + Path.GetFileName(directoryPath);
+			string id = parentDirectoryId;
+			//bit of a hack... we don't want our id to have this prefix.dir form fo the top level,
+			//where it is going to be referenced by other wix files, that will just be expecting the id
+			//the msbuild target gave for the id of this directory
+
+			//I don't have it quite right, though. See the test file, where you get
+			// <Component Id="common.bin.bin" (the last bin is undesirable)
+
+			if (Path.GetFullPath(_rootDir) != directoryPath)
+			{
+				id+="." + Path.GetFileName(directoryPath);
+			}
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 			return id;
 		}
