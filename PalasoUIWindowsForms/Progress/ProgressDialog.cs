@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
-using System.Threading;
 using System.Windows.Forms;
 using Palaso.Progress;
 using Timer=System.Windows.Forms.Timer;
@@ -112,7 +111,10 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 			set
 			{
-				_progressBar.Minimum = value;
+				if (_backgroundWorker == null)
+				{
+					_progressBar.Minimum = value;
+				}
 			}
 		}
 
@@ -127,6 +129,10 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 			set
 			{
+				if (_backgroundWorker != null)
+				{
+					return;
+				}
 				if (InvokeRequired)
 				{
 					Invoke(new ProgressCallback(SetMaximumCrossThread), new object[] { value });
@@ -203,6 +209,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			set
 			{
 				_backgroundWorker = value;
+				_progressBar.Minimum = 0;
+				_progressBar.Maximum = 100;
 			}
 		}
 
@@ -280,15 +288,19 @@ namespace Palaso.UI.WindowsForms.Progress
 			ProgressState state = e.UserState as ProgressState;
 			if (state != null)
 			{
- //               _lastHeardFromProgressState = state;
-				ProgressRangeMaximum = state.TotalNumberOfSteps;
-				Progress = state.NumberOfStepsCompleted;
+				//               _lastHeardFromProgressState = state;
 				StatusText = state.StatusLabel;
+			}
 
+			if (state == null
+				|| state is BackgroundWorkerState)
+			{
+				Progress = e.ProgressPercentage;
 			}
 			else
 			{
-				Progress = e.ProgressPercentage;
+				ProgressRangeMaximum = state.TotalNumberOfSteps;
+				Progress = state.NumberOfStepsCompleted;
 			}
 		}
 
