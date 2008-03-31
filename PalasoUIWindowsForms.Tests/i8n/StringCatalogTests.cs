@@ -122,10 +122,10 @@ msgstr 'one'
 		[Test]
 		public void FontsChanged()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, "Arial", 30);
-			Font normal = new Font(System.Drawing.FontFamily.GenericSerif, 20);
+			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSansSerif.Name, 30);
+			Font normal = new Font(FontFamily.GenericSerif, 20);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
-			Assert.AreEqual("Arial", localized.FontFamily.Name);
+			Assert.AreEqual(FontFamily.GenericSansSerif.Name, localized.FontFamily.Name);
 		}
 	}
 }

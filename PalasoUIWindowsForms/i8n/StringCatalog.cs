@@ -84,7 +84,7 @@ namespace Palaso.UI.WindowsForms.i8n
 		{
 			if (_inInternationalizationTestMode)
 			{
-				LabelFont = new Font("Arial", 9);
+				LabelFont = new Font(FontFamily.GenericSansSerif, 9);
 				return;
 			}
 
@@ -166,7 +166,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			{
 				if (_font == null)
 				{
-					_font = new Font("Arial", 9);
+					_font = new Font(FontFamily.GenericSansSerif, 9);
 				}
 				return _font;
 			}
