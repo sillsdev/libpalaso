@@ -48,6 +48,20 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\icu.net.dll</HintPath>
 	</Reference>
+	<None Include="..\lib\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\icudt38.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\icuin38.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\icuuc38.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+  <ItemGroup>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.XML" />
@@ -151,8 +165,7 @@
   </Target>
   -->
   <PropertyGroup>
-	<PreBuildEvent>copy "$(ProjectDir)\..\lib\icuin38.dll" "$(TargetDir)"
-copy "$(ProjectDir)\..\lib\icuuc38.dll" "$(TargetDir)"
-copy "$(ProjectDir)\..\lib\icudt38.dll" "$(TargetDir)"</PreBuildEvent>
+	<PreBuildEvent>
+	</PreBuildEvent>
   </PropertyGroup>
 </Project>
