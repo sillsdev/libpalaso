@@ -231,7 +231,7 @@ namespace Palaso.Tests.Base32Tests
 
 
 		[Test]
-		[Ignore("Long Running (7 seconds)")]
+		[Category("Long Running")] // ~7 seconds
 		public void EncodeThenDecode_Roundtrip()
 		{
 
@@ -247,7 +247,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[Ignore("Long Running (7 seconds)")]
+		[Category("Long Running")] // ~7 seconds
 		public void EncodeThenDecodeNoPadding_Roundtrip()
 		{
 
