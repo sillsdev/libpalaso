@@ -38,7 +38,14 @@ namespace Palaso.WritingSystems.Collation
 		/// <param name="prefix">The prefix of the sort-key attribute</param>
 		/// <param name="attribute">The sort key attribute</param>
 		/// <param name="namespaceUri">The namespace of the sortkey attribute</param>
-		public static void AddSortKeys(XPathNavigator document, string xpathSortKeySource, SortKeyGenerator sortKeyGenerator, string xpathElementToPutSortKeyAttributeIn, string prefix, string attribute, string namespaceUri)
+		public static void AddSortKeys(
+			XPathNavigator document,
+			string xpathSortKeySource,
+			SortKeyGenerator sortKeyGenerator,
+			string xpathElementToPutSortKeyAttributeIn,
+			string prefix,
+			string attribute,
+			string namespaceUri)
 		{
 			if (document == null)
 			{
@@ -79,15 +86,21 @@ namespace Palaso.WritingSystems.Collation
 					throw new ArgumentException("Invalid namespace URI. Cannot be empty.");
 				}
 			}
-			XPathExpression compiledXpathElementToPutSortKeyAttributeIn = XPathExpression.Compile(xpathElementToPutSortKeyAttributeIn);
+			XPathExpression compiledXpathElementToPutSortKeyAttributeIn =
+				XPathExpression.Compile(xpathElementToPutSortKeyAttributeIn);
+
 			foreach (XPathNavigator sortKeySource in document.Select(xpathSortKeySource))
 			{
 				byte[] sortKeyData = sortKeyGenerator(sortKeySource.Value).KeyData;
 				string sortKeyBase32 = Base32Convert.ToBase32HexString(sortKeyData, Base32FormattingOptions.None);
-				XPathNavigator elementToPutSortKeyAttributeIn = sortKeySource.SelectSingleNode(compiledXpathElementToPutSortKeyAttributeIn);
+
+				XPathNavigator elementToPutSortKeyAttributeIn =
+					sortKeySource.SelectSingleNode(compiledXpathElementToPutSortKeyAttributeIn);
+
 				if (elementToPutSortKeyAttributeIn.MoveToAttribute(attribute, namespaceUri??string.Empty))
 				{
-				   elementToPutSortKeyAttributeIn.DeleteSelf();
+					//now we point at the attribute that already exists
+					elementToPutSortKeyAttributeIn.DeleteSelf();
 				}
 				elementToPutSortKeyAttributeIn.CreateAttribute(prefix,
 															   attribute,
