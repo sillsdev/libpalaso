@@ -209,6 +209,12 @@ namespace Palaso.Tests.Text
 
 			string mtxml = writer.GetStringBuilder().ToString();
 			mtxml = mtxml.Replace('"', '\'');
+
+			// normalize string line terminators
+			// for portability across os
+			mtxml = mtxml.Replace("\r\n", "\n");
+			answer = answer.Replace("\r\n", "\n");
+
 			Debug.WriteLine(mtxml);
 			Assert.AreEqual(answer, mtxml);
 		}
