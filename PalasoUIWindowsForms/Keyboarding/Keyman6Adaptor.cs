@@ -88,6 +88,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 				return keymanLink.Initialize(false);
 #endif
+				return false;
 			}
 		}
 
