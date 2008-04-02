@@ -55,29 +55,36 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
+		[Category("Windows IME")]
 		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
 		{
 			RequiresWindowsIME();
-			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows)[0];
+			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
+			Assert.Greater(keyboards.Count, 0, "This test requires that the Windows IME has at least one language installed.");
+			KeyboardController.KeyboardDescriptor d = keyboards[0];
 			KeyboardController.ActivateKeyboard(d.Name);
 			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
+		[Category("Windows IME")]
 		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
 		{
 			RequiresWindowsIME();
-			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows)[1];
+			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
+			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
+			KeyboardController.KeyboardDescriptor d = keyboards[1];
 			KeyboardController.ActivateKeyboard(d.Name);
 			KeyboardController.DeactivateKeyboard();
 			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
-	   [Test]
+		[Test]
+		[Category("Windows IME")]
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
-			Assert.AreEqual(PlatformID.Win32NT, Environment.OSVersion.Platform);
+			RequiresWindowsIME();
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
-			Assert.Greater(keyboards.Count,1 , "This test requires that the Windows IME ahs at least two languages installed.");
+			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
 			{
 				Assert.AreEqual(KeyboardController.Engines.Windows, keyboard.engine);
@@ -85,7 +92,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 
-		[Test, Ignore("must have keyman 6")]
+		[Test]
+		[Category("Keyman6")]
 		public void Keyman6_GetKeyboards_GivesAtLeastOneAndOnlyKeyman6Ones()
 		{
 		   RequiresKeyman6();
@@ -97,8 +105,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 		}
 
-
-		[Test, Ignore("must have keyman 6")]
+		[Test]
+		[Category("Keyman6")]
 		public void Keyman6_ActivateKeyboard_ReportsItWasActivated()
 		{
 			RequiresKeyman6();
@@ -110,7 +118,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 
-		[Test, Ignore("must have keyman 6")]
+		[Test]
+		[Category("Keyman6")]
 		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
 		{
 			RequiresKeyman6();
@@ -122,7 +131,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 
-		[Test, Ignore("must have keyman 7")]
+		[Test]
+		[Category("Keyman7")]
 		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
 		{
 			RequiresKeyman7();
@@ -133,7 +143,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 
-		[Test, Ignore("must have keyman 7")]
+		[Test]
+		[Category("Keyman7")]
 		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
 		{
 			RequiresKeyman7();
@@ -145,7 +156,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 
-		[Test, Ignore("must have keyman 7")]
+		[Test]
+		[Category("Keyman7")]
 		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()
 		{
 			RequiresKeyman7();

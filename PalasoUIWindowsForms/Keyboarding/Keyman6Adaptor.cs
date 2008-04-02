@@ -15,6 +15,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				return;
 			}
 
+			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return;
+			}
 #if !MONO
 			try
 			{
@@ -42,6 +46,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			get
 			{
 				List<KeyboardController.KeyboardDescriptor> descriptors = new List<KeyboardController.KeyboardDescriptor>();
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
+				{
+					return descriptors;
+				}
 #if !MONO
 				try
 				{
@@ -71,9 +79,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			get
 			{
-#if MONO
-				return false;
-#else
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
+				{
+					return false;
+				}
+
+#if !MONO
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 				return keymanLink.Initialize(false);
 #endif
@@ -82,6 +93,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		static public void Deactivate()
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return;
+			}
+
 #if !MONO
 			try
 			{
@@ -100,6 +116,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboardNamed(string name)
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return false;
+			}
 #if !MONO
 			try
 			{
@@ -127,6 +147,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static string GetActiveKeyboard()
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return null;
+			}
 #if !MONO
 			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 			if (!keymanLink.Initialize(false))

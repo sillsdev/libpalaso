@@ -20,12 +20,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
         {
             get
             {
-                try
+				if (Environment.OSVersion.Platform != PlatformID.Unix)
                 {
-                    return InnerKeyman7Wrapper.KeyboardDescriptors;
-                }
-                catch (Exception)
-                {
+					try
+					{
+						return InnerKeyman7Wrapper.KeyboardDescriptors;
+					}
+					catch (Exception) {}
                 }
                 return new List<KeyboardController.KeyboardDescriptor>();
             }
@@ -35,12 +36,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
         {
             get
             {
-                try
+				if (Environment.OSVersion.Platform != PlatformID.Unix)
                 {
-                    return InnerKeyman7Wrapper.EngineAvailable;
-                }
-				catch (Exception)
-                {
+					try
+					{
+						return InnerKeyman7Wrapper.EngineAvailable;
+					}
+					catch (Exception) {}
                 }
                 return false;
             }
@@ -48,13 +50,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
         public static void ActivateKeyboard(string name)
         {
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return;
+			}
+
             try
             {
                 InnerKeyman7Wrapper.ActivateKeyboard(name);
             }
-            catch(Palaso.Reporting.ErrorReport.NonFatalMessageSentToUserException error)
+			catch(Palaso.Reporting.ErrorReport.NonFatalMessageSentToUserException)
             {
-                throw error; // needed for tests to know that a message box would have been shown
+				throw; // needed for tests to know that a message box would have been shown
             }
 			catch (Exception)
             {
@@ -63,6 +70,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
         public static void Deactivate()
         {
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return;
+			}
+
             try
             {
                 InnerKeyman7Wrapper.Deactivate();
@@ -74,6 +86,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
         public static bool HasKeyboardNamed(string name)
         {
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return false;
+			}
+
             try
             {
                 return InnerKeyman7Wrapper.HasKeyboardNamed(name);
@@ -86,6 +103,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
         public static string GetActiveKeyboard()
         {
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return null;
+			}
+
             try
             {
                 return InnerKeyman7Wrapper.GetActiveKeyboard();

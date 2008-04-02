@@ -78,7 +78,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool EngineAvailable
 		{
-			get { return PlatformID.Win32NT == Environment.OSVersion.Platform; }
+			get {
+				return PlatformID.Win32NT == Environment.OSVersion.Platform
+					   || PlatformID.Unix == Environment.OSVersion.Platform;
+			}
 		}
 
 		static  public void Deactivate()
