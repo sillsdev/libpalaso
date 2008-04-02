@@ -30,6 +30,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 <node>b</node>
 <node>q</node>
 </test>");
+
 			this._document = document.CreateNavigator();
 			this._xpathSortKeySource = "//node";
 			this._xpathElementToPutSortKeyAttributeIn = "self::*";
@@ -50,7 +51,8 @@ namespace Palaso.Tests.WritingSystems.Collation
 						_attribute);
 
 			string expectedXml = "<test>\r\n  <node sort-key=\"1QKG20810400\">z</node>\r\n  <node sort-key=\"1O1020810400\">a</node>\r\n  <node sort-key=\"1O4G20810400\">b</node>\r\n  <node sort-key=\"1Q4G20810400\">q</node>\r\n</test>";
-			Assert.AreEqual(expectedXml, _document.InnerXml);
+			Assert.AreEqual(NormalizeLineBreaks(expectedXml),
+							NormalizeLineBreaks(_document.OuterXml));
 		}
 
 		[Test]
@@ -65,7 +67,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 						_xpathElementToPutSortKeyAttributeIn,
 						_attribute);
 
-			Assert.AreEqual(string.Empty, navigator.InnerXml);
+			Assert.AreEqual(string.Empty, navigator.OuterXml);
 		}
 
 		[Test]
@@ -234,7 +236,8 @@ namespace Palaso.Tests.WritingSystems.Collation
 			"\">a</node>\r\n  <node sil:sort-key=\"1O4G20810400\" xmlns:sil=\""+ _uri +
 			"\">b</node>\r\n  <node sil:sort-key=\"1Q4G20810400\" xmlns:sil=\""+ _uri +
 			"\">q</node>\r\n</test>";
-			Assert.AreEqual(expectedXml, _document.InnerXml);
+			Assert.AreEqual(NormalizeLineBreaks(expectedXml),
+							NormalizeLineBreaks(_document.OuterXml));
 		}
 
 	  [Test]
@@ -253,9 +256,14 @@ namespace Palaso.Tests.WritingSystems.Collation
 				   _attribute);
 
 		string expectedXml = "<test>\r\n  <node sort-key=\"1QKG20810400\">z</node>\r\n  <node sort-key=\"1O1020810400\">a</node>\r\n  <node sort-key=\"1O4G20810400\">b</node>\r\n  <node sort-key=\"1Q4G20810400\">q</node>\r\n</test>";
-		Assert.AreEqual(expectedXml, _document.InnerXml);
+		Assert.AreEqual(NormalizeLineBreaks(expectedXml),
+						NormalizeLineBreaks(_document.OuterXml));
 	  }
 
+	  private string NormalizeLineBreaks(string s)
+	  {
+		  return s.Replace("\r\n", "\n");
+	  }
 	}
 
 }
