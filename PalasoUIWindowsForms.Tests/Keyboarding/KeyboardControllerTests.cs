@@ -42,10 +42,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
+		[Category("Windows IME")]
 		public void GetAllKeyboards_GivesSeveral()
 		{
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME ahs at least two languages installed.");
+			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
 		[Test, ExpectedException(typeof(ErrorReport.NonFatalMessageSentToUserException))]
