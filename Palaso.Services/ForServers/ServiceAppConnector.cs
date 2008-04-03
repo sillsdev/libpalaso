@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-#if !MONO
-using System.ServiceModel;
-#endif
+using CookComputing.XmlRpc;
 
 namespace Palaso.Services.ForServers
 {
@@ -12,22 +10,29 @@ namespace Palaso.Services.ForServers
 	/// will be launched to provide the service, regardless of how many times the  user or another
 	/// program tells it to open.
 	/// </summary>
-#if !MONO
-	[ServiceContract]
-#endif
 	public interface IServiceAppConnector
 	{
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("ServiceApp.BringToFront", Description = "Request the application to come to the front of the other windows (first coming out of server mode if needed).")]
 		void BringToFront();
+
+		[XmlRpcMethod("ServiceApp.IsAlive", Description = "Always returns true.")]
+		bool IsAlive();
 	}
 
-#if !MONO
-	[ServiceBehavior(InstanceContextMode = InstanceContextMode.Single,
-		IncludeExceptionDetailInFaults = true)]
-#endif
-	public class ServiceAppConnector : IServiceAppConnector
+
+	/// <summary>
+	/// This versino is required by the XmlRpc component; it just adds the IXmlRpcProxy
+	/// </summary>
+	public interface IServiceAppConnectorWithProxy : IServiceAppConnector, IXmlRpcProxy
+	{
+	}
+
+
+	[XmlRpcService(
+	  Name = "Service App Connector",
+	  Description = "This is an XML-RPC service for finding or launching an instance of a service.",
+	  AutoDocumentation = true)]
+	public class ServiceAppConnector : MarshalByRefObject, IServiceAppConnector
 	{
 		public event EventHandler BringToFrontRequest;
 		private List<string> _clientIds= new List<string>();
@@ -43,6 +48,11 @@ namespace Palaso.Services.ForServers
 			{
 				BringToFrontRequest.Invoke(this, null);
 			}
+		}
+
+		public bool IsAlive()
+		{
+			return true;
 		}
 	}
 }

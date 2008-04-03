@@ -4,6 +4,11 @@ using Palaso.Services.ForClients;
 
 namespace Palaso.Services.Dictionary
 {
+	/// <summary>
+	/// A client application uses this class to find, talk to, and detach from
+	/// an application that provides Dictionary Services (e.g. WeSay), without having to deal with the
+	/// underyling communication mechanims
+	/// </summary>
 	public class DictionaryAccessor : IDisposable
 	{
 		private bool _isDisposed;
@@ -13,6 +18,13 @@ namespace Palaso.Services.Dictionary
 
 		public delegate void LogEventHandler(string s, params object[] arguments);
 		public event LogEventHandler ErrorLog;
+
+
+		public static string GetServiceName(string dictionaryPath)
+		{
+			return "DictionaryServices/" + dictionaryPath;
+		}
+
 
 		public DictionaryAccessor(string dictionaryPath, string pathToDicionaryServicesApp)
 		{
@@ -40,7 +52,7 @@ namespace Palaso.Services.Dictionary
 
 		private IDictionaryService GetDictionaryService()
 		{
-			IDictionaryService dictionaryService = IPCUtils.GetExistingService<IDictionaryService>(ServiceAddress);
+		   IDictionaryService dictionaryService = IpcSystem.GetExistingService<IDictionaryService>(ServiceName);
 			if (dictionaryService == null)
 			{
 				string arguments = '"' + _dictionaryPath + '"' + " -server";
@@ -49,7 +61,7 @@ namespace Palaso.Services.Dictionary
 				for (int i = 0; i < 20; i++)
 				{
 					System.Threading.Thread.Sleep(500);
-					dictionaryService = IPCUtils.GetExistingService<IDictionaryService>(ServiceAddress);
+					dictionaryService = IpcSystem.GetExistingService<IDictionaryService>(ServiceName);
 					if (dictionaryService != null)
 					{
 						dictionaryService.RegisterClient(Process.GetCurrentProcess().Id);
@@ -63,18 +75,22 @@ namespace Palaso.Services.Dictionary
 				Log("Failed to locate or start dictionary service");
 			}
 			return dictionaryService;
+	}
+
+		public string[] GetServiceDocumentation()
+		{
+			return new string[] { };
+			// couldn't get this to work: return Service.SystemListMethods();
 		}
 
-
-
-		private string ServiceAddress
+		private string ServiceName
 		{
 			get
 			{
-				return IPCUtils.URLPrefix+"DictionaryServices/"
-					   + Uri.EscapeDataString(_dictionaryPath);
+				return GetServiceName(_dictionaryPath);
 			}
 		}
+
 
 		public void Dispose()
 		{
@@ -88,7 +104,7 @@ namespace Palaso.Services.Dictionary
 			_isDisposed = true;
 			if (_isRegisteredWithService)
 			{
-				IDictionaryService service = IPCUtils.GetExistingService<IDictionaryService>(ServiceAddress);
+				IDictionaryService service = IpcSystem.GetExistingService<IDictionaryService>(ServiceName);
 				if (service != null)
 				{
 					try
@@ -123,7 +139,19 @@ namespace Palaso.Services.Dictionary
 		/// <param name="forms">The headwords of the matched elements.</param>
 		public void GetMatchingEntries(string writingSystemId, string form, FindMethods method, out string[] ids, out string[] forms)
 		{
-			Service.GetMatchingEntries(writingSystemId, form, method, out ids, out forms);
+			FindResult r = Service.GetMatchingEntries(writingSystemId, SafeFromNull(form), method.ToString());
+			ids = r.ids;
+			forms = r.forms;
+		}
+
+		/// <summary>
+		/// the cookcomputing xmlrpc serializer chokes when given a null where a string is expected
+		/// </summary>
+		/// <param name="form"></param>
+		/// <returns></returns>
+		private string SafeFromNull(string form)
+		{
+			return  form==null ? string.Empty : form;
 		}
 
 		/// <summary>
@@ -154,9 +182,12 @@ namespace Palaso.Services.Dictionary
 							   string definitionWritingSystemId, string definition,
 							   string exampleWritingSystemId, string example)
 		{
-			return Service.AddEntry(lexemeFormWritingSystemId, lexemeForm,
-									definitionWritingSystemId, definition,
-									exampleWritingSystemId, example);
+			return Service.AddEntry(SafeFromNull(lexemeFormWritingSystemId),
+									SafeFromNull(lexemeForm),
+									SafeFromNull(definitionWritingSystemId),
+									SafeFromNull(definition),
+									SafeFromNull(exampleWritingSystemId),
+									SafeFromNull(example));
 		}
 	}
 }

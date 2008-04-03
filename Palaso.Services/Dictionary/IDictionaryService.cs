@@ -1,13 +1,14 @@
-#if !MONO
-using System.ServiceModel;
-#endif
+using CookComputing.XmlRpc;
 
 namespace Palaso.Services.Dictionary
 {
-#if !MONO
-	[ServiceContract]
-#endif
-	public interface IDictionaryService
+	public struct FindResult
+	{
+		public string[] ids ;
+		public string[] forms;
+	}
+
+	public interface IDictionaryServiceBase
 	{
 		/// <summary>
 		/// Search the dictionary for an ordered list of entries that may be what the user is looking for.
@@ -15,13 +16,9 @@ namespace Palaso.Services.Dictionary
 		/// <param name="writingSystemId"></param>
 		/// <param name="form">The form to search on.  May be used to match on lexeme form, citation form, variants, etc.,
 		/// depending on how the implementing dictionary services application.</param>
-		/// <param name="method">Controls how matching should happen</param>
-		/// <param name="ids">The ids of the returned elements, for use in other calls.</param>
-		/// <param name="forms">The headwords of the matched elements.</param>
-#if !MONO
-		[OperationContract]
-#endif
-		void GetMatchingEntries(string writingSystemId, string form, FindMethods method, out string[] ids, out string[] forms);
+		/// <param name="findMethod">Controls how matching should happen</param>
+		[XmlRpcMethod("Dictionary.GetMatchingEntries", Description = "Search the dictionary for an ordered list of entries that may be what the user is looking for.")]
+		FindResult GetMatchingEntries(string writingSystemId, string form, string findMethod);
 
 		/// <summary>
 		/// Get an HTML representation of one or more entries.
@@ -31,45 +28,35 @@ namespace Palaso.Services.Dictionary
 		/// don't have an html header.</remarks>
 		/// <param name="entryIds"></param>
 		/// <returns></returns>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.GetHtmlForEntries", Description = "Get an HTML representation of one or more entries.")]
 		string GetHtmlForEntries(string[] entryIds);
 
 		/// <summary>
 		/// Used to help the dictionary service app know when to quit
 		/// </summary>
 		/// <param name="clientProcessId"></param>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.RegisterClient", Description = "Used to help the dictionary service app know when to quit")]
 		void RegisterClient(int clientProcessId);
 
 		/// <summary>
 		/// Used to help the dictionary service app know when to quit
 		/// </summary>
 		/// <param name="clientProcessId"></param>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.DeregisterClient", Description = "Used to help the dictionary service app know when to quit")]
 		void DeregisterClient(int clientProcessId);
 
 		/// <summary>
 		/// Cause a gui application to come to the front, focussed on this entry, read to edit
 		/// </summary>
 		/// <param name="entryId"></param>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.JumpToEntry", Description = "Cause a gui application to come to the front, focussed on this entry, read to edit")]
 		void JumpToEntry(string entryId);
 
 		/// <summary>
 		/// Add a new entry to the lexicon
 		/// </summary>
 		/// <returns>the id that was assigned to the new entry</returns>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.AddEntry", Description = "Add a new entry to the lexicon")]
 		string AddEntry(string lexemeFormWritingSystemId, string lexemeForm,
 						string definitionWritingSystemId, string definition,
 						string exampleWritingSystemId, string example);
@@ -78,27 +65,23 @@ namespace Palaso.Services.Dictionary
 		/// this is useful for unit tests, to see if the app went where we asked
 		/// </summary>
 		/// <returns></returns>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.GetCurrentUrl", Description = "this is useful for unit tests, to see if the app went where we asked")]
 		string GetCurrentUrl();
 
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.ShowUIWithUrl", Description = "")]
 		void ShowUIWithUrl(string url);
 
 		/// <summary>
 		/// mostly for unit testing
 		/// </summary>
-#if !MONO
-		[OperationContract]
-#endif
+		[XmlRpcMethod("Dictionary.IsInServerMode", Description = "")]
 		bool IsInServerMode();
 
+		//todo        void AddInflectionalVariant(string writingSystemId, string variant);
+	}
 
-//todo        void AddInflectionalVariant(string writingSystemId, string variant);
-
+	public interface IDictionaryService : IDictionaryServiceBase, IXmlRpcProxy
+	{
 	}
 
 	public enum FindMethods

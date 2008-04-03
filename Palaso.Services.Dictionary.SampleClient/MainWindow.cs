@@ -29,6 +29,10 @@ namespace Palaso.Services.Dictionary.SampleClient
 
 		private void Main_Load(object sender, EventArgs e)
 		{
+			if (this.DesignMode)
+			{
+				return;
+			}
 			Logger = this;
 
 			LoadFromSettings();
@@ -74,6 +78,14 @@ namespace Palaso.Services.Dictionary.SampleClient
 		{
 			//only really needed if switching from settings tab, but it'll be fast
 			LoadFromSettings();
+		}
+
+		private void btnShowDocumentation_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			foreach (string s in _dictionaryAccessor.GetServiceDocumentation())
+			{
+				Console.WriteLine(s);
+			}
 		}
 
 

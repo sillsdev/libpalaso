@@ -1,11 +1,8 @@
 using System;
 using System.Diagnostics;
-#if !MONO
-using System.ServiceModel;
-#endif
+using System.Runtime.Remoting;
 using System.Threading;
 using Palaso.Services.ForClients;
-using Palaso.Services.ForServers;
 
 namespace Palaso.Services.ForServers
 {
@@ -27,10 +24,8 @@ namespace Palaso.Services.ForServers
 		private State _state;
 		private State _requestedState;
 		private static ServiceAppConnector _connector;
-#if !MONO
-		private static ServiceHost _singletonAppHost;
-#endif
-		private readonly string _pipeName;
+
+		private readonly string _serviceName;
 		public event EventHandler BringToFrontRequest;
 
 		/// <summary>
@@ -41,9 +36,9 @@ namespace Palaso.Services.ForServers
 		/// <param name="pipeName"></param>
 		/// <param name="startInServerMode"></param>
 		/// <returns>null if an application is already open with that pipe, otherwise a helper object</returns>
-		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName, bool startInServerMode)
+		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName,  bool startInServerMode)
 		{
-			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(pipeName, startInServerMode);
+			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(pipeName,startInServerMode);
 			if (!helper.StartupIfAppropriate())
 			{
 				return null;
@@ -53,24 +48,21 @@ namespace Palaso.Services.ForServers
 				return helper;
 			}
 		}
-		private ServiceAppSingletonHelper(string pipeName, bool startInServerMode)
+
+
+		private ServiceAppSingletonHelper(string serviceName, bool startInServerMode)
 		{
-			if (string.IsNullOrEmpty(pipeName))
+
+			if (string.IsNullOrEmpty(serviceName))
 			{
-				throw new ArgumentException("pipeName");
+				throw new ArgumentException("serviceName");
 			}
 
-			_pipeName = pipeName;
+			_serviceName = serviceName;
 			_state = State.Starting;
 
-			if (!IPCUtils.IsWcfAvailable)
-			{
-				_requestedState = State.UiMode;
-			}
-			else
-			{
-				_requestedState = startInServerMode ? State.ServerMode : State.UiMode;
-			}
+			_requestedState = startInServerMode ? State.ServerMode : State.UiMode;
+
 		}
 
 		public State CurrentState
@@ -133,17 +125,14 @@ namespace Palaso.Services.ForServers
 
 
 		/// <summary>
-		/// Decides whether there is already an app using this named pipe, and claims the pipe if not.
+		/// Decides whether there is already an app using this service name, and claims the service name if not.
 		/// </summary>
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
-			if (!IPCUtils.IsWcfAvailable)
-			{
-				return true;
-			}
-			IServiceAppConnector alreadyExistingInstance = IPCUtils.GetExistingService<IServiceAppConnector>(SingletonAppAddress);
-			if (alreadyExistingInstance != null)
+			IServiceAppConnectorWithProxy alreadyExistingInstance =
+				IpcSystem.GetExistingService<IServiceAppConnectorWithProxy>(_serviceName);
+			if ((alreadyExistingInstance != null) )
 			{
 				if (_requestedState == State.UiMode)
 				{
@@ -152,38 +141,16 @@ namespace Palaso.Services.ForServers
 				return false;
 			}
 
-			StartServeAppSingletonService();
+			// create the service any future versions of this (with the same pipeName) will use
+			// to find out we're already running and tell us other stuff (like BringToFront)
+			Debug.Assert(null == RemotingServices.GetServerTypeForUri(IpcSystem.GetUrlForService(_serviceName, IpcSystem._defaultPort)));
+
+
+			_connector = new ServiceAppConnector();
+			_connector.BringToFrontRequest += On_BringToFrontRequest;
+			IpcSystem.StartServingObject(_serviceName, _connector);
+
 			return true;
-		}
-
-
-		private string SingletonAppAddress
-		{
-			get
-			{
-				return IPCUtils.URLPrefix + _pipeName;
-			}
-		}
-
-
-
-		/// <summary>
-		/// create the service any future versions of this (with the same pipeName) will use
-		/// to find out we're already running and tell us other stuff (like BringToFront)
-		/// </summary>
-		private  void StartServeAppSingletonService()
-		{
-			_connector = new    ServiceAppConnector();
-			_connector.BringToFrontRequest+=On_BringToFrontRequest;
-#if !MONO
-			_singletonAppHost = new ServiceHost(_connector, new Uri[] { new Uri(SingletonAppAddress), });
-
-			NetNamedPipeBinding binding = new NetNamedPipeBinding();
-
-			_singletonAppHost.AddServiceEndpoint(typeof(IServiceAppConnector), binding,
-												 SingletonAppAddress);
-			_singletonAppHost.Open();
-#endif
 		}
 
 
@@ -213,19 +180,16 @@ namespace Palaso.Services.ForServers
 			_state = State.ServerMode;
 			while (true)
 			{
-				if (IPCUtils.IsWcfAvailable)
+				if (_connector.ClientIds.Count > 1)
 				{
-					if (_connector.ClientIds.Count > 1)
-					{
-						someoneHasAttached = true;
-					}
-					//once at least one client has registered (attached), quit
-					//when none are attached anymore
-					if (someoneHasAttached && _connector.ClientIds.Count == 0)
-					{
-						_state = State.Exitting;
-						break;
-					}
+					someoneHasAttached = true;
+				}
+				//once at least one client has registered (attached), quit
+				//when none are attached anymore
+				if (someoneHasAttached && _connector.ClientIds.Count == 0)
+				{
+					_state = State.Exitting;
+					break;
 				}
 				if (_requestedState == State.UiMode)
 				{
@@ -244,5 +208,20 @@ namespace Palaso.Services.ForServers
 			}
 		}
 
+//        public static void DisposeForNextTest()
+//        {
+//            if (_connector != null)
+//            {
+////this is just a guess, it's unclear what this does
+//                RemotingServices.Disconnect(_connector);
+//                _connector = null;
+//                IPCUtils.UnregisterHttpChannel(IPCUtils.URLPort);
+//            }
+//        }
+
+		public void TestRequestsExitFromServerMode()
+		{
+			_requestedState = State.Exitting;
+		}
 	}
 }

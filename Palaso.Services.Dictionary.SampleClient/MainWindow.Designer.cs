@@ -39,6 +39,7 @@ namespace Palaso.Services.Dictionary.SampleClient
 			this.settingsControl1 = new Palaso.Services.Dictionary.SampleClient.SettingsControl();
 			this._logText = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.btnShowDocumentation = new System.Windows.Forms.LinkLabel();
 			this._tabControl.SuspendLayout();
 			this._lookupTabPage.SuspendLayout();
 			this._addEntryTabPage.SuspendLayout();
@@ -48,8 +49,8 @@ namespace Palaso.Services.Dictionary.SampleClient
 			// _tabControl
 			//
 			this._tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-																			 | System.Windows.Forms.AnchorStyles.Left)
-																			| System.Windows.Forms.AnchorStyles.Right)));
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._tabControl.Controls.Add(this._lookupTabPage);
 			this._tabControl.Controls.Add(this._addEntryTabPage);
 			this._tabControl.Controls.Add(this._settingsTabPage);
@@ -137,11 +138,23 @@ namespace Palaso.Services.Dictionary.SampleClient
 			this.label1.TabIndex = 2;
 			this.label1.Text = "Log";
 			//
+			// btnShowDocumentation
+			//
+			this.btnShowDocumentation.AutoSize = true;
+			this.btnShowDocumentation.Location = new System.Drawing.Point(337, 306);
+			this.btnShowDocumentation.Name = "btnShowDocumentation";
+			this.btnShowDocumentation.Size = new System.Drawing.Size(149, 13);
+			this.btnShowDocumentation.TabIndex = 3;
+			this.btnShowDocumentation.TabStop = true;
+			this.btnShowDocumentation.Text = "Show XmlRpc Documentation";
+			this.btnShowDocumentation.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.btnShowDocumentation_LinkClicked);
+			//
 			// MainWindow
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(498, 408);
+			this.Controls.Add(this.btnShowDocumentation);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this._logText);
 			this.Controls.Add(this._tabControl);
@@ -168,5 +181,6 @@ namespace Palaso.Services.Dictionary.SampleClient
 		private LookupControl lookupControl1;
 		private System.Windows.Forms.TabPage _settingsTabPage;
 		private SettingsControl settingsControl1;
+		private System.Windows.Forms.LinkLabel btnShowDocumentation;
 	}
 }

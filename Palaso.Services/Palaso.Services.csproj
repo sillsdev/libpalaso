@@ -44,20 +44,20 @@
 	<ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+	<Reference Include="CookComputing.XmlRpcV2, Version=2.2.0.4, Culture=neutral, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\CookComputing.XmlRpcV2.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
+	<Reference Include="System.Runtime.Remoting" />
+	<Reference Include="System.Web" />
 	<Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' != 'Mono Debug' And '$(Configuration)' != 'Mono Release'">
-	<Reference Include="System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>C:\WINDOWS\Microsoft.NET\Framework\v3.0\Windows Communication Foundation\System.ServiceModel.dll</HintPath>
-	</Reference>
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Dictionary\DictionaryAccessor.cs" />
 	<Compile Include="Dictionary\IDictionaryService.cs" />
-	<Compile Include="ForClients\IPCUtils.cs" />
+	<Compile Include="IPCSystem.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="ForServers\ServiceAppConnector.cs" />
 	<Compile Include="ForServers\ServiceAppSingletonHelper.cs" />
