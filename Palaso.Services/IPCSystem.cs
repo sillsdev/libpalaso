@@ -130,7 +130,7 @@ namespace Palaso.Services.ForClients
 			RemotingServices.Marshal(objectToServe, FixupServiceName(unescapedServiceName));
 
 			System.Diagnostics.Debug.WriteLine("Now serving " + FixupServiceName(unescapedServiceName));
-			File.WriteAllText(@"c:\temp\StartServingObjectLog.txt", "Now serving " + FixupServiceName(unescapedServiceName));
+   //         File.WriteAllText(@"c:\temp\StartServingObjectLog.txt", "Now serving " + FixupServiceName(unescapedServiceName));
 
 			/* in WPF, we did something like this:
 			 *
