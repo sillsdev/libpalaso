@@ -98,9 +98,13 @@
 		<nunit2>
 			<formatter type="Plain" usefile="true" />
 			<test>
-				<assemblies>
-					<include name="../output/${configuration}/*.Tests.dll" />
-				</assemblies>
+		  <assemblies>
+			<include name="../output/${configuration}/*.Tests.dll" />
+		  </assemblies>
+		  <categories>
+			<exclude name="Keyman6"/>
+			<exclude name="Keyman7"/>
+		  </categories>
 			</test>
 		</nunit2>
 	</target>
