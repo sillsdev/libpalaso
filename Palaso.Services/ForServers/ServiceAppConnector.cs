@@ -10,15 +10,12 @@ namespace Palaso.Services.ForServers
 	/// will be launched to provide the service, regardless of how many times the  user or another
 	/// program tells it to open.
 	/// </summary>
-	public interface IServiceAppConnector
+	public interface IServiceAppConnector : IPingable
 	{
 		[XmlRpcMethod("ServiceApp.BringToFront", Description = "Request the application to come to the front of the other windows (first coming out of server mode if needed).")]
 		void BringToFront();
 
-		[XmlRpcMethod("ServiceApp.IsAlive", Description = "Always returns true.")]
-		bool IsAlive();
 	}
-
 
 	/// <summary>
 	/// This versino is required by the XmlRpc component; it just adds the IXmlRpcProxy
@@ -50,7 +47,7 @@ namespace Palaso.Services.ForServers
 			}
 		}
 
-		public bool IsAlive()
+		public bool Ping()
 		{
 			return true;
 		}

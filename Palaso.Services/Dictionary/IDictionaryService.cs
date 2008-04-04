@@ -80,7 +80,7 @@ namespace Palaso.Services.Dictionary
 		//todo        void AddInflectionalVariant(string writingSystemId, string variant);
 	}
 
-	public interface IDictionaryService : IDictionaryServiceBase, IXmlRpcProxy
+	public interface IDictionaryService : IDictionaryServiceBase, IXmlRpcProxy, IPingable
 	{
 	}
 

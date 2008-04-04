@@ -65,7 +65,7 @@ namespace Palaso.Reporting
 					catch (Exception)
 					{
 						//try again with a different file.  We loose the history, but oh well.
-						SetActualLogPath("Log-"+Path.GetTempFileName() + ".txt");
+						SetActualLogPath("Log-"+Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".txt");
 						m_out = File.CreateText(LogPath);
 
 					}

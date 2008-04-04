@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
@@ -8,7 +11,7 @@ using CookComputing.XmlRpc;
 using Palaso.Services.Dictionary;
 using Palaso.Services.ForServers;
 
-namespace Palaso.Services.ForClients
+namespace Palaso.Services
 {
 	/// <summary>
 	/// Wraps the inter-process communication mechanism so that this code isn't
@@ -18,7 +21,14 @@ namespace Palaso.Services.ForClients
 	/// </summary>
 	public class IpcSystem
 	{
-		public static int _defaultPort=5678;
+		/// <summary>
+		/// Because .net remoting (.net 2) requires each application to have its own port,
+		/// when providing services, we need to first find an open port, and when we go
+		/// looking for providers, we may need to query on serveral ports.
+		/// </summary>
+		public static int StartingPort=5678;
+
+		public static readonly int NumberOfPortsToTry = 3;
 
 		public static string URLPrefix
 		{
@@ -31,38 +41,41 @@ namespace Palaso.Services.ForClients
 
 
 		public static TServiceInterface GetExistingService<TServiceInterface>(string unescapedServiceName)
-			where TServiceInterface : class, IXmlRpcProxy
+			where TServiceInterface : class, IXmlRpcProxy, IPingable
 		{
 			System.Diagnostics.Debug.Assert(!unescapedServiceName.Contains("%"),"please leave it to this method to figure out the correct escaping to do.");
 			System.Diagnostics.Debug.WriteLine("Trying to get service: " + unescapedServiceName);
-			System.Diagnostics.Debug.Assert(!Uri.IsWellFormedUriString(unescapedServiceName.Replace("%5", "_"), UriKind.Absolute), "This method needs a service name, not a whole uri.");
+			System.Diagnostics.Debug.Assert(!IsWellFormedUriStringMonoSafe(unescapedServiceName), "This method needs a service name, not a whole uri.");
 
 
 			TServiceInterface serviceProxy = XmlRpcProxyGen.Create<TServiceInterface>();
-			serviceProxy.Url = GetUrlForService(FixupServiceName(unescapedServiceName), IpcSystem._defaultPort);
-
-			try
-			{ //todo: just need some way to see if it's alive
-				if(serviceProxy is IServiceAppConnector)
-				{
-					((IServiceAppConnector)serviceProxy).IsAlive();
-				}
-				if (serviceProxy is IDictionaryService)
-				{
-					((IDictionaryService) serviceProxy).GetCurrentUrl();
-				}
-
-			}
-			catch(Exception e)
+			for (int port = StartingPort; port < StartingPort + NumberOfPortsToTry; port++)
 			{
-				return null;
+				//nb: this timeout does work, but reducing it to the point where it
+				//actually returns earlier just makes it unreliable (consisten test failures to find
+				//existing services on my fast machine). 100,000 is default timeout, but
+				//you get a "nope, not there" in a second or two
+
+				//serviceProxy.Timeout = 1000;//2000 is safe on my fast machine
+				serviceProxy.Url = GetUrlForService(FixupServiceName(unescapedServiceName), port);
+
+				try
+				{
+					Debug.WriteLine("Looking for service at " + serviceProxy.Url);
+					//hack: just need some way to see if it's alive, there should be a lower-level way to do that
+					((IPingable)serviceProxy).Ping();
+					return serviceProxy;//found one
+				}
+				catch (Exception) //swallow
+				{
+				}
 			}
-
-
-			return serviceProxy;
+			return null;
 		}
 
-		public static string GetUrlForService(string name, int port)
+
+
+		private static string GetUrlForService(string name, int port)
 		{
 			return URLPrefix + ":" + port + "/" + FixupServiceName(name);
 		}
@@ -77,20 +90,44 @@ namespace Palaso.Services.ForClients
 			return name;
 		}
 
-		private static void RegisterHttpChannelIfNeeded(int port)
+		private static int GetAChannelWeCanUse()
 		{
 			//nb: only one channel per port+protocol
 
 			IDictionary props = new Hashtable();
-			props["port"] = port;
 			props["bindTo"] = "127.0.0.1"; //local only
-			props["name"] = GetChannelName(port);
+			props["name"] = GetChannelName(StartingPort);
+			props["port"] = StartingPort;
 
-			if (null == ChannelServices.GetChannel((string)props["name"]))
+			//this only seems to work if the channel belongs to our process!
+			if (null != ChannelServices.GetChannel((string)props["name"]))
 			{
-				IChannel channel = new HttpChannel(props, null, new XmlRpcServerFormatterSinkProvider());
-				ChannelServices.RegisterChannel(channel, false);
+				return StartingPort; //we already own this port in this process
 			}
+
+			int port = StartingPort;
+			for (; port < StartingPort + NumberOfPortsToTry; port++)
+			{
+				props["port"] = port;
+				props["name"] = GetChannelName(port);
+				try
+				{
+#if DEBUG
+					Console.WriteLine("Looking for free port: " + port);
+#endif
+					IChannel channel = new HttpChannel(props, null, new XmlRpcServerFormatterSinkProvider());
+					ChannelServices.RegisterChannel(channel, false);
+					break;
+				}
+				catch (Exception e)
+				{
+				}
+			}
+			if (port < StartingPort + NumberOfPortsToTry)
+			{
+				return port;
+			}
+			throw new ApplicationException("Could not find a free port on which to create the service.");
 		}
 
 		private static string GetChannelName(int port)
@@ -113,11 +150,14 @@ namespace Palaso.Services.ForClients
 		public static void StartServingObject(string unescapedServiceName,MarshalByRefObject objectToServe)
 		{
 			System.Diagnostics.Debug.Assert(!unescapedServiceName.Contains("%"), "please leave it to this method to figure out the correct escaping to do.");
-			System.Diagnostics.Debug.Assert(!Uri.IsWellFormedUriString(unescapedServiceName.Replace("%5","_"), UriKind.Absolute), "This method needs a service name, not a whole uri.");
+			System.Diagnostics.Debug.Assert(!IsWellFormedUriStringMonoSafe(unescapedServiceName), "This method needs a service name, not a whole uri.");
 
 			try
 			{
-				IpcSystem.RegisterHttpChannelIfNeeded(IpcSystem._defaultPort);
+				int port = IpcSystem.GetAChannelWeCanUse();
+#if DEBUG
+				Console.WriteLine("(we *think* we are) registering on port: " + port);
+#endif
 			}
 			catch (System.Runtime.Remoting.RemotingException e)
 			{
@@ -130,17 +170,37 @@ namespace Palaso.Services.ForClients
 			RemotingServices.Marshal(objectToServe, FixupServiceName(unescapedServiceName));
 
 			System.Diagnostics.Debug.WriteLine("Now serving " + FixupServiceName(unescapedServiceName));
-   //         File.WriteAllText(@"c:\temp\StartServingObjectLog.txt", "Now serving " + FixupServiceName(unescapedServiceName));
+			//         File.WriteAllText(@"c:\temp\StartServingObjectLog.txt", "Now serving " + FixupServiceName(unescapedServiceName));
+		}
 
-			/* in WPF, we did something like this:
-			 *
-			 *                 _dictionaryHost = new ServiceHost(objectToServe, new Uri[] {new Uri(DictionaryServiceAddress),});
+		/// <summary>
+		/// mono bug number 376692
+		/// </summary>
+		/// <param name="unescapedServiceName"></param>
+		/// <returns></returns>
+		private static bool IsWellFormedUriStringMonoSafe(string unescapedServiceName)
+		{
+			return IsWellFormedUriStringMonoSafe(unescapedServiceName.Replace("%5", "_"), UriKind.Absolute);
+		}
 
-				_dictionaryHost.AddServiceEndpoint(typeof (IDictionaryService), IPCUtils.CreateBinding(),
-												   DictionaryServiceAddress);
-				_dictionaryHost.Open();
-			   */
-
+		private static bool IsWellFormedUriStringMonoSafe(string unescapedServiceName, UriKind uriKind)
+		{
+			try
+			{
+				return Uri.IsWellFormedUriString(unescapedServiceName.Replace("%5", "_"), uriKind);
+			}
+			catch (Exception)
+			{
+				return false; // mono will, incorrectly, fall through to here
+			}
 		}
 	}
+
+
+	public interface IPingable
+	{
+		[XmlRpcMethod("IpcSystem.Ping", Description = "Always returns true.")]
+		bool Ping();
+	}
+
 }

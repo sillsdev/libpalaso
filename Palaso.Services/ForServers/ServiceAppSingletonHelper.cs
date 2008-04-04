@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Remoting;
 using System.Threading;
-using Palaso.Services.ForClients;
 
 namespace Palaso.Services.ForServers
 {
@@ -26,6 +25,7 @@ namespace Palaso.Services.ForServers
 		private static ServiceAppConnector _connector;
 
 		private readonly string _serviceName;
+		private bool _couldHaveTwinsInProcess;
 		public event EventHandler BringToFrontRequest;
 
 		/// <summary>
@@ -33,12 +33,12 @@ namespace Palaso.Services.ForServers
 		/// (e.g., open on the same document).  If it finds one, it asks it to come to the front.
 		/// If it can't find one, it claims that pipe and returns a new ServiceAppSingletonHelper
 		/// </summary>
-		/// <param name="pipeName"></param>
+		/// <param name="serviceName"></param>
 		/// <param name="startInServerMode"></param>
 		/// <returns>null if an application is already open with that pipe, otherwise a helper object</returns>
-		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string pipeName,  bool startInServerMode)
+		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName,  bool startInServerMode, bool couldHaveTwinsInProcess)
 		{
-			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(pipeName,startInServerMode);
+			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(serviceName,startInServerMode, couldHaveTwinsInProcess);
 			if (!helper.StartupIfAppropriate())
 			{
 				return null;
@@ -49,8 +49,18 @@ namespace Palaso.Services.ForServers
 			}
 		}
 
+		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName,  bool startInServerMode)
+		{
+			return CreateServiceAppSingletonHelperIfNeeded(serviceName, startInServerMode, false);
+		}
 
-		private ServiceAppSingletonHelper(string serviceName, bool startInServerMode)
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="serviceName"></param>
+		/// <param name="startInServerMode"></param>
+		/// <param name="couldHaveTwinsInProcess">true only for tests where we can have multiple threads opening processes to simulate multiple apps</param>
+		private ServiceAppSingletonHelper(string serviceName, bool startInServerMode, bool couldHaveTwinsInProcess)
 		{
 
 			if (string.IsNullOrEmpty(serviceName))
@@ -59,6 +69,7 @@ namespace Palaso.Services.ForServers
 			}
 
 			_serviceName = serviceName;
+			_couldHaveTwinsInProcess = couldHaveTwinsInProcess;
 			_state = State.Starting;
 
 			_requestedState = startInServerMode ? State.ServerMode : State.UiMode;
@@ -130,20 +141,24 @@ namespace Palaso.Services.ForServers
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
-			IServiceAppConnectorWithProxy alreadyExistingInstance =
-				IpcSystem.GetExistingService<IServiceAppConnectorWithProxy>(_serviceName);
-			if ((alreadyExistingInstance != null) )
+			Process[] twins = System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+			if (_couldHaveTwinsInProcess || twins.Length > 1)
 			{
-				if (_requestedState == State.UiMode)
+				IServiceAppConnectorWithProxy alreadyExistingInstance =
+					IpcSystem.GetExistingService<IServiceAppConnectorWithProxy>(_serviceName);
+				if ((alreadyExistingInstance != null))
 				{
-					alreadyExistingInstance.BringToFront();
+					if (_requestedState == State.UiMode)
+					{
+						alreadyExistingInstance.BringToFront();
+					}
+					return false;
 				}
-				return false;
 			}
 
-			// create the service any future versions of this (with the same pipeName) will use
+			// create the service any future versions of this (with the same serviceName) will use
 			// to find out we're already running and tell us other stuff (like BringToFront)
-			Debug.Assert(null == RemotingServices.GetServerTypeForUri(IpcSystem.GetUrlForService(_serviceName, IpcSystem._defaultPort)));
+			//Debug.Assert(null == RemotingServices.GetServerTypeForUri(IpcSystem.GetUrlForService(_serviceName, IpcSystem.StartingPort)));
 
 
 			_connector = new ServiceAppConnector();
@@ -222,6 +237,11 @@ namespace Palaso.Services.ForServers
 		public void TestRequestsExitFromServerMode()
 		{
 			_requestedState = State.Exitting;
+			DateTime start = DateTime.Now;
+			while (_state != State.Exitting & DateTime.Now - start < TimeSpan.FromSeconds(1))
+			{
+				Thread.Sleep(10);
+			}
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using Palaso.Services.ForClients;
 
 namespace Palaso.Services.Dictionary
 {
