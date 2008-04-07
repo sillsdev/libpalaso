@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.Reporting;
@@ -16,12 +15,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[SetUp]
 		public void Setup()
 		{
-			Palaso.Reporting.ErrorReport.IsOkToInteractWithUser = false;
+			ErrorReport.IsOkToInteractWithUser = false;
 		}
 
 		private void RequiresWindow()
 		{
-			_window = new System.Windows.Forms.Form();
+			_window = new Form();
 			TextBox box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
@@ -97,7 +96,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Keyman6")]
 		public void Keyman6_GetKeyboards_GivesAtLeastOneAndOnlyKeyman6Ones()
 		{
-		   RequiresKeyman6();
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return; // doesn't need to run on Unix
+			}
+			RequiresKeyman6();
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6);
 			Assert.Greater(keyboards.Count, 0);
 			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
@@ -110,6 +113,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Keyman6")]
 		public void Keyman6_ActivateKeyboard_ReportsItWasActivated()
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return; // doesn't need to run on Unix
+			}
 			RequiresKeyman6();
 			RequiresWindow();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
@@ -123,6 +130,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Keyman6")]
 		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
 		{
+			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return; // doesn't need to run on Unix
+			}
+
 			RequiresKeyman6();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
 			KeyboardController.ActivateKeyboard(d.Name);
@@ -136,6 +148,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Keyman7")]
 		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return; // doesn't need to run on Unix
+			}
 			RequiresKeyman7();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
 			KeyboardController.ActivateKeyboard(d.Name);
@@ -161,6 +177,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Keyman7")]
 		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return; // doesn't need to run on Unix
+			}
 			RequiresKeyman7();
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7);
 			Assert.Greater(keyboards.Count, 0);
@@ -181,19 +201,19 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 
-		private void RequiresWindowsIME()
+		private static void RequiresWindowsIME()
 		{
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Windows),
 						  "Windows IME Not available");
 		}
 
-		private void RequiresKeyman6()
+		private static void RequiresKeyman6()
 		{
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6),
 						  "Keyman 6 Not available");
 
 		}
-		private void RequiresKeyman7()
+		private static void RequiresKeyman7()
 		{
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman7),
 						  "Keyman 7 Not available");
