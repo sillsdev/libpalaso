@@ -78,7 +78,7 @@
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.Designer.cs">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
+	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemChooserTestForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
