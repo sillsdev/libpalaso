@@ -66,8 +66,9 @@ namespace Palaso.Services
 					((IPingable)serviceProxy).Ping();
 					return serviceProxy;//found one
 				}
-				catch (Exception) //swallow
+				catch (Exception e) //swallow
 				{
+					Debug.WriteLine("This is not necessarily a problem: "+e.Message);
 				}
 			}
 			return null;

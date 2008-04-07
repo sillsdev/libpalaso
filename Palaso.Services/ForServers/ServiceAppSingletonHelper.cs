@@ -141,18 +141,25 @@ namespace Palaso.Services.ForServers
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
-			Process[] twins = System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
-			if (_couldHaveTwinsInProcess || twins.Length > 1)
+//            Process[] twins = System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+//            if (_couldHaveTwinsInProcess || twins.Length > 1)
 			{
+				Debug.WriteLine("Checking to see if there is another app already providing this service...");
+
 				IServiceAppConnectorWithProxy alreadyExistingInstance =
 					IpcSystem.GetExistingService<IServiceAppConnectorWithProxy>(_serviceName);
 				if ((alreadyExistingInstance != null))
 				{
 					if (_requestedState == State.UiMode)
 					{
+						Debug.WriteLine("Found another app already providing this service.");
 						alreadyExistingInstance.BringToFront();
 					}
 					return false;
+				}
+				else
+				{
+				   Debug.WriteLine("Did not find another app already providing this service.");
 				}
 			}
 

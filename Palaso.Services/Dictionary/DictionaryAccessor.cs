@@ -57,7 +57,7 @@ namespace Palaso.Services.Dictionary
 				string arguments = '"' + _dictionaryPath + '"' + " -server";
 				Log("Starting service as [{0} {1}]...", _pathToDictionaryServicesApp, arguments);
 				System.Diagnostics.Process.Start(_pathToDictionaryServicesApp, arguments);
-				for (int i = 0; i < 20; i++)
+				for (int i = 0; i < 5; i++)
 				{
 					System.Threading.Thread.Sleep(500);
 					dictionaryService = IpcSystem.GetExistingService<IDictionaryService>(ServiceName);
