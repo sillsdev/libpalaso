@@ -84,9 +84,17 @@ namespace Palaso.Services.Tests
 		private static Process StartServerProcess(string serviceName)
 		{
 			Process server = Process.Start("Palaso.Services.Tests.Server.exe", serviceName+" "+IpcSystem.StartingPort);
-			while (!server.Responding)
+			bool processIdle = false;
+			TimeSpan lastProcessorTime = TimeSpan.Zero;
+			while(!processIdle)
 			{
+				TimeSpan processorTime = server.TotalProcessorTime;
+
+				processIdle = processorTime != TimeSpan.Zero
+							  && lastProcessorTime == processorTime;
+				lastProcessorTime = processorTime;
 			}
+
 			return server;
 		}
 
