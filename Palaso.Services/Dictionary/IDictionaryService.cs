@@ -8,7 +8,7 @@ namespace Palaso.Services.Dictionary
 		public string[] forms;
 	}
 
-	public interface IDictionaryServiceBase
+	public interface IDictionaryServiceBase : IPingable
 	{
 		/// <summary>
 		/// Search the dictionary for an ordered list of entries that may be what the user is looking for.
