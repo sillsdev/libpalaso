@@ -164,6 +164,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Keyman7")]
 		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
 		{
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				return; // doesn't need to run on Unix
+			}
 			RequiresKeyman7();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
 			KeyboardController.ActivateKeyboard(d.Name);
