@@ -74,16 +74,16 @@ namespace Palaso.Services.Tests
 			}
 		}
 
-		private void TestGettingProcess(string serviceName)
+		private static void TestGettingProcess(string serviceName)
 		{
 			ITestService service = IpcSystem.GetExistingService<ITestServiceWithProxy>(serviceName);
 			Assert.IsNotNull(service);
 			Assert.IsTrue(service.Ping());
 		}
 
-		private Process StartServerProcess(string serviceName)
+		private static Process StartServerProcess(string serviceName)
 		{
-			System.Diagnostics.Process server = System.Diagnostics.Process.Start("Palaso.Services.Tests.Server.exe", serviceName+" "+IpcSystem.StartingPort);
+			Process server = Process.Start("Palaso.Services.Tests.Server.exe", serviceName+" "+IpcSystem.StartingPort);
 			while (!server.Responding)
 			{
 			}
@@ -108,10 +108,10 @@ namespace Palaso.Services.Tests
 
 		class TestServerRunner : IDisposable
 		{
-			private Semaphore _testDone;
-			private Thread _serverThread;
+			private readonly Semaphore _testDone;
+			private readonly Thread _serverThread;
 			public TestService Service;
-			private string _serviceName;
+			private readonly string _serviceName;
 
 			public TestServerRunner(string serviceName)
 			{
