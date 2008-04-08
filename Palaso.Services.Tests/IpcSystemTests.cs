@@ -9,10 +9,23 @@ namespace Palaso.Services.Tests
 	[TestFixture]
 	public class IpcSystemTests
 	{
+		private Mutex testIsRunning;
+		[SetUp]
+		public void Setup()
+		{
+			bool createdNew;
+			testIsRunning = new Mutex(true, "Palaso.Services.Tests.Runner.TestIsRunning", out createdNew);
+			if(!createdNew)
+			{
+				testIsRunning.WaitOne();
+			}
+		}
+
 		[TearDown]
 		public void TearDown()
 		{
 			IpcSystem.StartingPort += 10;  // so tests don't interfer with each other
+			testIsRunning.ReleaseMutex();
 		}
 
 		[Test]
@@ -83,10 +96,28 @@ namespace Palaso.Services.Tests
 
 		private static Process StartServerProcess(string serviceName)
 		{
-			Process server = Process.Start("Palaso.Services.Tests.Server.exe", serviceName+" "+IpcSystem.StartingPort);
-			Thread.Sleep(1000); // Wait a second to let the Server get started
+			ProcessStartInfo processStartInfo = new ProcessStartInfo();
+			processStartInfo.FileName = "Palaso.Services.Tests.Server.exe";
+			processStartInfo.Arguments = serviceName + " " + IpcSystem.StartingPort;
+			processStartInfo.UseShellExecute = false;
+			processStartInfo.RedirectStandardOutput = true;
+			processStartInfo.RedirectStandardInput = true;
+			processStartInfo.RedirectStandardError = true;
+			Process server = Process.Start(processStartInfo);
+			server.ErrorDataReceived += OnDataReceived;
+			server.OutputDataReceived += OnDataReceived;
+			Thread.Sleep(250);
 
+			// wait until server has started
+			Mutex serverIsStarting = Mutex.OpenExisting("Palaso.Services.Tests.Server.ServerIsStarting");
+			serverIsStarting.WaitOne();
+			serverIsStarting.ReleaseMutex();
 			return server;
+		}
+
+		private static void OnDataReceived(object sender, DataReceivedEventArgs e)
+		{
+			Console.WriteLine(e.Data);
 		}
 
 		public interface ITestService
