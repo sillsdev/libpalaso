@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
@@ -40,17 +39,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 				{
+					string region = string.Empty;
 					if (Environment.OSVersion.Platform != PlatformID.Unix)
 					{
-						string region = GetRegion(language);
-
-						WritingSystemDefinition def =
+						region = GetRegion(language);
+					}
+					WritingSystemDefinition def =
 							new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, region, "", "",
 														language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName, false);
-						def.NativeName = language.Culture.NativeName;
-						def.Keyboard = language.LayoutName;
-						yield return def;
-					}
+					def.NativeName = language.Culture.NativeName;
+					def.Keyboard = language.LayoutName;
+					yield return def;
 				}
 			}
 		}

@@ -106,7 +106,7 @@ namespace Palaso.Services.Tests
 			Process server = Process.Start(processStartInfo);
 			server.ErrorDataReceived += OnDataReceived;
 			server.OutputDataReceived += OnDataReceived;
-			Thread.Sleep(250);
+			Thread.Sleep(500);
 
 			// wait until server has started
 			Mutex serverIsStarting = Mutex.OpenExisting("Palaso.Services.Tests.Server.ServerIsStarting");
