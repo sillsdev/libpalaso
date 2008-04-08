@@ -44,8 +44,8 @@ namespace Palaso.Services
 			where TServiceInterface : class, IXmlRpcProxy, IPingable
 		{
 			System.Diagnostics.Debug.Assert(!unescapedServiceName.Contains("%"),"please leave it to this method to figure out the correct escaping to do.");
-			System.Diagnostics.Debug.WriteLine("Trying to get service: " + unescapedServiceName);
 			System.Diagnostics.Debug.Assert(!IsWellFormedUriStringMonoSafe(unescapedServiceName), "This method needs a service name, not a whole uri.");
+		  //  System.Diagnostics.Debug.WriteLine("("+unescapedServiceName+") trying to get service: " + unescapedServiceName);
 
 
 			TServiceInterface serviceProxy = XmlRpcProxyGen.Create<TServiceInterface>();
@@ -61,14 +61,15 @@ namespace Palaso.Services
 
 				try
 				{
-					Debug.WriteLine("Looking for service at " + serviceProxy.Url);
+					Debug.WriteLine("Checking for service at " + serviceProxy.Url);
 					//hack: just need some way to see if it's alive, there should be a lower-level way to do that
 					((IPingable)serviceProxy).Ping();
+					Debug.WriteLine("   Found & pinged.");
 					return serviceProxy;//found one
 				}
 				catch (Exception e) //swallow
 				{
-					Debug.WriteLine("This is not necessarily a problem: "+e.Message);
+					Debug.WriteLine("   " + e.Message + " (not necessarily a problem)");
 				}
 			}
 			return null;
