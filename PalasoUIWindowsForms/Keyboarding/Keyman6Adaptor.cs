@@ -19,6 +19,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return;
 			}
+			TryActivateKeyman6Keyboard();
+		}
+
+		// this needs to be in a separate method or the Mono Jit will fail
+		private static void TryActivateKeyman6Keyboard() {
 #if !MONO
 			try
 			{
@@ -50,6 +55,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					return descriptors;
 				}
+TryGetKeyboardDescriptors();
+				return descriptors;
+			}
+		}
+
+		// this needs to be in a separate method or the Mono Jit will fail
+		private static void TryGetKeyboardDescriptors()
+		{
 #if !MONO
 				try
 				{
@@ -71,8 +84,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					Debug.Fail(err.Message);
 				}
 #endif
-				return descriptors;
-			}
 		}
 
 		public static bool EngineAvailable
@@ -84,12 +95,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					return false;
 				}
 
+				IsEngineAvailable();
+				return false;
+			}
+		}
+
+		// this needs to be in a separate method or the Mono Jit will fail
+		private static void IsEngineAvailable()
+		{
 #if !MONO
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 				return keymanLink.Initialize(false);
 #endif
-				return false;
-			}
 		}
 
 		static public void Deactivate()
@@ -99,6 +116,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				return;
 			}
 
+			TryDeactivate();
+		}
+
+		// this needs to be in a separate method or the Mono Jit will fail
+		private static void TryDeactivate()
+		{
 #if !MONO
 			try
 			{
@@ -121,6 +144,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return false;
 			}
+			TryHasKeyboardNamed();
+			return false;
+		}
+
+		// this needs to be in a separate method or the Mono Jit will fail
+		private static void TryHasKeyboardNamed()
+		{
 #if !MONO
 			try
 			{
@@ -143,7 +173,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem looking for a keybaord in keyman 6.");
 			}
 #endif
-			return false;
 		}
 
 		public static string GetActiveKeyboard()
@@ -152,6 +181,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return null;
 			}
+			TryGetActiveKeyboard();
+			return null;
+		}
+
+		// this needs to be in a separate method or the Mono Jit will fail
+		private static void TryGetActiveKeyboard()
+		{
 #if !MONO
 			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 			if (!keymanLink.Initialize(false))
@@ -172,7 +208,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					"There was a problem retrieving the active keyboard in keyman 6.");
 			}
 #endif
-			return null;
 		}
 	}
 }
