@@ -19,11 +19,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return;
 			}
-			TryActivateKeyman6Keyboard();
+			TryActivateKeyman6Keyboard(name);
 		}
 
 		// this needs to be in a separate method or the Mono Jit will fail
-		private static void TryActivateKeyman6Keyboard() {
+		private static void TryActivateKeyman6Keyboard(string name) {
 #if !MONO
 			try
 			{
@@ -55,13 +55,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					return descriptors;
 				}
-TryGetKeyboardDescriptors();
+				TryGetKeyboardDescriptors(descriptors);
 				return descriptors;
 			}
 		}
 
 		// this needs to be in a separate method or the Mono Jit will fail
-		private static void TryGetKeyboardDescriptors()
+		private static void TryGetKeyboardDescriptors(ICollection<KeyboardController.KeyboardDescriptor> descriptors)
 		{
 #if !MONO
 				try
@@ -95,17 +95,18 @@ TryGetKeyboardDescriptors();
 					return false;
 				}
 
-				IsEngineAvailable();
-				return false;
+				return IsEngineAvailable();
 			}
 		}
 
 		// this needs to be in a separate method or the Mono Jit will fail
-		private static void IsEngineAvailable()
+		private static bool IsEngineAvailable()
 		{
 #if !MONO
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 				return keymanLink.Initialize(false);
+#else
+				return false;
 #endif
 		}
 
@@ -144,12 +145,11 @@ TryGetKeyboardDescriptors();
 			{
 				return false;
 			}
-			TryHasKeyboardNamed();
-			return false;
+			return TryHasKeyboardNamed(name);
 		}
 
 		// this needs to be in a separate method or the Mono Jit will fail
-		private static void TryHasKeyboardNamed()
+		private static bool TryHasKeyboardNamed(string name)
 		{
 #if !MONO
 			try
@@ -173,6 +173,7 @@ TryGetKeyboardDescriptors();
 				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem looking for a keybaord in keyman 6.");
 			}
 #endif
+			return false;
 		}
 
 		public static string GetActiveKeyboard()
@@ -181,12 +182,11 @@ TryGetKeyboardDescriptors();
 			{
 				return null;
 			}
-			TryGetActiveKeyboard();
-			return null;
+			return TryGetActiveKeyboard();
 		}
 
 		// this needs to be in a separate method or the Mono Jit will fail
-		private static void TryGetActiveKeyboard()
+		private static string TryGetActiveKeyboard()
 		{
 #if !MONO
 			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
@@ -208,6 +208,7 @@ TryGetKeyboardDescriptors();
 					"There was a problem retrieving the active keyboard in keyman 6.");
 			}
 #endif
+			return null;
 		}
 	}
 }
