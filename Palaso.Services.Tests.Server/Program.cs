@@ -9,6 +9,8 @@ namespace Palaso.Services.Tests.Server
 		static void Main(string[] args)
 		{
 			bool createdNew;
+
+
 			Mutex serverIsStarting = new Mutex(true, "Palaso.Services.Tests.Server.ServerIsStarting", out createdNew);
 			if (!createdNew)
 			{

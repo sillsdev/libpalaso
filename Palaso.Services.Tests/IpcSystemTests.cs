@@ -28,6 +28,15 @@ namespace Palaso.Services.Tests
 			testIsRunning.ReleaseMutex();
 		}
 
+		/// <summary>
+		/// This was a problem at one point
+		/// </summary>
+		[Test]
+		public void CanGetMutexWithServiceNameBasedOnFilePath()
+		{
+			IpcSystem.GetMutexForPortAndService(5678, @"DictionaryServices/E:\Users\John\AppData\Local\Temp\pjjxxq02.jj4\test.lift");
+		}
+
 		[Test]
 		public void CanServeUpOneServiceInThread()
 		{

@@ -170,13 +170,22 @@ namespace Palaso.Services
 		{
 			return new Mutex(false, "Palaso.IPSystem:" + port.ToString());
 		}
-		private static Mutex GetMutexForPortAndService(int port, string serviceName)
+		internal static Mutex GetMutexForPortAndService(int port, string serviceName)
 		{
 			return new Mutex(false, GetNameOfMutexForPortAndService(port, serviceName));
 		}
 
 		private static string GetNameOfMutexForPortAndService(int port, string serviceName)
 		{
+			// mutex names are (may be?) implemeted as files, so we need to make them valid
+			foreach (char c in System.IO.Path.GetInvalidPathChars())
+			{
+			  serviceName = serviceName.Replace(c, '_');
+			}
+			foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+			{
+				serviceName = serviceName.Replace(c, '_');
+			}
 			return "Palaso.IPSystem:" + port.ToString() + "/" + serviceName;
 		}
 
