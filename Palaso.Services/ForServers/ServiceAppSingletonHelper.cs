@@ -10,7 +10,7 @@ namespace Palaso.Services.ForServers
 	/// with handling the states of being invisible, becoming visible, and
 	/// ensuring that only one instance of the application is running.
 	/// </summary>
-	public class ServiceAppSingletonHelper
+	public class ServiceAppSingletonHelper : IDisposable
 	{
 		public enum State
 		{
@@ -20,6 +20,9 @@ namespace Palaso.Services.ForServers
 			Exitting,
 			UiModeStarting
 		} ;
+
+		private IDisposable _ipcServiceProviderDescriptor = null;
+
 		private State _state;
 		private State _requestedState;
 		private static ServiceAppConnector _connector;
@@ -36,9 +39,9 @@ namespace Palaso.Services.ForServers
 		/// <param name="serviceName"></param>
 		/// <param name="startInServerMode"></param>
 		/// <returns>null if an application is already open with that pipe, otherwise a helper object</returns>
-		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName,  bool startInServerMode, bool couldHaveTwinsInProcess)
+		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName, bool startInServerMode, bool couldHaveTwinsInProcess)
 		{
-			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(serviceName,startInServerMode, couldHaveTwinsInProcess);
+			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(serviceName, startInServerMode, couldHaveTwinsInProcess);
 			if (!helper.StartupIfAppropriate())
 			{
 				return null;
@@ -49,7 +52,7 @@ namespace Palaso.Services.ForServers
 			}
 		}
 
-		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName,  bool startInServerMode)
+		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName, bool startInServerMode)
 		{
 			return CreateServiceAppSingletonHelperIfNeeded(serviceName, startInServerMode, false);
 		}
@@ -108,7 +111,7 @@ namespace Palaso.Services.ForServers
 			}
 			//wait another second to allow the apps event hander to truly be running
 			Thread.Sleep(1000);
-			switch(_state)
+			switch (_state)
 			{
 				case State.Exitting:
 					throw new Exception(Process.GetCurrentProcess().ProcessName + " is in the process of Exitting.");
@@ -131,7 +134,7 @@ namespace Palaso.Services.ForServers
 
 		public void OnExitIfInServerMode(object sender, EventArgs e)
 		{
-			_requestedState =State.Exitting;
+			_requestedState = State.Exitting;
 		}
 
 
@@ -141,8 +144,8 @@ namespace Palaso.Services.ForServers
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
-//            Process[] twins = System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
-//            if (_couldHaveTwinsInProcess || twins.Length > 1)
+			//            Process[] twins = System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+			//            if (_couldHaveTwinsInProcess || twins.Length > 1)
 			{
 				Debug.WriteLine("Checking to see if there is another app already providing this service...");
 
@@ -159,7 +162,7 @@ namespace Palaso.Services.ForServers
 				}
 				else
 				{
-				   Debug.WriteLine("Did not find another app already providing this service.");
+					Debug.WriteLine("Did not find another app already providing this service.");
 				}
 			}
 
@@ -170,7 +173,7 @@ namespace Palaso.Services.ForServers
 
 			_connector = new ServiceAppConnector();
 			_connector.BringToFrontRequest += On_BringToFrontRequest;
-			IpcSystem.StartServingObject(_serviceName, _connector);
+			_ipcServiceProviderDescriptor = IpcSystem.StartServingObject(_serviceName, _connector);
 
 			return true;
 		}
@@ -198,7 +201,7 @@ namespace Palaso.Services.ForServers
 		public delegate void StartUI();
 		public void HandleEventsUntilExit(StartUI uiStarter)
 		{
-			bool someoneHasAttached=false;
+			bool someoneHasAttached = false;
 			_state = State.ServerMode;
 			while (true)
 			{
@@ -230,16 +233,16 @@ namespace Palaso.Services.ForServers
 			}
 		}
 
-//        public static void DisposeForNextTest()
-//        {
-//            if (_connector != null)
-//            {
-////this is just a guess, it's unclear what this does
-//                RemotingServices.Disconnect(_connector);
-//                _connector = null;
-//                IPCUtils.UnregisterHttpChannel(IPCUtils.URLPort);
-//            }
-//        }
+		//        public static void DisposeForNextTest()
+		//        {
+		//            if (_connector != null)
+		//            {
+		////this is just a guess, it's unclear what this does
+		//                RemotingServices.Disconnect(_connector);
+		//                _connector = null;
+		//                IPCUtils.UnregisterHttpChannel(IPCUtils.URLPort);
+		//            }
+		//        }
 
 		public void TestRequestsExitFromServerMode()
 		{
@@ -250,5 +253,61 @@ namespace Palaso.Services.ForServers
 				Thread.Sleep(10);
 			}
 		}
+
+		#region IDisposable Members
+#if DEBUG
+		~ServiceAppSingletonHelper()
+		{
+			if (!this._disposed)
+			{
+				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName + ".");
+			}
+		}
+#endif
+
+		private bool _disposed = false;
+
+		public bool IsDisposed
+		{
+			get
+			{
+				return _disposed;
+			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!IsDisposed)
+			{
+				if (disposing)
+				{
+					// dispose-only, i.e. non-finalizable logic
+					if (_ipcServiceProviderDescriptor != null)
+					{
+						_ipcServiceProviderDescriptor.Dispose();
+					}
+					_ipcServiceProviderDescriptor = null;
+				}
+
+				// shared (dispose and finalizable) cleanup logic
+				this._disposed = true;
+			}
+		}
+
+		protected void VerifyNotDisposed()
+		{
+			if (this._disposed)
+			{
+				throw new ObjectDisposedException(GetType().FullName);
+			}
+		}
+
+		#endregion
 	}
 }

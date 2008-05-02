@@ -26,7 +26,7 @@ namespace Palaso.Services.Tests.ForServers
 
 
 		[Test]
-		[Category("Long Running")]
+	   // [Category("Long Running")]
 		public void FirstStartReturnsService()
 		{
 			ServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(),false);
@@ -34,7 +34,7 @@ namespace Palaso.Services.Tests.ForServers
 		}
 
 		[Test]
-		[Category("Long Running")]
+	//    [Category("Long Running")]
 		public void CanGetAtServiceFromTests()
 		{
 			using(new ServerRunner(ServerRunner.uiState.dontBotherWithEvents, GetServiceName(), false))
@@ -65,7 +65,7 @@ namespace Palaso.Services.Tests.ForServers
 
 
 		[Test]
-		[Category("Long Running")]
+		//[Category("Long Running")]
 		public void CreateServiceAppSingletonHelperIfNeeded_SameService_ReturnsNull()
 		{
 			ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(),false);
@@ -82,7 +82,7 @@ namespace Palaso.Services.Tests.ForServers
 //        }
 
 		[Test]
-		[Category("Long Running")]
+	 //   [Category("Long Running")]
 		public void StartWithDifferentNameReturnsService()
 		{
 			using (new ServerRunner(ServerRunner.uiState.initiallyAsServer, GetServiceName(), true))
@@ -93,7 +93,7 @@ namespace Palaso.Services.Tests.ForServers
 		}
 
 		[Test]
-		[Category("Long Running")]
+	   // [Category("Long Running")]
 		public void StateIsStartingBeforeRunIsCalled()//review: is this right?
 		{
 			using (ServerRunner runner = new ServerRunner(ServerRunner.uiState.dontBotherWithEvents, GetServiceName(), false))
@@ -122,7 +122,7 @@ namespace Palaso.Services.Tests.ForServers
 		*/
 
 		[Test]
-		[Category("Long Running")]
+	 //   [Category("Long Running")]
 		public void ServerRunningInServerMode_SecondAttempAsksForServerMode_DoesNothing()
 		{
 			using (ServerRunner runner = new ServerRunner(ServerRunner.uiState.initiallyAsServer, GetServiceName(), false))
@@ -134,7 +134,7 @@ namespace Palaso.Services.Tests.ForServers
 		}
 
 		[Test]
-		[Category("Long Running")]
+   //     [Category("Long Running")]
 		public void ServerRunningInServerMode_SecondAttempAsksForUIMode_CallsStartUI()
 		{
 			using (ServerRunner runner = new ServerRunner(ServerRunner.uiState.initiallyAsServer, GetServiceName(), true))
@@ -146,7 +146,7 @@ namespace Palaso.Services.Tests.ForServers
 		}
 
 		[Test]
-		[Category("Long Running")]
+	  //  [Category("Long Running")]
 		public void CanLaunchTwoDifferntServersInThreads()
 		{
 			using (new ServerRunner(ServerRunner.uiState.initiallyWithUI, GetServiceName(), true))

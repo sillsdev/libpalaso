@@ -57,6 +57,7 @@
   <ItemGroup>
 	<Compile Include="Dictionary\DictionaryAccessor.cs" />
 	<Compile Include="Dictionary\IDictionaryService.cs" />
+	<Compile Include="ForServers\IpcServiceDescriptor.cs" />
 	<Compile Include="IPCSystem.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="ForServers\ServiceAppConnector.cs" />

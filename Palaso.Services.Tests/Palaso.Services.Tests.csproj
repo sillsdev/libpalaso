@@ -66,6 +66,10 @@
 	<Compile Include="Dictionary\TypicalUsage.cs" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.csproj">
+	  <Project>{F85EBEB5-8A47-470B-8A00-CB801CD80232}</Project>
+	  <Name>Palaso.Services.Tests.Server</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\Palaso.Services\Palaso.Services.csproj">
 	  <Project>{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}</Project>
 	  <Name>Palaso.Services</Name>

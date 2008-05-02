@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
+using System.Threading;
 using CookComputing.XmlRpc;
 using Palaso.Services.Dictionary;
 using Palaso.Services.ForServers;
@@ -26,7 +27,7 @@ namespace Palaso.Services
 		/// when providing services, we need to first find an open port, and when we go
 		/// looking for providers, we may need to query on serveral ports.
 		/// </summary>
-		public static int StartingPort=5678;
+		public static int StartingPort = 5678;
 
 		public static readonly int NumberOfPortsToTry = 3;
 
@@ -43,9 +44,9 @@ namespace Palaso.Services
 		public static TServiceInterface GetExistingService<TServiceInterface>(string unescapedServiceName)
 			where TServiceInterface : class, IXmlRpcProxy, IPingable
 		{
-			System.Diagnostics.Debug.Assert(!unescapedServiceName.Contains("%"),"please leave it to this method to figure out the correct escaping to do.");
+			System.Diagnostics.Debug.Assert(!unescapedServiceName.Contains("%"), "please leave it to this method to figure out the correct escaping to do.");
 			System.Diagnostics.Debug.Assert(!IsWellFormedUriStringMonoSafe(unescapedServiceName), "This method needs a service name, not a whole uri.");
-		  //  System.Diagnostics.Debug.WriteLine("("+unescapedServiceName+") trying to get service: " + unescapedServiceName);
+			//  System.Diagnostics.Debug.WriteLine("("+unescapedServiceName+") trying to get service: " + unescapedServiceName);
 
 
 			TServiceInterface serviceProxy = XmlRpcProxyGen.Create<TServiceInterface>();
@@ -58,6 +59,17 @@ namespace Palaso.Services
 
 				//serviceProxy.Timeout = 1000;//2000 is safe on my fast machine
 				serviceProxy.Url = GetUrlForService(FixupServiceName(unescapedServiceName), port);
+
+				//Mutex m = GetMutexForPortAndService(port, unescapedServiceName);
+				try
+				{
+				  Mutex.OpenExisting(GetNameOfMutexForPortAndService(port, unescapedServiceName));
+				}
+				catch (Exception e)
+				{
+					// there is no mutex with this name so no one is serving this on that port.
+					continue;// loop and check the next port
+				}
 
 				try
 				{
@@ -92,24 +104,41 @@ namespace Palaso.Services
 			return name;
 		}
 
-		private static int GetAChannelWeCanUse()
-		{
-			//nb: only one channel per port+protocol
+  #if OptimizeRawPortChoosing
+		private static int GetAChannelWeCanUse(out Mutex portMutex)
+	{
+			portMutex = null;
+#else
+		  private static int GetAChannelWeCanUse()
+		  {
 
+#endif
 			IDictionary props = new Hashtable();
 			props["bindTo"] = "127.0.0.1"; //local only
 			props["name"] = GetChannelName(StartingPort);
 			props["port"] = StartingPort;
 
 			//this only seems to work if the channel belongs to our process!
+#if DoWeNeedThis
 			if (null != ChannelServices.GetChannel((string)props["name"]))
 			{
 				return StartingPort; //we already own this port in this process
 			}
+#endif
 
 			int port = StartingPort;
 			for (; port < StartingPort + NumberOfPortsToTry; port++)
 			{
+ //       Although this may be sound in practice, in tests it was a problem somehow...
+  //         it was only an optimisation, so I'm going to leave it out for now
+  #if OptimizeRawPortChoosing
+			 portMutex = GetMutexForPort(port);
+				if (!portMutex.WaitOne(100, false))
+				{
+					continue; // don't even try it
+				}
+#endif
+
 				props["port"] = port;
 				props["name"] = GetChannelName(port);
 				try
@@ -123,6 +152,11 @@ namespace Palaso.Services
 				}
 				catch (Exception e)
 				{
+  #if OptimizeRawPortChoosing
+					if(portMutex !=null)
+						portMutex.ReleaseMutex();
+					portMutex = null;
+#endif
 				}
 			}
 			if (port < StartingPort + NumberOfPortsToTry)
@@ -132,34 +166,67 @@ namespace Palaso.Services
 			throw new ApplicationException("Could not find a free port on which to create the service.");
 		}
 
+		private static Mutex GetMutexForPort(int port)
+		{
+			return new Mutex(false, "Palaso.IPSystem:" + port.ToString());
+		}
+		private static Mutex GetMutexForPortAndService(int port, string serviceName)
+		{
+			return new Mutex(false, GetNameOfMutexForPortAndService(port, serviceName));
+		}
+
+		private static string GetNameOfMutexForPortAndService(int port, string serviceName)
+		{
+			return "Palaso.IPSystem:" + port.ToString() + "/" + serviceName;
+		}
+
 		private static string GetChannelName(int port)
 		{
-			return "http."+port;
+			return "http." + port;
 		}
 
-		static private void UnregisterHttpChannel(int port)
-		{
-			IDictionary props = new Hashtable();
-			props["port"] = port;
-			//see if one with this name is registered
-			IChannel channel = ChannelServices.GetChannel(GetChannelName(port));
-			if (channel != null)
-			{
-				ChannelServices.UnregisterChannel(channel);
-			}
-		}
+		//        static private void UnregisterHttpChannel(int port)
+		//        {
+		//            IDictionary props = new Hashtable();
+		//            props["port"] = port;
+		//            //see if one with this name is registered
+		//            IChannel channel = ChannelServices.GetChannel(GetChannelName(port));
+		//            if (channel != null)
+		//            {
+		//                ChannelServices.UnregisterChannel(channel);
+		//            }
+		//        }
 
-		public static void StartServingObject(string unescapedServiceName,MarshalByRefObject objectToServe)
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <returns>Something you must dispose of when you're done, or exitting</returns>
+		public static IDisposable StartServingObject(string unescapedServiceName, MarshalByRefObject objectToServe)
 		{
 			System.Diagnostics.Debug.Assert(!unescapedServiceName.Contains("%"), "please leave it to this method to figure out the correct escaping to do.");
 			System.Diagnostics.Debug.Assert(!IsWellFormedUriStringMonoSafe(unescapedServiceName), "This method needs a service name, not a whole uri.");
 
+			Mutex portAndServiceMutex = null;
+			Mutex portMutex = null;
 			try
 			{
+
+#if OptimizeRawPortChoosing
+				int port = IpcSystem.GetAChannelWeCanUse(out portMutex);
+				Debug.Assert(portMutex != null);
+#else
 				int port = IpcSystem.GetAChannelWeCanUse();
-#if DEBUG
-				Console.WriteLine("(we *think* we are) registering on port: " + port);
 #endif
+
+#if DEBUG
+				Console.WriteLine("registering on port: " + port);
+#endif
+				portAndServiceMutex = GetMutexForPortAndService(port, unescapedServiceName);
+				if (!portAndServiceMutex.WaitOne(10, false))
+				{
+					throw new ApplicationException("We thought the port was free, but couldn't get the port+serviced name mutex.");
+				}
 			}
 			catch (System.Runtime.Remoting.RemotingException e)
 			{
@@ -170,10 +237,12 @@ namespace Palaso.Services
 			//just made?
 
 			RemotingServices.Marshal(objectToServe, FixupServiceName(unescapedServiceName));
-
 			System.Diagnostics.Debug.WriteLine("Now serving " + FixupServiceName(unescapedServiceName));
 			//         File.WriteAllText(@"c:\temp\StartServingObjectLog.txt", "Now serving " + FixupServiceName(unescapedServiceName));
+
+			return new IpcServiceDescriptor(portMutex, portAndServiceMutex);
 		}
+
 
 		/// <summary>
 		/// mono bug number 376692
