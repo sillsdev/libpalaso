@@ -23,6 +23,7 @@
 		/>
 		<loadfile property="svn.head.revision" file="${svn.info.log}" />
 		<regex pattern="^Revision: (?'revision'.*)$" input="${svn.head.revision}" options="Multiline" />
+		<property name="revision" value="${string::trim(revision)}" />
 		<echo message="Revision: ${revision}" />
 		<delete file="${svn.info.log}" />
 	</target>
