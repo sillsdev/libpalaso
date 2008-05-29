@@ -59,6 +59,7 @@ namespace Palaso.Services.Tests.ForServers
 			{
 				_helper.TestRequestsExitFromServerMode();
 			}
+			_helper.Dispose();
 		}
 
 		private void StartServer()

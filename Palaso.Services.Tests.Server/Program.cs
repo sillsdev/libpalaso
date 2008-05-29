@@ -22,9 +22,10 @@ namespace Palaso.Services.Tests.Server
 
 			IpcSystem.StartingPort = int.Parse(args[1]);
 
+			IDisposable objectBeingServed = null;
 			try
 			{
-				IpcSystem.StartServingObject(args[0], service);
+				objectBeingServed = IpcSystem.StartServingObject(args[0], service);
 			}
 			catch (Exception e)
 			{
@@ -37,6 +38,10 @@ namespace Palaso.Services.Tests.Server
 			Mutex testIsRunning = Mutex.OpenExisting("Palaso.Services.Tests.Runner.TestIsRunning");
 			testIsRunning.WaitOne();
 			testIsRunning.ReleaseMutex();
+			if(objectBeingServed != null)
+			{
+				objectBeingServed.Dispose();
+			}
 		}
 
 		public interface ITestService

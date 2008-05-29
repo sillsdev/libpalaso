@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using NUnit.Framework;
 using Palaso.Services.ForServers;
 
@@ -29,8 +27,10 @@ namespace Palaso.Services.Tests.ForServers
 	   // [Category("Long Running")]
 		public void FirstStartReturnsService()
 		{
-			ServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(),false);
-			Assert.IsNotNull(helper);
+			using (ServiceAppSingletonHelper helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), false))
+			{
+				Assert.IsNotNull(helper);
+			}
 		}
 
 		[Test]
@@ -68,8 +68,13 @@ namespace Palaso.Services.Tests.ForServers
 		//[Category("Long Running")]
 		public void CreateServiceAppSingletonHelperIfNeeded_SameService_ReturnsNull()
 		{
-			ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(),false);
-			Assert.IsNull(ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), false, true));
+			using (ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), false))
+			{
+				using (ServiceAppSingletonHelper singletonHelper2 = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), false, true))
+				{
+					Assert.IsNull(singletonHelper2);
+				}
+			}
 		}
 //
 //        [Test]
@@ -87,8 +92,10 @@ namespace Palaso.Services.Tests.ForServers
 		{
 			using (new ServerRunner(ServerRunner.uiState.initiallyAsServer, GetServiceName(), true))
 			{
-				Assert.IsNotNull(
-					ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName() + "blah", false));
+				using(ServiceAppSingletonHelper singletonHelper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName() + "blah", false))
+				{
+					Assert.IsNotNull(singletonHelper);
+				}
 			}
 		}
 
@@ -128,8 +135,10 @@ namespace Palaso.Services.Tests.ForServers
 			using (ServerRunner runner = new ServerRunner(ServerRunner.uiState.initiallyAsServer, GetServiceName(), false))
 			{
 				Assert.IsFalse(runner._bringToFrontRequestCalled);
-				ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), true, true);
-				Assert.IsFalse(runner._bringToFrontRequestCalled);
+				using(ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), true, true))
+				{
+					Assert.IsFalse(runner._bringToFrontRequestCalled);
+				}
 			}
 		}
 
@@ -140,8 +149,10 @@ namespace Palaso.Services.Tests.ForServers
 			using (ServerRunner runner = new ServerRunner(ServerRunner.uiState.initiallyAsServer, GetServiceName(), true))
 			{
 				Assert.IsFalse(runner._startUICalled);
-				ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), true, true);
-				Assert.IsFalse(runner._startUICalled);
+				using(ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(GetServiceName(), true, true))
+				{
+					Assert.IsFalse(runner._startUICalled);
+				}
 			}
 		}
 
