@@ -25,6 +25,7 @@ namespace Palaso.Services.Tests
 		public void TearDown()
 		{
 			IpcSystem.StartingPort += 10;  // so tests don't interfer with each other
+
 			testIsRunning.ReleaseMutex();
 		}
 
@@ -151,7 +152,6 @@ namespace Palaso.Services.Tests
 			private readonly Thread _serverThread;
 			public TestService Service;
 			private readonly string _serviceName;
-
 			public TestServerRunner(string serviceName)
 			{
 				_serviceName = serviceName;
@@ -167,13 +167,14 @@ namespace Palaso.Services.Tests
 			private void StartServer()
 			{
 				Service = new TestService();
-				IpcSystem.StartServingObject(_serviceName, Service);
+				using (IDisposable objectBeingServed = IpcSystem.StartServingObject(_serviceName, Service))
+				{
+					//tell the unit test that the service is up, and it can more forward
+					Semaphore.OpenExisting("serversReady").Release(1);
 
-				//tell the unit test that the service is up, and it can more forward
-				Semaphore.OpenExisting("serversReady").Release(1);
-
-				//wait here until the unit test is over
-				Semaphore.OpenExisting("testDone:" + _serviceName).WaitOne();
+					//wait here until the unit test is over
+					Semaphore.OpenExisting("testDone:" + _serviceName).WaitOne();
+				}
 			}
 
 

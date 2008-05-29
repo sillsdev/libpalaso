@@ -36,7 +36,6 @@ namespace Palaso.Services.ForServers
 		#endif
 
 		private bool _disposed = false;
-		private bool _delayWritingCachesUntilDispose = false;
 
 
 			public bool IsDisposed

@@ -44,6 +44,7 @@ namespace Palaso.Services.ForServers
 			ServiceAppSingletonHelper helper = new ServiceAppSingletonHelper(serviceName, startInServerMode, couldHaveTwinsInProcess);
 			if (!helper.StartupIfAppropriate())
 			{
+				helper.Dispose();
 				return null;
 			}
 			else
