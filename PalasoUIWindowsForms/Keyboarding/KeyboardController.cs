@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -5,6 +6,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 {
 	public class KeyboardController
 	{
+		static readonly Hashtable s_languagesAlreadyShownKeyBoardNotFoundMessages = new Hashtable();
+
 		public enum Engines
 		{
 			None = 0,
@@ -55,9 +58,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			else
 			{
-				Palaso.Reporting.ErrorReport.ReportNonFatalMessage(
-					"Could not find a keyboard ime that had a keyboard named '{0}'", name);
+				if (!(s_languagesAlreadyShownKeyBoardNotFoundMessages.Contains(name)))
+				{
+					s_languagesAlreadyShownKeyBoardNotFoundMessages.Add(name, null);
+					Palaso.Reporting.ErrorReport.ReportNonFatalMessage(
+						"Could not find a keyboard ime that had a keyboard named '{0}'", name);
+
+				}
 			}
+
 		}
 
 		public static string GetActiveKeyboard()

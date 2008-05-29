@@ -55,6 +55,23 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
+		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
+		{
+			// the keyboardName for this test and above need to be different
+			string keyboardName = "This should never be the same as the name of an installed keyboard";
+			try
+			{
+				KeyboardController.ActivateKeyboard(keyboardName);
+				Assert.Fail("Should have thrown exception but didn't.");
+			}
+			catch (ErrorReport.NonFatalMessageSentToUserException)
+			{
+
+			}
+			KeyboardController.ActivateKeyboard(keyboardName);
+		}
+
+		[Test]
 		[Category("Windows IME")]
 		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
 		{
@@ -222,5 +239,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman7),
 						  "Keyman 7 Not available");
 		}
+
+
 	}
 }
