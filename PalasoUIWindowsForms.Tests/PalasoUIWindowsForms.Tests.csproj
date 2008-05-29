@@ -58,6 +58,9 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
+	<Compile Include="Hotspot\HotSpotProviderTests.cs" />
+	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="i8n\StringCatalogTests.cs" />
 	<Compile Include="Keyboarding\KeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
@@ -78,6 +81,7 @@
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.Designer.cs">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\PromptTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemChooserTestForm.cs">
 	  <SubType>Form</SubType>

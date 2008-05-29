@@ -54,6 +54,10 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+	<Reference Include="Enchant.Net, Version=1.3.1.1, Culture=neutral, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Enchant.Net.dll</HintPath>
+	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
@@ -64,6 +68,9 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="HotSpot\HotSpot.cs" />
+	<Compile Include="HotSpot\HotSpotProvider.cs" />
+	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
 	<Compile Include="i8n\StringCatalog.cs" />
 	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
 	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
@@ -79,6 +86,7 @@
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+	<Compile Include="Spelling\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -105,6 +113,7 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\Prompt.cs" />
 	<Compile Include="WritingSystems\FontAndKeyboardControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
