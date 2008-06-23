@@ -127,5 +127,21 @@ msgstr 'one'
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
 			Assert.AreEqual(FontFamily.GenericSansSerif.Name, localized.FontFamily.Name);
 		}
+		[Test]
+		public void ModifyFontForLocation_SmallFont_ValidFont()
+		{
+			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.Epsilon);
+			Font normal = new Font(FontFamily.GenericSerif, Single.Epsilon);
+			Font localized = StringCatalog.ModifyFontForLocalization(normal);
+			Assert.IsNotNull(localized);
+		}
+		[Test]
+		public void ModifyFontForLocation_HugeFont_ValidFont()
+		{
+			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.MaxValue);
+			Font normal = new Font(FontFamily.GenericSerif, Single.MaxValue);
+			Font localized = StringCatalog.ModifyFontForLocalization(normal);
+			Assert.IsNotNull(localized);
+		}
 	}
 }
