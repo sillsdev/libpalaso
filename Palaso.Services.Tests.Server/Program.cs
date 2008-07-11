@@ -20,7 +20,7 @@ namespace Palaso.Services.Tests.Server
 			TestService service = new TestService();
 			Console.WriteLine("Starting '{0}' Service...", args[0]);
 
-			IpcSystem.StartingPort = int.Parse(args[1]);
+			IpcSystem.StartingPortBase = int.Parse(args[1]);
 
 			IDisposable objectBeingServed = null;
 			try
