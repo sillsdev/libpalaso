@@ -11,10 +11,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class FontAndKeyboardControl : UserControl
 	{
 		private string _sampleText="type here to test the font and keyboard";
+		private SetupPM _model;
 
 		public FontAndKeyboardControl()
 		{
 			InitializeComponent();
+		}
+
+		internal void BindToModel(SetupPM model)
+		{
+			_model = model;
 		}
 
 		public bool RightToLeftScript
@@ -47,7 +53,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					value = "(default)";
 				}
-
 				_keyboardCombo.Text = value;
 			}
 		}
@@ -98,17 +103,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void OnLoad(object sender, EventArgs e)
 		{
 			_keyboardCombo.Items.Clear();
-			foreach (string s in KeyboardNames)
+			foreach (string s in _model.KeyboardNames)
 			{
 				_keyboardCombo.Items.Add(s);
 			}
 
 			_fontFamilyCombo.Items.Clear();
-			foreach (FontFamily family in System.Drawing.FontFamily.Families)
+			foreach (FontFamily family in _model.FontFamilies)
 			{
 				_fontFamilyCombo.Items.Add(family.Name);
 			}
-				_sampleTextBox.Text =SampleText ;
+			_sampleTextBox.Text =SampleText ;
 
 			UpdateDisplay();
 		   // AssignKeyboard();
