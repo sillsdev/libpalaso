@@ -22,14 +22,36 @@ namespace Palaso.Services
 	/// </summary>
 	public class IpcSystem
 	{
+		public static int StartingPortBase = 5678;
+
+		public static readonly int NumberOfPortsToTry = 4;
+
 		/// <summary>
 		/// Because .net remoting (.net 2) requires each application to have its own port,
 		/// when providing services, we need to first find an open port, and when we go
 		/// looking for providers, we may need to query on serveral ports.
 		/// </summary>
-		public static int StartingPort = 5678;
+		public static int GetStartingPort(string serviceName)
+		{
+			// Strategy using a hash code to find a starting port for a service
+			// This gives us a greater number of services we can support without
+			// having to scan very many ports.
+			int port = GetStringHash(serviceName);
+			port *= NumberOfPortsToTry;
+			port += StartingPortBase;
+			return port;
+		}
 
-		public static readonly int NumberOfPortsToTry = 3;
+		private static byte GetStringHash(string str)
+		{
+			int hash = 5381;
+			foreach (char c in str)
+			{
+				hash = ((hash << 5) + hash) + c;
+			}
+			hash = (hash ^ (hash >> 8) ^ (hash >> 16) ^ (hash >> 24)) & 0xff;
+			return (byte)hash;
+		}
 
 		public static string URLPrefix
 		{
@@ -50,7 +72,8 @@ namespace Palaso.Services
 
 
 			TServiceInterface serviceProxy = XmlRpcProxyGen.Create<TServiceInterface>();
-			for (int port = StartingPort; port < StartingPort + NumberOfPortsToTry; port++)
+			int startingPort = GetStartingPort(unescapedServiceName);
+			for (int port = startingPort; port < startingPort + NumberOfPortsToTry; port++)
 			{
 				//nb: this timeout does work, but reducing it to the point where it
 				//actually returns earlier just makes it unreliable (consisten test failures to find
@@ -63,7 +86,7 @@ namespace Palaso.Services
 				//Mutex m = GetMutexForPortAndService(port, unescapedServiceName);
 				try
 				{
-				  Mutex.OpenExisting(GetNameOfMutexForPortAndService(port, unescapedServiceName));
+					Mutex.OpenExisting(GetNameOfMutexForPortAndService(port, unescapedServiceName));
 				}
 				catch (Exception e)
 				{
@@ -109,14 +132,15 @@ namespace Palaso.Services
 	{
 			portMutex = null;
 #else
-		  private static int GetAChannelWeCanUse()
+		  private static int GetAChannelWeCanUse(string serviceName)
 		  {
 
 #endif
+			int startingPort = GetStartingPort(serviceName);
 			IDictionary props = new Hashtable();
 			props["bindTo"] = "127.0.0.1"; //local only
-			props["name"] = GetChannelName(StartingPort);
-			props["port"] = StartingPort;
+			props["name"] = GetChannelName(startingPort);
+			props["port"] = startingPort;
 
 			//this only seems to work if the channel belongs to our process!
 #if DoWeNeedThis
@@ -126,8 +150,8 @@ namespace Palaso.Services
 			}
 #endif
 
-			int port = StartingPort;
-			for (; port < StartingPort + NumberOfPortsToTry; port++)
+			int port = startingPort;
+			for (; port < startingPort + NumberOfPortsToTry; port++)
 			{
  //       Although this may be sound in practice, in tests it was a problem somehow...
   //         it was only an optimisation, so I'm going to leave it out for now
@@ -159,7 +183,7 @@ namespace Palaso.Services
 #endif
 				}
 			}
-			if (port < StartingPort + NumberOfPortsToTry)
+			if (port < startingPort + NumberOfPortsToTry)
 			{
 				return port;
 			}
@@ -225,7 +249,7 @@ namespace Palaso.Services
 				int port = IpcSystem.GetAChannelWeCanUse(out portMutex);
 				Debug.Assert(portMutex != null);
 #else
-				int port = IpcSystem.GetAChannelWeCanUse();
+				int port = IpcSystem.GetAChannelWeCanUse(unescapedServiceName);
 #endif
 
 #if DEBUG
