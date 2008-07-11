@@ -33,7 +33,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Don\'t remove this");
 			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("");
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PickerUsingListView));
-			this._editListLink = new System.Windows.Forms.LinkLabel();
+			this._setupWritingSystemsLink = new System.Windows.Forms.LinkLabel();
 			this.listView1 = new System.Windows.Forms.ListView();
 			this._labelColumnHeader = new System.Windows.Forms.ColumnHeader();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -46,17 +46,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_descriptionColumnHeader.Text = "Description";
 			_descriptionColumnHeader.Width = 133;
 			//
-			// _editListLink
+			// _setupWritingSystemsLink
 			//
-			this._editListLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._editListLink.AutoSize = true;
-			this._editListLink.Location = new System.Drawing.Point(3, 138);
-			this._editListLink.Name = "_editListLink";
-			this._editListLink.Size = new System.Drawing.Size(40, 13);
-			this._editListLink.TabIndex = 1;
-			this._editListLink.TabStop = true;
-			this._editListLink.Text = "More...";
-			this._editListLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._editListLink_LinkClicked);
+			this._setupWritingSystemsLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._setupWritingSystemsLink.AutoSize = true;
+			this._setupWritingSystemsLink.Location = new System.Drawing.Point(3, 138);
+			this._setupWritingSystemsLink.Name = "_setupWritingSystemsLink";
+			this._setupWritingSystemsLink.Size = new System.Drawing.Size(40, 13);
+			this._setupWritingSystemsLink.TabIndex = 1;
+			this._setupWritingSystemsLink.TabStop = true;
+			this._setupWritingSystemsLink.Text = "More...";
+			this._setupWritingSystemsLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._editListLink_LinkClicked);
 			//
 			// listView1
 			//
@@ -103,7 +103,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.listView1);
-			this.Controls.Add(this._editListLink);
+			this.Controls.Add(this._setupWritingSystemsLink);
 			this.Name = "PickerUsingListView";
 			this.Size = new System.Drawing.Size(278, 158);
 			this.Load += new System.EventHandler(this.PickerUsingListView_Load);
@@ -114,7 +114,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#endregion
 
-		private System.Windows.Forms.LinkLabel _editListLink;
+		private System.Windows.Forms.LinkLabel _setupWritingSystemsLink;
 		private System.Windows.Forms.ListView listView1;
 		private System.Windows.Forms.ColumnHeader _labelColumnHeader;
 		private System.Windows.Forms.ToolTip toolTip1;

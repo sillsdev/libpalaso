@@ -73,7 +73,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._fontFamilyCombo.FormattingEnabled = true;
 			this._fontFamilyCombo.Location = new System.Drawing.Point(89, 25);
 			this._fontFamilyCombo.Name = "_fontFamilyCombo";
-			this._fontFamilyCombo.Size = new System.Drawing.Size(166, 21);
+			this._fontFamilyCombo.Size = new System.Drawing.Size(234, 21);
 			this._fontFamilyCombo.TabIndex = 0;
 			this._fontFamilyCombo.SelectedIndexChanged += new System.EventHandler(this._fontFamilyCombo_SelectedIndexChanged);
 			this._fontFamilyCombo.TextChanged += new System.EventHandler(this._fontFamilyCombo_TextChanged);
@@ -92,7 +92,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._keyboardCombo.FormattingEnabled = true;
 			this._keyboardCombo.Location = new System.Drawing.Point(89, 52);
 			this._keyboardCombo.Name = "_keyboardCombo";
-			this._keyboardCombo.Size = new System.Drawing.Size(166, 21);
+			this._keyboardCombo.Size = new System.Drawing.Size(234, 21);
 			this._keyboardCombo.TabIndex = 1;
 			this._keyboardCombo.SelectedIndexChanged += new System.EventHandler(this._keyboardCombo_SelectedIndexChanged);
 			//
@@ -118,7 +118,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _rightToLeftBox
 			//
 			this._rightToLeftBox.AutoSize = true;
-			this._rightToLeftBox.Location = new System.Drawing.Point(89, 88);
+			this._rightToLeftBox.Location = new System.Drawing.Point(89, 79);
 			this._rightToLeftBox.Name = "_rightToLeftBox";
 			this._rightToLeftBox.Size = new System.Drawing.Size(115, 17);
 			this._rightToLeftBox.TabIndex = 6;

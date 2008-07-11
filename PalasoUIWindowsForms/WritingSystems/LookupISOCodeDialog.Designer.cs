@@ -88,7 +88,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(292, 266);
+			this.ClientSize = new System.Drawing.Size(292, 262);
 			this.Controls.Add(this._aboutLink);
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this.listView1);

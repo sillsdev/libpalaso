@@ -12,14 +12,22 @@ namespace Palaso.WritingSystems
 		private string _languageName;
 		private string _script;
 		private string _abbreviation;
+
+		private string _versionNumber;
+		private string _versionDescription;
+
+		private DateTime _dateModified;
+
 		private string _defaultFontName;
+		private string _keyboard;
+
 		private bool _modified;
 
 		/// <summary>
 		/// Other classes that persist this need to know when our id changed, so the can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		private string _previousRepositoryIdentifier;
+		private string _storeID;
 
 		/// <summary>
 		/// singleton
@@ -28,10 +36,9 @@ namespace Palaso.WritingSystems
 	   /// <summary>
 		/// singleton
 		/// </summary>
-		 private static List<LanguageCode> _languageCodes;
+		private static List<LanguageCode> _languageCodes;
 
 		private bool _markedForDeletion;
-		private string _keyboard;
 		private string _nativeName;
 		private bool _rightToLeftScript;
 
@@ -40,6 +47,24 @@ namespace Palaso.WritingSystems
 		{
 			LoadScriptOptions();
 			Modified = false;
+		}
+
+		public WritingSystemDefinition(string iso)
+			: this()
+		{
+			_iso = iso;
+		}
+
+		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
+			: this()
+		{
+			_region = region;
+			_iso = iso;
+			_abbreviation = abbreviation;
+			_script = script;
+			_languageName = languageName;
+			_variant = variant;
+			_rightToLeftScript = rightToLeftScript;
 		}
 
 		/// <summary>
@@ -167,18 +192,23 @@ namespace Palaso.WritingSystems
 
 		}
 
-		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
-			:this()
+		public string VersionNumber
 		{
-			_region = region;
-			_iso = iso;
-			_abbreviation = abbreviation;
-			_script = script;
-			_languageName = languageName;
-			_variant = variant;
-			_rightToLeftScript = rightToLeftScript;
+			get { return _versionNumber; }
+			set { _versionNumber = value; }
 		}
 
+		public string VersionDescription
+		{
+			get { return _versionDescription; }
+			set { _versionDescription = value; }
+		}
+
+		public DateTime DateModified
+		{
+			get { return _dateModified; }
+			set { _dateModified = value; }
+		}
 
 		public string Variant
 		{
@@ -272,15 +302,15 @@ namespace Palaso.WritingSystems
 		/// Other classes that persist this need to know when our id changed, so the can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		public string PreviousRepositoryIdentifier
+		public string StoreID
 		{
 			get
 			{
-				return _previousRepositoryIdentifier;
+				return _storeID;
 			}
 			set
 			{
-				_previousRepositoryIdentifier = value;
+				_storeID = value;
 			}
 		}
 
@@ -511,6 +541,7 @@ namespace Palaso.WritingSystems
 					return _label;
 				}
 			}
+
 			public override string ToString()
 			{
 				return _label;

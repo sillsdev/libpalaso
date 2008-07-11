@@ -1,0 +1,7 @@
+TODO: Palaso Writing Systems
+
+- Add dtc / dtm to the ldml adaptor
+
+- check if ldml specs dtc and dtm
+
+- Factor out the script and language options out of WritingSystemDefinition

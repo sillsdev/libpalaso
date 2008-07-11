@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.UI.WritingSystems;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -49,8 +48,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_normalItemFont = listView1.Items[0].Font;
 			}
 			listView1.Items.Clear();
-			Palaso.WritingSystems.LdmlInFolderWritingSystemRepository repository =
-				new LdmlInFolderWritingSystemRepository();
+			Palaso.WritingSystems.LdmlInFolderWritingSystemStore repository =
+				new LdmlInFolderWritingSystemStore();
 			foreach (WritingSystemDefinition definition in repository.WritingSystemDefinitions)
 			{
 				ListViewItem item = new ListViewItem(definition.DisplayLabel);
@@ -72,9 +71,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _editListLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			WSListDialog dialog = new WSListDialog();
-			dialog.ShowDialog();
-			LoadDefinitions();
+			//!!! NYI
+			//WSListDialog dialog = new WSListDialog();
+			//dialog.ShowDialog();
+			//LoadDefinitions();
 		}
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)

@@ -7,34 +7,38 @@ namespace Palaso.WritingSystems
 {
 	public class LdmlAdaptor
 	{
-		private const string _kExtension = ".ldml";
 		private XmlNamespaceManager _nameSpaceManager;
 
-		internal LdmlAdaptor()
+		public LdmlAdaptor()
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
 		}
 
-		internal void Load(LdmlInFolderWritingSystemRepository repository, string identifier, WritingSystemDefinition ws)
+		public void Read(string filePath, WritingSystemDefinition ws)
 		{
-			XmlDocument doc = new XmlDocument();
-			string path = Path.Combine(repository.PathToWritingSystems, identifier + _kExtension);
-			if (File.Exists(path))
-			{
-				doc.Load(path);
-			}
-			else
-			{
-				if (identifier.ToLower() == "en-latn")
-				{
-					FillWithDefaults("en-Latn", ws);
-					return;
-				}
-			}
-			ws.ISO = GetIdentityValue(doc, "language");
-			ws.Variant = GetIdentityValue(doc, "variant");
-			ws.Region = GetIdentityValue(doc, "territory");
-			ws.Script = GetIdentityValue(doc, "script");
+			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
+			doc.Load(filePath);
+			Read(doc, ws);
+		}
+
+		public void Read(XmlReader xmlReader, WritingSystemDefinition ws)
+		{
+			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
+			doc.Load(xmlReader);
+			Read(doc, ws);
+		}
+
+		public void Read(XmlDocument doc, WritingSystemDefinition ws)
+		{
+			ws.ISO = GetIdentityValue(doc, "language", "type");
+			ws.Variant = GetIdentityValue(doc, "variant", "type");
+			ws.Region = GetIdentityValue(doc, "territory", "type");
+			ws.Script = GetIdentityValue(doc, "script", "type");
+			string dateTime = GetIdentityValue(doc, "generation", "date");
+			ws.DateModified = DateTime.Parse(dateTime);
+			XmlNode node = doc.SelectSingleNode("ldml/identity/version");
+			ws.VersionNumber = XmlHelpers.GetOptionalAttributeValue(node, "number");
+			ws.VersionDescription = node.InnerText;
 
 			ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
 			ws.LanguageName = GetSpecialValue(doc, "languageName");
@@ -42,8 +46,27 @@ namespace Palaso.WritingSystems
 			ws.Keyboard = GetSpecialValue(doc, "keyboard");
 			string rtl = GetSpecialValue(doc, "rightToLeft");
 			ws.RightToLeftScript = rtl == "true";
-			ws.PreviousRepositoryIdentifier = identifier;
+			ws.StoreID = "";
 			ws.Modified = false;
+		}
+
+		public void Write(string filePath, WritingSystemDefinition ws)
+		{
+			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
+			doc.CreateXmlDeclaration("1.0", "", "no");
+			XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
+			XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
+			UpdateDOM(doc, ws);
+			doc.Save(filePath);
+		}
+
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws)
+		{
+			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
+			XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
+			XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
+			UpdateDOM(doc, ws);
+			doc.Save(xmlWriter); //??? Not sure about this, does this need to be Write(To) or similar?
 		}
 
 		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
@@ -63,95 +86,35 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		internal string GetFileName(WritingSystemDefinition ws)
-		{
-			return GetFileNameFromIdentifier(ws.RFC4646);
-		}
-
-		public static string GetFileNameFromIdentifier(string identifier)
-		{
-			return identifier + _kExtension;
-		}
-
 		private string GetSpecialValue(XmlDocument doc, string field)
 		{
 			XmlNode node = doc.SelectSingleNode("ldml/special/palaso:"+field, _nameSpaceManager);
 			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
 		}
 
-		private string GetIdentityValue(XmlDocument doc, string field)
+		private string GetIdentityValue(XmlDocument doc, string field, string attributeName)
 		{
-			XmlNode node = doc.SelectSingleNode("ldml/identity/"+field);
-			return XmlHelpers.GetOptionalAttributeValue(node, "type", string.Empty);
+			XmlNode node = doc.SelectSingleNode("ldml/identity/" + field);
+			return XmlHelpers.GetOptionalAttributeValue(node, attributeName, string.Empty);
 		}
 
-		internal void SaveToRepository(LdmlInFolderWritingSystemRepository repository, WritingSystemDefinition ws)
-		{
-			XmlDocument doc = new XmlDocument();
-			string savePath = Path.Combine(repository.PathToWritingSystems,GetFileName(ws));
-			string incomingPath;
-			if (!ws.Modified && File.Exists(savePath))
-			{
-				return; // no need to save (better to preserve the modified date)
-			}
-			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier))
-			{
-				incomingPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier);
-			}
-			else
-			{
-				incomingPath = savePath;
-			}
-			if (File.Exists(incomingPath))
-			{
-				doc.Load(incomingPath);
-			}
-			else
-			{
-				XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
-				XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
-			}
-			UpdateDOM(doc, ws);
-			doc.Save(savePath);
-			ws.Modified = false;
-
-			RemoveOldFileIfNeeded(repository, ws);
-			//save this so that if the user makes a name-changing change and saves again, we
-			//can remove or rename to this version
-			ws.PreviousRepositoryIdentifier = GetFileName(ws);
-		}
 		public static XmlNamespaceManager MakeNameSpaceManager()
 		{
 			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			return m;
 		}
-		private void RemoveOldFileIfNeeded(LdmlInFolderWritingSystemRepository repository, WritingSystemDefinition ws)
-		{
-			if (!String.IsNullOrEmpty(ws.PreviousRepositoryIdentifier) && ws.PreviousRepositoryIdentifier != ws.RFC4646)
-			{
-				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, ws.PreviousRepositoryIdentifier+_kExtension);
-				if (File.Exists(oldGuyPath))
-				{
-					try
-					{
-						File.Delete(oldGuyPath);
-					}
-					catch (Exception )
-					{
-						//swallow. It's ok, we're just trying to clean up.
-					}
-
-				}
-			}
-		}
 
 		private void UpdateDOM(XmlDocument dom, WritingSystemDefinition ws)
 		{
-			SetSubIdentityNode(dom, "language", ws.ISO);
-			SetSubIdentityNode(dom, "script", ws.Script);
-			SetSubIdentityNode(dom, "territory", ws.Region);
-			SetSubIdentityNode(dom, "variant", ws.Variant);
+			SetSubIdentityNode(dom, "language", "type", ws.ISO);
+			SetSubIdentityNode(dom, "script", "type", ws.Script);
+			SetSubIdentityNode(dom, "territory", "type", ws.Region);
+			SetSubIdentityNode(dom, "variant", "type", ws.Variant);
+			SetSubIdentityNode(dom, "generation", "date", String.Format("{0:s}", ws.DateModified));
+			XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/identity", "version", null, _nameSpaceManager);
+			XmlHelpers.AddOrUpdateAttribute(node, "number", ws.VersionNumber);
+			node.InnerText = ws.VersionDescription;
 
 			SetTopLevelSpecialNode(dom, "languageName", ws.LanguageName);
 			SetTopLevelSpecialNode(dom, "abbreviation", ws.Abbreviation);
@@ -160,12 +123,12 @@ namespace Palaso.WritingSystems
 			SetTopLevelSpecialNode(dom, "rightToLeft", ws.RightToLeftScript ? "true": "false");
 		}
 
-		private void SetSubIdentityNode(XmlDocument dom, string field, string value)
+		private void SetSubIdentityNode(XmlDocument dom, string field, string attributeName, string value)
 		{
 			if (!String.IsNullOrEmpty(value))
 			{
 				XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/identity", field, null, _nameSpaceManager);
-				Palaso.XmlHelpers.AddOrUpdateAttribute(node, "type", value);
+				XmlHelpers.AddOrUpdateAttribute(node, attributeName, value);
 			}
 			else
 			{
