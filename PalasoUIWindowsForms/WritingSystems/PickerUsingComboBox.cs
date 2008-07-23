@@ -53,8 +53,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			_inAdding = true;
 			Items.Clear();
-			Palaso.WritingSystems.LdmlInFolderWritingSystemRepository repository =
-				new LdmlInFolderWritingSystemRepository();
+			Palaso.WritingSystems.LdmlInFolderWritingSystemStore repository =
+				new LdmlInFolderWritingSystemStore();
 			foreach (WritingSystemDefinition definition in repository.WritingSystemDefinitions)
 			{
 				DefinitionWrapper item = new DefinitionWrapper(definition);

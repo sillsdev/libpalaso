@@ -23,7 +23,7 @@ namespace Palaso.UI.WritingSystems
 
 		private void WSListDialog_Load(object sender, EventArgs e)
 		{
-			LdmlInFolderWritingSystemRepository repository = new LdmlInFolderWritingSystemRepository();
+			LdmlInFolderWritingSystemStore repository = new LdmlInFolderWritingSystemStore();
 			repository.SystemWritingSystemProvider =
 				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
 

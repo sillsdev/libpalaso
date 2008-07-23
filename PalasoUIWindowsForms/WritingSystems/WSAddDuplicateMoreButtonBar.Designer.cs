@@ -40,7 +40,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _addButton
 			//
-			this._addButton.Location = new System.Drawing.Point(20, 13);
+			this._addButton.Location = new System.Drawing.Point(3, 3);
 			this._addButton.Name = "_addButton";
 			this._addButton.Size = new System.Drawing.Size(75, 23);
 			this._addButton.TabIndex = 0;
@@ -50,7 +50,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _duplicateButton
 			//
-			this._duplicateButton.Location = new System.Drawing.Point(101, 13);
+			this._duplicateButton.Location = new System.Drawing.Point(84, 3);
 			this._duplicateButton.Name = "_duplicateButton";
 			this._duplicateButton.Size = new System.Drawing.Size(75, 23);
 			this._duplicateButton.TabIndex = 1;
@@ -61,7 +61,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _moreButton
 			//
 			this._moreButton.Cursor = System.Windows.Forms.Cursors.Arrow;
-			this._moreButton.Location = new System.Drawing.Point(182, 13);
+			this._moreButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this._moreButton.Location = new System.Drawing.Point(165, 3);
 			this._moreButton.Name = "_moreButton";
 			this._moreButton.Size = new System.Drawing.Size(75, 23);
 			this._moreButton.TabIndex = 2;
@@ -75,19 +76,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._deleteMenuItem,
 			this._loadMenuItem});
 			this._contextMenu.Name = "_contextMenu";
-			this._contextMenu.Size = new System.Drawing.Size(106, 48);
+			this._contextMenu.Size = new System.Drawing.Size(117, 48);
 			//
 			// _deleteMenuItem
 			//
 			this._deleteMenuItem.Name = "_deleteMenuItem";
-			this._deleteMenuItem.Size = new System.Drawing.Size(105, 22);
+			this._deleteMenuItem.Size = new System.Drawing.Size(116, 22);
 			this._deleteMenuItem.Text = "&Delete";
 			this._deleteMenuItem.Click += new System.EventHandler(this.DeleteMenuClick);
 			//
 			// _loadMenuItem
 			//
 			this._loadMenuItem.Name = "_loadMenuItem";
-			this._loadMenuItem.Size = new System.Drawing.Size(105, 22);
+			this._loadMenuItem.Size = new System.Drawing.Size(116, 22);
 			this._loadMenuItem.Text = "&Load";
 			this._loadMenuItem.Click += new System.EventHandler(this.LoadMenuClick);
 			//
@@ -95,11 +96,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._addButton);
 			this.Controls.Add(this._moreButton);
 			this.Controls.Add(this._duplicateButton);
-			this.Controls.Add(this._addButton);
 			this.Name = "WSAddDuplicateMoreButtonBar";
-			this.Size = new System.Drawing.Size(273, 49);
+			this.Size = new System.Drawing.Size(245, 31);
 			this._contextMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 

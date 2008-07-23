@@ -77,6 +77,10 @@ namespace Palaso.WritingSystems
 
 		private static string GetFileNameFromIdentifier(string identifier)
 		{
+			if (string.IsNullOrEmpty(identifier))
+			{
+				return identifier;
+			}
 			return identifier + _kExtension;
 		}
 
@@ -213,7 +217,7 @@ namespace Palaso.WritingSystems
 			if (File.Exists(filePath))
 			{
 				adaptor.Read(filePath, ws);
-				ws.StoreID = GetFileName(ws);
+				ws.StoreID = Path.GetFileNameWithoutExtension(GetFileName(ws));
 				ws.Modified = false;
 			}
 			else
@@ -229,8 +233,9 @@ namespace Palaso.WritingSystems
 
 		public void SaveDefinition(WritingSystemDefinition ws)
 		{
+			string incomingFileName = GetFileNameFromIdentifier(ws.StoreID);
+			Set(ws);
 			string writingSystemFileName = GetFileName(ws);
-			string incomingFileName = ws.StoreID;
 			string writingSystemFilePath = GetFilePath(ws);
 			if (!ws.Modified && File.Exists(writingSystemFilePath))
 			{
@@ -251,7 +256,7 @@ namespace Palaso.WritingSystems
 			ws.Modified = false;
 			//save this so that if the user makes a name-changing change and saves again, we
 			//can remove or rename to this version
-			ws.StoreID = writingSystemFileName;
+			//ws.StoreID = writingSystemFileName;  - done in Set(ws);
 
 			//RemoveOldFileIfNeeded(ws); //!!! Shouldn't be required now.
 		}
@@ -282,6 +287,7 @@ namespace Palaso.WritingSystems
 				}
 				File.Move(GetFilePathFromIdentifier(identifier), destination);
 			}
+			base.Remove(identifier);
 		}
 
 		private string PathToWritingSystemTrash()
@@ -294,21 +300,31 @@ namespace Palaso.WritingSystems
 			//delete anything we're going to delete first, to prevent loosing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
+			List<string> idsToRemove = new List<string>();
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
 				if (ws.MarkedForDeletion)
 				{
-					Remove(ws.StoreID);//nb: purposefully not removing from our list, for fear of leading to bugs in the UI. If we did this, we'd want to require the UI to reload the WS list after a save.
+					idsToRemove.Add(ws.StoreID);//nb: purposefully not removing from our list, for fear of leading to bugs in the UI. If we did this, we'd want to require the UI to reload the WS list after a save.
 				}
 			}
+			foreach (string id in idsToRemove)
+			{
+				Remove(id);
+			}
 
+			List<WritingSystemDefinition> allDefs = new List<WritingSystemDefinition>();
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				 SaveDefinition(ws);
-				 if (!ws.Modified)
-				 {
-					 OnChangeNotifySharedStore(ws);
-				 }
+				allDefs.Add(ws);
+			}
+			foreach (WritingSystemDefinition ws in allDefs)
+			{
+				SaveDefinition(ws);
+				if (!ws.Modified)
+				{
+					OnChangeNotifySharedStore(ws);
+				}
 			}
 		}
 	}

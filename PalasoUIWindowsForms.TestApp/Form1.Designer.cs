@@ -1,6 +1,6 @@
-namespace Palaso.UI.WindowsForms.WritingSystems
+namespace PalasoUIWindowsForms.TestApp
 {
-	partial class WSAboutControl
+	partial class Form1
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -20,7 +20,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			base.Dispose(disposing);
 		}
 
-		#region Component Designer generated code
+		#region Windows Form Designer generated code
 
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -28,33 +28,31 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._pgAbout = new System.Windows.Forms.PropertyGrid();
+			this.dialog = new Palaso.UI.WindowsForms.WritingSystems.WSPropertiesDialog();
 			this.SuspendLayout();
 			//
-			// _pgAbout
+			// dialog
 			//
-			this._pgAbout.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._pgAbout.Location = new System.Drawing.Point(0, 0);
-			this._pgAbout.Name = "_pgAbout";
-			this._pgAbout.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-			this._pgAbout.Size = new System.Drawing.Size(430, 227);
-			this._pgAbout.TabIndex = 0;
-			this._pgAbout.ToolbarVisible = false;
-			this._pgAbout.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this._pgAbout_PropertyValueChanged);
+			this.dialog.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dialog.Location = new System.Drawing.Point(0, 0);
+			this.dialog.Name = "dialog";
+			this.dialog.Size = new System.Drawing.Size(703, 413);
+			this.dialog.TabIndex = 0;
 			//
-			// WSAboutControl
+			// Form1
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this._pgAbout);
-			this.Name = "WSAboutControl";
-			this.Size = new System.Drawing.Size(430, 227);
+			this.ClientSize = new System.Drawing.Size(703, 413);
+			this.Controls.Add(this.dialog);
+			this.Name = "Form1";
+			this.Text = "Form1";
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.PropertyGrid _pgAbout;
+		private Palaso.UI.WindowsForms.WritingSystems.WSPropertiesDialog dialog;
 	}
 }

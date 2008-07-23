@@ -33,11 +33,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _listView
 			//
+			this._listView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._listView.FullRowSelect = true;
+			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(0, 0);
+			this._listView.MultiSelect = false;
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(339, 271);
+			this._listView.Size = new System.Drawing.Size(381, 294);
 			this._listView.TabIndex = 0;
 			this._listView.UseCompatibleStateImageBehavior = false;
+			this._listView.View = System.Windows.Forms.View.List;
 			//
 			// WSPickerUsingListView
 			//
@@ -53,5 +58,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		#endregion
 
 		private System.Windows.Forms.ListView _listView;
+
 	}
 }

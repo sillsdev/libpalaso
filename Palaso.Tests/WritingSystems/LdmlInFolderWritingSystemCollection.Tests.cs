@@ -7,6 +7,45 @@ using Palaso.WritingSystems;
 namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
+	public class LdmlInFolderWritingSystemStoreInterfaceTests : IWritingSystemStoreTests
+	{
+		private List<string> _testPaths;
+
+		[SetUp]
+		public override void SetUp()
+		{
+			_testPaths = new List<string>();
+			base.SetUp();
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			foreach (string testPath in _testPaths)
+			{
+				if (Directory.Exists(testPath))
+				{
+					Directory.Delete(testPath, true);
+				}
+			}
+		}
+
+		public override IWritingSystemStore CreateNewStore()
+		{
+			string testPath = Path.GetTempPath() + "PalasoTest" + _testPaths.Count;
+			if (Directory.Exists(testPath))
+			{
+				Directory.Delete(testPath, true);
+			}
+			_testPaths.Add(testPath);
+			LdmlInFolderWritingSystemStore store = new LdmlInFolderWritingSystemStore(testPath);
+			store.DontAddDefaultDefinitions = true;
+			return store;
+		}
+	}
+
+	[TestFixture]
 	public class LdmlInFolderWritingSystemCollectionTests
 	{
 		private string _testPath;
@@ -123,21 +162,21 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void StoreIDAfterSave_SameAsFileName()
+		public void StoreIDAfterSave_SameAsFileNameWithoutExtension()
 		{
 			_writingSystem.ISO = "1";
 			_collection.SaveDefinition(_writingSystem);
-			Assert.AreEqual("1.ldml", _writingSystem.StoreID);
+			Assert.AreEqual("1", _writingSystem.StoreID);
 		}
 
 		[Test]
-		public void StoreIDAfterLoad_SameAsFileName()
+		public void StoreIDAfterLoad_SameAsFileNameWithoutExtension()
 		{
 			_writingSystem.ISO = "1";
 			_collection.SaveDefinition(_writingSystem);
 
 			WritingSystemDefinition ws2 = _collection.LoadDefinition("1");
-			Assert.AreEqual("1.ldml", ws2.StoreID);
+			Assert.AreEqual("1", ws2.StoreID);
 		}
 
 		[Test]
@@ -149,9 +188,9 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(File.Exists(path));
 			WritingSystemDefinition ws2 = _collection.LoadDefinition("1");
 			ws2.ISO = "2";
-			Assert.AreEqual("1.ldml", ws2.StoreID);
+			Assert.AreEqual("1", ws2.StoreID);
 			_collection.SaveDefinition(ws2);
-			Assert.AreEqual("2.ldml", ws2.StoreID);
+			Assert.AreEqual("2", ws2.StoreID);
 			Assert.IsFalse(File.Exists(path));
 			path = Path.Combine(_collection.PathToWritingSystems, "2.ldml");
 			Assert.IsTrue(File.Exists(path));

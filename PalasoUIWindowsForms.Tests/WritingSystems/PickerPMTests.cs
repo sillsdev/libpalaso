@@ -10,7 +10,8 @@ using Palaso.UI.WindowsForms.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
-	class PickerPMTests
+	[TestFixture]
+	public class PickerPMTests
 	{
 		PickerPM _model;
 		string _testFilePath;

@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	internal partial class WSListControl : UserControl
 	{
-		private LdmlInFolderWritingSystemRepository _repository;
+		private LdmlInFolderWritingSystemStore _repository;
 		private WritingSystemDefinition _writingSystemForDeletionUndo;
 
 		public WSListControl()
@@ -26,10 +26,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //                item.PushToWritingSystemDefinition();
 //            }
 
-			_repository.SaveDefinitions();
+			_repository.Save();
 		}
 
-		public void LoadFromRepository(LdmlInFolderWritingSystemRepository repository)
+		public void LoadFromRepository(LdmlInFolderWritingSystemStore repository)
 		{
 			_repository = repository;
 			_writingSystemList.Clear();
@@ -74,7 +74,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnAddNewClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			WritingSystemDefinition ws = _repository.AddNewDefinition();
+			WritingSystemDefinition ws = _repository.CreateNew();
 			WSListItem item = AddWritingSystem(ws);
 			item.Selected = true;
 			this.ScrollControlIntoView(item);

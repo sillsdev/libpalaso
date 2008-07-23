@@ -33,10 +33,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public WritingSystemDefinition AddNew()
+		public WritingSystemDefinition CreateNew()
 		{
 			WritingSystemDefinition retval = new WritingSystemDefinition();
-			Set(retval);
 
 			//!!! TODO: Add to shared
 
@@ -45,6 +44,14 @@ namespace Palaso.WritingSystems
 
 		virtual public void Remove(string identifier)
 		{
+			if (identifier == null)
+			{
+				throw new ArgumentNullException("identifier");
+			}
+			if (!_writingSystems.ContainsKey(identifier))
+			{
+				throw new ArgumentOutOfRangeException("identifier");
+			}
 			// Delete from us
 			//??? Do we really delete or just mark for deletion?
 			_writingSystems.Remove(identifier);
@@ -71,6 +78,10 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition)
 		{
+			if (definition == null)
+			{
+				throw new ArgumentNullException("definition");
+			}
 			return definition.Clone();
 		}
 
@@ -82,6 +93,10 @@ namespace Palaso.WritingSystems
 
 		public void Set(WritingSystemDefinition ws)
 		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
@@ -90,11 +105,33 @@ namespace Palaso.WritingSystems
 				_writingSystems.Remove(ws.StoreID);
 			}
 			ws.StoreID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+			if (_writingSystems.ContainsKey(ws.StoreID))
+			{
+				throw new ArgumentException("Duplicate writing system already exists.  Please change this writing system before storing.");
+			}
 			_writingSystems[ws.StoreID] = ws;
+		}
+
+		public bool CanSet(WritingSystemDefinition ws)
+		{
+			if (ws == null)
+			{
+				return false;
+			}
+			string newID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+			return newID == ws.StoreID || !_writingSystems.ContainsKey(newID);
 		}
 
 		public WritingSystemDefinition Get(string identifier)
 		{
+			if (identifier == null)
+			{
+				throw new ArgumentNullException("identifier");
+			}
+			if (!_writingSystems.ContainsKey(identifier))
+			{
+				throw new ArgumentOutOfRangeException("identifier");
+			}
 			return _writingSystems[identifier];
 		}
 
@@ -120,9 +157,17 @@ namespace Palaso.WritingSystems
 
 		virtual public IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
 		{
+			if (rhs == null)
+			{
+				throw new ArgumentNullException("rhs");
+			}
 			List<WritingSystemDefinition> newerWritingSystems = new List<WritingSystemDefinition>();
 			foreach (WritingSystemDefinition ws in rhs)
 			{
+				if (ws == null)
+				{
+					throw new ArgumentNullException("rhs", "rhs contains a null WritingSystemDefinition");
+				}
 				if (_writingSystems.ContainsKey(ws.RFC4646))
 				{
 					if (!_writingSystemsToIgnore.ContainsKey(ws.RFC4646) && (ws.DateModified > _writingSystems[ws.RFC4646].DateModified))

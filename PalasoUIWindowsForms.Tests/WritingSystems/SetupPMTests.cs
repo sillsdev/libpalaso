@@ -22,10 +22,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[SetUp]
 		public void Setup()
 		{
-			_model = new SetupPM();
 			_testFilePath = Path.GetTempFileName();
 			IWritingSystemStore writingSystemStore = new LdmlInXmlWritingSystemStore();
-			_model.WritingSystemStore = writingSystemStore;
+			_model = new SetupPM(writingSystemStore);
 		}
 
 		[TearDown]
@@ -56,16 +55,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void EnumerateWritingSystems_HasMoreThanOne()
-		{
-			IEnumerable<WritingSystemDefinition> ws = _model.WritingSystemsDefinitions;
-			IEnumerator<WritingSystemDefinition> it = ws.GetEnumerator();
-			it.MoveNext();
-			Console.WriteLine(String.Format("Current writingsystem {0}", it.Current.DisplayLabel));
-			Assert.IsNotNull(it.Current);
-		}
-
-		[Test]
 		public void FindInputLanguage_KnownLanguageCanBeFound()
 		{
 			string knownLanguage = "";
@@ -83,56 +72,58 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void DeleteCurrent_NoLongerInList()
 		{
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws1"));
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws2"));
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws3"));
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.AddNew();
+			_model.CurrentISO = "ws2";
+			_model.AddNew();
+			_model.CurrentISO = "ws3";
 			List<string> writingSystems = new List<string>();
-			foreach (WritingSystemDefinition ws in _model.WritingSystemsDefinitions)
+			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
-				writingSystems.Add(ws.Abbreviation);
+				writingSystems.Insert(0, _model.CurrentISO);
 			}
 			string deletedWS = writingSystems[1];
-			_model.SelectCurrentByIndex(1);
+			_model.CurrentIndex = 1;
 			_model.DeleteCurrent();
-			foreach (WritingSystemDefinition ws in _model.WritingSystemsDefinitions)
+			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
-				Assert.AreNotEqual(deletedWS, ws.Abbreviation);
+				Assert.AreNotEqual(deletedWS, _model.CurrentISO);
 			}
 		}
 
 		[Test]
-		public void CurrentGetEmpty_IsNull()
+		public void CurrentSelectionEmpty_IsFalse()
 		{
-			Assert.IsNull(_model.Current);
+			Assert.IsFalse(_model.HasCurrentSelection);
 		}
 
 		[Test]
 		public void CurrentSelectByIndex_GetCurrentCorrect()
 		{
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws1"));
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws2"));
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws3"));
-			_model.SelectCurrentByIndex(1);
-			WritingSystemDefinition ws = _model.Current;
-			Assert.AreEqual("ws2", ws.Abbreviation);
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.AddNew();
+			_model.CurrentISO = "ws2";
+			_model.AddNew();
+			_model.CurrentISO = "ws3";
+			_model.CurrentIndex = 1;
+			Assert.AreEqual("ws2", _model.CurrentISO);
 		}
 
 		[Test]
 		public void Add_NewInList()
 		{
-			foreach (WritingSystemDefinition ws in _model.WritingSystemsDefinitions)
+			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
-				Assert.AreNotEqual("New", ws.Abbreviation);
+				Assert.AreNotEqual("New", _model.CurrentAbbreviation);
 			}
 			WritingSystemDefinition wsNew = _model.AddNew();
 			Assert.IsNotNull(wsNew);
 			bool haveNew = false;
-			foreach (WritingSystemDefinition ws in _model.WritingSystemsDefinitions)
+			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
-				if (ws.Abbreviation == "New")
-				{
-					haveNew = true;
-				}
+				haveNew |= _model.CurrentAbbreviation == "New";
 			}
 			Assert.IsTrue(haveNew);
 		}
@@ -140,49 +131,170 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void Rename_CurrentRenamed()
 		{
-			WritingSystemDefinition d = _model.Current;
-			string oldName = d.Abbreviation;
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentAbbreviation = "abc";
 			string newName = "xyz";
 			_model.RenameCurrent(newName);
-			WritingSystemDefinition test = _model.Current;
-			Assert.AreEqual(newName, test.Abbreviation);
+			Assert.AreEqual(newName, _model.CurrentAbbreviation);
 		}
 
 		[Test]
 		public void Event_Add_TriggersOnAddDelete()
 		{
-			Assert.IsTrue(false, "NYI");
+			bool eventTriggered = false;
+			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
+			_model.AddNew();
+			Assert.IsTrue(eventTriggered);
 		}
 
 		[Test]
 		public void Event_Duplicate_TriggersOnAddDelete()
 		{
-			Assert.IsTrue(false, "NYI");
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			bool eventTriggered = false;
+			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
+			_model.DuplicateCurrent();
+			Assert.IsTrue(eventTriggered);
 		}
 
 		[Test]
 		public void Event_Delete_TriggersOnAddDelete()
 		{
-			Assert.IsTrue(false, "NYI");
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			bool eventTriggered = false;
+			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
+			_model.DeleteCurrent();
+			Assert.IsTrue(eventTriggered);
 		}
 
 		[Test]
-		public void Event_Update_TriggersEvent()
+		public void Event_AddNew_TriggersSelectionChanged()
 		{
-			Assert.IsTrue(false, "NYI");
+			bool eventTriggered = false;
+			_model.SelectionChanged += delegate { eventTriggered = true; };
+			_model.AddNew();
+			Assert.IsTrue(eventTriggered);
+		}
+
+		[Test]
+		public void Event_SameItemSelected_DoesNotTriggerSelectionChanged()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.AddNew();
+			_model.CurrentISO = "ws2";
+			bool eventTriggered = false;
+			_model.CurrentIndex = 0;
+			_model.SelectionChanged += delegate { eventTriggered = true; };
+			_model.CurrentIndex = 0;
+			Assert.IsFalse(eventTriggered);
+		}
+
+		[Test]
+		public void Event_DifferentItemSelected_TriggersSelectionChanged()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.AddNew();
+			_model.CurrentISO = "ws2";
+			bool eventTriggered = false;
+			_model.CurrentIndex = 0;
+			_model.SelectionChanged += delegate { eventTriggered = true; };
+			_model.CurrentIndex = 1;
+			Assert.IsTrue(eventTriggered);
+		}
+
+		[Test]
+		public void Event_ItemSelectedSelectNegative1_TriggersSelectionChanged()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			bool eventTriggered = false;
+			_model.CurrentIndex = 0;
+			_model.SelectionChanged += delegate { eventTriggered = true; };
+			_model.CurrentIndex = -1;
+			Assert.IsTrue(eventTriggered);
+		}
+
+		[Test]
+		public void Event_ItemSelectedClearSelection_TriggersSelectionChanged()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			bool eventTriggered = false;
+			_model.CurrentIndex = 0;
+			_model.SelectionChanged += delegate { eventTriggered = true; };
+			_model.ClearSelection();
+			Assert.IsTrue(eventTriggered);
+		}
+
+		[Test]
+		public void Event_NoItemSelectedClearSelection_DoesNotTriggerSelectionChanged()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			bool eventTriggered = false;
+			_model.ClearSelection();
+			_model.SelectionChanged += delegate { eventTriggered = true; };
+			_model.ClearSelection();
+			Assert.IsFalse(eventTriggered);
+		}
+
+		[Test]
+		public void Event_CurrentItemUpdated_TriggersCurrentItemUpdated()
+		{
+			_model.AddNew();
+			bool eventTriggered = false;
+			_model.CurrentItemUpdated += delegate { eventTriggered = true; };
+			_model.CurrentISO = "ws1";
+			Assert.IsTrue(eventTriggered);
+		}
+
+		[Test]
+		public void Event_CurrentItemAssignedButNotChanged_DoesNotTriggerCurrentItemUpdated()
+		{
+			_model.AddNew();
+			bool eventTriggered = false;
+			_model.CurrentISO = "ws1";
+			_model.CurrentItemUpdated += delegate { eventTriggered = true; };
+			_model.CurrentISO = "ws1";
+			Assert.IsFalse(eventTriggered);
+		}
+
+		[Test]
+		public void EmptyAddNew_NewItemSelected()
+		{
+			_model.AddNew();
+			Assert.IsTrue(_model.HasCurrentSelection);
 		}
 
 		[Test]
 		public void DuplicateCurrent_AppearsInList()
 		{
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws1"));
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws2"));
-			_model.WritingSystemStore.Set(new WritingSystemDefinition("ws3"));
-			_model.SelectCurrentByIndex(1);
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.AddNew();
+			_model.CurrentISO = "ws2";
+			_model.AddNew();
+			_model.CurrentISO = "ws3";
+			_model.CurrentIndex = 1;
 			_model.DuplicateCurrent();
-			Assert.AreEqual(4, _model.WritingSystemStore.Count);
+			Assert.AreEqual(4, _model.WritingSystemCount);
 		}
 
-	}
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void DuplicateCurrent_NoCurrent_ThrowsInvalidOperation()
+		{
+			_model.DuplicateCurrent();
+		}
 
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void DeleteCurrent_NoCurrent_ThrowsInvalidOperation()
+		{
+			_model.DeleteCurrent();
+		}
+	}
 }

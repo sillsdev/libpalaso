@@ -10,6 +10,15 @@ using Palaso.WritingSystems;
 namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
+	public class LdmlInXmlWritingSystemStoreInterfaceTests : IWritingSystemStoreTests
+	{
+		public override IWritingSystemStore CreateNewStore()
+		{
+			return new LdmlInXmlWritingSystemStore();
+		}
+	}
+
+	[TestFixture]
 	public class LdmlInXmlWritingSystemCollectionTests
 	{
 		private string _testFilePath;
@@ -57,71 +66,6 @@ namespace Palaso.Tests.WritingSystems
 			xmlWriter.WriteEndElement();
 			xmlWriter.WriteEndDocument();
 			xmlWriter.Close();
-		}
-
-		[Test]
-		public void SetTwoDefinitions_CountEquals2()
-		{
-			_writingSystem.ISO = "one";
-			_writingSystemStore.Set(_writingSystem);
-			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "two";
-			_writingSystemStore.Set(ws2);
-
-			Assert.AreEqual(2, _writingSystemStore.Count);
-		}
-
-		[Test]
-		public void AddNewDefinition_CountEquals1()
-		{
-			_writingSystemStore.AddNew();
-			Assert.AreEqual(1, _writingSystemStore.Count);
-		}
-
-		[Test]
-		public void SetDefinitionTwice_OnlySetOnce()
-		{
-			_writingSystem.ISO = "one";
-			_writingSystemStore.Set(_writingSystem);
-			Assert.AreEqual(1, _writingSystemStore.Count);
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "one";
-			_writingSystemStore.Set(ws);
-			Assert.AreEqual(1, _writingSystemStore.Count);
-		}
-
-		[Test]
-		public void SetDefinitionTwice_UpdatesStore()
-		{
-			_writingSystem.ISO = "one";
-			_writingSystemStore.Set(_writingSystem);
-			Assert.AreEqual(1, _writingSystemStore.Count);
-			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "one";
-			ws1.DefaultFontName = "one font";
-			_writingSystemStore.Set(ws1);
-			WritingSystemDefinition ws2 = _writingSystemStore.Get("one");
-			Assert.AreEqual("one font", ws2.DefaultFontName);
-		}
-
-		[Test]
-		public void Exists_FalseThenTrue()
-		{
-			Assert.IsFalse(_writingSystemStore.Exists("one"));
-			_writingSystem.ISO = "one";
-			_writingSystemStore.Set(_writingSystem);
-			Assert.IsTrue(_writingSystemStore.Exists("one"));
-		}
-
-		[Test]
-		public void Remove_CountDecreases()
-		{
-			_writingSystem.ISO = "one";
-			_writingSystemStore.Set(_writingSystem);
-			Assert.AreEqual(1, _writingSystemStore.Count);
-			_writingSystemStore.Remove("one");
-			Assert.AreEqual(0, _writingSystemStore.Count);
 		}
 
 		[Test]
@@ -180,103 +124,6 @@ namespace Palaso.Tests.WritingSystems
 			xmlReader.Close();
 
 		}
-
-		[Test]
-		public void NewerThanEmpty_ReturnsNoneNewer()
-		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
-			_writingSystemStore.Set(ws1);
-
-			LdmlInXmlWritingSystemStore store = new LdmlInXmlWritingSystemStore();
-			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(_writingSystemStore.WritingSystemDefinitions))
-			{
-				count++;
-			}
-			Assert.AreEqual(0, count);
-		}
-
-		[Test]
-		public void NewerThanOlder_ReturnsOneNewer()
-		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
-			ws1.DateModified = new DateTime(2008, 1, 15);
-			_writingSystemStore.Set(ws1);
-
-			LdmlInXmlWritingSystemStore store = new LdmlInXmlWritingSystemStore();
-			WritingSystemDefinition ws2 = _writingSystemStore.MakeDuplicate(ws1);
-			ws2.DateModified = new DateTime(2008, 1, 14);
-			store.Set(ws2);
-
-			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(_writingSystemStore.WritingSystemDefinitions))
-			{
-				count++;
-			}
-			Assert.AreEqual(1, count);
-		}
-
-		[Test]
-		public void NewerThanNewer_ReturnsNoneNewer()
-		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
-			ws1.DateModified = new DateTime(2008, 1, 15);
-			_writingSystemStore.Set(ws1);
-
-			LdmlInXmlWritingSystemStore store = new LdmlInXmlWritingSystemStore();
-			WritingSystemDefinition ws2 = _writingSystemStore.MakeDuplicate(ws1);
-			ws2.DateModified = new DateTime(2008, 1, 16);
-			store.Set(ws2);
-
-			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(_writingSystemStore.WritingSystemDefinitions))
-			{
-				count++;
-			}
-			Assert.AreEqual(0, count);
-		}
-
-		[Test]
-		public void NewerThanCheckedAlready_ReturnsNoneNewer()
-		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
-			ws1.DateModified = new DateTime(2008, 1, 15);
-			_writingSystemStore.Set(ws1);
-
-			LdmlInXmlWritingSystemStore store = new LdmlInXmlWritingSystemStore();
-			WritingSystemDefinition ws2 = _writingSystemStore.MakeDuplicate(ws1);
-			ws2.DateModified = new DateTime(2008, 1, 14);
-			store.Set(ws2);
-			store.LastChecked("en", new DateTime(2008, 1, 16));
-
-			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(_writingSystemStore.WritingSystemDefinitions))
-			{
-				count++;
-			}
-			Assert.AreEqual(0, count);
-		}
-
-		[Test]
-		public void CanStoreVariants_CountTwo()
-		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
-			Assert.AreEqual("en", ws1.RFC4646);
-			WritingSystemDefinition ws2 = ws1.Clone();
-			ws2.Variant = "latn";
-			Assert.AreEqual("en-latn", ws2.RFC4646);
-
-			_writingSystemStore.Set(ws1);
-			Assert.AreEqual(1, _writingSystemStore.Count);
-			_writingSystemStore.Set(ws2);
-			Assert.AreEqual(2, _writingSystemStore.Count);
-		}
-
 
 #if false
 		[Test]
