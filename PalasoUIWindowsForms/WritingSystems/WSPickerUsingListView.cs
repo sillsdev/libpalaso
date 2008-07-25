@@ -148,7 +148,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnSelectedIndexChanged()
 		{
-			RefreshListViewItemBackgrounds();
 			if (SelectedIndexChanged != null)
 			{
 				SelectedIndexChanged(this, new EventArgs());

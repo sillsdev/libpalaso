@@ -331,5 +331,20 @@ namespace Palaso.Tests.WritingSystems
 		{
 			StoreUnderTest.Remove("This isn't in the store!");
 		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void GetNewStoreIDWhenSet_Null_Throws()
+		{
+			StoreUnderTest.GetNewStoreIDWhenSet(null);
+		}
+
+		[Test]
+		public void GetNewStoreIDWhenSet_ReturnsSameStoreIDAsSet()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition("ws1");
+			string newID = StoreUnderTest.GetNewStoreIDWhenSet(ws);
+			StoreUnderTest.Set(ws);
+			Assert.AreEqual(ws.StoreID, newID);
+		}
 	}
 }

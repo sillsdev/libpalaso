@@ -112,6 +112,15 @@ namespace Palaso.WritingSystems
 			_writingSystems[ws.StoreID] = ws;
 		}
 
+		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
+			return (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+		}
+
 		public bool CanSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)

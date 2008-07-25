@@ -313,10 +313,16 @@ namespace Palaso.WritingSystems
 				Remove(id);
 			}
 
+			// make a copy and then go through that list - SaveDefinition calls Set which
+			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
+			// and not be allowed in a foreach loop
 			List<WritingSystemDefinition> allDefs = new List<WritingSystemDefinition>();
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				allDefs.Add(ws);
+				if (CanSet(ws))
+				{
+					allDefs.Add(ws);
+				}
 			}
 			foreach (WritingSystemDefinition ws in allDefs)
 			{

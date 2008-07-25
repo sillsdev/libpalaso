@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Text;
 
 using System.Windows.Forms;
-
+using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -76,7 +76,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (_currentWritingSystem == value)
 					return;
-				SetCurrentAndOthersIfPossible();
 				_currentWritingSystem = value;
 				_currentIndex = value == null ? -1 : _writingSystemDefinitions.FindIndex(value.Equals);
 				OnSelectionChanged();
@@ -95,7 +94,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					throw new ArgumentOutOfRangeException();
 				}
-				SetCurrentAndOthersIfPossible();
 				_currentIndex = value;
 				WritingSystemDefinition oldCurrentWS = _currentWritingSystem;
 				_currentWritingSystem = value == -1 ? null : _writingSystemDefinitions[value];
@@ -138,10 +136,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
+				Dictionary<string, int> idList = new Dictionary<string, int>();
 				bool[] canSave = new bool[_writingSystemDefinitions.Count];
 				for (int i = 0; i < _writingSystemDefinitions.Count; i++)
 				{
-					canSave[i] = _writingSystemStore.CanSet(_writingSystemDefinitions[i]);
+					string id = _writingSystemStore.GetNewStoreIDWhenSet(_writingSystemDefinitions[i]);
+					if (idList.ContainsKey(id))
+					{
+						canSave[i] = false;
+						canSave[idList[id]] = false;
+					}
+					else
+					{
+						canSave[i] = true;
+						idList.Add(id, i);
+					}
 				}
 				return canSave;
 			}
@@ -167,7 +176,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return _writingSystemStore.CanSet(Current);
+				return Current == null ? false : WritingSystemListCanSave[CurrentIndex];
 			}
 		}
 
@@ -184,7 +193,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentLanguageName
 		{
-			get { return Current.LanguageName; }
+			get { return Current.LanguageName ?? string.Empty; }
 			set
 			{
 				if (Current.LanguageName != value)
@@ -197,7 +206,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentAbbreviation
 		{
-			get { return Current.Abbreviation; }
+			get { return Current.Abbreviation ?? string.Empty; }
 			set
 			{
 				if (Current.Abbreviation != value)
@@ -223,7 +232,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentDefaultFontName
 		{
-			get { return Current.DefaultFontName; }
+			get { return Current.DefaultFontName ?? string.Empty; }
 			set
 			{
 				if (Current.DefaultFontName != value)
@@ -234,14 +243,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		public float CurrentDefaultFontSize
+		{
+			get { return Current.DefaultFontSize; }
+			set
+			{
+				if (Current.DefaultFontSize != value)
+				{
+					Current.DefaultFontSize = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
 		public string CurrentDisplayLabel
 		{
-			get { return Current.DisplayLabel; }
+			get { return Current.DisplayLabel ?? string.Empty; }
 		}
 
 		public string CurrentISO
 		{
-			get { return Current.ISO; }
+			get { return Current.ISO ?? string.Empty; }
 			set
 			{
 				if (Current.ISO != value)
@@ -254,9 +276,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentKeyboard
 		{
-			get { return Current.Keyboard; }
+			get { return string.IsNullOrEmpty(Current.Keyboard) ? "(default)" : Current.Keyboard; }
 			set
 			{
+				if (value == "(default)")
+				{
+					value = string.Empty;
+				}
 				if (Current.Keyboard != value)
 				{
 					Current.Keyboard = value;
@@ -267,7 +293,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentNativeName
 		{
-			get { return Current.NativeName; }
+			get { return Current.NativeName ?? string.Empty; }
 			set
 			{
 				if (Current.NativeName != value)
@@ -280,7 +306,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRegion
 		{
-			get { return Current.Region; }
+			get { return Current.Region ?? string.Empty; }
 			set
 			{
 				if (Current.Region != value)
@@ -293,7 +319,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRFC4646
 		{
-			get { return Current.RFC4646; }
+			get { return Current.RFC4646 ?? string.Empty; }
 		}
 
 		public bool CurrentRightToLeftScript
@@ -311,7 +337,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentScript
 		{
-			get { return Current.Script; }
+			get { return Current.Script ?? string.Empty; }
 			set
 			{
 				if (Current.Script != value)
@@ -324,7 +350,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVariant
 		{
-			get { return Current.Variant; }
+			get { return Current.Variant ?? string.Empty; }
 			set
 			{
 				if (Current.Variant != value)
@@ -337,12 +363,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVerboseDescription
 		{
-			get { return Current.VerboseDescription; }
+			get { return Current.VerboseDescription ?? string.Empty; }
 		}
 
 		public string CurrentVersionDescription
 		{
-			get { return Current.VersionDescription; }
+			get { return Current.VersionDescription ?? string.Empty; }
 			set
 			{
 				if (Current.VersionDescription != value)
@@ -355,7 +381,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVersionNumber
 		{
-			get { return Current.VersionNumber; }
+			get { return Current.VersionNumber ?? string.Empty; }
 			set
 			{
 				if (Current.VersionNumber != value)
@@ -480,29 +506,43 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void Save()
 		{
+			SetAllPossibleAndRemoveOthers();
 			_writingSystemStore.Save();
 		}
 
-		private void SetCurrentAndOthersIfPossible()
+		private void SetAllPossibleAndRemoveOthers()
 		{
-			bool[] canSaveBefore = WritingSystemListCanSave;
-			if (CanSaveCurrent)
+			// Remove everything from the store, then set everything that we can
+			// The reason to do this is to solve problems with cycles that could prevent saving.
+			// Example:
+			// ws1 has ID "a" and ws2 has ID "b"
+			// Set ws1 to ID "b" and ws2 to ID "a"
+			// The store will not allow you to set either of these because of the conflict
+			// but if we remove them first and then set them, it will work.
+			foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
 			{
-				_writingSystemStore.Set(Current);
-			}
-			bool done = false;
-			while (!done)
-			{
-				done = true;
-				for (int i = 0; i < _writingSystemDefinitions.Count; i++)
+				if (!string.IsNullOrEmpty(ws.StoreID))
 				{
-					if (!canSaveBefore[i] && _writingSystemStore.CanSet(_writingSystemDefinitions[i]))
-					{
-						_writingSystemStore.Set(_writingSystemDefinitions[i]);
-						canSaveBefore[i] = true;
-						done = false;
-					}
+					_writingSystemStore.Remove(ws.StoreID);
+					ws.StoreID = string.Empty;
 				}
+			}
+			foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
+			{
+				if (_writingSystemStore.CanSet(ws))
+				{
+					_writingSystemStore.Set(ws);
+				}
+			}
+		}
+
+		public void ActivateCurrentKeyboard()
+		{
+			if (Current == null)
+				return;
+			if (!string.IsNullOrEmpty(Current.Keyboard))
+			{
+				KeyboardController.ActivateKeyboard(Current.Keyboard);
 			}
 		}
 	}

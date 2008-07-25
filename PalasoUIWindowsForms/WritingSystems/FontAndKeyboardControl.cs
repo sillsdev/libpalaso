@@ -103,12 +103,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void OnLoad(object sender, EventArgs e)
 		{
 			_keyboardCombo.Items.Clear();
+			_fontFamilyCombo.Items.Clear();
+			if (_model == null)
+			{
+				UpdateDisplay();
+				return;
+			}
 			foreach (string s in _model.KeyboardNames)
 			{
 				_keyboardCombo.Items.Add(s);
 			}
 
-			_fontFamilyCombo.Items.Clear();
 			foreach (FontFamily family in _model.FontFamilies)
 			{
 				_fontFamilyCombo.Items.Add(family.Name);

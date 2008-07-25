@@ -8,21 +8,22 @@ using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public partial class WSPropertiesDialog : UserControl
+	public partial class WSPropertiesTabControl : UserControl
 	{
 		private SetupPM _model;
 
-		public WSPropertiesDialog()
+		public WSPropertiesTabControl()
 		{
 			InitializeComponent();
+			_aboutControl.TextChanged += delegate { _aboutPage.Text = _aboutControl.Text; };
 		}
 
 		public void BindToModel(SetupPM model)
 		{
 			_model = model;
-			_buttonBar.BindToModel(_model);
-			_picker.BindToModel(_model);
-			_propertiesTabControl.BindToModel(_model);
+			_aboutControl.BindToModel(_model);
+			_fontControl.BindToModel(_model);
+			_keyboardControl.BindToModel(_model);
 		}
 	}
 }

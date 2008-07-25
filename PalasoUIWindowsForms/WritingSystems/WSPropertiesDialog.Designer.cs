@@ -29,19 +29,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void InitializeComponent()
 		{
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this._buttonBar = new Palaso.UI.WindowsForms.WritingSystems.WSAddDuplicateMoreButtonBar();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this._picker = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingListView();
-			this._tabControl = new System.Windows.Forms.TabControl();
-			this.tabPage1 = new System.Windows.Forms.TabPage();
-			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this._buttonBar = new Palaso.UI.WindowsForms.WritingSystems.WSAddDuplicateMoreButtonBar();
+			this._propertiesTabControl = new Palaso.UI.WindowsForms.WritingSystems.WSPropertiesTabControl();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
-			this._tabControl.SuspendLayout();
 			this.SuspendLayout();
 			//
 			// splitContainer1
@@ -64,15 +61,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer1.SplitterDistance = 422;
 			this.splitContainer1.TabIndex = 2;
 			//
-			// _buttonBar
-			//
-			this._buttonBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this._buttonBar.Location = new System.Drawing.Point(0, 4);
-			this._buttonBar.Name = "_buttonBar";
-			this._buttonBar.Size = new System.Drawing.Size(841, 31);
-			this._buttonBar.TabIndex = 0;
-			//
 			// splitContainer2
 			//
 			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -85,7 +73,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// splitContainer2.Panel2
 			//
-			this.splitContainer2.Panel2.Controls.Add(this._tabControl);
+			this.splitContainer2.Panel2.Controls.Add(this._propertiesTabControl);
 			this.splitContainer2.Size = new System.Drawing.Size(841, 422);
 			this.splitContainer2.SplitterDistance = 243;
 			this.splitContainer2.SplitterWidth = 10;
@@ -100,36 +88,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._picker.Size = new System.Drawing.Size(243, 422);
 			this._picker.TabIndex = 0;
 			//
-			// _tabControl
+			// _buttonBar
 			//
-			this._tabControl.Controls.Add(this.tabPage1);
-			this._tabControl.Controls.Add(this.tabPage2);
-			this._tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._tabControl.Location = new System.Drawing.Point(0, 0);
-			this._tabControl.Name = "_tabControl";
-			this._tabControl.SelectedIndex = 0;
-			this._tabControl.Size = new System.Drawing.Size(588, 422);
-			this._tabControl.TabIndex = 0;
+			this._buttonBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._buttonBar.Location = new System.Drawing.Point(0, 4);
+			this._buttonBar.Name = "_buttonBar";
+			this._buttonBar.Size = new System.Drawing.Size(841, 31);
+			this._buttonBar.TabIndex = 0;
 			//
-			// tabPage1
+			// _propertiesTabControl
 			//
-			this.tabPage1.Location = new System.Drawing.Point(4, 22);
-			this.tabPage1.Name = "tabPage1";
-			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(580, 396);
-			this.tabPage1.TabIndex = 0;
-			this.tabPage1.Text = "tabPage1";
-			this.tabPage1.UseVisualStyleBackColor = true;
-			//
-			// tabPage2
-			//
-			this.tabPage2.Location = new System.Drawing.Point(4, 22);
-			this.tabPage2.Name = "tabPage2";
-			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage2.Size = new System.Drawing.Size(192, 74);
-			this.tabPage2.TabIndex = 1;
-			this.tabPage2.Text = "tabPage2";
-			this.tabPage2.UseVisualStyleBackColor = true;
+			this._propertiesTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._propertiesTabControl.Location = new System.Drawing.Point(0, 0);
+			this._propertiesTabControl.Name = "_propertiesTabControl";
+			this._propertiesTabControl.Size = new System.Drawing.Size(588, 422);
+			this._propertiesTabControl.TabIndex = 0;
 			//
 			// WSPropertiesDialog
 			//
@@ -144,7 +118,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			this.splitContainer2.ResumeLayout(false);
-			this._tabControl.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -155,9 +128,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private WSAddDuplicateMoreButtonBar _buttonBar;
 		private System.Windows.Forms.SplitContainer splitContainer2;
 		private WSPickerUsingListView _picker;
-		private System.Windows.Forms.TabControl _tabControl;
-		private System.Windows.Forms.TabPage tabPage1;
-		private System.Windows.Forms.TabPage tabPage2;
+		private WSPropertiesTabControl _propertiesTabControl;
 
 	}
 }

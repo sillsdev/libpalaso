@@ -24,6 +24,12 @@ namespace Palaso.WritingSystems
 		WritingSystemDefinition Get(string identifier);
 
 		/// <summary>
+		/// If the given writing system were passed to Set, this function returns the
+		/// new StoreID that would be assigned.
+		/// </summary>
+		string GetNewStoreIDWhenSet(WritingSystemDefinition ws);
+
+		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
 		/// </summary>
 		bool Exists(string identifier);

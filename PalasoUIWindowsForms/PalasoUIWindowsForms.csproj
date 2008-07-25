@@ -164,6 +164,18 @@
 	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.Designer.cs">
 	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\WSFontControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSFontControl.Designer.cs">
+	  <DependentUpon>WSFontControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSKeyboardControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSKeyboardControl.Designer.cs">
+	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\WSListControl-old.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -193,6 +205,12 @@
 	</Compile>
 	<Compile Include="WritingSystems\WSPropertiesDialog.Designer.cs">
 	  <DependentUpon>WSPropertiesDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSPropertiesTabControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSPropertiesTabControl.Designer.cs">
+	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
 	</Compile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +263,14 @@
 	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSFontControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSFontControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSKeyboardControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSListControl-old.resx">
 	  <DependentUpon>WSListControl-old.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -264,6 +290,10 @@
 	<EmbeddedResource Include="WritingSystems\WSPropertiesDialog.resx">
 	  <DependentUpon>WSPropertiesDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSPropertiesTabControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

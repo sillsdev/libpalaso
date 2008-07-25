@@ -296,5 +296,56 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_model.DeleteCurrent();
 		}
+
+		[Test]
+		public void EditCurrentSelection_UpdatesCanSaveForCurrent()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.AddNew();
+			Assert.IsTrue(_model.CanSaveCurrent);
+			_model.CurrentISO = "ws1";
+			Assert.IsFalse(_model.CanSaveCurrent);
+		}
+
+		[Test]
+		public void EditCurrentSelection_UpdatesCanSaveForAll()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "a";
+			_model.AddNew();
+			_model.CurrentISO = "b";
+			_model.AddNew();
+			_model.CurrentISO = "b";
+			_model.CurrentIndex = 1;
+			_model.CurrentISO = "a";
+			_model.CurrentIndex = 0;
+			bool[] canSave = _model.WritingSystemListCanSave;
+			Assert.IsFalse(canSave[0]);
+			Assert.IsFalse(canSave[1]);
+			Assert.IsTrue(canSave[2]);
+			_model.CurrentISO = "c";
+			canSave = _model.WritingSystemListCanSave;
+			Assert.IsTrue(canSave[0]);
+			Assert.IsTrue(canSave[1]);
+			Assert.IsTrue(canSave[2]);
+		}
+
+		[Test]
+		public void EditCurrentSelection_UpdatesCanSaveAndFixesCycle()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "a";
+			_model.AddNew();
+			_model.CurrentISO = "b";
+			_model.CurrentIndex = 0;
+			_model.CurrentISO = "b";
+			Assert.IsFalse(_model.CanSaveCurrent);
+			_model.CurrentIndex = 1;
+			_model.CurrentISO = "a";
+			bool[] canSave = _model.WritingSystemListCanSave;
+			Assert.IsTrue(canSave[0]);
+			Assert.IsTrue(canSave[1]);
+		}
 	}
 }

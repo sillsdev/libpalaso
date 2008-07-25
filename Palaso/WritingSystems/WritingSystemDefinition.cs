@@ -19,6 +19,7 @@ namespace Palaso.WritingSystems
 		private DateTime _dateModified;
 
 		private string _defaultFontName;
+		private float _defaultFontSize;
 		private string _keyboard;
 
 		private bool _modified;
@@ -474,6 +475,22 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public float DefaultFontSize
+		{
+			get
+			{
+				return _defaultFontSize;
+			}
+			set
+			{
+				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
+				{
+					throw new ArgumentOutOfRangeException();
+				}
+				_defaultFontSize = value;
+			}
+		}
+
 		public string Keyboard
 		{
 			get
@@ -579,6 +596,7 @@ namespace Palaso.WritingSystems
 			WritingSystemDefinition ws =
 				new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
 			ws._defaultFontName = _defaultFontName;
+			ws._defaultFontSize = _defaultFontSize;
 			ws._keyboard = _keyboard;
 			ws._versionNumber = _versionNumber;
 			ws._versionDescription = _versionDescription;
