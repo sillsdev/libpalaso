@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
+using System.Reflection;
 using System.Text;
 
 using System.Windows.Forms;
@@ -31,7 +33,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		#region Properties
-		public IEnumerable<String> KeyboardNames
+		public static IEnumerable<String> KeyboardNames
 		{
 			get
 			{
@@ -55,7 +57,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public IEnumerable<FontFamily> FontFamilies
+		public static IEnumerable<FontFamily> FontFamilies
 		{
 			get
 			{
@@ -177,6 +179,58 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get
 			{
 				return Current == null ? false : WritingSystemListCanSave[CurrentIndex];
+			}
+		}
+
+		/// <summary>
+		/// Returns a list of possible sort options as (option, description) pairs
+		/// </summary>
+		public static IEnumerable<KeyValuePair<string, string>> SortUsingOptions
+		{
+			get
+			{
+				foreach (Enum customSortRulesType in Enum.GetValues(typeof(WritingSystemDefinition.SortRulesType)))
+				{
+					FieldInfo fi =
+							customSortRulesType.GetType().GetField(customSortRulesType.ToString());
+
+					DescriptionAttribute[] descriptions =
+						(DescriptionAttribute[])
+						fi.GetCustomAttributes(typeof (DescriptionAttribute), false);
+					string description;
+					if (descriptions.Length == 0)
+					{
+						description = customSortRulesType.ToString();
+					}
+					else
+					{
+						description = descriptions[0].Description;
+					}
+					yield return new KeyValuePair<string, string>(customSortRulesType.ToString(), description);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a list of (value, description) pairs for language options for sorting
+		/// </summary>
+		public IEnumerable<KeyValuePair<string, string>> SortLanguageOptions
+		{
+			get
+			{
+				foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
+				{
+					if (string.IsNullOrEmpty(ws.RFC4646))
+					{
+						continue;
+					}
+					yield return new KeyValuePair<string, string>(ws.RFC4646, ws.DisplayLabel);
+				}
+				yield return new KeyValuePair<string, string>(null, "-----");
+				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures))
+				{
+					yield return new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
+				}
 			}
 		}
 
@@ -387,6 +441,58 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (Current.VersionNumber != value)
 				{
 					Current.VersionNumber = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public string CurrentSpellCheckingId
+		{
+			get { return Current.SpellCheckingId ?? string.Empty; }
+			set
+			{
+				if (Current.SpellCheckingId != value)
+				{
+					Current.SpellCheckingId = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public string CurrentAutoReplaceRules
+		{
+			get { return Current.AutoReplaceRules ?? string.Empty; }
+			set
+			{
+				if (Current.AutoReplaceRules != value)
+				{
+					Current.AutoReplaceRules = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public string CurrentSortUsing
+		{
+			get { return Current.SortUsing ?? string.Empty; }
+			set
+			{
+				if (Current.SortUsing != value)
+				{
+					Current.SortUsing = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public string CurrentSortRules
+		{
+			get { return Current.SortRules ?? string.Empty; }
+			set
+			{
+				if (Current.SortRules != value)
+				{
+					Current.SortRules = value;
 					OnCurrentItemUpdated();
 				}
 			}

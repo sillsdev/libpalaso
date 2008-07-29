@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using Palaso.WritingSystems;
 
@@ -140,6 +141,95 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "blah", "", "", "", "", false);
 			Assert.IsNull(ws.CurrentScriptOption);
+		}
+
+		[Test]
+		public void ModifyingDefinitionSetsModifiedFlag()
+		{
+			// Put any properties to ignore in this string surrounded by "|"
+			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|";
+			// special test values to use for properties that are particular
+			Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
+			Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
+			firstValueSpecial.Add("SortUsing", "CustomSimple");
+			secondValueSpecial.Add("SortUsing", "CustomICU");
+			// test values to use based on type
+			Dictionary<Type, object> firstValueToSet = new Dictionary<Type, object>();
+			Dictionary<Type, object> secondValueToSet = new Dictionary<Type, object>();
+			firstValueToSet.Add(typeof (float), 2.18281828459045f);
+			secondValueToSet.Add(typeof (float), 3.141592653589f);
+			firstValueToSet.Add(typeof (bool), true);
+			secondValueToSet.Add(typeof (bool), false);
+			firstValueToSet.Add(typeof (string), "X");
+			secondValueToSet.Add(typeof (string), "Y");
+			firstValueToSet.Add(typeof (DateTime), new DateTime(2007, 12, 31));
+			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
+			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+			{
+				// skip read-only or ones in the ignore list
+				if (!propertyInfo.CanWrite || ignoreProperties.Contains("|" + propertyInfo.Name + "|"))
+				{
+					continue;
+				}
+				WritingSystemDefinition ws = new WritingSystemDefinition();
+				ws.Modified = false;
+				// We need to ensure that all values we are setting are actually different than the current values.
+				// This could be accomplished by comparing with the current value or by setting twice with different values.
+				// We use the setting twice method so we don't require a getter on the property.
+				try
+				{
+					if (firstValueSpecial.ContainsKey(propertyInfo.Name) && secondValueSpecial.ContainsKey(propertyInfo.Name))
+					{
+						propertyInfo.SetValue(ws, firstValueSpecial[propertyInfo.Name], null);
+						propertyInfo.SetValue(ws, secondValueSpecial[propertyInfo.Name], null);
+					}
+					else if (firstValueToSet.ContainsKey(propertyInfo.PropertyType) && secondValueToSet.ContainsKey(propertyInfo.PropertyType))
+					{
+						propertyInfo.SetValue(ws, firstValueToSet[propertyInfo.PropertyType], null);
+						propertyInfo.SetValue(ws, secondValueToSet[propertyInfo.PropertyType], null);
+					}
+					else
+					{
+						Assert.Fail("Unhandled property type - please update the test to handle type {0}",
+									propertyInfo.PropertyType.Name);
+					}
+				}
+				catch
+				{
+					Assert.Fail("Error setting property WritingSystemDefinition.{0}", propertyInfo.Name);
+				}
+				Assert.IsTrue(ws.Modified, "Modifying WritingSystemDefinition.{0} did not change modified flag.", propertyInfo.Name);
+			}
+		}
+
+		[Test]
+		public void CloneCopiesAllNeededMembers()
+		{
+			// Put any fields to ignore in this string surrounded by "|"
+			const string ignoreFields = "|_modified|_markedForDeletion|_storeID|";
+			// values to use for testing different types
+			Dictionary<Type, object> valuesToSet = new Dictionary<Type, object>();
+			valuesToSet.Add(typeof (float), 3.14f);
+			valuesToSet.Add(typeof (bool), true);
+			valuesToSet.Add(typeof (string), "Foo");
+			valuesToSet.Add(typeof (DateTime), DateTime.Now);
+			foreach (FieldInfo fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			{
+				if (ignoreFields.Contains("|" + fieldInfo.Name + "|"))
+				{
+					continue;
+				}
+				WritingSystemDefinition ws = new WritingSystemDefinition();
+				if (valuesToSet.ContainsKey(fieldInfo.FieldType))
+				{
+					fieldInfo.SetValue(ws, valuesToSet[fieldInfo.FieldType]);
+				}
+				else
+				{
+					Assert.Fail("Unhandled field type - please update the test to handle type {0}", fieldInfo.FieldType.Name);
+				}
+				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(ws.Clone()), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldInfo.Name);
+			}
 		}
 	}
 }

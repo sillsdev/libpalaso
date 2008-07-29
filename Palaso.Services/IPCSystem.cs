@@ -42,6 +42,11 @@ namespace Palaso.Services
 			return port;
 		}
 
+		// We're using our own hash function instead of the builtin String.GetHashCode for a good reason.
+		// GetHashCode is not guaranteed to keep the same implementation between framework versions, so
+		// .Net 1.1, .Net 2.0, .Net whatever version, and all different versions of Mono could return
+		// different hash values, which may foul up two peers trying to find each other if they were on
+		// different framework versions.
 		private static byte GetStringHash(string str)
 		{
 			int hash = 5381;

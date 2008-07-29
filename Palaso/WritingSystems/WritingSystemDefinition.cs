@@ -1,11 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace Palaso.WritingSystems
 {
 	public class WritingSystemDefinition
 	{
+		public enum SortRulesType
+		{
+			/// <summary>
+			/// Custom Simple (Shoebox/Toolbox) style rules
+			/// </summary>
+			[Description("Custom Simple (Shoebox style) rules")]
+			CustomSimple,
+			/// <summary>
+			/// Custom ICU rules
+			/// </summary>
+			[Description("Custom ICU rules")]
+			CustomICU,
+			/// <summary>
+			/// Use the sort rules from another language
+			/// </summary>
+			[Description("Same as another language")]
+			OtherLanguage
+		}
+
 		private string _iso;
 		private string _region;
 		private string _variant;
@@ -22,7 +42,16 @@ namespace Palaso.WritingSystems
 		private float _defaultFontSize;
 		private string _keyboard;
 
+		private string _sortUsing;
+		private string _sortRules;
+		private string _spellCheckingId;
+
+		private string _autoReplaceRules;
+
 		private bool _modified;
+		private bool _markedForDeletion;
+		private string _nativeName;
+		private bool _rightToLeftScript;
 
 		/// <summary>
 		/// Other classes that persist this need to know when our id changed, so the can
@@ -38,10 +67,6 @@ namespace Palaso.WritingSystems
 		/// singleton
 		/// </summary>
 		private static List<LanguageCode> _languageCodes;
-
-		private bool _markedForDeletion;
-		private string _nativeName;
-		private bool _rightToLeftScript;
 
 
 		public WritingSystemDefinition()
@@ -196,13 +221,13 @@ namespace Palaso.WritingSystems
 		public string VersionNumber
 		{
 			get { return _versionNumber; }
-			set { _versionNumber = value; }
+			set { UpdateString(ref _versionNumber, value); }
 		}
 
 		public string VersionDescription
 		{
 			get { return _versionDescription; }
-			set { _versionDescription = value; }
+			set { UpdateString(ref _versionDescription, value); }
 		}
 
 		public DateTime DateModified
@@ -483,11 +508,16 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				if (value == _defaultFontSize)
+				{
+					return;
+				}
 				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
 				{
 					throw new ArgumentOutOfRangeException();
 				}
 				_defaultFontSize = value;
+				Modified = true;
 			}
 		}
 
@@ -591,6 +621,44 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public string SortUsing
+		{
+			get { return _sortUsing ?? string.Empty; }
+			set
+			{
+				if (!Enum.IsDefined(typeof (SortRulesType), value))
+				{
+					throw new ArgumentException("Invalid SortUsing option");
+				}
+				UpdateString(ref _sortUsing, value);
+			}
+		}
+
+		public string SortRules
+		{
+			get { return _sortRules ?? string.Empty; }
+			set { UpdateString(ref _sortRules, value); }
+		}
+
+		public string SpellCheckingId
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_spellCheckingId))
+				{
+					return _iso;
+				}
+				return _spellCheckingId;
+			}
+			set { UpdateString(ref _spellCheckingId, value); }
+		}
+
+		public string AutoReplaceRules
+		{
+			get { return _autoReplaceRules ?? string.Empty; }
+			set { UpdateString(ref _autoReplaceRules, value); }
+		}
+
 		public WritingSystemDefinition Clone()
 		{
 			WritingSystemDefinition ws =
@@ -601,6 +669,11 @@ namespace Palaso.WritingSystems
 			ws._versionNumber = _versionNumber;
 			ws._versionDescription = _versionDescription;
 			ws._nativeName = _nativeName;
+			ws._sortUsing = _sortUsing;
+			ws._sortRules = _sortRules;
+			ws._spellCheckingId = _spellCheckingId;
+			ws._autoReplaceRules = _autoReplaceRules;
+			ws._dateModified = _dateModified;
 			return ws;
 		}
 	}
