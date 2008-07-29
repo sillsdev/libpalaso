@@ -109,12 +109,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				UpdateDisplay();
 				return;
 			}
-			foreach (string s in _model.KeyboardNames)
+			foreach (string s in SetupPM.KeyboardNames)
 			{
 				_keyboardCombo.Items.Add(s);
 			}
 
-			foreach (FontFamily family in _model.FontFamilies)
+			foreach (FontFamily family in SetupPM.FontFamilies)
 			{
 				_fontFamilyCombo.Items.Add(family.Name);
 			}

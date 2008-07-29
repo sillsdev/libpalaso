@@ -36,7 +36,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void KeyboardNames_HasAtLeastOneKeyboard()
 		{
-			IEnumerable<string> keyboard = _model.KeyboardNames;
+			IEnumerable<string> keyboard = SetupPM.KeyboardNames;
 			IEnumerator<string> it = keyboard.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current keyboard {0}", it.Current));
@@ -47,7 +47,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void FontFamilies_HasAtLeastOneFont()
 		{
-			IEnumerable<FontFamily> font = _model.FontFamilies;
+			IEnumerable<FontFamily> font = SetupPM.FontFamilies;
 			IEnumerator<FontFamily> it = font.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current font {0}", it.Current.Name));
@@ -346,6 +346,63 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			bool[] canSave = _model.WritingSystemListCanSave;
 			Assert.IsTrue(canSave[0]);
 			Assert.IsTrue(canSave[1]);
+		}
+
+		[Test]
+		public void SortUsingOptions_ReturnsAtLeastOne()
+		{
+			Assert.IsTrue(SetupPM.SortUsingOptions.GetEnumerator().MoveNext());
+		}
+
+		[Test]
+		public void SortLanguageOptions_ReturnsAtLeastOne()
+		{
+			Assert.IsTrue(_model.SortLanguageOptions.GetEnumerator().MoveNext());
+		}
+
+		[Test]
+		public void SortLanuageOptions_DoesNotIncludeCurrnt()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "TestLanguage";
+			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
+			{
+				Assert.AreNotEqual(_model.CurrentRFC4646, languageOption.Key);
+			}
+		}
+
+		[Test]
+		public void SortLanuageOptions_DoesIncludeOtherWritingSystems()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "TestLanguage1";
+			string key = _model.CurrentRFC4646;
+			_model.AddNew();
+			_model.CurrentISO = "TestLanguage2";
+			bool found = false;
+			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
+			{
+				found |= key == languageOption.Key;
+			}
+			Assert.IsTrue(found);
+		}
+
+		[Test]
+		public void SortLanuageOptions_DoesNotIncludeOtherWritingSystemsThatMakeACycle()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "TestLanguage1";
+			string key = _model.CurrentRFC4646;
+			_model.AddNew();
+			_model.CurrentISO = "TestLanguage2";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage.ToString();
+			_model.CurrentSortRules = key;
+			key = _model.CurrentRFC4646;
+			_model.CurrentIndex = 0;
+			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
+			{
+				Assert.AreNotEqual(key, languageOption.Key);
+			}
 		}
 	}
 }

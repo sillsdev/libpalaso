@@ -44,7 +44,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			Rectangle originalBounds = _keyboardComboBox.Bounds;
 			_keyboardComboBox.Items.Clear();
-			foreach (string keyboardName in _model.KeyboardNames)
+			foreach (string keyboardName in SetupPM.KeyboardNames)
 			{
 				_keyboardComboBox.Items.Add(keyboardName);
 			}

@@ -218,18 +218,51 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
+				// create a list of languages we have to disallow to prevent a cycle
+				// in the sort options
+				List<string> prohibitedList = new List<string>();
+				if (Current != null && !string.IsNullOrEmpty(Current.RFC4646))
+				{
+					// don't allow the current language to be picked
+					prohibitedList.Add(Current.RFC4646);
+				}
+				for (int i = 0; i < _writingSystemDefinitions.Count; i++)
+				{
+					WritingSystemDefinition ws = _writingSystemDefinitions[i];
+					// don't allow if it references another language on our prohibited list and this one
+					// isn't already on the prohibited list
+					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage.ToString()
+						&& !string.IsNullOrEmpty(ws.RFC4646) && prohibitedList.Contains(ws.SortRules)
+						&& !prohibitedList.Contains(ws.RFC4646))
+					{
+						prohibitedList.Add(ws.RFC4646);
+						// Restart the scan through all the writing systems every time we add a prohibited one.
+						// This ensuers that we catch all possible cycles.
+						i = -1;
+					}
+				}
+				bool returnedOne = false;
+				// add languages from other writing system definitions to the top of the list
+				// but don't include empty definitions or ones that would cause a cycle
 				foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
 				{
-					if (string.IsNullOrEmpty(ws.RFC4646))
+					if (string.IsNullOrEmpty(ws.RFC4646) || prohibitedList.Contains(ws.RFC4646))
 					{
 						continue;
 					}
+					returnedOne = true;
 					yield return new KeyValuePair<string, string>(ws.RFC4646, ws.DisplayLabel);
 				}
-				yield return new KeyValuePair<string, string>(null, "-----");
+				if (returnedOne)
+				{
+					// include separator only if we've included our own languages at the top of the list
+					yield return new KeyValuePair<string, string>(string.Empty, "-----");
+				}
+				// populate the rest of the list with all languages from the OS
 				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures))
 				{
-					yield return new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
+					yield return
+						new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
 				}
 			}
 		}

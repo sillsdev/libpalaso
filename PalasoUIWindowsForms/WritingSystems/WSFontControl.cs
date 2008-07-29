@@ -90,7 +90,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			foreach (FontFamily fontFamily in _model.FontFamilies)
+			foreach (FontFamily fontFamily in SetupPM.FontFamilies)
 			{
 				if (!fontFamily.IsStyleAvailable(FontStyle.Regular))
 				{
