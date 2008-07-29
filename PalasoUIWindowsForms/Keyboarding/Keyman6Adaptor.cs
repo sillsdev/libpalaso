@@ -82,9 +82,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				InnerKeyman6Wrapper.Deactivate();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating keyman 6.");
+				string error = string.Format("There was a problem deactivating keyman 6.\r\n{0}", e);
+				Palaso.Reporting.NonFatalErrorDialog.Show(error);
 			}
 		}
 
