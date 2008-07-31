@@ -164,6 +164,12 @@
 	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.Designer.cs">
 	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\WSAutoReplaceControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSAutoReplaceControl.Designer.cs">
+	  <DependentUpon>WSAutoReplaceControl.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\WSFontControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -211,6 +217,18 @@
 	</Compile>
 	<Compile Include="WritingSystems\WSPropertiesTabControl.Designer.cs">
 	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSSortControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSSortControl.Designer.cs">
+	  <DependentUpon>WSSortControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSSpellingControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
+	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
   </ItemGroup>
   <ItemGroup>
@@ -263,6 +281,10 @@
 	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSAutoReplaceControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSAutoReplaceControl.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSFontControl.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>WSFontControl.cs</DependentUpon>
@@ -294,6 +316,14 @@
 	<EmbeddedResource Include="WritingSystems\WSPropertiesTabControl.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSSortControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSSortControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSSpellingControl.resx">
+	  <SubType>Designer</SubType>
+	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

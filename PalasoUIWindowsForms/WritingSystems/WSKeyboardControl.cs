@@ -31,9 +31,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
 			}
 			_model = model;
-			_model.SelectionChanged += ModelSelectionChanged;
-			_model.CurrentItemUpdated += ModelCurrentItemUpdated;
-			PopulateKeyboardList();
+			Enabled = false;
+			if (_model != null)
+			{
+				_model.SelectionChanged += ModelSelectionChanged;
+				_model.CurrentItemUpdated += ModelCurrentItemUpdated;
+				PopulateKeyboardList();
+				UpdateFromModel();
+			}
 		}
 
 		private void PopulateKeyboardList()
@@ -65,12 +70,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (!_model.HasCurrentSelection)
 			{
-				_keyboardComboBox.Enabled = false;
-				_testArea.Enabled = false;
+				Enabled = false;
 				return;
 			}
-			_keyboardComboBox.Enabled = true;
-			_testArea.Enabled = true;
+			Enabled = true;
 			if (_model.CurrentKeyboard != _keyboardComboBox.Text)
 			{
 				_keyboardComboBox.Text = _model.CurrentKeyboard;
@@ -96,6 +99,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _keyboardComboBox_TextChanged(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			if (_model.CurrentKeyboard != _keyboardComboBox.Text)
 			{
 				_model.CurrentKeyboard = _keyboardComboBox.Text;
@@ -104,12 +111,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _testArea_Enter(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
 			_model.ActivateCurrentKeyboard();
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
 		}
 	}

@@ -51,16 +51,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (!_model.HasCurrentSelection)
 			{
-				_fontComboBox.Enabled = false;
-				_fontSizeComboBox.Enabled = false;
-				_rightToLeftCheckBox.Enabled = false;
-				_testArea.Enabled = false;
+				Enabled = false;
 				return;
 			}
-			_fontComboBox.Enabled = true;
-			_fontSizeComboBox.Enabled = true;
-			_rightToLeftCheckBox.Enabled = true;
-			_testArea.Enabled = true;
+			Enabled = true;
 			float currentSize;
 			if (!float.TryParse(_fontSizeComboBox.Text, out currentSize))
 			{
@@ -128,6 +122,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void FontComboBox_TextChanged(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			if (_model.HasCurrentSelection && _model.CurrentDefaultFontName != _fontComboBox.Text)
 			{
 				_model.CurrentDefaultFontName = _fontComboBox.Text;
@@ -137,6 +135,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void FontSizeComboBox_TextChanged(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			float newSize;
 			if (!float.TryParse(_fontSizeComboBox.Text, out newSize))
 			{
@@ -151,17 +153,29 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _testArea_Enter(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
 			_model.ActivateCurrentKeyboard();
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
 		}
 
 		private void RightToLeftCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
+			if (_model == null)
+			{
+				return;
+			}
 			if (_model.HasCurrentSelection && _model.CurrentRightToLeftScript != _rightToLeftCheckBox.Checked)
 			{
 				_model.CurrentRightToLeftScript = _rightToLeftCheckBox.Checked;
