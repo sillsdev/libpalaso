@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
@@ -243,6 +245,7 @@ namespace Palaso.WritingSystems
 
 		private class ICURulesParser
 		{
+			private XmlDocument _dom;
 			private Rule _primaryDifference;
 			private Rule _secondaryDifference;
 			private Rule _tertiaryDifference;
@@ -251,38 +254,90 @@ namespace Palaso.WritingSystems
 			private Rule _oneRule;
 			private Rule _icuRules;
 
-			public ICURulesParser() : this(false) {}
+			public ICURulesParser(XmlDocument dom) : this(dom, false) {}
 
-			public ICURulesParser(bool useDebugger)
+			public ICURulesParser(XmlDocument dom, bool useDebugger)
 			{
+				_dom = dom;
+
+				// someWhiteSpace ::= WS+
+				// optionalWhiteSpace ::= WS*
 				Parser someWhiteSpace = Ops.OneOrMore(Prims.WhiteSpace);
 				Parser optionalWhiteSpace = Ops.ZeroOrMore(Prims.WhiteSpace);
+
+				// Valid escaping formats (from ICU source code u_unescape):
+				// \uhhhh - exactly 4 hex digits to specify character
+				// \Uhhhhhhhh - exactly 8 hex digits to specify character
+				// \xhh - 1 or 2 hex digits to specify character
+				// \x{hhhhhhhh} - 1 to 8 hex digits to specify character
+				// \ooo - 1 to 3 octal digits to specify character
+				// \cX - masked control character - take value of X and bitwise AND with 0x1F
+				// \a - U+0007
+				// \b - U+0008
+				// \t - U+0009
+				// \n - U+000A
+				// \v - U+000B
+				// \f - U+000C
+				// \r - U+000D
+				// Any other character following '\' means that literal character (e.g. '\<' ::= '<', '\\' ::= '\')
 				Parser octalDigit = Prims.Range('0', '7');
+				Parser hexDigitExpect = Ops.Expect("icu0001", "Invalid hexadecimal character in escape sequence.", Prims.HexDigit);
+				Parser hex4Group = Ops.Sequence(hexDigitExpect, hexDigitExpect, hexDigitExpect, hexDigitExpect);
 				Parser singleCharacterEscape = Ops.Sequence(Prims.AnyChar - Ops.Choice('u', 'U', 'x', octalDigit, 'c'));
-				Parser hex4Group = Ops.Sequence(Prims.HexDigit, Prims.HexDigit, Prims.HexDigit, Prims.HexDigit);
 				Parser hex4Escape = Ops.Sequence('u', hex4Group);
 				Parser hex8Escape = Ops.Sequence('U', hex4Group, hex4Group);
-				Parser hex2Escape = Ops.Sequence('x', Prims.HexDigit, !Prims.HexDigit);
-				Parser hexXEscape = Ops.Sequence('x', '{', Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit,
-														  !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, '}');
+				Parser hex2Escape = Ops.Sequence('x', hexDigitExpect, !Prims.HexDigit);
+				Parser hexXEscape = Ops.Sequence('x', '{', hexDigitExpect, !hexDigitExpect, !hexDigitExpect, !hexDigitExpect,
+														  !hexDigitExpect, !hexDigitExpect, !hexDigitExpect, !hexDigitExpect, '}');
 				Parser octalEscape = Ops.Sequence(octalDigit, !octalDigit, !octalDigit);
 				Parser controlEscape = Ops.Sequence('c', Prims.AnyChar);
-				Parser escapeSequence = Ops.Sequence('\\', singleCharacterEscape | hex4Escape | hex8Escape | hex2Escape |
-													 hexXEscape | octalEscape | controlEscape);
+				Parser escapeSequence = Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.",
+					singleCharacterEscape | hex4Escape | hex8Escape | hex2Escape | hexXEscape | octalEscape | controlEscape));
+
+				// singleQuoteLiteral ::= "''"
+				// quotedStringCharacter ::= AllChars - "'"
+				// quotedString ::= "'" (singleQuoteLiteral | quotedStringCharacter)+ "'"
 				Parser singleQuoteLiteral = Ops.Sequence('\'', '\'');
-				Parser quotedString = Ops.Sequence('\'', Ops.ZeroOrMore(singleQuoteLiteral | (Prims.AnyChar - '\'')), '\'');
+				Parser quotedStringCharacter = Prims.AnyChar - '\'';
+				Parser quotedString = Ops.Sequence('\'', Ops.OneOrMore(singleQuoteLiteral | quotedStringCharacter),
+					Ops.Expect("icu0003", "Quoted string without matching end-quote.", '\''));
+
+				// Any alphanumeric ASCII character and all characters above the ASCII range are valid data characters
+				// dataCharacter ::= [A-Za-z0-9] | [U+0080-U+1FFFFF]
 				Parser dataCharacter = Prims.LetterOrDigit | Prims.Range('\u0080', char.MaxValue);
-				Parser stringElement = escapeSequence | singleQuoteLiteral | quotedString | dataCharacter;
+				// dataString ::= (escapeSequence | singleQuoteLiteral | quotedString | dataCharacter)
+				//           (WS? (escapeSequence | singleQuoteLiteral | quotedString | dataCharacter))*
+				Parser dataString = Ops.List(escapeSequence | singleQuoteLiteral | quotedString | dataCharacter, optionalWhiteSpace);
+
+				// firstOrLast ::= 'first' | 'last'
+				// primarySecondaryTertiary ::= 'primary' | 'secondary' | 'tertiary'
+				// indirectOption ::= (primarySecondaryTertiary WS 'ignorable') | 'variable' | 'regular' | 'implicit' | 'trailing'
+				// indirectPosition ::= '[' firstOrLast WS indirectOption ']'
 				Parser firstOrLast = Ops.Choice("first", "last");
 				Parser primarySecondaryTertiary = Ops.Choice("primary", "secondary", "tertiary");
-				Parser indirectOptions = Ops.Choice(Ops.Sequence(primarySecondaryTertiary, someWhiteSpace, "ignorable"),
+				Parser indirectOption = Ops.Choice(Ops.Sequence(primarySecondaryTertiary, someWhiteSpace, "ignorable"),
 													"variable", "regular", "implicit", "trailing");
-				Parser indirectPosition = Ops.Sequence('[', firstOrLast, someWhiteSpace, indirectOptions, ']');
-				Parser dataString = Ops.List(stringElement, someWhiteSpace);
-				Parser expansion = Ops.Sequence(dataString, optionalWhiteSpace, '/', optionalWhiteSpace, dataString);
-				Parser prefix = Ops.Sequence(dataString, optionalWhiteSpace, '|', optionalWhiteSpace, dataString);
+				Parser indirectPosition = Ops.Sequence('[', Ops.Expect("icu0004", "Invalid indirect position specifier: unknown option",
+					Ops.Sequence(firstOrLast, someWhiteSpace, indirectOption)),
+					Ops.Expect("icu0005", "Indirect position specifier missing closing ']'", ']'));
+
+				// expansion ::= dataString WS? '/' WS? dataString
+				Parser expansion = Ops.Sequence(Ops.Expect("icu0006", "Invalid expansion: Data missing before '/'", dataString),
+					optionalWhiteSpace, '/', optionalWhiteSpace,
+					Ops.Expect("icu0007", "Invalid expansion: Data missing after '/'", dataString));
+
+				// prefix ::= dataString WS? '|' WS? dataString
+				Parser prefix = Ops.Sequence(Ops.Expect("icu0008", "Invalid prefix: Data missing before '|'", dataString),
+					optionalWhiteSpace, '|', optionalWhiteSpace,
+					Ops.Expect("icu0009", "Invalid prefix: Data missing after '|'", dataString));
+
+				// dataElement ::= indirectPosition | expansion | prefix | dataString
 				Parser dataElement = indirectPosition | expansion | prefix | dataString;
-				Parser beforeOption = Ops.Sequence("[before", someWhiteSpace, Prims.Range('1', '3'), ']');
+
+				// beforeOption ::= '[before' WS ('1' | '2' | '3') ']'
+				Parser beforeOption = Ops.Sequence("[before", someWhiteSpace,
+					Ops.Expect("icu0010", "Invalid 'before' specifier: Missing '1', '2', or '3'", Ops.Choice('1', '2', '3')),
+					Ops.Expect("icu0011", "Invalid 'before' specifier: Missing closing ']'", ']'));
 
 				_primaryDifference = new Rule("primaryDifference");
 				_secondaryDifference = new Rule("secondaryDifference");
@@ -292,14 +347,114 @@ namespace Palaso.WritingSystems
 				_oneRule = new Rule("oneRule");
 				_icuRules = new Rule("icuRules");
 
+				// primaryDifference ::= '<' WS? dataElement
 				_primaryDifference.Parser = Ops.Sequence('<', optionalWhiteSpace, dataElement);
+
+				// secondaryDifference ::= '<<' WS? dataElement
 				_secondaryDifference.Parser = Ops.Sequence("<<", optionalWhiteSpace, dataElement);
+
+				// tertiaryDifference ::= '<<<' WS? dataElement
 				_tertiaryDifference.Parser = Ops.Sequence("<<<", optionalWhiteSpace, dataElement);
+
+				// noDifference ::= '=' WS? dataElement
 				_noDifference.Parser = Ops.Sequence('=', optionalWhiteSpace, dataElement);
+
+				// reset ::= '&' WS? beforeOption? WS? dataElement
 				_reset.Parser = Ops.Sequence('&', optionalWhiteSpace, !beforeOption, optionalWhiteSpace, dataElement);
+
+				// oneRule ::= reset (WS? (primaryDifference | secondaryDifference | tertiaryDifference | noDifference))*
 				_oneRule.Parser = Ops.Sequence(_reset, Ops.ZeroOrMore(Ops.Sequence(optionalWhiteSpace,
 											   _primaryDifference | _secondaryDifference | _tertiaryDifference | _noDifference)));
-				_icuRules.Parser = Ops.Sequence(optionalWhiteSpace, Ops.ZeroOrMore(_oneRule), optionalWhiteSpace);
+
+				// icuRules ::= (oneRule | WS)* EOF
+				_icuRules.Parser = Ops.ZeroOrMore(_oneRule | optionalWhiteSpace);
+
+				singleCharacterEscape.Act += OnSingleCharacterEscape;
+				hex4Escape.Act += OnHexEscape;
+				hex8Escape.Act += OnHexEscape;
+				hex2Escape.Act += OnHexEscape;
+				hexXEscape.Act += OnHexEscape;
+				octalEscape.Act += OnOctalEscape;
+				controlEscape.Act += OnControlEscape;
+				singleQuoteLiteral.Act += OnSingleQuoteLiteral;
+				quotedStringCharacter.Act += OnDataCharacter;
+				dataCharacter.Act += OnDataCharacter;
+			}
+
+			private StringBuilder _currentDataElement;
+
+			private void OnSingleCharacterEscape(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length == 1);
+				Dictionary<char, char> substitutes = new Dictionary<char, char>(7);
+				substitutes['a'] = '\u0007';
+				substitutes['b'] = '\u0008';
+				substitutes['t'] = '\u0009';
+				substitutes['n'] = '\u000A';
+				substitutes['v'] = '\u000B';
+				substitutes['f'] = '\u000C';
+				substitutes['r'] = '\u000D';
+				char newChar = args.Value[0];
+				if (substitutes.ContainsKey(newChar))
+				{
+					newChar = substitutes[newChar];
+				}
+				_currentDataElement.Append(newChar);
+			}
+
+			private void OnHexEscape(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 11);
+				string hex = args.Value.Substring(1);
+				if (hex[0] == '{')
+				{
+					hex = hex.Substring(1, hex.Length - 2);
+				}
+				AddCharacterFromCode(Int32.Parse(hex, NumberStyles.AllowHexSpecifier));
+			}
+
+			private void OnOctalEscape(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 4);
+				// There is no octal number style, so we have to do it manually.
+				int code = 0;
+				for (int i=1; i < args.Value.Length; i++)
+				{
+					code = code * 8 + Int32.Parse(args.Value.Substring(i, 1));
+				}
+				AddCharacterFromCode(code);
+			}
+
+			private void OnControlEscape(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length == 2);
+				AddCharacterFromCode(args.Value[1] & 0x1F);
+			}
+
+			private void AddCharacterFromCode(int code)
+			{
+				try
+				{
+					_currentDataElement.Append(Char.ConvertFromUtf32(code));
+				}
+				catch (ArgumentOutOfRangeException e)
+				{
+					string message =
+						string.Format("Unable to parse ICU: Invalid character code (U+{0:X}) in escape sequence.", code);
+					throw new ApplicationException(message, e);
+				}
+			}
+
+			private void OnSingleQuoteLiteral(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value == "''");
+				_currentDataElement.Append('\'');
+			}
+
+			private void OnDataCharacter(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length == 1);
+				_currentDataElement.Append(args.Value);
 			}
 		}
 	}
