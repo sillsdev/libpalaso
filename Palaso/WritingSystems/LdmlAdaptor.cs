@@ -125,6 +125,7 @@ namespace Palaso.WritingSystems
 			XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/identity", "version", null, _nameSpaceManager);
 			XmlHelpers.AddOrUpdateAttribute(node, "number", ws.VersionNumber);
 			node.InnerText = ws.VersionDescription;
+			UpdateCollationElement(dom, ws);
 
 			SetTopLevelSpecialNode(dom, "languageName", ws.LanguageName);
 			SetTopLevelSpecialNode(dom, "abbreviation", ws.Abbreviation);
@@ -214,7 +215,7 @@ namespace Palaso.WritingSystems
 				parentNode.RemoveChild(node);
 			}
 
-			XmlNode alias = XmlHelpers.GetOrCreateElement(parentNode, string.Empty, "alias", string.Empty, _nameSpaceManager);
+			XmlNode alias = XmlHelpers.GetOrCreateElement(parentNode, ".", "alias", string.Empty, _nameSpaceManager);
 			XmlHelpers.AddOrUpdateAttribute(alias, "source", ws.SortRules);
 		}
 
@@ -239,27 +240,30 @@ namespace Palaso.WritingSystems
 			icu = icu ?? string.Empty;
 			// remove any alias that would override our rules
 			XmlHelpers.RemoveElement(parentNode, "alias", _nameSpaceManager);
-			XmlNode rulesNode = XmlHelpers.GetOrCreateElement(parentNode, string.Empty, "rules", string.Empty, _nameSpaceManager);
-			XmlHelpers.RemoveElement(rulesNode, "alias", _nameSpaceManager);
+			// remove existing rules as we're about to write all of those
+			XmlHelpers.RemoveElement(parentNode, "rules", _nameSpaceManager);
+			XmlNode rulesNode = XmlHelpers.GetOrCreateElement(parentNode, ".", "rules", string.Empty, _nameSpaceManager);
+			ICURulesParser parser = new ICURulesParser();
+			parser.AddIcuRulesToNode(rulesNode, icu);
 		}
 
 		private class ICURulesParser
 		{
+			private XmlNode _parentNode;
 			private XmlDocument _dom;
-			private Rule _primaryDifference;
-			private Rule _secondaryDifference;
-			private Rule _tertiaryDifference;
-			private Rule _noDifference;
-			private Rule _reset;
-			private Rule _oneRule;
 			private Rule _icuRules;
 
-			public ICURulesParser(XmlDocument dom) : this(dom, false) {}
+			// You will notice that the xml tags used don't always match my parser/rule variable name.  We have
+			// the creators of ldml and icu to thank for that.  Collation in ldml is based off of icu and is pretty
+			// much a straight conversion of icu operators into xml tags.  Unfortunately, ICU refers to some constructs
+			// with one name (which I used for my variable names), but ldml uses a different name for the actual
+			// xml tag.
+			// http://unicode.org/reports/tr35/#Collation_Elements - ldml collation element spec
+			// http://icu-project.org/userguide/Collate_Customization.html - ICU collation spec
+			public ICURulesParser() : this(false) {}
 
-			public ICURulesParser(XmlDocument dom, bool useDebugger)
+			public ICURulesParser(bool useDebugger)
 			{
-				_dom = dom;
-
 				// someWhiteSpace ::= WS+
 				// optionalWhiteSpace ::= WS*
 				Parser someWhiteSpace = Ops.OneOrMore(Prims.WhiteSpace);
@@ -283,7 +287,7 @@ namespace Palaso.WritingSystems
 				Parser octalDigit = Prims.Range('0', '7');
 				Parser hexDigitExpect = Ops.Expect("icu0001", "Invalid hexadecimal character in escape sequence.", Prims.HexDigit);
 				Parser hex4Group = Ops.Sequence(hexDigitExpect, hexDigitExpect, hexDigitExpect, hexDigitExpect);
-				Parser singleCharacterEscape = Ops.Sequence(Prims.AnyChar - Ops.Choice('u', 'U', 'x', octalDigit, 'c'));
+				Parser singleCharacterEscape = Prims.AnyChar - Ops.Choice('u', 'U', 'x', octalDigit, 'c');
 				Parser hex4Escape = Ops.Sequence('u', hex4Group);
 				Parser hex8Escape = Ops.Sequence('U', hex4Group, hex4Group);
 				Parser hex2Escape = Ops.Sequence('x', hexDigitExpect, !Prims.HexDigit);
@@ -297,77 +301,82 @@ namespace Palaso.WritingSystems
 				// singleQuoteLiteral ::= "''"
 				// quotedStringCharacter ::= AllChars - "'"
 				// quotedString ::= "'" (singleQuoteLiteral | quotedStringCharacter)+ "'"
-				Parser singleQuoteLiteral = Ops.Sequence('\'', '\'');
+				Parser singleQuoteLiteral = Prims.Str("''");
 				Parser quotedStringCharacter = Prims.AnyChar - '\'';
 				Parser quotedString = Ops.Sequence('\'', Ops.OneOrMore(singleQuoteLiteral | quotedStringCharacter),
 					Ops.Expect("icu0003", "Quoted string without matching end-quote.", '\''));
 
 				// Any alphanumeric ASCII character and all characters above the ASCII range are valid data characters
-				// dataCharacter ::= [A-Za-z0-9] | [U+0080-U+1FFFFF]
-				Parser dataCharacter = Prims.LetterOrDigit | Prims.Range('\u0080', char.MaxValue);
-				// dataString ::= (escapeSequence | singleQuoteLiteral | quotedString | dataCharacter)
-				//           (WS? (escapeSequence | singleQuoteLiteral | quotedString | dataCharacter))*
-				Parser dataString = Ops.List(escapeSequence | singleQuoteLiteral | quotedString | dataCharacter, optionalWhiteSpace);
+				// normalCharacter ::= [A-Za-z0-9] | [U+0080-U+1FFFFF]
+				// dataCharacter ::= normalCharacter | singleQuoteLiteral | escapeSequence
+				// dataString ::= (dataCharacter | quotedString) (WS? (dataCharacter | quotedString))*
+				Parser normalCharacter = Prims.LetterOrDigit | Prims.Range('\u0080', char.MaxValue);
+				Parser dataCharacter = normalCharacter | singleQuoteLiteral | escapeSequence;
+				Rule dataString = new Rule(Ops.List(dataCharacter | quotedString, optionalWhiteSpace));
 
 				// firstOrLast ::= 'first' | 'last'
 				// primarySecondaryTertiary ::= 'primary' | 'secondary' | 'tertiary'
 				// indirectOption ::= (primarySecondaryTertiary WS 'ignorable') | 'variable' | 'regular' | 'implicit' | 'trailing'
 				// indirectPosition ::= '[' firstOrLast WS indirectOption ']'
+				// According to the LDML spec, "implicit" should not be allowed in a reset element, but we're not going to check that
 				Parser firstOrLast = Ops.Choice("first", "last");
 				Parser primarySecondaryTertiary = Ops.Choice("primary", "secondary", "tertiary");
 				Parser indirectOption = Ops.Choice(Ops.Sequence(primarySecondaryTertiary, someWhiteSpace, "ignorable"),
 													"variable", "regular", "implicit", "trailing");
-				Parser indirectPosition = Ops.Sequence('[', Ops.Expect("icu0004", "Invalid indirect position specifier: unknown option",
+				Rule indirectPosition = new Rule(Ops.Sequence('[', Ops.Expect("icu0004", "Invalid indirect position specifier: unknown option",
 					Ops.Sequence(firstOrLast, someWhiteSpace, indirectOption)),
-					Ops.Expect("icu0005", "Indirect position specifier missing closing ']'", ']'));
+					Ops.Expect("icu0005", "Indirect position specifier missing closing ']'", ']')));
 
-				// expansion ::= dataString WS? '/' WS? dataString
-				Parser expansion = Ops.Sequence(Ops.Expect("icu0006", "Invalid expansion: Data missing before '/'", dataString),
-					optionalWhiteSpace, '/', optionalWhiteSpace,
-					Ops.Expect("icu0007", "Invalid expansion: Data missing after '/'", dataString));
+				// top ::= "[top]"
+				// [top] is a deprecated element in ICU and should be replaced by indirect positioning.
+				Parser top = Prims.Str("[top]");
 
-				// prefix ::= dataString WS? '|' WS? dataString
-				Parser prefix = Ops.Sequence(Ops.Expect("icu0008", "Invalid prefix: Data missing before '|'", dataString),
-					optionalWhiteSpace, '|', optionalWhiteSpace,
-					Ops.Expect("icu0009", "Invalid prefix: Data missing after '|'", dataString));
+				// simpleElement ::= indirectPosition | dataString
+				Rule simpleElement = new Rule("simpleElement", indirectPosition | dataString);
 
-				// dataElement ::= indirectPosition | expansion | prefix | dataString
-				Parser dataElement = indirectPosition | expansion | prefix | dataString;
+				// expansion ::= WS? '/' WS? simpleElement
+				Rule expansion = new Rule("extend", Ops.Sequence(optionalWhiteSpace, '/', optionalWhiteSpace,
+					Ops.Expect("icu0007", "Invalid expansion: Data missing after '/'", simpleElement)));
+				// prefix ::= simpleElement WS? '|' WS?
+				Rule prefix = new Rule("context", Ops.Sequence(simpleElement, optionalWhiteSpace, '|', optionalWhiteSpace));
+				// extendedElement ::= (prefix simpleElement expansion?) | (prefix? simpleElement expansion)
+				Rule extendedElement = new Rule("x", Ops.Sequence(prefix, simpleElement, !expansion) |
+													 Ops.Sequence(!prefix, simpleElement, expansion));
 
-				// beforeOption ::= '[before' WS ('1' | '2' | '3') ']'
-				Parser beforeOption = Ops.Sequence("[before", someWhiteSpace,
-					Ops.Expect("icu0010", "Invalid 'before' specifier: Missing '1', '2', or '3'", Ops.Choice('1', '2', '3')),
+				// dataElement ::= simpleElement | extendedElement
+				Parser dataElement = simpleElement | extendedElement;
+
+				// beforeOption ::= '1' | '2' | '3'
+				// beforeSpecifier ::= "[before" WS beforeOption ']'
+				Parser beforeOption = Ops.Choice('1', '2', '3');
+				Parser beforeSpecifier = Ops.Sequence("[before", someWhiteSpace,
+					Ops.Expect("icu0010", "Invalid 'before' specifier: Invalid or missing option", beforeOption),
 					Ops.Expect("icu0011", "Invalid 'before' specifier: Missing closing ']'", ']'));
 
-				_primaryDifference = new Rule("primaryDifference");
-				_secondaryDifference = new Rule("secondaryDifference");
-				_tertiaryDifference = new Rule("tertiaryDifference");
-				_noDifference = new Rule("noDifference");
-				_reset = new Rule("reset");
-				_oneRule = new Rule("oneRule");
-				_icuRules = new Rule("icuRules");
+				// primaryDifferenceOperator ::= '<'
+				// secondaryDifferenceOperator ::= "<<"
+				// tertiaryDifferenceOperator ::= "<<<"
+				// noDifferenceOperator ::= '='
+				// differenceOperator ::= primaryDifferenceOperator | secondaryDifferenceOperator | tertiaryDifferenceOperator | noDifferenceOperator
+				Rule primaryDifferenceOperator = new Rule("p", Prims.Ch('<'));
+				Rule secondaryDifferenceOperator = new Rule("s", Prims.Str("<<"));
+				Rule tertiaryDifferenceOperator = new Rule("t", Prims.Str("<<<"));
+				Rule noDifferenceOperator = new Rule("i", Prims.Ch('='));
+				Parser differenceOperator = primaryDifferenceOperator | secondaryDifferenceOperator
+					| tertiaryDifferenceOperator | noDifferenceOperator;
+				// difference ::= differenceOperator WS? dataElement
+				Parser difference = Ops.Sequence(differenceOperator, optionalWhiteSpace, dataElement);
 
-				// primaryDifference ::= '<' WS? dataElement
-				_primaryDifference.Parser = Ops.Sequence('<', optionalWhiteSpace, dataElement);
+				// reset ::= '&' WS? ((beforeSpecifier? WS? simpleElement) | top)
+				Rule reset = new Rule("reset", Ops.Sequence('&', optionalWhiteSpace,
+					Ops.Sequence(!beforeSpecifier, optionalWhiteSpace, simpleElement) | top));
 
-				// secondaryDifference ::= '<<' WS? dataElement
-				_secondaryDifference.Parser = Ops.Sequence("<<", optionalWhiteSpace, dataElement);
-
-				// tertiaryDifference ::= '<<<' WS? dataElement
-				_tertiaryDifference.Parser = Ops.Sequence("<<<", optionalWhiteSpace, dataElement);
-
-				// noDifference ::= '=' WS? dataElement
-				_noDifference.Parser = Ops.Sequence('=', optionalWhiteSpace, dataElement);
-
-				// reset ::= '&' WS? beforeOption? WS? dataElement
-				_reset.Parser = Ops.Sequence('&', optionalWhiteSpace, !beforeOption, optionalWhiteSpace, dataElement);
-
-				// oneRule ::= reset (WS? (primaryDifference | secondaryDifference | tertiaryDifference | noDifference))*
-				_oneRule.Parser = Ops.Sequence(_reset, Ops.ZeroOrMore(Ops.Sequence(optionalWhiteSpace,
-											   _primaryDifference | _secondaryDifference | _tertiaryDifference | _noDifference)));
+				// oneRule ::= reset (WS? difference)*
+				Rule oneRule = new Rule("oneRule", Ops.Sequence(reset, Ops.ZeroOrMore(Ops.Sequence(optionalWhiteSpace,
+											   difference))));
 
 				// icuRules ::= (oneRule | WS)* EOF
-				_icuRules.Parser = Ops.ZeroOrMore(_oneRule | optionalWhiteSpace);
+				_icuRules = new Rule("icuRules", Ops.ZeroOrMore(oneRule | optionalWhiteSpace));
 
 				singleCharacterEscape.Act += OnSingleCharacterEscape;
 				hex4Escape.Act += OnHexEscape;
@@ -378,10 +387,79 @@ namespace Palaso.WritingSystems
 				controlEscape.Act += OnControlEscape;
 				singleQuoteLiteral.Act += OnSingleQuoteLiteral;
 				quotedStringCharacter.Act += OnDataCharacter;
-				dataCharacter.Act += OnDataCharacter;
+				normalCharacter.Act += OnDataCharacter;
+				dataString.PreParse += OnStartNewDataString;
+				dataString.Act += OnDataString;
+				firstOrLast.Act += OnIndirectPiece;
+				primarySecondaryTertiary.Act += OnIndirectPiece;
+				indirectOption.Act += OnIndirectPiece;
+				indirectPosition.PreParse += OnStartNewIndirectPosition;
+				indirectPosition.Act += OnIndirectPosition;
+				top.Act += OnTop;
+				simpleElement.PreParse += OnSimpleElementBegin;
+				simpleElement.PostParse += OnSimpleElementEnd;
+				expansion.PreParse += OnElementWithDataBegin;
+				prefix.PreParse += OnElementWithDataBegin;
+				extendedElement.PreParse += OnElementBegin;
+				extendedElement.PostParse += OnElementEnd;
+				primaryDifferenceOperator.PreParse += OnElementWithDataBegin;
+				secondaryDifferenceOperator.PreParse += OnElementWithDataBegin;
+				tertiaryDifferenceOperator.PreParse += OnElementWithDataBegin;
+				noDifferenceOperator.PreParse += OnElementWithDataBegin;
+				beforeOption.Act += OnBeforeOption;
+				reset.PreParse += OnElementWithDataBegin;
+				_icuRules.PostParse += OnIcuRulesEnd;
 			}
 
-			private StringBuilder _currentDataElement;
+			public void AddIcuRulesToNode(XmlNode parentNode, string icuRules)
+			{
+				if (parentNode == null)
+				{
+					throw new ArgumentNullException("parentNode");
+				}
+				_parentNode = parentNode;
+				_currentNode = parentNode;
+				// OwnerDocument will be null if the node is an XmlDocument
+				_dom = _parentNode.OwnerDocument ?? (XmlDocument)_parentNode;
+				_currentOperators = new Stack<string>();
+				StringScanner sc = new StringScanner(icuRules);
+				ParserMatch match = _icuRules.Parse(sc);
+				Debug.Assert(match.Success);
+				Debug.Assert(sc.AtEnd);
+			}
+
+			private StringBuilder _currentDataString;
+			private XmlNode _currentNode;
+			private Stack<string> _currentOperators;
+			private StringBuilder _currentIndirectPosition;
+
+			private void BeginElement(string name)
+			{
+				XmlNode node = _dom.CreateElement(name);
+				_currentNode.AppendChild(node);
+				_currentNode = node;
+			}
+
+			private void EndElement()
+			{
+				Debug.Assert(_currentNode != _parentNode);
+				_currentNode = _currentNode.ParentNode;
+			}
+
+			private void OnElementBegin(object sender, PreParseEventArgs args)
+			{
+				BeginElement(args.Parser.ID);
+			}
+
+			private void OnElementEnd(object sender, PostParseEventArgs args)
+			{
+				EndElement();
+			}
+
+			private void OnElementWithDataBegin(object sender, PreParseEventArgs args)
+			{
+				_currentOperators.Push(args.Parser.ID);
+			}
 
 			private void OnSingleCharacterEscape(object sender, ActionEventArgs args)
 			{
@@ -399,7 +477,7 @@ namespace Palaso.WritingSystems
 				{
 					newChar = substitutes[newChar];
 				}
-				_currentDataElement.Append(newChar);
+				_currentDataString.Append(newChar.ToString());
 			}
 
 			private void OnHexEscape(object sender, ActionEventArgs args)
@@ -435,7 +513,7 @@ namespace Palaso.WritingSystems
 			{
 				try
 				{
-					_currentDataElement.Append(Char.ConvertFromUtf32(code));
+					_currentDataString.Append(Char.ConvertFromUtf32(code));
 				}
 				catch (ArgumentOutOfRangeException e)
 				{
@@ -448,13 +526,139 @@ namespace Palaso.WritingSystems
 			private void OnSingleQuoteLiteral(object sender, ActionEventArgs args)
 			{
 				Debug.Assert(args.Value == "''");
-				_currentDataElement.Append('\'');
+				_currentDataString.Append("\'");
 			}
 
 			private void OnDataCharacter(object sender, ActionEventArgs args)
 			{
 				Debug.Assert(args.Value.Length == 1);
-				_currentDataElement.Append(args.Value);
+				_currentDataString.Append(args.Value);
+			}
+
+			private void OnStartNewDataString(object sender, PreParseEventArgs args)
+			{
+				_currentDataString = new StringBuilder();
+			}
+
+			private void OnDataString(object sender, ActionEventArgs args)
+			{
+				_currentNode.InnerText = _currentDataString.ToString();
+				_currentDataString = null;
+			}
+
+			private void OnIndirectPiece(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length > 0);
+				if (_currentIndirectPosition.Length > 0)
+				{
+					_currentIndirectPosition.Append('_');
+				}
+				// due to slight differences between ICU and LDML, regular becomes non_ignorable
+				_currentIndirectPosition.Append(args.Value.Replace("regular", "non_ignorable"));
+			}
+
+			private void OnStartNewIndirectPosition(object sender, PreParseEventArgs args)
+			{
+				_currentIndirectPosition = new StringBuilder();
+			}
+
+			private void OnIndirectPosition(object sender, ActionEventArgs args)
+			{
+				BeginElement(_currentIndirectPosition.ToString());
+				EndElement();
+				_currentIndirectPosition = null;
+			}
+
+			private void OnSimpleElementBegin(object sender, PreParseEventArgs args)
+			{
+				BeginElement(_currentOperators.Pop());
+			}
+
+			private void OnSimpleElementEnd(object sender, PostParseEventArgs args)
+			{
+				EndElement();
+			}
+
+			private void OnBeforeOption(object sender, ActionEventArgs args)
+			{
+				Debug.Assert(args.Value.Length == 1);
+				Dictionary<string, string> optionMap = new Dictionary<string, string>(3);
+				optionMap["1"] = "primary";
+				optionMap["2"] = "secondary";
+				optionMap["3"] = "tertiary";
+				Debug.Assert(optionMap.ContainsKey(args.Value));
+				XmlHelpers.AddOrUpdateAttribute(_currentNode, "before", optionMap[args.Value]);
+			}
+
+			private void OnTop(object sender, ActionEventArgs args)
+			{
+				// [top] is deprecated in ICU and not directly allowed in LDML
+				// [top] is probably best rendered the same as [before 1] [first tertiary ignorable]
+				XmlHelpers.AddOrUpdateAttribute(_currentNode, "before", "primary");
+				BeginElement("first_tertiary_ignorable");
+				EndElement();
+			}
+
+			// Use this to optimize successive difference elements into one element
+			private void OnIcuRulesEnd(object sender, PostParseEventArgs args)
+			{
+				// we can optimize primary, secondary, tertiary, and identity elements
+				List<string> optimizableElementNames = new List<string>(new string[] {"p", "s", "t", "i"});
+				List<List<XmlNode>> optimizableNodeGroups = new List<List<XmlNode>>();
+				List<XmlNode> currentOptimizableNodeGroup = null;
+
+				// first, build a list of lists of nodes we can optimize
+				foreach (XmlNode node in _currentNode.ChildNodes)
+				{
+					// Current node can be part of an optimized group if it is an allowed element
+					// AND it only contains one unicode code point.
+					bool nodeOptimizable = (optimizableElementNames.Contains(node.Name) &&
+						(node.InnerText.Length == 1 ||
+						(node.InnerText.Length == 2 && Char.IsSurrogatePair(node.InnerText, 0))));
+					// If we have a group of optimizable nodes, but we can't add the current node to that group
+					if (currentOptimizableNodeGroup != null && (!nodeOptimizable || currentOptimizableNodeGroup[0].Name != node.Name))
+					{
+						// Add our current group to the to-be-optimized list only if it makes sense (i.e. it has more than 1 node)
+						if (currentOptimizableNodeGroup.Count > 1)
+						{
+							optimizableNodeGroups.Add(currentOptimizableNodeGroup);
+						}
+						currentOptimizableNodeGroup = null;
+					}
+					if (!nodeOptimizable)
+					{
+						continue;
+					}
+					// start a new optimizable group if we're not in one already
+					if (currentOptimizableNodeGroup == null)
+					{
+						currentOptimizableNodeGroup = new List<XmlNode>();
+					}
+					currentOptimizableNodeGroup.Add(node);
+				}
+				// add the last group, if any
+				if (currentOptimizableNodeGroup != null && currentOptimizableNodeGroup.Count > 1)
+				{
+					optimizableNodeGroups.Add(currentOptimizableNodeGroup);
+				}
+
+				// We've got out groups of optimizable nodes, so we now optimize them
+				foreach (List<XmlNode> nodeGroup in optimizableNodeGroups)
+				{
+					// luckily the optimized names are the same as the unoptimized with 'c' appended
+					// so <p> becomes <pc>, <s> to <sc>, et al.
+					XmlNode optimizedNode = _dom.CreateElement(nodeGroup[0].Name + "c");
+					foreach (XmlNode node in nodeGroup)
+					{
+						optimizedNode.InnerText += node.InnerText;
+					}
+					// put it in the correct order in our rules.  THIS IS VERY IMPORTANT!
+					_currentNode.InsertBefore(optimizedNode, nodeGroup[0]);
+					foreach (XmlNode node in nodeGroup)
+					{
+						_currentNode.RemoveChild(node);
+					}
+				}
 			}
 		}
 	}
