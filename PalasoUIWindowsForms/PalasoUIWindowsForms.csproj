@@ -99,7 +99,7 @@
 	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.cs">
-	  <SubType>Component</SubType>
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.designer.cs">
 	  <DependentUpon>SuperToolTip.cs</DependentUpon>

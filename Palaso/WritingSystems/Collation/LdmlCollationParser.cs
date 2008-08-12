@@ -1,21 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
-using Palaso.WritingSystems;
-using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems.Collation
 {
 	class LdmlCollationParser
 	{
-		public LdmlCollationParser() { }
-
-		public string GetIcuRulesFromCollationNode(XmlNode collationNode, XmlNamespaceManager nameSpaceManager)
+		public static string GetIcuRulesFromCollationNode(XmlNode collationNode, XmlNamespaceManager nameSpaceManager)
 		{
 			if (collationNode == null)
 			{
@@ -25,21 +17,21 @@ namespace Palaso.WritingSystems.Collation
 			XmlNode settingsNode = collationNode.SelectSingleNode("settings", nameSpaceManager);
 			XmlNode rulesNode = collationNode.SelectSingleNode("rules", nameSpaceManager);
 			string icuRules = string.Empty;
-			_variableTop = null;
+			string variableTop = null;
 			int variableTopPositionIfNotUsed = 0;
 
 			if (settingsNode != null)
 			{
-				icuRules += GetIcuSettingsFromSettingsNode(settingsNode);
+				icuRules += GetIcuSettingsFromSettingsNode(settingsNode, out variableTop);
 				variableTopPositionIfNotUsed = icuRules.Length;
 			}
 			if (rulesNode != null)
 			{
-				icuRules += GetIcuRulesFromRulesNode(rulesNode);
+				icuRules += GetIcuRulesFromRulesNode(rulesNode, ref variableTop);
 			}
-			if (_variableTop != null)
+			if (variableTop != null)
 			{
-				string variableTopRule = String.Format("\n&{0} < [variable top]", EscapeForIcu(_variableTop));
+				string variableTopRule = String.Format("\n&{0} < [variable top]", EscapeForIcu(variableTop));
 				if (variableTopPositionIfNotUsed == icuRules.Length)
 				{
 					icuRules += variableTopRule;
@@ -53,9 +45,92 @@ namespace Palaso.WritingSystems.Collation
 			return icuRules.Trim();
 		}
 
-		private string _variableTop;
+		public static bool TryGetSimpleRulesFromCollationNode(XmlNode collationNode, XmlNamespaceManager namespaceManager, out string rules)
+		{
+			rules = null;
+			// simple rules can't deal with any non-default settings
+			if (collationNode.SelectSingleNode("settings", namespaceManager) != null)
+			{
+				return false;
+			}
+			XmlNode rulesNode = collationNode.SelectSingleNode("rules", namespaceManager);
+			if (rulesNode == null)
+			{
+				rules = string.Empty;
+				return true;
+			}
+			bool first = true;
+			bool inGroup = false;
+			string simpleRules = string.Empty;
+			foreach (XmlNode node in rulesNode.ChildNodes)
+			{
+				// First child node MUST BE <reset before="primary"><first_non_ignorable /></reset>
+				if (first && node.Name != "reset" && GetIcuData(node) != "[first regular]" && GetBeforeOption(node) != "[before 1]")
+				{
+					return false;
+				}
+				if (first)
+				{
+					first = false;
+					continue;
+				}
+				if (HasIndirectPosition(node))
+				{
+					return false;
+				}
+				switch (node.Name)
+				{
+					case "p":
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + "\n" + GetIcuData(node);
+						break;
+					case "s":
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetIcuData(node);
+						break;
+					case "t":
+						simpleRules += BeginSimpleGroupIfNeeded(ref inGroup) + " " + GetIcuData(node);
+						break;
+					case "pc":
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
+									   BuildSimpleRulesFromConcatenatedData("\n", node.InnerText);
+						break;
+					case "sc":
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
+									   BuildSimpleRulesFromConcatenatedData(" ", node.InnerText);
+						break;
+					case "tc":
+						simpleRules += BeginSimpleGroupIfNeeded(ref inGroup) +
+									   BuildSimpleRulesFromConcatenatedData(" ", node.InnerText);
+						break;
+					default:    // node type not allowed for simple rules conversion
+						return false;
+				}
+			}
+			simpleRules += EndSimpleGroupIfNeeded(ref inGroup);
+			rules = simpleRules.Trim();
+			return true;
+		}
 
-		private string EscapeForIcu(string unescapedData)
+		private static string EndSimpleGroupIfNeeded(ref bool inGroup)
+		{
+			if (!inGroup)
+			{
+				return string.Empty;
+			}
+			inGroup = false;
+			return " )";
+		}
+
+		private static string BeginSimpleGroupIfNeeded(ref bool inGroup)
+		{
+			if (inGroup)
+			{
+				return string.Empty;
+			}
+			inGroup = true;
+			return " (";
+		}
+
+		private static string EscapeForIcu(string unescapedData)
 		{
 			string result = string.Empty;
 			for (int i = 0; i < unescapedData.Length; i++)
@@ -69,7 +144,22 @@ namespace Palaso.WritingSystems.Collation
 			return result;
 		}
 
-		private string EscapeForIcu(int code)
+		private static string BuildSimpleRulesFromConcatenatedData(string op, string data)
+		{
+			string rule = string.Empty;
+			for (int i = 0; i < data.Length; i++)
+			{
+				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i));
+				rule += op + icuData;
+				if (Char.IsSurrogate(data, i))
+				{
+					i++;
+				}
+			}
+			return rule;
+		}
+
+		private static string EscapeForIcu(int code)
 		{
 			string result;
 			string ch = Char.ConvertFromUtf32(code);
@@ -94,8 +184,9 @@ namespace Palaso.WritingSystems.Collation
 			return result;
 		}
 
-		private string GetIcuSettingsFromSettingsNode(XmlNode settingsNode)
+		private static string GetIcuSettingsFromSettingsNode(XmlNode settingsNode, out string variableTop)
 		{
+			variableTop = null;
 			Dictionary<string, string> strengthValues = new Dictionary<string, string>();
 			strengthValues["primary"] = "1";
 			strengthValues["secondary"] = "2";
@@ -132,18 +223,33 @@ namespace Palaso.WritingSystems.Collation
 						icuSettings += String.Format("\n[hiraganaQ {0}]", attr.Value);
 						break;
 					case "variableTop":
-						_variableTop = attr.Value;
+						variableTop = EscapeForIcu(UnescapeVariableTop(attr.Value));
 						break;
 				}
 			}
 			return icuSettings;
 		}
 
-		private string GetIcuRulesFromRulesNode(XmlNode rulesNode)
+		private static string UnescapeVariableTop(string variableTop)
+		{
+			string result = string.Empty;
+			foreach (string hexCode in variableTop.Split('u'))
+			{
+				if (String.IsNullOrEmpty(hexCode))
+				{
+					continue;
+				}
+				result += Char.ConvertFromUtf32(int.Parse(hexCode, NumberStyles.AllowHexSpecifier));
+			}
+			return result;
+		}
+
+		private static string GetIcuRulesFromRulesNode(XmlNode rulesNode, ref string variableTop)
 		{
 			string rules = string.Empty;
 			foreach (XmlNode node in rulesNode.ChildNodes)
 			{
+				string icuData;
 				if (node.NodeType != XmlNodeType.Element)
 				{
 					throw new ApplicationException("Invalid XML node type in LDML collation rules.");
@@ -151,31 +257,36 @@ namespace Palaso.WritingSystems.Collation
 				switch (node.Name)
 				{
 					case "reset":
-						rules += String.Format("\n&{0}", GetIcuData(node));
+						icuData = GetIcuData(node);
+						rules += String.Format("\n&{2} {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop), GetBeforeOption(node));
 						break;
 					case "p":
-						rules += String.Format(" < {0}", GetIcuData(node));
+						icuData = GetIcuData(node);
+						rules += String.Format(" < {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 						break;
 					case "s":
-						rules += String.Format(" << {0}", GetIcuData(node));
+						icuData = GetIcuData(node);
+						rules += String.Format(" << {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 						break;
 					case "t":
-						rules += String.Format(" <<< {0}", GetIcuData(node));
+						icuData = GetIcuData(node);
+						rules += String.Format(" <<< {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 						break;
 					case "i":
-						rules += String.Format(" = {0}", GetIcuData(node));
+						icuData = GetIcuData(node);
+						rules += String.Format(" = {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 						break;
 					case "pc":
-						rules += BuildRuleFromConcatenatedData("<", node.InnerText);
+						rules += BuildRuleFromConcatenatedData("<", node.InnerText, ref variableTop);
 						break;
 					case "sc":
-						rules += BuildRuleFromConcatenatedData("<<", node.InnerText);
+						rules += BuildRuleFromConcatenatedData("<<", node.InnerText, ref variableTop);
 						break;
 					case "tc":
-						rules += BuildRuleFromConcatenatedData("<<<", node.InnerText);
+						rules += BuildRuleFromConcatenatedData("<<<", node.InnerText, ref variableTop);
 						break;
 					case "ic":
-						rules += BuildRuleFromConcatenatedData("=", node.InnerText);
+						rules += BuildRuleFromConcatenatedData("=", node.InnerText, ref variableTop);
 						break;
 					case "x":
 						rules += GetRuleFromExtendedNode(node);
@@ -187,13 +298,36 @@ namespace Palaso.WritingSystems.Collation
 			return rules;
 		}
 
-		private string GetIcuData(XmlNode node)
+		private static string GetBeforeOption(XmlNode node)
+		{
+			switch (XmlHelpers.GetAttributeValue(node, "before"))
+			{
+				case "primary":
+					return "[before 1]";
+				case "secondary":
+					return "[before 2]";
+				case "tertiary":
+					return "[before 3]";
+				case "":
+				case null:
+					return string.Empty;
+				default:
+					throw new ApplicationException("Invalid before specifier on reset collation element.");
+			}
+		}
+
+		private static bool HasIndirectPosition(XmlNode node)
+		{
+			return node.HasChildNodes;
+		}
+
+		private static string GetIcuData(XmlNode node)
 		{
 			if (node.ChildNodes.Count > 1)
 			{
 				throw new ApplicationException(String.Format("Invalid data in LDML collation rule: {0}", node.InnerXml));
 			}
-			if (node.HasChildNodes)
+			if (HasIndirectPosition(node))
 			{
 				return GetIndirectPosition(node.FirstChild);
 			}
@@ -209,7 +343,7 @@ namespace Palaso.WritingSystems.Collation
 			return data;
 		}
 
-		private string GetIndirectPosition(XmlNode indirectNode)
+		private static string GetIndirectPosition(XmlNode indirectNode)
 		{
 			switch (indirectNode.Name)
 			{
@@ -222,12 +356,13 @@ namespace Palaso.WritingSystems.Collation
 			}
 		}
 
-		private string BuildRuleFromConcatenatedData(string op, string data)
+		private static string BuildRuleFromConcatenatedData(string op, string data, ref string variableTop)
 		{
 			string rule = string.Empty;
 			for (int i=0; i < data.Length; i++)
 			{
-				rule += String.Format(" {0} {1}", op, EscapeForIcu(Char.ConvertToUtf32(data, i)));
+				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i));
+				rule += String.Format(" {0} {1}{2}", op, icuData, GetVariableTopString(icuData, ref variableTop));
 				if (Char.IsSurrogate(data, i))
 				{
 					i++;
@@ -236,7 +371,17 @@ namespace Palaso.WritingSystems.Collation
 			return rule;
 		}
 
-		private string GetRuleFromExtendedNode(XmlNode extendedNode)
+		private static string GetVariableTopString(string icuData, ref string variableTop)
+		{
+			if (variableTop == null || variableTop != icuData)
+			{
+				return string.Empty;
+			}
+			variableTop = null;
+			return " < [variable top]";
+		}
+
+		private static string GetRuleFromExtendedNode(XmlNode extendedNode)
 		{
 			string rule = string.Empty;
 			foreach (XmlNode node in extendedNode.ChildNodes)

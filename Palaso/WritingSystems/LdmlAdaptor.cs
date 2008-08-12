@@ -41,15 +41,73 @@ namespace Palaso.WritingSystems
 			XmlNode node = doc.SelectSingleNode("ldml/identity/version");
 			ws.VersionNumber = XmlHelpers.GetOptionalAttributeValue(node, "number");
 			ws.VersionDescription = node.InnerText;
+			ReadCollationElement(doc, ws);
 
-			ws.Abbreviation = GetSpecialValue(doc, "abbreviation");
-			ws.LanguageName = GetSpecialValue(doc, "languageName");
-			ws.DefaultFontName = GetSpecialValue(doc, "defaultFontFamily");
-			ws.Keyboard = GetSpecialValue(doc, "keyboard");
-			string rtl = GetSpecialValue(doc, "rightToLeft");
+			ws.Abbreviation = GetTopLevelSpecialValue(doc, "abbreviation");
+			ws.LanguageName = GetTopLevelSpecialValue(doc, "languageName");
+			ws.DefaultFontName = GetTopLevelSpecialValue(doc, "defaultFontFamily");
+			ws.Keyboard = GetTopLevelSpecialValue(doc, "keyboard");
+			string rtl = GetTopLevelSpecialValue(doc, "rightToLeft");
 			ws.RightToLeftScript = rtl == "true";
 			ws.StoreID = "";
 			ws.Modified = false;
+		}
+
+		private void ReadCollationElement(XmlDocument dom, WritingSystemDefinition ws)
+		{
+			XmlNode node = dom.SelectSingleNode("ldml/collations/collation[@type='']");
+			if (node == null)
+			{
+				return;
+			}
+			string rulesType = GetSpecialValue(node, "sortRulesType");
+			if (!Enum.IsDefined(typeof (WritingSystemDefinition.SortRulesType), rulesType))
+			{
+				rulesType = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			}
+			ws.SortUsing = rulesType;
+			switch ((WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), rulesType))
+			{
+				case WritingSystemDefinition.SortRulesType.OtherLanguage:
+					ReadCollationRulesForOtherLanguage(node, ws);
+					break;
+				case WritingSystemDefinition.SortRulesType.CustomSimple:
+					ReadCollationRulesForCustomSimple(node, ws);
+					break;
+				case WritingSystemDefinition.SortRulesType.CustomICU:
+					ReadCollationRulesForCustomICU(node, ws);
+					break;
+				default:
+					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
+					throw new ApplicationException(message);
+					break;
+			}
+		}
+
+		private void ReadCollationRulesForOtherLanguage(XmlNode node, WritingSystemDefinition ws)
+		{
+			XmlNode alias = node.SelectSingleNode("alias", _nameSpaceManager);
+			if (alias != null)
+			{
+				ws.SortRules = XmlHelpers.GetOptionalAttributeValue(alias, "source", string.Empty);
+			}
+			else
+			{
+				// missing alias element, fall back to ICU rules
+				ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+				ReadCollationRulesForCustomICU(node, ws);
+			}
+		}
+
+		private void ReadCollationRulesForCustomICU(XmlNode node, WritingSystemDefinition ws)
+		{
+			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(node, _nameSpaceManager);
+		}
+
+		private void ReadCollationRulesForCustomSimple(XmlNode node, WritingSystemDefinition ws)
+		{
+			ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			ReadCollationRulesForCustomICU(node, ws);
 		}
 
 		public void Write(string filePath, WritingSystemDefinition ws)
@@ -88,10 +146,16 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetSpecialValue(XmlDocument doc, string field)
+		private string GetTopLevelSpecialValue(XmlDocument doc, string field)
 		{
 			XmlNode node = doc.SelectSingleNode("ldml/special/palaso:"+field, _nameSpaceManager);
 			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
+		}
+
+		private string GetSpecialValue(XmlNode parent, string field)
+		{
+			XmlNode node = parent.SelectSingleNode("special/palaso:" + field, _nameSpaceManager);
+			return node == null ? string.Empty : node.InnerText;
 		}
 
 		private string GetIdentityValue(XmlDocument doc, string field, string attributeName)
@@ -153,6 +217,20 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private void SetSpecialNode(XmlNode parent, string field, string value)
+		{
+			if (!String.IsNullOrEmpty(value))
+			{
+				XmlHelpers.GetOrCreateElement(parent, ".", "special", null, _nameSpaceManager);
+				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "special", field, "palaso", _nameSpaceManager);
+				node.InnerText = value;
+			}
+			else
+			{
+				XmlHelpers.RemoveElement(parent, "special/palaso:" + field, _nameSpaceManager);
+			}
+		}
+
 		private void UpdateCollationElement(XmlDocument dom, WritingSystemDefinition ws)
 		{
 			Debug.Assert(dom != null);
@@ -184,6 +262,7 @@ namespace Palaso.WritingSystems
 					throw new ApplicationException(message);
 					break;
 			}
+			SetSpecialNode(node, "sortRulesType", ws.SortUsing);
 		}
 
 		private void UpdateCollationRulesFromOtherLanguage(XmlNode parentNode, WritingSystemDefinition ws)
