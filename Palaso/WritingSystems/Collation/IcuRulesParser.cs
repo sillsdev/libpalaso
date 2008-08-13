@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
+using Spart;
 using Spart.Actions;
 using Spart.Parsers;
 using Spart.Parsers.NonTerminal;
@@ -17,7 +18,7 @@ using Debugger = Spart.Debug.Debugger;
 
 namespace Palaso.WritingSystems.Collation
 {
-	class IcuRulesParser
+	public class IcuRulesParser
 	{
 		private XmlNode _parentNode;
 		private XmlDocument _dom;
@@ -54,11 +55,25 @@ namespace Palaso.WritingSystems.Collation
 			AssignSemanticActions();
 			InitializeDataObjects();
 			StringScanner sc = new StringScanner(icuRules);
-			ParserMatch match = _icuRules.Parse(sc);
-			ClearDataObjects();
-			if (!match.Success || !sc.AtEnd)
+			try
 			{
-				throw new ApplicationException("Invalid ICU rules.");
+				ParserMatch match = _icuRules.Parse(sc);
+				if (!match.Success || !sc.AtEnd)
+				{
+					throw new ApplicationException("Invalid ICU rules.");
+				}
+			}
+			catch (ApplicationException e)
+			{
+				throw new ApplicationException("Invalid ICU rules: " + e.Message, e);
+			}
+			catch (ParserErrorException e)
+			{
+				throw new ApplicationException("Invalid ICU rules: " + e.Message, e);
+			}
+			finally
+			{
+				ClearDataObjects();
 			}
 		}
 
@@ -156,8 +171,8 @@ namespace Palaso.WritingSystems.Collation
 			// Valid escaping formats (from ICU source code u_unescape):
 			// \uhhhh - exactly 4 hex digits to specify character
 			// \Uhhhhhhhh - exactly 8 hex digits to specify character
-			// \xhh - 1 or 2 hex digits to specify character
 			// \x{hhhhhhhh} - 1 to 8 hex digits to specify character
+			// \xhh - 1 or 2 hex digits to specify character
 			// \ooo - 1 to 3 octal digits to specify character
 			// \cX - masked control character - take value of X and bitwise AND with 0x1F
 			// \a - U+0007
@@ -174,13 +189,13 @@ namespace Palaso.WritingSystems.Collation
 			_singleCharacterEscape = Prims.AnyChar - Ops.Choice('u', 'U', 'x', _octalDigit, 'c');
 			_hex4Escape = Ops.Sequence('u', _hex4Group);
 			_hex8Escape = Ops.Sequence('U', _hex4Group, _hex4Group);
-			_hex2Escape = Ops.Sequence('x', _hexDigitExpect, !Prims.HexDigit);
 			_hexXEscape = Ops.Sequence('x', '{', _hexDigitExpect, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit,
 												 !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, '}');
+			_hex2Escape = Ops.Sequence('x', _hexDigitExpect, !Prims.HexDigit);
 			_octalEscape = Ops.Sequence(_octalDigit, !_octalDigit, !_octalDigit);
 			_controlEscape = Ops.Sequence('c', Prims.AnyChar);
 			_escapeSequence = Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.",
-				_singleCharacterEscape | _hex4Escape | _hex8Escape | _hex2Escape | _hexXEscape | _octalEscape | _controlEscape));
+				_singleCharacterEscape | _hex4Escape | _hex8Escape | _hexXEscape | _hex2Escape | _octalEscape | _controlEscape));
 
 			// singleQuoteLiteral ::= "''"
 			// quotedStringCharacter ::= AllChars - "'"
@@ -253,9 +268,9 @@ namespace Palaso.WritingSystems.Collation
 			_extendedDifference = new Rule("x", Ops.Sequence(_differenceOperator, _optionalWhiteSpace, _extendedElement));
 			_difference = _extendedDifference | _simpleDifference;
 
-			// reset ::= '&' WS? ((beforeSpecifier? WS? simpleElement) | top)
+				// reset ::= '&' WS? ((beforeSpecifier? WS? simpleElement) | top)
 			_reset = new Rule("reset", Ops.Sequence('&', _optionalWhiteSpace,
-				Ops.Sequence(!_beforeSpecifier, _optionalWhiteSpace, _simpleElement) | _top));
+				_top | Ops.Sequence(!_beforeSpecifier, _optionalWhiteSpace, _simpleElement)));
 
 			// This option is a weird one, as it can come at any place in a rule and sets the preceding
 			// dataString as the variable top option in the settings element.  So, it has to look at the
@@ -270,7 +285,7 @@ namespace Palaso.WritingSystems.Collation
 
 			// oneRule ::= reset (WS? (optionVariableTop | difference))*
 			_oneRule = new Rule("oneRule", Ops.Sequence(_reset, Ops.ZeroOrMore(Ops.Sequence(_optionalWhiteSpace,
-								_difference))));
+								_optionVariableTop | _difference))));
 
 			// Option notes:
 			// * The 'strength' option is specified in ICU as having valid values 1-4 and 'I'.  In the LDML spec, it
@@ -307,10 +322,10 @@ namespace Palaso.WritingSystems.Collation
 				_optionStrength | _optionHiraganaQ | _optionNumeric, _optionalWhiteSpace, ']'));
 
 			// I don't know if ICU requires all options first (it's unclear), but I am. :)
-			// icuRules ::= WS? (option WS?)* (oneRule WS?)+ EOF
+			// icuRules ::= WS? (option WS?)* (oneRule WS?)* EOF
 			_icuRules = new Rule("icuRules", Ops.Sequence(_optionalWhiteSpace,
 				Ops.ZeroOrMore(Ops.Sequence(_option, _optionalWhiteSpace)),
-				Ops.OneOrMore(Ops.Sequence(_oneRule, _optionalWhiteSpace)), Prims.End));
+				Ops.ZeroOrMore(Ops.Sequence(_oneRule, _optionalWhiteSpace)), Prims.End));
 
 			if (_useDebugger)
 			{
@@ -339,7 +354,6 @@ namespace Palaso.WritingSystems.Collation
 			_normalCharacter.Act += OnDataCharacter;
 			_dataString.Act += OnDataString;
 			_firstOrLast.Act += OnIndirectPiece;
-			_primarySecondaryTertiary.Act += OnIndirectPiece;
 			_indirectOption.Act += OnIndirectPiece;
 			_indirectPosition.Act += OnIndirectPosition;
 			_top.Act += OnTop;
@@ -520,7 +534,7 @@ namespace Palaso.WritingSystems.Collation
 			Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 4);
 			// There is no octal number style, so we have to do it manually.
 			int code = 0;
-			for (int i=1; i < args.Value.Length; i++)
+			for (int i=0; i < args.Value.Length; i++)
 			{
 				code = code * 8 + Int32.Parse(args.Value.Substring(i, 1));
 			}
@@ -573,7 +587,7 @@ namespace Palaso.WritingSystems.Collation
 				_currentIndirectPosition.Append('_');
 			}
 			// due to slight differences between ICU and LDML, regular becomes non_ignorable
-			_currentIndirectPosition.Append(args.Value.Replace("regular", "non_ignorable"));
+			_currentIndirectPosition.Append(args.Value.Replace("regular", "non_ignorable").Replace(' ', '_'));
 		}
 
 		private void OnIndirectPosition(object sender, ActionEventArgs args)
@@ -662,7 +676,7 @@ namespace Palaso.WritingSystems.Collation
 		private void OnOptionHiraganaQ(object sender, ActionEventArgs args)
 		{
 			XmlNode attr = _dom.CreateAttribute("hiraganaQuaternary");
-			attr.Value = attr.Value.EndsWith("on") ? "on" : "off";
+			attr.Value = args.Value.EndsWith("on") ? "on" : "off";
 			_optionAttributes.Add(attr);
 		}
 

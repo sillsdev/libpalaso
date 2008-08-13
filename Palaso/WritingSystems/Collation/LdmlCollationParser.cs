@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace Palaso.WritingSystems.Collation
 {
-	class LdmlCollationParser
+	public class LdmlCollationParser
 	{
 		public static string GetIcuRulesFromCollationNode(XmlNode collationNode, XmlNamespaceManager nameSpaceManager)
 		{
@@ -87,7 +87,8 @@ namespace Palaso.WritingSystems.Collation
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetIcuData(node);
 						break;
 					case "t":
-						simpleRules += BeginSimpleGroupIfNeeded(ref inGroup) + " " + GetIcuData(node);
+						BeginSimpleGroupIfNeeded(ref inGroup, ref simpleRules);
+						simpleRules += " " + GetIcuData(node);
 						break;
 					case "pc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
@@ -98,8 +99,8 @@ namespace Palaso.WritingSystems.Collation
 									   BuildSimpleRulesFromConcatenatedData(" ", node.InnerText);
 						break;
 					case "tc":
-						simpleRules += BeginSimpleGroupIfNeeded(ref inGroup) +
-									   BuildSimpleRulesFromConcatenatedData(" ", node.InnerText);
+						BeginSimpleGroupIfNeeded(ref inGroup, ref simpleRules);
+						simpleRules += BuildSimpleRulesFromConcatenatedData(" ", node.InnerText);
 						break;
 					default:    // node type not allowed for simple rules conversion
 						return false;
@@ -117,17 +118,18 @@ namespace Palaso.WritingSystems.Collation
 				return string.Empty;
 			}
 			inGroup = false;
-			return " )";
+			return ")";
 		}
 
-		private static string BeginSimpleGroupIfNeeded(ref bool inGroup)
+		private static void BeginSimpleGroupIfNeeded(ref bool inGroup, ref string rules)
 		{
 			if (inGroup)
 			{
-				return string.Empty;
+				return;
 			}
 			inGroup = true;
-			return " (";
+			rules = rules.Insert(rules.Length - 1, "(");
+			return;
 		}
 
 		private static string EscapeForIcu(string unescapedData)
@@ -258,7 +260,7 @@ namespace Palaso.WritingSystems.Collation
 				{
 					case "reset":
 						icuData = GetIcuData(node);
-						rules += String.Format("\n&{2} {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop), GetBeforeOption(node));
+						rules += String.Format("\n&{2}{0}{1}", icuData, GetVariableTopString(icuData, ref variableTop), GetBeforeOption(node));
 						break;
 					case "p":
 						icuData = GetIcuData(node);
@@ -303,11 +305,11 @@ namespace Palaso.WritingSystems.Collation
 			switch (XmlHelpers.GetAttributeValue(node, "before"))
 			{
 				case "primary":
-					return "[before 1]";
+					return "[before 1] ";
 				case "secondary":
-					return "[before 2]";
+					return "[before 2] ";
 				case "tertiary":
-					return "[before 3]";
+					return "[before 3] ";
 				case "":
 				case null:
 					return string.Empty;
@@ -318,7 +320,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private static bool HasIndirectPosition(XmlNode node)
 		{
-			return node.HasChildNodes;
+			return node.HasChildNodes && node.FirstChild.NodeType == XmlNodeType.Element;
 		}
 
 		private static string GetIcuData(XmlNode node)

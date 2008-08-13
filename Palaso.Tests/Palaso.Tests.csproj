@@ -79,6 +79,8 @@
 	<Compile Include="TestUtilities.cs" />
 	<Compile Include="Text\MultiTextBase.Tests.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXmlTests.cs" />
+	<Compile Include="WritingSystems\Collation\IcuRulesParserTests.cs" />
+	<Compile Include="WritingSystems\Collation\LdmlCollationParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\IWritingSystemStore.Tests.cs" />
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.Tests.cs" />
