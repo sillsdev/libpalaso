@@ -30,32 +30,75 @@ namespace Palaso.WritingSystems
 			Read(doc, ws);
 		}
 
-		public void Read(XmlDocument doc, WritingSystemDefinition ws)
+		public void Read(XmlNode parentOfLdmlNode, WritingSystemDefinition ws)
 		{
-			ws.ISO = GetIdentityValue(doc, "language", "type");
-			ws.Variant = GetIdentityValue(doc, "variant", "type");
-			ws.Region = GetIdentityValue(doc, "territory", "type");
-			ws.Script = GetIdentityValue(doc, "script", "type");
-			string dateTime = GetIdentityValue(doc, "generation", "date");
-			ws.DateModified = DateTime.Parse(dateTime);
-			XmlNode node = doc.SelectSingleNode("ldml/identity/version");
-			ws.VersionNumber = XmlHelpers.GetOptionalAttributeValue(node, "number");
-			ws.VersionDescription = node.InnerText;
-			ReadCollationElement(doc, ws);
+			if (parentOfLdmlNode == null)
+			{
+				throw new ArgumentNullException("parentOfLdmlNode");
+			}
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
+			XmlNode ldmlNode = parentOfLdmlNode.SelectSingleNode("ldml", _nameSpaceManager);
+			if (ldmlNode == null)
+			{
+				return;
+			}
+			ReadIdentityElement(ldmlNode, ws);
+			ReadLayoutElement(ldmlNode, ws);
+			ReadCollationElement(ldmlNode, ws);
 
-			ws.Abbreviation = GetTopLevelSpecialValue(doc, "abbreviation");
-			ws.LanguageName = GetTopLevelSpecialValue(doc, "languageName");
-			ws.DefaultFontName = GetTopLevelSpecialValue(doc, "defaultFontFamily");
-			ws.Keyboard = GetTopLevelSpecialValue(doc, "keyboard");
-			string rtl = GetTopLevelSpecialValue(doc, "rightToLeft");
-			ws.RightToLeftScript = rtl == "true";
+			ws.Abbreviation = GetSpecialValue(ldmlNode, "abbreviation");
+			ws.LanguageName = GetSpecialValue(ldmlNode, "languageName");
+			ws.DefaultFontName = GetSpecialValue(ldmlNode, "defaultFontFamily");
+			float fontSize;
+			if (float.TryParse(GetSpecialValue(ldmlNode, "defaultFontSize"), out fontSize))
+			{
+				ws.DefaultFontSize = fontSize;
+			}
+			ws.Keyboard = GetSpecialValue(ldmlNode, "defaultKeyboard");
+			ws.SpellCheckingId = GetSpecialValue(ldmlNode, "spellCheckingId");
 			ws.StoreID = "";
 			ws.Modified = false;
 		}
 
-		private void ReadCollationElement(XmlDocument dom, WritingSystemDefinition ws)
+		private void ReadIdentityElement(XmlNode ldmlNode, WritingSystemDefinition ws)
 		{
-			XmlNode node = dom.SelectSingleNode("ldml/collations/collation[@type='']");
+			XmlNode identityNode = ldmlNode.SelectSingleNode("identity", _nameSpaceManager);
+			if (identityNode == null)
+			{
+				return;
+			}
+			ws.ISO = GetSubNodeAttributeValue(identityNode, "language", "type");
+			ws.Variant = GetSubNodeAttributeValue(identityNode, "variant", "type");
+			ws.Region = GetSubNodeAttributeValue(identityNode, "territory", "type");
+			ws.Script = GetSubNodeAttributeValue(identityNode, "script", "type");
+			string dateTime = GetSubNodeAttributeValue(identityNode, "generation", "date");
+			ws.DateModified = DateTime.Parse(dateTime);
+			XmlNode versionNode = identityNode.SelectSingleNode("version");
+			ws.VersionNumber = XmlHelpers.GetOptionalAttributeValue(versionNode, "number");
+			ws.VersionDescription = versionNode == null ? string.Empty : versionNode.InnerText;
+		}
+
+		private void ReadLayoutElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		{
+			// The orientation node has two attributes, "lines" and "characters" which define direction of writing.
+			// The valid values are: "top-to-bottom", "bottom-to-top", "left-to-right", and "right-to-left"
+			// Currently we only handle horizontal character orders with top-to-bottom line order, so
+			// any value other than characters right-to-left, we treat as our default left-to-right order.
+			// This probably works for many scripts such as various East Asian scripts which traditionally
+			// are top-to-bottom characters and right-to-left lines, but can also be written with
+			// left-to-right characters and top-to-bottom lines.
+			ws.RightToLeftScript = GetSubNodeAttributeValue(ldmlNode, "layout/orientation", "characters") ==
+								   "right-to-left";
+		}
+
+		private void ReadCollationElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		{
+			// no type is the same as type=standard, and is the only one we're interested in
+			XmlNode node = ldmlNode.SelectSingleNode("collations/collation[@type='']") ??
+						   ldmlNode.SelectSingleNode("collations/collation[@type='standard']");
 			if (node == null)
 			{
 				return;
@@ -80,7 +123,6 @@ namespace Palaso.WritingSystems
 				default:
 					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
 					throw new ApplicationException(message);
-					break;
 			}
 		}
 
@@ -106,6 +148,13 @@ namespace Palaso.WritingSystems
 
 		private void ReadCollationRulesForCustomSimple(XmlNode node, WritingSystemDefinition ws)
 		{
+			string rules;
+			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(node, _nameSpaceManager, out rules))
+			{
+				ws.SortRules = rules;
+				return;
+			}
+			// fall back to ICU rules if Simple rules don't work
 			ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
 			ReadCollationRulesForCustomICU(node, ws);
 		}
@@ -114,18 +163,14 @@ namespace Palaso.WritingSystems
 		{
 			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
 			doc.CreateXmlDeclaration("1.0", "", "no");
-			XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
-			XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
-			UpdateDOM(doc, ws);
+			WriteToDom(doc, ws);
 			doc.Save(filePath);
 		}
 
 		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws)
 		{
 			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
-			XmlHelpers.GetOrCreateElement(doc, ".", "ldml", null, _nameSpaceManager);
-			XmlHelpers.GetOrCreateElement(doc, "ldml", "identity", null, _nameSpaceManager);
-			UpdateDOM(doc, ws);
+			WriteToDom(doc, ws);
 			doc.Save(xmlWriter); //??? Not sure about this, does this need to be Write(To) or similar?
 		}
 
@@ -146,21 +191,15 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetTopLevelSpecialValue(XmlDocument doc, string field)
+		private string GetSpecialValue(XmlNode parent, string field)
 		{
-			XmlNode node = doc.SelectSingleNode("ldml/special/palaso:"+field, _nameSpaceManager);
+			XmlNode node = parent.SelectSingleNode("special/palaso:"+field, _nameSpaceManager);
 			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
 		}
 
-		private string GetSpecialValue(XmlNode parent, string field)
+		private string GetSubNodeAttributeValue(XmlNode parent, string path, string attributeName)
 		{
-			XmlNode node = parent.SelectSingleNode("special/palaso:" + field, _nameSpaceManager);
-			return node == null ? string.Empty : node.InnerText;
-		}
-
-		private string GetIdentityValue(XmlDocument doc, string field, string attributeName)
-		{
-			XmlNode node = doc.SelectSingleNode("ldml/identity/" + field);
+			XmlNode node = parent.SelectSingleNode(path);
 			return XmlHelpers.GetOptionalAttributeValue(node, attributeName, string.Empty);
 		}
 
@@ -171,49 +210,40 @@ namespace Palaso.WritingSystems
 			return m;
 		}
 
-		private void UpdateDOM(XmlDocument dom, WritingSystemDefinition ws)
+		public void WriteToDom(XmlNode parentOfLdmlNode, WritingSystemDefinition ws)
 		{
-			SetSubIdentityNode(dom, "language", "type", ws.ISO);
-			SetSubIdentityNode(dom, "script", "type", ws.Script);
-			SetSubIdentityNode(dom, "territory", "type", ws.Region);
-			SetSubIdentityNode(dom, "variant", "type", ws.Variant);
-			SetSubIdentityNode(dom, "generation", "date", String.Format("{0:s}", ws.DateModified));
-			XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/identity", "version", null, _nameSpaceManager);
-			XmlHelpers.AddOrUpdateAttribute(node, "number", ws.VersionNumber);
-			node.InnerText = ws.VersionDescription;
-			UpdateCollationElement(dom, ws);
+			if (parentOfLdmlNode == null)
+			{
+				throw new ArgumentNullException("parentOfLdmlNode");
+			}
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
+			XmlNode ldmlNode = XmlHelpers.GetOrCreateElement(parentOfLdmlNode, ".", "ldml", null, _nameSpaceManager);
 
-			SetTopLevelSpecialNode(dom, "languageName", ws.LanguageName);
-			SetTopLevelSpecialNode(dom, "abbreviation", ws.Abbreviation);
-			SetTopLevelSpecialNode(dom, "defaultFontFamily", ws.DefaultFontName);
-			SetTopLevelSpecialNode(dom, "keyboard", ws.Keyboard);
-			SetTopLevelSpecialNode(dom, "rightToLeft", ws.RightToLeftScript ? "true": "false");
+			UpdateIdentityElement(ldmlNode, ws);
+			UpdateLayoutElement(ldmlNode, ws);
+			UpdateCollationElement(ldmlNode, ws);
+
+			SetSpecialNode(ldmlNode, "languageName", ws.LanguageName);
+			SetSpecialNode(ldmlNode, "abbreviation", ws.Abbreviation);
+			SetSpecialNode(ldmlNode, "defaultFontFamily", ws.DefaultFontName);
+			SetSpecialNode(ldmlNode, "defaultFontSize", ws.DefaultFontSize.ToString());
+			SetSpecialNode(ldmlNode, "defaultKeyboard", ws.Keyboard);
+			SetSpecialNode(ldmlNode, "spellCheckingId", ws.SpellCheckingId);
 		}
 
-		private void SetSubIdentityNode(XmlDocument dom, string field, string attributeName, string value)
+		private void SetSubNodeWithAttribute(XmlNode parent, string field, string attributeName, string value)
 		{
 			if (!String.IsNullOrEmpty(value))
 			{
-				XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/identity", field, null, _nameSpaceManager);
-				XmlHelpers.AddOrUpdateAttribute(node, attributeName, value);
+				XmlNode node = XmlHelpers.GetOrCreateElement(parent, ".", field, null, _nameSpaceManager, LdmlNodeComparer.Singleton);
+				XmlHelpers.AddOrUpdateAttribute(node, attributeName, value, LdmlNodeComparer.Singleton);
 			}
 			else
 			{
-				XmlHelpers.RemoveElement(dom, "ldml/identity/" + field, _nameSpaceManager);
-			}
-		}
-
-		private void SetTopLevelSpecialNode(XmlDocument dom, string field, string value)
-		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				XmlHelpers.GetOrCreateElement(dom, "ldml", "special", null, _nameSpaceManager);
-				XmlNode node = XmlHelpers.GetOrCreateElement(dom, "ldml/special", field, "palaso", _nameSpaceManager);
-				Palaso.XmlHelpers.AddOrUpdateAttribute(node, "value", value);
-			}
-			else
-			{
-				XmlHelpers.RemoveElement(dom, "ldml/special/palaso:" + field, _nameSpaceManager);
+				XmlHelpers.RemoveElement(parent, field, _nameSpaceManager);
 			}
 		}
 
@@ -221,9 +251,10 @@ namespace Palaso.WritingSystems
 		{
 			if (!String.IsNullOrEmpty(value))
 			{
-				XmlHelpers.GetOrCreateElement(parent, ".", "special", null, _nameSpaceManager);
-				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "special", field, "palaso", _nameSpaceManager);
-				node.InnerText = value;
+				XmlHelpers.GetOrCreateElement(parent, ".", "special", null, _nameSpaceManager, LdmlNodeComparer.Singleton);
+				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "special", field, "palaso", _nameSpaceManager,
+					LdmlNodeComparer.Singleton);
+				XmlHelpers.AddOrUpdateAttribute(node, "value", value, LdmlNodeComparer.Singleton);
 			}
 			else
 			{
@@ -231,20 +262,51 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private void UpdateCollationElement(XmlDocument dom, WritingSystemDefinition ws)
+		private void UpdateIdentityElement(XmlNode ldmlNode, WritingSystemDefinition ws)
 		{
-			Debug.Assert(dom != null);
+			XmlNode identityNode = XmlHelpers.GetOrCreateElement(ldmlNode, ".", "identity", null,
+				_nameSpaceManager, LdmlNodeComparer.Singleton);
+			SetSubNodeWithAttribute(identityNode, "language", "type", ws.ISO);
+			SetSubNodeWithAttribute(identityNode, "script", "type", ws.Script);
+			SetSubNodeWithAttribute(identityNode, "territory", "type", ws.Region);
+			SetSubNodeWithAttribute(identityNode, "variant", "type", ws.Variant);
+			SetSubNodeWithAttribute(identityNode, "generation", "date", String.Format("{0:s}", ws.DateModified));
+			XmlNode node = XmlHelpers.GetOrCreateElement(identityNode, ".", "version", null, _nameSpaceManager,
+				LdmlNodeComparer.Singleton);
+			XmlHelpers.AddOrUpdateAttribute(node, "number", ws.VersionNumber, LdmlNodeComparer.Singleton);
+			node.InnerText = ws.VersionDescription;
+		}
+
+		private void UpdateLayoutElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		{
+			XmlNode layoutNode = XmlHelpers.GetOrCreateElement(ldmlNode, ".", "layout", null, _nameSpaceManager,
+				LdmlNodeComparer.Singleton);
+			XmlNode orientationNode = XmlHelpers.GetOrCreateElement(layoutNode, ".", "orientation", null,
+				_nameSpaceManager, LdmlNodeComparer.Singleton);
+			// Currently we don't support line orientations other than top-to-bottom.
+			// We also don't support vertical character orientations, although both of these are allowed in LDML
+			XmlHelpers.AddOrUpdateAttribute(orientationNode, "lines", "top-to-bottom", LdmlNodeComparer.Singleton);
+			XmlHelpers.AddOrUpdateAttribute(orientationNode, "characters", ws.RightToLeftScript ? "right-to-left" : "left-to-right",
+				LdmlNodeComparer.Singleton);
+		}
+
+		private void UpdateCollationElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		{
+			Debug.Assert(ldmlNode != null);
 			Debug.Assert(ws != null);
 			if (string.IsNullOrEmpty(ws.SortUsing) || !Enum.IsDefined(typeof (WritingSystemDefinition.SortRulesType), ws.SortUsing))
 			{
 				return;
 			}
-			XmlNode parentNode = XmlHelpers.GetOrCreateElement(dom, "ldml", "collations", null, _nameSpaceManager);
-			XmlNode node = parentNode.SelectSingleNode("collation[@type='']", _nameSpaceManager);
+			XmlNode parentNode = XmlHelpers.GetOrCreateElement(ldmlNode, ".", "collations", null,
+				_nameSpaceManager, LdmlNodeComparer.Singleton);
+			// Because we have to check the type attribute, we can't just use the XmlHelpers.GetOrCreateElement
+			XmlNode node = parentNode.SelectSingleNode("collation[@type='']", _nameSpaceManager) ??
+				parentNode.SelectSingleNode("collation[@type='standard']", _nameSpaceManager);
 			if (node == null)
 			{
 				node = parentNode.OwnerDocument.CreateElement("collation");
-				parentNode.AppendChild(node);
+				XmlHelpers.InsertNodeUsingDefinedOrder(parentNode, node, LdmlNodeComparer.Singleton);
 			}
 			switch ((WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
 			{
@@ -260,7 +322,6 @@ namespace Palaso.WritingSystems
 				default:
 					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
 					throw new ApplicationException(message);
-					break;
 			}
 			SetSpecialNode(node, "sortRulesType", ws.SortUsing);
 		}
@@ -286,8 +347,9 @@ namespace Palaso.WritingSystems
 				parentNode.RemoveChild(node);
 			}
 
-			XmlNode alias = XmlHelpers.GetOrCreateElement(parentNode, ".", "alias", string.Empty, _nameSpaceManager);
-			XmlHelpers.AddOrUpdateAttribute(alias, "source", ws.SortRules);
+			XmlNode alias = XmlHelpers.GetOrCreateElement(parentNode, ".", "alias", string.Empty,
+				_nameSpaceManager, LdmlNodeComparer.Singleton);
+			XmlHelpers.AddOrUpdateAttribute(alias, "source", ws.SortRules, LdmlNodeComparer.Singleton);
 		}
 
 		private void UpdateCollationRulesFromCustomSimple(XmlNode parentNode, WritingSystemDefinition ws)
@@ -313,6 +375,224 @@ namespace Palaso.WritingSystems
 			XmlHelpers.RemoveElement(parentNode, "alias", _nameSpaceManager);
 			IcuRulesParser parser = new IcuRulesParser(true);
 			parser.AddIcuRulesToNode(parentNode, icu, _nameSpaceManager);
+		}
+	}
+
+	/// <summary>
+	/// Class for comparison of order of nodes in an LDML document.
+	/// Based on http://www.unicode.org/cldr/data/docs/design/ldml_canonical_form.html
+	/// </summary>
+	class LdmlNodeComparer: IComparer<XmlNode>
+	{
+		public static LdmlNodeComparer Singleton
+		{
+			get
+			{
+				if (_singleton == null)
+				{
+					_singleton = new LdmlNodeComparer();
+				}
+				return _singleton;
+			}
+		}
+
+		private static LdmlNodeComparer _singleton;
+		private LdmlNodeComparer() {}
+
+		public int Compare(XmlNode x, XmlNode y)
+		{
+			if (x == null)
+			{
+				return y == null ? 0 : -1;
+			}
+			if (y == null)
+			{
+				return 1;
+			}
+			int result = CompareNodeTypes(x, y);
+			if (result != 0)
+			{
+				return result;
+			}
+			switch (x.NodeType)
+			{
+				case XmlNodeType.Element:
+					result = CompareElementNames(x, y);
+					if (result != 0)
+					{
+						return result;
+					}
+					result = CompareElementAttributes(x, y);
+					break;
+				case XmlNodeType.Attribute:
+					result = CompareAttributeNames(x, y);
+					if (result != 0)
+					{
+						return result;
+					}
+					result = CompareAttributeValues(x, y);
+					break;
+			}
+			return result;
+		}
+
+		private static readonly object _key = new object();
+		private static Dictionary<XmlNodeType, int> _nodeTypeStrengths;
+
+		private static int GetItemStrength<T>(T item, IDictionary<T, int> strengthMap)
+		{
+			Debug.Assert(strengthMap != null);
+			return strengthMap.ContainsKey(item) ? strengthMap[item] : int.MaxValue;
+		}
+
+		private static int CompareNodeTypes(XmlNode x, XmlNode y)
+		{
+			lock (_key)
+			{
+				if (_nodeTypeStrengths == null)
+				{
+					_nodeTypeStrengths = new Dictionary<XmlNodeType, int>();
+					_nodeTypeStrengths[XmlNodeType.Attribute] = 1;
+					_nodeTypeStrengths[XmlNodeType.Element] = 2;
+				}
+			}
+			return GetItemStrength(x.NodeType, _nodeTypeStrengths).CompareTo(GetItemStrength(y.NodeType, _nodeTypeStrengths));
+		}
+
+		static readonly string[] _elementOrderedNameList = new string[] {
+			"ldml", "identity", "alias", "localeDisplayNames", "layout", "characters", "delimiters", "measurement",
+			"dates", "numbers", "collations", "posix", "version", "generation", "language", "script", "territory",
+			"variant", "languages", "scripts", "territories", "variants", "keys", "types", "key", "type", "orientation",
+			"exemplarCharacters", "mapping", "cp", "quotationStart", "quotationEnd", "alternateQuotationStart",
+			"alternateQuotationEnd", "measurementSystem", "paperSize", "height", "width", "localizedPatternChars",
+			"calendars", "timeZoneNames", "months", "monthNames", "monthAbbr", "days", "dayNames", "dayAbbr", "week",
+			"am", "pm", "eras", "dateFormats", "timeFormats", "dateTimeFormats", "fields", "month", "day", "minDays",
+			"firstDay", "weekendStart", "weekendEnd", "eraNames", "eraAbbr", "era", "pattern", "displayName",
+			"hourFormat", "hoursFormat", "gmtFormat", "regionFormat", "fallbackFormat", "abbreviationFallback",
+			"preferenceOrdering", "default", "calendar", "monthContext", "monthWidth", "dayContext", "dayWidth",
+			"dateFormatLength", "dateFormat", "timeFormatLength", "timeFormat", "dateTimeFormatLength", "dateTimeFormat",
+			"zone", "long", "short", "exemplarCity", "generic", "standard", "daylight", "field", "relative", "symbols",
+			"decimalFormats", "scientificFormats", "percentFormats", "currencyFormats", "currencies",
+			"decimalFormatLength", "decimalFormat", "scientificFormatLength", "scientificFormat", "percentFormatLength",
+			"percentFormat", "currencyFormatLength", "currencyFormat", "currency", "symbol", "decimal", "group", "list",
+			"percentSign", "nativeZeroDigit", "patternDigit", "plusSign", "minusSign", "exponential", "perMille",
+			"infinity", "nan", "collation", "messages", "yesstr", "nostr", "yesexpr", "noexpr", "special"};
+
+		static readonly string[] _attributeOrderedNameList = new string[] {
+			"type", "key", "registry", "alt", "source", "path", "day", "date", "version", "count", "lines",
+			"characters", "before", "number", "time", "validSubLocales", "standard", "references", "draft"};
+
+		static readonly string[] _valueOrderedList = new string[] {
+			"sun", "mon", "tue", "wed", "thu", "fri", "sat", "full", "long", "medium", "short", "wide", "abbreviated",
+			"narrow", "era", "year", "month", "week", "day", "weekday", "dayperiod", "hour", "minute", "second", "zone"};
+
+		private static Dictionary<string, int> _elementNameValues;
+		private static Dictionary<string, int> _attributeNameValues;
+		private static Dictionary<string, int> _valueValues;
+
+		private static int CompareElementNames(XmlNode x, XmlNode y)
+		{
+			lock (_key)
+			{
+				if (_elementNameValues == null)
+				{
+					_elementNameValues = new Dictionary<string, int>(_elementOrderedNameList.Length);
+					for (int i = 0; i < _elementOrderedNameList.Length; i++)
+					{
+						_elementNameValues.Add(_elementOrderedNameList[i], i);
+					}
+				}
+			}
+			// Any element named "special" always comes last, even after other new elements that may have been
+			// added to the standard after this code was written
+			if (x.Name == "special" && y.Name != "special")
+			{
+				return 1;
+			}
+			if (y.Name == "special" && x.Name != "special")
+			{
+				return -1;
+			}
+			return GetItemStrength(x.Name, _elementNameValues).CompareTo(GetItemStrength(y.Name, _elementNameValues));
+		}
+
+		private static int CompareAttributeNames(XmlNode x, XmlNode y)
+		{
+			lock (_key)
+			{
+				if (_attributeNameValues == null)
+				{
+					_attributeNameValues = new Dictionary<string, int>(_attributeOrderedNameList.Length);
+					for (int i = 0; i < _attributeOrderedNameList.Length; i++)
+					{
+						_attributeNameValues.Add(_attributeOrderedNameList[i], i);
+					}
+				}
+			}
+			return GetItemStrength(x.Name, _attributeNameValues).CompareTo(GetItemStrength(y.Name, _attributeNameValues));
+		}
+
+		private int CompareElementAttributes(XmlNode x, XmlNode y)
+		{
+			for (int i = 0; i < x.Attributes.Count && i < y.Attributes.Count; i++)
+			{
+				int result = Compare(x.Attributes[i], y.Attributes[i]);
+				if (result != 0)
+				{
+					return result;
+				}
+			}
+			return x.Attributes.Count.CompareTo(y.Attributes.Count);
+		}
+
+		/// <summary>
+		/// Compares two attribute values.  There is a value order table that defines the order of values
+		/// for some attributes of some elements.  After that, sort in numeric order, and then in alphabetic order.
+		/// There is a more complicated rule for the "type" attribute of the "zone" element, but since we're
+		/// not using that element at this time, I'm not going to try to write code for it.
+		/// </summary>
+		private static int CompareAttributeValues(XmlNode x, XmlNode y)
+		{
+			lock (_key)
+			{
+				if (_valueValues == null)
+				{
+					_valueValues = new Dictionary<string, int>(_valueOrderedList.Length);
+					for (int i = 0; i < _valueOrderedList.Length; i++)
+					{
+						_valueValues.Add(_valueOrderedList[i], i);
+					}
+				}
+			}
+			int result = 0;
+			if (x.Name == "type" || x.Name == "day")
+			{
+				result = GetItemStrength(x.Value, _valueValues).CompareTo(GetItemStrength(y.Value, _valueValues));
+			}
+			if (result != 0)
+			{
+				return result;
+			}
+			double xNumericValue, yNumericValue;
+			bool xIsNumeric = double.TryParse(x.Value, out xNumericValue);
+			bool yIsNumeric = double.TryParse(y.Value, out yNumericValue);
+			if (xIsNumeric && !yIsNumeric)
+			{
+				result = -1;
+			}
+			else if (!xIsNumeric && yIsNumeric)
+			{
+				result = 1;
+			}
+			else if (xIsNumeric && yIsNumeric)
+			{
+				result = xNumericValue.CompareTo(yNumericValue);
+			}
+			if (result == 0)
+			{
+				result = x.Value.CompareTo(y.Value);
+			}
+			return result;
 		}
 	}
 }

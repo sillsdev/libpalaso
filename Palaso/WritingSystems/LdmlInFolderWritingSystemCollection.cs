@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using Palaso.WritingSystems;
 
 namespace Palaso.WritingSystems
@@ -241,17 +242,21 @@ namespace Palaso.WritingSystems
 			{
 				return; // no need to save (better to preserve the modified date)
 			}
-			if (!String.IsNullOrEmpty(incomingFileName) &&  writingSystemFileName != incomingFileName)
+			XmlDocument dom = new XmlDocument();
+			if (!String.IsNullOrEmpty(incomingFileName) && writingSystemFileName != incomingFileName)
 			{
 				string previousFilePath = Path.Combine(PathToWritingSystems, incomingFileName);
 				if (File.Exists(previousFilePath))
 				{
+					// load old data to preserve stuff in LDML that we don't use
+					dom.Load(previousFilePath);
 					// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
 					File.Delete(previousFilePath); //!!! Should this be move to trash?
 				}
 			}
 			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Write(writingSystemFilePath, ws);
+			adaptor.WriteToDom(dom, ws);
+			dom.Save(writingSystemFilePath);
 
 			ws.Modified = false;
 			//save this so that if the user makes a name-changing change and saves again, we

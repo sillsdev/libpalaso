@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace Palaso
@@ -7,13 +8,41 @@ namespace Palaso
 	{
 		public static void AddOrUpdateAttribute(XmlNode node, string attributeName, string value)
 		{
-			XmlNode attr = GetDocument(node).CreateAttribute(attributeName);
+			AddOrUpdateAttribute(node, attributeName, value, null);
+		}
+
+		public static void AddOrUpdateAttribute(XmlNode node, string attributeName, string value, IComparer<XmlNode> nodeOrderComparer)
+		{
+			XmlAttribute attr = GetDocument(node).CreateAttribute(attributeName);
 			attr.Value = value;
-			node.Attributes.SetNamedItem(attr);
+			if (nodeOrderComparer == null)
+			{
+				node.Attributes.SetNamedItem(attr);
+			}
+			else
+			{
+				InsertNodeUsingDefinedOrder(node, attr, nodeOrderComparer);
+				/*XmlAttribute insertAfterAttribute = null;
+				foreach (XmlAttribute childAttribute in node.Attributes)
+				{
+					if (nodeOrderComparer.Compare(attr, childAttribute) < 0)
+					{
+						break;
+					}
+					insertAfterAttribute = childAttribute;
+				}
+				node.Attributes.InsertAfter(attr, insertAfterAttribute);*/
+			}
 		}
 
 		public static XmlNode GetOrCreateElement(XmlNode node, string xpathNotIncludingElement,
 			string elementName, string nameSpace, XmlNamespaceManager nameSpaceManager)
+		{
+			return GetOrCreateElement(node, xpathNotIncludingElement, elementName, nameSpace, nameSpaceManager, null);
+		}
+
+		public static XmlNode GetOrCreateElement(XmlNode node, string xpathNotIncludingElement,
+			string elementName, string nameSpace, XmlNamespaceManager nameSpaceManager, IComparer<XmlNode> nodeOrderComparer)
 		{
 			//enhance: if the parent path isn't found, strip of the last piece and recurse,
 			//so that the path will always be created if needed.
@@ -39,7 +68,27 @@ namespace Palaso
 				{
 					n = GetDocument(node).CreateElement(elementName);
 				}
-				parentNode.AppendChild(n);
+				if (nodeOrderComparer == null)
+				{
+					parentNode.AppendChild(n);
+				}
+				else
+				{
+					XmlNode insertAfterNode = null;
+					foreach (XmlNode childNode in parentNode.ChildNodes)
+					{
+						if (childNode.NodeType != XmlNodeType.Element)
+						{
+							continue;
+						}
+						if (nodeOrderComparer.Compare(n, childNode) < 0)
+						{
+							break;
+						}
+						insertAfterNode = childNode;
+					}
+					parentNode.InsertAfter(n, insertAfterNode);
+				}
 			}
 			return n;
 		}
@@ -148,6 +197,36 @@ namespace Palaso
 					return xa.Value;
 			}
 			return defaultString;
+		}
+
+		public static void InsertNodeUsingDefinedOrder(XmlNode parent, XmlNode newChild, IComparer<XmlNode> nodeOrderComparer)
+		{
+			if (newChild.NodeType == XmlNodeType.Attribute)
+			{
+				XmlAttribute insertAfterNode = null;
+				foreach (XmlAttribute childNode in parent.Attributes)
+				{
+					if (nodeOrderComparer.Compare(newChild, childNode) < 0)
+					{
+						break;
+					}
+					insertAfterNode = childNode;
+				}
+				parent.Attributes.InsertAfter((XmlAttribute)newChild, insertAfterNode);
+			}
+			else
+			{
+				XmlNode insertAfterNode = null;
+				foreach (XmlNode childNode in parent.ChildNodes)
+				{
+					if (nodeOrderComparer.Compare(newChild, childNode) < 0)
+					{
+						break;
+					}
+					insertAfterNode = childNode;
+				}
+				parent.InsertAfter(newChild, insertAfterNode);
+			}
 		}
 	}
 }

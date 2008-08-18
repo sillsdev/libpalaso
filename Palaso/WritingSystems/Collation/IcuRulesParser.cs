@@ -2,17 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Palaso.WritingSystems;
-using Palaso.WritingSystems.Collation;
 using Spart;
 using Spart.Actions;
 using Spart.Parsers;
 using Spart.Parsers.NonTerminal;
-using Spart.Parsers.Primitives;
 using Spart.Scanners;
 using Debugger = Spart.Debug.Debugger;
 
@@ -604,7 +600,6 @@ namespace Palaso.WritingSystems.Collation
 			optionMap["2"] = "secondary";
 			optionMap["3"] = "tertiary";
 			Debug.Assert(optionMap.ContainsKey(args.Value));
-			XmlNode attr = _dom.CreateAttribute("before");
 			AddAttributeForReset("before", optionMap[args.Value]);
 		}
 
@@ -790,7 +785,6 @@ namespace Palaso.WritingSystems.Collation
 
 		private void OnIcuRules(object sender, ActionEventArgs args)
 		{
-			XmlNode afterNode;
 			PreserveNonIcuSettings();
 			XmlHelpers.RemoveElement(_parentNode, "settings", _nameSpaceManager);
 			// add the settings element, if needed.
@@ -799,15 +793,10 @@ namespace Palaso.WritingSystems.Collation
 				XmlNode settings = _dom.CreateElement("settings");
 				foreach (XmlNode attr in _optionAttributes)
 				{
-					settings.Attributes.SetNamedItem(attr);
+					XmlHelpers.InsertNodeUsingDefinedOrder(settings, attr, LdmlNodeComparer.Singleton);
 				}
 				// "settings" comes after "base", which should be the first element if it exists
-				afterNode = null;
-				if (_parentNode.FirstChild != null && _parentNode.FirstChild.Name == "base")
-				{
-					afterNode = _parentNode.FirstChild;
-				}
-				_parentNode.InsertAfter(settings, afterNode);
+				XmlHelpers.InsertNodeUsingDefinedOrder(_parentNode, settings, LdmlNodeComparer.Singleton);
 			}
 			XmlHelpers.RemoveElement(_parentNode, "rules", _nameSpaceManager);
 			XmlNode rulesNode = _dom.CreateElement("rules");
@@ -817,10 +806,7 @@ namespace Palaso.WritingSystems.Collation
 				rulesNode.AppendChild(node);
 			}
 			// the "rules" element comes before any "special" elements, which should be the last elements if they exist
-			int i;
-			for (i = _parentNode.ChildNodes.Count - 1; i >= 0 && _parentNode.ChildNodes[i].Name == "special"; i--);
-			afterNode = i < 0 ? null : _parentNode.ChildNodes[i];
-			_parentNode.InsertAfter(rulesNode, afterNode);
+			XmlHelpers.InsertNodeUsingDefinedOrder(_parentNode, rulesNode, LdmlNodeComparer.Singleton);
 		}
 	}
 }
