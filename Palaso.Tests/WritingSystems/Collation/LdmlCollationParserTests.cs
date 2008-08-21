@@ -493,7 +493,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 			_collationNode.InnerXml = "<rules><reset before=\"primary\"><first_non_ignorable /></reset><p>a</p><p>b</p></rules>";
 			string simple;
 			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationNode, _nameSpaceManager, out simple));
-			Assert.AreEqual("a\nb", simple);
+			Assert.AreEqual("a\r\nb", simple);
 		}
 
 		[Test]
@@ -520,7 +520,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 			_collationNode.InnerXml = "<rules><reset before=\"primary\"><first_non_ignorable /></reset><pc>abc</pc></rules>";
 			string simple;
 			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationNode, _nameSpaceManager, out simple));
-			Assert.AreEqual("a\nb\nc", simple);
+			Assert.AreEqual("a\r\nb\r\nc", simple);
 		}
 
 		[Test]
@@ -548,7 +548,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 				+ "<s>d</s><pc>efg</pc><t>h</t><tc>ijk</tc><p>l</p></rules>";
 			string simple;
 			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationNode, _nameSpaceManager, out simple));
-			Assert.AreEqual("a b c d\ne\nf\n(g h i j k)\nl", simple);
+			Assert.AreEqual("a b c d\r\ne\r\nf\n(g h i j k)\r\nl", simple);
 		}
 
 		[Test]

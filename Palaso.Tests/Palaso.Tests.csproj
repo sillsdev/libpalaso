@@ -83,8 +83,10 @@
 	<Compile Include="WritingSystems\Collation\LdmlCollationParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\IWritingSystemStore.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlAdaptorTests.cs" />
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.Tests.cs" />
 	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
 	<Compile Include="XmlHelpers.Tests.cs" />
   </ItemGroup>

@@ -13,26 +13,20 @@ namespace Palaso
 
 		public static void AddOrUpdateAttribute(XmlNode node, string attributeName, string value, IComparer<XmlNode> nodeOrderComparer)
 		{
-			XmlAttribute attr = GetDocument(node).CreateAttribute(attributeName);
-			attr.Value = value;
-			if (nodeOrderComparer == null)
+			XmlNode attr = node.Attributes.GetNamedItem(attributeName);
+			if (attr == null)
 			{
-				node.Attributes.SetNamedItem(attr);
-			}
-			else
-			{
-				InsertNodeUsingDefinedOrder(node, attr, nodeOrderComparer);
-				/*XmlAttribute insertAfterAttribute = null;
-				foreach (XmlAttribute childAttribute in node.Attributes)
+				attr = GetDocument(node).CreateAttribute(attributeName);
+				if (nodeOrderComparer == null)
 				{
-					if (nodeOrderComparer.Compare(attr, childAttribute) < 0)
-					{
-						break;
-					}
-					insertAfterAttribute = childAttribute;
+					node.Attributes.SetNamedItem(attr);
 				}
-				node.Attributes.InsertAfter(attr, insertAfterAttribute);*/
+				else
+				{
+					InsertNodeUsingDefinedOrder(node, attr, nodeOrderComparer);
+				}
 			}
+			attr.Value = value;
 		}
 
 		public static XmlNode GetOrCreateElement(XmlNode node, string xpathNotIncludingElement,

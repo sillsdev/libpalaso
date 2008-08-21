@@ -91,11 +91,16 @@ namespace Palaso.WritingSystems
 			return _writingSystems.ContainsKey(identifier);
 		}
 
-		public void Set(WritingSystemDefinition ws)
+		public virtual void Set(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
 				throw new ArgumentNullException("ws");
+			}
+			string newID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+			if (_writingSystems.ContainsKey(newID) && newID != ws.StoreID)
+			{
+				throw new ArgumentException("Duplicate writing system already exists.  Please change this writing system before storing.");
 			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
@@ -104,11 +109,7 @@ namespace Palaso.WritingSystems
 			{
 				_writingSystems.Remove(ws.StoreID);
 			}
-			ws.StoreID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
-			if (_writingSystems.ContainsKey(ws.StoreID))
-			{
-				throw new ArgumentException("Duplicate writing system already exists.  Please change this writing system before storing.");
-			}
+			ws.StoreID = newID;
 			_writingSystems[ws.StoreID] = ws;
 		}
 

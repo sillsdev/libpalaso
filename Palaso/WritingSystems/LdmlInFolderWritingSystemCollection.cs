@@ -218,7 +218,7 @@ namespace Palaso.WritingSystems
 			if (File.Exists(filePath))
 			{
 				adaptor.Read(filePath, ws);
-				ws.StoreID = Path.GetFileNameWithoutExtension(GetFileName(ws));
+				ws.StoreID = identifier;
 				ws.Modified = false;
 			}
 			else
@@ -243,19 +243,26 @@ namespace Palaso.WritingSystems
 				return; // no need to save (better to preserve the modified date)
 			}
 			XmlDocument dom = new XmlDocument();
-			if (!String.IsNullOrEmpty(incomingFileName) && writingSystemFileName != incomingFileName)
+			if (!String.IsNullOrEmpty(incomingFileName))
 			{
 				string previousFilePath = Path.Combine(PathToWritingSystems, incomingFileName);
 				if (File.Exists(previousFilePath))
 				{
-					// load old data to preserve stuff in LDML that we don't use
-					dom.Load(previousFilePath);
-					// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-					File.Delete(previousFilePath); //!!! Should this be move to trash?
+					// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
+					try
+					{
+						dom.Load(previousFilePath);
+					}
+					catch {}
+					if (writingSystemFileName != incomingFileName)
+					{
+						// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
+						File.Delete(previousFilePath); //!!! Should this be move to trash?
+					}
 				}
 			}
 			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.WriteToDom(dom, ws);
+			adaptor.Write(dom, ws);
 			dom.Save(writingSystemFilePath);
 
 			ws.Modified = false;
@@ -337,6 +344,23 @@ namespace Palaso.WritingSystems
 					OnChangeNotifySharedStore(ws);
 				}
 			}
+		}
+
+		public override void Set(WritingSystemDefinition ws)
+		{
+			// Renaming files on Set keeps the file names consistent with StoreID which is changed in the base.
+			// This allows us to avoid creating duplicate files and to preserve LDML data which is not used
+			// in palaso.
+			string oldFileName = GetFileNameFromIdentifier(ws.StoreID);
+			string oldFilePath = Path.Combine(PathToWritingSystems, oldFileName);
+			string oldID = ws.StoreID;
+			base.Set(ws);
+			if (oldID == ws.StoreID || string.IsNullOrEmpty(oldFileName) || !File.Exists(oldFilePath))
+			{
+				return;
+			}
+			string writingSystemFilePath = GetFilePath(ws);
+			File.Move(oldFilePath, writingSystemFilePath);
 		}
 	}
 }

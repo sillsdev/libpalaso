@@ -81,7 +81,7 @@ namespace Palaso.WritingSystems.Collation
 				switch (node.Name)
 				{
 					case "p":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + "\n" + GetIcuData(node);
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + "\r\n" + GetIcuData(node);
 						break;
 					case "s":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetIcuData(node);
@@ -92,7 +92,7 @@ namespace Palaso.WritingSystems.Collation
 						break;
 					case "pc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
-									   BuildSimpleRulesFromConcatenatedData("\n", node.InnerText);
+									   BuildSimpleRulesFromConcatenatedData("\r\n", node.InnerText);
 						break;
 					case "sc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +

@@ -66,6 +66,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				set { _iso = value; }
 			}
 
+			private string _script;
+
+			[DescriptionAttribute("Enter something here if you need to distinguish between writing systems of the same language in different scripts.  For example, Chinese could be written in simplified or traditional script.")]
+			public string Script
+			{
+				get { return _script; }
+				set { _script = value; }
+			}
+
 			private string _region;
 
 			[DescriptionAttribute("Enter something here if you need to distinguish between writing systems of the same language in different places.  For example, English is spelled differently in the USA and UK.")]
@@ -131,6 +140,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_proxy.Name = _model.CurrentLanguageName;
 				_proxy.Abbreviation = _model.CurrentAbbreviation;
 				_proxy.ISO = _model.CurrentISO;
+				_proxy.Script = _model.CurrentScript;
 				_proxy.Region = _model.CurrentRegion;
 				_proxy.Variant = _model.CurrentVariant;
 				_pgAbout.Enabled = true;
@@ -149,6 +159,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_model.CurrentLanguageName = _proxy.Name;
 				_model.CurrentAbbreviation = _proxy.Abbreviation;
 				_model.CurrentISO = _proxy.ISO;
+				_model.CurrentScript = _proxy.Script;
 				_model.CurrentRegion = _proxy.Region;
 				_model.CurrentVariant = _proxy.Variant;
 			}

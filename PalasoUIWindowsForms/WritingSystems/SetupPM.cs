@@ -651,26 +651,44 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void SetAllPossibleAndRemoveOthers()
 		{
-			// Remove everything from the store, then set everything that we can
+			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
 			// The reason to do this is to solve problems with cycles that could prevent saving.
 			// Example:
 			// ws1 has ID "a" and ws2 has ID "b"
 			// Set ws1 to ID "b" and ws2 to ID "a"
 			// The store will not allow you to set either of these because of the conflict
-			// but if we remove them first and then set them, it will work.
-			foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
-			{
-				if (!string.IsNullOrEmpty(ws.StoreID))
-				{
-					_writingSystemStore.Remove(ws.StoreID);
-					ws.StoreID = string.Empty;
-				}
-			}
+			// NOTE: It is not a good idea to remove and then add all writing systems, even though it would
+			// NOTE: accomplish the same goal as any information in the LDML file not used by palaso would be lost.
+			Dictionary<WritingSystemDefinition, string> cantSet = new Dictionary<WritingSystemDefinition, string>();
 			foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
 			{
 				if (_writingSystemStore.CanSet(ws))
 				{
 					_writingSystemStore.Set(ws);
+				}
+				else
+				{
+					cantSet.Add(ws, ws.ISO);
+				}
+			}
+			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
+			{
+				while (!_writingSystemStore.CanSet(kvp.Key))
+				{
+					kvp.Key.ISO += "X";
+				}
+				_writingSystemStore.Set(kvp.Key);
+			}
+			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
+			{
+				kvp.Key.ISO = kvp.Value;
+				if (_writingSystemStore.CanSet(kvp.Key))
+				{
+					_writingSystemStore.Set(kvp.Key);
+				}
+				else
+				{
+					_writingSystemStore.Remove(kvp.Key.StoreID);
 				}
 			}
 		}

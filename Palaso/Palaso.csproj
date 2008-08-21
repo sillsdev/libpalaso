@@ -142,6 +142,7 @@
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollator.cs" />
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.cs" />
+	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />

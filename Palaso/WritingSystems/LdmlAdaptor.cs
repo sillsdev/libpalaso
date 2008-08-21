@@ -18,6 +18,14 @@ namespace Palaso.WritingSystems
 
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
+			if (filePath == null)
+			{
+				throw new ArgumentNullException("filePath");
+			}
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
 			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
 			doc.Load(filePath);
 			Read(doc, ws);
@@ -25,6 +33,14 @@ namespace Palaso.WritingSystems
 
 		public void Read(XmlReader xmlReader, WritingSystemDefinition ws)
 		{
+			if (xmlReader == null)
+			{
+				throw new ArgumentNullException("xmlReader");
+			}
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
 			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
 			doc.Load(xmlReader);
 			Read(doc, ws);
@@ -97,8 +113,7 @@ namespace Palaso.WritingSystems
 		private void ReadCollationElement(XmlNode ldmlNode, WritingSystemDefinition ws)
 		{
 			// no type is the same as type=standard, and is the only one we're interested in
-			XmlNode node = ldmlNode.SelectSingleNode("collations/collation[@type='']") ??
-						   ldmlNode.SelectSingleNode("collations/collation[@type='standard']");
+			XmlNode node = ldmlNode.SelectSingleNode("collations/collation[not(@type) or @type='standard']");
 			if (node == null)
 			{
 				return;
@@ -161,56 +176,36 @@ namespace Palaso.WritingSystems
 
 		public void Write(string filePath, WritingSystemDefinition ws)
 		{
+			if (filePath == null)
+			{
+				throw new ArgumentNullException("filePath");
+			}
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
 			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
 			doc.CreateXmlDeclaration("1.0", "", "no");
-			WriteToDom(doc, ws);
+			Write(doc, ws);
 			doc.Save(filePath);
 		}
 
 		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws)
 		{
+			if (xmlWriter == null)
+			{
+				throw new ArgumentNullException("xmlWriter");
+			}
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
 			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
-			WriteToDom(doc, ws);
+			Write(doc, ws);
 			doc.Save(xmlWriter); //??? Not sure about this, does this need to be Write(To) or similar?
 		}
 
-		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
-		{
-			string id = rfc4646.ToLower();
-			switch (id)
-			{
-				case "en-latn":
-					ws.ISO = "en";
-					ws.LanguageName = "English";
-					ws.Abbreviation = "eng";
-					ws.Script = "Latn";
-					break;
-				 default:
-					ws.Script = "Latn";
-					break;
-			}
-		}
-
-		private string GetSpecialValue(XmlNode parent, string field)
-		{
-			XmlNode node = parent.SelectSingleNode("special/palaso:"+field, _nameSpaceManager);
-			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
-		}
-
-		private string GetSubNodeAttributeValue(XmlNode parent, string path, string attributeName)
-		{
-			XmlNode node = parent.SelectSingleNode(path);
-			return XmlHelpers.GetOptionalAttributeValue(node, attributeName, string.Empty);
-		}
-
-		public static XmlNamespaceManager MakeNameSpaceManager()
-		{
-			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
-			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
-			return m;
-		}
-
-		public void WriteToDom(XmlNode parentOfLdmlNode, WritingSystemDefinition ws)
+		public void Write(XmlNode parentOfLdmlNode, WritingSystemDefinition ws)
 		{
 			if (parentOfLdmlNode == null)
 			{
@@ -234,6 +229,42 @@ namespace Palaso.WritingSystems
 			SetSpecialNode(ldmlNode, "spellCheckingId", ws.SpellCheckingId);
 		}
 
+		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
+		{
+			string id = rfc4646.ToLower();
+			switch (id)
+			{
+				case "en-latn":
+					ws.ISO = "en";
+					ws.LanguageName = "English";
+					ws.Abbreviation = "eng";
+					ws.Script = "Latn";
+					break;
+				 default:
+					ws.Script = "Latn";
+					break;
+			}
+		}
+
+		private string GetSpecialValue(XmlNode parent, string field)
+		{
+			XmlNode node = parent.SelectSingleNode("palaso:special/palaso:"+field, _nameSpaceManager);
+			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
+		}
+
+		private string GetSubNodeAttributeValue(XmlNode parent, string path, string attributeName)
+		{
+			XmlNode node = parent.SelectSingleNode(path);
+			return XmlHelpers.GetOptionalAttributeValue(node, attributeName, string.Empty);
+		}
+
+		public static XmlNamespaceManager MakeNameSpaceManager()
+		{
+			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
+			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			return m;
+		}
+
 		private void SetSubNodeWithAttribute(XmlNode parent, string field, string attributeName, string value)
 		{
 			if (!String.IsNullOrEmpty(value))
@@ -251,14 +282,14 @@ namespace Palaso.WritingSystems
 		{
 			if (!String.IsNullOrEmpty(value))
 			{
-				XmlHelpers.GetOrCreateElement(parent, ".", "special", null, _nameSpaceManager, LdmlNodeComparer.Singleton);
-				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "special", field, "palaso", _nameSpaceManager,
+				XmlHelpers.GetOrCreateElement(parent, ".", "special", "palaso", _nameSpaceManager, LdmlNodeComparer.Singleton);
+				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "palaso:special", field, "palaso", _nameSpaceManager,
 					LdmlNodeComparer.Singleton);
 				XmlHelpers.AddOrUpdateAttribute(node, "value", value, LdmlNodeComparer.Singleton);
 			}
 			else
 			{
-				XmlHelpers.RemoveElement(parent, "special/palaso:" + field, _nameSpaceManager);
+				XmlHelpers.RemoveElement(parent, "palaso:special/palaso:" + field, _nameSpaceManager);
 			}
 		}
 
@@ -375,224 +406,6 @@ namespace Palaso.WritingSystems
 			XmlHelpers.RemoveElement(parentNode, "alias", _nameSpaceManager);
 			IcuRulesParser parser = new IcuRulesParser(true);
 			parser.AddIcuRulesToNode(parentNode, icu, _nameSpaceManager);
-		}
-	}
-
-	/// <summary>
-	/// Class for comparison of order of nodes in an LDML document.
-	/// Based on http://www.unicode.org/cldr/data/docs/design/ldml_canonical_form.html
-	/// </summary>
-	class LdmlNodeComparer: IComparer<XmlNode>
-	{
-		public static LdmlNodeComparer Singleton
-		{
-			get
-			{
-				if (_singleton == null)
-				{
-					_singleton = new LdmlNodeComparer();
-				}
-				return _singleton;
-			}
-		}
-
-		private static LdmlNodeComparer _singleton;
-		private LdmlNodeComparer() {}
-
-		public int Compare(XmlNode x, XmlNode y)
-		{
-			if (x == null)
-			{
-				return y == null ? 0 : -1;
-			}
-			if (y == null)
-			{
-				return 1;
-			}
-			int result = CompareNodeTypes(x, y);
-			if (result != 0)
-			{
-				return result;
-			}
-			switch (x.NodeType)
-			{
-				case XmlNodeType.Element:
-					result = CompareElementNames(x, y);
-					if (result != 0)
-					{
-						return result;
-					}
-					result = CompareElementAttributes(x, y);
-					break;
-				case XmlNodeType.Attribute:
-					result = CompareAttributeNames(x, y);
-					if (result != 0)
-					{
-						return result;
-					}
-					result = CompareAttributeValues(x, y);
-					break;
-			}
-			return result;
-		}
-
-		private static readonly object _key = new object();
-		private static Dictionary<XmlNodeType, int> _nodeTypeStrengths;
-
-		private static int GetItemStrength<T>(T item, IDictionary<T, int> strengthMap)
-		{
-			Debug.Assert(strengthMap != null);
-			return strengthMap.ContainsKey(item) ? strengthMap[item] : int.MaxValue;
-		}
-
-		private static int CompareNodeTypes(XmlNode x, XmlNode y)
-		{
-			lock (_key)
-			{
-				if (_nodeTypeStrengths == null)
-				{
-					_nodeTypeStrengths = new Dictionary<XmlNodeType, int>();
-					_nodeTypeStrengths[XmlNodeType.Attribute] = 1;
-					_nodeTypeStrengths[XmlNodeType.Element] = 2;
-				}
-			}
-			return GetItemStrength(x.NodeType, _nodeTypeStrengths).CompareTo(GetItemStrength(y.NodeType, _nodeTypeStrengths));
-		}
-
-		static readonly string[] _elementOrderedNameList = new string[] {
-			"ldml", "identity", "alias", "localeDisplayNames", "layout", "characters", "delimiters", "measurement",
-			"dates", "numbers", "collations", "posix", "version", "generation", "language", "script", "territory",
-			"variant", "languages", "scripts", "territories", "variants", "keys", "types", "key", "type", "orientation",
-			"exemplarCharacters", "mapping", "cp", "quotationStart", "quotationEnd", "alternateQuotationStart",
-			"alternateQuotationEnd", "measurementSystem", "paperSize", "height", "width", "localizedPatternChars",
-			"calendars", "timeZoneNames", "months", "monthNames", "monthAbbr", "days", "dayNames", "dayAbbr", "week",
-			"am", "pm", "eras", "dateFormats", "timeFormats", "dateTimeFormats", "fields", "month", "day", "minDays",
-			"firstDay", "weekendStart", "weekendEnd", "eraNames", "eraAbbr", "era", "pattern", "displayName",
-			"hourFormat", "hoursFormat", "gmtFormat", "regionFormat", "fallbackFormat", "abbreviationFallback",
-			"preferenceOrdering", "default", "calendar", "monthContext", "monthWidth", "dayContext", "dayWidth",
-			"dateFormatLength", "dateFormat", "timeFormatLength", "timeFormat", "dateTimeFormatLength", "dateTimeFormat",
-			"zone", "long", "short", "exemplarCity", "generic", "standard", "daylight", "field", "relative", "symbols",
-			"decimalFormats", "scientificFormats", "percentFormats", "currencyFormats", "currencies",
-			"decimalFormatLength", "decimalFormat", "scientificFormatLength", "scientificFormat", "percentFormatLength",
-			"percentFormat", "currencyFormatLength", "currencyFormat", "currency", "symbol", "decimal", "group", "list",
-			"percentSign", "nativeZeroDigit", "patternDigit", "plusSign", "minusSign", "exponential", "perMille",
-			"infinity", "nan", "collation", "messages", "yesstr", "nostr", "yesexpr", "noexpr", "special"};
-
-		static readonly string[] _attributeOrderedNameList = new string[] {
-			"type", "key", "registry", "alt", "source", "path", "day", "date", "version", "count", "lines",
-			"characters", "before", "number", "time", "validSubLocales", "standard", "references", "draft"};
-
-		static readonly string[] _valueOrderedList = new string[] {
-			"sun", "mon", "tue", "wed", "thu", "fri", "sat", "full", "long", "medium", "short", "wide", "abbreviated",
-			"narrow", "era", "year", "month", "week", "day", "weekday", "dayperiod", "hour", "minute", "second", "zone"};
-
-		private static Dictionary<string, int> _elementNameValues;
-		private static Dictionary<string, int> _attributeNameValues;
-		private static Dictionary<string, int> _valueValues;
-
-		private static int CompareElementNames(XmlNode x, XmlNode y)
-		{
-			lock (_key)
-			{
-				if (_elementNameValues == null)
-				{
-					_elementNameValues = new Dictionary<string, int>(_elementOrderedNameList.Length);
-					for (int i = 0; i < _elementOrderedNameList.Length; i++)
-					{
-						_elementNameValues.Add(_elementOrderedNameList[i], i);
-					}
-				}
-			}
-			// Any element named "special" always comes last, even after other new elements that may have been
-			// added to the standard after this code was written
-			if (x.Name == "special" && y.Name != "special")
-			{
-				return 1;
-			}
-			if (y.Name == "special" && x.Name != "special")
-			{
-				return -1;
-			}
-			return GetItemStrength(x.Name, _elementNameValues).CompareTo(GetItemStrength(y.Name, _elementNameValues));
-		}
-
-		private static int CompareAttributeNames(XmlNode x, XmlNode y)
-		{
-			lock (_key)
-			{
-				if (_attributeNameValues == null)
-				{
-					_attributeNameValues = new Dictionary<string, int>(_attributeOrderedNameList.Length);
-					for (int i = 0; i < _attributeOrderedNameList.Length; i++)
-					{
-						_attributeNameValues.Add(_attributeOrderedNameList[i], i);
-					}
-				}
-			}
-			return GetItemStrength(x.Name, _attributeNameValues).CompareTo(GetItemStrength(y.Name, _attributeNameValues));
-		}
-
-		private int CompareElementAttributes(XmlNode x, XmlNode y)
-		{
-			for (int i = 0; i < x.Attributes.Count && i < y.Attributes.Count; i++)
-			{
-				int result = Compare(x.Attributes[i], y.Attributes[i]);
-				if (result != 0)
-				{
-					return result;
-				}
-			}
-			return x.Attributes.Count.CompareTo(y.Attributes.Count);
-		}
-
-		/// <summary>
-		/// Compares two attribute values.  There is a value order table that defines the order of values
-		/// for some attributes of some elements.  After that, sort in numeric order, and then in alphabetic order.
-		/// There is a more complicated rule for the "type" attribute of the "zone" element, but since we're
-		/// not using that element at this time, I'm not going to try to write code for it.
-		/// </summary>
-		private static int CompareAttributeValues(XmlNode x, XmlNode y)
-		{
-			lock (_key)
-			{
-				if (_valueValues == null)
-				{
-					_valueValues = new Dictionary<string, int>(_valueOrderedList.Length);
-					for (int i = 0; i < _valueOrderedList.Length; i++)
-					{
-						_valueValues.Add(_valueOrderedList[i], i);
-					}
-				}
-			}
-			int result = 0;
-			if (x.Name == "type" || x.Name == "day")
-			{
-				result = GetItemStrength(x.Value, _valueValues).CompareTo(GetItemStrength(y.Value, _valueValues));
-			}
-			if (result != 0)
-			{
-				return result;
-			}
-			double xNumericValue, yNumericValue;
-			bool xIsNumeric = double.TryParse(x.Value, out xNumericValue);
-			bool yIsNumeric = double.TryParse(y.Value, out yNumericValue);
-			if (xIsNumeric && !yIsNumeric)
-			{
-				result = -1;
-			}
-			else if (!xIsNumeric && yIsNumeric)
-			{
-				result = 1;
-			}
-			else if (xIsNumeric && yIsNumeric)
-			{
-				result = xNumericValue.CompareTo(yNumericValue);
-			}
-			if (result == 0)
-			{
-				result = x.Value.CompareTo(y.Value);
-			}
-			return result;
 		}
 	}
 }
