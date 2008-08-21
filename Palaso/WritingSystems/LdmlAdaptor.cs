@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
@@ -91,7 +92,13 @@ namespace Palaso.WritingSystems
 			ws.Region = GetSubNodeAttributeValue(identityNode, "territory", "type");
 			ws.Script = GetSubNodeAttributeValue(identityNode, "script", "type");
 			string dateTime = GetSubNodeAttributeValue(identityNode, "generation", "date");
-			ws.DateModified = DateTime.Parse(dateTime);
+			DateTime modified;
+			if (!DateTime.TryParse(dateTime, out modified))
+			{
+				//CVS format:    "$Date: 2008/06/18 22:52:35 $"
+				modified = DateTime.ParseExact(dateTime, "'$Date: 'yyyy/MM/dd HH:mm:ss $", null, DateTimeStyles.AssumeUniversal);
+			}
+			ws.DateModified = modified;
 			XmlNode versionNode = identityNode.SelectSingleNode("version");
 			ws.VersionNumber = XmlHelpers.GetOptionalAttributeValue(versionNode, "number");
 			ws.VersionDescription = versionNode == null ? string.Empty : versionNode.InnerText;

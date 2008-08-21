@@ -702,5 +702,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				KeyboardController.ActivateKeyboard(Current.Keyboard);
 			}
 		}
+
+		public string TestSort(string testString)
+		{
+			if (Current == null)
+				return testString;
+			if (testString == null)
+				return testString;
+			if (Current.Collator == null)
+				return testString;
+			List<SortKey> stringList = new List<SortKey>();
+			foreach (string str in testString.Split(new char[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
+			{
+				stringList.Add(Current.Collator.GetSortKey(str));
+			}
+			stringList.Sort(SortKey.Compare);
+			string result = string.Empty;
+			foreach (SortKey sk in stringList)
+			{
+				result += sk.OriginalString + "\r\n";
+			}
+			return result.TrimEnd(new char[] {'\r', '\n'});
+		}
 	}
 }

@@ -73,10 +73,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// splitContainer1.Panel1
 			//
-			this.splitContainer1.Panel1.Controls.Add(this._sortPanelOtherLanguage);
 			this.splitContainer1.Panel1.Controls.Add(this._sortPanelCustomText);
 			this.splitContainer1.Panel1.Controls.Add(this._sortUsingComboBox);
 			this.splitContainer1.Panel1.Controls.Add(this.label1);
+			this.splitContainer1.Panel1.Controls.Add(this._sortPanelOtherLanguage);
 			//
 			// splitContainer1.Panel2
 			//

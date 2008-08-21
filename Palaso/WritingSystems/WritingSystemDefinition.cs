@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
 {
@@ -52,6 +53,7 @@ namespace Palaso.WritingSystems
 		private bool _markedForDeletion;
 		private string _nativeName;
 		private bool _rightToLeftScript;
+		private ICollator _collator;
 
 		/// <summary>
 		/// Other classes that persist this need to know when our id changed, so the can
@@ -630,6 +632,7 @@ namespace Palaso.WritingSystems
 				{
 					throw new ArgumentException("Invalid SortUsing option");
 				}
+				_collator = null;
 				UpdateString(ref _sortUsing, value);
 			}
 		}
@@ -637,7 +640,11 @@ namespace Palaso.WritingSystems
 		public string SortRules
 		{
 			get { return _sortRules ?? string.Empty; }
-			set { UpdateString(ref _sortRules, value); }
+			set
+			{
+				_collator = null;
+				UpdateString(ref _sortRules, value);
+			}
 		}
 
 		public string SpellCheckingId
@@ -657,6 +664,26 @@ namespace Palaso.WritingSystems
 		{
 			get { return _autoReplaceRules ?? string.Empty; }
 			set { UpdateString(ref _autoReplaceRules, value); }
+		}
+
+		public ICollator Collator
+		{
+			get
+			{
+				if (_collator == null)
+				{
+					switch ((SortRulesType)Enum.Parse(typeof(SortRulesType), SortUsing))
+					{
+						case SortRulesType.CustomSimple:
+							_collator = new SimpleRulesCollator(SortRules);
+							break;
+						case SortRulesType.CustomICU:
+							_collator = new IcuRulesCollator(SortRules);
+							break;
+					}
+				}
+				return _collator;
+			}
 		}
 
 		public WritingSystemDefinition Clone()

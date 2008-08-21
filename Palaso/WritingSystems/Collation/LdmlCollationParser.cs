@@ -251,6 +251,10 @@ namespace Palaso.WritingSystems.Collation
 			string rules = string.Empty;
 			foreach (XmlNode node in rulesNode.ChildNodes)
 			{
+				if (node.NodeType == XmlNodeType.Comment)
+				{
+					continue;
+				}
 				string icuData;
 				if (node.NodeType != XmlNodeType.Element)
 				{
@@ -260,7 +264,7 @@ namespace Palaso.WritingSystems.Collation
 				{
 					case "reset":
 						icuData = GetIcuData(node);
-						rules += String.Format("\n&{2}{0}{1}", icuData, GetVariableTopString(icuData, ref variableTop), GetBeforeOption(node));
+						rules += String.Format("\r\n&{2}{0}{1}", icuData, GetVariableTopString(icuData, ref variableTop), GetBeforeOption(node));
 						break;
 					case "p":
 						icuData = GetIcuData(node);

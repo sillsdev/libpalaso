@@ -158,6 +158,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _testSortButton_Click(object sender, EventArgs e)
 		{
+			try
+			{
+				_testSortText.Text = _model.TestSort(_testSortText.Text);
+			}
+			catch (ApplicationException ex)
+			{
+				Palaso.Reporting.ErrorReport.ReportNonFatalMessage("Unable to sort test text: {0}", ex.Message);
+			}
 		}
 	}
 }
