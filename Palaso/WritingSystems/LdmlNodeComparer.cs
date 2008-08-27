@@ -8,6 +8,8 @@ namespace Palaso.WritingSystems
 	/// <summary>
 	/// Class for comparison of order of nodes in an LDML document.
 	/// Based on http://www.unicode.org/cldr/data/docs/design/ldml_canonical_form.html
+	/// The supplemental metadata shipped with the current CLDR release will have more complete
+	/// element and attribute order data.
 	/// </summary>
 	class LdmlNodeComparer : IComparer<XmlNode>
 	{
@@ -63,6 +65,40 @@ namespace Palaso.WritingSystems
 			return result;
 		}
 
+		public static int CompareElementNames(string x, string y)
+		{
+			lock (_key)
+			{
+				if (_elementNameValues == null)
+				{
+					_elementNameValues = BuildOrderDictionary(_elementOrderedNameList);
+				}
+			}
+			// Any element named "special" always comes last, even after other new elements that may have been
+			// added to the standard after this code was written
+			if (x == "special" && y != "special")
+			{
+				return 1;
+			}
+			if (y == "special" && x != "special")
+			{
+				return -1;
+			}
+			return GetItemStrength(x, _elementNameValues).CompareTo(GetItemStrength(y, _elementNameValues));
+		}
+
+		public static int CompareAttributeNames(string x, string y)
+		{
+			lock (_key)
+			{
+				if (_attributeNameValues == null)
+				{
+					_attributeNameValues = BuildOrderDictionary(_attributeOrderedNameList);
+				}
+			}
+			return GetItemStrength(x, _attributeNameValues).CompareTo(GetItemStrength(y, _attributeNameValues));
+		}
+
 		private static readonly object _key = new object();
 		private static Dictionary<XmlNodeType, int> _nodeTypeStrengths;
 
@@ -87,27 +123,59 @@ namespace Palaso.WritingSystems
 		}
 
 		static readonly string[] _elementOrderedNameList = new string[] {
-			"ldml", "identity", "alias", "localeDisplayNames", "layout", "characters", "delimiters", "measurement",
-			"dates", "numbers", "collations", "posix", "version", "generation", "language", "script", "territory",
-			"variant", "languages", "scripts", "territories", "variants", "keys", "types", "key", "type", "orientation",
-			"exemplarCharacters", "mapping", "cp", "quotationStart", "quotationEnd", "alternateQuotationStart",
-			"alternateQuotationEnd", "measurementSystem", "paperSize", "height", "width", "localizedPatternChars",
-			"calendars", "timeZoneNames", "months", "monthNames", "monthAbbr", "days", "dayNames", "dayAbbr", "week",
-			"am", "pm", "eras", "dateFormats", "timeFormats", "dateTimeFormats", "fields", "month", "day", "minDays",
-			"firstDay", "weekendStart", "weekendEnd", "eraNames", "eraAbbr", "era", "pattern", "displayName",
-			"hourFormat", "hoursFormat", "gmtFormat", "regionFormat", "fallbackFormat", "abbreviationFallback",
-			"preferenceOrdering", "default", "calendar", "monthContext", "monthWidth", "dayContext", "dayWidth",
-			"dateFormatLength", "dateFormat", "timeFormatLength", "timeFormat", "dateTimeFormatLength", "dateTimeFormat",
-			"zone", "long", "short", "exemplarCity", "generic", "standard", "daylight", "field", "relative", "symbols",
-			"decimalFormats", "scientificFormats", "percentFormats", "currencyFormats", "currencies",
-			"decimalFormatLength", "decimalFormat", "scientificFormatLength", "scientificFormat", "percentFormatLength",
-			"percentFormat", "currencyFormatLength", "currencyFormat", "currency", "symbol", "decimal", "group", "list",
-			"percentSign", "nativeZeroDigit", "patternDigit", "plusSign", "minusSign", "exponential", "perMille",
-			"infinity", "nan", "collation", "messages", "yesstr", "nostr", "yesexpr", "noexpr", "special"};
+			"ldml", "alternate", "attributeOrder", "attributes", "blockingItems", "calendarSystem", "character",
+			"character-fallback", "codePattern", "codesByTerritory", "comment", "context", "cp", "deprecatedItems",
+			"distinguishingItems", "elementOrder", "first_variable", "fractions", "identity", "info", "languageAlias",
+			"languageCodes", "languageCoverage", "languagePopulation", "last_variable", "first_tertiary_ignorable",
+			"last_tertiary_ignorable", "first_secondary_ignorable", "last_secondary_ignorable",
+			"first_primary_ignorable", "last_primary_ignorable", "first_non_ignorable", "last_non_ignorable",
+			"first_trailing", "last_trailing", "likelySubtag", "mapTimezones", "mapZone", "pluralRule", "pluralRules",
+			"reference", "region", "scriptAlias", "scriptCoverage", "serialElements", "substitute", "suppress",
+			"tRule", "telephoneCountryCode", "territoryAlias", "territoryCodes", "territoryCoverage",
+			"currencyCoverage", "timezone", "timezoneCoverage", "transform", "usesMetazone", "validity", "alias",
+			"appendItem", "base", "beforeCurrency", "afterCurrency", "currencyMatch", "dateFormatItem", "day",
+			"deprecated", "distinguishing", "blocking", "coverageAdditions", "era", "eraNames", "eraAbbr",
+			"eraNarrow", "exemplarCharacters", "fallback", "field", "generic", "greatestDifference", "height",
+			"hourFormat", "hoursFormat", "gmtFormat", "intervalFormatFallback", "intervalFormatItem", "key",
+			"localeDisplayNames", "layout", "localeDisplayPattern", "languages", "localePattern", "localeSeparator",
+			"localizedPatternChars", "dateRangePattern", "calendars", "long", "mapping", "measurementSystem",
+			"measurementSystemName", "messages", "minDays", "firstDay", "month", "months", "monthNames", "monthAbbr",
+			"days", "dayNames", "dayAbbr", "orientation", "inList", "inText", "paperSize", "pattern", "displayName",
+			"quarter", "quarters", "quotationStart", "quotationEnd", "alternateQuotationStart",
+			"alternateQuotationEnd", "regionFormat", "fallbackFormat", "abbreviationFallback", "preferenceOrdering",
+			"relative", "reset", "p", "pc", "rule", "s", "sc", "scripts", "segmentation", "settings", "short",
+			"commonlyUsed", "exemplarCity", "singleCountries", "default", "calendar", "collation", "currency",
+			"currencyFormat", "currencySpacing", "currencyFormatLength", "dateFormat", "dateFormatLength",
+			"dateTimeFormat", "dateTimeFormatLength", "availableFormats", "appendItems", "dayContext", "dayWidth",
+			"decimalFormat", "decimalFormatLength", "intervalFormats", "monthContext", "monthWidth", "percentFormat",
+			"percentFormatLength", "quarterContext", "quarterWidth", "scientificFormat", "scientificFormatLength",
+			"skipDefaultLocale", "defaultContent", "standard", "daylight", "suppress_contractions", "optimize",
+			"rules", "surroundingMatch", "insertBetween", "symbol", "decimal", "group", "list", "percentSign",
+			"nativeZeroDigit", "patternDigit", "plusSign", "minusSign", "exponential", "perMille", "infinity", "nan",
+			"currencyDecimal", "currencyGroup", "symbols", "decimalFormats", "scientificFormats", "percentFormats",
+			"currencyFormats", "currencies", "t", "tc", "q", "qc", "i", "ic", "extend", "territories", "timeFormat",
+			"timeFormatLength", "timeZoneNames", "type", "unit", "unitPattern", "unitName", "variable",
+			"attributeValues", "variables", "segmentRules", "variantAlias", "variants", "keys", "types",
+			"measurementSystemNames", "codePatterns", "version", "generation", "currencyData", "language", "script",
+			"territory", "territoryContainment", "languageData", "territoryInfo", "calendarData", "variant", "week",
+			"am", "pm", "eras", "dateFormats", "timeFormats", "dateTimeFormats", "fields", "weekData",
+			"measurementData", "timezoneData", "characters", "delimiters", "measurement", "dates", "numbers",
+			"transforms", "metadata", "codeMappings", "likelySubtags", "metazoneInfo", "plurals", "telephoneCodeData",
+			"units", "collations", "posix", "segmentations", "references", "weekendStart", "weekendEnd", "width", "x",
+			"yesstr", "nostr", "yesexpr", "noexpr", "zone", "metazone", "special", "zoneAlias", "zoneFormatting",
+			"zoneItem", "supplementalData"};
 
 		static readonly string[] _attributeOrderedNameList = new string[] {
-			"type", "key", "registry", "alt", "source", "path", "day", "date", "version", "count", "lines",
-			"characters", "before", "number", "time", "validSubLocales", "standard", "references", "draft"};
+			"_q", "type", "id", "choice", "key", "registry", "source", "target", "path", "day", "date", "version",
+			"count", "lines", "characters", "iso4217", "before", "from", "to", "mzone", "number", "time", "casing",
+			"list", "uri", "digits", "rounding", "iso3166", "hex", "request", "direction", "alternate", "backwards",
+			"caseFirst", "caseLevel", "hiraganaQuarternary", "hiraganaQuaternary", "variableTop", "normalization",
+			"numeric", "strength", "elements", "element", "attributes", "attribute", "aliases", "attributeValue",
+			"contains", "multizone", "order", "other", "replacement", "scripts", "services", "territories",
+			"territory", "tzidVersion", "value", "values", "variant", "variants", "visibility", "alpha3", "code",
+			"end", "exclude", "fips10", "gdp", "internet", "literacyPercent", "locales", "officialStatus",
+			"population", "populationPercent", "start", "used", "writingPercent", "validSubLocales", "standard",
+			"references", "alt", "draft"};
 
 		private static Dictionary<string, int> _elementNameValues;
 		private static Dictionary<string, int> _attributeNameValues;
@@ -116,36 +184,12 @@ namespace Palaso.WritingSystems
 
 		private static int CompareElementNames(XmlNode x, XmlNode y)
 		{
-			lock (_key)
-			{
-				if (_elementNameValues == null)
-				{
-					_elementNameValues = BuildOrderDictionary(_elementOrderedNameList);
-				}
-			}
-			// Any element named "special" always comes last, even after other new elements that may have been
-			// added to the standard after this code was written
-			if (x.Name == "special" && y.Name != "special")
-			{
-				return 1;
-			}
-			if (y.Name == "special" && x.Name != "special")
-			{
-				return -1;
-			}
-			return GetItemStrength(x.Name, _elementNameValues).CompareTo(GetItemStrength(y.Name, _elementNameValues));
+			return CompareElementNames(x.Name, y.Name);
 		}
 
 		private static int CompareAttributeNames(XmlNode x, XmlNode y)
 		{
-			lock (_key)
-			{
-				if (_attributeNameValues == null)
-				{
-					_attributeNameValues = BuildOrderDictionary(_attributeOrderedNameList);
-				}
-			}
-			return GetItemStrength(x.Name, _attributeNameValues).CompareTo(GetItemStrength(y.Name, _attributeNameValues));
+			return CompareAttributeNames(x.Name, y.Name);
 		}
 
 		private int CompareElementAttributes(XmlNode x, XmlNode y)

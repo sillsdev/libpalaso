@@ -42,7 +42,7 @@ namespace Palaso.Tests
 
 		public static void AssertXPathNotNull(XmlNode nodeOrDoc, string xpath)
 		{
-			XmlNode node = GetNode(nodeOrDoc, xpath, new XmlNamespaceManager(new NameTable()));
+			XmlNode node = GetNode(nodeOrDoc, xpath);
 			if (node == null)
 			{
 				PrintNodeToConsole(nodeOrDoc);
@@ -96,9 +96,15 @@ namespace Palaso.Tests
 		}
 
 
-		private static XmlNode GetNode(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager  )
+		private static XmlNode GetNode(XmlNode nodeOrDoc, string xpath, XmlNamespaceManager nameSpaceManager)
 		{
 			XmlNode node = nodeOrDoc.SelectSingleNode(xpath, nameSpaceManager);
+			return node;
+		}
+
+		private static XmlNode GetNode(XmlNode nodeOrDoc, string xpath)
+		{
+			XmlNode node = nodeOrDoc.SelectSingleNode(xpath);
 			return node;
 		}
 

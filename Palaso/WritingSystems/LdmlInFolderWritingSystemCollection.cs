@@ -348,11 +348,15 @@ namespace Palaso.WritingSystems
 
 		public override void Set(WritingSystemDefinition ws)
 		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
 			// Renaming files on Set keeps the file names consistent with StoreID which is changed in the base.
 			// This allows us to avoid creating duplicate files and to preserve LDML data which is not used
 			// in palaso.
 			string oldFileName = GetFileNameFromIdentifier(ws.StoreID);
-			string oldFilePath = Path.Combine(PathToWritingSystems, oldFileName);
+			string oldFilePath = string.IsNullOrEmpty(oldFileName) ? string.Empty : Path.Combine(PathToWritingSystems, oldFileName);
 			string oldID = ws.StoreID;
 			base.Set(ws);
 			if (oldID == ws.StoreID || string.IsNullOrEmpty(oldFileName) || !File.Exists(oldFilePath))

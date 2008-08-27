@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using NUnit.Framework;
 using Palaso.WritingSystems;
 
@@ -51,6 +52,7 @@ namespace Palaso.Tests.WritingSystems
 		private string _testPath;
 		private LdmlInFolderWritingSystemStore _collection;
 		private WritingSystemDefinition _writingSystem;
+		private XmlNamespaceManager _namespaceManager;
 
 		[SetUp]
 		public void Setup()
@@ -64,6 +66,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection = new LdmlInFolderWritingSystemStore(_testPath);
 			_collection.DontAddDefaultDefinitions = true;
 			Console.WriteLine("Writing System Path: {0}", _testPath);
+			_namespaceManager = new XmlNamespaceManager(new NameTable());
+			_namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 		}
 
 		[TearDown]
@@ -230,7 +234,7 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(ws2);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(ws2));
 			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
-			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
+			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
 		}
 
 		[Test]
@@ -306,10 +310,10 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Abbreviation = "abbrev";
 			_collection.SaveDefinition(_writingSystem);
 			string path = _collection.FilePathToWritingSystem(_writingSystem);
-			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
+			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation", _namespaceManager);
 			_writingSystem.Abbreviation = string.Empty;
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathIsNull(PathToWS, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
+			TestUtilities.AssertXPathIsNull(PathToWS, "ldml/special/palaso:abbreviation", _namespaceManager);
 		}
 
 		[Test]
@@ -319,7 +323,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO = "blah";
 			_writingSystem.Abbreviation = "bl";
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
+			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
 		}
 
 		private string PathToWS

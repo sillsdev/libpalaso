@@ -569,7 +569,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 			string icu = "[strength 3] [alternate shifted]\n[backwards 2]&[before 1][ first  regular]<b<\\u0041"
 				+ "<'cde'&gh<<p<K|Q/\\<<[last variable]<<4<[variable\ttop]\t<9";
 			_icuParser.AddIcuRulesToNode(_collationNode, icu, _nameSpaceManager);
-			string xml = "<settings strength=\"tertiary\" alternate=\"shifted\" backwards=\"on\" variableTop=\"u34\" />"
+			string xml = "<settings alternate=\"shifted\" backwards=\"on\" variableTop=\"u34\" strength=\"tertiary\" />"
 				+ "<rules><reset before=\"primary\"><first_non_ignorable /></reset>"
 				+ "<pc>bA</pc><p>cde</p><reset>gh</reset><s>p</s>"
 				+ "<x><context>K</context><p>Q</p><extend>&lt;</extend></x>"

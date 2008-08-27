@@ -46,18 +46,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void ReadFromXmlNode_NullXmlNode_Throws()
-		{
-			_adaptor.Read((XmlNode)null, _ws);
-		}
-
-		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void ReadFromXmlNode_NullWritingSystem_Throws()
-		{
-			_adaptor.Read(new XmlDocument(), null);
-		}
-
-		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToFile_NullFileName_Throws()
 		{
 			_adaptor.Write((string)null, _ws);

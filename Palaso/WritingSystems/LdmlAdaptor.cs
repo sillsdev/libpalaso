@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
@@ -11,6 +12,26 @@ namespace Palaso.WritingSystems
 	public class LdmlAdaptor
 	{
 		private XmlNamespaceManager _nameSpaceManager;
+		private string _abbreviationKey;
+		private string _languageNameKey;
+		private string _defaultFontFamilyKey;
+		private string _defaultFontSizeKey;
+		private string _spellCheckingIdKey;
+		private string _identityKey;
+		private string _languageKey;
+		private string _variantKey;
+		private string _territoryKey;
+		private string _scriptKey;
+		private string _generationKey;
+		private string _versionKey;
+		private string _numberKey;
+		private string _layoutKey;
+		private string _charactersKey;
+		private string _rightToLeftKey;
+		private string _collationsKey;
+		private string _collationKey;
+		private string _typeKey;
+		private string _sortRulesTypeKey;
 
 		public LdmlAdaptor()
 		{
@@ -27,9 +48,15 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
-			doc.Load(filePath);
-			Read(doc, ws);
+			XmlReaderSettings settings = new XmlReaderSettings();
+			settings.NameTable = _nameSpaceManager.NameTable;
+			settings.ValidationType = ValidationType.None;
+			settings.XmlResolver = null;
+			settings.ProhibitDtd = false;
+			using (XmlReader reader = XmlReader.Create(filePath, settings))
+			{
+				ReadLdml(reader, ws);
+			}
 		}
 
 		public void Read(XmlReader xmlReader, WritingSystemDefinition ws)
@@ -42,69 +69,106 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
-			doc.Load(xmlReader);
-			Read(doc, ws);
+			XmlReaderSettings settings = new XmlReaderSettings();
+			settings.NameTable = _nameSpaceManager.NameTable;
+			settings.ConformanceLevel = ConformanceLevel.Auto;
+			settings.ValidationType = ValidationType.None;
+			settings.XmlResolver = null;
+			settings.ProhibitDtd = false;
+			using (XmlReader reader = XmlReader.Create(xmlReader, settings))
+			{
+				ReadLdml(reader, ws);
+			}
 		}
 
-		public void Read(XmlNode parentOfLdmlNode, WritingSystemDefinition ws)
+		private static bool FindElement(XmlReader reader, string name)
 		{
-			if (parentOfLdmlNode == null)
-			{
-				throw new ArgumentNullException("parentOfLdmlNode");
-			}
-			if (ws == null)
-			{
-				throw new ArgumentNullException("ws");
-			}
-			XmlNode ldmlNode = parentOfLdmlNode.SelectSingleNode("ldml", _nameSpaceManager);
-			if (ldmlNode == null)
-			{
-				return;
-			}
-			ReadIdentityElement(ldmlNode, ws);
-			ReadLayoutElement(ldmlNode, ws);
-			ReadCollationElement(ldmlNode, ws);
+			return XmlHelpers.FindElement(reader, name, LdmlNodeComparer.CompareElementNames);
+		}
 
-			ws.Abbreviation = GetSpecialValue(ldmlNode, "abbreviation");
-			ws.LanguageName = GetSpecialValue(ldmlNode, "languageName");
-			ws.DefaultFontName = GetSpecialValue(ldmlNode, "defaultFontFamily");
-			float fontSize;
-			if (float.TryParse(GetSpecialValue(ldmlNode, "defaultFontSize"), out fontSize))
+		private static bool FindElement(XmlReader reader, string name, string nameSpace)
+		{
+			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
+		}
+
+		private void ReadLdml(XmlReader reader, WritingSystemDefinition ws)
+		{
+			Debug.Assert(reader != null);
+			Debug.Assert(ws != null);
+			if (reader.MoveToContent() != XmlNodeType.Element || reader.Name != "ldml")
 			{
-				ws.DefaultFontSize = fontSize;
+				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
 			}
-			ws.Keyboard = GetSpecialValue(ldmlNode, "defaultKeyboard");
-			ws.SpellCheckingId = GetSpecialValue(ldmlNode, "spellCheckingId");
+			reader.Read();
+			if (FindElement(reader, "identity"))
+			{
+				ReadIdentityElement(reader, ws);
+			}
+			if (FindElement(reader, "layout"))
+			{
+				ReadLayoutElement(reader, ws);
+			}
+			if (FindElement(reader, "collations"))
+			{
+				ReadCollationsElement(reader, ws);
+			}
+			if (FindElement(reader, "special"))
+			{
+				reader.ReadStartElement("special");
+				ws.Abbreviation = GetSpecialValue(reader, "abbreviation");
+				ws.DefaultFontName = GetSpecialValue(reader, "defaultFontFamily");
+				float fontSize;
+				if (float.TryParse(GetSpecialValue(reader, "defaultFontSize"), out fontSize))
+				{
+					ws.DefaultFontSize = fontSize;
+				}
+				ws.Keyboard = GetSpecialValue(reader, "defaultKeyboard");
+				ws.LanguageName = GetSpecialValue(reader, "languageName");
+				ws.SpellCheckingId = GetSpecialValue(reader, "spellCheckingId");
+			}
 			ws.StoreID = "";
 			ws.Modified = false;
 		}
 
-		private void ReadIdentityElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		private void ReadIdentityElement(XmlReader reader, WritingSystemDefinition ws)
 		{
-			XmlNode identityNode = ldmlNode.SelectSingleNode("identity", _nameSpaceManager);
-			if (identityNode == null)
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "identity");
+			using (XmlReader identityReader = reader.ReadSubtree())
 			{
-				return;
+				identityReader.MoveToContent();
+				identityReader.ReadStartElement("identity");
+				if (FindElement(identityReader, "version"))
+				{
+					ws.VersionNumber = identityReader.GetAttribute("number") ?? string.Empty;
+					if (!identityReader.IsEmptyElement)
+					{
+						ws.VersionDescription = identityReader.ReadString();
+						identityReader.ReadEndElement();
+					}
+				}
+				string dateTime = GetSubNodeAttributeValue(identityReader, "generation", "date");
+				DateTime modified = DateTime.UtcNow;
+				if (!string.IsNullOrEmpty(dateTime.Trim()) && !DateTime.TryParse(dateTime, out modified))
+				{
+					//CVS format:    "$Date: 2008/06/18 22:52:35 $"
+					modified = DateTime.ParseExact(dateTime, "'$Date: 'yyyy/MM/dd HH:mm:ss $", null,
+												   DateTimeStyles.AssumeUniversal);
+				}
+				ws.DateModified = modified;
+				ws.ISO = GetSubNodeAttributeValue(identityReader, "language", "type");
+				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
+				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
+				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
+				// move to end of identity node
+				while (identityReader.Read()) ;
 			}
-			ws.ISO = GetSubNodeAttributeValue(identityNode, "language", "type");
-			ws.Variant = GetSubNodeAttributeValue(identityNode, "variant", "type");
-			ws.Region = GetSubNodeAttributeValue(identityNode, "territory", "type");
-			ws.Script = GetSubNodeAttributeValue(identityNode, "script", "type");
-			string dateTime = GetSubNodeAttributeValue(identityNode, "generation", "date");
-			DateTime modified;
-			if (!DateTime.TryParse(dateTime, out modified))
+			if (!reader.IsEmptyElement)
 			{
-				//CVS format:    "$Date: 2008/06/18 22:52:35 $"
-				modified = DateTime.ParseExact(dateTime, "'$Date: 'yyyy/MM/dd HH:mm:ss $", null, DateTimeStyles.AssumeUniversal);
+				reader.ReadEndElement();
 			}
-			ws.DateModified = modified;
-			XmlNode versionNode = identityNode.SelectSingleNode("version");
-			ws.VersionNumber = XmlHelpers.GetOptionalAttributeValue(versionNode, "number");
-			ws.VersionDescription = versionNode == null ? string.Empty : versionNode.InnerText;
 		}
 
-		private void ReadLayoutElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		private void ReadLayoutElement(XmlReader reader, WritingSystemDefinition ws)
 		{
 			// The orientation node has two attributes, "lines" and "characters" which define direction of writing.
 			// The valid values are: "top-to-bottom", "bottom-to-top", "left-to-right", and "right-to-left"
@@ -113,19 +177,71 @@ namespace Palaso.WritingSystems
 			// This probably works for many scripts such as various East Asian scripts which traditionally
 			// are top-to-bottom characters and right-to-left lines, but can also be written with
 			// left-to-right characters and top-to-bottom lines.
-			ws.RightToLeftScript = GetSubNodeAttributeValue(ldmlNode, "layout/orientation", "characters") ==
-								   "right-to-left";
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "layout");
+			using (XmlReader layoutReader = reader.ReadSubtree())
+			{
+				layoutReader.MoveToContent();
+				layoutReader.ReadStartElement("layout");
+				ws.RightToLeftScript = GetSubNodeAttributeValue(layoutReader, "orientation", "characters") ==
+									   "right-to-left";
+				while (layoutReader.Read());
+			}
+			if (!reader.IsEmptyElement)
+			{
+				reader.ReadEndElement();
+			}
 		}
 
-		private void ReadCollationElement(XmlNode ldmlNode, WritingSystemDefinition ws)
+		private void ReadCollationsElement(XmlReader reader, WritingSystemDefinition ws)
 		{
-			// no type is the same as type=standard, and is the only one we're interested in
-			XmlNode node = ldmlNode.SelectSingleNode("collations/collation[not(@type) or @type='standard']");
-			if (node == null)
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "collations");
+			using (XmlReader collationsReader = reader.ReadSubtree())
 			{
-				return;
+				collationsReader.MoveToContent();
+				collationsReader.ReadStartElement("collations");
+				bool found = false;
+				while (FindElement(collationsReader, "collation"))
+				{
+					// having no type is the same as type=standard, and is the only one we're interested in
+					string typeValue = collationsReader.GetAttribute("type");
+					if (string.IsNullOrEmpty(typeValue) || typeValue == "standard")
+					{
+						found = true;
+						break;
+					}
+					reader.Skip();
+				}
+				if (found)
+				{
+					reader.MoveToElement();
+					string collationXml = reader.ReadInnerXml();
+					ReadCollationElement(collationXml, ws);
+				}
+				while (collationsReader.Read());
 			}
-			string rulesType = GetSpecialValue(node, "sortRulesType");
+			if (!reader.IsEmptyElement)
+			{
+				reader.ReadEndElement();
+			}
+		}
+
+		private void ReadCollationElement(string collationXml, WritingSystemDefinition ws)
+		{
+			Debug.Assert(collationXml != null);
+			Debug.Assert(ws != null);
+
+			XmlReaderSettings readerSettings = new XmlReaderSettings();
+			readerSettings.CloseInput = true;
+			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+			string rulesType = string.Empty;
+			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
+			{
+				if (FindElement(collationReader, "special"))
+				{
+					collationReader.Read();
+					rulesType = GetSpecialValue(collationReader, "sortRulesType");
+				}
+			}
 			if (!Enum.IsDefined(typeof (WritingSystemDefinition.SortRulesType), rulesType))
 			{
 				rulesType = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
@@ -134,13 +250,13 @@ namespace Palaso.WritingSystems
 			switch ((WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), rulesType))
 			{
 				case WritingSystemDefinition.SortRulesType.OtherLanguage:
-					ReadCollationRulesForOtherLanguage(node, ws);
+					ReadCollationRulesForOtherLanguage(collationXml, ws);
 					break;
 				case WritingSystemDefinition.SortRulesType.CustomSimple:
-					ReadCollationRulesForCustomSimple(node, ws);
+					ReadCollationRulesForCustomSimple(collationXml, ws);
 					break;
 				case WritingSystemDefinition.SortRulesType.CustomICU:
-					ReadCollationRulesForCustomICU(node, ws);
+					ReadCollationRulesForCustomICU(collationXml, ws);
 					break;
 				default:
 					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
@@ -148,37 +264,42 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private void ReadCollationRulesForOtherLanguage(XmlNode node, WritingSystemDefinition ws)
+		private void ReadCollationRulesForOtherLanguage(string collationXml, WritingSystemDefinition ws)
 		{
-			XmlNode alias = node.SelectSingleNode("alias", _nameSpaceManager);
-			if (alias != null)
+			XmlReaderSettings readerSettings = new XmlReaderSettings();
+			readerSettings.CloseInput = true;
+			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
-				ws.SortRules = XmlHelpers.GetOptionalAttributeValue(alias, "source", string.Empty);
-			}
-			else
-			{
-				// missing alias element, fall back to ICU rules
-				ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
-				ReadCollationRulesForCustomICU(node, ws);
+				if (FindElement(collationReader, "alias"))
+				{
+					ws.SortRules = collationReader.GetAttribute("source") ?? string.Empty;
+				}
+				else
+				{
+					// missing alias element, fall back to ICU rules
+					ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+					ReadCollationRulesForCustomICU(collationXml, ws);
+				}
 			}
 		}
 
-		private void ReadCollationRulesForCustomICU(XmlNode node, WritingSystemDefinition ws)
+		private void ReadCollationRulesForCustomICU(string collationXml, WritingSystemDefinition ws)
 		{
-			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(node, _nameSpaceManager);
+			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationXml);
 		}
 
-		private void ReadCollationRulesForCustomSimple(XmlNode node, WritingSystemDefinition ws)
+		private void ReadCollationRulesForCustomSimple(string collationXml, WritingSystemDefinition ws)
 		{
 			string rules;
-			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(node, _nameSpaceManager, out rules))
+			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
 			{
 				ws.SortRules = rules;
 				return;
 			}
 			// fall back to ICU rules if Simple rules don't work
 			ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
-			ReadCollationRulesForCustomICU(node, ws);
+			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
 		public void Write(string filePath, WritingSystemDefinition ws)
@@ -228,11 +349,11 @@ namespace Palaso.WritingSystems
 			UpdateLayoutElement(ldmlNode, ws);
 			UpdateCollationElement(ldmlNode, ws);
 
-			SetSpecialNode(ldmlNode, "languageName", ws.LanguageName);
 			SetSpecialNode(ldmlNode, "abbreviation", ws.Abbreviation);
 			SetSpecialNode(ldmlNode, "defaultFontFamily", ws.DefaultFontName);
 			SetSpecialNode(ldmlNode, "defaultFontSize", ws.DefaultFontSize.ToString());
 			SetSpecialNode(ldmlNode, "defaultKeyboard", ws.Keyboard);
+			SetSpecialNode(ldmlNode, "languageName", ws.LanguageName);
 			SetSpecialNode(ldmlNode, "spellCheckingId", ws.SpellCheckingId);
 		}
 
@@ -253,21 +374,44 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetSpecialValue(XmlNode parent, string field)
+		private string GetSpecialValue(XmlReader reader, string field)
 		{
-			XmlNode node = parent.SelectSingleNode("palaso:special/palaso:"+field, _nameSpaceManager);
-			return XmlHelpers.GetOptionalAttributeValue(node, "value", string.Empty);
+			if (!XmlHelpers.FindElement(reader, "palaso:" + field, _nameSpaceManager.LookupNamespace("palaso"), string.Compare))
+			{
+				return string.Empty;
+			}
+			return reader.GetAttribute("value") ?? string.Empty;
 		}
 
-		private string GetSubNodeAttributeValue(XmlNode parent, string path, string attributeName)
+		private string GetSubNodeAttributeValue(XmlReader reader, string elementName, string attributeName)
 		{
-			XmlNode node = parent.SelectSingleNode(path);
-			return XmlHelpers.GetOptionalAttributeValue(node, attributeName, string.Empty);
+			return FindElement(reader, elementName) ? (reader.GetAttribute(attributeName) ?? string.Empty) : string.Empty;
 		}
 
-		public static XmlNamespaceManager MakeNameSpaceManager()
+		private XmlNamespaceManager MakeNameSpaceManager()
 		{
-			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
+			XmlNameTable nameTable = new NameTable();
+			_abbreviationKey = nameTable.Add("abbreviation");
+			_languageNameKey = nameTable.Add("languageName");
+			_defaultFontFamilyKey = nameTable.Add("defaultFontFamily");
+			_defaultFontSizeKey = nameTable.Add("defaultFontSize");
+			_spellCheckingIdKey = nameTable.Add("spellCheckingId");
+			_identityKey = nameTable.Add("identity");
+			_languageKey = nameTable.Add("language");
+			_variantKey = nameTable.Add("variant");
+			_territoryKey = nameTable.Add("territory");
+			_scriptKey = nameTable.Add("script");
+			_generationKey = nameTable.Add("generation");
+			_versionKey = nameTable.Add("version");
+			_numberKey = nameTable.Add("number");
+			_layoutKey = nameTable.Add("layout");
+			_charactersKey = nameTable.Add("characters");
+			_rightToLeftKey = nameTable.Add("right-to-left");
+			_collationsKey = nameTable.Add("collations");
+			_collationKey = nameTable.Add("collation");
+			_typeKey = nameTable.Add("type");
+			_sortRulesTypeKey = nameTable.Add("sortRulesType");
+			XmlNamespaceManager m = new XmlNamespaceManager(nameTable);
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			return m;
 		}
@@ -289,14 +433,13 @@ namespace Palaso.WritingSystems
 		{
 			if (!String.IsNullOrEmpty(value))
 			{
-				XmlHelpers.GetOrCreateElement(parent, ".", "special", "palaso", _nameSpaceManager, LdmlNodeComparer.Singleton);
-				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "palaso:special", field, "palaso", _nameSpaceManager,
-					LdmlNodeComparer.Singleton);
-				XmlHelpers.AddOrUpdateAttribute(node, "value", value, LdmlNodeComparer.Singleton);
+				XmlHelpers.GetOrCreateElement(parent, ".", "special", string.Empty, _nameSpaceManager, LdmlNodeComparer.Singleton);
+				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "special", field, "palaso", _nameSpaceManager);
+				XmlHelpers.AddOrUpdateAttribute(node, "value", value);
 			}
 			else
 			{
-				XmlHelpers.RemoveElement(parent, "palaso:special/palaso:" + field, _nameSpaceManager);
+				XmlHelpers.RemoveElement(parent, "special/palaso:" + field, _nameSpaceManager);
 			}
 		}
 

@@ -56,7 +56,7 @@ namespace Palaso
 			{
 				if (!String.IsNullOrEmpty(nameSpace))
 				{
-					n = GetDocument(node).CreateElement(string.Empty, elementName, nameSpaceManager.LookupNamespace(nameSpace));
+					n = GetDocument(node).CreateElement(nameSpace, elementName, nameSpaceManager.LookupNamespace(nameSpace));
 				}
 				else
 				{
@@ -221,6 +221,38 @@ namespace Palaso
 				}
 				parent.InsertAfter(newChild, insertAfterNode);
 			}
+		}
+
+		public static bool FindElement(XmlReader reader, string name, Comparison<string> comparison)
+		{
+			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement &&
+				(reader.NodeType != XmlNodeType.Element || comparison(name, reader.Name) > 0))
+			{
+				switch (reader.NodeType)
+				{
+					case XmlNodeType.Attribute:
+					case XmlNodeType.Element:
+						reader.Skip();
+						break;
+					default:
+						reader.Read();
+						break;
+				}
+			}
+			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
+		}
+
+		public static bool FindElement(XmlReader reader, string name, string nameSpace, Comparison<string> comparison)
+		{
+			while (FindElement(reader, name, comparison))
+			{
+				if (reader.NamespaceURI == nameSpace)
+				{
+					return true;
+				}
+				reader.Skip();
+			}
+			return false;
 		}
 	}
 }
