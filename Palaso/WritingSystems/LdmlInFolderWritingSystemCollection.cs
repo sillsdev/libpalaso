@@ -242,7 +242,6 @@ namespace Palaso.WritingSystems
 			{
 				return; // no need to save (better to preserve the modified date)
 			}
-			XmlDocument dom = new XmlDocument();
 			if (!String.IsNullOrEmpty(incomingFileName))
 			{
 				string previousFilePath = Path.Combine(PathToWritingSystems, incomingFileName);
@@ -251,7 +250,7 @@ namespace Palaso.WritingSystems
 					// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
 					try
 					{
-						dom.Load(previousFilePath);
+						//dom.Load(previousFilePath);
 					}
 					catch {}
 					if (writingSystemFileName != incomingFileName)
@@ -262,8 +261,7 @@ namespace Palaso.WritingSystems
 				}
 			}
 			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Write(dom, ws);
-			dom.Save(writingSystemFilePath);
+			adaptor.Write(writingSystemFilePath, ws);
 
 			ws.Modified = false;
 			//save this so that if the user makes a name-changing change and saves again, we

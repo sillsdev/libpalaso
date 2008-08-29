@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
@@ -12,26 +13,6 @@ namespace Palaso.WritingSystems
 	public class LdmlAdaptor
 	{
 		private XmlNamespaceManager _nameSpaceManager;
-		private string _abbreviationKey;
-		private string _languageNameKey;
-		private string _defaultFontFamilyKey;
-		private string _defaultFontSizeKey;
-		private string _spellCheckingIdKey;
-		private string _identityKey;
-		private string _languageKey;
-		private string _variantKey;
-		private string _territoryKey;
-		private string _scriptKey;
-		private string _generationKey;
-		private string _versionKey;
-		private string _numberKey;
-		private string _layoutKey;
-		private string _charactersKey;
-		private string _rightToLeftKey;
-		private string _collationsKey;
-		private string _collationKey;
-		private string _typeKey;
-		private string _sortRulesTypeKey;
 
 		public LdmlAdaptor()
 		{
@@ -89,6 +70,42 @@ namespace Palaso.WritingSystems
 		private static bool FindElement(XmlReader reader, string name, string nameSpace)
 		{
 			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
+		}
+
+		public static void WriteLdmlText(XmlWriter writer, string text)
+		{
+			// Not all Unicode characters are valid in an XML document, so we need to create
+			// the <cp hex="X"> elements to replace the invalid characters.
+			// Note: While 0xD (carriage return) is a valid XML character, it is automatically
+			// either dropped or coverted to 0xA by any conforming XML parser, so we also make a <cp>
+			// element for that one.
+			StringBuilder sb = new StringBuilder(text.Length);
+			for (int i=0; i < text.Length; i++)
+			{
+				int code = Char.ConvertToUtf32(text, i);
+				if ((code == 0x9) ||
+					(code == 0xA) ||
+					(code >= 0x20 && code <= 0xD7FF) ||
+					(code >= 0xE000 && code <= 0xFFFD) ||
+					(code >= 0x10000 && code <= 0x10FFFF))
+				{
+					sb.Append(Char.ConvertFromUtf32(code));
+				}
+				else
+				{
+					writer.WriteString(sb.ToString());
+					writer.WriteStartElement("cp");
+					writer.WriteAttributeString("hex", String.Format("{0:X}", code));
+					writer.WriteEndElement();
+					sb = new StringBuilder(text.Length - i);
+				}
+
+				if (Char.IsSurrogatePair(text, i))
+				{
+					i++;
+				}
+			}
+			writer.WriteString(sb.ToString());
 		}
 
 		private void ReadLdml(XmlReader reader, WritingSystemDefinition ws)
@@ -271,13 +288,22 @@ namespace Palaso.WritingSystems
 			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
-				if (FindElement(collationReader, "alias"))
+				bool foundValue = false;
+				if (FindElement(collationReader, "base"))
 				{
-					ws.SortRules = collationReader.GetAttribute("source") ?? string.Empty;
+					if (!collationReader.IsEmptyElement && collationReader.ReadToDescendant("alias"))
+					{
+						string sortRules = collationReader.GetAttribute("source");
+						if (sortRules != null)
+						{
+							ws.SortRules = sortRules;
+							foundValue = true;
+						}
+					}
 				}
-				else
+				if (!foundValue)
 				{
-					// missing alias element, fall back to ICU rules
+					// missing base alias element, fall back to ICU rules
 					ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
 					ReadCollationRulesForCustomICU(collationXml, ws);
 				}
@@ -312,10 +338,14 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
-			doc.CreateXmlDeclaration("1.0", "", "no");
-			Write(doc, ws);
-			doc.Save(filePath);
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.IndentChars = "\t";
+			settings.NewLineHandling = NewLineHandling.None;
+			XmlWriter writer = XmlWriter.Create(filePath, settings);
+			writer.WriteStartDocument();
+			WriteLdml(writer, null, ws);
+			writer.Close();
 		}
 
 		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws)
@@ -328,33 +358,115 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlDocument doc = new XmlDocument(_nameSpaceManager.NameTable);
-			Write(doc, ws);
-			doc.Save(xmlWriter); //??? Not sure about this, does this need to be Write(To) or similar?
+			WriteLdml(xmlWriter, null, ws);
 		}
 
-		public void Write(XmlNode parentOfLdmlNode, WritingSystemDefinition ws)
+		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
-			if (parentOfLdmlNode == null)
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
+			writer.WriteStartElement("ldml");
+			if (reader != null)
 			{
-				throw new ArgumentNullException("parentOfLdmlNode");
+				reader.MoveToContent();
+				reader.ReadStartElement("ldml");
+				CopyUntilElement(writer, reader, "identity");
 			}
-			if (ws == null)
+			WriteIdentityElement(writer, reader, ws);
+			if (reader != null)
 			{
-				throw new ArgumentNullException("ws");
+				CopyUntilElement(writer, reader, "layout");
 			}
-			XmlNode ldmlNode = XmlHelpers.GetOrCreateElement(parentOfLdmlNode, ".", "ldml", null, _nameSpaceManager);
+			WriteLayoutElement(writer, reader, ws);
+			if (reader != null)
+			{
+				CopyUntilElement(writer, reader, "collations");
+			}
+			WriteCollationsElement(writer, reader, ws);
+			if (reader != null)
+			{
+				CopyUntilElement(writer, reader, "special");
+			}
+			WriteTopLevelSpecialElement(writer, ws);
+			if (reader != null)
+			{
+				CopyOtherSpecialElements(writer, reader);
+				CopyToEndElement(writer, reader);
+			}
+			writer.WriteEndElement();
+		}
 
-			UpdateIdentityElement(ldmlNode, ws);
-			UpdateLayoutElement(ldmlNode, ws);
-			UpdateCollationElement(ldmlNode, ws);
+		private void CopyUntilElement(XmlWriter writer, XmlReader reader, string elementName)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(reader != null);
+			Debug.Assert(!string.IsNullOrEmpty(elementName));
+			if (reader.NodeType == XmlNodeType.None)
+			{
+				reader.Read();
+			}
+			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
+				&& (reader.NodeType != XmlNodeType.Element || LdmlNodeComparer.CompareElementNames(reader.Name, elementName) < 0))
+			{
+				// XmlWriter.WriteNode doesn't do anything if the node type is Attribute
+				if (reader.NodeType == XmlNodeType.Attribute)
+				{
+					writer.WriteAttributes(reader, false);
+				}
+				else
+				{
+					writer.WriteNode(reader, false);
+				}
+			}
+		}
 
-			SetSpecialNode(ldmlNode, "abbreviation", ws.Abbreviation);
-			SetSpecialNode(ldmlNode, "defaultFontFamily", ws.DefaultFontName);
-			SetSpecialNode(ldmlNode, "defaultFontSize", ws.DefaultFontSize.ToString());
-			SetSpecialNode(ldmlNode, "defaultKeyboard", ws.Keyboard);
-			SetSpecialNode(ldmlNode, "languageName", ws.LanguageName);
-			SetSpecialNode(ldmlNode, "spellCheckingId", ws.SpellCheckingId);
+		private void CopyToEndElement(XmlWriter writer, XmlReader reader)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(reader != null);
+			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement)
+			{
+				// XmlWriter.WriteNode doesn't do anything if the node type is Attribute
+				if (reader.NodeType == XmlNodeType.Attribute)
+				{
+					writer.WriteAttributes(reader, false);
+				}
+				else
+				{
+					writer.WriteNode(reader, false);
+				}
+			}
+			// either read the end element or no-op if EOF
+			reader.Read();
+		}
+
+		private void CopyOtherSpecialElements(XmlWriter writer, XmlReader reader)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(reader != null);
+			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
+				&& (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
+			{
+				if (reader.NodeType == XmlNodeType.Element)
+				{
+					bool palasoNS = false;
+					while (reader.MoveToNextAttribute())
+					{
+						if (reader.Name.StartsWith("xmlns:") && reader.Value == _nameSpaceManager.LookupNamespace("palaso"))
+						{
+							palasoNS = true;
+							break;
+						}
+					}
+					reader.MoveToElement();
+					if (palasoNS)
+					{
+						reader.Skip();
+						continue;
+					}
+				}
+				writer.WriteNode(reader, false);
+			}
 		}
 
 		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
@@ -390,172 +502,294 @@ namespace Palaso.WritingSystems
 
 		private XmlNamespaceManager MakeNameSpaceManager()
 		{
-			XmlNameTable nameTable = new NameTable();
-			_abbreviationKey = nameTable.Add("abbreviation");
-			_languageNameKey = nameTable.Add("languageName");
-			_defaultFontFamilyKey = nameTable.Add("defaultFontFamily");
-			_defaultFontSizeKey = nameTable.Add("defaultFontSize");
-			_spellCheckingIdKey = nameTable.Add("spellCheckingId");
-			_identityKey = nameTable.Add("identity");
-			_languageKey = nameTable.Add("language");
-			_variantKey = nameTable.Add("variant");
-			_territoryKey = nameTable.Add("territory");
-			_scriptKey = nameTable.Add("script");
-			_generationKey = nameTable.Add("generation");
-			_versionKey = nameTable.Add("version");
-			_numberKey = nameTable.Add("number");
-			_layoutKey = nameTable.Add("layout");
-			_charactersKey = nameTable.Add("characters");
-			_rightToLeftKey = nameTable.Add("right-to-left");
-			_collationsKey = nameTable.Add("collations");
-			_collationKey = nameTable.Add("collation");
-			_typeKey = nameTable.Add("type");
-			_sortRulesTypeKey = nameTable.Add("sortRulesType");
-			XmlNamespaceManager m = new XmlNamespaceManager(nameTable);
+			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			return m;
 		}
 
-		private void SetSubNodeWithAttribute(XmlNode parent, string field, string attributeName, string value)
+		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)
 		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				XmlNode node = XmlHelpers.GetOrCreateElement(parent, ".", field, null, _nameSpaceManager, LdmlNodeComparer.Singleton);
-				XmlHelpers.AddOrUpdateAttribute(node, attributeName, value, LdmlNodeComparer.Singleton);
-			}
-			else
-			{
-				XmlHelpers.RemoveElement(parent, field, _nameSpaceManager);
-			}
+			writer.WriteStartElement(elementName);
+			writer.WriteAttributeString(attributeName, value);
+			writer.WriteEndElement();
 		}
 
-		private void SetSpecialNode(XmlNode parent, string field, string value)
+		private void WriteSpecialValue(XmlWriter writer, string field, string value)
 		{
-			if (!String.IsNullOrEmpty(value))
-			{
-				XmlHelpers.GetOrCreateElement(parent, ".", "special", string.Empty, _nameSpaceManager, LdmlNodeComparer.Singleton);
-				XmlNode node = XmlHelpers.GetOrCreateElement(parent, "special", field, "palaso", _nameSpaceManager);
-				XmlHelpers.AddOrUpdateAttribute(node, "value", value);
-			}
-			else
-			{
-				XmlHelpers.RemoveElement(parent, "special/palaso:" + field, _nameSpaceManager);
-			}
-		}
-
-		private void UpdateIdentityElement(XmlNode ldmlNode, WritingSystemDefinition ws)
-		{
-			XmlNode identityNode = XmlHelpers.GetOrCreateElement(ldmlNode, ".", "identity", null,
-				_nameSpaceManager, LdmlNodeComparer.Singleton);
-			SetSubNodeWithAttribute(identityNode, "language", "type", ws.ISO);
-			SetSubNodeWithAttribute(identityNode, "script", "type", ws.Script);
-			SetSubNodeWithAttribute(identityNode, "territory", "type", ws.Region);
-			SetSubNodeWithAttribute(identityNode, "variant", "type", ws.Variant);
-			SetSubNodeWithAttribute(identityNode, "generation", "date", String.Format("{0:s}", ws.DateModified));
-			XmlNode node = XmlHelpers.GetOrCreateElement(identityNode, ".", "version", null, _nameSpaceManager,
-				LdmlNodeComparer.Singleton);
-			XmlHelpers.AddOrUpdateAttribute(node, "number", ws.VersionNumber, LdmlNodeComparer.Singleton);
-			node.InnerText = ws.VersionDescription;
-		}
-
-		private void UpdateLayoutElement(XmlNode ldmlNode, WritingSystemDefinition ws)
-		{
-			XmlNode layoutNode = XmlHelpers.GetOrCreateElement(ldmlNode, ".", "layout", null, _nameSpaceManager,
-				LdmlNodeComparer.Singleton);
-			XmlNode orientationNode = XmlHelpers.GetOrCreateElement(layoutNode, ".", "orientation", null,
-				_nameSpaceManager, LdmlNodeComparer.Singleton);
-			// Currently we don't support line orientations other than top-to-bottom.
-			// We also don't support vertical character orientations, although both of these are allowed in LDML
-			XmlHelpers.AddOrUpdateAttribute(orientationNode, "lines", "top-to-bottom", LdmlNodeComparer.Singleton);
-			XmlHelpers.AddOrUpdateAttribute(orientationNode, "characters", ws.RightToLeftScript ? "right-to-left" : "left-to-right",
-				LdmlNodeComparer.Singleton);
-		}
-
-		private void UpdateCollationElement(XmlNode ldmlNode, WritingSystemDefinition ws)
-		{
-			Debug.Assert(ldmlNode != null);
-			Debug.Assert(ws != null);
-			if (string.IsNullOrEmpty(ws.SortUsing) || !Enum.IsDefined(typeof (WritingSystemDefinition.SortRulesType), ws.SortUsing))
+			if (String.IsNullOrEmpty(value))
 			{
 				return;
 			}
-			XmlNode parentNode = XmlHelpers.GetOrCreateElement(ldmlNode, ".", "collations", null,
-				_nameSpaceManager, LdmlNodeComparer.Singleton);
-			// Because we have to check the type attribute, we can't just use the XmlHelpers.GetOrCreateElement
-			XmlNode node = parentNode.SelectSingleNode("collation[@type='']", _nameSpaceManager) ??
-				parentNode.SelectSingleNode("collation[@type='standard']", _nameSpaceManager);
-			if (node == null)
+			writer.WriteStartElement(field, _nameSpaceManager.LookupNamespace("palaso"));
+			writer.WriteAttributeString("value", value);
+			writer.WriteEndElement();
+		}
+
+		private void WriteIdentityElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
+			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "identity";
+
+			writer.WriteStartElement("identity");
+			writer.WriteStartElement("version");
+			writer.WriteAttributeString("number", ws.VersionNumber);
+			writer.WriteString(ws.VersionDescription);
+			writer.WriteEndElement();
+			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
+			WriteElementWithAttribute(writer, "language", "type", ws.ISO);
+			if (!String.IsNullOrEmpty(ws.Script))
 			{
-				node = parentNode.OwnerDocument.CreateElement("collation");
-				XmlHelpers.InsertNodeUsingDefinedOrder(parentNode, node, LdmlNodeComparer.Singleton);
+				WriteElementWithAttribute(writer, "script", "type", ws.Script);
 			}
+			if (!String.IsNullOrEmpty(ws.Region))
+			{
+				WriteElementWithAttribute(writer, "territory", "type", ws.Region);
+			}
+			if (!String.IsNullOrEmpty(ws.Variant))
+			{
+				WriteElementWithAttribute(writer, "variant", "type", ws.Variant);
+			}
+			if (needToCopy)
+			{
+				if (reader.IsEmptyElement)
+				{
+					reader.Skip();
+				}
+				else
+				{
+					reader.Read(); // move past "identity" element}
+
+					// <special> is the only node we possibly left out and need to copy
+					FindElement(reader, "special");
+					CopyToEndElement(writer, reader);
+				}
+			}
+			writer.WriteEndElement();
+		}
+
+		private void WriteLayoutElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
+			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "identity";
+			// if we're left-to-right, we don't need to write out default values
+			bool needLayoutElement = ws.RightToLeftScript;
+
+			if (needLayoutElement)
+			{
+				writer.WriteStartElement("layout");
+				writer.WriteStartElement("orientation");
+				// omit default value for "lines" attribute
+				writer.WriteAttributeString("characters", "right-to-left");
+				writer.WriteEndElement();
+			}
+			if (needToCopy)
+			{
+				if (reader.IsEmptyElement)
+				{
+					reader.Skip();
+				}
+				else
+				{
+					reader.Read();
+					// skip any existing orientation and alias element, and copy the rest
+					if (FindElement(reader, "orientation"))
+					{
+						reader.Skip();
+					}
+					if (reader.NodeType != XmlNodeType.EndElement && !needLayoutElement)
+					{
+						needLayoutElement = true;
+						writer.WriteStartElement("layout");
+					}
+					CopyToEndElement(writer, reader);
+				}
+			}
+			if (needLayoutElement)
+			{
+				writer.WriteEndElement();
+			}
+		}
+
+		private void WriteBeginSpecialElement(XmlWriter writer)
+		{
+			writer.WriteStartElement("special");
+			writer.WriteAttributeString("xmlns", "palaso", null, _nameSpaceManager.LookupNamespace("palaso"));
+		}
+
+		private void WriteTopLevelSpecialElement(XmlWriter writer, WritingSystemDefinition ws)
+		{
+			WriteBeginSpecialElement(writer);
+			WriteSpecialValue(writer, "abbreviation", ws.Abbreviation);
+			WriteSpecialValue(writer, "defaultFontFamily", ws.DefaultFontName);
+			WriteSpecialValue(writer, "defaultFontSize", ws.DefaultFontSize.ToString());
+			WriteSpecialValue(writer, "defaultKeyboard", ws.Keyboard);
+			WriteSpecialValue(writer, "languageName", ws.LanguageName);
+			WriteSpecialValue(writer, "spellCheckingId", ws.SpellCheckingId);
+			writer.WriteEndElement();
+		}
+
+		private void WriteCollationsElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
+			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "collations";
+
+			writer.WriteStartElement("collations");
+			if (needToCopy)
+			{
+				if (reader.IsEmptyElement)
+				{
+					reader.Skip();
+					needToCopy = false;
+				}
+				else
+				{
+					reader.ReadStartElement("collations");
+					if (FindElement(reader, "alias"))
+					{
+						reader.Skip();
+					}
+					CopyUntilElement(writer, reader, "collation");
+				}
+			}
+			WriteCollationElement(writer, reader, ws);
+			if (needToCopy)
+			{
+				CopyToEndElement(writer, reader);
+			}
+			writer.WriteEndElement();
+		}
+
+		private void WriteCollationElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		{
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
+			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "collation";
+			if (needToCopy)
+			{
+				string collationType = reader.GetAttribute("type");
+				needToCopy = String.IsNullOrEmpty(collationType) || collationType == "standard";
+			}
+			if (needToCopy && reader.IsEmptyElement)
+			{
+				reader.Skip();
+				needToCopy = false;
+			}
+
+			if (string.IsNullOrEmpty(ws.SortUsing) || !Enum.IsDefined(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
+			{
+				if (needToCopy)
+				{
+					// copy whole existing node - invalid/undefined collation rules in our definition
+					writer.WriteNode(reader, false);
+				}
+				return;
+			}
+			if (needToCopy && reader.IsEmptyElement)
+			{
+				reader.Skip();
+				needToCopy = false;
+			}
+			if (!needToCopy)
+			{
+				// set to null if we don't need to copy to make it easier to tell in the methods we call
+				reader = null;
+			}
+			else
+			{
+				reader.ReadStartElement("collation");
+				while (reader.NodeType == XmlNodeType.Attribute)
+				{
+					reader.Read();
+				}
+			}
+
+			writer.WriteStartElement("collation");
 			switch ((WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
 			{
 				case WritingSystemDefinition.SortRulesType.OtherLanguage:
-					UpdateCollationRulesFromOtherLanguage(node, ws);
+					WriteCollationRulesFromOtherLanguage(writer, reader, ws);
 					break;
 				case WritingSystemDefinition.SortRulesType.CustomSimple:
-					UpdateCollationRulesFromCustomSimple(node, ws);
+					WriteCollationRulesFromCustomSimple(writer, reader, ws);
 					break;
 				case WritingSystemDefinition.SortRulesType.CustomICU:
-					UpdateCollationRulesFromCustomICU(node, ws);
+					WriteCollationRulesFromCustomICU(writer, reader, ws);
 					break;
 				default:
 					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
 					throw new ApplicationException(message);
 			}
-			SetSpecialNode(node, "sortRulesType", ws.SortUsing);
+			WriteBeginSpecialElement(writer);
+			WriteSpecialValue(writer, "sortRulesType", ws.SortUsing);
+			writer.WriteEndElement();
+			if (needToCopy)
+			{
+				if (FindElement(reader, "special"))
+				{
+					CopyOtherSpecialElements(writer, reader);
+				}
+				CopyToEndElement(writer, reader);
+			}
+			writer.WriteEndElement();
 		}
 
-		private void UpdateCollationRulesFromOtherLanguage(XmlNode parentNode, WritingSystemDefinition ws)
+		private void WriteCollationRulesFromOtherLanguage(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
-			Debug.Assert(parentNode != null);
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
 			Debug.Assert(ws.SortUsing == "OtherLanguage");
+
 			// Since the alias element gets all information from another source,
 			// we should remove all other elements in this collation element.  We
 			// leave "special" elements as they are custom data from some other app.
-			List<XmlNode> nodesToRemove = new List<XmlNode>();
-			foreach (XmlNode child in parentNode.ChildNodes)
+			writer.WriteStartElement("base");
+			WriteElementWithAttribute(writer, "alias", "source", ws.SortRules);
+			writer.WriteEndElement();
+			if (reader != null)
 			{
-				if (child.NodeType != XmlNodeType.Element || child.Name == "special")
-				{
-					continue;
-				}
-				nodesToRemove.Add(child);
+				// don't copy anything, but skip to the 1st special node
+				FindElement(reader, "special");
 			}
-			foreach (XmlNode node in nodesToRemove)
-			{
-				parentNode.RemoveChild(node);
-			}
-
-			XmlNode alias = XmlHelpers.GetOrCreateElement(parentNode, ".", "alias", string.Empty,
-				_nameSpaceManager, LdmlNodeComparer.Singleton);
-			XmlHelpers.AddOrUpdateAttribute(alias, "source", ws.SortRules, LdmlNodeComparer.Singleton);
 		}
 
-		private void UpdateCollationRulesFromCustomSimple(XmlNode parentNode, WritingSystemDefinition ws)
+		private void WriteCollationRulesFromCustomSimple(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
-			Debug.Assert(parentNode != null);
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
 			Debug.Assert(ws.SortUsing == "CustomSimple");
+
 			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.SortRules ?? string.Empty);
-			UpdateCollationRulesFromICUString(parentNode, icu);
+			WriteCollationRulesFromICUString(writer, reader, icu);
 		}
 
-		private void UpdateCollationRulesFromCustomICU(XmlNode parentNode, WritingSystemDefinition ws)
+		private void WriteCollationRulesFromCustomICU(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
-			Debug.Assert(parentNode != null);
+			Debug.Assert(writer != null);
+			Debug.Assert(ws != null);
 			Debug.Assert(ws.SortUsing == "CustomICU");
-			UpdateCollationRulesFromICUString(parentNode, ws.SortRules);
+			WriteCollationRulesFromICUString(writer, reader, ws.SortRules);
 		}
 
-		private void UpdateCollationRulesFromICUString(XmlNode parentNode, string icu)
+		private void WriteCollationRulesFromICUString(XmlWriter writer, XmlReader reader, string icu)
 		{
-			Debug.Assert(parentNode != null);
+			Debug.Assert(writer != null);
 			icu = icu ?? string.Empty;
-			// remove any alias that would override our rules
-			XmlHelpers.RemoveElement(parentNode, "alias", _nameSpaceManager);
-			IcuRulesParser parser = new IcuRulesParser(true);
-			parser.AddIcuRulesToNode(parentNode, icu, _nameSpaceManager);
+			if (reader != null)
+			{
+				// don't copy any alias that would override our rules
+				if (FindElement(reader, "alias"))
+				{
+					reader.Skip();
+				}
+				CopyUntilElement(writer, reader, "settings");
+				// for now we'll omit anything in the suppress_contractions and optimize nodes
+				FindElement(reader, "special");
+			}
+			IcuRulesParser parser = new IcuRulesParser(false);
+			parser.WriteIcuRules(writer, icu);
 		}
 	}
 }

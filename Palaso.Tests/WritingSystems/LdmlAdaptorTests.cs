@@ -68,17 +68,5 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_adaptor.Write(XmlWriter.Create(new MemoryStream()), null);
 		}
-
-		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void WriteToXmlNode_NullXmlNode_Throws()
-		{
-			_adaptor.Write((XmlNode)null, _ws);
-		}
-
-		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void WriteToXmlNode_NullWritingSystem_Throws()
-		{
-			_adaptor.Write(new XmlDocument(), null);
-		}
 	}
 }

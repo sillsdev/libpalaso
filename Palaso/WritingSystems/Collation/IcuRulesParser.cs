@@ -16,11 +16,9 @@ namespace Palaso.WritingSystems.Collation
 {
 	public class IcuRulesParser
 	{
-		private XmlNode _parentNode;
-		private XmlDocument _dom;
+		private XmlWriter _writer;
 		private Debugger _debugger;
 		private bool _useDebugger;
-		private XmlNamespaceManager _nameSpaceManager;
 
 		// You will notice that the xml tags used don't always match my parser/rule variable name.  We have
 		// the creators of ldml and icu to thank for that.  Collation in ldml is based off of icu and is pretty
@@ -37,16 +35,17 @@ namespace Palaso.WritingSystems.Collation
 			_useDebugger = useDebugger;
 		}
 
-		public void AddIcuRulesToNode(XmlNode parentNode, string icuRules, XmlNamespaceManager nameSpaceManager)
+		public void WriteIcuRules(XmlWriter writer, string icuRules)
 		{
-			if (parentNode == null)
+			if (writer == null)
 			{
-				throw new ArgumentNullException("parentNode");
+				throw new ArgumentNullException("writer");
 			}
-			_parentNode = parentNode;
-			_nameSpaceManager = nameSpaceManager;
-			// OwnerDocument will be null if the node is an XmlDocument
-			_dom = _parentNode.OwnerDocument ?? (XmlDocument)_parentNode;
+			if (icuRules == null)
+			{
+				throw new ArgumentNullException("icuRules");
+			}
+			_writer = writer;
 			DefineParsingRules();
 			AssignSemanticActions();
 			InitializeDataObjects();
@@ -70,6 +69,7 @@ namespace Palaso.WritingSystems.Collation
 			finally
 			{
 				ClearDataObjects();
+				_writer = null;
 			}
 		}
 
@@ -78,9 +78,7 @@ namespace Palaso.WritingSystems.Collation
 			// I was going to run with no semantic actions and therefore no dom needed,
 			// but some actions can throw (OnOptionVariableTop for one),
 			// so we need to run the actions as well for full validation.
-			_dom = new XmlDocument();
-			_nameSpaceManager = new XmlNamespaceManager(_dom.NameTable);
-			_parentNode = _dom;
+			_writer = null;
 			DefineParsingRules();
 			AssignSemanticActions();
 			InitializeDataObjects();
@@ -259,7 +257,7 @@ namespace Palaso.WritingSystems.Collation
 			// simpleDifference ::= differenceOperator WS? simpleElement
 			// extendedDifference ::= differenceOperator WS? extendedElement
 			// difference ::= simpleDifference | extendedDifference
-			// NOTE: Due to issues in the parser, extendedDifference MUST COME BEFORE simpleDifference in the difference definition
+			// NOTE: Due to the implementation of the parser, extendedDifference MUST COME BEFORE simpleDifference in the difference definition
 			_simpleDifference = new Rule("simpleDifference", Ops.Sequence(_differenceOperator, _optionalWhiteSpace, _simpleElement));
 			_extendedDifference = new Rule("x", Ops.Sequence(_differenceOperator, _optionalWhiteSpace, _extendedElement));
 			_difference = _extendedDifference | _simpleDifference;
@@ -372,23 +370,148 @@ namespace Palaso.WritingSystems.Collation
 			_icuRules.Act += OnIcuRules;
 		}
 
+		private class IcuDataObject : IComparable<IcuDataObject>
+		{
+			private XmlNodeType _nodeType;
+			private string _name;
+			private string _value;
+			private List<IcuDataObject> _children;
+
+			private IcuDataObject(XmlNodeType nodeType, string name, string value)
+			{
+				_nodeType = nodeType;
+				_name = name;
+				_value = value;
+				if (_nodeType == XmlNodeType.Element)
+				{
+					_children = new List<IcuDataObject>();
+				}
+			}
+
+			public static IcuDataObject CreateAttribute(string name, string value)
+			{
+				return new IcuDataObject(XmlNodeType.Attribute, name, value);
+			}
+
+			public static IcuDataObject CreateAttribute(string name)
+			{
+				return new IcuDataObject(XmlNodeType.Attribute, name, string.Empty);
+			}
+
+			public static IcuDataObject CreateElement(string name)
+			{
+				return new IcuDataObject(XmlNodeType.Element, name, null);
+			}
+
+			public static IcuDataObject CreateText(string text)
+			{
+				return new IcuDataObject(XmlNodeType.Text, null, text);
+			}
+
+			public string Name
+			{
+				get { return _name; }
+			}
+
+			public string Value
+			{
+				set { _value = value; }
+			}
+
+			public string InnerText
+			{
+				get
+				{
+					if (_nodeType == XmlNodeType.Attribute || _nodeType == XmlNodeType.Text)
+					{
+						return _value;
+					}
+					StringBuilder sb = new StringBuilder();
+					foreach (IcuDataObject child in _children)
+					{
+						if (child._nodeType == XmlNodeType.Attribute)
+						{
+							continue;
+						}
+						sb.Append(child.InnerText);
+					}
+					return sb.ToString();
+				}
+			}
+
+			public void AppendChild(IcuDataObject ido)
+			{
+				Debug.Assert(_nodeType == XmlNodeType.Element);
+				_children.Add(ido);
+			}
+
+			public void Write(XmlWriter writer)
+			{
+				switch (_nodeType)
+				{
+					case XmlNodeType.Element:
+						writer.WriteStartElement(_name);
+						foreach (IcuDataObject ido in _children)
+						{
+							ido.Write(writer);
+						}
+						writer.WriteEndElement();
+						break;
+					case XmlNodeType.Attribute:
+						writer.WriteAttributeString(_name, _value);
+						break;
+					case XmlNodeType.Text:
+						LdmlAdaptor.WriteLdmlText(writer, _value);
+						break;
+					default:
+						Debug.Assert(false, "Unhandled Icu Data Object type");
+						break;
+				}
+			}
+
+			#region IComparable<IcuDataObject> Members
+
+			public int CompareTo(IcuDataObject other)
+			{
+				Dictionary<XmlNodeType, int> _nodeTypeStrength = new Dictionary<XmlNodeType, int>(3);
+				_nodeTypeStrength[XmlNodeType.Attribute] = 1;
+				_nodeTypeStrength[XmlNodeType.Element] = 2;
+				_nodeTypeStrength[XmlNodeType.Text] = 3;
+				int result = _nodeTypeStrength[_nodeType].CompareTo(_nodeTypeStrength[other._nodeType]);
+				if (result != 0)
+				{
+					return result;
+				}
+				switch (_nodeType)
+				{
+					case XmlNodeType.Attribute:
+						return LdmlNodeComparer.CompareAttributeNames(_name, other._name);
+					case XmlNodeType.Element:
+						return LdmlNodeComparer.CompareElementNames(_name, other._name);
+				}
+				return 0;
+			}
+
+			#endregion
+		}
+
 		private StringBuilder _currentDataString;
-		private Stack<XmlNode> _currentDataObjects;
-		private List<XmlNode> _currentNodes;
+		private Stack<IcuDataObject> _currentDataObjects;
+		private List<IcuDataObject> _currentNodes;
 		private Stack<string> _currentOperators;
 		private StringBuilder _currentIndirectPosition;
-		private Queue<XmlNode> _attributesForReset;
-		private List<XmlNode> _optionAttributes;
+		private Queue<IcuDataObject> _attributesForReset;
+		private List<IcuDataObject> _optionAttributes;
 
 		private void InitializeDataObjects()
 		{
 			_currentDataString = new StringBuilder();
-			_currentDataObjects = new Stack<XmlNode>();
-			_currentNodes = new List<XmlNode>();
+			_currentDataObjects = new Stack<IcuDataObject>();
+			_currentNodes = new List<IcuDataObject>();
 			_currentOperators = new Stack<string>();
 			_currentIndirectPosition = new StringBuilder();
-			_attributesForReset = new Queue<XmlNode>();
-			_optionAttributes = new List<XmlNode>();
+			_attributesForReset = new Queue<IcuDataObject>();
+			_optionAttributes = new List<IcuDataObject>();
 		}
 
 		private void ClearDataObjects()
@@ -401,22 +524,23 @@ namespace Palaso.WritingSystems.Collation
 			_attributesForReset = null;
 		}
 
-		private XmlNode AddXmlNodeWithData(string name)
+		private void AddXmlNodeWithData(string name)
 		{
-			XmlNode node = _dom.CreateElement(name);
-			node.AppendChild(_currentDataObjects.Pop());
-			_currentNodes.Add(node);
-			return node;
+			IcuDataObject ido = IcuDataObject.CreateElement(name);
+			ido.AppendChild(_currentDataObjects.Pop());
+			_currentNodes.Add(ido);
 		}
 
 		private void OnReset(object sender, ActionEventArgs args)
 		{
-			XmlNode node = AddXmlNodeWithData(((Rule)sender).ID);
-			foreach (XmlNode attr in _attributesForReset)
+			IcuDataObject ido = IcuDataObject.CreateElement(((Rule)sender).ID);
+			foreach (IcuDataObject attr in _attributesForReset)
 			{
-				node.Attributes.SetNamedItem(attr);
+				ido.AppendChild(attr);
 			}
-			_attributesForReset = new Queue<XmlNode>();
+			ido.AppendChild(_currentDataObjects.Pop());
+			_currentNodes.Add(ido);
+			_attributesForReset = new Queue<IcuDataObject>();
 		}
 
 		private void OnSimpleDifference(object sender, ActionEventArgs args)
@@ -434,11 +558,11 @@ namespace Palaso.WritingSystems.Collation
 		{
 			// There should always at least be 2 nodes by this point - reset and either prefix or expansion
 			Debug.Assert(_currentNodes.Count >= 2);
-			XmlNode differenceNode = _dom.CreateElement("x");
-			XmlNode dataNode = _dom.CreateElement(_currentOperators.Pop());
+			IcuDataObject differenceNode = IcuDataObject.CreateElement("x");
+			IcuDataObject dataNode = IcuDataObject.CreateElement(_currentOperators.Pop());
 			dataNode.AppendChild(_currentDataObjects.Pop());
-			XmlNode prefixNode = _currentNodes[_currentNodes.Count - 2];
-			XmlNode expansionNode = _currentNodes[_currentNodes.Count - 1];
+			IcuDataObject prefixNode = _currentNodes[_currentNodes.Count - 2];
+			IcuDataObject expansionNode = _currentNodes[_currentNodes.Count - 1];
 			int deleteCount = 0;
 			if (expansionNode.Name != "extend")
 			{
@@ -490,8 +614,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private void AddAttributeForReset(string name, string value)
 		{
-			XmlNode attr = _dom.CreateAttribute(name);
-			attr.Value = value;
+			IcuDataObject attr = IcuDataObject.CreateAttribute(name, value);
 			_attributesForReset.Enqueue(attr);
 		}
 
@@ -571,7 +694,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private void OnDataString(object sender, ActionEventArgs args)
 		{
-			_currentDataObjects.Push(_dom.CreateTextNode(_currentDataString.ToString()));
+			_currentDataObjects.Push(IcuDataObject.CreateText(_currentDataString.ToString()));
 			_currentDataString = new StringBuilder();
 		}
 
@@ -588,7 +711,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private void OnIndirectPosition(object sender, ActionEventArgs args)
 		{
-			_currentDataObjects.Push(_dom.CreateElement(_currentIndirectPosition.ToString()));
+			_currentDataObjects.Push(IcuDataObject.CreateElement(_currentIndirectPosition.ToString()));
 			_currentIndirectPosition = new StringBuilder();
 		}
 
@@ -607,7 +730,7 @@ namespace Palaso.WritingSystems.Collation
 		{
 			// [top] is deprecated in ICU and not directly allowed in LDML
 			// [top] is probably best rendered the same as [before 1] [first tertiary ignorable]
-			_currentDataObjects.Push(_dom.CreateElement("first_tertiary_ignorable"));
+			_currentDataObjects.Push(IcuDataObject.CreateElement("first_tertiary_ignorable"));
 			AddAttributeForReset("before", "primary");
 		}
 
@@ -616,14 +739,13 @@ namespace Palaso.WritingSystems.Collation
 			Regex regex = new Regex("(\\S+)\\s+(\\S+)");
 			Match match = regex.Match(args.Value);
 			Debug.Assert(match.Success);
-			XmlNode attr = _dom.CreateAttribute(match.Groups[1].Value);
-			attr.Value = match.Groups[2].Value;
+			IcuDataObject attr = IcuDataObject.CreateAttribute(match.Groups[1].Value, match.Groups[2].Value);
 			_optionAttributes.Add(attr);
 		}
 
 		private void OnOptionBackwards(object sender, ActionEventArgs args)
 		{
-			XmlNode attr = _dom.CreateAttribute("backwards");
+			IcuDataObject attr = IcuDataObject.CreateAttribute("backwards");
 			switch (args.Value[args.Value.Length - 1])
 			{
 				case '1':
@@ -641,7 +763,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private void OnOptionStrength(object sender, ActionEventArgs args)
 		{
-			XmlNode attr = _dom.CreateAttribute("strength");
+			IcuDataObject attr = IcuDataObject.CreateAttribute("strength");
 			switch (args.Value[args.Value.Length - 1])
 			{
 				case '1':
@@ -670,15 +792,15 @@ namespace Palaso.WritingSystems.Collation
 
 		private void OnOptionHiraganaQ(object sender, ActionEventArgs args)
 		{
-			XmlNode attr = _dom.CreateAttribute("hiraganaQuaternary");
+			IcuDataObject attr = IcuDataObject.CreateAttribute("hiraganaQuaternary");
 			attr.Value = args.Value.EndsWith("on") ? "on" : "off";
 			_optionAttributes.Add(attr);
 		}
 
 		private void OnOptionVariableTop(object sender, ActionEventArgs args)
 		{
-			XmlNode attr = _dom.CreateAttribute("variableTop");
-			XmlNode previousNode = _currentNodes[_currentNodes.Count - 1];
+			IcuDataObject attr = IcuDataObject.CreateAttribute("variableTop");
+			IcuDataObject previousNode = _currentNodes[_currentNodes.Count - 1];
 			if (previousNode.Name == "x")
 			{
 				throw new ApplicationException("[variable top] cannot follow an extended node (prefix, expasion, or both).");
@@ -708,11 +830,11 @@ namespace Palaso.WritingSystems.Collation
 		{
 			// we can optimize primary, secondary, tertiary, and identity elements
 			List<string> optimizableElementNames = new List<string>(new string[] { "p", "s", "t", "i" });
-			List<XmlNode> currentOptimizableNodeGroup = null;
-			List<XmlNode> optimizedNodeList = new List<XmlNode>();
+			List<IcuDataObject> currentOptimizableNodeGroup = null;
+			List<IcuDataObject> optimizedNodeList = new List<IcuDataObject>();
 
 			// first, build a list of lists of nodes we can optimize
-			foreach (XmlNode node in _currentNodes)
+			foreach (IcuDataObject node in _currentNodes)
 			{
 				// Current node can be part of an optimized group if it is an allowed element
 				// AND it only contains one unicode code point.
@@ -734,7 +856,7 @@ namespace Palaso.WritingSystems.Collation
 				// start a new optimizable group if we're not in one already
 				if (currentOptimizableNodeGroup == null)
 				{
-					currentOptimizableNodeGroup = new List<XmlNode>();
+					currentOptimizableNodeGroup = new List<IcuDataObject>();
 				}
 				currentOptimizableNodeGroup.Add(node);
 			}
@@ -746,7 +868,7 @@ namespace Palaso.WritingSystems.Collation
 			_currentNodes = optimizedNodeList;
 		}
 
-		private XmlNode CreateOptimizedNode(List<XmlNode> nodeGroup)
+		private IcuDataObject CreateOptimizedNode(List<IcuDataObject> nodeGroup)
 		{
 			Debug.Assert(nodeGroup != null);
 			Debug.Assert(nodeGroup.Count > 0);
@@ -757,56 +879,62 @@ namespace Palaso.WritingSystems.Collation
 			}
 			// luckily the optimized names are the same as the unoptimized with 'c' appended
 			// so <p> becomes <pc>, <s> to <sc>, et al.
-			XmlNode optimizedNode = _dom.CreateElement(nodeGroup[0].Name + "c");
-			foreach (XmlNode node in nodeGroup)
+			IcuDataObject optimizedNode = IcuDataObject.CreateElement(nodeGroup[0].Name + "c");
+			foreach (IcuDataObject node in nodeGroup)
 			{
-				optimizedNode.InnerText += node.InnerText;
+				optimizedNode.AppendChild(IcuDataObject.CreateText(node.InnerText));
 			}
 			return optimizedNode;
 		}
 
 		private void PreserveNonIcuSettings()
 		{
-			XmlNode oldSettings = _parentNode.SelectSingleNode("settings", _nameSpaceManager);
-			if (oldSettings == null)
-			{
-				return;
-			}
-			List<string> icuSettings = new List<string>(new string[] {"strength", "alternate", "backwards",
-				"normalization", "caseLevel", "caseFirst", "hiraganaQuaternary", "numeric", "variableTop"});
-			foreach (XmlAttribute attr in oldSettings.Attributes)
-			{
-				if (!icuSettings.Contains(attr.Name))
-				{
-					_optionAttributes.Add(attr.CloneNode(true));
-				}
-			}
+			//XmlNode oldSettings = _parentNode.SelectSingleNode("settings", _nameSpaceManager);
+			//if (oldSettings == null)
+			//{
+			//    return;
+			//}
+			//List<string> icuSettings = new List<string>(new string[] {"strength", "alternate", "backwards",
+			//    "normalization", "caseLevel", "caseFirst", "hiraganaQuaternary", "numeric", "variableTop"});
+			//foreach (XmlAttribute attr in oldSettings.Attributes)
+			//{
+			//    if (!icuSettings.Contains(attr.Name))
+			//    {
+			//        _optionAttributes.Add(attr.CloneNode(true));
+			//    }
+			//}
 		}
 
 		private void OnIcuRules(object sender, ActionEventArgs args)
 		{
+			OptimizeNodes();
+			if (_writer == null)
+			{
+				// we are in validate only mode
+				return;
+			}
 			PreserveNonIcuSettings();
-			XmlHelpers.RemoveElement(_parentNode, "settings", _nameSpaceManager);
 			// add the settings element, if needed.
 			if (_optionAttributes.Count > 0)
 			{
-				XmlNode settings = _dom.CreateElement("settings");
-				foreach (XmlNode attr in _optionAttributes)
+				_optionAttributes.Sort();
+				_writer.WriteStartElement("settings");
+				foreach (IcuDataObject attr in _optionAttributes)
 				{
-					XmlHelpers.InsertNodeUsingDefinedOrder(settings, attr, LdmlNodeComparer.Singleton);
+					attr.Write(_writer);
 				}
-				// "settings" comes after "base", which should be the first element if it exists
-				XmlHelpers.InsertNodeUsingDefinedOrder(_parentNode, settings, LdmlNodeComparer.Singleton);
+				_writer.WriteEndElement();
 			}
-			XmlHelpers.RemoveElement(_parentNode, "rules", _nameSpaceManager);
-			XmlNode rulesNode = _dom.CreateElement("rules");
-			OptimizeNodes();
-			foreach (XmlNode node in _currentNodes)
+			if (_currentNodes.Count == 0)
 			{
-				rulesNode.AppendChild(node);
+				return;
 			}
-			// the "rules" element comes before any "special" elements, which should be the last elements if they exist
-			XmlHelpers.InsertNodeUsingDefinedOrder(_parentNode, rulesNode, LdmlNodeComparer.Singleton);
+			_writer.WriteStartElement("rules");
+			foreach (IcuDataObject node in _currentNodes)
+			{
+				node.Write(_writer);
+			}
+			_writer.WriteEndElement();
 		}
 	}
 }
