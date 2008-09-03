@@ -14,9 +14,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private string _initialISOCode;
 		private WritingSystemDefinition.LanguageCode _selectedCode;
 		private int _indexOfInitiallySelectedCode=-1;
+		private readonly IList<WritingSystemDefinition.LanguageCode> _languageCodes;
 
 		public LookupISOCodeDialog()
 		{
+			_languageCodes = WritingSystemDefinition.LanguageCodes;
 			InitializeComponent();
 		}
 
@@ -52,7 +54,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_initialISOCode = value;
 				_indexOfInitiallySelectedCode = 0;
-				foreach (WritingSystemDefinition.LanguageCode code in WritingSystemDefinition.LanguageCodes)
+				foreach (WritingSystemDefinition.LanguageCode code in _languageCodes)
 				{
 					if (code.Code == _initialISOCode)
 					{
@@ -60,7 +62,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					}
 					_indexOfInitiallySelectedCode++;
 				}
-				if (_indexOfInitiallySelectedCode >= WritingSystemDefinition.LanguageCodes.Count)
+				if (_indexOfInitiallySelectedCode >= _languageCodes.Count)
 				{
 					_indexOfInitiallySelectedCode = -1;
 				}
@@ -69,11 +71,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void LookupISOCodeDialog_Load(object sender, EventArgs e)
 		{
-			this.listView1.VirtualListSize = WritingSystemDefinition.LanguageCodes.Count;
+			this.listView1.VirtualListSize = _languageCodes.Count;
 			listView1.SelectedIndices.Clear();
 			if (_indexOfInitiallySelectedCode > 0)
 			{
 				listView1.SelectedIndices.Add(_indexOfInitiallySelectedCode);
+				listView1.EnsureVisible(_indexOfInitiallySelectedCode);
 			}
 			else
 			{  //select the first to make it easy to just start typing (NOTE: typing doesn't work with virtual mode anyhow)
@@ -93,7 +96,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
 		{
-			WritingSystemDefinition.LanguageCode code= WritingSystemDefinition.LanguageCodes[e.ItemIndex];
+			WritingSystemDefinition.LanguageCode code= _languageCodes[e.ItemIndex];
 			e.Item = new ListViewItem(code.Name);
 			e.Item.SubItems.Add(code.Code);
 			e.Item.Tag = code;
@@ -114,6 +117,51 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				ListViewItem item = listView1.Items[listView1.SelectedIndices[0]];
 				_selectedCode = item.Tag as WritingSystemDefinition.LanguageCode;
 			}
+		}
+
+		private void listView1_SearchForVirtualItem(object sender, SearchForVirtualItemEventArgs e)
+		{
+			if (!e.IsTextSearch)
+				return;
+			int increment = 1;
+			if (e.Direction == SearchDirectionHint.Up || e.Direction == SearchDirectionHint.Left)
+			{
+				increment = -1;
+			}
+			string searchText = e.Text.ToLowerInvariant();
+			int startIndex = e.StartIndex;
+			if (startIndex == -1 && increment == 1)
+			{
+				startIndex = 0;
+			}
+			else if (startIndex == -1 && increment == -1)
+			{
+				startIndex = _languageCodes.Count - 1;
+			}
+			bool first = true;
+			for (int i=startIndex; i != startIndex || first; i += increment)
+			{
+				first = false;
+				if (i < 0)
+				{
+					i = _languageCodes.Count - 1;
+				}
+				else if (i >= _languageCodes.Count)
+				{
+					i = 0;
+				}
+				if ((e.IsPrefixSearch && _languageCodes[i].Name.ToLowerInvariant().StartsWith(searchText))
+					|| (!e.IsPrefixSearch && _languageCodes[i].Name.ToLowerInvariant().Contains(searchText)))
+				{
+					e.Index = i;
+					return;
+				}
+			}
+		}
+
+		private void _aboutLink639_1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("http://www.infoterm.info/standardization/iso_639_1_2002.php");
 		}
 	}
 }

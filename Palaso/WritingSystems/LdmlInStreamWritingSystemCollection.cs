@@ -24,7 +24,7 @@ namespace Palaso.WritingSystems
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
 				LdmlAdaptor adaptor = new LdmlAdaptor();
-				adaptor.Write(xmlWriter, ws);
+				adaptor.Write(xmlWriter, ws, null);
 			}
 			xmlWriter.WriteEndElement();
 			//delete anything we're going to delete first, to prevent loosing

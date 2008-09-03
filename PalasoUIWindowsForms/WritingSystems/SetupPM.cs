@@ -492,19 +492,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public string CurrentAutoReplaceRules
-		{
-			get { return Current.AutoReplaceRules ?? string.Empty; }
-			set
-			{
-				if (Current.AutoReplaceRules != value)
-				{
-					Current.AutoReplaceRules = value;
-					OnCurrentItemUpdated();
-				}
-			}
-		}
-
 		public string CurrentSortUsing
 		{
 			get { return Current.SortUsing ?? string.Empty; }
@@ -723,6 +710,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				result += sk.OriginalString + "\r\n";
 			}
 			return result.TrimEnd(new char[] {'\r', '\n'});
+		}
+
+		public bool ValidateCurrentSortRules(out string message)
+		{
+			if (Current == null)
+			{
+				message = null;
+				return true;
+			}
+			return Current.ValidateCollationRules(out message);
 		}
 	}
 }

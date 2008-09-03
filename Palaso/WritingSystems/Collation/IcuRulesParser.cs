@@ -88,6 +88,14 @@ namespace Palaso.WritingSystems.Collation
 			{
 				match = _icuRules.Parse(sc);
 			}
+			catch (ParserErrorException e)
+			{
+				string errString = sc.InputString.Split(new char[] {'\n'})[e.ParserError.Line - 1];
+				int startingPos = Math.Max((int) e.ParserError.Column - 2, 0);
+				errString = errString.Substring(startingPos, Math.Min(10, errString.Length - startingPos));
+				message = String.Format("{0}: '{1}'", e.ParserError.ErrorText, errString);
+				return false;
+			}
 			catch (Exception e)
 			{
 				message = e.Message;
@@ -258,8 +266,10 @@ namespace Palaso.WritingSystems.Collation
 			// extendedDifference ::= differenceOperator WS? extendedElement
 			// difference ::= simpleDifference | extendedDifference
 			// NOTE: Due to the implementation of the parser, extendedDifference MUST COME BEFORE simpleDifference in the difference definition
-			_simpleDifference = new Rule("simpleDifference", Ops.Sequence(_differenceOperator, _optionalWhiteSpace, _simpleElement));
-			_extendedDifference = new Rule("x", Ops.Sequence(_differenceOperator, _optionalWhiteSpace, _extendedElement));
+			_simpleDifference = new Rule("simpleDifference", Ops.Sequence(_differenceOperator,
+				_optionalWhiteSpace, _simpleElement));
+			_extendedDifference = new Rule("x", Ops.Sequence(_differenceOperator,
+				_optionalWhiteSpace, _extendedElement));
 			_difference = _extendedDifference | _simpleDifference;
 
 				// reset ::= '&' WS? ((beforeSpecifier? WS? simpleElement) | top)
@@ -319,7 +329,7 @@ namespace Palaso.WritingSystems.Collation
 			// icuRules ::= WS? (option WS?)* (oneRule WS?)* EOF
 			_icuRules = new Rule("icuRules", Ops.Sequence(_optionalWhiteSpace,
 				Ops.ZeroOrMore(Ops.Sequence(_option, _optionalWhiteSpace)),
-				Ops.ZeroOrMore(Ops.Sequence(_oneRule, _optionalWhiteSpace)), Prims.End));
+				Ops.ZeroOrMore(Ops.Sequence(_oneRule, _optionalWhiteSpace)), Ops.Expect("icu0015", "Invalid ICU rules.", Prims.End)));
 
 			if (_useDebugger)
 			{

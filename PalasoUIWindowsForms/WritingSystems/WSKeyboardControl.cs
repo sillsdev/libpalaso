@@ -83,7 +83,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void SetTestAreaFont()
 		{
-			float fontSize = _defaultFontSize;
+			float fontSize = _model.CurrentDefaultFontSize;
 			if (fontSize <= 0 || float.IsNaN(fontSize) || float.IsInfinity(fontSize))
 			{
 				fontSize = _defaultFontSize;

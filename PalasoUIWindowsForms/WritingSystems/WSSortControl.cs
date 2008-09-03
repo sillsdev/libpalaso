@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -15,6 +16,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly Hashtable _sortUsingValueMap;
 		private Hashtable _languageOptionMap;
 		private bool _changingModel;
+		private string _defaultKeyboard;
+		private string _defaultFontName;
+		private float _defaultFontSize;
 
 		public WSSortControl()
 		{
@@ -26,6 +30,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_sortUsingValueMap[sortUsingOption.Key] = index;
 				_sortUsingValueMap[index] = sortUsingOption.Key;
 			}
+			_defaultFontName = _sortRulesTextBox.Font.Name;
+			_defaultFontSize = _sortRulesTextBox.Font.SizeInPoints;
 		}
 
 		public void BindToModel(SetupPM model)
@@ -60,6 +66,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void UpdateFromModel()
 		{
+			_rulesValidationTimer.Enabled = false;
 			if (!_model.HasCurrentSelection)
 			{
 				_sortPanelCustomText.Visible = false;
@@ -77,6 +84,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_sortUsingComboBox.SelectedIndex = -1;
 			}
+			SetControlFonts();
 		}
 
 		private void LoadLanguageChoicesFromModel()
@@ -98,6 +106,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			try
 			{
 				_model.CurrentSortRules = _sortRulesTextBox.Text;
+				_rulesValidationTimer.Stop();
+				_rulesValidationTimer.Start();
 			}
 			finally
 			{
@@ -117,6 +127,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (newValue == "OtherLanguage")
 			{
 				_sortPanelOtherLanguage.Visible = true;
+				_rulesValidationTimer.Enabled = false;
 				if (_languageOptionMap.ContainsKey(_model.CurrentSortRules))
 				{
 					_languageComboBox.SelectedIndex = (int)_languageOptionMap[_model.CurrentSortRules];
@@ -160,12 +171,80 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			try
 			{
-				_testSortText.Text = _model.TestSort(_testSortText.Text);
+				if (ValidateSortRules())
+				{
+					_testSortResult.Text = _model.TestSort(_testSortText.Text);
+				}
 			}
 			catch (ApplicationException ex)
 			{
 				Palaso.Reporting.ErrorReport.ReportNonFatalMessage("Unable to sort test text: {0}", ex.Message);
 			}
+		}
+
+		private void SetControlFonts()
+		{
+			float fontSize = _model.CurrentDefaultFontSize;
+			if (fontSize <= 0 || float.IsNaN(fontSize) || float.IsInfinity(fontSize))
+			{
+				fontSize = _defaultFontSize;
+			}
+			string fontName = _model.CurrentDefaultFontName;
+			if (string.IsNullOrEmpty(fontName))
+			{
+				fontName = _defaultFontName;
+			}
+			Font customFont = new Font(fontName, fontSize);
+			_sortRulesTextBox.Font = customFont;
+			// We are not setting the RightToLeft propert for the sort rules because the ICU syntax is inherently left to right.
+			_testSortText.Font = customFont;
+			_testSortText.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
+			_testSortResult.Font = customFont;
+			_testSortResult.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
+		}
+
+		private void TextControl_Enter(object sender, EventArgs e)
+		{
+			if (_model == null)
+			{
+				return;
+			}
+			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
+			_model.ActivateCurrentKeyboard();
+		}
+
+		private void TextControl_Leave(object sender, EventArgs e)
+		{
+			if (_model == null)
+			{
+				return;
+			}
+			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+			if (_rulesValidationTimer.Enabled)
+			{
+				_rulesValidationTimer.Enabled = false;
+				ValidateSortRules();
+			}
+		}
+
+		private void _rulesValidationTimer_Tick(object sender, EventArgs e)
+		{
+			_rulesValidationTimer.Enabled = false;
+			ValidateSortRules();
+		}
+
+		private bool ValidateSortRules()
+		{
+			string message;
+			if (!_model.ValidateCurrentSortRules(out message))
+			{
+				_testSortResult.Text = message ?? String.Empty;
+				_testSortResult.ForeColor = Color.Red;
+				return false;
+			}
+			_testSortResult.Text = String.Empty;
+			_testSortResult.ForeColor = Color.Black;
+			return true;
 		}
 	}
 }

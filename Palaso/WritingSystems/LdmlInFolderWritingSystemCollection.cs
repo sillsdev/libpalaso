@@ -85,29 +85,6 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
-		// Moved from adaptor !!! Think we can do without this.
-		private void RemoveOldFileIfNeeded(WritingSystemDefinition ws)
-		{
-			/*
-			if (!String.IsNullOrEmpty(ws.StoreID) && ws.StoreID != ws.RFC4646)
-			{
-				string oldGuyPath = Path.Combine(repository.PathToWritingSystems, ws.StoreID + _kExtension);
-				if (File.Exists(oldGuyPath))
-				{
-					try
-					{
-						File.Delete(oldGuyPath);
-					}
-					catch (Exception)
-					{
-						//swallow. It's ok, we're just trying to clean up.
-					}
-
-				}
-			}
-			*/
-		}
-
 		public void LoadAllDefinitions()
 		{
 			Clear();
@@ -238,6 +215,7 @@ namespace Palaso.WritingSystems
 			Set(ws);
 			string writingSystemFileName = GetFileName(ws);
 			string writingSystemFilePath = GetFilePath(ws);
+			MemoryStream oldData = null;
 			if (!ws.Modified && File.Exists(writingSystemFilePath))
 			{
 				return; // no need to save (better to preserve the modified date)
@@ -250,7 +228,7 @@ namespace Palaso.WritingSystems
 					// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
 					try
 					{
-						//dom.Load(previousFilePath);
+						oldData = new MemoryStream(File.ReadAllBytes(previousFilePath), false);
 					}
 					catch {}
 					if (writingSystemFileName != incomingFileName)
@@ -261,14 +239,9 @@ namespace Palaso.WritingSystems
 				}
 			}
 			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Write(writingSystemFilePath, ws);
+			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;
-			//save this so that if the user makes a name-changing change and saves again, we
-			//can remove or rename to this version
-			//ws.StoreID = writingSystemFileName;  - done in Set(ws);
-
-			//RemoveOldFileIfNeeded(ws); //!!! Shouldn't be required now.
 		}
 
 		public string FilePathToWritingSystem(WritingSystemDefinition ws)

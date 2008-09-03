@@ -47,8 +47,6 @@ namespace Palaso.WritingSystems
 		private string _sortRules;
 		private string _spellCheckingId;
 
-		private string _autoReplaceRules;
-
 		private bool _modified;
 		private bool _markedForDeletion;
 		private string _nativeName;
@@ -149,7 +147,8 @@ namespace Palaso.WritingSystems
 					if (tline.Length == 0)
 						continue;
 					string[] fields = tline.Split('\t');
-					_languageCodes.Add(new LanguageCode(fields[0], fields[6]));
+					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
+					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6]));
 				}
 				_languageCodes.Sort(LanguageCode.CompareByName);
 				return _languageCodes;
@@ -660,12 +659,6 @@ namespace Palaso.WritingSystems
 			set { UpdateString(ref _spellCheckingId, value); }
 		}
 
-		public string AutoReplaceRules
-		{
-			get { return _autoReplaceRules ?? string.Empty; }
-			set { UpdateString(ref _autoReplaceRules, value); }
-		}
-
 		public ICollator Collator
 		{
 			get
@@ -680,10 +673,37 @@ namespace Palaso.WritingSystems
 						case SortRulesType.CustomICU:
 							_collator = new IcuRulesCollator(SortRules);
 							break;
+						case SortRulesType.OtherLanguage:
+							_collator = new SystemCollator(SortRules);
+							break;
 					}
 				}
 				return _collator;
 			}
+		}
+
+		public bool ValidateCollationRules(out string message)
+		{
+			message = null;
+			try
+			{
+				switch ((SortRulesType) Enum.Parse(typeof (SortRulesType), SortUsing))
+				{
+					case SortRulesType.CustomICU:
+						return IcuRulesCollator.ValidateSortRules(SortRules, out message);
+					case SortRulesType.CustomSimple:
+						return SimpleRulesCollator.ValidateSimpleRules(SortRules, out message);
+					case SortRulesType.OtherLanguage:
+						new SystemCollator(SortRules);
+						break;
+				}
+			}
+			catch (Exception e)
+			{
+				message = String.Format("Error while validating sorting rules: {0}", e.Message);
+				return false;
+			}
+			return true;
 		}
 
 		public WritingSystemDefinition Clone()
@@ -699,7 +719,6 @@ namespace Palaso.WritingSystems
 			ws._sortUsing = _sortUsing;
 			ws._sortRules = _sortRules;
 			ws._spellCheckingId = _spellCheckingId;
-			ws._autoReplaceRules = _autoReplaceRules;
 			ws._dateModified = _dateModified;
 			return ws;
 		}

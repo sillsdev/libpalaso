@@ -298,7 +298,10 @@ namespace Palaso.WritingSystems.Collation
 						case "reset":
 							string beforeOption = GetBeforeOption(rulesReader);
 							icuData = GetIcuData(rulesReader);
-							rules += String.Format(NewLine + "&{2}{0}{1}", icuData, GetVariableTopString(icuData, ref variableTop),
+							// I added a space after the ampersand to increase readability with situations where the first
+							// character following a reset may be a combining character or some other character that would be
+							// rendered around the ampersand
+							rules += String.Format(NewLine + "& {2}{0}{1}", icuData, GetVariableTopString(icuData, ref variableTop),
 								beforeOption);
 							break;
 						case "p":

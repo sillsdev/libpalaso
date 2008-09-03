@@ -328,7 +328,7 @@ namespace Palaso.WritingSystems
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
-		public void Write(string filePath, WritingSystemDefinition ws)
+		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
 			if (filePath == null)
 			{
@@ -338,17 +338,40 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlWriterSettings settings = new XmlWriterSettings();
-			settings.Indent = true;
-			settings.IndentChars = "\t";
-			settings.NewLineHandling = NewLineHandling.None;
-			XmlWriter writer = XmlWriter.Create(filePath, settings);
-			writer.WriteStartDocument();
-			WriteLdml(writer, null, ws);
-			writer.Close();
+			XmlWriterSettings writerSettings = new XmlWriterSettings();
+			writerSettings.Indent = true;
+			writerSettings.IndentChars = "\t";
+			writerSettings.NewLineHandling = NewLineHandling.None;
+			XmlReader reader = null;
+			try
+			{
+				if (oldFile != null)
+				{
+					XmlReaderSettings readerSettings = new XmlReaderSettings();
+					readerSettings.NameTable = _nameSpaceManager.NameTable;
+					readerSettings.ConformanceLevel = ConformanceLevel.Auto;
+					readerSettings.ValidationType = ValidationType.None;
+					readerSettings.XmlResolver = null;
+					readerSettings.ProhibitDtd = false;
+					reader = XmlReader.Create(oldFile, readerSettings);
+				}
+				using (XmlWriter writer = XmlWriter.Create(filePath, writerSettings))
+				{
+					writer.WriteStartDocument();
+					WriteLdml(writer, reader, ws);
+					writer.Close();
+				}
+			}
+			finally
+			{
+				if (reader != null)
+				{
+					reader.Close();
+				}
+			}
 		}
 
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws)
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader xmlReader)
 		{
 			if (xmlWriter == null)
 			{
@@ -358,7 +381,28 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			WriteLdml(xmlWriter, null, ws);
+			XmlReader reader = null;
+			try
+			{
+				if (xmlReader != null)
+				{
+					XmlReaderSettings settings = new XmlReaderSettings();
+					settings.NameTable = _nameSpaceManager.NameTable;
+					settings.ConformanceLevel = ConformanceLevel.Auto;
+					settings.ValidationType = ValidationType.None;
+					settings.XmlResolver = null;
+					settings.ProhibitDtd = false;
+					reader = XmlReader.Create(xmlReader, settings);
+				}
+				WriteLdml(xmlWriter, reader, ws);
+			}
+			finally
+			{
+				if (reader != null)
+				{
+					reader.Close();
+				}
+			}
 		}
 
 		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)

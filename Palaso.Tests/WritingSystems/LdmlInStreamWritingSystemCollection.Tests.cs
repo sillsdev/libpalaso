@@ -49,7 +49,7 @@ namespace Palaso.Tests.WritingSystems
 			LdmlAdaptor adaptor = new LdmlAdaptor();
 			foreach (WritingSystemDefinition ws in writingSystems)
 			{
-				adaptor.Write(xmlWriter, ws);
+				adaptor.Write(xmlWriter, ws, null);
 			}
 			xmlWriter.WriteEndElement();
 			xmlWriter.WriteEndElement();

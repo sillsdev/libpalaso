@@ -48,25 +48,25 @@ namespace Palaso.Tests.WritingSystems
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToFile_NullFileName_Throws()
 		{
-			_adaptor.Write((string)null, _ws);
+			_adaptor.Write((string)null, _ws, null);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToFile_NullWritingSystem_Throws()
 		{
-			_adaptor.Write("foo.ldml", null);
+			_adaptor.Write("foo.ldml", null, null);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToXmlWriter_NullXmlReader_Throws()
 		{
-			_adaptor.Write((XmlWriter)null, _ws);
+			_adaptor.Write((XmlWriter)null, _ws, null);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToXmlWriter_NullWritingSystem_Throws()
 		{
-			_adaptor.Write(XmlWriter.Create(new MemoryStream()), null);
+			_adaptor.Write(XmlWriter.Create(new MemoryStream()), null, null);
 		}
 	}
 }

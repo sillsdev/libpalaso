@@ -30,7 +30,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a", icu);
+			Assert.AreEqual("& a", icu);
 		}
 
 		[Test]
@@ -38,7 +38,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><p>b</p></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < b", icu);
+			Assert.AreEqual("& a < b", icu);
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><s>b</s></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a << b", icu);
+			Assert.AreEqual("& a << b", icu);
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><t>b</t></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a <<< b", icu);
+			Assert.AreEqual("& a <<< b", icu);
 		}
 
 		[Test]
@@ -62,7 +62,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><i>b</i></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a = b", icu);
+			Assert.AreEqual("& a = b", icu);
 		}
 
 		[Test]
@@ -70,7 +70,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><x><context>b</context><p>c</p></x></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < b | c", icu);
+			Assert.AreEqual("& a < b | c", icu);
 		}
 
 		[Test]
@@ -78,7 +78,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><x><p>b</p><extend>c</extend></x></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < b / c", icu);
+			Assert.AreEqual("& a < b / c", icu);
 		}
 
 		[Test]
@@ -86,7 +86,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><x><context>b</context><p>c</p><extend>d</extend></x></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < b | c / d", icu);
+			Assert.AreEqual("& a < b | c / d", icu);
 		}
 
 		[Test]
@@ -94,7 +94,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>ab</reset><p>cd</p></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&ab < cd", icu);
+			Assert.AreEqual("& ab < cd", icu);
 		}
 
 		[Test]
@@ -102,7 +102,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><pc>bc</pc></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < b < c", icu);
+			Assert.AreEqual("& a < b < c", icu);
 		}
 
 		[Test]
@@ -110,7 +110,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><sc>bc</sc></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a << b << c", icu);
+			Assert.AreEqual("& a << b << c", icu);
 		}
 
 		[Test]
@@ -118,7 +118,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><tc>bc</tc></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a <<< b <<< c", icu);
+			Assert.AreEqual("& a <<< b <<< c", icu);
 		}
 
 		[Test]
@@ -126,7 +126,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><ic>bc</ic></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a = b = c", icu);
+			Assert.AreEqual("& a = b = c", icu);
 		}
 
 		[Test]
@@ -134,7 +134,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><first_tertiary_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[first tertiary ignorable]", icu);
+			Assert.AreEqual("& [first tertiary ignorable]", icu);
 		}
 
 		[Test]
@@ -142,7 +142,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_tertiary_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[last tertiary ignorable]", icu);
+			Assert.AreEqual("& [last tertiary ignorable]", icu);
 		}
 
 		[Test]
@@ -150,7 +150,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><first_secondary_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[first secondary ignorable]", icu);
+			Assert.AreEqual("& [first secondary ignorable]", icu);
 		}
 
 		[Test]
@@ -158,7 +158,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_secondary_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[last secondary ignorable]", icu);
+			Assert.AreEqual("& [last secondary ignorable]", icu);
 		}
 
 		[Test]
@@ -166,7 +166,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><first_primary_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[first primary ignorable]", icu);
+			Assert.AreEqual("& [first primary ignorable]", icu);
 		}
 
 		[Test]
@@ -174,7 +174,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_primary_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[last primary ignorable]", icu);
+			Assert.AreEqual("& [last primary ignorable]", icu);
 		}
 
 		[Test]
@@ -182,7 +182,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><first_variable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[first variable]", icu);
+			Assert.AreEqual("& [first variable]", icu);
 		}
 
 		[Test]
@@ -190,7 +190,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_variable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[last variable]", icu);
+			Assert.AreEqual("& [last variable]", icu);
 		}
 
 		[Test]
@@ -198,7 +198,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><first_non_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[first regular]", icu);
+			Assert.AreEqual("& [first regular]", icu);
 		}
 
 		[Test]
@@ -206,7 +206,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_non_ignorable /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[last regular]", icu);
+			Assert.AreEqual("& [last regular]", icu);
 		}
 
 		[Test]
@@ -214,7 +214,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><first_trailing /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[first trailing]", icu);
+			Assert.AreEqual("& [first trailing]", icu);
 		}
 
 		[Test]
@@ -222,7 +222,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_trailing /></reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[last trailing]", icu);
+			Assert.AreEqual("& [last trailing]", icu);
 		}
 
 		[Test]
@@ -230,7 +230,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><p><first_implicit /></p></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < [first implicit]", icu);
+			Assert.AreEqual("& a < [first implicit]", icu);
 		}
 
 		[Test]
@@ -238,7 +238,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><p><last_implicit /></p></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < [last implicit]", icu);
+			Assert.AreEqual("& a < [last implicit]", icu);
 		}
 
 		[Test]
@@ -246,7 +246,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset before=\"primary\">a</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[before 1] a", icu);
+			Assert.AreEqual("& [before 1] a", icu);
 		}
 
 		[Test]
@@ -254,7 +254,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset before=\"secondary\">a</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[before 2] a", icu);
+			Assert.AreEqual("& [before 2] a", icu);
 		}
 
 		[Test]
@@ -262,7 +262,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset before=\"tertiary\">a</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&[before 3] a", icu);
+			Assert.AreEqual("& [before 3] a", icu);
 		}
 
 		[Test]
@@ -270,7 +270,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>a</reset><p>b</p><reset>c</reset><s>d</s></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&a < b\r\n&c << d", icu);
+			Assert.AreEqual("& a < b\r\n& c << d", icu);
 		}
 
 		[Test]
@@ -438,7 +438,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<settings variableTop=\"u41\" /><rules><reset>A</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&A < [variable top]", icu);
+			Assert.AreEqual("& A < [variable top]", icu);
 		}
 
 
@@ -447,7 +447,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>(</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("&\\u0028", icu);
+			Assert.AreEqual("& \\u0028", icu);
 		}
 
 		[Test, ExpectedException(typeof(ApplicationException))]
@@ -461,8 +461,8 @@ namespace Palaso.Tests.WritingSystems.Collation
 		public void BigCombinedRule_ParsesCorrectlyIntoIcu()
 		{
 			// certainly some of this actually doesn't form semantically vaild ICU, but it should be syntactically correct
-			string icuExpected = "[strength 3]\r\n[alternate shifted]\r\n[backwards 2]\r\n&[before 1] [first regular] < b < A < cde\r\n"
-				+ "&gh << p < K | Q / \\u003C < [last variable] << 4 < [variable top] < 9";
+			string icuExpected = "[strength 3]\r\n[alternate shifted]\r\n[backwards 2]\r\n& [before 1] [first regular] < b < A < cde\r\n"
+				+ "& gh << p < K | Q / \\u003C < [last variable] << 4 < [variable top] < 9";
 			string xml = "<settings strength=\"tertiary\" alternate=\"shifted\" backwards=\"on\" variableTop=\"u34\" />"
 				+ "<rules><reset before=\"primary\"><first_non_ignorable /></reset>"
 				+ "<pc>bA</pc><p>cde</p><reset>gh</reset><s>p</s>"
