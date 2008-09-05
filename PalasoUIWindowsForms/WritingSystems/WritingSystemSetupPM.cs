@@ -12,7 +12,19 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public class SetupPM
+	/// <summary>
+	/// This is the presentation model for the UI for setting up Writing Systems using either
+	/// a writing system store or a single writing system.
+	/// In order to use any of the provided UI elements within your own forms, you need to
+	/// instantiate a WritingSystemSetupPM object and bind the UI elements to that object.
+	/// WSPropertiesDialog provides its own WritingSystemSetupPM object and can be used by itself.
+	/// </summary>
+	/// <example><code>
+	/// WritingSystemSetupPM model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore();
+	/// WSPropertiesPanel panel = new WSPropertiesPanel();
+	/// panel.BindToModel(model);
+	/// </code></example>
+	public class WritingSystemSetupPM
 	{
 		private readonly bool _usingStore;
 		private WritingSystemDefinition _currentWritingSystem;
@@ -21,7 +33,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
-		public SetupPM(IWritingSystemStore writingSystemStore)
+		/// <summary>
+		/// Creates the presentation model object based off of a writing system store of some sort.
+		/// </summary>
+		public WritingSystemSetupPM(IWritingSystemStore writingSystemStore)
 		{
 			if (writingSystemStore == null)
 			{
@@ -34,7 +49,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_usingStore = true;
 		}
 
-		public SetupPM(WritingSystemDefinition ws)
+		/// <summary>
+		/// Creates the presentation model object based off of a single writing system definition.
+		/// This is the easiest form to use if you only want part of the UI elements or only operate on
+		/// one WritingSystemDefiniion
+		/// </summary>
+		public WritingSystemSetupPM(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -50,6 +70,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		#region Properties
+		/// <summary>
+		/// Provides a list of all possible installed keyboards.
+		/// </summary>
 		public static IEnumerable<String> KeyboardNames
 		{
 			get
@@ -74,6 +97,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Provides a list of all available Font family names on the system.
+		/// </summary>
 		public static IEnumerable<FontFamily> FontFamilies
 		{
 			get
@@ -85,6 +111,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// For internal use only.  To access information about the writing system,
+		/// you should use the CurrentXXX Properties which mirror the public properties
+		/// available on WritingSystemDefinition.  This is needed to ensure that the UI
+		/// stays up to date with any changes to the underlying WritingSystemDefinition.
+		/// </summary>
 		private WritingSystemDefinition Current
 		{
 			get
@@ -105,6 +137,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The index of the currently selected WritingSystemDefinition from the list of
+		/// available definitions.  This will be -1 if there is no selection.
+		/// </summary>
 		public int CurrentIndex
 		{
 			get
@@ -132,6 +168,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Returns true if there is a WritingSystemDefinition currently selected
+		/// for display and editing.
+		/// </summary>
 		public bool HasCurrentSelection
 		{
 			get
@@ -140,6 +180,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Columns to include in a list of WritingSystemDefinitions.
+		/// </summary>
 		public string[] WritingSystemListColumns
 		{
 			get
@@ -148,6 +191,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Returns a list of available WritingSystemDefinitions.  The arrays returned will have
+		/// elements corresponding with the columns returned by WritingSystemListColumns.
+		/// </summary>
 		public IEnumerable<string[]> WritingSystemListItems
 		{
 			get
@@ -159,6 +206,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gives a true/false flag for all available WritingSystemDefinitions on whether or
+		/// not the underlying store will be able to save them.  This could be false due to
+		/// two definitions having the same identifying information.
+		/// </summary>
 		public bool[] WritingSystemListCanSave
 		{
 			get
@@ -187,6 +239,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The columns to display in a list for only the currently selected writing system.
+		/// </summary>
 		public string[] WritingSystemListCurrentItem
 		{
 			get
@@ -195,6 +250,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Returns the total number of writing systems available.
+		/// </summary>
 		public int WritingSystemCount
 		{
 			get
@@ -203,6 +261,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Whether or not the underlying store will be able to save the currently
+		/// selected writing system.
+		/// </summary>
 		public bool CanSaveCurrent
 		{
 			get
@@ -301,6 +363,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// True if the model has an underlying writing system store,
+		/// false if it is operating on only a single WritingSystemDefinition.
+		/// </summary>
 		public bool UsingWritingSystemStore
 		{
 			get { return _usingStore; }
@@ -562,9 +628,29 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#region Events
 
+		/// <summary>
+		/// Fires when a WritingSystemDefinition is added or deleted.
+		/// </summary>
 		public event EventHandler ItemAddedOrDeleted;
+
+		/// <summary>
+		/// Fires whenever the columns in a list of writing systems change.
+		/// </summary>
 		public event EventHandler ListColumnsChanged;
+
+		/// <summary>
+		/// Fired when the selection changes to a different WritingSystemDefinition.
+		/// When the currently selected item is deleted, this event will fire first to
+		/// select another WritingSystemDefinition, and then the ItemAddedOrDeleted event will fire.
+		/// When an item is added, ItemAddedOrDeleted will fire first, and then this event
+		/// will fire to indicated the selection of the new item.
+		/// </summary>
 		public event EventHandler SelectionChanged;
+
+		/// <summary>
+		/// This event is fired whenever the currently selected WritingSystemDefinition
+		/// is changed.
+		/// </summary>
 		public event EventHandler CurrentItemUpdated;
 
 		#endregion

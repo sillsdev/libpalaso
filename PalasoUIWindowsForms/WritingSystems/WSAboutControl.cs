@@ -93,7 +93,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 		private WSProxy _proxy;
 
 		public WSAboutControl()
@@ -103,7 +103,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_pgAbout.SelectedObject = _proxy;
 		}
 
-		public void BindToModel(SetupPM model)
+		public void BindToModel(WritingSystemSetupPM model)
 		{
 			if (_model != null)
 			{

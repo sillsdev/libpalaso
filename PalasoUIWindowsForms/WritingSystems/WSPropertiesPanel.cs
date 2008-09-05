@@ -10,14 +10,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPropertiesPanel : UserControl
 	{
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 
 		public WSPropertiesPanel()
 		{
 			InitializeComponent();
 		}
 
-		public void BindToModel(SetupPM model)
+		public void BindToModel(WritingSystemSetupPM model)
 		{
 			_model = model;
 			_buttonBar.BindToModel(_model);

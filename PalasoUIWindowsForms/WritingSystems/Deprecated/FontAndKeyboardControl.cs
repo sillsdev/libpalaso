@@ -11,14 +11,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class FontAndKeyboardControl : UserControl
 	{
 		private string _sampleText="type here to test the font and keyboard";
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 
 		public FontAndKeyboardControl()
 		{
 			InitializeComponent();
 		}
 
-		internal void BindToModel(SetupPM model)
+		internal void BindToModel(WritingSystemSetupPM model)
 		{
 			_model = model;
 		}
@@ -109,12 +109,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				UpdateDisplay();
 				return;
 			}
-			foreach (string s in SetupPM.KeyboardNames)
+			foreach (string s in WritingSystemSetupPM.KeyboardNames)
 			{
 				_keyboardCombo.Items.Add(s);
 			}
 
-			foreach (FontFamily family in SetupPM.FontFamilies)
+			foreach (FontFamily family in WritingSystemSetupPM.FontFamilies)
 			{
 				_fontFamilyCombo.Items.Add(family.Name);
 			}

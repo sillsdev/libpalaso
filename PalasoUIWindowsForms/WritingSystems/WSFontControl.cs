@@ -11,7 +11,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSFontControl : UserControl
 	{
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 		private string _defaultFontName;
 		private float _defaultFontSize;
 		private string _defaultKeyboard;
@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 		}
 
-		public void BindToModel(SetupPM model)
+		public void BindToModel(WritingSystemSetupPM model)
 		{
 			if (_model != null)
 			{
@@ -84,7 +84,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			foreach (FontFamily fontFamily in SetupPM.FontFamilies)
+			foreach (FontFamily fontFamily in WritingSystemSetupPM.FontFamilies)
 			{
 				if (!fontFamily.IsStyleAvailable(FontStyle.Regular))
 				{

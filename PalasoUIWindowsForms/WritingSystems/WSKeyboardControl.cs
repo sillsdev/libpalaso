@@ -11,7 +11,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSKeyboardControl : UserControl
 	{
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 		private string _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontName = _testArea.Font.Name;
 		}
 
-		public void BindToModel(SetupPM model)
+		public void BindToModel(WritingSystemSetupPM model)
 		{
 			if (_model != null)
 			{
@@ -49,7 +49,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			Rectangle originalBounds = _keyboardComboBox.Bounds;
 			_keyboardComboBox.Items.Clear();
-			foreach (string keyboardName in SetupPM.KeyboardNames)
+			foreach (string keyboardName in WritingSystemSetupPM.KeyboardNames)
 			{
 				_keyboardComboBox.Items.Add(keyboardName);
 			}

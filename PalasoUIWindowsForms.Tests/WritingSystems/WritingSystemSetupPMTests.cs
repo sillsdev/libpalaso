@@ -14,9 +14,9 @@ using Palaso.UI.WindowsForms.WritingSystems;
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
 	[TestFixture]
-	public class SetupPMTests
+	public class WritingSystemSetupPMTests
 	{
-		SetupPM _model;
+		WritingSystemSetupPM _model;
 		string _testFilePath;
 
 		[SetUp]
@@ -24,7 +24,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_testFilePath = Path.GetTempFileName();
 			IWritingSystemStore writingSystemStore = new LdmlInXmlWritingSystemStore();
-			_model = new SetupPM(writingSystemStore);
+			_model = new WritingSystemSetupPM(writingSystemStore);
 		}
 
 		[TearDown]
@@ -36,7 +36,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void KeyboardNames_HasAtLeastOneKeyboard()
 		{
-			IEnumerable<string> keyboard = SetupPM.KeyboardNames;
+			IEnumerable<string> keyboard = WritingSystemSetupPM.KeyboardNames;
 			IEnumerator<string> it = keyboard.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current keyboard {0}", it.Current));
@@ -47,7 +47,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void FontFamilies_HasAtLeastOneFont()
 		{
-			IEnumerable<FontFamily> font = SetupPM.FontFamilies;
+			IEnumerable<FontFamily> font = WritingSystemSetupPM.FontFamilies;
 			IEnumerator<FontFamily> it = font.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current font {0}", it.Current.Name));
@@ -351,7 +351,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void SortUsingOptions_ReturnsAtLeastOne()
 		{
-			Assert.IsTrue(SetupPM.SortUsingOptions.GetEnumerator().MoveNext());
+			Assert.IsTrue(WritingSystemSetupPM.SortUsingOptions.GetEnumerator().MoveNext());
 		}
 
 		[Test]
@@ -408,63 +408,63 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_DeleteThrows()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.DeleteCurrent();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_AddNewThrows()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.AddNew();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_ClearSelectionThrows()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.ClearSelection();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_ChangingCurrentIndex_Throws()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.CurrentIndex = -1;
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_DuplicateCurrent_Throws()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.DuplicateCurrent();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_Save_Throws()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.Save();
 		}
 
 		[Test]
 		public void SingleWSMode_HasOnlyOne()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			Assert.AreEqual(1, _model.WritingSystemCount);
 		}
 
 		[Test]
 		public void SingleWSMode_WSIsSelected()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			Assert.IsTrue(_model.HasCurrentSelection);
 		}
 
 		[Test]
 		public void SingleWSMode_UsingStore_IsFalse()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			Assert.IsFalse(_model.UsingWritingSystemStore);
 		}
 
@@ -559,7 +559,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void ImportFile_SingleWSMode_Throws()
 		{
-			_model = new SetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
 			_model.ImportFile("foo.xml");
 		}
 

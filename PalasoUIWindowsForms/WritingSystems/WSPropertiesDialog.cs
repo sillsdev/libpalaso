@@ -11,19 +11,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPropertiesDialog : Form
 	{
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 
 		public WSPropertiesDialog()
 		{
 			InitializeComponent();
-			_model = new SetupPM(new LdmlInFolderWritingSystemStore());
+			_model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore());
 			_wsPropertiesPanel.BindToModel(_model);
 		}
 
 		public WSPropertiesDialog(string writingSystemStorePath)
 		{
 			InitializeComponent();
-			_model = new SetupPM(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
+			_model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
 			_wsPropertiesPanel.BindToModel(_model);
 		}
 

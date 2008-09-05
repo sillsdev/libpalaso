@@ -10,7 +10,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPropertiesTabControl : UserControl
 	{
-		private SetupPM _model;
+		private WritingSystemSetupPM _model;
 
 		public WSPropertiesTabControl()
 		{
@@ -18,7 +18,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_aboutControl.TextChanged += delegate { _aboutPage.Text = _aboutControl.Text; };
 		}
 
-		public void BindToModel(SetupPM model)
+		public void BindToModel(WritingSystemSetupPM model)
 		{
 			_model = model;
 			_aboutControl.BindToModel(_model);
