@@ -264,7 +264,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&[top]");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset before=\"primary\"><first_tertiary_ignorable /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset><last_non_ignorable /></reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]

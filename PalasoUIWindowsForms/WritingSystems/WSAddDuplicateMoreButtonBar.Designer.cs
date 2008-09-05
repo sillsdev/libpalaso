@@ -34,7 +34,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._moreButton = new System.Windows.Forms.Button();
 			this._contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this._deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this._loadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this._importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this._contextMenu.SuspendLayout();
 			this.SuspendLayout();
 			//
@@ -74,23 +74,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this._deleteMenuItem,
-			this._loadMenuItem});
+			this._importMenuItem});
 			this._contextMenu.Name = "_contextMenu";
-			this._contextMenu.Size = new System.Drawing.Size(117, 48);
+			this._contextMenu.Size = new System.Drawing.Size(153, 70);
 			//
 			// _deleteMenuItem
 			//
 			this._deleteMenuItem.Name = "_deleteMenuItem";
-			this._deleteMenuItem.Size = new System.Drawing.Size(116, 22);
+			this._deleteMenuItem.Size = new System.Drawing.Size(152, 22);
 			this._deleteMenuItem.Text = "&Delete";
 			this._deleteMenuItem.Click += new System.EventHandler(this.DeleteMenuClick);
 			//
-			// _loadMenuItem
+			// _importMenuItem
 			//
-			this._loadMenuItem.Name = "_loadMenuItem";
-			this._loadMenuItem.Size = new System.Drawing.Size(116, 22);
-			this._loadMenuItem.Text = "&Load";
-			this._loadMenuItem.Click += new System.EventHandler(this.LoadMenuClick);
+			this._importMenuItem.Name = "_importMenuItem";
+			this._importMenuItem.Size = new System.Drawing.Size(152, 22);
+			this._importMenuItem.Text = "&Import";
+			this._importMenuItem.Click += new System.EventHandler(this.ImportMenuClick);
 			//
 			// WSAddDuplicateMoreButtonBar
 			//
@@ -113,6 +113,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.Button _moreButton;
 		private System.Windows.Forms.ContextMenuStrip _contextMenu;
 		private System.Windows.Forms.ToolStripMenuItem _deleteMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem _loadMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem _importMenuItem;
 	}
 }

@@ -14,6 +14,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public class SetupPM
 	{
+		private readonly bool _usingStore;
 		private WritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
 		private readonly IWritingSystemStore _writingSystemStore;
@@ -30,6 +31,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemStore.WritingSystemDefinitions);
 			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
 			_currentIndex = -1;
+			_usingStore = true;
+		}
+
+		public SetupPM(WritingSystemDefinition ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
+			_currentWritingSystem = ws;
+			_currentIndex = 0;
+			_writingSystemStore = null;
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
+			_writingSystemDefinitions.Add(ws);
+			_deletedWritingSystemDefinitions = null;
+			_usingStore = false;
 		}
 
 		#region Properties
@@ -76,6 +93,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set
 			{
+				if (!_usingStore)
+				{
+					throw new InvalidOperationException("Unable to change selection without writing system store.");
+				}
 				if (_currentWritingSystem == value)
 					return;
 				_currentWritingSystem = value;
@@ -92,6 +113,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set
 			{
+				if (!_usingStore)
+				{
+					throw new InvalidOperationException("Unable to change selection without writing system store.");
+				}
 				if (value < -1 || value >= _writingSystemDefinitions.Count)
 				{
 					throw new ArgumentOutOfRangeException();
@@ -138,6 +163,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
+				if (!_usingStore)
+				{
+					return new bool[] {false};
+				}
 				Dictionary<string, int> idList = new Dictionary<string, int>();
 				bool[] canSave = new bool[_writingSystemDefinitions.Count];
 				for (int i = 0; i < _writingSystemDefinitions.Count; i++)
@@ -178,6 +207,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
+				if (!_usingStore)
+				{
+					return false;
+				}
 				return Current == null ? false : WritingSystemListCanSave[CurrentIndex];
 			}
 		}
@@ -242,17 +275,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					}
 				}
 				bool returnedOne = false;
+				//NOTE: not currently listing other writing system definitions as it doesn't work yet.
 				// add languages from other writing system definitions to the top of the list
 				// but don't include empty definitions or ones that would cause a cycle
-				foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
-				{
-					if (string.IsNullOrEmpty(ws.RFC4646) || prohibitedList.Contains(ws.RFC4646))
-					{
-						continue;
-					}
-					returnedOne = true;
-					yield return new KeyValuePair<string, string>(ws.RFC4646, ws.DisplayLabel);
-				}
+				//foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
+				//{
+				//    if (string.IsNullOrEmpty(ws.RFC4646) || prohibitedList.Contains(ws.RFC4646))
+				//    {
+				//        continue;
+				//    }
+				//    returnedOne = true;
+				//    yield return new KeyValuePair<string, string>(ws.RFC4646, ws.DisplayLabel);
+				//}
 				if (returnedOne)
 				{
 					// include separator only if we've included our own languages at the top of the list
@@ -265,6 +299,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
 				}
 			}
+		}
+
+		public bool UsingWritingSystemStore
+		{
+			get { return _usingStore; }
 		}
 
 		#endregion
@@ -552,6 +591,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void DeleteCurrent()
 		{
+			if (!_usingStore)
+			{
+				throw new InvalidOperationException("Unable to delete current selection when there is no writing system store.");
+			}
 			if (!HasCurrentSelection)
 			{
 				throw new InvalidOperationException("Unable to delete current selection when there is no current selection.");
@@ -573,6 +616,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void DuplicateCurrent()
 		{
+			if (!_usingStore)
+			{
+				throw new InvalidOperationException("Unable to duplicate current selection when there is no writing system store.");
+			}
 			if (!HasCurrentSelection)
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
@@ -585,6 +632,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public WritingSystemDefinition AddNew()
 		{
+			if (!_usingStore)
+			{
+				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+			}
 			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
 			ws.Abbreviation = "New";
 			_writingSystemDefinitions.Add(ws);
@@ -632,6 +683,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void Save()
 		{
+			if (!_usingStore)
+			{
+				throw new InvalidOperationException("Unable to save when there is no writing system store.");
+			}
 			SetAllPossibleAndRemoveOthers();
 			_writingSystemStore.Save();
 		}
@@ -720,6 +775,28 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return true;
 			}
 			return Current.ValidateCollationRules(out message);
+		}
+
+		public void ImportFile(string fileName)
+		{
+			if (!_usingStore)
+			{
+				throw new InvalidOperationException("Unable to import file when not using writing system store.");
+			}
+			if (fileName == null)
+			{
+				throw new ArgumentNullException("fileName");
+			}
+			if (!System.IO.File.Exists(fileName))
+			{
+				throw new ArgumentException("File does not exist.", "fileName");
+			}
+			LdmlAdaptor _adaptor = new LdmlAdaptor();
+			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
+			_adaptor.Read(fileName, ws);
+			_writingSystemDefinitions.Add(ws);
+			OnAddOrDelete();
+			Current = ws;
 		}
 	}
 }

@@ -82,7 +82,6 @@
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\PromptTests.cs" />
-	<Compile Include="WritingSystems\PickerPMTests.cs" />
 	<Compile Include="WritingSystems\SetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />

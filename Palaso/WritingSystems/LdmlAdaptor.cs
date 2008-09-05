@@ -667,10 +667,16 @@ namespace Palaso.WritingSystems
 			WriteBeginSpecialElement(writer);
 			WriteSpecialValue(writer, "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "defaultFontFamily", ws.DefaultFontName);
-			WriteSpecialValue(writer, "defaultFontSize", ws.DefaultFontSize.ToString());
+			if (ws.DefaultFontSize != 0)
+			{
+				WriteSpecialValue(writer, "defaultFontSize", ws.DefaultFontSize.ToString());
+			}
 			WriteSpecialValue(writer, "defaultKeyboard", ws.Keyboard);
 			WriteSpecialValue(writer, "languageName", ws.LanguageName);
-			WriteSpecialValue(writer, "spellCheckingId", ws.SpellCheckingId);
+			if (ws.SpellCheckingId != ws.ISO)
+			{
+				WriteSpecialValue(writer, "spellCheckingId", ws.SpellCheckingId);
+			}
 			writer.WriteEndElement();
 		}
 
@@ -805,6 +811,12 @@ namespace Palaso.WritingSystems
 			Debug.Assert(ws != null);
 			Debug.Assert(ws.SortUsing == "CustomSimple");
 
+			string message;
+			// avoid throwing exception, just don't save invalid data
+			if (!SimpleRulesCollator.ValidateSimpleRules(ws.SortRules ?? string.Empty, out message))
+			{
+				return;
+			}
 			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.SortRules ?? string.Empty);
 			WriteCollationRulesFromICUString(writer, reader, icu);
 		}
@@ -833,6 +845,12 @@ namespace Palaso.WritingSystems
 				FindElement(reader, "special");
 			}
 			IcuRulesParser parser = new IcuRulesParser(false);
+			string message;
+			// avoid throwing exception, just don't save invalid data
+			if (!parser.ValidateIcuRules(icu, out message))
+			{
+				return;
+			}
 			parser.WriteIcuRules(writer, icu);
 		}
 	}

@@ -371,7 +371,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			}
 		}
 
-		[Test]
+		[Test, Ignore("Not implemented")]
 		public void SortLanuageOptions_DoesIncludeOtherWritingSystems()
 		{
 			_model.AddNew();
@@ -403,6 +403,182 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			{
 				Assert.AreNotEqual(key, languageOption.Key);
 			}
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void SingleWSMode_DeleteThrows()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.DeleteCurrent();
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void SingleWSMode_AddNewThrows()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.AddNew();
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void SingleWSMode_ClearSelectionThrows()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.ClearSelection();
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void SingleWSMode_ChangingCurrentIndex_Throws()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.CurrentIndex = -1;
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void SingleWSMode_DuplicateCurrent_Throws()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.DuplicateCurrent();
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void SingleWSMode_Save_Throws()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.Save();
+		}
+
+		[Test]
+		public void SingleWSMode_HasOnlyOne()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			Assert.AreEqual(1, _model.WritingSystemCount);
+		}
+
+		[Test]
+		public void SingleWSMode_WSIsSelected()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			Assert.IsTrue(_model.HasCurrentSelection);
+		}
+
+		[Test]
+		public void SingleWSMode_UsingStore_IsFalse()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			Assert.IsFalse(_model.UsingWritingSystemStore);
+		}
+
+		[Test]
+		public void NormalMode_UsingStore_IsTrue()
+		{
+			Assert.IsTrue(_model.UsingWritingSystemStore);
+		}
+
+		[Test]
+		public void TestSort_NoSelection_DoesNothing()
+		{
+			_model.ClearSelection();
+			Assert.AreEqual("bar\r\nfoo", _model.TestSort("bar\r\nfoo"));
+		}
+
+		[Test]
+		public void TestSort_NullString_DoesNothing()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortRules = "&b<a<c";
+			Assert.IsNull(_model.TestSort(null));
+		}
+
+		[Test]
+		public void TestSort_RulesAndString_SortsCorrectly()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortRules = "&b<a<c";
+			Assert.AreEqual("b\r\na\r\nc", _model.TestSort("a\r\nb\r\nc"));
+		}
+
+		[Test]
+		public void ValidateSortRules_ValidIcuRules_IsTrue()
+		{
+			string message;
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortRules = "&b<a<c";
+			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
+		}
+
+		[Test]
+		public void ValidateSortRules_InvalidIcuRules_IsFalse()
+		{
+			string message;
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortRules = "&&b<a<c";
+			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
+		}
+
+		[Test]
+		public void ValidateSortRules_ValidSimpleRules_IsTrue()
+		{
+			string message;
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomSimple.ToString();
+			_model.CurrentSortRules = "b a c";
+			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
+		}
+
+		[Test]
+		public void ValidateSortRules_InvalidSimpleRules_IsFalse()
+		{
+			string message;
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomSimple.ToString();
+			_model.CurrentSortRules = "ab b b";
+			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
+		}
+
+		[Test]
+		public void ValidateSortRules_ValidOtherLanguage_IsTrue()
+		{
+			string message;
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage.ToString();
+			_model.CurrentSortRules = "en";
+			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
+		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void ImportFile_SingleWSMode_Throws()
+		{
+			_model = new SetupPM(new WritingSystemDefinition());
+			_model.ImportFile("foo.xml");
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void ImportFile_Null_Throws()
+		{
+			_model.ImportFile(null);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentException))]
+		public void ImportFile_EmptyString_Throws()
+		{
+			_model.ImportFile(String.Empty);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentException))]
+		public void ImportFile_FileDoesntExist_Throws()
+		{
+			_model.ImportFile("Hopefully this file does not exist.xml");
 		}
 	}
 }

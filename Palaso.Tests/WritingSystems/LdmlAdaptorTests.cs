@@ -68,5 +68,22 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_adaptor.Write(XmlWriter.Create(new MemoryStream()), null, null);
 		}
+
+		[Test]
+		public void ExistingUnusedLdml_Write_PreservesData()
+		{
+			StringWriter sw = new StringWriter();
+			WritingSystemDefinition ws = new WritingSystemDefinition("xxx");
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.ConformanceLevel = ConformanceLevel.Fragment;
+			settings.Indent = false;
+			settings.NewLineChars = string.Empty;
+			settings.OmitXmlDeclaration = true;
+			XmlWriter writer = XmlWriter.Create(sw, settings);
+			_adaptor.Write(writer, ws, XmlReader.Create(new StringReader("<ldml><!--Comment--><dates/><special>hey</special></ldml>")));
+			writer.Close();
+			string s = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"xxx\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special>hey</special></ldml>";
+			Assert.AreEqual(s, sw.ToString());
+		}
 	}
 }

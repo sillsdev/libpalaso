@@ -238,7 +238,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			string message;
 			if (!_model.ValidateCurrentSortRules(out message))
 			{
-				_testSortResult.Text = message ?? String.Empty;
+				_testSortResult.Text = "SORT RULES WILL NOT BE SAVED\r\n" + (message ?? String.Empty);
 				_testSortResult.ForeColor = Color.Red;
 				return false;
 			}

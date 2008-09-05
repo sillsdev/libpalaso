@@ -1,28 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public partial class WSPropertiesDialog : UserControl
+	public partial class WSPropertiesDialog : Form
 	{
 		private SetupPM _model;
 
 		public WSPropertiesDialog()
 		{
 			InitializeComponent();
+			_model = new SetupPM(new LdmlInFolderWritingSystemStore());
+			_wsPropertiesPanel.BindToModel(_model);
 		}
 
-		public void BindToModel(SetupPM model)
+		public WSPropertiesDialog(string writingSystemStorePath)
 		{
-			_model = model;
-			_buttonBar.BindToModel(_model);
-			_picker.BindToModel(_model);
-			_propertiesTabControl.BindToModel(_model);
+			InitializeComponent();
+			_model = new SetupPM(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
+			_wsPropertiesPanel.BindToModel(_model);
+		}
+
+		private void _closeButton_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			_model.Save();
+			base.OnClosed(e);
 		}
 	}
 }

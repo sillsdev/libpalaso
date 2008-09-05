@@ -75,9 +75,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model.DeleteCurrent();
 		}
 
-		private void LoadMenuClick(object sender, EventArgs e)
+		private void ImportMenuClick(object sender, EventArgs e)
 		{
-			// TODO:
+			OpenFileDialog dialog = new OpenFileDialog();
+			dialog.Filter = "LDML files (*.ldml;*.xml)|*.ldml;*.xml|All files (*.*)|*.*";
+			dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			dialog.RestoreDirectory = true;
+			if (dialog.ShowDialog(this) == DialogResult.OK)
+			{
+				_model.ImportFile(dialog.FileName);
+			}
 		}
 	}
 }

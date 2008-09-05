@@ -629,7 +629,7 @@ namespace Palaso.WritingSystems
 			{
 				if (!Enum.IsDefined(typeof (SortRulesType), value))
 				{
-					throw new ArgumentException("Invalid SortUsing option");
+					throw new ArgumentOutOfRangeException("Invalid SortUsing option");
 				}
 				_collator = null;
 				UpdateString(ref _sortUsing, value);

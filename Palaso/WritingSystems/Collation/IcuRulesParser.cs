@@ -739,9 +739,8 @@ namespace Palaso.WritingSystems.Collation
 		private void OnTop(object sender, ActionEventArgs args)
 		{
 			// [top] is deprecated in ICU and not directly allowed in LDML
-			// [top] is probably best rendered the same as [before 1] [first tertiary ignorable]
-			_currentDataObjects.Push(IcuDataObject.CreateElement("first_tertiary_ignorable"));
-			AddAttributeForReset("before", "primary");
+			// [top] is probably best rendered the same as [last regular]
+			_currentDataObjects.Push(IcuDataObject.CreateElement("last_non_ignorable"));
 		}
 
 		private void OnOptionNormal(object sender, ActionEventArgs args)

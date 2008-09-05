@@ -231,5 +231,20 @@ namespace Palaso.Tests.WritingSystems
 				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(ws.Clone()), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldInfo.Name);
 			}
 		}
+
+		[Test, ExpectedException(typeof(ArgumentOutOfRangeException)) ]
+		public void InvalidSortUsing_Throws()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SortUsing = "invalid";
+		}
+
+		[Test]
+		public void NoSortUsing_ValidateSortRules_IsFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			string message;
+			Assert.IsFalse(ws.ValidateCollationRules(out message));
+		}
 	}
 }
