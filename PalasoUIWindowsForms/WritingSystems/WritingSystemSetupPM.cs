@@ -675,6 +675,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Current = null;
 		}
 
+		/// <summary>
+		/// Deletes the currently selected writing system.
+		/// </summary>
 		public void DeleteCurrent()
 		{
 			if (!_usingStore)
@@ -700,6 +703,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			OnAddOrDelete();
 		}
 
+		/// <summary>
+		/// Makes a copy of the currently selected writing system and selects the new copy.
+		/// </summary>
 		public void DuplicateCurrent()
 		{
 			if (!_usingStore)
@@ -716,7 +722,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Current = ws;
 		}
 
-		public WritingSystemDefinition AddNew()
+		/// <summary>
+		/// Creates a new writing system and selects it.
+		/// </summary>
+		/// <returns></returns>
+		public void AddNew()
 		{
 			if (!_usingStore)
 			{
@@ -727,7 +737,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
 			Current = ws;
-			return ws;
 		}
 
 		private void OnAddOrDelete()
@@ -762,11 +771,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public void RenameCurrent(string newShortName)
-		{
-			CurrentAbbreviation = newShortName;
-		}
-
+		/// <summary>
+		/// Saves all writing systems in the store, if possible.
+		/// </summary>
 		public void Save()
 		{
 			if (!_usingStore)
@@ -821,6 +828,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Activates the custom keyboard for the currently selected writing system.
+		/// </summary>
 		public void ActivateCurrentKeyboard()
 		{
 			if (Current == null)
@@ -831,6 +841,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Performs a sort on the given string using the sort rules defined
+		/// in the current writing system.
+		/// </summary>
+		/// <param name="testString">String to sort, separated by newlines</param>
+		/// <returns>Sorted string</returns>
 		public string TestSort(string testString)
 		{
 			if (Current == null)
@@ -853,6 +869,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			return result.TrimEnd(new char[] {'\r', '\n'});
 		}
 
+		/// <summary>
+		/// Validates the current custom sort rules.
+		/// </summary>
+		/// <param name="message">Error message, if any.  This will only be set if false is returned.</param>
+		/// <returns>True if rules are valid, otherwise false.</returns>
 		public bool ValidateCurrentSortRules(out string message)
 		{
 			if (Current == null)
@@ -863,6 +884,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			return Current.ValidateCollationRules(out message);
 		}
 
+		/// <summary>
+		/// Imports the given file into the writing system store.
+		/// </summary>
+		/// <param name="fileName">Full path of file to import</param>
 		public void ImportFile(string fileName)
 		{
 			if (!_usingStore)

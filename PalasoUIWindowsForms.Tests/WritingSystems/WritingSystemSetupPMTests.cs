@@ -118,25 +118,13 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			{
 				Assert.AreNotEqual("New", _model.CurrentAbbreviation);
 			}
-			WritingSystemDefinition wsNew = _model.AddNew();
-			Assert.IsNotNull(wsNew);
+			_model.AddNew();
 			bool haveNew = false;
 			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
 				haveNew |= _model.CurrentAbbreviation == "New";
 			}
 			Assert.IsTrue(haveNew);
-		}
-
-		[Test]
-		public void Rename_CurrentRenamed()
-		{
-			_model.AddNew();
-			_model.CurrentISO = "ws1";
-			_model.CurrentAbbreviation = "abc";
-			string newName = "xyz";
-			_model.RenameCurrent(newName);
-			Assert.AreEqual(newName, _model.CurrentAbbreviation);
 		}
 
 		[Test]

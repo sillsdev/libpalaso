@@ -6,6 +6,9 @@ using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
 {
+	/// <summary>
+	/// This class stores the information used to define various writing system properties.
+	/// </summary>
 	public class WritingSystemDefinition
 	{
 		public enum SortRulesType
@@ -128,7 +131,9 @@ namespace Palaso.WritingSystems
 			_scriptOptions.Sort(ScriptOption.CompareScriptOptions);
 		}
 
-
+		/// <summary>
+		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
+		/// </summary>
 		public static IList<LanguageCode> LanguageCodes
 		{
 			get
@@ -246,7 +251,6 @@ namespace Palaso.WritingSystems
 			set
 			{
 				UpdateString(ref _variant, value);
-
 			}
 		}
 
@@ -326,7 +330,7 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Other classes that persist this need to know when our id changed, so the can
+		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
 		public string StoreID
@@ -659,6 +663,10 @@ namespace Palaso.WritingSystems
 			set { UpdateString(ref _spellCheckingId, value); }
 		}
 
+		/// <summary>
+		/// Returns an ICollator interface that can be used to sort strings based
+		/// on the custom collation rules.
+		/// </summary>
 		public ICollator Collator
 		{
 			get
@@ -682,6 +690,11 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Tests whether the current custom collation rules are valid.
+		/// </summary>
+		/// <param name="message">Used for an error message if rules do not validate.</param>
+		/// <returns>True if rules are valid, false otherwise.</returns>
 		public bool ValidateCollationRules(out string message)
 		{
 			message = null;
