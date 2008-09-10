@@ -9,7 +9,7 @@ namespace Palaso.Text
 	/// A LanguageForm is a unicode string plus the id of its writing system
 	/// </summary>
    // [ReflectorType("alt")]
-	public class LanguageForm : Annotatable
+	public class LanguageForm : Annotatable, IComparable<LanguageForm>
 	{
 		private string _writingSystemId;
 		private string _form;
@@ -90,5 +90,20 @@ namespace Palaso.Text
 		}
 
 		#endregion
+
+		public int CompareTo(LanguageForm other)
+		{
+			if(other == null)
+			{
+				return 1;
+			}
+			int writingSystemOrder = this.WritingSystemId.CompareTo(other.WritingSystemId);
+			if (writingSystemOrder != 0)
+			{
+				return writingSystemOrder;
+			}
+			int formOrder = this.Form.CompareTo(other.Form);
+			return formOrder;
+		}
 	}
 }
