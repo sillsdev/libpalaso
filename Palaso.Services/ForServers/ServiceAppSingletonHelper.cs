@@ -145,8 +145,14 @@ namespace Palaso.Services.ForServers
 		/// <returns>false if this application should just exit</returns>
 		private bool StartupIfAppropriate()
 		{
+			Mutex preventMultipleStartups = new Mutex(false, "Palaso.Services.ServiceAppSingletonHelper.StartupIfAppropriate");
+			if (!preventMultipleStartups.WaitOne(10000, false))
+			{
+				throw new ApplicationException("Timed out while waiting to be able to create service.");
+			}
 			//            Process[] twins = System.Diagnostics.Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
 			//            if (_couldHaveTwinsInProcess || twins.Length > 1)
+			try
 			{
 				Debug.WriteLine("Checking to see if there is another app already providing this service...");
 
@@ -165,16 +171,20 @@ namespace Palaso.Services.ForServers
 				{
 					Debug.WriteLine("Did not find another app already providing this service.");
 				}
+
+				// create the service any future versions of this (with the same serviceName) will use
+				// to find out we're already running and tell us other stuff (like BringToFront)
+				//Debug.Assert(null == RemotingServices.GetServerTypeForUri(IpcSystem.GetUrlForService(_serviceName, IpcSystem.StartingPort)));
+
+				_connector = new ServiceAppConnector();
+				_connector.BringToFrontRequest += On_BringToFrontRequest;
+				_ipcServiceProviderDescriptor = IpcSystem.StartServingObject(_serviceName, _connector);
 			}
-
-			// create the service any future versions of this (with the same serviceName) will use
-			// to find out we're already running and tell us other stuff (like BringToFront)
-			//Debug.Assert(null == RemotingServices.GetServerTypeForUri(IpcSystem.GetUrlForService(_serviceName, IpcSystem.StartingPort)));
-
-
-			_connector = new ServiceAppConnector();
-			_connector.BringToFrontRequest += On_BringToFrontRequest;
-			_ipcServiceProviderDescriptor = IpcSystem.StartServingObject(_serviceName, _connector);
+			finally
+			{
+				preventMultipleStartups.ReleaseMutex();
+				preventMultipleStartups.Close();
+			}
 
 			return true;
 		}
