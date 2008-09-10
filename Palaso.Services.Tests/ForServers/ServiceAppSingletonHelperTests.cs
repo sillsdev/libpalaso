@@ -17,7 +17,7 @@ namespace Palaso.Services.Tests.ForServers
 			//we increment the port as the cleanest way to get a new start for each test;
 			// it would probably be possible to teardown the existing stuff, but this takes
 			// a long time to do (Cambell guesses 4 seconds)
-		   IpcSystem.StartingPort++;
+		   IpcSystem.StartingPortBase++;
 		   // ServiceAppSingletonHelper.DisposeForNextTest();
 		}
 
@@ -51,7 +51,7 @@ namespace Palaso.Services.Tests.ForServers
 		public static string GetServiceName()
 		{
 			//this is intentionally a messy service name
-			return "c:/onetwo.three"+IpcSystem.StartingPort;//give a different name each test, so they don't interfere
+			return "c:/onetwo.three"+IpcSystem.StartingPortBase;//give a different name each test, so they don't interfere
 		}
 
 //        private void RunServerThreadAndWaitUntilReady(ThreadStart threadMethod)

@@ -24,7 +24,7 @@ namespace Palaso.Services.Tests
 		[TearDown]
 		public void TearDown()
 		{
-			IpcSystem.StartingPort += 10;  // so tests don't interfer with each other
+			IpcSystem.StartingPortBase += 10;  // so tests don't interfer with each other
 
 			testIsRunning.ReleaseMutex();
 		}
@@ -108,7 +108,7 @@ namespace Palaso.Services.Tests
 		{
 			ProcessStartInfo processStartInfo = new ProcessStartInfo();
 			processStartInfo.FileName = "Palaso.Services.Tests.Server.exe";
-			processStartInfo.Arguments = serviceName + " " + IpcSystem.StartingPort;
+			processStartInfo.Arguments = serviceName + " " + IpcSystem.StartingPortBase;
 			processStartInfo.UseShellExecute = false;
 			processStartInfo.RedirectStandardOutput = true;
 			processStartInfo.RedirectStandardInput = true;
