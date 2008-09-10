@@ -8,7 +8,7 @@ using Palaso.Text;
 
 namespace Palaso.Text
 {
-	public class MultiTextBase : INotifyPropertyChanged
+	public class MultiTextBase : INotifyPropertyChanged, IComparable<MultiTextBase>
 	{
 		/// <summary>
 		/// We have this pesky "backreference" solely to enable fast
@@ -351,6 +351,7 @@ namespace Palaso.Text
 
 			//actually copy the contents, as we must now be the parent
 			forms[Forms.Length] = new LanguageForm(languageForm.WritingSystemId, languageForm.Form, this);
+			Array.Sort(forms);
 			_forms = forms;
 		}
 
@@ -365,6 +366,28 @@ namespace Palaso.Text
 		public IEnumerator GetEnumerator()
 		{
 			return Forms.GetEnumerator();
+		}
+
+		public int CompareTo(MultiTextBase other)
+		{
+			if(other == null)
+			{
+				return 1;
+			}
+			int formLengthOrder = this.Forms.Length.CompareTo(other.Forms.Length);
+			if(formLengthOrder != 0)
+			{
+				return formLengthOrder;
+			}
+			for(int i = 0; i < Forms.Length; i++)
+			{
+				int languageFormOrder = Forms[i].CompareTo(other.Forms[i]);
+				if(languageFormOrder != 0)
+				{
+					return languageFormOrder;
+				}
+			}
+			return 0;
 		}
 
 		public override string ToString()

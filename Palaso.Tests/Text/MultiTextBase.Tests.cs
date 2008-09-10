@@ -584,5 +584,96 @@ namespace Palaso.Tests.Text
 			Assert.AreEqual("1", forms[0].Form);
 			Assert.AreEqual("3", forms[1].Form);
 		}
+
+		[Test]
+		public void SetAlternative_ThreeDifferentLanguages_LanguageFormsAreSortedbyWritingSystem()
+		{
+
+			MultiTextBase multiTextBaseToPopulate = new MultiTextBase();
+			multiTextBaseToPopulate.SetAlternative("fr", "fr Word3");
+			multiTextBaseToPopulate.SetAlternative("de", "de Word1");
+			multiTextBaseToPopulate.SetAlternative("en", "en Word2");
+			Assert.AreEqual(3, multiTextBaseToPopulate.Forms.Length);
+			Assert.AreEqual("de", multiTextBaseToPopulate.Forms[0].WritingSystemId);
+			Assert.AreEqual("en", multiTextBaseToPopulate.Forms[1].WritingSystemId);
+			Assert.AreEqual("fr", multiTextBaseToPopulate.Forms[2].WritingSystemId);
+		}
+
+		[Test]
+		public void CompareTo_Null_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = null;
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithFewerForms_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithMoreForms_ReturnsLess()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(-1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalWritingSystemsAndFirstNonidenticalWritingSystemIsAlphabeticallyEarlier_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("en", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalWritingSystemsAndFirstNonidenticalWritingSystemIsAlphabeticallyLater_ReturnsLess()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("en", "Word 1");
+			Assert.AreEqual(-1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalFormsAndFirstNonidenticalFormIsAlphabeticallyEarlier_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 2");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalFormsAndFirstNonidenticalformIsAlphabeticallyLater_ReturnsLess()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 2");
+			Assert.AreEqual(-1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_IdenticalMultiText_ReturnsEqual()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(0, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
 	}
 }
