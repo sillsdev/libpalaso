@@ -8,7 +8,7 @@ using Palaso.Text;
 
 namespace Palaso.Text
 {
-	public class MultiTextBase : INotifyPropertyChanged, IComparable<MultiTextBase>
+	public class MultiTextBase : INotifyPropertyChanged, IComparable
 	{
 		/// <summary>
 		/// We have this pesky "backreference" solely to enable fast
@@ -368,12 +368,18 @@ namespace Palaso.Text
 			return Forms.GetEnumerator();
 		}
 
-		public int CompareTo(MultiTextBase other)
+		public int CompareTo(object o)
 		{
-			if(other == null)
+
+			if(o == null)
 			{
 				return 1;
 			}
+			if (!(o is MultiTextBase))
+			{
+				throw new ArgumentException("Can not compare to objects other than MultiTextBase.");
+			}
+			MultiTextBase other = (MultiTextBase) o;
 			int formLengthOrder = this.Forms.Length.CompareTo(other.Forms.Length);
 			if(formLengthOrder != 0)
 			{
