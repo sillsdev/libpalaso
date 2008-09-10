@@ -77,6 +77,7 @@
 	<Compile Include="Progress\ConsoleProgressState.cs" />
 	<Compile Include="Progress\NullProgressState.cs" />
 	<Compile Include="Progress\ProgressState.cs" />
+	<Compile Include="Progress\XslTransformWithProgress.cs" />
 	<Compile Include="Resource.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
