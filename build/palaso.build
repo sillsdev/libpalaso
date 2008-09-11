@@ -5,8 +5,8 @@
 	<target name="clean" description="Delete all previously compiled binaries.">
 		<delete>
 			<fileset>
-				<include name="**/bin/**" />
-				<include name="**/obj/**" />
+				<include name="../**/bin/**" />
+				<include name="../**/obj/**" />
 				<include name="../output/**" />
 				<include name="../release/output/*" />
 			</fileset>

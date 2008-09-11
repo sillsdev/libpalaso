@@ -48,18 +48,6 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\icu.net.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\icu.net.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\icudt38.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\icuin38.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\icuuc38.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />
@@ -169,5 +157,6 @@
   <PropertyGroup>
 	<PreBuildEvent>
 	</PreBuildEvent>
+	<PostBuildEvent>copy /y $(ProjectDir)..\lib\icu*.dll* $(ProjectDir)$(OutDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>
