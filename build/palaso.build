@@ -103,6 +103,8 @@
 			<include name="../output/${configuration}/*.Tests.dll" />
 		  </assemblies>
 		  <categories>
+			<exclude name="MouseSensitive"/>
+			<exclude name="Windows IME"/>
 			<exclude name="Keyman6"/>
 			<exclude name="Keyman7"/>
 		  </categories>
