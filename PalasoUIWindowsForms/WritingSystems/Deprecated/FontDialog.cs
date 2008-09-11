@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	[Obsolete]
 	public partial class FontDialog : Form
 	{
 		public FontDialog()

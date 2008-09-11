@@ -8,6 +8,7 @@ using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	[Obsolete("Use WSFontControl and WSKeyboardControl instead")]
 	public partial class FontAndKeyboardControl : UserControl
 	{
 		private string _sampleText="type here to test the font and keyboard";

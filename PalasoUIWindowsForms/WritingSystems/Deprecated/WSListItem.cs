@@ -8,6 +8,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	[Obsolete]
 	internal partial class WSListItem : UserControl, ControlListBox.ISelectableControl
 	{
 		private readonly WritingSystemDefinition _writingSystemDefinition;

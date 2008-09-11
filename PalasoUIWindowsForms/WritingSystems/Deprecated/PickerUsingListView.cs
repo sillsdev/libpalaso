@@ -5,6 +5,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	[Obsolete]
 	public partial class PickerUsingListView : UserControl
 	{
 		private string _identifierOfSelectedWritingSystem;

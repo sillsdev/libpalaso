@@ -10,6 +10,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	[Obsolete]
 	public partial class PickerUsingComboBox : ComboBox
 	{
 		private string _identifierOfSelectedWritingSystem;

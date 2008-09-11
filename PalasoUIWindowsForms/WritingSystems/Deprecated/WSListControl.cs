@@ -5,6 +5,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	[Obsolete]
 	internal partial class WSListControl : UserControl
 	{
 		private LdmlInFolderWritingSystemStore _repository;

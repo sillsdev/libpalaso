@@ -5,6 +5,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WritingSystems
 {
+	[Obsolete]
 	public partial class WSListDialog : Form
 	{
 		public WSListDialog()
