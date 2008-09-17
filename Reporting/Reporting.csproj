@@ -36,7 +36,7 @@
 	</SccAuxPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-	<OutputPath>..\output\debug\</OutputPath>
+	<OutputPath>..\output\Debug\</OutputPath>
 	<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	<BaseAddress>285212672</BaseAddress>
 	<CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -104,7 +104,7 @@
 	<Reference Include="System">
 	  <Name>System</Name>
 	</Reference>
-	<Reference Include="System.configuration" />
+	<Reference Include="System.Configuration" />
 	<Reference Include="System.Data">
 	  <Name>System.Data</Name>
 	</Reference>

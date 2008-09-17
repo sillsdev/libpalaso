@@ -14,7 +14,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\debug\</OutputPath>
+	<OutputPath>..\output\Debug\</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -80,8 +80,15 @@
 	<Compile Include="Text\LanguageFormTest.cs" />
 	<Compile Include="Text\MultiTextBase.Tests.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXmlTests.cs" />
-	<Compile Include="WritingSystems\RepositoryWithLdmlAdaptor.Tests.cs" />
+	<Compile Include="WritingSystems\Collation\IcuRulesParserTests.cs" />
+	<Compile Include="WritingSystems\Collation\LdmlCollationParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
+	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
+	<Compile Include="WritingSystems\IWritingSystemStore.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlAdaptorTests.cs" />
+	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
 	<Compile Include="XmlHelpers.Tests.cs" />
   </ItemGroup>

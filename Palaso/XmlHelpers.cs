@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace Palaso
@@ -7,13 +8,35 @@ namespace Palaso
 	{
 		public static void AddOrUpdateAttribute(XmlNode node, string attributeName, string value)
 		{
-			XmlNode attr = GetDocument(node).CreateAttribute(attributeName);
+			AddOrUpdateAttribute(node, attributeName, value, null);
+		}
+
+		public static void AddOrUpdateAttribute(XmlNode node, string attributeName, string value, IComparer<XmlNode> nodeOrderComparer)
+		{
+			XmlNode attr = node.Attributes.GetNamedItem(attributeName);
+			if (attr == null)
+			{
+				attr = GetDocument(node).CreateAttribute(attributeName);
+				if (nodeOrderComparer == null)
+				{
+					node.Attributes.SetNamedItem(attr);
+				}
+				else
+				{
+					InsertNodeUsingDefinedOrder(node, attr, nodeOrderComparer);
+				}
+			}
 			attr.Value = value;
-			node.Attributes.SetNamedItem(attr);
 		}
 
 		public static XmlNode GetOrCreateElement(XmlNode node, string xpathNotIncludingElement,
 			string elementName, string nameSpace, XmlNamespaceManager nameSpaceManager)
+		{
+			return GetOrCreateElement(node, xpathNotIncludingElement, elementName, nameSpace, nameSpaceManager, null);
+		}
+
+		public static XmlNode GetOrCreateElement(XmlNode node, string xpathNotIncludingElement,
+			string elementName, string nameSpace, XmlNamespaceManager nameSpaceManager, IComparer<XmlNode> nodeOrderComparer)
 		{
 			//enhance: if the parent path isn't found, strip of the last piece and recurse,
 			//so that the path will always be created if needed.
@@ -33,13 +56,33 @@ namespace Palaso
 			{
 				if (!String.IsNullOrEmpty(nameSpace))
 				{
-					n = GetDocument(node).CreateElement(string.Empty, elementName, nameSpaceManager.LookupNamespace(nameSpace));
+					n = GetDocument(node).CreateElement(nameSpace, elementName, nameSpaceManager.LookupNamespace(nameSpace));
 				}
 				else
 				{
 					n = GetDocument(node).CreateElement(elementName);
 				}
-				parentNode.AppendChild(n);
+				if (nodeOrderComparer == null)
+				{
+					parentNode.AppendChild(n);
+				}
+				else
+				{
+					XmlNode insertAfterNode = null;
+					foreach (XmlNode childNode in parentNode.ChildNodes)
+					{
+						if (childNode.NodeType != XmlNodeType.Element)
+						{
+							continue;
+						}
+						if (nodeOrderComparer.Compare(n, childNode) < 0)
+						{
+							break;
+						}
+						insertAfterNode = childNode;
+					}
+					parentNode.InsertAfter(n, insertAfterNode);
+				}
 			}
 			return n;
 		}
@@ -148,6 +191,68 @@ namespace Palaso
 					return xa.Value;
 			}
 			return defaultString;
+		}
+
+		public static void InsertNodeUsingDefinedOrder(XmlNode parent, XmlNode newChild, IComparer<XmlNode> nodeOrderComparer)
+		{
+			if (newChild.NodeType == XmlNodeType.Attribute)
+			{
+				XmlAttribute insertAfterNode = null;
+				foreach (XmlAttribute childNode in parent.Attributes)
+				{
+					if (nodeOrderComparer.Compare(newChild, childNode) < 0)
+					{
+						break;
+					}
+					insertAfterNode = childNode;
+				}
+				parent.Attributes.InsertAfter((XmlAttribute)newChild, insertAfterNode);
+			}
+			else
+			{
+				XmlNode insertAfterNode = null;
+				foreach (XmlNode childNode in parent.ChildNodes)
+				{
+					if (nodeOrderComparer.Compare(newChild, childNode) < 0)
+					{
+						break;
+					}
+					insertAfterNode = childNode;
+				}
+				parent.InsertAfter(newChild, insertAfterNode);
+			}
+		}
+
+		public static bool FindElement(XmlReader reader, string name, Comparison<string> comparison)
+		{
+			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement &&
+				(reader.NodeType != XmlNodeType.Element || comparison(name, reader.Name) > 0))
+			{
+				switch (reader.NodeType)
+				{
+					case XmlNodeType.Attribute:
+					case XmlNodeType.Element:
+						reader.Skip();
+						break;
+					default:
+						reader.Read();
+						break;
+				}
+			}
+			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
+		}
+
+		public static bool FindElement(XmlReader reader, string name, string nameSpace, Comparison<string> comparison)
+		{
+			while (FindElement(reader, name, comparison))
+			{
+				if (reader.NamespaceURI == nameSpace)
+				{
+					return true;
+				}
+				reader.Skip();
+			}
+			return false;
 		}
 	}
 }

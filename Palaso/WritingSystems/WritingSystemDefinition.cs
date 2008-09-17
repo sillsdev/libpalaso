@@ -1,25 +1,66 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
 {
+	/// <summary>
+	/// This class stores the information used to define various writing system properties.
+	/// </summary>
 	public class WritingSystemDefinition
 	{
+		public enum SortRulesType
+		{
+			/// <summary>
+			/// Custom Simple (Shoebox/Toolbox) style rules
+			/// </summary>
+			[Description("Custom Simple (Shoebox style) rules")]
+			CustomSimple,
+			/// <summary>
+			/// Custom ICU rules
+			/// </summary>
+			[Description("Custom ICU rules")]
+			CustomICU,
+			/// <summary>
+			/// Use the sort rules from another language
+			/// </summary>
+			[Description("Same as another language")]
+			OtherLanguage
+		}
+
 		private string _iso;
 		private string _region;
 		private string _variant;
 		private string _languageName;
 		private string _script;
 		private string _abbreviation;
+
+		private string _versionNumber;
+		private string _versionDescription;
+
+		private DateTime _dateModified;
+
 		private string _defaultFontName;
+		private float _defaultFontSize;
+		private string _keyboard;
+
+		private string _sortUsing;
+		private string _sortRules;
+		private string _spellCheckingId;
+
 		private bool _modified;
+		private bool _markedForDeletion;
+		private string _nativeName;
+		private bool _rightToLeftScript;
+		private ICollator _collator;
 
 		/// <summary>
 		/// Other classes that persist this need to know when our id changed, so the can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		private string _previousRepositoryIdentifier;
+		private string _storeID;
 
 		/// <summary>
 		/// singleton
@@ -28,18 +69,31 @@ namespace Palaso.WritingSystems
 	   /// <summary>
 		/// singleton
 		/// </summary>
-		 private static List<LanguageCode> _languageCodes;
-
-		private bool _markedForDeletion;
-		private string _keyboard;
-		private string _nativeName;
-		private bool _rightToLeftScript;
+		private static List<LanguageCode> _languageCodes;
 
 
 		public WritingSystemDefinition()
 		{
 			LoadScriptOptions();
 			Modified = false;
+		}
+
+		public WritingSystemDefinition(string iso)
+			: this()
+		{
+			_iso = iso;
+		}
+
+		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
+			: this()
+		{
+			_region = region;
+			_iso = iso;
+			_abbreviation = abbreviation;
+			_script = script;
+			_languageName = languageName;
+			_variant = variant;
+			_rightToLeftScript = rightToLeftScript;
 		}
 
 		/// <summary>
@@ -77,7 +131,9 @@ namespace Palaso.WritingSystems
 			_scriptOptions.Sort(ScriptOption.CompareScriptOptions);
 		}
 
-
+		/// <summary>
+		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
+		/// </summary>
 		public static IList<LanguageCode> LanguageCodes
 		{
 			get
@@ -96,7 +152,8 @@ namespace Palaso.WritingSystems
 					if (tline.Length == 0)
 						continue;
 					string[] fields = tline.Split('\t');
-					_languageCodes.Add(new LanguageCode(fields[0], fields[6]));
+					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
+					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6]));
 				}
 				_languageCodes.Sort(LanguageCode.CompareByName);
 				return _languageCodes;
@@ -167,18 +224,23 @@ namespace Palaso.WritingSystems
 
 		}
 
-		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
-			:this()
+		public string VersionNumber
 		{
-			_region = region;
-			_iso = iso;
-			_abbreviation = abbreviation;
-			_script = script;
-			_languageName = languageName;
-			_variant = variant;
-			_rightToLeftScript = rightToLeftScript;
+			get { return _versionNumber; }
+			set { UpdateString(ref _versionNumber, value); }
 		}
 
+		public string VersionDescription
+		{
+			get { return _versionDescription; }
+			set { UpdateString(ref _versionDescription, value); }
+		}
+
+		public DateTime DateModified
+		{
+			get { return _dateModified; }
+			set { _dateModified = value; }
+		}
 
 		public string Variant
 		{
@@ -189,7 +251,6 @@ namespace Palaso.WritingSystems
 			set
 			{
 				UpdateString(ref _variant, value);
-
 			}
 		}
 
@@ -269,18 +330,18 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Other classes that persist this need to know when our id changed, so the can
+		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		public string PreviousRepositoryIdentifier
+		public string StoreID
 		{
 			get
 			{
-				return _previousRepositoryIdentifier;
+				return _storeID;
 			}
 			set
 			{
-				_previousRepositoryIdentifier = value;
+				_storeID = value;
 			}
 		}
 
@@ -444,6 +505,27 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public float DefaultFontSize
+		{
+			get
+			{
+				return _defaultFontSize;
+			}
+			set
+			{
+				if (value == _defaultFontSize)
+				{
+					return;
+				}
+				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
+				{
+					throw new ArgumentOutOfRangeException();
+				}
+				_defaultFontSize = value;
+				Modified = true;
+			}
+		}
+
 		public string Keyboard
 		{
 			get
@@ -511,6 +593,7 @@ namespace Palaso.WritingSystems
 					return _label;
 				}
 			}
+
 			public override string ToString()
 			{
 				return _label;
@@ -543,10 +626,113 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public string SortUsing
+		{
+			get { return _sortUsing ?? string.Empty; }
+			set
+			{
+				if (!Enum.IsDefined(typeof (SortRulesType), value))
+				{
+					throw new ArgumentOutOfRangeException("Invalid SortUsing option");
+				}
+				_collator = null;
+				UpdateString(ref _sortUsing, value);
+			}
+		}
+
+		public string SortRules
+		{
+			get { return _sortRules ?? string.Empty; }
+			set
+			{
+				_collator = null;
+				UpdateString(ref _sortRules, value);
+			}
+		}
+
+		public string SpellCheckingId
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_spellCheckingId))
+				{
+					return _iso;
+				}
+				return _spellCheckingId;
+			}
+			set { UpdateString(ref _spellCheckingId, value); }
+		}
+
+		/// <summary>
+		/// Returns an ICollator interface that can be used to sort strings based
+		/// on the custom collation rules.
+		/// </summary>
+		public ICollator Collator
+		{
+			get
+			{
+				if (_collator == null)
+				{
+					switch ((SortRulesType)Enum.Parse(typeof(SortRulesType), SortUsing))
+					{
+						case SortRulesType.CustomSimple:
+							_collator = new SimpleRulesCollator(SortRules);
+							break;
+						case SortRulesType.CustomICU:
+							_collator = new IcuRulesCollator(SortRules);
+							break;
+						case SortRulesType.OtherLanguage:
+							_collator = new SystemCollator(SortRules);
+							break;
+					}
+				}
+				return _collator;
+			}
+		}
+
+		/// <summary>
+		/// Tests whether the current custom collation rules are valid.
+		/// </summary>
+		/// <param name="message">Used for an error message if rules do not validate.</param>
+		/// <returns>True if rules are valid, false otherwise.</returns>
+		public bool ValidateCollationRules(out string message)
+		{
+			message = null;
+			try
+			{
+				switch ((SortRulesType) Enum.Parse(typeof (SortRulesType), SortUsing))
+				{
+					case SortRulesType.CustomICU:
+						return IcuRulesCollator.ValidateSortRules(SortRules, out message);
+					case SortRulesType.CustomSimple:
+						return SimpleRulesCollator.ValidateSimpleRules(SortRules, out message);
+					case SortRulesType.OtherLanguage:
+						new SystemCollator(SortRules);
+						break;
+				}
+			}
+			catch (Exception e)
+			{
+				message = String.Format("Error while validating sorting rules: {0}", e.Message);
+				return false;
+			}
+			return true;
+		}
+
 		public WritingSystemDefinition Clone()
 		{
 			WritingSystemDefinition ws =
 				new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
+			ws._defaultFontName = _defaultFontName;
+			ws._defaultFontSize = _defaultFontSize;
+			ws._keyboard = _keyboard;
+			ws._versionNumber = _versionNumber;
+			ws._versionDescription = _versionDescription;
+			ws._nativeName = _nativeName;
+			ws._sortUsing = _sortUsing;
+			ws._sortRules = _sortRules;
+			ws._spellCheckingId = _spellCheckingId;
+			ws._dateModified = _dateModified;
 			return ws;
 		}
 	}

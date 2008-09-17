@@ -18,6 +18,25 @@ namespace Palaso.WritingSystems.Collation
 			}
 		}
 
+		public static bool ValidateSortRules(string rules, out string message)
+		{
+			IcuRulesParser parser = new IcuRulesParser();
+			if (!parser.ValidateIcuRules(rules, out message))
+			{
+				return false;
+			}
+			try
+			{
+				new IcuRulesCollator(rules);
+			}
+			catch (Exception e)
+			{
+				message = String.Format("Invalid ICU sort rules: {0}", e.Message);
+				return false;
+			}
+			return true;
+		}
+
 		public SortKey GetSortKey(string source)
 		{
 			return _collator.GetSortKey(source);

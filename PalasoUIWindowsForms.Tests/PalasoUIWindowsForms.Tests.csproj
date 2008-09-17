@@ -16,7 +16,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\debug\</OutputPath>
+	<OutputPath>..\output\Debug\</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -82,6 +82,8 @@
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\PromptTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
+	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemChooserTestForm.cs">
 	  <SubType>Form</SubType>

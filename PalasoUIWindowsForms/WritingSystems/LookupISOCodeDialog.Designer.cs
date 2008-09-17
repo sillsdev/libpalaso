@@ -33,6 +33,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
 			this._okButton = new System.Windows.Forms.Button();
 			this._aboutLink = new System.Windows.Forms.LinkLabel();
+			this._aboutLink639_1 = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			//
 			// listView1
@@ -49,8 +50,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.listView1.UseCompatibleStateImageBehavior = false;
 			this.listView1.View = System.Windows.Forms.View.Details;
 			this.listView1.VirtualMode = true;
-			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
+			this.listView1.SearchForVirtualItem += new System.Windows.Forms.SearchForVirtualItemEventHandler(this.listView1_SearchForVirtualItem);
 			this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+			this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this.listView1.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listView1_RetrieveVirtualItem);
 			//
 			// columnHeader1
@@ -75,7 +77,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _aboutLink
 			//
 			this._aboutLink.AutoSize = true;
-			this._aboutLink.Location = new System.Drawing.Point(12, 236);
+			this._aboutLink.Location = new System.Drawing.Point(12, 252);
 			this._aboutLink.Name = "_aboutLink";
 			this._aboutLink.Size = new System.Drawing.Size(119, 13);
 			this._aboutLink.TabIndex = 2;
@@ -83,12 +85,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._aboutLink.Text = "About ISO 639-3 Codes";
 			this._aboutLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._aboutLink_LinkClicked);
 			//
+			// _aboutLink639_1
+			//
+			this._aboutLink639_1.AutoSize = true;
+			this._aboutLink639_1.Location = new System.Drawing.Point(12, 231);
+			this._aboutLink639_1.Name = "_aboutLink639_1";
+			this._aboutLink639_1.Size = new System.Drawing.Size(119, 13);
+			this._aboutLink639_1.TabIndex = 3;
+			this._aboutLink639_1.TabStop = true;
+			this._aboutLink639_1.Text = "About ISO 639-1 Codes";
+			this._aboutLink639_1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._aboutLink639_1_LinkClicked);
+			//
 			// LookupISOCodeDialog
 			//
 			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(292, 266);
+			this.ClientSize = new System.Drawing.Size(292, 274);
+			this.Controls.Add(this._aboutLink639_1);
 			this.Controls.Add(this._aboutLink);
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this.listView1);
@@ -111,5 +125,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.LinkLabel _aboutLink;
+		private System.Windows.Forms.LinkLabel _aboutLink639_1;
 	}
 }
