@@ -79,19 +79,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				List<String> keyboards = new List<string>();
 				keyboards.Add("(default)");
-
-				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
-				if (keymanLink.Initialize(false))
+				foreach (KeyboardController.KeyboardDescriptor keyboard in
+					KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
 				{
-					foreach (KeymanLink.KeymanLink.KeymanKeyboard keyboard in keymanLink.Keyboards)
-					{
-						keyboards.Add(keyboard.KbdName);
-					}
-				}
-
-				foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
-				{
-					keyboards.Add(lang.LayoutName);
+					keyboards.Add(keyboard.Name);
 				}
 				return keyboards;
 			}
