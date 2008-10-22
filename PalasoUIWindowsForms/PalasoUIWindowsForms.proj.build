@@ -1,0 +1,34 @@
+<project name="PalasoUIWindowsForms" default="build" basedir=".">
+  <target name="build">
+	<csc target="library"
+		output="${project.output.dir}/PalasoUIWindowsForms.dll"
+		doc="${project.output.dir}/doc/PalasoUIWindowsForms.xml"
+		debug="${build.debug}"
+		define="${build.defines}">
+	  <nowarn>
+		<warning number="618,672"/>
+		<warning number="1699" if="${runtime.version=='2.0'}"/>
+	  </nowarn>
+	  <sources basedir=".">
+		<include name="**/*.cs" />
+	  </sources>
+	  <references basedir="${project.output.dir}">
+		<include name="System.dll" />
+		<include name="System.Drawing.dll" />
+		<include name="System.Data.dll" />
+		<include name="System.Windows.Forms.dll" />
+		<include name="Enchant.Net.dll" />
+		<include name="Palaso.dll" />
+		<include name="Reporting.dll" />
+		<include name="System.Design.dll" />
+	  </references>
+	</csc>
+  </target>
+
+  <target name="package">
+	<copy todir="${package.src.dir}/icu.net">
+	  <fileset refid="source-files" />
+	</copy>
+  </target>
+
+</project>

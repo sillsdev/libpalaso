@@ -1,0 +1,34 @@
+<project name="Palaso" default="build" basedir=".">
+  <property name="resgen.exe" value="resgen2"/>
+  <target name="build">
+	<exec program="${resgen.exe}" workingdir=".">
+	  <arg line="-usesourcepath -compile Resource.resx,Palaso.Resource.resources"/>
+	</exec>
+	<csc target="library"
+		output="${project.output.dir}/Palaso.dll"
+		doc="${project.output.dir}/doc/Palaso.xml"
+		debug="${build.debug}"
+		define="${build.defines}">
+	  <nowarn>
+		<warning number="618,672"/>
+		<warning number="1699" if="${runtime.version=='2.0'}"/>
+	  </nowarn>
+	  <sources basedir=".">
+		<include name="**/*.cs" />
+	  </sources>
+	  <references basedir="${project.output.dir}">
+		<include name="icu.net.dll" />
+	  </references>
+	  <resources>
+		<include name="Palaso.Resource.resources"/>
+	  </resources>
+	</csc>
+  </target>
+
+  <target name="package">
+	<copy todir="${package.src.dir}/icu.net">
+	  <fileset refid="source-files" />
+	</copy>
+  </target>
+
+</project>

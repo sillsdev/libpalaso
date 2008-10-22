@@ -1,0 +1,30 @@
+<project name="Palaso.Services.Dictionary.SampleClient" default="build" basedir=".">
+  <target name="build">
+	<csc target="library"
+		output="${project.output.dir}/Palaso.Services.Dictionary.SampleClient.dll"
+		doc="${project.output.dir}/doc/Palaso.Services.Dictionary.SampleClient.xml"
+		debug="${build.debug}"
+		define="${build.defines}">
+	  <nowarn>
+		<warning number="618,672"/>
+		<warning number="1699" if="${runtime.version=='2.0'}"/>
+	  </nowarn>
+	  <sources basedir=".">
+		<include name="**/*.cs" />
+	  </sources>
+	  <references basedir="${project.output.dir}">
+		<include name="PalasoUIWindowsForms.dll" />
+		<include name="System.Windows.Forms.dll" />
+		<include name="System.Drawing.dll" />
+		<include name="Palaso.Services.dll" />
+	  </references>
+	</csc>
+  </target>
+
+  <target name="package">
+	<copy todir="${package.src.dir}/icu.net">
+	  <fileset refid="source-files" />
+	</copy>
+  </target>
+
+</project>
