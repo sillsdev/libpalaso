@@ -1,22 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoBuildTasks", "PalasoBuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTasks", "Palaso.BuildTasks.csproj", "{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Mono Debug|Any CPU = Mono Debug|Any CPU
+		Mono Release|Any CPU = Mono Release|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Mono Debug|Any CPU.ActiveCfg = Mono Debug|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Mono Debug|Any CPU.Build.0 = Mono Debug|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Mono Release|Any CPU.ActiveCfg = Mono Release|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Mono Release|Any CPU.Build.0 = Mono Release|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B8D60F8-DE6B-41C1-99BF-36DE167AF349}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

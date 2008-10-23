@@ -40,4 +40,16 @@
 	</MakeWixForDirTree>
   </Target>
 
+  <UsingTask AssemblyFile="..\output\Debug\Palaso.BuildTasks.dll" TaskName="Split" />
+  <Target Name="SplitTest">
+	<Split Input="1234:abcd"
+			 Delimiter=":"
+			 OutputSubString="0"
+		   >
+	  <Output TaskParameter="ReturnValue" PropertyName="Version" />
+	</Split>
+	<Message Text="Version: $(Version)" />
+  </Target>
+
+
 </Project>
