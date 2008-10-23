@@ -13,7 +13,7 @@
 		</delete>
 	</target>
 
-	<target name="revision">
+	<target name="revision_svn">
 		<property name="svn.info.log" value="svninfo.txt"/>
 		<exec
 			program="svn.exe"
@@ -28,7 +28,14 @@
 		<delete file="${svn.info.log}" />
 	</target>
 
-	<target name="version" depends="revision">
+	<target name="revision_teamcityhg">
+		<property name="teamcity" value="${environment::get-variable('BUILD_NUMBER')}" />
+		<regex pattern="^(?'revision'.*):" input="${teamcity}" />
+		<property name="revision" value="${string::trim(revision)}" />
+		<echo message="Revision: ${revision}" />
+	</target>
+
+	<target name="version" depends="revision_teamcityhg">
 		<loadfile property="version" file="version.txt">
 			<filterchain>
 				<expandproperties />
