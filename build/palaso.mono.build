@@ -427,7 +427,7 @@
 	<echo message="${project.lib.dir}" />
 	<copy todir="${project.output.dir}">
 		<fileset basedir="${project.lib.dir}">
-			<include name="*.*" />
+			<include name="*" />
 		</fileset>
 	</copy>
 </target>
@@ -436,7 +436,7 @@
 	<property name="project.lib.dir" value="$project.lib.base.dir"/>
 	<copy todir="${project.output.dir}">
 		<fileset basedir="${project.lib.dir}">
-			<include name="*.*" />
+			<include name="*" />
 		</fileset>
 	</copy>
 </target>
