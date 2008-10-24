@@ -30,7 +30,7 @@
 
 	<target name="revision_teamcityhg">
 		<property name="teamcity" value="${environment::get-variable('BUILD_NUMBER')}" />
-		<regex pattern="^(?'revision'.*):" input="${teamcity}" />
+		<regex pattern="^(?'revision'[^:]*)" input="${teamcity}" />
 		<property name="revision" value="${string::trim(revision)}" />
 		<echo message="Revision: ${revision}" />
 	</target>
