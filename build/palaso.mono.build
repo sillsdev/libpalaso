@@ -165,7 +165,7 @@
 
 	<target name="test" depends="build">
 		<exec program="${environment::get-variable('teamcity.dotnet.nunitlauncher')}">
-			<arg value="/home/mono/Palaso.Mercurial/output/linux/mono/2.0/Debug/*.Test*" />
+			<arg value="/home/mono/buildAgent/work/37b509c4a449b6e2/output/linux/mono/2.0/Debug/*.Test*" />
 		</exec>
 
 		<!--<nunit2>
