@@ -164,20 +164,24 @@
 	</target>
 
 	<target name="test" depends="build">
-		<nunit2>
-			<formatter type="Plain" usefile="true" />
+		<exec program="${teamcity.dotnet.nunitlauncher}">
+			<arg value="v2.0 x86 NUnit-2.4.7 output/linux/mono/2.0/Debug/*.Test*" />
+		</exec>
+
+		<!--<nunit2>
+			<formatter type="Plain" usefile="false" />
 			<test>
-		  <assemblies>
-			<include name="${project.output.dir}/*.Tests.dll" />
-		  </assemblies>
-		  <categories>
-			<exclude name="MouseSensitive"/>
-			<exclude name="Windows IME"/>
-			<exclude name="Keyman6"/>
-			<exclude name="Keyman7"/>
-		  </categories>
+			<assemblies>
+				<include name="${project.output.dir}/*.Tests.dll" />
+			</assemblies>
+			<categories>
+				<exclude name="MouseSensitive"/>
+				<exclude name="Windows IME"/>
+				<exclude name="Keyman6"/>
+				<exclude name="Keyman7"/>
+			</categories>
 			</test>
-		</nunit2>
+		</nunit2>-->
 	</target>
 
 	<target name="installerpre" depends="version">
