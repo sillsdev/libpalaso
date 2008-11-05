@@ -172,7 +172,7 @@
 		</in>
 		<do>
 			<nunit2 failonerror="false" verbose="true">
-			<formatter type="Plain" usefile="true" />
+			<formatter type="Plain"/>
 			<test>
 			<assemblies>
 				<include name="${filename}" />
