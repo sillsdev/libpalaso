@@ -164,15 +164,18 @@
 	</target>
 
 	<target name="test" depends="build">
-		<exec program="${environment::get-variable('teamcity.dotnet.nunitlauncher')}">
-			<arg value="v2.0 x86 NUnit-2.5.0 output/linux/mono/2.0/Debug/*.Test*" />
-		</exec>
-
-		<!--<nunit2>
-			<formatter type="Plain" usefile="false" />
+		<foreach item="File" property="filename">
+		<in>
+			<items>
+				<include name="${project.output.dir}/*.Tests.dll" />
+			</items>
+		</in>
+		<do>
+			<nunit2 failonerror="false" verbose="true">
+			<formatter type="Plain" usefile="true" />
 			<test>
 			<assemblies>
-				<include name="${project.output.dir}/*.Tests.dll" />
+				<include name="${filename}" />
 			</assemblies>
 			<categories>
 				<exclude name="MouseSensitive"/>
@@ -181,7 +184,10 @@
 				<exclude name="Keyman7"/>
 			</categories>
 			</test>
-		</nunit2>-->
+		</nunit2>
+		</do>
+		</foreach>
+
 	</target>
 
 	<target name="installerpre" depends="version">
