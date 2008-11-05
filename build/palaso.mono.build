@@ -164,7 +164,7 @@
 	</target>
 
 	<target name="test" depends="build">
-		<exec program="${teamcity.dotnet.nunitlauncher}">
+		<exec program="${environment::get-variable(teamcity.dotnet.nunitlauncher)}">
 			<arg value="v2.0 x86 NUnit-2.4.7 output/linux/mono/2.0/Debug/*.Test*" />
 		</exec>
 
