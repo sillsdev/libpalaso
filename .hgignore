@@ -1,0 +1,20 @@
+syntax: glob
+
+output
+Thumbs.db
+.bzr
+obj
+bin
+*.suo
+*.resharper
+*.user
+_ReSharper.*
+config
+*.xml
+*.resources
+*.pidb
+*.userprefs
+*.nunit
+*.usertasks
+*~
+AssemblyInfo.cs

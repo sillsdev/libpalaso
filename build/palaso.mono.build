@@ -1,5 +1,44 @@
 <project name="Palaso Build" default="build">
 
+<!-- ***************************************************************** -->
+<!-- ********* Set a few properties						   *********** -->
+<!-- ***************************************************************** -->
+	<!-- Project build dir is the dir where the build script is located -->
+	<property name="project.bld.dir"  value="${project::get-base-directory()}"/>
+
+	<!-- Project base dir is the build dir's parent -->
+	<property name="project.base.dir" value="${path::get-directory-name(project.bld.dir)}"/>
+
+	<!-- Project source dir is the same as the base dir -->
+	<property name="project.src.dir" value="${project.base.dir}" />
+
+	<!-- Project lib dir is a child of the base dir -->
+	<property name="project.lib.base.dir" value="${path::combine(project.base.dir,'lib')}"/>
+
+	<!-- OS Platform in Use -->
+	<property name="os.platform" value="other"/>
+	<if test="${platform::is-win32()}">
+		<property name="os.platform" value="win32"/>
+	</if>
+	<if test="${platform::is-unix()}">
+		<property name="os.platform" value="linux"/>
+	</if>
+
+	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
+		<include name="Palaso/Palaso.proj.build" />
+		<include name="Palaso.Tests/Palaso.Tests.proj.build" />
+		<include name="Reporting/Reporting.proj.build" />
+		<include name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
+		<include name="AddSortKey/AddSortKey.proj.build" />
+		<include name="TestApp/Reporting.TestApp.proj.build" />
+		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
+		<include name="Palaso.Services\Palaso.Services.proj.build" />
+		<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
+		<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
+		<include name="Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.proj.build" />
+		<include name="PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.proj.build" />
+	</fileset>
+
 	<target name="clean" description="Delete all previously compiled binaries.">
 		<delete>
 			<fileset>
@@ -7,9 +46,13 @@
 				<include name="../**/obj/**" />
 				<include name="../output/**" />
 				<include name="../release/output/*" />
-		<exclude name="../.hg/**/*" />
+				<exclude name="../.hg/**/*" />
 			</fileset>
 		</delete>
+
+		<nant target="clean">
+			<buildfiles refid="project.buildfiles.src" />
+		</nant>
 	</target>
 
 	<target name="revision">
@@ -83,21 +126,6 @@
 
 	<target name="build.solution" depends="clean, make-output-dir, set-build-config, set-runtime-config, copy-lib-files">
 
-		<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
-			<include name="Palaso/Palaso.proj.build" />
-			<include name="Palaso.Tests/Palaso.Tests.proj.build" />
-			<include name="Reporting/Reporting.proj.build" />
-			<include name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
-			<include name="AddSortKey/AddSortKey.proj.build" />
-			<include name="TestApp/Reporting.TestApp.proj.build" />
-			<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
-			<include name="Palaso.Services\Palaso.Services.proj.build" />
-			<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
-			<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
-			<include name="Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.proj.build" />
-			<include name="PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.proj.build" />
-		</fileset>
-
 		<nant target="build">
 			<properties>
 				<property name="build.defines" value="${build.defines}" />
@@ -153,6 +181,7 @@
 	</target>
 
 	<target name="installerpre" depends="version">
+		<fail />
 		<foreach item="File" property="filename">
 			<in>
 				<items>
@@ -172,6 +201,7 @@
 	</target>
 
 	<target name="installerpost">
+		<fail />
 		<foreach item="File" property="filename">
 			<in>
 				<items>
@@ -187,6 +217,7 @@
 	</target>
 
 	<target name="installer.win">
+		<fail />
 		<exec program="C:\Program Files\Inno Setup 5\ISCC.exe" append="true">
 			<arg file="../release/solid.iss" />
 		</exec>
@@ -203,31 +234,6 @@
 			<arg line="-n -s:ftp.txt" />
 		</exec>
 	</target>
-
-
-<!-- ***************************************************************** -->
-<!-- ********* Set a few properties						   *********** -->
-<!-- ***************************************************************** -->
-	<!-- Project build dir is the dir where the build script is located -->
-	<property name="project.bld.dir"  value="${project::get-base-directory()}"/>
-
-	<!-- Project base dir is the build dir's parent -->
-	<property name="project.base.dir" value="${path::get-directory-name(project.bld.dir)}"/>
-
-	<!-- Project source dir is the same as the base dir -->
-	<property name="project.src.dir" value="${project.base.dir}" />
-
-	<!-- Project lib dir is a child of the base dir -->
-	<property name="project.lib.base.dir" value="${path::combine(project.base.dir,'lib')}"/>
-
-	<!-- OS Platform in Use -->
-  <property name="os.platform" value="other"/>
-  <if test="${platform::is-win32()}">
-	<property name="os.platform" value="win32"/>
-  </if>
-  <if test="${platform::is-unix()}">
-	<property name="os.platform" value="linux"/>
-  </if>
 
 <!-- ***************************************************************** -->
 <!-- ********* Targets for setting the build configuration *********** -->

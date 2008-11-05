@@ -1,14 +1,8 @@
 <project name="PalasoUIWindowsForms.Tests" default="build" basedir=".">
   <target name="build">
 
-	<move todir="nant.resx.bak">
+	<copy todir="nant.resx.bak" >
 		<fileset basedir=".">
-			<include name="**/*.resx" />
-		</fileset>
-	</move>
-
-	<copy todir="." >
-		<fileset basedir="nant.resx.bak">
 			<include name="**/*.resx" />
 		</fileset>
 		<filterchain>
@@ -16,29 +10,22 @@
 		</filterchain>
 	</copy>
 
-	<property name="resxFilesExist" value="false" />
-
 	<foreach item="File" property="filename">
 		<in>
 			<items>
-				<include name="**/*.resx" />
-				<exclude name="nant.resx.bak/**/*.resx" />
+				<include name="nant.resx.bak/**/*.resx" />
 			</items>
 		</in>
 		<do>
-			<property name="resxFilesExist" value="true" />
-			<echo message="${resxFilesExist}" />
-			<delete file="${filename}" if="${file::get-length(filename)==0}"/>
+			<resgen input="${filename}" usesourcepath="true" unless="${file::get-length(filename)==0}" />
 		</do>
 	</foreach>
 
-	<resgen usesourcepath="true" if="${resxFilesExist}">
-		<resources>
-			<include name="**/*.resx" />
-			<exclude name="nant.resx.bak/**/*.resx" />
-		</resources>
-	</resgen>
-
+	<copy todir="." >
+		<fileset basedir="nant.resx.bak">
+			<include name="**/*.resources" />
+		</fileset>
+	</copy>
 
 	<csc target="library"
 		output="${project.output.dir}/PalasoUIWindowsForms.Tests.dll"
@@ -65,13 +52,9 @@
 		  <include name="**/*.resources" />
 	  </resources>
 	</csc>
+  </target>
 
-	<move todir="." overwrite="true">
-		<fileset basedir="nant.resx.bak">
-			<include name="**/*.resx" />
-		</fileset>
-	</move>
-
+  <target name="clean">
 	<delete>
 		<fileset>
 			<include name="**/*.resources" />
