@@ -164,6 +164,8 @@
 	</target>
 
 	<target name="test" depends="build">
+<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
+		The downside to this is that TeamCity will show a passing build even with failing tests-->
 		<foreach item="File" property="filename">
 		<in>
 			<items>
@@ -188,6 +190,21 @@
 		</do>
 		</foreach>
 
+<!-- Run the tests a second time, failing as soon as possible. We do this so that TeamCity indicates a failed build on failing tests-->
+		<nunit2 failonerror="false">
+			<formatter type="Plain" usefile="false" />
+			<test>
+			<assemblies>
+				<include name="${project.output.dir}/*.Tests.dll" />
+			</assemblies>
+			<categories>
+				<exclude name="MouseSensitive"/>
+				<exclude name="Windows IME"/>
+				<exclude name="Keyman6"/>
+				<exclude name="Keyman7"/>
+			</categories>
+			</test>
+		</nunit2>
 	</target>
 
 	<target name="installerpre" depends="version">
