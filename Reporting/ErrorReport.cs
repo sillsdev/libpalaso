@@ -171,15 +171,47 @@ namespace Palaso.Reporting
 		/// this overrides OkToInteractWithUser
 		/// The test can then retrieve from PreviousNonFatalMessage
 		/// </summary>
-		public static bool JustRecordNonFatalMessagesForTesting
-		{
-			set { s_justRecordNonFatalMessagesForTesting = value; }
-			get { return s_justRecordNonFatalMessagesForTesting; }
-		}
+//        public static bool JustRecordNonFatalMessagesForTesting
+//        {
+//            set { s_justRecordNonFatalMessagesForTesting = value; }
+//            get { return s_justRecordNonFatalMessagesForTesting; }
+//        }
 
-		public static string PreviousNonFatalMessage
+		/// <summary>
+		/// for unit test
+		/// </summary>
+//        public static string PreviousNonFatalMessage
+//        {
+//            get { return s_previousNonFatalMessage; }
+//        }
+
+		/// <summary>
+		/// use this in unit tests to cleanly check that a message would have been shown.
+		/// E.g.  using (new Palaso.Reporting.ErrorReport.NonFatalErrorReportExpected()) {...}
+		/// </summary>
+		public class NonFatalErrorReportExpected :IDisposable
 		{
-			get { return s_previousNonFatalMessage; }
+			private readonly bool previousJustRecordNonFatalMessagesForTesting;
+			public NonFatalErrorReportExpected()
+			{
+				previousJustRecordNonFatalMessagesForTesting = s_justRecordNonFatalMessagesForTesting;
+				s_justRecordNonFatalMessagesForTesting = true;
+				s_previousNonFatalMessage = null;//this is a static, so a previous unit test could have filled it with something (yuck)
+			}
+			public void Dispose()
+			{
+				s_justRecordNonFatalMessagesForTesting= previousJustRecordNonFatalMessagesForTesting;
+				if (s_previousNonFatalMessage == null)
+					throw new Exception("Non Fatal Error Report was expected but wasn't generated.");
+				s_previousNonFatalMessage = null;
+			}
+			/// <summary>
+			/// use this to check the actual contents of the message that was triggered
+			/// </summary>
+			public string Message
+			{
+				get { return s_previousNonFatalMessage; }
+			}
 		}
 
 		/// <summary>
@@ -283,7 +315,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalMessage(string message, params object[] args)
 		{
-			if(JustRecordNonFatalMessagesForTesting)
+			if(s_justRecordNonFatalMessagesForTesting)
 			{
 				ErrorReport.s_previousNonFatalMessage = String.Format(message, args);
 			}

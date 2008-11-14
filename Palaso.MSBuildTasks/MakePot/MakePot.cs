@@ -101,8 +101,8 @@ namespace Palaso.BuildTasks.MakePot
 
 		private void WritePotHeader(StreamWriter writer)
 		{
-			writer.WriteLine("msgid \"");
-			writer.WriteLine("msgstr \"");
+			writer.WriteLine("msgid \"\"");
+			writer.WriteLine("msgstr \"\"");
 			writer.WriteLine("\"Project-Id-Version: {0}\n\"", ProjectId);
 			writer.WriteLine("\"Report-Msgid-Bugs-To: {0}\n\"", MsdIdBugsTo);
 
