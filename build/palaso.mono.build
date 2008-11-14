@@ -55,7 +55,7 @@
 		</nant>
 	</target>
 
-	<target name="revision">
+	<target name="revision_svn">
 		<property name="svn.info.log" value="svninfo.txt"/>
 		<exec
 			program="svn.exe"
@@ -70,7 +70,14 @@
 		<delete file="${svn.info.log}" />
 	</target>
 
-	<target name="version" depends="revision">
+	<target name="revision_teamcityhg">
+		<property name="teamcity" value="${environment::get-variable('BUILD_NUMBER')}" />
+		<regex pattern="^(?'revision'[^:]*)" input="${teamcity}" />
+		<property name="revision" value="${string::trim(revision)}" />
+		<echo message="Revision: ${revision}" />
+	</target>
+
+	<target name="version" depends="revision_teamcityhg">
 		<loadfile property="version" file="version.txt">
 			<filterchain>
 				<expandproperties />
@@ -85,6 +92,7 @@
 			<in>
 				<items>
 					<include name="../**/AssemblyInfo.cs" />
+					<exclude name="../.hg/**/*" />
 				</items>
 			</in>
 			<do>
@@ -119,13 +127,12 @@
 	</target>
 
 	<target name="build" description="Build all targets.">
-		<call target="build.solution"/>
+		<call target="build-only"/>
 	</target>
 
 	<target name="rebuild" depends="clean, build" />
 
-	<target name="build.solution" depends="clean, make-output-dir, set-build-config, set-runtime-config, copy-lib-files">
-
+	<target name="build-only" depends="make-output-dir, set-build-config, set-runtime-config, copy-lib-files">
 		<nant target="build">
 			<properties>
 				<property name="build.defines" value="${build.defines}" />
@@ -163,37 +170,41 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
 
-	<target name="test" depends="build">
-<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
+	<target name="test" depends="build-only">
+		<call target="test-only"/>
+	</target>
+
+	<target name="test-only" depends="make-output-dir, set-build-config, set-runtime-config">
+		<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
 		The downside to this is that TeamCity will show a passing build even with failing tests-->
 
 		<echo message="*********************************************************************"/>
 		<echo message="******                  Begin Test run!	                    ********"/>
 		<echo message="*********************************************************************"/>
 
-	<foreach item="File" property="filename">
-		<in>
-			<items>
-				<include name="${project.output.dir}/*.Tests.dll" />
-			</items>
-		</in>
-		<do>
-			<nunit2 failonerror="false" verbose="true">
-			<formatter type="Plain"/>
-			<test>
-			<assemblies>
-				<include name="${filename}" />
-			</assemblies>
-			<categories>
-				<exclude name="MouseSensitive"/>
-				<exclude name="Windows IME"/>
-				<exclude name="Keyman6"/>
-				<exclude name="Keyman7"/>
-			</categories>
-			</test>
-		</nunit2>
-		</do>
-		</foreach>
+		<foreach item="File" property="filename">
+			<in>
+				<items>
+					<include name="${project.output.dir}/*.Tests.dll" />
+				</items>
+			</in>
+			<do>
+				<nunit2 failonerror="false" verbose="true">
+				<formatter type="Plain"/>
+				<test>
+				<assemblies>
+					<include name="${filename}" />
+				</assemblies>
+				<categories>
+					<exclude name="MouseSensitive"/>
+					<exclude name="Windows IME"/>
+					<exclude name="Keyman6"/>
+					<exclude name="Keyman7"/>
+				</categories>
+				</test>
+			</nunit2>
+			</do>
+			</foreach>
 
 		<echo message="*********************************************************************"/>
 		<echo message="******                  End Test run!                        ********"/>
@@ -215,6 +226,61 @@
 			</test>
 		</nunit2>
 	</target>
+
+	<target name="test2-only" depends="make-output-dir, set-build-config, set-runtime-config">
+		<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
+		The downside to this is that TeamCity will show a passing build even with failing tests-->
+
+		<echo message="*******************************************************************"/>
+		<echo message="******                  Begin Test Run                       ******"/>
+		<echo message="*******************************************************************"/>
+		<echo message="Warning: Palaso.Service is currently not tested under mono."/>
+
+		<nunit2 haltonfailure="false" failonerror="true">
+			<formatter type="Plain"/>
+			<test>
+			<assemblies>
+				<include name="${project.output.dir}/*.Tests.dll" />
+				<exclude name="${project.output.dir}/Palaso.Services*.dll" />
+			</assemblies>
+			<categories>
+				<exclude name="MouseSensitive"/>
+				<exclude name="Windows IME"/>
+				<exclude name="Keyman6"/>
+				<exclude name="Keyman7"/>
+			</categories>
+			</test>
+		</nunit2>
+	</target>
+
+	<target name="test-teamcity" depends="build">
+		<call target="test-teamcity-only"/>
+	</target>
+
+	<target name="test-teamcity-only" depends="make-output-dir, set-build-config, set-runtime-config">
+		<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
+		The downside to this is that TeamCity will show a passing build even with failing tests-->
+
+		<echo message="*******************************************************************"/>
+		<echo message="******                  Begin Test Run                       ******"/>
+		<echo message="*******************************************************************"/>
+		<echo message="Warning: Palaso.Service is currently not tested under mono."/>
+
+		<path id="project.testfiles">
+			<pathelement file="${project.output.dir}/Palaso.Tests.dll" />
+		</path>
+
+		<exec program="$(teamcity_dotnet_nunitlauncher)">
+			<arg value="v2.0" />
+			<arg value="x86" />
+			<arg value="NUnit-2.5.0" />
+			<arg>
+				<path refid="project.testfiles" />
+			</arg>
+		</exec>
+	</target>
+
+
 
 	<target name="installerpre" depends="version">
 		<fail />
