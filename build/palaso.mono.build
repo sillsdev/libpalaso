@@ -270,7 +270,7 @@
 			<pathelement file="${project.output.dir}/Palaso.Tests.dll" />
 		</path>
 
-		<property name="teamcity.dotnet.nunitlauncher" value="${environment::get-variable('TEAMCITY_DOTNET_NUNITLAUNCHER')}" />
+		<property name="teamcity.dotnet.nunitlauncher" value="${environment::get-variable('teamcity.dotnet.nunitlauncher')}" />
 		<exec program="${teamcity.dotnet.nunitlauncher}">
 			<arg value="v2.0" />
 			<arg value="x86" />
