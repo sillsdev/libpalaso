@@ -270,10 +270,11 @@
 			<pathelement file="${project.output.dir}/Palaso.Tests.dll" />
 		</path>
 
+		<property name="teamcity.dotnet.nunitlauncher" value="${environment::get-variable('TEAMCITY_DOTNET_NUNITLAUNCHER')}" />
 		<exec program="${teamcity.dotnet.nunitlauncher}">
 			<arg value="v2.0" />
 			<arg value="x86" />
-			<arg value="NUnit-2.5.0" />
+			<arg value="NUnit-2.4.7" />
 			<arg>
 				<path refid="project.testfiles" />
 			</arg>
