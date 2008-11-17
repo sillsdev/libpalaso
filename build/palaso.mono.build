@@ -272,7 +272,7 @@
 
 		<property name="teamcity.dotnet.nunitlauncher" value="${environment::get-variable('teamcity.dotnet.nunitlauncher')}" />
 		<exec program="mono">
-			<arg value="~/buildAgent/plugins/dotnetPlugin/bin/${teamcity.dotnet.nunitlauncher}" />
+			<arg value="/home/mono/buildAgent/plugins/dotnetPlugin/bin/${teamcity.dotnet.nunitlauncher}" />
 			<arg value="v2.0" />
 			<arg value="x86" />
 			<arg value="NUnit-2.4.7" />
