@@ -112,14 +112,14 @@ namespace Palaso.WritingSystems.Collation
 				switch (reader.Name)
 				{
 					case "p":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + NewLine + EscapeForIcu(GetTextData(reader));
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + NewLine + GetTextData(reader);
 						break;
 					case "s":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + EscapeForIcu(GetTextData(reader));
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetTextData(reader);
 						break;
 					case "t":
 						BeginSimpleGroupIfNeeded(ref inGroup, ref simpleRules);
-						simpleRules += " " + EscapeForIcu(GetTextData(reader));
+						simpleRules += " " + GetTextData(reader);
 						break;
 					case "pc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
@@ -180,13 +180,19 @@ namespace Palaso.WritingSystems.Collation
 		private static string BuildSimpleRulesFromConcatenatedData(string op, string data)
 		{
 			string rule = string.Empty;
+			bool surrogate = false;
 			for (int i = 0; i < data.Length; i++)
 			{
-				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i));
-				rule += op + icuData;
+				if (surrogate)
+				{
+					rule += data[i];
+					surrogate = false;
+					continue;
+				}
+				rule += op + data[i];
 				if (Char.IsSurrogate(data, i))
 				{
-					i++;
+					surrogate = true;
 				}
 			}
 			return rule;
@@ -201,14 +207,7 @@ namespace Palaso.WritingSystems.Collation
 			// to maintain the highest compatibility with future Unicode code points.
 			if ((code < 0x7F && !Char.IsLetterOrDigit(ch, 0)) || Char.IsWhiteSpace(ch, 0))
 			{
-				if (Char.IsSurrogate(ch, 0))
-				{
-					result = "\\U" + code.ToString("X8");
-				}
-				else
-				{
-					result = "\\u" + code.ToString("X4");
-				}
+				result = "\\" + ch;
 			}
 			else
 			{

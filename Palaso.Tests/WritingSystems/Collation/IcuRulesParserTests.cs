@@ -475,12 +475,15 @@ namespace Palaso.Tests.WritingSystems.Collation
 			Assert.AreEqual("<settings variableTop=\"u41\" /><rules><reset>A</reset></rules>", _xmlText.ToString());
 		}
 
+		// Most of these escapes aren't actually handled by ICU - it just treats the character
+		// following backslash as a literal.  These tests just check for no other special escape
+		// handling that is invalid.
 		[Test]
 		public void Escape_u_ProducesCorrectCharacter()
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\u0041");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset>A</reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>u0041</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -488,7 +491,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\U00000041");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset>A</reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>U00000041</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -496,15 +499,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\x41");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset>A</reset></rules>", _xmlText.ToString());
-		}
-
-		[Test]
-		public void Escape_x_brace_ProducesCorrectCharacter()
-		{
-			_icuParser.WriteIcuRules(_writer, "&\\x{041}");
-			_writer.Close();
-			Assert.AreEqual("<rules><reset>A</reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>x41</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -512,7 +507,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\102");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset>B</reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>102</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -520,7 +515,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\c\u0083");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset><cp hex=\"3\" /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>c\u0083</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -528,7 +523,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\a");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset><cp hex=\"7\" /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>a</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -536,7 +531,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\b");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset><cp hex=\"8\" /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>b</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -544,7 +539,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\t");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset>\t</reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>t</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -552,7 +547,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\n");
 			_writer.Close();
-			Assert.AreEqual(String.Format("<rules><reset>{0}</reset></rules>", _writer.Settings.NewLineChars), _xmlText.ToString());
+			Assert.AreEqual(String.Format("<rules><reset>n</reset></rules>", _writer.Settings.NewLineChars), _xmlText.ToString());
 		}
 
 		[Test]
@@ -560,7 +555,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\v");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset><cp hex=\"B\" /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>v</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -568,7 +563,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\f");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset><cp hex=\"C\" /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>f</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -576,7 +571,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_icuParser.WriteIcuRules(_writer, "&\\r");
 			_writer.Close();
-			Assert.AreEqual("<rules><reset><cp hex=\"D\" /></reset></rules>", _xmlText.ToString());
+			Assert.AreEqual("<rules><reset>r</reset></rules>", _xmlText.ToString());
 		}
 
 		[Test]
@@ -642,13 +637,13 @@ namespace Palaso.Tests.WritingSystems.Collation
 		public void BigCombinedRule_ParsesCorrectly()
 		{
 			// certainly some of this actually doesn't form semantically vaild ICU, but it should be syntactically correct
-			string icu = "[strength 3] [alternate shifted]\n[backwards 2]&[before 1][ first  regular]<b<\\u0041"
+			string icu = "[strength 3] [alternate shifted]\n[backwards 2]&[before 1][ first  regular]<b<\\u"
 				+ "<'cde'&gh<<p<K|Q/\\<<[last variable]<<4<[variable\ttop]\t<9";
 			_icuParser.WriteIcuRules(_writer, icu);
 			_writer.Close();
 			string xml = "<settings alternate=\"shifted\" backwards=\"on\" variableTop=\"u34\" strength=\"tertiary\" />"
 				+ "<rules><reset before=\"primary\"><first_non_ignorable /></reset>"
-				+ "<pc>bA</pc><p>cde</p><reset>gh</reset><s>p</s>"
+				+ "<pc>bu</pc><p>cde</p><reset>gh</reset><s>p</s>"
 				+ "<x><context>K</context><p>Q</p><extend>&lt;</extend></x>"
 				+ "<p><last_variable /></p><s>4</s><p>9</p></rules>";
 			Assert.AreEqual(xml, _xmlText.ToString());

@@ -296,7 +296,7 @@ namespace Palaso.WritingSystems.Collation
 					{
 						if (!Char.IsLetterOrDigit(c))
 						{
-							result.Replace(c.ToString(), "\\u" + ((int) c).ToString("X4"));
+							result.Replace(c.ToString(), "\\" + c);
 						}
 					}
 				}

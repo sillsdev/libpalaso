@@ -116,16 +116,6 @@ namespace Palaso.WritingSystems.Collation
 
 		private Parser _someWhiteSpace;
 		private Parser _optionalWhiteSpace;
-		private Parser _octalDigit;
-		private Parser _hexDigitExpect;
-		private Parser _hex4Group;
-		private Parser _singleCharacterEscape;
-		private Parser _hex4Escape;
-		private Parser _hex8Escape;
-		private Parser _hex2Escape;
-		private Parser _hexXEscape;
-		private Parser _octalEscape;
-		private Parser _controlEscape;
 		private Parser _escapeSequence;
 		private Parser _singleQuoteLiteral;
 		private Parser _quotedStringCharacter;
@@ -170,34 +160,19 @@ namespace Palaso.WritingSystems.Collation
 			_someWhiteSpace = Ops.OneOrMore(Prims.WhiteSpace);
 			_optionalWhiteSpace = Ops.ZeroOrMore(Prims.WhiteSpace);
 
-			// Valid escaping formats (from ICU source code u_unescape):
-			// \uhhhh - exactly 4 hex digits to specify character
-			// \Uhhhhhhhh - exactly 8 hex digits to specify character
-			// \x{hhhhhhhh} - 1 to 8 hex digits to specify character
-			// \xhh - 1 or 2 hex digits to specify character
-			// \ooo - 1 to 3 octal digits to specify character
-			// \cX - masked control character - take value of X and bitwise AND with 0x1F
-			// \a - U+0007
-			// \b - U+0008
-			// \t - U+0009
-			// \n - U+000A
-			// \v - U+000B
-			// \f - U+000C
-			// \r - U+000D
-			// Any other character following '\' means that literal character (e.g. '\<' ::= '<', '\\' ::= '\')
-			_octalDigit = Prims.Range('0', '7');
-			_hexDigitExpect = Ops.Expect("icu0001", "Invalid hexadecimal character in escape sequence.", Prims.HexDigit);
-			_hex4Group = Ops.Sequence(_hexDigitExpect, _hexDigitExpect, _hexDigitExpect, _hexDigitExpect);
-			_singleCharacterEscape = Prims.AnyChar - Ops.Choice('u', 'U', 'x', _octalDigit, 'c');
-			_hex4Escape = Ops.Sequence('u', _hex4Group);
-			_hex8Escape = Ops.Sequence('U', _hex4Group, _hex4Group);
-			_hexXEscape = Ops.Sequence('x', '{', _hexDigitExpect, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit,
-												 !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, '}');
-			_hex2Escape = Ops.Sequence('x', _hexDigitExpect, !Prims.HexDigit);
-			_octalEscape = Ops.Sequence(_octalDigit, !_octalDigit, !_octalDigit);
-			_controlEscape = Ops.Sequence('c', Prims.AnyChar);
-			_escapeSequence = Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.",
-				_singleCharacterEscape | _hex4Escape | _hex8Escape | _hexXEscape | _hex2Escape | _octalEscape | _controlEscape));
+			// Valid escaping formats (from http://www.icu-project.org/userguide/Collate_Customization.html )
+			//
+			// Most of the characters can be used as parts of rules.
+			// However, whitespace characters will be skipped over,
+			// and all ASCII characters that are not digits or letters
+			// are considered to be part of syntax. In order to use
+			// these characters in rules, they need to be escaped.
+			// Escaping can be done in several ways:
+			// * Single characters can be escaped using backslash \ (U+005C).
+			// * Strings can be escaped by putting them between single quotes 'like this'.
+			// * Single quote can be quoted using two single quotes ''.
+			// escapeSequence ::= "\" anyChar
+			_escapeSequence = Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.", Prims.AnyChar));
 
 			// singleQuoteLiteral ::= "''"
 			// quotedStringCharacter ::= AllChars - "'"
@@ -346,13 +321,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private void AssignSemanticActions()
 		{
-			_singleCharacterEscape.Act += OnSingleCharacterEscape;
-			_hex4Escape.Act += OnHexEscape;
-			_hex8Escape.Act += OnHexEscape;
-			_hex2Escape.Act += OnHexEscape;
-			_hexXEscape.Act += OnHexEscape;
-			_octalEscape.Act += OnOctalEscape;
-			_controlEscape.Act += OnControlEscape;
+			_escapeSequence.Act += OnEscapeSequence;
 			_singleQuoteLiteral.Act += OnSingleQuoteLiteral;
 			_quotedStringCharacter.Act += OnDataCharacter;
 			_normalCharacter.Act += OnDataCharacter;
@@ -628,66 +597,11 @@ namespace Palaso.WritingSystems.Collation
 			_attributesForReset.Enqueue(attr);
 		}
 
-		private void OnSingleCharacterEscape(object sender, ActionEventArgs args)
-		{
-			Debug.Assert(args.Value.Length == 1);
-			Dictionary<char, char> substitutes = new Dictionary<char, char>(7);
-			substitutes['a'] = '\u0007';
-			substitutes['b'] = '\u0008';
-			substitutes['t'] = '\u0009';
-			substitutes['n'] = '\u000A';
-			substitutes['v'] = '\u000B';
-			substitutes['f'] = '\u000C';
-			substitutes['r'] = '\u000D';
-			char newChar = args.Value[0];
-			if (substitutes.ContainsKey(newChar))
-			{
-				newChar = substitutes[newChar];
-			}
-			_currentDataString.Append(newChar.ToString());
-		}
-
-		private void OnHexEscape(object sender, ActionEventArgs args)
-		{
-			Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 11);
-			string hex = args.Value.Substring(1);
-			if (hex[0] == '{')
-			{
-				hex = hex.Substring(1, hex.Length - 2);
-			}
-			AddCharacterFromCode(Int32.Parse(hex, NumberStyles.AllowHexSpecifier));
-		}
-
-		private void OnOctalEscape(object sender, ActionEventArgs args)
-		{
-			Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 4);
-			// There is no octal number style, so we have to do it manually.
-			int code = 0;
-			for (int i=0; i < args.Value.Length; i++)
-			{
-				code = code * 8 + Int32.Parse(args.Value.Substring(i, 1));
-			}
-			AddCharacterFromCode(code);
-		}
-
-		private void OnControlEscape(object sender, ActionEventArgs args)
+		private void OnEscapeSequence(object sender, ActionEventArgs args)
 		{
 			Debug.Assert(args.Value.Length == 2);
-			AddCharacterFromCode(args.Value[1] & 0x1F);
-		}
-
-		private void AddCharacterFromCode(int code)
-		{
-			try
-			{
-				_currentDataString.Append(Char.ConvertFromUtf32(code));
-			}
-			catch (ArgumentOutOfRangeException e)
-			{
-				string message =
-					string.Format("Unable to parse ICU: Invalid character code (U+{0:X}) in escape sequence.", code);
-				throw new ApplicationException(message, e);
-			}
+			Debug.Assert(args.Value[0] == '\\');
+			_currentDataString.Append(args.Value[1]);
 		}
 
 		private void OnSingleQuoteLiteral(object sender, ActionEventArgs args)

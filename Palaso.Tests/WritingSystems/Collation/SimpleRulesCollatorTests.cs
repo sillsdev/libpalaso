@@ -646,7 +646,7 @@ namespace Palaso.WritingSystems.Collation.Tests
 		public void ConvertToIcuRules_AsciiCharacterNotLetterOrDigit_RequiresIcuEscaping()
 		{
 			VerifyExpectedIcuFromActualSimple(
-				ICUstart + "\\u005C << \\u003C << \\u003C\\u003C << \\u003C\\u003C\\u003C << \\u003D << \\u0026",
+				ICUstart + "\\\\ << \\< << \\<\\< << \\<\\<\\< << \\= << \\&",
 				"\\u005c < << <<< = &");
 		}
 
