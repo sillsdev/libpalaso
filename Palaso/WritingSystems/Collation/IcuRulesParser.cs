@@ -150,6 +150,9 @@ namespace Palaso.WritingSystems.Collation
 		private Parser _optionHiraganaQ;
 		private Parser _optionNumeric;
 		private Parser _optionVariableTop;
+		private Parser _optionSuppressContractions;
+		private Parser _optionOptimize;
+		private Parser _characterSet;
 		private Rule _option;
 		private Rule _icuRules;
 
@@ -285,8 +288,12 @@ namespace Palaso.WritingSystems.Collation
 			// optionStrength ::= 'strength' WS ('1' | '2' | '3' | '4' | 'I' | 'i' | '5')
 			// optionHiraganaQ ::= 'hiraganaQ' WS optionOnOff
 			// optionNumeric ::= 'numeric' WS optionOnOff
+			// characterSet ::= '[' (AnyChar - ']')* ']'
+			// optionSuppressContractions ::= 'suppress' WS 'contractions' WS characterSet
+			// optionOptimize ::= 'optimize' WS characterSet
 			// option ::= '[' WS? (optionAlternate | optionBackwards | optionNormalization | optionCaseLevel
-			//            optionCaseFirst | optionStrength | optionHiraganaQ | optionNumeric) WS? ']'
+			//            | optionCaseFirst | optionStrength | optionHiraganaQ | optionNumeric
+			//            | optionSuppressContractions | optionOptimize) WS? ']'
 			_optionOnOff = Ops.Choice("on", "off");
 			_optionAlternate = Ops.Sequence("alternate", _someWhiteSpace, Ops.Choice("non-ignorable", "shifted"));
 			_optionBackwards = Ops.Sequence("backwards", _someWhiteSpace, Ops.Choice('1', '2'));
@@ -296,9 +303,14 @@ namespace Palaso.WritingSystems.Collation
 			_optionStrength = Ops.Sequence("strength", _someWhiteSpace, Ops.Choice('1', '2', '3', '4', 'I', 'i', '5'));
 			_optionHiraganaQ = Ops.Sequence("hiraganaQ", _someWhiteSpace, _optionOnOff);
 			_optionNumeric = Ops.Sequence("numeric", _someWhiteSpace, _optionOnOff);
+			_characterSet = Ops.Sequence('[', Ops.ZeroOrMore(Prims.AnyChar - ']'), ']');
+			_optionSuppressContractions = Ops.Sequence("suppress", _someWhiteSpace, "contractions", _someWhiteSpace,
+				_characterSet);
+			_optionOptimize = Ops.Sequence("optimize", _someWhiteSpace, _characterSet);
 			_option = new Rule("option", Ops.Sequence('[', _optionalWhiteSpace, _optionAlternate |
 				_optionBackwards | _optionNormalization | _optionCaseLevel | _optionCaseFirst |
-				_optionStrength | _optionHiraganaQ | _optionNumeric, _optionalWhiteSpace, ']'));
+				_optionStrength | _optionHiraganaQ | _optionNumeric | _optionSuppressContractions |
+				_optionOptimize, _optionalWhiteSpace, ']'));
 
 			// I don't know if ICU requires all options first (it's unclear), but I am. :)
 			// icuRules ::= WS? (option WS?)* (oneRule WS?)* EOF
@@ -346,6 +358,9 @@ namespace Palaso.WritingSystems.Collation
 			_optionHiraganaQ.Act += OnOptionHiraganaQ;
 			_optionNumeric.Act += OnOptionNormal;
 			_optionVariableTop.Act += OnOptionVariableTop;
+			_characterSet.Act += OnCharacterSet;
+			_optionSuppressContractions.Act += OnOptionSuppressContractions;
+			_optionOptimize.Act += OnOptionOptimize;
 			_icuRules.Act += OnIcuRules;
 		}
 
@@ -418,10 +433,28 @@ namespace Palaso.WritingSystems.Collation
 				}
 			}
 
+			// adds node at end of children
 			public void AppendChild(IcuDataObject ido)
 			{
 				Debug.Assert(_nodeType == XmlNodeType.Element);
+				Debug.Assert(ido != null);
 				_children.Add(ido);
+			}
+
+			// inserts child node in correct sort order
+			public void InsertChild(IcuDataObject ido)
+			{
+				Debug.Assert(_nodeType == XmlNodeType.Element);
+				Debug.Assert(ido != null);
+				int i;
+				for (i=0; i < _children.Count; ++i)
+				{
+					if (ido.CompareTo(_children[i]) < 0)
+					{
+						break;
+					}
+				}
+				_children.Insert(i, ido);
 			}
 
 			public void Write(XmlWriter writer)
@@ -452,10 +485,8 @@ namespace Palaso.WritingSystems.Collation
 
 			public int CompareTo(IcuDataObject other)
 			{
-				Dictionary<XmlNodeType, int> _nodeTypeStrength = new Dictionary<XmlNodeType, int>(3);
-				_nodeTypeStrength[XmlNodeType.Attribute] = 1;
-				_nodeTypeStrength[XmlNodeType.Element] = 2;
-				_nodeTypeStrength[XmlNodeType.Text] = 3;
+				var _nodeTypeStrength = new Dictionary<XmlNodeType, int>
+					{{XmlNodeType.Attribute, 1}, {XmlNodeType.Element, 2}, {XmlNodeType.Text, 3}};
 				int result = _nodeTypeStrength[_nodeType].CompareTo(_nodeTypeStrength[other._nodeType]);
 				if (result != 0)
 				{
@@ -480,7 +511,8 @@ namespace Palaso.WritingSystems.Collation
 		private Stack<string> _currentOperators;
 		private StringBuilder _currentIndirectPosition;
 		private Queue<IcuDataObject> _attributesForReset;
-		private List<IcuDataObject> _optionAttributes;
+		private List<IcuDataObject> _optionElements;
+		private string _currentCharacterSet;
 
 		private void InitializeDataObjects()
 		{
@@ -490,7 +522,8 @@ namespace Palaso.WritingSystems.Collation
 			_currentOperators = new Stack<string>();
 			_currentIndirectPosition = new StringBuilder();
 			_attributesForReset = new Queue<IcuDataObject>();
-			_optionAttributes = new List<IcuDataObject>();
+			_optionElements = new List<IcuDataObject>();
+			_currentCharacterSet = null;
 		}
 
 		private void ClearDataObjects()
@@ -501,6 +534,8 @@ namespace Palaso.WritingSystems.Collation
 			_currentOperators = null;
 			_currentIndirectPosition = null;
 			_attributesForReset = null;
+			_optionElements = null;
+			_currentCharacterSet = null;
 		}
 
 		private void AddXmlNodeWithData(string name)
@@ -663,7 +698,7 @@ namespace Palaso.WritingSystems.Collation
 			Match match = regex.Match(args.Value);
 			Debug.Assert(match.Success);
 			IcuDataObject attr = IcuDataObject.CreateAttribute(match.Groups[1].Value, match.Groups[2].Value);
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionBackwards(object sender, ActionEventArgs args)
@@ -681,7 +716,7 @@ namespace Palaso.WritingSystems.Collation
 					Debug.Assert(false, "Unhandled backwards option.");
 					break;
 			}
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionStrength(object sender, ActionEventArgs args)
@@ -710,14 +745,14 @@ namespace Palaso.WritingSystems.Collation
 					Debug.Assert(false, "Unhandled strength option.");
 					break;
 			}
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionHiraganaQ(object sender, ActionEventArgs args)
 		{
 			IcuDataObject attr = IcuDataObject.CreateAttribute("hiraganaQuaternary");
 			attr.Value = args.Value.EndsWith("on") ? "on" : "off";
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionVariableTop(object sender, ActionEventArgs args)
@@ -745,7 +780,31 @@ namespace Palaso.WritingSystems.Collation
 				}
 			}
 			attr.Value = escapedValue;
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
+		}
+
+		private void OnCharacterSet(object sender, ActionEventArgs args)
+		{
+			Debug.Assert(_currentCharacterSet == null);
+			_currentCharacterSet = args.Value;
+		}
+
+		private void OnOptionSuppressContractions(object sender, ActionEventArgs args)
+		{
+			Debug.Assert(_currentCharacterSet != null);
+			var element = IcuDataObject.CreateElement("suppress_contractions");
+			element.AppendChild(IcuDataObject.CreateText(_currentCharacterSet));
+			_optionElements.Add(element);
+			_currentCharacterSet = null;
+		}
+
+		private void OnOptionOptimize(object sender, ActionEventArgs args)
+		{
+			Debug.Assert(_currentCharacterSet != null);
+			var element = IcuDataObject.CreateElement("optimize");
+			element.AppendChild(IcuDataObject.CreateText(_currentCharacterSet));
+			_optionElements.Add(element);
+			_currentCharacterSet = null;
 		}
 
 		// Use this to optimize successive difference elements into one element
@@ -828,6 +887,25 @@ namespace Palaso.WritingSystems.Collation
 			//}
 		}
 
+		private void AddSettingsAttribute(IcuDataObject attr)
+		{
+			IcuDataObject settings = null;
+			foreach (var option in _optionElements)
+			{
+				if (option.Name == "settings")
+				{
+					settings = option;
+					break;
+				}
+			}
+			if (settings == null)
+			{
+				settings = IcuDataObject.CreateElement("settings");
+				_optionElements.Insert(0, settings);
+			}
+			settings.InsertChild(attr);
+		}
+
 		private void OnIcuRules(object sender, ActionEventArgs args)
 		{
 			OptimizeNodes();
@@ -837,26 +915,18 @@ namespace Palaso.WritingSystems.Collation
 				return;
 			}
 			PreserveNonIcuSettings();
-			// add the settings element, if needed.
-			if (_optionAttributes.Count > 0)
+			// add any the option elements, if needed.
+			if (_optionElements.Count > 0)
 			{
-				_optionAttributes.Sort();
-				_writer.WriteStartElement("settings");
-				foreach (IcuDataObject attr in _optionAttributes)
-				{
-					attr.Write(_writer);
-				}
-				_writer.WriteEndElement();
+				_optionElements.Sort();
+				_optionElements.ForEach(e => e.Write(_writer));
 			}
 			if (_currentNodes.Count == 0)
 			{
 				return;
 			}
 			_writer.WriteStartElement("rules");
-			foreach (IcuDataObject node in _currentNodes)
-			{
-				node.Write(_writer);
-			}
+			_currentNodes.ForEach(n => n.Write(_writer));
 			_writer.WriteEndElement();
 		}
 	}

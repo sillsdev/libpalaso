@@ -475,6 +475,22 @@ namespace Palaso.Tests.WritingSystems.Collation
 			Assert.AreEqual("<settings variableTop=\"u41\" /><rules><reset>A</reset></rules>", _xmlText.ToString());
 		}
 
+		[Test]
+		public void SuppressContractions_ProducesCorrectNode()
+		{
+			_icuParser.WriteIcuRules(_writer, "[suppress contractions [abc]]");
+			_writer.Close();
+			Assert.AreEqual("<suppress_contractions>[abc]</suppress_contractions>", _xmlText.ToString());
+		}
+
+		[Test]
+		public void Optimize_ProducesCorrectNode()
+		{
+			_icuParser.WriteIcuRules(_writer, "[optimize [abc]]");
+			_writer.Close();
+			Assert.AreEqual("<optimize>[abc]</optimize>", _xmlText.ToString());
+		}
+
 		// Most of these escapes aren't actually handled by ICU - it just treats the character
 		// following backslash as a literal.  These tests just check for no other special escape
 		// handling that is invalid.

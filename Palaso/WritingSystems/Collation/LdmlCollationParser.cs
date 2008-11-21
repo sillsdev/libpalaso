@@ -31,6 +31,14 @@ namespace Palaso.WritingSystems.Collation
 					icuRules += GetIcuSettingsFromSettingsNode(collationReader, out variableTop);
 					variableTopPositionIfNotUsed = icuRules.Length;
 				}
+				if (XmlHelpers.FindElement(collationReader, "suppress_contractions", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuOptionFromNode(collationReader);
+				}
+				if (XmlHelpers.FindElement(collationReader, "optimize", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuOptionFromNode(collationReader);
+				}
 				if (XmlHelpers.FindElement(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuRulesFromRulesNode(collationReader, ref variableTop);
@@ -274,6 +282,22 @@ namespace Palaso.WritingSystems.Collation
 					continue;
 				}
 				result += Char.ConvertFromUtf32(int.Parse(hexCode, NumberStyles.AllowHexSpecifier));
+			}
+			return result;
+		}
+
+		private static string GetIcuOptionFromNode(XmlReader reader)
+		{
+			Debug.Assert(reader.NodeType == XmlNodeType.Element);
+			string result;
+			switch (reader.Name)
+			{
+				case "suppress_contractions":
+				case "optimize":
+					result = String.Format(NewLine + "[{0} {1}]", reader.Name.Replace('_', ' '), reader.ReadElementString());
+					break;
+				default:
+					throw new ApplicationException(String.Format("Invalid LDML collation option element: {0}", reader.Name));
 			}
 			return result;
 		}

@@ -434,13 +434,28 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		public void VariableTop_ProducesCorrectSettingsNode()
+		public void VariableTop_ProducesCorrectIcu()
 		{
 			_collationXml = "<settings variableTop=\"u41\" /><rules><reset>A</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
 			Assert.AreEqual("& A < [variable top]", icu);
 		}
 
+		[Test]
+		public void SuppressContractions_ProducesCorrectIcu()
+		{
+			_collationXml = "<suppress_contractions>[abc]</suppress_contractions><rules />";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("[suppress contractions [abc]]", icu);
+		}
+
+		[Test]
+		public void Optimize_ProducesCorrectIcu()
+		{
+			_collationXml = "<optimize>[abc]</optimize><rules />";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("[optimize [abc]]", icu);
+		}
 
 		[Test]
 		public void IcuEscapableCharacter_ProducesCorrectEscapeSequence()
