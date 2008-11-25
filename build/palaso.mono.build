@@ -171,10 +171,10 @@
 	</target>
 
 	<target name="test" depends="build-only">
-		<call target="test-only"/>
+		<call target="test-noservices-only"/>
 	</target>
 
-	<target name="test-only" depends="make-output-dir, set-build-config, set-runtime-config">
+	<target name="test-only-old" depends="make-output-dir, set-build-config, set-runtime-config">
 		<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
 		The downside to this is that TeamCity will show a passing build even with failing tests-->
 
@@ -227,7 +227,7 @@
 		</nunit2>
 	</target>
 
-	<target name="test2-only" depends="make-output-dir, set-build-config, set-runtime-config">
+	<target name="test-noservices-only" depends="make-output-dir, set-build-config, set-runtime-config">
 		<!-- Run tests the first time without stopping the build under on failing tests because we want to be able to see ALL failing tests in the log.
 		The downside to this is that TeamCity will show a passing build even with failing tests-->
 
