@@ -45,7 +45,7 @@
 		<include name="System.Windows.Forms.dll" />
 		<include name="PalasoUIWindowsForms.dll" />
 		<include name="Palaso.dll" />
-		<include name="Reporting.dll" />
+		<include name="PalasoReporting.dll" />
 		<include name="nunit.framework.dll" />
 	  </references>
 	  <resources dynamicprefix="true" basedir="..">

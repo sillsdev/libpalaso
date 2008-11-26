@@ -28,8 +28,8 @@
 	</copy>
 
 	<csc target="library"
-		output="${project.output.dir}/Reporting.dll"
-		doc="${project.output.dir}/doc/Reporting.xml"
+		output="${project.output.dir}/PalasoReporting.dll"
+		doc="${project.output.dir}/doc/PalasoReporting.xml"
 		debug="${build.debug}"
 		define="${build.defines}">
 	  <nowarn>

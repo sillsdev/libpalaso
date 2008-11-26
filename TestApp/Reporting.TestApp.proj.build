@@ -28,8 +28,8 @@
 	</copy>
 
 	<csc target="library"
-		output="${project.output.dir}/Reporting.TestApp.dll"
-		doc="${project.output.dir}/doc/Reporting.TestApp.xml"
+		output="${project.output.dir}/PalasoReporting.TestApp.dll"
+		doc="${project.output.dir}/doc/PalasoReporting.TestApp.xml"
 		debug="${build.debug}"
 		define="${build.defines}">
 	  <nowarn>
@@ -45,7 +45,7 @@
 		<include name="System.Windows.Forms.dll" />
 		<include name="Palaso.dll" />
 		<include name="PalasoUIWindowsForms.dll" />
-		<include name="Reporting.dll" />
+		<include name="PalasoReporting.dll" />
 	  </references>
 	  <resources dynamicprefix="true" basedir="..">
 		  <include name="**/*.resources" />
