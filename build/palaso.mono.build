@@ -200,6 +200,7 @@
 					<exclude name="Windows IME"/>
 					<exclude name="Keyman6"/>
 					<exclude name="Keyman7"/>
+					<exclude name="Mono Known Issue"/>
 				</categories>
 				</test>
 			</nunit2>
@@ -222,6 +223,7 @@
 				<exclude name="Windows IME"/>
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
+				<exclude name="Mono Known Issue"/>
 			</categories>
 			</test>
 		</nunit2>
@@ -248,6 +250,7 @@
 				<exclude name="Windows IME"/>
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
+				<exclude name="Mono Known Issue"/>
 			</categories>
 			</test>
 		</nunit2>

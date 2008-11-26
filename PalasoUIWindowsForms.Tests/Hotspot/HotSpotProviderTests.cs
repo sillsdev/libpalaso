@@ -325,9 +325,10 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 			textBox4.Dispose();
 		}
 
-		[Test]
-		public void RetrieveHotSpots_GiveSomeHotspots_HotSpotsVisible()
-		{
+	[Test]
+	[NUnit.Framework.Category("Known Mono Issue")] // review: WS-????
+	public void RetrieveHotSpots_GiveSomeHotspots_HotSpotsVisible()
+	{
 			using (TextBox textBox = new TextBox())
 			{
 				textBox.Text = "Now is the time for all good men to come to the aid...";
