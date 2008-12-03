@@ -61,11 +61,13 @@ namespace Palaso.Services.ForServers
 					if (_portMutex != null)
 					{
 						_portMutex.ReleaseMutex();
+						_portMutex.Close();
 						_portMutex = null;
 					}
 					if (_portAndChannelMutex != null)
 					{
 						_portAndChannelMutex.ReleaseMutex();
+						_portAndChannelMutex.Close();
 						_portAndChannelMutex = null;
 					}
 				}

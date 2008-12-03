@@ -59,7 +59,6 @@ namespace Palaso.Services.Tests.ForServers
 			{
 				_helper.TestRequestsExitFromServerMode();
 			}
-			_helper.Dispose();
 		}
 
 		private void StartServer()
@@ -74,6 +73,7 @@ namespace Palaso.Services.Tests.ForServers
 
 			Semaphore.OpenExisting("testDone_"+_serviceName).WaitOne();
 
+			_helper.Dispose();
 		}
 
 		private void StartServerAndHandleEvents()
@@ -85,6 +85,7 @@ namespace Palaso.Services.Tests.ForServers
 			Semaphore.OpenExisting("serversReady_" + _serviceName).Release(1);
 			_helper.HandleEventsUntilExit(delegate { _startUICalled = true; });
 			//   Semaphore.OpenExisting("testDone").WaitOne();
+			_helper.Dispose();
 		}
 
 	}
