@@ -20,44 +20,30 @@
 			</resources>
 		</resgen>
 		-->
-
 		<csc target="library"
-		output="${project.output.dir}/Palaso.Services.Tests.dll"
-		doc="${project.output.dir}/doc/Palaso.Services.Tests.xml"
-		debug="${build.debug}"
-		define="${build.defines}">
-	  <nowarn>
-		<warning number="618,672"/>
-		<warning number="1699" if="${runtime.version=='2.0'}"/>
-	  </nowarn>
-	  <sources basedir=".">
-		<include name="**/*.cs" />
-	  </sources>
-	  <references basedir="${project.output.dir}">
-		<include name="CookComputing.XmlRpcV2.dll" />
-		<include name="nunit.framework.dll" />
-		<include name="Palaso.Services.dll" />
-	  </references>
+			output="${project.output.dir}/Palaso.Services.Tests.dll"
+			doc="${project.output.dir}/doc/Palaso.Services.Tests.xml"
+			debug="${build.debug}"
+			define="${build.defines}">
+			<nowarn>
+				<warning number="618,672"/>
+				<warning number="1699" if="${runtime.version=='2.0'}"/>
+			</nowarn>
+			<sources basedir=".">
+				<include name="**/*.cs" />
+			</sources>
+			<references basedir="${project.output.dir}">
+				<include name="CookComputing.XmlRpcV2.dll" />
+				<include name="nunit.framework.dll" />
+				<include name="Palaso.Services.dll" />
+			</references>
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
 				<include name="${build.namespace.dir}/**/*.resources" />
 			</resources>
-	</csc>
-  </target>
+		</csc>
+	</target>
 
-  <target name="clean">
-	<delete>
-		<fileset>
-			<include name="**/*.resources" />
-			<include name="nant.resx.bak/**" />
-			<include name="nant.resx.bak" />
-		</fileset>
-	</delete>
-  </target>
-
-  <target name="package">
-	<copy todir="${package.src.dir}/icu.net">
-	  <fileset refid="source-files" />
-	</copy>
-  </target>
+	<target name="clean">
+	</target>
 
 </project>
