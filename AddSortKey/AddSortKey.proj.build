@@ -1,7 +1,6 @@
 <project name="AddSortKey" default="build" basedir=".">
-  <target name="build">
-
-		<property name="build.namespace" value="Palaso.Reporting" />
+	<target name="build">
+		<property name="build.namespace" value="AddSortKey" />
 		<property name="build.namespace.dir" value="${path::combine(project.resource.dir, build.namespace)}" />
 
 		<!-- review: usesourcepath will not work as the path of the source has been changed making it invalid -->
