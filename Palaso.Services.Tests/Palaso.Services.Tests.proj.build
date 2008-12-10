@@ -4,6 +4,7 @@
 		<property name="build.namespace.dir" value="${path::combine(project.resource.dir, build.namespace)}" />
 
 		<!-- review: usesourcepath will not work as the path of the source has been changed making it invalid -->
+		<!-- No resources
 		<copy todir="${build.namespace.dir}" >
 			<fileset basedir=".">
 				<include name="**/*.resx" />
@@ -18,9 +19,9 @@
 				<include name="${build.namespace.dir}/**/*.resx" />
 			</resources>
 		</resgen>
+		-->
 
-
-	<csc target="library"
+		<csc target="library"
 		output="${project.output.dir}/Palaso.Services.Tests.dll"
 		doc="${project.output.dir}/doc/Palaso.Services.Tests.xml"
 		debug="${build.debug}"
