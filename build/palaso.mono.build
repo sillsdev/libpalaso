@@ -25,18 +25,18 @@
 	</if>
 
 	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
-		<exclude name="Palaso/Palaso.proj.build" />
-		<exclude name="Palaso.Tests/Palaso.Tests.proj.build" />
+		<include name="Palaso/Palaso.proj.build" />
+		<include name="Palaso.Tests/Palaso.Tests.proj.build" />
 		<include name="Reporting/Reporting.proj.build" />
-		<exclude name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
-		<exclude name="AddSortKey/AddSortKey.proj.build" />
-		<exclude name="TestApp/Reporting.TestApp.proj.build" />
-		<exclude name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
-		<exclude name="Palaso.Services\Palaso.Services.proj.build" />
-		<exclude name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
-		<exclude name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
-		<exclude name="Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.proj.build" />
-		<exclude name="PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.proj.build" />
+		<include name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
+		<include name="AddSortKey/AddSortKey.proj.build" />
+		<include name="TestApp/Reporting.TestApp.proj.build" />
+		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
+		<include name="Palaso.Services\Palaso.Services.proj.build" />
+		<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
+		<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
+		<include name="Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.proj.build" />
+		<include name="PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.proj.build" />
 	</fileset>
 
 	<target name="clean" description="Delete all previously compiled binaries.">

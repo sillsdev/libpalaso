@@ -1,31 +1,25 @@
 <project name="Palaso.Services.Tests" default="build" basedir=".">
   <target name="build">
 
-	<copy todir="nant.resx.bak" >
-		<fileset basedir=".">
-			<include name="**/*.resx" />
-		</fileset>
-		<filterchain>
-			<replacestring from="\" to="/" />
-		</filterchain>
-	</copy>
+		<property name="build.namespace" value="Palaso.Reporting" />
+		<property name="build.namespace.dir" value="${path::combine(project.resource.dir, build.namespace)}" />
 
-	<foreach item="File" property="filename">
-		<in>
-			<items>
-				<include name="nant.resx.bak/**/*.resx" />
-			</items>
-		</in>
-		<do>
-			<resgen input="${filename}" usesourcepath="true" unless="${file::get-length(filename)==0}" />
-		</do>
-	</foreach>
+		<!-- review: usesourcepath will not work as the path of the source has been changed making it invalid -->
+		<copy todir="${build.namespace.dir}" >
+			<fileset basedir=".">
+				<include name="**/*.resx" />
+			</fileset>
+			<filterchain>
+				<replacestring from="\" to="/" />
+			</filterchain>
+		</copy>
 
-	<copy todir="." >
-		<fileset basedir="nant.resx.bak">
-			<include name="**/*.resources" />
-		</fileset>
-	</copy>
+		<resgen todir="${build.namespace.dir}">
+			<resources>
+				<include name="${build.namespace.dir}/**/*.resx" />
+			</resources>
+		</resgen>
+
 
 	<csc target="library"
 		output="${project.output.dir}/Palaso.Services.Tests.dll"
@@ -44,9 +38,9 @@
 		<include name="nunit.framework.dll" />
 		<include name="Palaso.Services.dll" />
 	  </references>
-	  <resources dynamicprefix="true" basedir="..">
-		  <include name="**/*.resources" />
-	  </resources>
+			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
+				<include name="${build.namespace.dir}/**/*.resources" />
+			</resources>
 	</csc>
   </target>
 
