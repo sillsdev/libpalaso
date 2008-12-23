@@ -35,12 +35,42 @@ namespace Palaso.Media.Tests
 	   }
 
 	   [Test, ExpectedException(typeof(ApplicationException))]
-	   public void StopRecording_NoRecording_Throws()
+	   public void StopRecording_NotRecording_Throws()
 	   {
 		   var x = new AudioRecorder(Path.GetRandomFileName());
 		   x.StopRecording();
 	   }
 
+	   [Test]
+	   public void StopPlaying_WhilePlaying_Ok()
+	   {
+		   using (var session = new RecordingSession(1000))
+		   {
+			   session.Recorder.Play();
+			   Thread.Sleep(100);
+			  session.Recorder.StopPlaying();
+		   }
+	   }
+
+	   [Test]
+	   public void Record_AfterRecordThenStop_Ok()
+	   {
+		   using (var session = new RecordingSession(100))
+		   {
+			   session.Recorder.StartRecording();
+			   Thread.Sleep(100);
+			   session.Recorder.StopRecording();
+		   }
+	   }
+
+	   [Test,ExpectedException(typeof(ApplicationException))]
+	   public void Play_WhileRecording_Throws()
+	   {
+		   using (var session = new RecordingSession())
+		   {
+			   session.Recorder.Play();
+		   }
+	   }
 
 	   [Test]
 	   public void CanRecord_FileDoesNotExist_True()
@@ -85,10 +115,8 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void CanStop_WhilePlaying_True()
 	   {
-			using (var session = new RecordingSession())
+			using (var session = new RecordingSession(1000))
 		   {
-			   Thread.Sleep(1000);
-			   session.Recorder.StopPlaying();
 				session.Recorder.Play();
 				Thread.Sleep(100);
 			   Assert.IsTrue(session.Recorder.CanStop);
@@ -111,7 +139,7 @@ namespace Palaso.Media.Tests
 	   }
 
 	   [Test]
-	   public void Record_WhileRecording_IsRecordingTrue()
+	   public void IsRecording_WhileRecording_True()
 	   {
 		   using (var f = new Palaso.Tests.TempFile())
 		   {
@@ -143,7 +171,7 @@ namespace Palaso.Media.Tests
 			  : this()
 		   {
 			   Thread.Sleep(1000);//record a second
-			   _recorder.StopPlaying();
+			   _recorder.StopRecording();
 		   }
 
 		   public AudioRecorder Recorder
@@ -166,7 +194,7 @@ namespace Palaso.Media.Tests
 	   }
 
 	   [Test]
-	   public void Record_WhileRecording_CanStopIsTrue()
+	   public void CanStop_WhileRecording_True()
 	   {
 		   using (var session = new RecordingSession())
 		   {
@@ -192,12 +220,20 @@ namespace Palaso.Media.Tests
 		   }
 	   }
 
+	   [Test,ExpectedException(typeof(ApplicationException))]
+	   public void StartRecording_WhileRecording_Throws()
+	   {
+		   using (var session = new RecordingSession())
+		   {
+			   session.Recorder.StartRecording();
+		   }
+	   }
+
 	   [Test]
 	   public void CanRecord_WhilePlaying_False()
 	   {
 		   using (var session = new RecordingSession(1000))
 		   {
-			   session.Recorder.StopRecording();
 			   session.Recorder.Play();
 			   Thread.Sleep(100);
 			   Assert.IsTrue(session.Recorder.IsPlaying);
@@ -210,7 +246,6 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var session = new RecordingSession(1000))
 		   {
-			   session.Recorder.StopRecording();
 			   session.Recorder.Play();
 			   Thread.Sleep(100);
 			   Assert.IsFalse(session.Recorder.CanPlay);

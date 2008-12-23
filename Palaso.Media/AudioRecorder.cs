@@ -31,6 +31,9 @@ namespace Palaso.Media
 
 		public void StartRecording()
 		{
+			if(_thinkWeAreRecording)
+				throw new ApplicationException("Can't begin recording when we're already recording.");
+
 			_thinkWeAreRecording = true;
 			_recorder.ClearRecordedAudioDataBuffer();
 			_recorder.StartRecordingBufferedAudio();
@@ -91,6 +94,9 @@ namespace Palaso.Media
 
 		public void Play()
 		{
+			if(IsRecording)
+				throw new ApplicationException("Can't play while recording.");
+
 			if (_sound != null)
 			{
 				_engine.StopAllSounds();
