@@ -38,6 +38,9 @@ namespace Palaso.Media
 		}
 		public void StopRecording()
 		{
+			if(!_thinkWeAreRecording)
+				throw new ApplicationException("Stop Recoding called when we weren't recording.  Use IsRecording to check first.");
+
 			_thinkWeAreRecording = false;
 			_recorder.StopRecordingAudio();
 			SaveAsWav(_path);
@@ -93,6 +96,8 @@ namespace Palaso.Media
 				_engine.StopAllSounds();
 			}
 
+			if(!File.Exists(_path))
+				throw new FileNotFoundException("Could not find sound file", _path);
 
 			//turns out, the silly engine will keep playing the same recording, even
 			//after we've chaned the contents of the file or even delete it.
