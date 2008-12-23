@@ -63,6 +63,8 @@ namespace Palaso.Reporting
 			m_lastError = MAPISendMail(new IntPtr(0), new IntPtr(0), msg, how, 0);
 //            if (m_lastError > 1)
 //                MessageBox.Show("MAPISendMail failed! " + GetLastError(), "MAPISendMail");
+			//todo if(m_lastError==25)
+				//bad recipient
 
 			Cleanup(ref msg);
 			return m_lastError ==0;//NB: doesn't seem to cach user "denial" using outlook's warning dialog
