@@ -509,7 +509,7 @@
   <target name="set-output-dir" depends="set-build-config,set-runtime-config">
 	<property name="base.output.dir"
 	  value="${path::combine(project.base.dir,'output')}"/>
-	<property name="os.platform.dir"
+	 <property name="os.platform.dir"
 	  value="${path::combine(base.output.dir,os.platform)}"/>
 	<property name="runtime.platform.dir"
 	  value="${path::combine(os.platform.dir,runtime.platform)}"/>
@@ -517,15 +517,19 @@
 	  value="${path::combine(runtime.platform.dir,runtime.version)}"/>
 	<property name="project.output.dir"
 	  value="${path::combine(runtime.version.dir,build.config)}"/>
-	<property name="project.documentation.dir"
+	 <property name="project.documentation.dir"
 	  value="${path::combine(project.output.dir,'doc')}"/>
+	 <property name="project.resource.dir"
+	  value="${path::combine(project.output.dir,'resources')}"/>
   </target>
 
   <target name="make-output-dir" depends="set-output-dir">
 	<mkdir dir="${project.output.dir}"
 	  unless="${directory::exists(project.output.dir)}"/>
-	<mkdir dir="${project.documentation.dir}"
+	 <mkdir dir="${project.documentation.dir}"
 	  unless="${directory::exists(project.documentation.dir)}"/>
+	 <mkdir dir="${project.resource.dir}"
+	  unless="${directory::exists(project.resource.dir)}"/>
   </target>
 
 <!-- ***************************************************************** -->

@@ -135,6 +135,17 @@ namespace Palaso.Reporting
 				// in the <appSettings> section of the .config file (see MSDN for details).
 				bool showUI = ShowUI;
 
+				if (exception.InnerException != null)
+				{
+					Debug.WriteLine(String.Format("Exception: {0} {1}", exception.Message, exception.InnerException.Message));
+					Logger.WriteEvent("Exception: {0} {1}", exception.Message, exception.InnerException.Message);
+				}
+				else
+				{
+					Debug.WriteLine(String.Format("Exception: {0}", exception.Message));
+					Logger.WriteEvent("Exception: {0}", exception.Message);
+				}
+
 				if (exception is ExternalException
 					&& (uint)(((ExternalException)exception).ErrorCode) == 0x8007000E) // E_OUTOFMEMORY
 				{
