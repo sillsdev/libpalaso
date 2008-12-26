@@ -91,6 +91,12 @@
   <ItemGroup>
 	<None Include="Resources\DeleteHS.png" />
   </ItemGroup>
+  <ItemGroup>
+	<None Include="artwork\recordDisabled16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="artwork\playDisabled14x16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.

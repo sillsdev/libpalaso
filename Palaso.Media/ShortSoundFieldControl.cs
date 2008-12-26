@@ -10,6 +10,7 @@ namespace Palaso.Media
 		private string _path;
 		private string _deleteButtonInstructions = "Delete this recording.";
 
+		public event EventHandler BeforeStartingToRecord;
 		public event EventHandler SoundRecorded;
 		public event EventHandler SoundDeleted;
 
@@ -21,8 +22,6 @@ namespace Palaso.Media
 			_poorMansWaveform.Left = _hint.Left;
 			_hint.Text = "";
 		}
-
-
 
 		public string Path
 		{
@@ -36,16 +35,27 @@ namespace Palaso.Media
 			}
 		}
 
-
 		private void UpdateScreen()
 		{
 			bool exists = File.Exists(Path);
 			bool mouseIsWithin = Parent.RectangleToScreen(Bounds).Contains(MousePosition);
+
+			if(mouseIsWithin)
+			{
+				_playButton.Image = global::Palaso.Media.Properties.Resources.play14x16;
+				_recordButton.Image = global::Palaso.Media.Properties.Resources.record16x16;
+			}
+			else
+			{
+				_playButton.Image = global::Palaso.Media.Properties.Resources.playDisabled14x16;
+				_recordButton.Image = global::Palaso.Media.Properties.Resources.recordDisabled16x16;
+			}
+
 			_recordButton.Enabled = _deleteButton.Enabled = mouseIsWithin;
 			_playButton.Enabled = mouseIsWithin && !_recorder.IsPlaying;
 			_recordButton.FlatAppearance.BorderSize = mouseIsWithin ? 1 : 0;
 
-			_playButton.Visible = mouseIsWithin && exists && (_recorder.IsPlaying || _recorder.CanPlay);
+			_playButton.Visible =  exists && (_recorder.IsPlaying || _recorder.CanPlay);
 			 _deleteButton.Visible = mouseIsWithin && exists;
 
 			 bool mouseOverDeleteButton = RectangleToScreen(_deleteButton.Bounds).Contains(MousePosition);
@@ -54,24 +64,11 @@ namespace Palaso.Media
 			 bool mouseOverPlayButton = RectangleToScreen(_playButton.Bounds).Contains(MousePosition);
 			 _playButton.FlatAppearance.BorderSize = mouseOverPlayButton ? 1 : 0;
 
-			_poorMansWaveform.Visible = exists;
+			_poorMansWaveform.Visible = false;//this was a good idea, but made the screen too busy //exists;
 			_recordButton.Visible = !exists;
 
 
 		}
-
-//        private void _stopButton_Click(object sender, EventArgs e)
-//        {
-//            if(_recorder.IsRecording)
-//            {
-//                _recorder.StopRecording();
-//            }
-//            else
-//            {
-//                _recorder.StopPlaying();
-//            }
-//            UpdateScreen();
-//        }
 
 		private void timer1_Tick(object sender, EventArgs e)
 		{
@@ -93,6 +90,10 @@ namespace Palaso.Media
 
 		private void OnRecordDown(object sender, MouseEventArgs e)
 		{
+			//allow owner one last chance to set a path (which may be sensitive to other ui controls)
+			if (BeforeStartingToRecord!=null)
+				BeforeStartingToRecord.Invoke(this, null);
+
 			if (File.Exists(Path))
 				File.Delete(Path);
 
@@ -133,13 +134,5 @@ namespace Palaso.Media
 			_recorder.Play();
 			UpdateScreen();
 		}
-
-		private void ShortSoundFieldControl_MouseEnter(object sender, EventArgs e)
-		{
-//            var pt = MousePosition;
-//            bool b = Parent.RectangleToScreen(Bounds).Contains(pt);
-//            UpdateScreen();
-		}
-
 	}
 }

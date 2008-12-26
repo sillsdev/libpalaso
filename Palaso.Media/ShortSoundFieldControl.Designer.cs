@@ -40,6 +40,7 @@
 			//
 			// _timer
 			//
+			this._timer.Interval = 200;
 			this._timer.Tick += new System.EventHandler(this.timer1_Tick);
 			//
 			// _playButton
@@ -47,12 +48,14 @@
 			this._playButton.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
 			this._playButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._playButton.Image = global::Palaso.Media.Properties.Resources.play14x16;
+			this._playButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this._playButton.Location = new System.Drawing.Point(0, 0);
 			this._playButton.Name = "_playButton";
 			this._playButton.Size = new System.Drawing.Size(38, 19);
 			this._playButton.TabIndex = 2;
 			this._playButton.TabStop = false;
 			this._playButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+			this.toolTip1.SetToolTip(this._playButton, "Click to play the recording.");
 			this._playButton.UseVisualStyleBackColor = false;
 			this._playButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnClickPlay);
 			//
@@ -78,6 +81,7 @@
 			this._recordButton.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
 			this._recordButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._recordButton.Image = global::Palaso.Media.Properties.Resources.record16x16;
+			this._recordButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this._recordButton.Location = new System.Drawing.Point(41, 0);
 			this._recordButton.Name = "_recordButton";
 			this._recordButton.Size = new System.Drawing.Size(38, 19);
@@ -128,7 +132,6 @@
 			this.Controls.Add(this._recordButton);
 			this.Name = "ShortSoundFieldControl";
 			this.Size = new System.Drawing.Size(328, 22);
-			this.MouseEnter += new System.EventHandler(this.ShortSoundFieldControl_MouseEnter);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

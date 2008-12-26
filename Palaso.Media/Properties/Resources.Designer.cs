@@ -74,9 +74,23 @@ namespace Palaso.Media.Properties {
 			}
 		}
 
+		internal static System.Drawing.Bitmap playDisabled14x16 {
+			get {
+				object obj = ResourceManager.GetObject("playDisabled14x16", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		internal static System.Drawing.Bitmap record16x16 {
 			get {
 				object obj = ResourceManager.GetObject("record16x16", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap recordDisabled16x16 {
+			get {
+				object obj = ResourceManager.GetObject("recordDisabled16x16", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
