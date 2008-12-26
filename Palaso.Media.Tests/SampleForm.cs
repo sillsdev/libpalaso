@@ -19,6 +19,17 @@ namespace Palaso.Media.SampleApp
 //            UpdateScreen();
 //            timer1.Enabled = true;
 		}
+
+		private void shortSoundFieldControl1_Load(object sender, EventArgs e)
+		{
+			this.shortSoundFieldControl1.Path = Path.GetTempFileName().Replace(".tmp", ".wav");
+		}
+
+		private void shortSoundFieldControl2_Load(object sender, EventArgs e)
+		{
+			this.shortSoundFieldControl2.Path = Path.GetTempFileName().Replace(".tmp", ".wav");
+		}
+
 //
 //        private void UpdateScreen()
 //        {

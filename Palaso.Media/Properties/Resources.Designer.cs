@@ -60,6 +60,13 @@ namespace Palaso.Media.Properties {
 			}
 		}
 
+		internal static System.Drawing.Bitmap Delete {
+			get {
+				object obj = ResourceManager.GetObject("Delete", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		internal static System.Drawing.Bitmap play14x16 {
 			get {
 				object obj = ResourceManager.GetObject("play14x16", resourceCulture);

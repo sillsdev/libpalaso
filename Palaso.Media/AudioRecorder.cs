@@ -13,6 +13,8 @@ namespace Palaso.Media
 		private ISound _sound;
 		private string _path;
 		private bool _thinkWeAreRecording;
+		private DateTime _startRecordingTime;
+		private DateTime _stopRecordingTime;
 
 
 		public AudioRecorder(string path)
@@ -37,6 +39,7 @@ namespace Palaso.Media
 			_thinkWeAreRecording = true;
 			_recorder.ClearRecordedAudioDataBuffer();
 			_recorder.StartRecordingBufferedAudio();
+			_startRecordingTime = DateTime.Now;
 
 		}
 		public void StopRecording()
@@ -48,7 +51,19 @@ namespace Palaso.Media
 			_recorder.StopRecordingAudio();
 			SaveAsWav(_path);
 			_recorder.ClearRecordedAudioDataBuffer();
+			_stopRecordingTime = DateTime.Now;
 		}
+
+		public double LastRecordingMilliseconds
+		{
+			get
+			{
+				if(_startRecordingTime == default(DateTime) || _stopRecordingTime == default(DateTime))
+					return 0;
+				return _stopRecordingTime.Subtract(_startRecordingTime).TotalMilliseconds;
+			}
+		}
+
 		public bool IsRecording
 		{
 			get
@@ -89,7 +104,7 @@ namespace Palaso.Media
 
 		public bool CanPlay
 		{
-			get { return !IsPlaying && !IsRecording; }
+			get { return !IsPlaying && !IsRecording && File.Exists(_path); }
 		}
 
 		public void Play()
