@@ -116,12 +116,24 @@ namespace Palaso.Services.Tests
 			Process server = Process.Start(processStartInfo);
 			server.ErrorDataReceived += OnDataReceived;
 			server.OutputDataReceived += OnDataReceived;
-			Thread.Sleep(500);
 
 			// wait until server has started
-			Mutex serverIsStarting = Mutex.OpenExisting("Palaso.Services.Tests.Server.ServerIsStarting");
-			serverIsStarting.WaitOne();
-			serverIsStarting.ReleaseMutex();
+			for (int i = 0; i < 3; ++i)
+			{
+				Thread.Sleep(500);
+				try
+				{
+					Mutex serverIsStarting = Mutex.OpenExisting("Palaso.Services.Tests.Server.ServerIsStarting");
+					serverIsStarting.WaitOne();
+					serverIsStarting.ReleaseMutex();
+					break;
+				}
+				catch (WaitHandleCannotBeOpenedException)
+				{
+					continue;
+				}
+
+			}
 			return server;
 		}
 
