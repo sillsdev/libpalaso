@@ -47,10 +47,7 @@ namespace Palaso.Services.ForServers
 				helper.Dispose();
 				return null;
 			}
-			else
-			{
-				return helper;
-			}
+			return helper;
 		}
 
 		public static ServiceAppSingletonHelper CreateServiceAppSingletonHelperIfNeeded(string serviceName, bool startInServerMode)

@@ -32,6 +32,12 @@ namespace Palaso.Services.Tests.ForServers
 
 			testDone = new Semaphore(0, 1, "testDone_" + serviceName);
 			Semaphore serverReady = new Semaphore(0, 1, "serversReady_"+serviceName);
+			_helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(
+				_serviceName,
+				_initialUiState ==
+				uiState.initiallyAsServer,
+				_couldHaveTwinsInProcess
+			);
 			if (initialUiState == uiState.dontBotherWithEvents)
 			{
 				serverThread = new Thread(StartServer);
@@ -58,34 +64,25 @@ namespace Palaso.Services.Tests.ForServers
 			else
 			{
 				_helper.TestRequestsExitFromServerMode();
+				_helper.Dispose();
 			}
 		}
 
 		private void StartServer()
 		{
-			_helper = ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(_serviceName,
-																						_initialUiState ==
-																						uiState.initiallyAsServer,
-																						_couldHaveTwinsInProcess);
 			_helper.BringToFrontRequest += delegate { _bringToFrontRequestCalled = true; };
 
 			Semaphore.OpenExisting("serversReady_" + _serviceName).Release(1);
 
 			Semaphore.OpenExisting("testDone_"+_serviceName).WaitOne();
-
-			_helper.Dispose();
 		}
 
 		private void StartServerAndHandleEvents()
 		{
-			_helper =
-				ServiceAppSingletonHelper.CreateServiceAppSingletonHelperIfNeeded(_serviceName,
-																				  _initialUiState==uiState.initiallyAsServer);
 			_helper.BringToFrontRequest += delegate { _bringToFrontRequestCalled = true; };
 			Semaphore.OpenExisting("serversReady_" + _serviceName).Release(1);
 			_helper.HandleEventsUntilExit(delegate { _startUICalled = true; });
 			//   Semaphore.OpenExisting("testDone").WaitOne();
-			_helper.Dispose();
 		}
 
 	}
