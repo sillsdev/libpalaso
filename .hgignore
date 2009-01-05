@@ -10,12 +10,9 @@ bin
 *.user
 _ReSharper.*
 config
-*.xml
-*.resources
 *.pidb
 *.userprefs
 *.nunit
 *.usertasks
 *~
-AssemblyInfo.cs
 nant.resx.bak
