@@ -326,7 +326,7 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 		}
 
 	[Test]
-	[NUnit.Framework.Category("Known Mono Issue")] // review: WS-????
+	[NUnit.Framework.Category("KnownMonoIssue")] // review: WS-????
 	public void RetrieveHotSpots_GiveSomeHotspots_HotSpotsVisible()
 	{
 			using (TextBox textBox = new TextBox())
