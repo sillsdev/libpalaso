@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using Palaso.Tests;
+using Palaso.Media;
 
 namespace Palaso.Media.Tests
 {
