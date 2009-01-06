@@ -250,7 +250,7 @@
 				<exclude name="Windows IME"/>
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
-				<exclude name="Mono Known Issue"/>
+				<exclude name="KnownMonoIssue"/>
 			</categories>
 			</test>
 		</nunit2>
