@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Spart;
 
@@ -743,6 +744,33 @@ namespace Palaso.WritingSystems.Collation.Tests
 			{
 				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
 			}
+		}
+
+		private void VerifyExpectedSort(string simpleRules, string[] original, string[] expected)
+		{
+			Assert.AreEqual(original.Length, expected.Length);
+
+			SimpleRulesCollator collator = new SimpleRulesCollator(simpleRules);
+			Array.Sort(original, collator);
+
+
+			for (int i = 0; i < original.Length; i++)
+			{
+				Assert.AreEqual(expected[i], original[i], "at index {0}", i);
+			}
+		}
+
+		[Test]
+		public void Compare_Hyphens()
+		{
+			var original = new string[] {"anna",
+										"-ana",
+										  "ana"};
+
+			var expected = new string[] { "ana",
+										   "anna",
+										   "-ana"};
+			VerifyExpectedSort("a\nb\n-", original, expected);
 		}
 
 		[Test]

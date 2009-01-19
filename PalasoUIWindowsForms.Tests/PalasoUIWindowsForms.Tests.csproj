@@ -2,7 +2,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>8.0.50727</ProductVersion>
+	<ProductVersion>9.0.30729</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{6E16866F-FF8D-4136-AD67-36AFE3626432}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -67,6 +67,7 @@
 	<Compile Include="Hotspot\HotSpotProviderTests.cs" />
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="i8n\StringCatalogTests.cs" />
+	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="Keyboarding\KeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
@@ -114,6 +115,11 @@
 	  <Project>{9CCBECEC-513C-4DA4-A4CE-F5361B633760}</Project>
 	  <Name>Reporting</Name>
 	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
