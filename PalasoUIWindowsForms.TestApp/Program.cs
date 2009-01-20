@@ -27,8 +27,9 @@ namespace PalasoUIWindowsForms.TestApp
 			var images = new ArtOfReadingImageCollection();
 			images.LoadIndex(@"C:\palaso\output\debug\ImageGallery\artofreadingindexv3_en.txt");
 			images.RootImagePath = @"c:\art of reading\images";
-			Application.Run(new PictureChooser(images));
-			;
+			var form = new PictureChooser(images, "duck");
+			Application.Run(form);
+			Console.WriteLine("REsult: " + form.ChosenPath);
 		}
 	}
 }

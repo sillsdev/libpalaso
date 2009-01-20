@@ -20,6 +20,16 @@ namespace WeSay.LexicalTools.AddPictures
 
 		public event EventHandler OnLoadComplete;
 
+
+		public string SelectedPath
+		{
+			get
+			{
+				if(SelectedItems == null || SelectedItems.Count ==0)
+					return null;
+				return SelectedItems[0].Tag as string;
+			}
+		}
 		private int thumbNailSize = 95;
 		public int ThumbNailSize
 		{
