@@ -29,6 +29,8 @@ namespace WeSay.LexicalTools.AddPictures
 
 		private void PictureChooser_Load(object sender, EventArgs e)
 		{
+			_thumbnailViewer.CaptionMethod = _images.CaptionMethod;
+
 			if (_searchTermsBox.Text.Length > 0)
 				_searchButton_Click(this, null);
 		}

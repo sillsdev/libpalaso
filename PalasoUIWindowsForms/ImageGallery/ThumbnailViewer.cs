@@ -4,13 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-using System.IO;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using Palaso.UI.WindowsForms.ImageGallery;
 
 namespace WeSay.LexicalTools.AddPictures
 {
@@ -88,11 +84,11 @@ namespace WeSay.LexicalTools.AddPictures
 			_thumbnailWorker.WorkerSupportsCancellation = true;
 			_thumbnailWorker.DoWork += new DoWorkEventHandler(bwLoadImages_DoWork);
 			_thumbnailWorker.WorkerSupportsCancellation = true;
-			_thumbnailWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(myWorker_RunWorkerCompleted);
+			_thumbnailWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnRunWorkerCompleted);
 
 		}
 
-		void myWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			if (OnLoadComplete != null)
 				OnLoadComplete(this, new EventArgs());
@@ -174,7 +170,7 @@ namespace WeSay.LexicalTools.AddPictures
 			}
 		}
 
-		public void LoadItems(IList<string> fileList)
+		public void LoadItems(IList<string> pathList)
 		{
 			if ((_thumbnailWorker != null) && (_thumbnailWorker.IsBusy))
 			{
@@ -195,21 +191,33 @@ namespace WeSay.LexicalTools.AddPictures
 			LargeImageList.Images.Clear();
 			AddDefaultThumb();//what does this do?
 
-			foreach (string fileName in fileList)
+			foreach (string path in pathList)
 			{
-				ListViewItem liTemp = Items.Add(System.IO.Path.GetFileName(fileName));
+				string caption;
+				if(CaptionMethod != null)
+				{
+					caption = CaptionMethod.Invoke(path);
+				}
+				else
+				{
+					caption = System.IO.Path.GetFileName(path);
+				}
+				ListViewItem liTemp = Items.Add(caption);
 				liTemp.ImageIndex = 0;
-				liTemp.Tag = fileName;
+				liTemp.Tag = path;
 			}
 
 			EndUpdate();
 			if (_thumbnailWorker != null)
 			{
 				if (!_thumbnailWorker.CancellationPending)
-					_thumbnailWorker.RunWorkerAsync(fileList);
+					_thumbnailWorker.RunWorkerAsync(pathList);
 			}
 		}
 
-
+		public CaptionMethodDelegate CaptionMethod
+		{
+			get; set;
+		}
 	}
 }

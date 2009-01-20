@@ -51,12 +51,28 @@ namespace WeSay.LexicalTools.Tests
 			Assert.AreEqual(0, matches.Count);
 		}
 
+
+		[Test]
+		public void GetMatchingKeywords_2Good1Not_GivesGood()
+		{
+			var wordsForSeach = _artCollection.StripNonMatchingKeywords("duck blah dog");
+
+			Assert.AreEqual("duck dog", wordsForSeach);
+		}
+
 		[Test]
 		public void GetMatchingPictures_TwoKeyWords_GetMatchesOnBoth()
 		{
 			var duckMatches = _artCollection.GetMatchingPictures("duck");
 			var bothMatches = _artCollection.GetMatchingPictures("duck sheep");
 			Assert.Greater(bothMatches.Count, duckMatches.Count);
+		}
+
+		[Test]
+		public void GetMatchingPictures_WordsFollowedByPunctuation_StillMatches()
+		{
+			var duckMatches = _artCollection.GetMatchingPictures("duck, blah");
+			Assert.Less(0, duckMatches.Count);
 		}
 
 		[Test]

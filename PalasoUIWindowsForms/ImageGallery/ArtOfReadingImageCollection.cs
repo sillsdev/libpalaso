@@ -8,40 +8,21 @@ using Palaso.Extensions;
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
-	public interface IImageCollection
-	{
-		IList<object> GetMatchingPictures(string keywords);
-
-		/// <summary>
-		/// The imageTOken here could be a path or whatever, the client doesn't need to know or care
-		/// </summary>
-		/// <param name="imageToken"></param>
-		/// <returns></returns>
-		Image GetThumbNail(object imageToken);
-
-		IList<string> GetPathsFromResults(IList<object> results, bool limitToThoseActuallyAvailable);
-	}
-
 	public class ArtOfReadingImageCollection :IImageCollection
 	{
-		private Dictionary<string, List<string>> _index;
+		private Dictionary<string, List<string>> _wordToPartialPathIndex;
+		private Dictionary<string, string> _partialPathToWordsIndex;
 
 		public ArtOfReadingImageCollection()
 		{
-		   _index = new Dictionary<string, List<string>>();
+		   _wordToPartialPathIndex = new Dictionary<string, List<string>>();
+		   _partialPathToWordsIndex = new Dictionary<string, string>();
 		}
 
 		public string RootImagePath { get; set; }
 
 		public void LoadIndex(string indexFilePath)
 		{
-
-			/*            string path = _fileLocator.LocateFile(_config.IndexFileName, "picture index");
-			if (string.IsNullOrEmpty(path) || !File.Exists(path))
-			{
-				throw new ConfigurationException("Could not load picture index file.");
-			}
-*/
 			using (var f = File.OpenText(indexFilePath))
 			{
 				while (!f.EndOfStream)
@@ -51,12 +32,13 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 					Debug.Assert(parts.Length == 2);
 					if (parts.Length != 2)
 						continue;
-					var fileName = parts[0];
+					var partialPath = parts[0];
 					var keyString = parts[1].Trim(new char[] { ' ', '"' });//some have quotes, some don't
+					_partialPathToWordsIndex.Add(partialPath, keyString);
 					var keys = keyString.SplitTrimmed(',');
 					foreach (var key in keys)
 					{
-						_index.GetOrCreate(key).Add(fileName);
+						_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
 					}
 				}
 			}
@@ -64,12 +46,43 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public IList<object> GetMatchingPictures(string keywords)
 		{
+			keywords = GetCleanedUpSearchString(keywords);
 			return GetMatchingPictures(keywords.SplitTrimmed(' '));
+		}
+
+		public string GetCleanedUpSearchString(string keywords)
+		{
+			keywords = keywords.Replace(",", string.Empty);
+			keywords = keywords.Replace(";", string.Empty);
+			keywords = keywords.Replace("-", string.Empty);
+			keywords = keywords.Replace(".", string.Empty);
+			keywords = keywords.Replace("(", string.Empty);
+			return  keywords.Replace(")", string.Empty);
 		}
 
 		public Image GetThumbNail(object imageToken)
 		{
 			throw new System.NotImplementedException();
+		}
+
+		public CaptionMethodDelegate CaptionMethod
+		{
+			get { return GetCaption; }
+		}
+
+		private string GetCaption(string path)
+		{
+			try
+			{
+				var partialPath = path.Replace(RootImagePath, "");
+				partialPath = partialPath.Replace(Path.DirectorySeparatorChar, ':');
+				partialPath = partialPath.Trim(new char[] {':'});
+				return _partialPathToWordsIndex[partialPath];
+			}
+			catch (Exception)
+			{
+				return "error";
+			}
 		}
 
 
@@ -94,7 +107,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				List<string> picturesForThisKey = new List<string>();
 
-				if (_index.TryGetValue(key, out picturesForThisKey))
+				if (_wordToPartialPathIndex.TryGetValue(key, out picturesForThisKey))
 				{
 					pictures.AddRange(picturesForThisKey);
 				}
@@ -105,5 +118,17 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		}
 
 
+		public string StripNonMatchingKeywords(string stringWhichMayContainKeywords)
+		{
+			string result = string.Empty;
+			stringWhichMayContainKeywords = GetCleanedUpSearchString(stringWhichMayContainKeywords);
+			var words = stringWhichMayContainKeywords.SplitTrimmed(' ');
+			foreach (var key in words)
+			{
+				if (_wordToPartialPathIndex.ContainsKey(key))
+					result += " " + key;
+			}
+			return result.Trim();
+		}
 	}
 }

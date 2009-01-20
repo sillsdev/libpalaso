@@ -32,8 +32,8 @@
 			this._searchTermsBox = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this._searchButton = new System.Windows.Forms.Button();
-			this._thumbnailViewer = new WeSay.LexicalTools.AddPictures.ThumbnailViewer();
 			this._okButton = new System.Windows.Forms.Button();
+			this._thumbnailViewer = new WeSay.LexicalTools.AddPictures.ThumbnailViewer();
 			this.SuspendLayout();
 			//
 			// _searchTermsBox
@@ -54,28 +54,13 @@
 			//
 			// _searchButton
 			//
-			this._searchButton.Location = new System.Drawing.Point(338, 14);
+			this._searchButton.Location = new System.Drawing.Point(317, 15);
 			this._searchButton.Name = "_searchButton";
 			this._searchButton.Size = new System.Drawing.Size(75, 23);
 			this._searchButton.TabIndex = 3;
 			this._searchButton.Text = "Search";
 			this._searchButton.UseVisualStyleBackColor = true;
 			this._searchButton.Click += new System.EventHandler(this._searchButton_Click);
-			//
-			// _thumbnailViewer
-			//
-			this._thumbnailViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this._thumbnailViewer.CanLoad = false;
-			this._thumbnailViewer.Location = new System.Drawing.Point(0, 56);
-			this._thumbnailViewer.Name = "_thumbnailViewer";
-			this._thumbnailViewer.Size = new System.Drawing.Size(627, 544);
-			this._thumbnailViewer.TabIndex = 0;
-			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
-			this._thumbnailViewer.ThumbNailSize = 95;
-			this._thumbnailViewer.UseCompatibleStateImageBehavior = false;
-			this._thumbnailViewer.DoubleClick += new System.EventHandler(this._thumbnailViewer_DoubleClick);
 			//
 			// _okButton
 			//
@@ -87,6 +72,22 @@
 			this._okButton.Text = "&OK";
 			this._okButton.UseVisualStyleBackColor = true;
 			this._okButton.Click += new System.EventHandler(this._okButton_Click);
+			//
+			// _thumbnailViewer
+			//
+			this._thumbnailViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._thumbnailViewer.CanLoad = false;
+			this._thumbnailViewer.CaptionMethod = null;
+			this._thumbnailViewer.Location = new System.Drawing.Point(0, 56);
+			this._thumbnailViewer.Name = "_thumbnailViewer";
+			this._thumbnailViewer.Size = new System.Drawing.Size(627, 544);
+			this._thumbnailViewer.TabIndex = 0;
+			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
+			this._thumbnailViewer.ThumbNailSize = 95;
+			this._thumbnailViewer.UseCompatibleStateImageBehavior = false;
+			this._thumbnailViewer.DoubleClick += new System.EventHandler(this._thumbnailViewer_DoubleClick);
 			//
 			// PictureChooser
 			//
