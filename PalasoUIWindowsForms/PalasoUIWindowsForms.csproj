@@ -82,6 +82,7 @@
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
 	<Compile Include="i8n\StringCatalog.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollection.cs" />
+	<Compile Include="ImageGallery\IImageCollection.cs" />
 	<Compile Include="ImageGallery\PictureChooser.cs">
 	  <SubType>Form</SubType>
 	</Compile>
