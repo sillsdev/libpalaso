@@ -27,6 +27,7 @@
 	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
 		<include name="Palaso/Palaso.proj.build" />
 		<include name="Palaso.Tests/Palaso.Tests.proj.build" />
+		<include name="Palaso.Backup/Palaso.Backup.proj.build" />
 		<include name="Reporting/Reporting.proj.build" />
 		<include name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
 		<include name="AddSortKey/AddSortKey.proj.build" />
