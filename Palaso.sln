@@ -2,86 +2,36 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso", "Palaso\Palaso.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Tests", "Palaso.Tests\Palaso.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms", "PalasoUIWindowsForms\PalasoUIWindowsForms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting", "Reporting\Reporting.csproj", "{9CCBECEC-513C-4DA4-A4CE-F5361B633760}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSortKey", "AddSortKey\AddSortKey.csproj", "{3D4F73A8-DB05-4580-98A0-DEE34C010636}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp", "TestApp\Reporting.TestApp.csproj", "{13B5E313-1B26-4DAE-9E96-133768B62FD2}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.Tests", "PalasoUIWindowsForms.Tests\PalasoUIWindowsForms.Tests.csproj", "{6E16866F-FF8D-4136-AD67-36AFE3626432}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Services", "Palaso.Services\Palaso.Services.csproj", "{55B824F8-63ED-43BC-8FA0-9C92695A2D3F}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Services.Tests", "Palaso.Services.Tests\Palaso.Services.Tests.csproj", "{4CEA3549-7920-4EF0-BCB2-1C643CDC33DD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Services.Dictionary.SampleClient", "Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.csproj", "{06FD1066-C3C6-4132-A820-5CC501375B91}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTasks", "Palaso.MSBuildTasks\Palaso.BuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Services.Tests.Server", "Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.csproj", "{F85EBEB5-8A47-470B-8A00-CB801CD80232}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.TestApp", "PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Media", "Palaso.Media\Palaso.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Media.Tests", "Palaso.Media.Tests\Palaso.Media.Tests.csproj", "{CD4AF11C-C214-4D90-8F12-6DA97836B800}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Backup", "Palaso.Backup\Palaso.Backup.csproj", "{BCE2C162-81FB-4150-915E-2BD77D87391D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -207,6 +157,14 @@ Global
 		{CD4AF11C-C214-4D90-8F12-6DA97836B800}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD4AF11C-C214-4D90-8F12-6DA97836B800}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD4AF11C-C214-4D90-8F12-6DA97836B800}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE2C162-81FB-4150-915E-2BD77D87391D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
