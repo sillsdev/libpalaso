@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Management;
 using NDesk.DBus;
 using org.freedesktop.DBus;
@@ -11,76 +9,71 @@ namespace Palaso.Backup
 {
 	public class UsbDriveInfo
 	{
-		private long _availableFreeSpace;
-		private bool _isReady;
-		private string _name;
 		private DirectoryInfo _rootDirectory;
-		private long _totalSize;
-		private string _volumelabel;
-
-		public long AvailableFreeSpace
-		{
-			get { return _availableFreeSpace; }
-			private set { _availableFreeSpace = value; }
-		}
-
-		public bool IsReady
-		{
-			get { return _isReady; }
-			private set { _isReady = value; }
-		}
-
-		public string Name
-		{
-			get { return _name; }
-			private set { _name = value; }
-		}
+		private ulong _totalSize;
 
 		public DirectoryInfo RootDirectory
 		{
 			get { return _rootDirectory; }
-			private set { _rootDirectory = value; }
 		}
 
-		public long TotalSize
+		public double TotalSize
 		{
 			get { return _totalSize; }
-			private set { _totalSize = value; }
 		}
 
-		public string Volumelabel
+		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
 		{
-			get { return _volumelabel; }
-			private set { _volumelabel = value; }
+			try
+			{
+				return device.GetPropertyString(propertyName);
+			}
+			catch{}
+			return String.Empty;
 		}
 
+		private static ulong TryGetDevicePropertyUInt64(HalDevice device, string propertyName)
+		{
+			try
+			{
+				return device.GetPropertyInteger(propertyName);
+			}
+			catch{}
+			return 0;
+		}
 
 		public static List<UsbDriveInfo> GetDrives()
 		{
-			List<UsbDriveInfo> driveInfos = new List<UsbDriveInfo>();
+			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				Connection conn;
-
 				conn = Bus.System;
 
+				ObjectPath halManagerPath = new ObjectPath("/org/freedesktop/Hal/Manager");
+				string halNameOnDbus = "org.freedesktop.Hal";
 
+				HalManager manager = conn.GetObject<HalManager>(halNameOnDbus, halManagerPath);
 
-				ObjectPath opath = new ObjectPath("/org/freedesktop/Hal/Manager");
+				ObjectPath[] volumeDevicePaths = manager.FindDeviceByCapability("volume");
+				foreach (ObjectPath volumeDevicePath in volumeDevicePaths)
+				{
+					HalDevice volumeDevice = conn.GetObject<HalDevice>(halNameOnDbus, volumeDevicePath);
 
-				string name = "org.freedesktop.Hal";
+					if (DeviceIsOnUsbBus(conn, halNameOnDbus, volumeDevice))
+					{
+						UsbDriveInfo deviceInfo = new UsbDriveInfo();
 
+						string devicePath = TryGetDevicePropertyString(volumeDevice, "volume.mount_point");
 
+						deviceInfo._totalSize = TryGetDevicePropertyUInt64(volumeDevice, "volume.size");
+						deviceInfo._rootDirectory = new DirectoryInfo(devicePath);
 
-				HalManager manager = conn.GetObject<HalManager>(name, opath);
+						drives.Add(deviceInfo);
+					}
+				}
 
-
-
-				ObjectPath[] returnedStrings;
-
-
-
-				returnedStrings = manager.GetAllDevices();
+				ObjectPath[] storageDevices = manager.FindDeviceByCapability("storage");
 			}
 			else
 			{
@@ -118,13 +111,11 @@ namespace Palaso.Backup
 											if (s == diskInfoFromWMI["NAME"].ToString())
 											{
 												UsbDriveInfo usbDriveinfo = new UsbDriveInfo();
-												usbDriveinfo._availableFreeSpace = driveInfo.AvailableFreeSpace;
-												usbDriveinfo._totalSize = driveInfo.TotalSize;
-												usbDriveinfo._name = driveInfo.Name;
-												usbDriveinfo._volumelabel = driveInfo.VolumeLabel;
-												usbDriveinfo._isReady = driveInfo.IsReady;
+												//We use a ulong because that's what linux uses
+												usbDriveinfo._totalSize = (ulong)driveInfo.TotalSize;
+
 												usbDriveinfo._rootDirectory = driveInfo.RootDirectory;
-												driveInfos.Add(usbDriveinfo);
+												drives.Add(usbDriveinfo);
 											}
 										}
 
@@ -140,19 +131,37 @@ namespace Palaso.Backup
 
 				}
 			}
-			return driveInfos;
+			return drives;
+		}
+
+		private static bool DeviceIsOnUsbBus(Connection conn, string halNameOnDbus, HalDevice device)
+		{
+			bool deviceIsOnUsbSubsystem;
+			bool thereIsAPathToParent;
+			do
+			{
+				string subsystem = TryGetDevicePropertyString(device, "info.subsystem");
+				deviceIsOnUsbSubsystem = subsystem.Contains("usb");
+				string pathToParent = TryGetDevicePropertyString(device, "info.parent");
+				thereIsAPathToParent = String.IsNullOrEmpty(pathToParent);
+				device = conn.GetObject<HalDevice>(halNameOnDbus, new ObjectPath(pathToParent));
+			} while (!deviceIsOnUsbSubsystem && !thereIsAPathToParent);
+			return deviceIsOnUsbSubsystem;
 		}
 
 		[Interface ("org.freedesktop.Hal.Manager")]
 		interface HalManager : Introspectable
 		{
 			ObjectPath[] GetAllDevices();
+			ObjectPath[] FindDeviceByCapability(string capability);
 		}
 
 		[Interface("org.freedesktop.Hal.Device")]
 		interface HalDevice : Introspectable
 		{
-			ObjectPath[] GetAllDevices();
+			string GetPropertyString(string propertyName);
+			string[] GetPropertyStringList(string propertyName);
+			ulong GetPropertyInteger(string propertyName);
 		}
 	}
 }
