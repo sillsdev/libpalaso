@@ -22,24 +22,14 @@ namespace Palaso.Backup
 			get { return _totalSize; }
 		}
 
-		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
+		private static string GetDevicePropertyString(HalDevice device, string propertyName)
 		{
-			try
-			{
-				return device.GetPropertyString(propertyName);
-			}
-			catch{}
-			return String.Empty;
+			return device.GetPropertyString(propertyName);
 		}
 
-		private static ulong TryGetDevicePropertyUInt64(HalDevice device, string propertyName)
+		private static ulong GetDevicePropertyInteger(HalDevice device, string propertyName)
 		{
-			try
-			{
-				return device.GetPropertyInteger(propertyName);
-			}
-			catch{}
-			return 0;
+			return device.GetPropertyInteger(propertyName);
 		}
 
 		public static List<UsbDriveInfo> GetDrives()
@@ -47,8 +37,7 @@ namespace Palaso.Backup
 			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
-				Connection conn;
-				conn = Bus.System;
+				Connection conn = Bus.System;
 
 				ObjectPath halManagerPath = new ObjectPath("/org/freedesktop/Hal/Manager");
 				string halNameOnDbus = "org.freedesktop.Hal";
@@ -64,16 +53,14 @@ namespace Palaso.Backup
 					{
 						UsbDriveInfo deviceInfo = new UsbDriveInfo();
 
-						string devicePath = TryGetDevicePropertyString(volumeDevice, "volume.mount_point");
+						string devicePath = GetDevicePropertyString(volumeDevice, "volume.mount_point");
 
-						deviceInfo._totalSize = TryGetDevicePropertyUInt64(volumeDevice, "volume.size");
+						deviceInfo._totalSize = GetDevicePropertyInteger(volumeDevice, "volume.size");
 						deviceInfo._rootDirectory = new DirectoryInfo(devicePath);
 
 						drives.Add(deviceInfo);
 					}
 				}
-
-				ObjectPath[] storageDevices = manager.FindDeviceByCapability("storage");
 			}
 			else
 			{
@@ -140,9 +127,9 @@ namespace Palaso.Backup
 			bool thereIsAPathToParent;
 			do
 			{
-				string subsystem = TryGetDevicePropertyString(device, "info.subsystem");
+				string subsystem = GetDevicePropertyString(device, "info.subsystem");
 				deviceIsOnUsbSubsystem = subsystem.Contains("usb");
-				string pathToParent = TryGetDevicePropertyString(device, "info.parent");
+				string pathToParent = GetDevicePropertyString(device, "info.parent");
 				thereIsAPathToParent = String.IsNullOrEmpty(pathToParent);
 				device = conn.GetObject<HalDevice>(halNameOnDbus, new ObjectPath(pathToParent));
 			} while (!deviceIsOnUsbSubsystem && !thereIsAPathToParent);
