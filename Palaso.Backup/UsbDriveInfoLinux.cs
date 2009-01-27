@@ -22,14 +22,26 @@ namespace Palaso.Backup
 			get { return _totalSize; }
 		}
 
-		private static string GetDevicePropertyString(HalDevice device, string propertyName)
+		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
 		{
-			return device.GetPropertyString(propertyName);
+			//if the property does not exist, we don't care
+			try
+			{
+				return device.GetPropertyString(propertyName);
+			}
+			catch{}
+			return String.Empty;
 		}
 
-		private static ulong GetDevicePropertyInteger(HalDevice device, string propertyName)
+		private static ulong TryGetDevicePropertyInteger(HalDevice device, string propertyName)
 		{
-			return device.GetPropertyInteger(propertyName);
+			//if the property does not exist, we don't care
+			try
+			{
+				return device.GetPropertyInteger(propertyName);
+			}
+			catch { }
+			return 0;
 		}
 
 		public new static List<UsbDriveInfo> GetDrives()
@@ -51,9 +63,9 @@ namespace Palaso.Backup
 				{
 					UsbDriveInfoLinux deviceInfo = new UsbDriveInfoLinux();
 
-					string devicePath = GetDevicePropertyString(volumeDevice, "volume.mount_point");
+					string devicePath = TryGetDevicePropertyString(volumeDevice, "volume.mount_point");
 
-					deviceInfo._totalSize = GetDevicePropertyInteger(volumeDevice, "volume.size");
+					deviceInfo._totalSize = TryGetDevicePropertyInteger(volumeDevice, "volume.size");
 					deviceInfo._rootDirectory = new DirectoryInfo(devicePath);
 
 					drives.Add(deviceInfo);
@@ -68,9 +80,9 @@ namespace Palaso.Backup
 			bool thereIsAPathToParent;
 			do
 			{
-				string subsystem = GetDevicePropertyString(device, "info.subsystem");
+				string subsystem = TryGetDevicePropertyString(device, "info.subsystem");
 				deviceIsOnUsbSubsystem = subsystem.Contains("usb");
-				string pathToParent = GetDevicePropertyString(device, "info.parent");
+				string pathToParent = TryGetDevicePropertyString(device, "info.parent");
 				thereIsAPathToParent = String.IsNullOrEmpty(pathToParent);
 				device = conn.GetObject<HalDevice>(halNameOnDbus, new ObjectPath(pathToParent));
 			} while (!deviceIsOnUsbSubsystem && !thereIsAPathToParent);
@@ -93,4 +105,4 @@ namespace Palaso.Backup
 		}
 	}
 }
-#endif
+//#endif
