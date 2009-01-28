@@ -9,6 +9,10 @@ namespace Palaso.Backup
 {
 	public abstract class UsbDriveInfo
 	{
+		public abstract bool IsReady
+		{
+			get;
+		}
 
 		public abstract DirectoryInfo RootDirectory
 		{

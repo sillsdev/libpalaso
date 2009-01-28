@@ -9,17 +9,30 @@ namespace Palaso.Backup
 {
 	internal class UsbDriveInfoLinux:UsbDriveInfo
 	{
-		private DirectoryInfo _rootDirectory;
-		private ulong _totalSize;
+		private HalDevice _volumeDevice;
+
+		public override bool IsReady
+		{
+			get
+			{
+				return TryGetDevicePropertyBoolean(_volumeDevice, "volume.is_mounted");
+			}
+		}
 
 		public override DirectoryInfo RootDirectory
 		{
-			get { return _rootDirectory; }
+			get
+			{
+				string devicePath = TryGetDevicePropertyString(_volumeDevice, "volume.mount_point");
+				//When a device is present but not mounted. This method will throw an ArgumentException.
+				//In particular this can be the case just after inserting a UsbDevice
+				return new DirectoryInfo(devicePath);
+			}
 		}
 
 		public override ulong TotalSize
 		{
-			get { return _totalSize; }
+			get { return TryGetDevicePropertyInteger(_volumeDevice, "volume.size"); }
 		}
 
 		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
@@ -31,6 +44,17 @@ namespace Palaso.Backup
 			}
 			catch{}
 			return String.Empty;
+		}
+
+		private static bool TryGetDevicePropertyBoolean(HalDevice device, string propertyName)
+		{
+			//if the property does not exist, we don't care
+			try
+			{
+				return device.GetPropertyBoolean(propertyName);
+			}
+			catch { }
+			return false;
 		}
 
 		private static ulong TryGetDevicePropertyInteger(HalDevice device, string propertyName)
@@ -62,13 +86,12 @@ namespace Palaso.Backup
 				if (DeviceIsOnUsbBus(conn, halNameOnDbus, volumeDevice))
 				{
 					UsbDriveInfoLinux deviceInfo = new UsbDriveInfoLinux();
-
-					string devicePath = TryGetDevicePropertyString(volumeDevice, "volume.mount_point");
-
-					deviceInfo._totalSize = TryGetDevicePropertyInteger(volumeDevice, "volume.size");
-					deviceInfo._rootDirectory = new DirectoryInfo(devicePath);
-
-					drives.Add(deviceInfo);
+					deviceInfo._volumeDevice = volumeDevice;
+					//This emulates Windows behavior
+					if (deviceInfo.IsReady)
+					{
+						drives.Add(deviceInfo);
+					}
 				}
 			}
 			return drives;
@@ -102,6 +125,7 @@ namespace Palaso.Backup
 			string GetPropertyString(string propertyName);
 			string[] GetPropertyStringList(string propertyName);
 			ulong GetPropertyInteger(string propertyName);
+			bool GetPropertyBoolean(string propertyName);
 		}
 	}
 }

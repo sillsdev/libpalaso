@@ -7,21 +7,37 @@ namespace Palaso.Backup
 {
 	internal class UsbDriveInfoWindows : UsbDriveInfo
 	{
-		private DirectoryInfo _rootDirectory;
-		private ulong _totalSize;
+		private DriveInfo _driveInfo;
 
 		private UsbDriveInfoWindows()
 		{
 		}
 
+		public override bool IsReady
+		{
+			get { return _driveInfo.IsReady; }
+		}
+
 		public override DirectoryInfo RootDirectory
 		{
-			get { return _rootDirectory; }
+			get
+			{
+				//this check is here because Linux throws if the drive is unmounted
+				if (!IsReady)
+				{
+					throw new ArgumentException("Is drive mounted?");
+				}
+				return _driveInfo.RootDirectory;
+			}
 		}
 
 		public override ulong TotalSize
 		{
-			get { return _totalSize; }
+			get
+			{
+				//We use a ulong because that's what linux uses
+				return  (ulong)_driveInfo.TotalSize;
+			}
 		}
 
 		public new static List<UsbDriveInfo> GetDrives()
@@ -61,10 +77,8 @@ namespace Palaso.Backup
 										if (s == diskInfoFromWMI["NAME"].ToString())
 										{
 											UsbDriveInfoWindows usbDriveinfo = new UsbDriveInfoWindows();
-											//We use a ulong because that's what linux uses
-											usbDriveinfo._totalSize = (ulong)driveInfo.TotalSize;
 
-											usbDriveinfo._rootDirectory = driveInfo.RootDirectory;
+											usbDriveinfo._driveInfo = driveInfo;
 											drives.Add(usbDriveinfo);
 										}
 									}
