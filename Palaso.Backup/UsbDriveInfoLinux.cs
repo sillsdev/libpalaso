@@ -7,7 +7,7 @@ using org.freedesktop.DBus;
 
 namespace Palaso.Backup
 {
-	public class UsbDriveInfoLinux:UsbDriveInfo
+	internal class UsbDriveInfoLinux:UsbDriveInfo
 	{
 		private DirectoryInfo _rootDirectory;
 		private ulong _totalSize;
