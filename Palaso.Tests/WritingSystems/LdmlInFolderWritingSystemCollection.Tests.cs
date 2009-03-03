@@ -228,8 +228,7 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2 = _collection.LoadDefinition("blah");
+			WritingSystemDefinition ws2 = _collection.LoadDefinition("blah");
 			ws2.Variant = "piglatin";
 			_collection.SaveDefinition(ws2);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(ws2));
@@ -360,8 +359,7 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 			_collection.Remove(_writingSystem.ISO);
 			AssertFileIsInTrash(_writingSystem);
-			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "blah";
+			WritingSystemDefinition ws2 = new WritingSystemDefinition {ISO = "blah"};
 			_collection.SaveDefinition(ws2);
 			_collection.Remove(ws2.ISO);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(_writingSystem));
