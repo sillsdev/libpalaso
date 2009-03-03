@@ -103,16 +103,16 @@ namespace Palaso.BuildTasks.MakePot
 		{
 			writer.WriteLine("msgid \"\"");
 			writer.WriteLine("msgstr \"\"");
-			writer.WriteLine("\"Project-Id-Version: {0}\"\n", ProjectId);
-			writer.WriteLine("\"Report-Msgid-Bugs-To: {0}\"\n", MsdIdBugsTo);
+			writer.WriteLine("\"Project-Id-Version: {0}\"", ProjectId);
+			writer.WriteLine("\"Report-Msgid-Bugs-To: {0}\"", MsdIdBugsTo);
 
-			writer.WriteLine("\"POT-Creation-Date: {0}\"\n", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("\"PO-Revision-Date: {0}\"\n", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("\"Last-Translator: \"\n");
-			writer.WriteLine("\"Language-Team: \"\n");
-			writer.WriteLine("\"MIME-Version: 1.0\"\n");
-			writer.WriteLine("\"Content-Type: text/plain; charset=UTF-8\"\n");
-			writer.WriteLine("\"Content-Transfer-Encoding: 8bit\"\n");
+			writer.WriteLine("\"POT-Creation-Date: {0}\"", DateTime.UtcNow.ToString("s"));
+			writer.WriteLine("\"PO-Revision-Date: {0}\"", DateTime.UtcNow.ToString("s"));
+			writer.WriteLine("\"Last-Translator: \"");
+			writer.WriteLine("\"Language-Team: \"");
+			writer.WriteLine("\"MIME-Version: 1.0\"");
+			writer.WriteLine("\"Content-Type: text/plain; charset=UTF-8\"");
+			writer.WriteLine("\"Content-Transfer-Encoding: 8bit\"");
 		}
 
 
