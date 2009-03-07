@@ -80,6 +80,11 @@ namespace WeSay.LexicalTools.AddPictures
 			Close();
 		}
 
+		private void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			_okButton.Enabled = (_thumbnailViewer.SelectedItems.Count > 0);
+		}
+
 	}
 
 }

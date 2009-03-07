@@ -85,7 +85,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			_thumbnailWorker.DoWork += new DoWorkEventHandler(bwLoadImages_DoWork);
 			_thumbnailWorker.WorkerSupportsCancellation = true;
 			_thumbnailWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnRunWorkerCompleted);
-
+			this.MultiSelect = false;
 		}
 
 		void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

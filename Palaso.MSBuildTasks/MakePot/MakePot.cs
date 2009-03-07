@@ -158,6 +158,10 @@ namespace Palaso.BuildTasks.MakePot
 					_entries.Add(str, new List<string>());
 				}
 				string comments = "#; " + filePath;
+
+				//catch the second parameter from calls like this:
+				//            StringCatalog.Get("~Note", "The label for the field showing a note.");
+
 				if (match.Groups.Count >= 3 && match.Groups[3].Length > 0)
 				{
 					string comment = match.Groups[3].Value;

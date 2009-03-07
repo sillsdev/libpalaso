@@ -47,11 +47,13 @@ namespace Palaso.UI.WindowsForms.i8n
 				}
 				if (_wiredToParent && _parent != null)
 				{
+					UnwireFromControl(_parent);
 					UnwireFromChildren(_parent);
 				}
 				_parent = value;
 				if (_wiredToParent && _parent != null)
 				{
+					WireToControl(_parent);
 					WireToChildren(_parent);
 				}
 			}
@@ -177,7 +179,7 @@ namespace Palaso.UI.WindowsForms.i8n
 
 		private static bool IsAllowedControl(Control control)
 		{
-			return control is Label || control is IButtonControl || control is TabControl;
+			return control is Label || control is IButtonControl || control is TabControl || control is Form;
 		}
 
 		#region ISupportInitialize Members
@@ -194,9 +196,13 @@ namespace Palaso.UI.WindowsForms.i8n
 		///
 		public void EndInit()
 		{
+			if (DesignMode)
+				return;
+
 			if (!_wiredToParent && Parent != null)
 			{
 				_wiredToParent = true;
+				WireToControl(_parent);
 				WireToChildren(Parent);
 			}
 		}
