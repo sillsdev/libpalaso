@@ -6,6 +6,8 @@ using NUnit.Framework;
 using Palaso.IO;
 using Palaso.Tests;
 using Palaso.UI.WindowsForms.ImageGallery;
+using System.Linq;
+
 
 namespace WeSay.LexicalTools.Tests
 {
@@ -33,7 +35,7 @@ namespace WeSay.LexicalTools.Tests
 		public void GetMatchingPictures_OnKeyWordHasManyMatches_GetManyMatches()
 		{
 			var matches = _artCollection.GetMatchingPictures("duck");
-			Assert.Less(30, matches.Count);
+			Assert.Less(30, matches.Count());
 		}
 
 		/// <summary>
@@ -48,7 +50,7 @@ namespace WeSay.LexicalTools.Tests
 		public void GetMatchingPictures_OnKeyWordHasTwoMatches_GetTwoMatches()
 		{
 			var matches = _artCollection.GetMatchingPictures("xyz");
-			Assert.AreEqual(0, matches.Count);
+			Assert.AreEqual(0, matches.Count());
 		}
 
 
@@ -65,14 +67,14 @@ namespace WeSay.LexicalTools.Tests
 		{
 			var duckMatches = _artCollection.GetMatchingPictures("duck");
 			var bothMatches = _artCollection.GetMatchingPictures("duck sheep");
-			Assert.Greater(bothMatches.Count, duckMatches.Count);
+			Assert.Greater(bothMatches.Count(), duckMatches.Count());
 		}
 
 		[Test]
 		public void GetMatchingPictures_WordsFollowedByPunctuation_StillMatches()
 		{
 			var duckMatches = _artCollection.GetMatchingPictures("duck, blah");
-			Assert.Less(0, duckMatches.Count);
+			Assert.Less(0, duckMatches.Count());
 		}
 
 		[Test]
@@ -80,7 +82,7 @@ namespace WeSay.LexicalTools.Tests
 		{
 			var batMatches = _artCollection.GetMatchingPictures("bat");
 			var bothMatches = _artCollection.GetMatchingPictures("bat bat");
-			Assert.AreEqual(bothMatches.Count, batMatches.Count);
+			Assert.AreEqual(bothMatches.Count(), batMatches.Count());
 
 			bothMatches = _artCollection.GetMatchingPictures("bat animal");
 			List<string> found = new List<string>();

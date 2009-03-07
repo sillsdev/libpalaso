@@ -1,4 +1,4 @@
-﻿namespace WeSay.LexicalTools.AddPictures
+﻿namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	partial class ThumbnailViewer
 	{

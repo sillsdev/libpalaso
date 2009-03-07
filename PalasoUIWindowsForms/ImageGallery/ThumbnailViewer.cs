@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using Palaso.UI.WindowsForms.ImageGallery;
 
-namespace WeSay.LexicalTools.AddPictures
+namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	public partial class ThumbnailViewer : ListView
 	{
@@ -96,51 +96,10 @@ namespace WeSay.LexicalTools.AddPictures
 
 		public Image GetThumbNail(string fileName)
 		{
-			return GetThumbNail(fileName, thumbNailSize, thumbNailSize, thumbBorderColor);
+			return ImageUtilities.GetThumbNail(fileName, thumbNailSize, thumbNailSize, thumbBorderColor);
 		}
 
-		public static Image GetThumbNail(string fileName, int imgWidth, int imgHeight, Color penColor)
-		{
-			Bitmap bmp;
 
-			try
-			{
-				bmp = new Bitmap(fileName);
-			}
-			catch
-			{
-				bmp = new Bitmap(imgWidth, imgHeight); //If we cant load the image, create a blank one with ThumbSize
-			}
-
-
-			imgWidth = bmp.Width > imgWidth ? imgWidth : bmp.Width;
-			imgHeight = bmp.Height > imgHeight ? imgHeight : bmp.Height;
-
-			Bitmap retBmp = new Bitmap(imgWidth, imgHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
-
-			Graphics grp = Graphics.FromImage(retBmp);
-
-
-			int tnWidth = imgWidth, tnHeight = imgHeight;
-
-			if (bmp.Width > bmp.Height)
-				tnHeight = (int)(((float)bmp.Height / (float)bmp.Width) * tnWidth);
-			else if (bmp.Width < bmp.Height)
-				tnWidth = (int)(((float)bmp.Width / (float)bmp.Height) * tnHeight);
-
-			int iLeft = (imgWidth / 2) - (tnWidth / 2);
-			int iTop = (imgHeight / 2) - (tnHeight / 2);
-
-			grp.PixelOffsetMode = PixelOffsetMode.None;
-			grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-			grp.DrawImage(bmp, iLeft, iTop, tnWidth, tnHeight);
-
-			Pen pn = new Pen(penColor, 1); //Color.Wheat
-			grp.DrawRectangle(pn, 0, 0, retBmp.Width - 1, retBmp.Height - 1);
-
-			return retBmp;
-		}
 
 		private void AddDefaultThumb()
 		{
@@ -157,7 +116,7 @@ namespace WeSay.LexicalTools.AddPictures
 
 		private void bwLoadImages_DoWork(object sender, DoWorkEventArgs e)
 		{
-			var fileList = (IList<string>)e.Argument;
+			var fileList = (IEnumerable<string>)e.Argument;
 
 			foreach (string fileName in fileList)
 			{
@@ -170,7 +129,7 @@ namespace WeSay.LexicalTools.AddPictures
 			}
 		}
 
-		public void LoadItems(IList<string> pathList)
+		public void LoadItems(IEnumerable<string> pathList)
 		{
 			if ((_thumbnailWorker != null) && (_thumbnailWorker.IsBusy))
 			{
@@ -178,7 +137,7 @@ namespace WeSay.LexicalTools.AddPictures
 				DateTime timeOut = DateTime.Now.AddSeconds(3);
 				while(_thumbnailWorker.IsBusy && (DateTime.Now.CompareTo(timeOut)<0))
 				{
-				   //this doesn't allow the thread to actual cancel  Thread.Sleep(100);
+					//this doesn't allow the thread to actual cancel  Thread.Sleep(100);
 					Application.DoEvents();//this, however, is criminal
 				}
 

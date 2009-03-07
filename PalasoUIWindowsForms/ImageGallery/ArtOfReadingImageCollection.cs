@@ -44,7 +44,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 		}
 
-		public IList<object> GetMatchingPictures(string keywords)
+		public IEnumerable<object> GetMatchingPictures(string keywords)
 		{
 			keywords = GetCleanedUpSearchString(keywords);
 			return GetMatchingPictures(keywords.SplitTrimmed(' '));
@@ -86,21 +86,19 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		}
 
 
-		public IList<string> GetPathsFromResults(IList<object> results, bool limitToThoseActuallyAvailable)
+		public IEnumerable<string> GetPathsFromResults(IEnumerable<object> results, bool limitToThoseActuallyAvailable)
 		{
-			List<string> paths= new List<string>();
 			foreach (var macPath in results)
 			{
 				var path = Path.Combine(RootImagePath, ((string) macPath).Replace(':', Path.DirectorySeparatorChar));
 				if (!limitToThoseActuallyAvailable || File.Exists(path))
 				{
-					paths.Add(path);
+					yield return path;
 				}
 			}
-			return paths;
 		}
 
-		private IList<object> GetMatchingPictures(IEnumerable<string> keywords)
+		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords)
 		{
 			List<string> pictures = new List<string>();
 			foreach (var key in keywords)
@@ -129,6 +127,28 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 					result += " " + key;
 			}
 			return result.Trim();
+		}
+
+		public static string TryToGetCollectionPath()
+		{
+			string root;
+			try
+			{
+				root = (from d in DriveInfo.GetDrives()
+							where d.VolumeLabel.Contains("Art Of Reading")
+							select d.RootDirectory.FullName).FirstOrDefault();
+			}
+			catch
+			{
+				return null;
+			}
+			if(!string.IsNullOrEmpty(root))
+			{
+				var path = Path.Combine(root, "images");
+				if(Directory.Exists(path))
+					return path;
+			}
+				return null;
 		}
 	}
 }

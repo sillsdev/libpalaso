@@ -1,4 +1,6 @@
-﻿namespace WeSay.LexicalTools.AddPictures
+﻿using Palaso.UI.WindowsForms.ImageGallery;
+
+namespace WeSay.LexicalTools.AddPictures
 {
 	partial class PictureChooser
 	{
@@ -33,7 +35,8 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this._searchButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
-			this._thumbnailViewer = new WeSay.LexicalTools.AddPictures.ThumbnailViewer();
+			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
+			this._notFoundLabel = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			//
 			// _searchTermsBox
@@ -89,12 +92,26 @@
 			this._thumbnailViewer.UseCompatibleStateImageBehavior = false;
 			this._thumbnailViewer.DoubleClick += new System.EventHandler(this._thumbnailViewer_DoubleClick);
 			//
+			// _notFoundLabel
+			//
+			this._notFoundLabel.AutoSize = true;
+			this._notFoundLabel.BackColor = System.Drawing.SystemColors.Window;
+			this._notFoundLabel.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._notFoundLabel.ForeColor = System.Drawing.Color.Gray;
+			this._notFoundLabel.Location = new System.Drawing.Point(58, 92);
+			this._notFoundLabel.Name = "_notFoundLabel";
+			this._notFoundLabel.Size = new System.Drawing.Size(182, 23);
+			this._notFoundLabel.TabIndex = 5;
+			this._notFoundLabel.Text = "No matching images";
+			this._notFoundLabel.Visible = false;
+			//
 			// PictureChooser
 			//
 			this.AcceptButton = this._searchButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(639, 612);
+			this.Controls.Add(this._notFoundLabel);
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this._searchButton);
 			this.Controls.Add(this.label1);
@@ -118,6 +135,7 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button _searchButton;
 		private System.Windows.Forms.Button _okButton;
+		private System.Windows.Forms.Label _notFoundLabel;
 
 	}
 }

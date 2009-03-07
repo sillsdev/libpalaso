@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 	public interface IImageCollection
 	{
-		IList<object> GetMatchingPictures(string keywords);
+		IEnumerable<object> GetMatchingPictures(string keywords);
 
 		/// <summary>
 		/// The imageTOken here could be a path or whatever, the client doesn't need to know or care
@@ -18,6 +18,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		CaptionMethodDelegate CaptionMethod{ get;}
 
-		IList<string> GetPathsFromResults(IList<object> results, bool limitToThoseActuallyAvailable);
+		IEnumerable<string> GetPathsFromResults(IEnumerable<object> results, bool limitToThoseActuallyAvailable);
 	}
 }

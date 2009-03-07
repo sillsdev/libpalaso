@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
+using System.Linq;
 
 namespace WeSay.LexicalTools.AddPictures
 {
@@ -18,13 +19,34 @@ namespace WeSay.LexicalTools.AddPictures
 
 		private void _searchButton_Click(object sender, EventArgs e)
 		{
-
-			if (!string.IsNullOrEmpty(_searchTermsBox.Text))
+			Cursor.Current = Cursors.WaitCursor;
+			_searchButton.Enabled = false;
+			_okButton.Enabled = false;
+			try
 			{
-				IList<object> results = _images.GetMatchingPictures(_searchTermsBox.Text);
+				_thumbnailViewer.Clear();
+				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
+				{
+					IEnumerable<object> results = _images.GetMatchingPictures(_searchTermsBox.Text);
+					if (results.Count() == 0)
+					{
+						_notFoundLabel.Visible = true;
+					}
+					else
+					{
+						_notFoundLabel.Visible = false;
+						_thumbnailViewer.LoadItems(_images.GetPathsFromResults(results, true));
+					}
+				}
 
-				_thumbnailViewer.LoadItems(_images.GetPathsFromResults(results, true));
 			}
+			catch (Exception error)
+			{
+
+			}
+			_searchButton.Enabled = true;
+			_okButton.Enabled = false;
+			Cursor.Current = Cursors.Default;
 		}
 
 		private void PictureChooser_Load(object sender, EventArgs e)
