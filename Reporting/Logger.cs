@@ -7,13 +7,22 @@ using System.Windows.Forms;
 
 namespace Palaso.Reporting
 {
+
+	public interface ILogger
+	{
+		/// <summary>
+		/// This is something that should be listed in the source control checkin
+		/// </summary>
+		void WriteConciseHistoricalEvent(string message, params object[] args);
+	}
+
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Logs stuff to a file created in
 	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\Productname\Log.txt
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class Logger : IDisposable
+	public class Logger : IDisposable, ILogger
 	{
 		private static Logger _singleton;
 		protected StreamWriter m_out;
@@ -124,6 +133,16 @@ namespace Palaso.Reporting
 		{
 			Dispose(false);
 			// The base class finalizer is called automatically.
+		}
+
+		/// <summary>
+		/// This is for version-control checkin descriptions. E.g. "Deleted foobar".
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="args"></param>
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			WriteEventCore(message, args);
 		}
 
 		/// <summary>
