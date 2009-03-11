@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -14,6 +15,46 @@ namespace Palaso.Reporting
 		/// This is something that should be listed in the source control checkin
 		/// </summary>
 		void WriteConciseHistoricalEvent(string message, params object[] args);
+	}
+	public class MultiLogger : IDisposable, ILogger
+	{
+		private readonly List<ILogger> _loggers= new List<ILogger>();
+		public void Dispose()
+		{
+			foreach (ILogger logger in _loggers)
+			{
+				IDisposable d = logger as IDisposable;
+				if(d!=null)
+					d.Dispose();
+			}
+			_loggers.Clear();
+		}
+
+		public void Add(ILogger logger)
+		{
+			_loggers.Add(logger);
+		}
+
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			foreach (ILogger logger in _loggers)
+			{
+				logger.WriteConciseHistoricalEvent(message,args);
+			}
+		}
+	}
+
+	public class StringLogger :  ILogger
+	{
+		StringBuilder _builder = new StringBuilder();
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			_builder.AppendFormat(message, args);
+		}
+		public string GetLogText()
+		{
+			return _builder.ToString();
+		}
 	}
 
 	/// ----------------------------------------------------------------------------------------
@@ -37,7 +78,7 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void Init()
 		{
-			if(_singleton == null)
+			if(Singleton == null)
 				_singleton = new Logger();
 		}
 
@@ -49,9 +90,9 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void ShutDown()
 		{
-			if (_singleton != null)
+			if (Singleton != null)
 			{
-				_singleton.Dispose();
+				Singleton.Dispose();
 				_singleton = null;
 			}
 		}
@@ -213,10 +254,10 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				if (_singleton == null)
+				if (Singleton == null)
 					return "No log available.";
 
-				string logText = _singleton.GetLogTextAndStartOver();
+				string logText = Singleton.GetLogTextAndStartOver();
 
 				return logText;
 			}
@@ -258,6 +299,11 @@ namespace Palaso.Reporting
 			}
 		}
 
+		public static Logger Singleton
+		{
+			get { return _singleton; }
+		}
+
 		private static void SetActualLogPath(string filename)
 		{
 			_actualLogPath = Path.Combine(Path.GetTempPath(),
@@ -275,8 +321,8 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void WriteEvent(string message, params object[] args)
 		{
-			if (_singleton != null)
-				_singleton.WriteEventCore(message,args);
+			if (Singleton != null)
+				Singleton.WriteEventCore(message,args);
 		}
 
 		private void WriteEventCore(string message, params object[] args)
@@ -311,8 +357,8 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void WriteMinorEvent(string message, params object[] args)
 		{
-			if (_singleton != null)
-				_singleton.WriteMinorEventCore(message,args);
+			if (Singleton != null)
+				Singleton.WriteMinorEventCore(message,args);
 		}
 
 		private void WriteMinorEventCore(string message, params object[] args)
