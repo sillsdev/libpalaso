@@ -97,12 +97,16 @@ namespace Palaso.Reporting
 			}
 		}
 
-		private Logger(): this(true)
+		public Logger(): this(true)
 		{
 		}
 
 		private Logger(bool startWithNewFile)
 		{
+			if(_singleton!= null)
+			{
+				throw new ApplicationException("Sadly, only one instance of Logger is currently allowed, per instance of the application.");
+			}
 			try
 			{
 				m_out = null;
