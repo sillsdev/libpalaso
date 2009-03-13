@@ -16,20 +16,27 @@ namespace Palaso.Reporting
 		/// </summary>
 		void WriteConciseHistoricalEvent(string message, params object[] args);
 	}
-	public class MultiLogger : IDisposable, ILogger
+	public class MultiLogger :ILogger
 	{
 		private readonly List<ILogger> _loggers= new List<ILogger>();
-		public void Dispose()
-		{
-			foreach (ILogger logger in _loggers)
-			{
-				IDisposable d = logger as IDisposable;
-				if(d!=null)
-					d.Dispose();
-			}
-			_loggers.Clear();
-		}
 
+  //          this just lead to problems.  Better to say "this doesn't own anything", and let the DI container handle the lifetimes
+//        public void Dispose()
+//        {
+//            foreach (ILogger logger in _loggers)
+//            {
+//
+//                IDisposable d = logger as IDisposable;
+//                if(d!=null)
+//                    d.Dispose();
+//            }
+//            _loggers.Clear();
+//        }
+
+		/// <summary>
+		/// NB: you must handle disposal of the logger yourself (easy with a DI container)
+		/// </summary>
+		/// <param name="logger"></param>
 		public void Add(ILogger logger)
 		{
 			_loggers.Add(logger);
