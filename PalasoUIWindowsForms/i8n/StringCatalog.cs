@@ -109,6 +109,42 @@ namespace Palaso.UI.WindowsForms.i8n
 			return Get(id,  String.Empty);
 		}
 
+		/// <summary>
+		/// Clients should use this rather than running string.Format themselves,
+		/// because this has error checking and a helpful message, should the number
+		/// of parameters be wrong.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="translationNotes">just for the string scanner's use</param>
+		/// <param name="args">arguments to the string, used in string.format</param>
+		/// <returns></returns>
+		public static string GetFormatted(string id, string translationNotes, params object[] args)
+		{
+			//todo: this doesn't notice if the catalog has too few arugment slots, e.g.
+			//if it says "blah" when it should say "blah{0}"
+
+			try
+			{
+				var s = Get(id, translationNotes);
+				try
+				{
+					s = String.Format(s, args);
+					return s;
+				}
+				catch(Exception e)
+				{
+					Reporting.ErrorReport.ReportNonFatalMessage(
+						"There was a problem localizing\r\n'{0}'\r\ninto this UI language... check number of parameters. The code expects there to be {1}.  The current localized string is\r\n'{2}'.\r\nThe error was {3}", id, args.Length, s, e.Message);
+
+					return "!!"+s; // show it without the formatting
+				}
+			}
+			catch(Exception e)
+			{
+				return "Error localizing string '" + id + "' to this UI language";
+			}
+		}
+
 		public static string Get(string id, string translationNotes)
 		{
 			if (!String.IsNullOrEmpty(id) && id[0] == '~')

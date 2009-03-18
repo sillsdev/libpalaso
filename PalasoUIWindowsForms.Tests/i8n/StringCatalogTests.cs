@@ -57,6 +57,16 @@ msgid 'multi2'
 msgstr 'one'
 'two'
 'three'
+
+#: formatted correctly
+msgid 'oneParam'
+msgstr 'first={0}'
+
+
+#: missing param
+msgid 'noParams'
+msgstr 'first'
+
 ";
 
 			contents = contents.Replace('\'', '"');
@@ -68,6 +78,37 @@ msgstr 'one'
 		{
 			File.Delete(_poFile);
 		}
+
+		[Test]
+		public void GetFormatted_FoundCorrectString_Formats()
+		{
+			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
+			Assert.AreEqual("first=one", StringCatalog.GetFormatted("oneParam", "blah blah", "one"));
+		}
+
+/* TODO we haven't implemented this detection yet
+	[Test]
+		public void GetFormatted_TooFewParamsInCatalog_ShowsMessageAndReturnRightMessage()
+		{
+			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
+			//todo: when palaso is upgraded to the other branch, we can add something like this
+			//using(new Palaso.Reporting.NonFatalErrorDialog())
+			var answer = StringCatalog.GetFormatted("noParams", "blah blah","one");
+			Assert.AreEqual("!!first", answer);
+		}
+  */
+
+		[Test]
+		public void GetFormatted_TooManyParamsInCatalog_ShowsMessageAndReturnRightMessage()
+		{
+			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
+			using(new Palaso.Reporting.ErrorReport.NonFatalErrorReportExpected())
+			{
+				var answer = StringCatalog.GetFormatted("oneParam", "blah blah");
+				Assert.AreEqual("!!first={0}", answer);
+			}
+		}
+
 		[Test]
 		public void MultiLines_EmtpyMsgStr_Concatenated()
 		{
