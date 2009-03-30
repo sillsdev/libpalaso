@@ -82,9 +82,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				InnerKeyman6Wrapper.Deactivate();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating keyman 6.");
+				throw e;
+				// wip cjp: See WS-850 Identify the exception and maybe catch once per session, or advise re IPA problem.
+				// IPA keyboard 1.1.5 seems to work for MD, IPA keyboard V1.2 causes an exception to be thrown in Keyman 6.x
+				// Plan is to release this to identify the exception, then catch and discard.
+//                string error = string.Format("There was a problem deactivating keyman 6.\r\n{0}", e);
+//                Palaso.Reporting.NonFatalErrorDialog.Show(error);
 			}
 		}
 
