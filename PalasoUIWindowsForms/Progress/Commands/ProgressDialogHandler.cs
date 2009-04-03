@@ -173,7 +173,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void FinishWithUnspecifiedError()
 		{
-			Palaso.Reporting.ErrorReport.ReportNonFatalMessage("An error occurred while processing your request.");
+			Palaso.Reporting.ErrorReport.NotifyUserOfProblem("An error occurred while processing your request.");
 			Finish();
 		}
 

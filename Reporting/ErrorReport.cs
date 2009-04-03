@@ -322,9 +322,10 @@ namespace Palaso.Reporting
 		}
 
 		/// <summary>
-		/// Put up a message box, unless OkToInteractWithUser is false, in which case throw an Appliciation Exception
+		/// Put up a message box, unless OkToInteractWithUser is false, in which case throw an Appliciation Exception.
+		/// This will not report the problem to the developer.  Use one of the "report" methods for that.
 		/// </summary>
-		public static void ReportNonFatalMessage(string message, params object[] args)
+		public static void NotifyUserOfProblem(string message, params object[] args)
 		{
 			if(s_justRecordNonFatalMessagesForTesting)
 			{

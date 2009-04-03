@@ -178,7 +178,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			catch (ApplicationException ex)
 			{
-				Palaso.Reporting.ErrorReport.ReportNonFatalMessage("Unable to sort test text: {0}", ex.Message);
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem("Unable to sort test text: {0}", ex.Message);
 			}
 		}
 

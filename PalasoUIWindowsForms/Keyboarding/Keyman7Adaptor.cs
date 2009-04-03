@@ -163,7 +163,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
             if(oneBasedIndex < 1)
             {
-                 Palaso.Reporting.ErrorReport.ReportNonFatalMessage("The keyboard '{0}' could not be activated using Keyman 7.", name);
+				 Palaso.Reporting.ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.", name);
                 return;
             }
             string s = keyman.Keyboards[oneBasedIndex].Name;

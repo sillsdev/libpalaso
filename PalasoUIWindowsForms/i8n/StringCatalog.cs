@@ -97,7 +97,7 @@ namespace Palaso.UI.WindowsForms.i8n
 				}
 				catch (Exception)
 				{
-					Palaso.Reporting.ErrorReport.ReportNonFatalMessage(
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(
 						"Could not find the requested UI font '{0}'.  Will use a generic font instead.",
 						labelFontName);
 				}
@@ -133,7 +133,7 @@ namespace Palaso.UI.WindowsForms.i8n
 				}
 				catch(Exception e)
 				{
-					Reporting.ErrorReport.ReportNonFatalMessage(
+					Reporting.ErrorReport.NotifyUserOfProblem(
 						"There was a problem localizing\r\n'{0}'\r\ninto this UI language... check number of parameters. The code expects there to be {1}.  The current localized string is\r\n'{2}'.\r\nThe error was {3}", id, args.Length, s, e.Message);
 
 					return "!!"+s; // show it without the formatting

@@ -19,7 +19,7 @@ namespace TestApp
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			Palaso.Reporting.ErrorReport.ReportNonFatalMessage("hello");
+			Palaso.Reporting.ErrorReport.NotifyUserOfProblem("hello");
 		}
 
 		private void button2_Click(object sender, EventArgs e)
