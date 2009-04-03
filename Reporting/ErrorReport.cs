@@ -25,6 +25,7 @@ namespace Palaso.Reporting
 		private static bool s_isOkToInteractWithUser = true;
 		private static bool s_justRecordNonFatalMessagesForTesting=false;
 		private static string s_previousNonFatalMessage;
+		private static Exception s_previousNonFatalException;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -310,6 +311,16 @@ namespace Palaso.Reporting
 			return x;
 		}
 
+		public static void ReportFatalException(Exception e)
+		{
+			ErrorNotificationDialog.ReportException(e, null);
+		}
+
+		public static void ReportFatalException(Exception e, Form parentForm)
+		{
+			ErrorNotificationDialog.ReportException(e, parentForm);
+		}
+
 		/// <summary>
 		/// Put up a message box, unless OkToInteractWithUser is false, in which case throw an Appliciation Exception
 		/// </summary>
@@ -332,9 +343,68 @@ namespace Palaso.Reporting
 			}
 		}
 
+		public static void ReportNonFatalException(Exception exception)
+		{
+			ReportNonFatalException(exception, new ShowAlwaysPolicy());
+		}
+
+		/// <summary>
+		/// Allow user to report an exception even though the program doesn't need to exit
+		/// </summary>
+		public static void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
+		{
+			if(s_justRecordNonFatalMessagesForTesting)
+			{
+				ErrorReport.s_previousNonFatalException = exception;
+				return;
+			}
+			 if(policy.ShouldShowErrorReportDialog(exception))
+			{
+				if (ErrorReport.IsOkToInteractWithUser)
+				{
+					   ErrorNotificationDialog.ReportException(exception, null, false);
+				}
+				else
+				{
+					throw new NonFatalExceptionWouldHaveBeenMessageShownToUserException(exception);
+				}
+			}
+		}
+
 		public class NonFatalMessageSentToUserException : ApplicationException
 		{
 			public NonFatalMessageSentToUserException(string message) : base(message) {}
+		}
+
+		public class NonFatalExceptionWouldHaveBeenMessageShownToUserException : ApplicationException
+		{
+			public NonFatalExceptionWouldHaveBeenMessageShownToUserException(Exception e)  : base(e.Message, e) { }
+		}
+	}
+
+	public interface IRepeatNoticePolicy
+	{
+		bool ShouldShowErrorReportDialog(Exception exception);
+	}
+
+	public class ShowAlwaysPolicy :IRepeatNoticePolicy
+	{
+		public bool ShouldShowErrorReportDialog(Exception exception)
+		{
+			return true;
+		}
+	}
+
+	public class ShowOncePerSessionBasedOnExactMessagePolicy :IRepeatNoticePolicy
+	{
+		private static List<string> _alreadyReportedMessages = new List<string>();
+
+		public bool ShouldShowErrorReportDialog(Exception exception)
+		{
+			if(_alreadyReportedMessages.Contains(exception.Message))
+				return false;
+			_alreadyReportedMessages.Add(exception.Message);
+			return true;
 		}
 	}
 }

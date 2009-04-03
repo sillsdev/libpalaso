@@ -35,6 +35,7 @@ namespace TestApp
 			this.label1 = new System.Windows.Forms.Label();
 			this._keyman6TestBox = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.button4 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// button1
@@ -69,7 +70,7 @@ namespace TestApp
 			//
 			// _keymanTestBox
 			//
-			this._keymanTestBox.Location = new System.Drawing.Point(157, 183);
+			this._keymanTestBox.Location = new System.Drawing.Point(155, 337);
 			this._keymanTestBox.Name = "_keymanTestBox";
 			this._keymanTestBox.Size = new System.Drawing.Size(100, 20);
 			this._keymanTestBox.TabIndex = 1;
@@ -78,7 +79,7 @@ namespace TestApp
 			// label1
 			//
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(23, 183);
+			this.label1.Location = new System.Drawing.Point(23, 337);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(126, 13);
 			this.label1.TabIndex = 2;
@@ -86,7 +87,7 @@ namespace TestApp
 			//
 			// _keyman6TestBox
 			//
-			this._keyman6TestBox.Location = new System.Drawing.Point(157, 218);
+			this._keyman6TestBox.Location = new System.Drawing.Point(155, 364);
 			this._keyman6TestBox.Name = "_keyman6TestBox";
 			this._keyman6TestBox.Size = new System.Drawing.Size(100, 20);
 			this._keyman6TestBox.TabIndex = 1;
@@ -95,23 +96,34 @@ namespace TestApp
 			// label2
 			//
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(23, 218);
+			this.label2.Location = new System.Drawing.Point(23, 367);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(126, 13);
 			this.label2.TabIndex = 2;
 			this.label2.Text = "First Keyman 6 keyboard:";
 			//
+			// button4
+			//
+			this.button4.Location = new System.Drawing.Point(34, 184);
+			this.button4.Name = "button4";
+			this.button4.Size = new System.Drawing.Size(226, 23);
+			this.button4.TabIndex = 0;
+			this.button4.Text = "NonFatal Exception with once per session policy";
+			this.button4.UseVisualStyleBackColor = true;
+			this.button4.Click += new System.EventHandler(this.OnExceptionWithPolicyClick);
+			//
 			// Form1
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(284, 264);
+			this.ClientSize = new System.Drawing.Size(287, 402);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this._keyman6TestBox);
 			this.Controls.Add(this._keymanTestBox);
 			this.Controls.Add(this.button3);
 			this.Controls.Add(this.button2);
+			this.Controls.Add(this.button4);
 			this.Controls.Add(this.button1);
 			this.Name = "Form1";
 			this.Text = "Form1";
@@ -129,5 +141,6 @@ namespace TestApp
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox _keyman6TestBox;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button button4;
 	}
 }

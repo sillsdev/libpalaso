@@ -81,7 +81,12 @@ namespace Palaso.UI.WindowsForms.Progress
 				dlg.ShowDialog();
 				if (dlg.ProgressStateResult!=null && dlg.ProgressStateResult.ExceptionThatWasEncountered != null)
 				{
-					Palaso.Reporting.ErrorNotificationDialog.ReportException(dlg.ProgressStateResult.ExceptionThatWasEncountered, null, failureWouldBeFatal);
+					if(failureWouldBeFatal)
+						Reporting.ErrorReport.ReportFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
+				   else
+					{
+						Reporting.ErrorReport.ReportNonFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
+					}
 					return false;
 				}
 				return !dlg.ProgressState.Cancel;

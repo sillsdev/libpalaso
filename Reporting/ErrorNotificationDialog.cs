@@ -195,7 +195,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		/// <param name="error">the exception you want to report</param>
 		/// ------------------------------------------------------------------------------------
-		public static void ReportException(Exception error)
+		internal static void ReportException(Exception error)
 		{
 			ReportException(error, null);
 		}
@@ -205,7 +205,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		/// <param name="error"></param>
 		/// <param name="parent"></param>
-		public static void ReportException(Exception error, Form parent)
+		internal static void ReportException(Exception error, Form parent)
 		{
 			ReportException(error, null, true);
 		}
@@ -219,7 +219,7 @@ namespace Palaso.Reporting
 		/// show modally on)</param>
 		/// ------------------------------------------------------------------------------------
 		/// <param name="isLethal"></param>
-		public static void ReportException(Exception error, Form parent, bool isLethal)
+		internal static void ReportException(Exception error, Form parent, bool isLethal)
 		{
 			if (s_doIgnoreReport)
 			{
@@ -349,6 +349,7 @@ namespace Palaso.Reporting
 				if (msg.SendMailDirect(ErrorReport.EmailSubject, m_details.Text))
 				{
 					CloseUp();
+					return;
 				}
 			}
 			catch (Exception)
