@@ -6,7 +6,7 @@ using Palaso.Reporting;
 
 namespace Palaso.Reporting
 {
-	 public class ErrorNotificationDialog : Form, IDisposable
+	 public class ExceptionReportingDialog : Form, IDisposable
 	{
 		#region Member variables
 
@@ -25,7 +25,7 @@ namespace Palaso.Reporting
 
 		#endregion
 
-		protected ErrorNotificationDialog(bool isLethal)
+		protected ExceptionReportingDialog(bool isLethal)
 		{
 			_isLethal = isLethal;
 		}
@@ -95,7 +95,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorNotificationDialog));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExceptionReportingDialog));
 			this.label2 = new System.Windows.Forms.Label();
 			this.m_reproduce = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
@@ -226,7 +226,7 @@ namespace Palaso.Reporting
 				return;            // ignore message if we are showing from a previous error
 			}
 
-			using (ErrorNotificationDialog e = new ErrorNotificationDialog(isLethal))
+			using (ExceptionReportingDialog e = new ExceptionReportingDialog(isLethal))
 			{
 				e.HandleError(error, parent);
 			}
@@ -261,9 +261,10 @@ namespace Palaso.Reporting
 
 			if (!_isLethal)
 			{
-				_closeButton.Text = ReportingStrings.ks_Ok;
+				_closeButton.Text = "&Send Email";
 				BackColor = Color.FromArgb(255, 255, 192); //yellow
 				m_notification.BackColor = BackColor;
+				_linkJustExit.Text = "Don't Send Email";
 			}
 
 			Exception innerMostException = null;

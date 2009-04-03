@@ -150,7 +150,7 @@ namespace Palaso.Reporting
 					&& (uint)(((ExternalException)exception).ErrorCode) == 0x8007000E) // E_OUTOFMEMORY
 				{
 					if (showUI)
-						ErrorNotificationDialog.ReportException(exception);//, parent);
+						ExceptionReportingDialog.ReportException(exception);//, parent);
 					else
 					{
 						Trace.Fail("Out of memory");
@@ -167,7 +167,7 @@ namespace Palaso.Reporting
 					{
 						// bool fIsLethal = !(exception is Reporting.ConfigurationException);
 						//ErrorReporter.ReportException(exception, parent, fIsLethal);
-						ErrorNotificationDialog.ReportException(exception);
+						ExceptionReportingDialog.ReportException(exception);
 						return false;
 					}
 					else

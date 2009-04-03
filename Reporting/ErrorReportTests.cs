@@ -57,7 +57,7 @@ namespace Palaso.Reporting
 //				[Test]
 				public void TestSend()
 				{
-					ErrorNotificationDialog.ReportException(new System.Exception("Testing"));
+					ExceptionReportingDialog.ReportException(new System.Exception("Testing"));
 				}
 	}
 

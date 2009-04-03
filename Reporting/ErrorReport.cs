@@ -313,12 +313,12 @@ namespace Palaso.Reporting
 
 		public static void ReportFatalException(Exception e)
 		{
-			ErrorNotificationDialog.ReportException(e, null);
+			ExceptionReportingDialog.ReportException(e, null);
 		}
 
 		public static void ReportFatalException(Exception e, Form parentForm)
 		{
-			ErrorNotificationDialog.ReportException(e, parentForm);
+			ExceptionReportingDialog.ReportException(e, parentForm);
 		}
 
 		/// <summary>
@@ -362,7 +362,7 @@ namespace Palaso.Reporting
 			{
 				if (ErrorReport.IsOkToInteractWithUser)
 				{
-					   ErrorNotificationDialog.ReportException(exception, null, false);
+					   ExceptionReportingDialog.ReportException(exception, null, false);
 				}
 				else
 				{
