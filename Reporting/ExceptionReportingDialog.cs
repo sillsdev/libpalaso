@@ -312,7 +312,9 @@ namespace Palaso.Reporting
 			 _notificationText.Text = message;
 
 			 Exception innerMostException = null;
-			 _details.Text += message + Environment.NewLine;
+			 _details.Text += "Message (not an exception): " + message + Environment.NewLine;
+			 _details.Text += Environment.NewLine;
+			 _details.Text += "--Stack--"+ Environment.NewLine;;
 			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
 
 
@@ -336,12 +338,14 @@ namespace Palaso.Reporting
 
 		 private void AddErrorReportingPropertiesToDetails()
 		 {
-			 _details.Text += "\r\nError Reporting Properties:\r\n";
+
+			 _details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
 			 foreach (string label in ErrorReport.Properties.Keys)
 			 {
 				 _details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
 			 }
 
+			 _details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
 			 try
 			 {
 				 _details.Text += Logger.LogText;
