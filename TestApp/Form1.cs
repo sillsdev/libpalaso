@@ -62,7 +62,7 @@ namespace TestApp
 
 		private void OnNonFatalMessageWithStack(object sender, EventArgs e)
 		{
-			ErrorReport.ReportNonFatalMessageWithStackTrack("{0} {1}", "hello","there");
+			ErrorReport.ReportNonFatalMessageWithStackTrace("{0} {1}", "hello","there");
 		}
 	}
 }

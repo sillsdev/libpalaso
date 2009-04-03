@@ -346,7 +346,7 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// </summary>
-		public static void ReportNonFatalMessageWithStackTrack(string message, params object[] args)
+		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
 //            try
 //            {

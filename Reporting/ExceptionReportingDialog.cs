@@ -13,14 +13,15 @@ namespace Palaso.Reporting
 		private Label label2;
 		private Label label3;
 		private TextBox _details;
-		private TextBox m_notification;
+		private TextBox _pleaseHelpText;
 		private TextBox m_reproduce;
 		private Label _attemptToContinueLabel;
 
 		private bool _isLethal;
 
-		private Button _closeButton;
-		 private LinkLabel _linkJustExit;
+		private Button _sendAndCloseButton;
+		 private LinkLabel _dontSendEmailLink;
+		 private TextBox _notificationText;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -100,10 +101,11 @@ namespace Palaso.Reporting
 			this.m_reproduce = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this._details = new System.Windows.Forms.TextBox();
-			this._closeButton = new System.Windows.Forms.Button();
-			this.m_notification = new System.Windows.Forms.TextBox();
+			this._sendAndCloseButton = new System.Windows.Forms.Button();
+			this._pleaseHelpText = new System.Windows.Forms.TextBox();
 			this._attemptToContinueLabel = new System.Windows.Forms.Label();
-			this._linkJustExit = new System.Windows.Forms.LinkLabel();
+			this._dontSendEmailLink = new System.Windows.Forms.LinkLabel();
+			this._notificationText = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			//
 			// label2
@@ -123,28 +125,28 @@ namespace Palaso.Reporting
 			resources.ApplyResources(this.label3, "label3");
 			this.label3.Name = "label3";
 			//
-			// m_details
+			// _details
 			//
-			resources.ApplyResources(this._details, "m_details");
+			resources.ApplyResources(this._details, "_details");
 			this._details.BackColor = System.Drawing.SystemColors.ControlLightLight;
 			this._details.Name = "_details";
 			this._details.ReadOnly = true;
 			//
 			// _closeButton
 			//
-			resources.ApplyResources(this._closeButton, "_closeButton");
-			this._closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._closeButton.Name = "_closeButton";
-			this._closeButton.Click += new System.EventHandler(this.btnClose_Click);
+			resources.ApplyResources(this._sendAndCloseButton, "_closeButton");
+			this._sendAndCloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._sendAndCloseButton.Name = "_sendAndCloseButton";
+			this._sendAndCloseButton.Click += new System.EventHandler(this.btnClose_Click);
 			//
 			// m_notification
 			//
-			resources.ApplyResources(this.m_notification, "m_notification");
-			this.m_notification.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this.m_notification.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.m_notification.ForeColor = System.Drawing.Color.Black;
-			this.m_notification.Name = "m_notification";
-			this.m_notification.ReadOnly = true;
+			resources.ApplyResources(this._pleaseHelpText, "m_notification");
+			this._pleaseHelpText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+			this._pleaseHelpText.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._pleaseHelpText.ForeColor = System.Drawing.Color.Black;
+			this._pleaseHelpText.Name = "_pleaseHelpText";
+			this._pleaseHelpText.ReadOnly = true;
 			//
 			// _attemptToContinueLabel
 			//
@@ -154,31 +156,41 @@ namespace Palaso.Reporting
 			//
 			// _linkJustExit
 			//
-			resources.ApplyResources(this._linkJustExit, "_linkJustExit");
-			this._linkJustExit.Name = "_linkJustExit";
-			this._linkJustExit.TabStop = true;
-			this._linkJustExit.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnJustExit_LinkClicked);
+			resources.ApplyResources(this._dontSendEmailLink, "_linkJustExit");
+			this._dontSendEmailLink.Name = "_dontSendEmailLink";
+			this._dontSendEmailLink.TabStop = true;
+			this._dontSendEmailLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnJustExit_LinkClicked);
 			//
-			// ErrorNotificationDialog
+			// _userMessage
 			//
-			this.AcceptButton = this._closeButton;
+			resources.ApplyResources(this._notificationText, "_userMessage");
+			this._notificationText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+			this._notificationText.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._notificationText.ForeColor = System.Drawing.Color.Black;
+			this._notificationText.Name = "_notificationText";
+			this._notificationText.ReadOnly = true;
+			//
+			// ExceptionReportingDialog
+			//
+			this.AcceptButton = this._sendAndCloseButton;
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this.CancelButton = this._closeButton;
+			this.CancelButton = this._sendAndCloseButton;
 			this.ControlBox = false;
-			this.Controls.Add(this._linkJustExit);
+			this.Controls.Add(this._dontSendEmailLink);
 			this.Controls.Add(this.m_reproduce);
-			this.Controls.Add(this.m_notification);
+			this.Controls.Add(this._notificationText);
+			this.Controls.Add(this._pleaseHelpText);
 			this.Controls.Add(this._details);
 			this.Controls.Add(this._attemptToContinueLabel);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this._closeButton);
+			this.Controls.Add(this._sendAndCloseButton);
 			this.KeyPreview = true;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "ErrorNotificationDialog";
+			this.Name = "ExceptionReportingDialog";
 			this.Load += new System.EventHandler(this.ErrorNotificationDialog_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -297,6 +309,7 @@ namespace Palaso.Reporting
 		 public void Report(string message, StackTrace stackTrace, Form owningForm)
 		 {
 			 PrepareDialog();
+			 _notificationText.Text = message;
 
 			 Exception innerMostException = null;
 			 _details.Text += message + Environment.NewLine;
@@ -350,10 +363,11 @@ namespace Palaso.Reporting
 
 			 if (!_isLethal)
 			 {
-				 _closeButton.Text = "&Send Email";
+				 _sendAndCloseButton.Text = "&Send Email";
 				 BackColor = Color.FromArgb(255, 255, 192); //yellow
-				 m_notification.BackColor = BackColor;
-				 _linkJustExit.Text = "Don't Send Email";
+				 _notificationText.BackColor = BackColor;
+				 _pleaseHelpText.BackColor = BackColor;
+				 _dontSendEmailLink.Text = "Don't Send Email";
 			 }
 		 }
 

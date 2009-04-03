@@ -127,7 +127,7 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-	<value>24, 64</value>
+	<value>24, 111</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
 	<value>463, 13</value>
@@ -148,13 +148,13 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
-	<value>5</value>
+	<value>6</value>
   </data>
   <data name="m_reproduce.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Left, Right</value>
   </data>
   <data name="m_reproduce.Location" type="System.Drawing.Point, System.Drawing">
-	<value>24, 88</value>
+	<value>24, 136</value>
   </data>
   <data name="m_reproduce.Multiline" type="System.Boolean, mscorlib">
 	<value>True</value>
@@ -163,7 +163,7 @@
 	<value>Vertical</value>
   </data>
   <data name="m_reproduce.Size" type="System.Drawing.Size, System.Drawing">
-	<value>509, 160</value>
+	<value>509, 112</value>
   </data>
   <data name="m_reproduce.TabIndex" type="System.Int32, mscorlib">
 	<value>0</value>
@@ -211,37 +211,37 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-	<value>6</value>
+	<value>7</value>
   </data>
-  <data name="m_details.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+  <data name="_details.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Bottom, Left, Right</value>
   </data>
-  <data name="m_details.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="_details.Location" type="System.Drawing.Point, System.Drawing">
 	<value>24, 280</value>
   </data>
-  <data name="m_details.Multiline" type="System.Boolean, mscorlib">
+  <data name="_details.Multiline" type="System.Boolean, mscorlib">
 	<value>True</value>
   </data>
-  <data name="m_details.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+  <data name="_details.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
 	<value>Both</value>
   </data>
-  <data name="m_details.Size" type="System.Drawing.Size, System.Drawing">
-	<value>509, 90</value>
+  <data name="_details.Size" type="System.Drawing.Size, System.Drawing">
+	<value>509, 119</value>
   </data>
-  <data name="m_details.TabIndex" type="System.Int32, mscorlib">
+  <data name="_details.TabIndex" type="System.Int32, mscorlib">
 	<value>4</value>
   </data>
-  <data name="&gt;&gt;m_details.Name" xml:space="preserve">
-	<value>m_details</value>
+  <data name="&gt;&gt;_details.Name" xml:space="preserve">
+	<value>_details</value>
   </data>
-  <data name="&gt;&gt;m_details.Type" xml:space="preserve">
+  <data name="&gt;&gt;_details.Type" xml:space="preserve">
 	<value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;m_details.Parent" xml:space="preserve">
+  <data name="&gt;&gt;_details.Parent" xml:space="preserve">
 	<value>$this</value>
   </data>
-  <data name="&gt;&gt;m_details.ZOrder" xml:space="preserve">
-	<value>3</value>
+  <data name="&gt;&gt;_details.ZOrder" xml:space="preserve">
+	<value>4</value>
   </data>
   <data name="_closeButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Right</value>
@@ -253,7 +253,7 @@
 	<value>NoControl</value>
   </data>
   <data name="_closeButton.Location" type="System.Drawing.Point, System.Drawing">
-	<value>413, 399</value>
+	<value>413, 428</value>
   </data>
   <data name="_closeButton.Size" type="System.Drawing.Size, System.Drawing">
 	<value>120, 23</value>
@@ -274,7 +274,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_closeButton.ZOrder" xml:space="preserve">
-	<value>7</value>
+	<value>8</value>
   </data>
   <data name="m_notification.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Left, Right</value>
@@ -283,19 +283,19 @@
 	<value>Arial, 9.75pt</value>
   </data>
   <data name="m_notification.Location" type="System.Drawing.Point, System.Drawing">
-	<value>24, 12</value>
+	<value>24, 71</value>
   </data>
   <data name="m_notification.Multiline" type="System.Boolean, mscorlib">
 	<value>True</value>
   </data>
   <data name="m_notification.Size" type="System.Drawing.Size, System.Drawing">
-	<value>512, 44</value>
+	<value>512, 37</value>
   </data>
   <data name="m_notification.TabIndex" type="System.Int32, mscorlib">
 	<value>22</value>
   </data>
   <data name="m_notification.Text" xml:space="preserve">
-	<value>An internal error has occurred. To help us fix the problem, we need to gather information on what went wrong.</value>
+	<value>To help us fix the problem, we need to gather information on what went wrong.</value>
   </data>
   <data name="&gt;&gt;m_notification.Name" xml:space="preserve">
 	<value>m_notification</value>
@@ -307,7 +307,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;m_notification.ZOrder" xml:space="preserve">
-	<value>2</value>
+	<value>3</value>
   </data>
   <data name="_attemptToContinueLabel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Right</value>
@@ -319,7 +319,7 @@
 	<value>NoControl</value>
   </data>
   <data name="_attemptToContinueLabel.Location" type="System.Drawing.Point, System.Drawing">
-	<value>277, 403</value>
+	<value>277, 432</value>
   </data>
   <data name="_attemptToContinueLabel.Size" type="System.Drawing.Size, System.Drawing">
 	<value>130, 13</value>
@@ -343,7 +343,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_attemptToContinueLabel.ZOrder" xml:space="preserve">
-	<value>4</value>
+	<value>5</value>
   </data>
   <data name="_linkJustExit.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Left</value>
@@ -352,7 +352,7 @@
 	<value>True</value>
   </data>
   <data name="_linkJustExit.Location" type="System.Drawing.Point, System.Drawing">
-	<value>21, 403</value>
+	<value>21, 432</value>
   </data>
   <data name="_linkJustExit.Size" type="System.Drawing.Size, System.Drawing">
 	<value>126, 13</value>
@@ -375,6 +375,39 @@
   <data name="&gt;&gt;_linkJustExit.ZOrder" xml:space="preserve">
 	<value>0</value>
   </data>
+  <data name="_userMessage.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+	<value>Top, Left, Right</value>
+  </data>
+  <data name="_userMessage.Font" type="System.Drawing.Font, System.Drawing">
+	<value>Arial, 9.75pt, style=Bold</value>
+  </data>
+  <data name="_userMessage.Location" type="System.Drawing.Point, System.Drawing">
+	<value>25, 12</value>
+  </data>
+  <data name="_userMessage.Multiline" type="System.Boolean, mscorlib">
+	<value>True</value>
+  </data>
+  <data name="_userMessage.Size" type="System.Drawing.Size, System.Drawing">
+	<value>512, 44</value>
+  </data>
+  <data name="_userMessage.TabIndex" type="System.Int32, mscorlib">
+	<value>22</value>
+  </data>
+  <data name="_userMessage.Text" xml:space="preserve">
+	<value>An internal error has occurred.</value>
+  </data>
+  <data name="&gt;&gt;_userMessage.Name" xml:space="preserve">
+	<value>_userMessage</value>
+  </data>
+  <data name="&gt;&gt;_userMessage.Type" xml:space="preserve">
+	<value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_userMessage.Parent" xml:space="preserve">
+	<value>$this</value>
+  </data>
+  <data name="&gt;&gt;_userMessage.ZOrder" xml:space="preserve">
+	<value>2</value>
+  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
 	<value>True</value>
   </metadata>
@@ -385,7 +418,7 @@
 	<value>True</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-	<value>552, 446</value>
+	<value>552, 475</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
 	<value>465, 480</value>
@@ -397,7 +430,7 @@
 	<value>Whoops</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
-	<value>ErrorNotificationDialog</value>
+	<value>ExceptionReportingDialog</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
 	<value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
