@@ -58,7 +58,11 @@ namespace TestApp
 			{
 				ErrorReport.ReportNonFatalException(exception, new ShowOncePerSessionBasedOnExactMessagePolicy() );
 			}
+		}
 
+		private void OnNonFatalMessageWithStack(object sender, EventArgs e)
+		{
+			ErrorReport.ReportNonFatalMessageWithStackTrack("{0} {1}", "hello","there");
 		}
 	}
 }

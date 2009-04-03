@@ -12,7 +12,7 @@ namespace Palaso.Reporting
 
 		private Label label2;
 		private Label label3;
-		private TextBox m_details;
+		private TextBox _details;
 		private TextBox m_notification;
 		private TextBox m_reproduce;
 		private Label _attemptToContinueLabel;
@@ -99,7 +99,7 @@ namespace Palaso.Reporting
 			this.label2 = new System.Windows.Forms.Label();
 			this.m_reproduce = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
-			this.m_details = new System.Windows.Forms.TextBox();
+			this._details = new System.Windows.Forms.TextBox();
 			this._closeButton = new System.Windows.Forms.Button();
 			this.m_notification = new System.Windows.Forms.TextBox();
 			this._attemptToContinueLabel = new System.Windows.Forms.Label();
@@ -125,10 +125,10 @@ namespace Palaso.Reporting
 			//
 			// m_details
 			//
-			resources.ApplyResources(this.m_details, "m_details");
-			this.m_details.BackColor = System.Drawing.SystemColors.ControlLightLight;
-			this.m_details.Name = "m_details";
-			this.m_details.ReadOnly = true;
+			resources.ApplyResources(this._details, "m_details");
+			this._details.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this._details.Name = "_details";
+			this._details.ReadOnly = true;
 			//
 			// _closeButton
 			//
@@ -170,7 +170,7 @@ namespace Palaso.Reporting
 			this.Controls.Add(this._linkJustExit);
 			this.Controls.Add(this.m_reproduce);
 			this.Controls.Add(this.m_notification);
-			this.Controls.Add(this.m_details);
+			this.Controls.Add(this._details);
 			this.Controls.Add(this._attemptToContinueLabel);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label3);
@@ -226,13 +226,24 @@ namespace Palaso.Reporting
 				return;            // ignore message if we are showing from a previous error
 			}
 
-			using (ExceptionReportingDialog e = new ExceptionReportingDialog(isLethal))
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
 			{
-				e.HandleError(error, parent);
+				dlg.Report(error, parent);
 			}
 		}
 
+		internal static void ReportMessage(string message, StackTrace stack, bool isLethal)
+		{
+			if (s_doIgnoreReport)
+			{
+				return;            // ignore message if we are showing from a previous error
+			}
 
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			{
+				dlg.Report(message, stack, null);
+			}
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -241,92 +252,131 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void GatherData()
 		{
-			m_details.Text += "\r\nTo Reproduce: " + m_reproduce.Text + "\r\n";
+			_details.Text += "\r\nTo Reproduce: " + m_reproduce.Text + "\r\n";
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="error"></param>
-		/// <param name="owner"></param>
-		/// ------------------------------------------------------------------------------------
-		public void HandleError(Exception error, Form owner)
+		 public void Report(Exception error, Form owningForm)
 		{
-			CheckDisposed();
-			//
-			// Required for Windows Form Designer support
-			//
-			InitializeComponent();
-
-			if (!_isLethal)
-			{
-				_closeButton.Text = "&Send Email";
-				BackColor = Color.FromArgb(255, 255, 192); //yellow
-				m_notification.BackColor = BackColor;
-				_linkJustExit.Text = "Don't Send Email";
-			}
+			PrepareDialog();
 
 			Exception innerMostException = null;
-			m_details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+			_details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
 
 			//if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
 			//we want the developer to read.
 			if (innerMostException != null)
 			{
-				m_details.Text = "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
-								 "\r\n\r\nFull, hierarchical exception contents:\r\n" + m_details.Text;
+				_details.Text = "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
+								 "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
 			}
 
-			m_details.Text += "\r\nError Reporting Properties:\r\n";
-			foreach (string label in ErrorReport.Properties.Keys)
-			{
-				m_details.Text += label + ": " + ErrorReport.Properties[label] + "\r\n";
-			}
+			AddErrorReportingPropertiesToDetails();
 
-			try
-			{
-				m_details.Text += Logger.LogText;
-			}
-			catch(Exception err)
-			{
-				//We have more than one report of dieing while logging an exception.
-				m_details.Text += "****Could not read from log: " + err.Message+Environment.NewLine;
-			}
 
-			Debug.WriteLine(m_details.Text);
+			Debug.WriteLine(_details.Text);
 			if (innerMostException != null)
 			{
 				error = innerMostException;
 			}
 
+
 			try
 			{
 				Logger.WriteEvent("Got exception " + error.GetType().Name);
 			}
-			catch(Exception err)
+			catch (Exception err)
 			{
 				//We have more than one report of dieing while logging an exception.
-				m_details.Text += "****Could not write to log (" + err.Message+")" + Environment.NewLine;
-				m_details.Text += "Was try to log the exception: " + error.Message + Environment.NewLine;
+				_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				_details.Text += "Was try to log the exception: " + error.Message + Environment.NewLine;
 			}
 
-
-			if (ErrorReport.IsOkToInteractWithUser)
-			{
-				s_doIgnoreReport = true;
-				ShowDialog(owner);
-				s_doIgnoreReport = false;
-			}
-			else //the test environment already prohibits dialogs but will save the contents of assertions in some log.
-			{
-				Debug.Fail(m_details.Text);
-			}
+			ShowReportDialogIfAppropriate(owningForm);
 		}
 
+		 public void Report(string message, StackTrace stackTrace, Form owningForm)
+		 {
+			 PrepareDialog();
+
+			 Exception innerMostException = null;
+			 _details.Text += message + Environment.NewLine;
+			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
 
 
-		/// ------------------------------------------------------------------------------------
+			 AddErrorReportingPropertiesToDetails();
+
+			 Debug.WriteLine(_details.Text);
+
+
+			 try
+			 {
+				 Logger.WriteEvent("Got error message " + message);
+			 }
+			 catch (Exception err)
+			 {
+				 //We have more than one report of dieing while logging an exception.
+				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+			 }
+
+			 ShowReportDialogIfAppropriate(owningForm);
+		 }
+
+		 private void AddErrorReportingPropertiesToDetails()
+		 {
+			 _details.Text += "\r\nError Reporting Properties:\r\n";
+			 foreach (string label in ErrorReport.Properties.Keys)
+			 {
+				 _details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
+			 }
+
+			 try
+			 {
+				 _details.Text += Logger.LogText;
+			 }
+			 catch (Exception err)
+			 {
+				 //We have more than one report of dieing while logging an exception.
+				 _details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
+			 }
+		 }
+
+		 private void PrepareDialog()
+		 {
+			 CheckDisposed();
+			 //
+			 // Required for Windows Form Designer support
+			 //
+			 InitializeComponent();
+
+			 if (!_isLethal)
+			 {
+				 _closeButton.Text = "&Send Email";
+				 BackColor = Color.FromArgb(255, 255, 192); //yellow
+				 m_notification.BackColor = BackColor;
+				 _linkJustExit.Text = "Don't Send Email";
+			 }
+		 }
+
+		 private void ShowReportDialogIfAppropriate(Form owningForm)
+		 {
+
+
+			 if (ErrorReport.IsOkToInteractWithUser)
+			 {
+				 s_doIgnoreReport = true;
+				 ShowDialog(owningForm);
+				 s_doIgnoreReport = false;
+			 }
+			 else //the test environment already prohibits dialogs but will save the contents of assertions in some log.
+			 {
+				 Debug.Fail(_details.Text);
+			 }
+
+
+		 }
+
+
+		 /// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
 		/// </summary>
@@ -341,13 +391,13 @@ namespace Palaso.Reporting
 			}
 			GatherData();
 
-			Clipboard.SetDataObject(m_details.Text, true);
+			Clipboard.SetDataObject(_details.Text, true);
 
 			try
 			{
 				MAPI msg = new MAPI();
 				msg.AddRecipientTo(ErrorReport.EmailAddress);
-				if (msg.SendMailDirect(ErrorReport.EmailSubject, m_details.Text))
+				if (msg.SendMailDirect(ErrorReport.EmailSubject, _details.Text))
 				{
 					CloseUp();
 					return;
@@ -380,9 +430,9 @@ namespace Palaso.Reporting
 
 			if (ErrorReport.EmailAddress != null)
 			{
-				m_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, m_details.Text);
+				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
 			}
-			Clipboard.SetDataObject(m_details.Text, true);
+			Clipboard.SetDataObject(_details.Text, true);
 
 			CloseUp();
 		}

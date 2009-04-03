@@ -343,6 +343,36 @@ namespace Palaso.Reporting
 			}
 		}
 
+		/// <summary>
+		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// </summary>
+		public static void ReportNonFatalMessageWithStackTrack(string message, params object[] args)
+		{
+//            try
+//            {
+//                throw new ApplicationException(string.Format(message, args));
+//            }
+//            catch (Exception e)
+//            {
+//                ReportNonFatalException(e);
+//            }
+			var s = string.Format(message, args);
+			var stack =  new System.Diagnostics.StackTrace(true);
+			ExceptionReportingDialog.ReportMessage(s,stack, false);
+		}
+		/// <summary>
+		/// Bring up a "green box" that let's them send in a report, then exit.
+		/// </summary>
+		public static void ReportFatalMessageWithStackTrace(string message, params object[] args)
+		{
+			var s = string.Format(message, args);
+			var stack = new System.Diagnostics.StackTrace(true);
+			ExceptionReportingDialog.ReportMessage(s, stack, false);
+		}
+
+		/// <summary>
+		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// </summary>
 		public static void ReportNonFatalException(Exception exception)
 		{
 			ReportNonFatalException(exception, new ShowAlwaysPolicy());
