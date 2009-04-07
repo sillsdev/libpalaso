@@ -15,7 +15,11 @@ namespace Palaso.Extensions
 
 			foreach (var part in x)
 			{
-				r.Add(part.Trim());
+				var trim = part.Trim();
+				if(trim!=string.Empty)
+				{
+					r.Add(trim);
+				}
 			}
 			return r;
 		}
