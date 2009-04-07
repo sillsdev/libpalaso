@@ -6,6 +6,9 @@ namespace Palaso.Extensions
 	{
 		public static List<string> SplitTrimmed(this string s, char seperator)
 		{
+			if(s.Trim() == string.Empty)
+				return new List<string>();
+
 			var x = s.Split(seperator);
 
 			var r = new List<string>();
