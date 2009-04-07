@@ -459,11 +459,26 @@ namespace Palaso.Reporting
 		{
 			if (!_isLethal || ModifierKeys.Equals(Keys.Shift))
 			{
-				Logger.WriteEvent("Continuing...");
+				try
+				{
+					Logger.WriteEvent("Error Dialog: Continuing...");
+				}
+				catch (Exception)
+				{
+					//really can't handle an embedded error related to logging
+				}
 				this.Close();
 				return;
 			}
-			Logger.WriteEvent("Exiting...");
+			try
+			{
+				Logger.WriteEvent("Error Dialog: Exiting...");
+			}
+			catch (Exception)
+			{
+				//really can't handle an embedded error related to logging
+			}
+
 			Process.GetCurrentProcess().Kill();
 		}
 

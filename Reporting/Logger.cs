@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -7,13 +8,69 @@ using System.Windows.Forms;
 
 namespace Palaso.Reporting
 {
+
+	public interface ILogger
+	{
+		/// <summary>
+		/// This is something that should be listed in the source control checkin
+		/// </summary>
+		void WriteConciseHistoricalEvent(string message, params object[] args);
+	}
+	public class MultiLogger :ILogger
+	{
+		private readonly List<ILogger> _loggers= new List<ILogger>();
+
+  //          this just lead to problems.  Better to say "this doesn't own anything", and let the DI container handle the lifetimes
+//        public void Dispose()
+//        {
+//            foreach (ILogger logger in _loggers)
+//            {
+//
+//                IDisposable d = logger as IDisposable;
+//                if(d!=null)
+//                    d.Dispose();
+//            }
+//            _loggers.Clear();
+//        }
+
+		/// <summary>
+		/// NB: you must handle disposal of the logger yourself (easy with a DI container)
+		/// </summary>
+		/// <param name="logger"></param>
+		public void Add(ILogger logger)
+		{
+			_loggers.Add(logger);
+		}
+
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			foreach (ILogger logger in _loggers)
+			{
+				logger.WriteConciseHistoricalEvent(message,args);
+			}
+		}
+	}
+
+	public class StringLogger :  ILogger
+	{
+		StringBuilder _builder = new StringBuilder();
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			_builder.AppendFormat(message, args);
+		}
+		public string GetLogText()
+		{
+			return _builder.ToString();
+		}
+	}
+
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Logs stuff to a file created in
 	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\Productname\Log.txt
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class Logger : IDisposable
+	public class Logger : IDisposable, ILogger
 	{
 		private static Logger _singleton;
 		protected StreamWriter m_out;
@@ -28,7 +85,7 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void Init()
 		{
-			if(_singleton == null)
+			if(Singleton == null)
 				_singleton = new Logger();
 		}
 
@@ -40,19 +97,23 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void ShutDown()
 		{
-			if (_singleton != null)
+			if (Singleton != null)
 			{
-				_singleton.Dispose();
+				Singleton.Dispose();
 				_singleton = null;
 			}
 		}
 
-		private Logger(): this(true)
+		public Logger(): this(true)
 		{
 		}
 
 		private Logger(bool startWithNewFile)
 		{
+			if(_singleton!= null)
+			{
+				throw new ApplicationException("Sadly, only one instance of Logger is currently allowed, per instance of the application.");
+			}
 			try
 			{
 				m_out = null;
@@ -127,6 +188,16 @@ namespace Palaso.Reporting
 		}
 
 		/// <summary>
+		/// This is for version-control checkin descriptions. E.g. "Deleted foobar".
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="args"></param>
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			WriteEventCore(message, args);
+		}
+
+		/// <summary>
 		///
 		/// </summary>
 		/// <remarks>Must not be virtual.</remarks>
@@ -194,10 +265,10 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				if (_singleton == null)
+				if (Singleton == null)
 					return "No log available.";
 
-				string logText = _singleton.GetLogTextAndStartOver();
+				string logText = Singleton.GetLogTextAndStartOver();
 
 				return logText;
 			}
@@ -239,6 +310,11 @@ namespace Palaso.Reporting
 			}
 		}
 
+		public static Logger Singleton
+		{
+			get { return _singleton; }
+		}
+
 		private static void SetActualLogPath(string filename)
 		{
 			_actualLogPath = Path.Combine(Path.GetTempPath(),
@@ -256,8 +332,8 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void WriteEvent(string message, params object[] args)
 		{
-			if (_singleton != null)
-				_singleton.WriteEventCore(message,args);
+			if (Singleton != null)
+				Singleton.WriteEventCore(message,args);
 		}
 
 		private void WriteEventCore(string message, params object[] args)
@@ -292,8 +368,8 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void WriteMinorEvent(string message, params object[] args)
 		{
-			if (_singleton != null)
-				_singleton.WriteMinorEventCore(message,args);
+			if (Singleton != null)
+				Singleton.WriteMinorEventCore(message,args);
 		}
 
 		private void WriteMinorEventCore(string message, params object[] args)
