@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
+using Palaso.Test;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -206,7 +207,7 @@ namespace Palaso.Tests.WritingSystems
 
 			_writingSystem.ISO = "blah";
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/identity/language[@type='blah']");
+			AssertThatXmlIn.File(PathToWS).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='blah']");
 		}
 
 		[Test]
@@ -216,7 +217,7 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 			_writingSystem.Variant = "piglatin";
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/identity/variant[@type='piglatin']");
+			AssertThatXmlIn.File(PathToWS ).HasAtLeastOneMatchForXpath( "ldml/identity/variant[@type='piglatin']");
 		}
 
 		[Test]
@@ -232,8 +233,8 @@ namespace Palaso.Tests.WritingSystems
 			ws2.Variant = "piglatin";
 			_collection.SaveDefinition(ws2);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(ws2));
-			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
-			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
+			AssertThatXmlIn.File(path ).HasAtLeastOneMatchForXpath( "ldml/identity/variant[@type='piglatin']");
+			AssertThatXmlIn.File(path ).HasAtLeastOneMatchForXpath( "ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
 		}
 
 		[Test]
@@ -294,10 +295,10 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 			string path = _collection.FilePathToWritingSystem(_writingSystem);
 
-			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant");
+			AssertThatXmlIn.File(path ).HasAtLeastOneMatchForXpath( "ldml/identity/variant");
 			_writingSystem.Variant = string.Empty;
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathIsNull(PathToWS, "ldml/identity/variant");
+			AssertThatXmlIn.File(PathToWS).HasNoMatchForXpath("ldml/identity/variant");
 		}
 
 
@@ -309,10 +310,10 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Abbreviation = "abbrev";
 			_collection.SaveDefinition(_writingSystem);
 			string path = _collection.FilePathToWritingSystem(_writingSystem);
-			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation", _namespaceManager);
+			AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation", _namespaceManager);
 			_writingSystem.Abbreviation = string.Empty;
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathIsNull(PathToWS, "ldml/special/palaso:abbreviation", _namespaceManager);
+			AssertThatXmlIn.File(PathToWS).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation", _namespaceManager);
 		}
 
 		[Test]
@@ -322,7 +323,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO = "blah";
 			_writingSystem.Abbreviation = "bl";
 			_collection.SaveDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
+			AssertThatXmlIn.File(PathToWS).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
 		}
 
 		private string PathToWS

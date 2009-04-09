@@ -71,6 +71,10 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\LinqBridge.dll</HintPath>
 	</Reference>
+	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\nunit.framework.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
@@ -142,6 +146,9 @@
 	<Compile Include="Annotations\Annotation.cs" />
 	<Compile Include="Annotations\IAnnotatable.cs" />
 	<Compile Include="Spelling\WordTokenizer.cs" />
+	<Compile Include="Test\FluentAssertXml.cs" />
+	<Compile Include="Test\TemporaryFolder.cs" />
+	<Compile Include="Test\TestUtilities.cs" />
 	<Compile Include="Text\LanguageForm.cs" />
 	<Compile Include="Text\MultiTextBase.cs" />
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />

@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using Palaso.Test;
 using Palaso.Tests;
 using Palaso.Media;
 
@@ -20,7 +21,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void Construct_FileDoesExistButEmpty_OK()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   var x = new AudioRecorder(f.Path);
 		   }
@@ -90,7 +91,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void CanRecord_ConstructWithEmptyFile_True()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   var x = new AudioRecorder(f.Path);
 			   Assert.IsTrue(x.CanRecord);
@@ -100,7 +101,7 @@ namespace Palaso.Media.Tests
 	   [Test, Ignore("IrrKlang doesn't throw, so we don't really know"), ExpectedException(typeof(ApplicationException))]
 	   public void Play_FileEmpty_Throws()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   var x = new AudioRecorder(f.Path);
 			   x.Play();
@@ -128,7 +129,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void RecordAndStop_FileAlreadyExists_FileReplaced()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   var old = File.GetLastWriteTimeUtc(f.Path);
 			   var x = new AudioRecorder(f.Path);
@@ -142,7 +143,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void IsRecording_WhileRecording_True()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   var x = new AudioRecorder(f.Path);
 			   x.StartRecording();
@@ -157,12 +158,12 @@ namespace Palaso.Media.Tests
 	   /// </summary>
 	   class RecordingSession:IDisposable
 	   {
-		   private Palaso.Tests.TempFile _tempFile;
+		   private TempFile _tempFile;
 		   private AudioRecorder _recorder;
 
 		   public RecordingSession()
 		   {
-			   _tempFile = new Palaso.Tests.TempFile();
+			   _tempFile = new TempFile();
 			   _recorder = new AudioRecorder(_tempFile.Path);
 			   _recorder.StartRecording();
 			   Thread.Sleep(100);
@@ -256,7 +257,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void IsRecording_AfterRecording_False()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   AudioRecorder x = RecordSomething(f);
 			   Assert.IsFalse(x.IsRecording);
@@ -266,7 +267,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void RecordThenStop_CanPlay_IsTrue()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   AudioRecorder x = RecordSomething(f);
 			   Assert.IsTrue(x.CanPlay);
@@ -276,7 +277,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void RecordThenPlay_OK()
 	   {
-		   using (var f = new Palaso.Tests.TempFile())
+		   using (var f = new TempFile())
 		   {
 			   AudioRecorder x = RecordSomething(f);
 			   x.Play();

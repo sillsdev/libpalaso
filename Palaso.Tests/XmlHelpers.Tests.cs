@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using NUnit.Framework;
+using Palaso.Test;
 
 namespace Palaso.Tests
 {
@@ -32,7 +33,7 @@ namespace Palaso.Tests
 			XmlNode node= Palaso.XmlHelpers.GetOrCreateElement(doc, "world/thailand", "chiangmai", null, _nameSpaceManager);
 			Assert.IsNotNull(node);
 			Assert.AreEqual("chiangmai", node.Name);
-			TestUtilities.AssertXPathNotNull(doc, "world/thailand/chiangmai");
+			AssertThatXmlIn.Dom(doc).HasAtLeastOneMatchForXpath("world/thailand/chiangmai");
 		}
 
 		[Test]
@@ -70,7 +71,7 @@ namespace Palaso.Tests
 			doc.LoadXml("<world><thailand><chiangmai/></thailand></world>");
 			XmlNode node = doc.SelectSingleNode("world/thailand/chiangmai");
 			Palaso.XmlHelpers.AddOrUpdateAttribute(node, "temp", "24");
-			TestUtilities.AssertXPathNotNull(doc, "world/thailand/chiangmai[@temp='24']");
+			AssertThatXmlIn.Dom(doc).HasAtLeastOneMatchForXpath("world/thailand/chiangmai[@temp='24']");
 		}
 
 		[Test]
@@ -80,8 +81,8 @@ namespace Palaso.Tests
 			doc.LoadXml("<world><thailand><chiangmai temp='12'/></thailand></world>");
 			XmlNode node = doc.SelectSingleNode("world/thailand/chiangmai");
 			Palaso.XmlHelpers.AddOrUpdateAttribute(node, "temp", "12");
-			TestUtilities.AssertXPathIsNull(doc, "world/thailand/chiangmai[@temp='24']");
-			TestUtilities.AssertXPathNotNull(doc, "world/thailand/chiangmai[@temp='12']");
+			AssertThatXmlIn.Dom(doc).HasNoMatchForXpath("world/thailand/chiangmai[@temp='24']");
+			AssertThatXmlIn.Dom(doc).HasAtLeastOneMatchForXpath("world/thailand/chiangmai[@temp='12']");
 		}
 	}
 

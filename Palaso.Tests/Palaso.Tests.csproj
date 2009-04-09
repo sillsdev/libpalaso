@@ -82,8 +82,6 @@
 	<Compile Include="Spart\Provider.cs" />
 	<Compile Include="Spart\Scanners\StringScannerTest.cs" />
 	<Compile Include="Spelling\WordTokenizerTests.cs" />
-	<Compile Include="TemporaryFolder.cs" />
-	<Compile Include="TestUtilities.cs" />
 	<Compile Include="Text\LanguageFormTest.cs" />
 	<Compile Include="Text\MultiTextBase.Tests.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXmlTests.cs" />

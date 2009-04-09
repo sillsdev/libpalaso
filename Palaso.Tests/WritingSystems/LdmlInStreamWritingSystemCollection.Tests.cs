@@ -217,7 +217,7 @@ namespace Palaso.Tests.WritingSystems
 
 			_writingSystem.ISO = "blah";
 			_writingSystemStore.StoreDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/identity/language[@type='blah']");
+			AssertXmlFile.AtLeastOneMatch(PathToWS, "ldml/identity/language[@type='blah']");
 		}
 
 		[Test]
@@ -227,7 +227,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystemStore.StoreDefinition(_writingSystem);
 			_writingSystem.Variant = "piglatin";
 			_writingSystemStore.StoreDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/identity/variant[@type='piglatin']");
+			AssertXmlFile.AtLeastOneMatch(PathToWS, "ldml/identity/variant[@type='piglatin']");
 		}
 
 		[Test]
@@ -244,8 +244,8 @@ namespace Palaso.Tests.WritingSystems
 			ws2.Variant = "piglatin";
 			_writingSystemStore.StoreDefinition(ws2);
 			string path = Path.Combine(_writingSystemStore.PathToWritingSystems, _writingSystemStore.GetFileName(ws2));
-			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant[@type='piglatin']");
-			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
+			AssertXmlFile.AtLeastOneMatch(path, "ldml/identity/variant[@type='piglatin']");
+			AssertXmlFile.AtLeastOneMatch(path, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
 		}
 
 		[Test]
@@ -306,7 +306,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystemStore.StoreDefinition(_writingSystem);
 			string path = _writingSystemStore.PathToWritingSystem(_writingSystem);
 
-			TestUtilities.AssertXPathNotNull(path, "ldml/identity/variant");
+			AssertXmlFile.AtLeastOneMatch(path, "ldml/identity/variant");
 			_writingSystem.Variant = string.Empty;
 			_writingSystemStore.StoreDefinition(_writingSystem);
 			TestUtilities.AssertXPathIsNull(PathToWS, "ldml/identity/variant");
@@ -321,7 +321,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Abbreviation = "abbrev";
 			_writingSystemStore.StoreDefinition(_writingSystem);
 			string path = _writingSystemStore.PathToWritingSystem(_writingSystem);
-			TestUtilities.AssertXPathNotNull(path, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
+			AssertXmlFile.AtLeastOneMatch(path, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
 			_writingSystem.Abbreviation = string.Empty;
 			_writingSystemStore.StoreDefinition(_writingSystem);
 			TestUtilities.AssertXPathIsNull(PathToWS, "ldml/special/palaso:abbreviation", LdmlAdaptor.MakeNameSpaceManager());
@@ -334,7 +334,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO = "blah";
 			_writingSystem.Abbreviation = "bl";
 			_writingSystemStore.StoreDefinition(_writingSystem);
-			TestUtilities.AssertXPathNotNull(PathToWS, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
+			AssertXmlFile.AtLeastOneMatch(PathToWS, "ldml/special/palaso:abbreviation[@value='bl']", LdmlAdaptor.MakeNameSpaceManager());
 		}
 
 		private string PathToWS

@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Xml;
 
-namespace Palaso.Tests
+namespace Palaso.Test
 {
 	public class TempLiftFile : TempFile
 	{
