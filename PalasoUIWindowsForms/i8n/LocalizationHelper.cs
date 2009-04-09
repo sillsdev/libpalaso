@@ -250,6 +250,17 @@ namespace Palaso.UI.WindowsForms.i8n
 				set { _font = value; }
 			}
 		}
+
+
+
+		~LocalizationHelper()
+		{
+			if (Parent !=null)
+			{
+				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName + ".");
+			}
+
+		}
 	}
 
 	/// <summary>
