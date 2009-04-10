@@ -59,7 +59,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
             {
                 InnerKeyman7Wrapper.ActivateKeyboard(name);
             }
-			catch(Palaso.Reporting.ErrorReport.NonFatalMessageSentToUserException)
+			catch(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException)
             {
 				throw; // needed for tests to know that a message box would have been shown
             }

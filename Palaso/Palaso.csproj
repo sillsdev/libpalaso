@@ -76,7 +76,11 @@
 	  <HintPath>..\lib\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
+	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
+	<Reference Include="System.Drawing" />
+	<Reference Include="System.Web" />
+	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +99,43 @@
 	<Compile Include="Progress\NullProgressState.cs" />
 	<Compile Include="Progress\ProgressState.cs" />
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
+	<Compile Include="Reporting\ConfigurationException.cs" />
+	<Compile Include="Reporting\EmailMessage.cs" />
+	<Compile Include="Reporting\ErrorReport.cs" />
+	<Compile Include="Reporting\ErrorReportTests.cs" />
+	<Compile Include="Reporting\ExceptionHandler.cs" />
+	<Compile Include="Reporting\ExceptionHelper.cs" />
+	<Compile Include="Reporting\ExceptionReportingDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\Logger.cs" />
+	<Compile Include="Reporting\MAPIHelper.cs" />
+	<Compile Include="Reporting\ProblemNotificationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
+	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Reporting\ReportingSetting.Designer.cs">
+	  <DependentUpon>ReportingSetting.settings</DependentUpon>
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	</Compile>
+	<Compile Include="Reporting\ReportingStrings.Designer.cs">
+	  <DependentUpon>ReportingStrings.resx</DependentUpon>
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	</Compile>
+	<Compile Include="Reporting\UsageEmailDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\UsageReporter.cs" />
+	<Compile Include="Reporting\UserRegistrationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\UserRegistrationDialog.Designer.cs">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="Resource.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
@@ -171,6 +212,27 @@
 	<Compile Include="XmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
+	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
+	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\ReportingStrings.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>ReportingStrings.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\UsageEmailDialog.resx">
+	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\UserRegistrationDialog.resx">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Resource.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -181,13 +243,15 @@
 	<None Include="Resources\scriptNames.txt" />
   </ItemGroup>
   <ItemGroup>
+	<None Include="Reporting\app.config" />
+	<None Include="Reporting\ReportingSetting.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>ReportingSetting.Designer.cs</LastGenOutput>
+	</None>
 	<None Include="Resources\languageCodes.txt" />
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\Reporting\Reporting.csproj">
-	  <Project>{9CCBECEC-513C-4DA4-A4CE-F5361B633760}</Project>
-	  <Name>Reporting</Name>
-	</ProjectReference>
+	<Content Include="Reporting\Usage.ico" />
   </ItemGroup>
   <ItemGroup>
 	<Folder Include="Spart\Parsers\NonTerminal\Contexts\" />

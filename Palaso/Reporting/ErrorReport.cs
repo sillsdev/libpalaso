@@ -327,20 +327,31 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void NotifyUserOfProblem(string message, params object[] args)
 		{
-			if(s_justRecordNonFatalMessagesForTesting)
+			NotifyUserOfProblem(new ShowAlwaysPolicy(), message, args);
+		}
+
+		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
+		{
+			var message = string.Format(messageFmt, args);
+			if (!policy.ShouldShowMessage(message))
 			{
-				ErrorReport.s_previousNonFatalMessage = String.Format(message, args);
+				return;
+			}
+
+			if (s_justRecordNonFatalMessagesForTesting)
+			{
+				ErrorReport.s_previousNonFatalMessage = message;
 			}
 			else if (ErrorReport.IsOkToInteractWithUser)
 			{
-				NonFatalErrorDialog.Show(String.Format(message, args),
+				ProblemNotificationDialog.Show(message,
 										 UsageReporter.AppNameToUseInDialogs + " Error",
-										 "&OK");
+										 "&OK", policy.ReoccurenceMessage);
 
 			}
 			else
 			{
-				throw new NonFatalMessageSentToUserException(String.Format(message, args));
+				throw new ProblemNotificationSentToUserException(message);
 			}
 		}
 
@@ -402,20 +413,26 @@ namespace Palaso.Reporting
 			}
 		}
 
-		public class NonFatalMessageSentToUserException : ApplicationException
+		public class ProblemNotificationSentToUserException : ApplicationException
 		{
-			public NonFatalMessageSentToUserException(string message) : base(message) {}
+			public ProblemNotificationSentToUserException(string message) : base(message) {}
 		}
 
 		public class NonFatalExceptionWouldHaveBeenMessageShownToUserException : ApplicationException
 		{
 			public NonFatalExceptionWouldHaveBeenMessageShownToUserException(Exception e)  : base(e.Message, e) { }
 		}
+
+
 	}
 
 	public interface IRepeatNoticePolicy
 	{
 		bool ShouldShowErrorReportDialog(Exception exception);
+		bool ShouldShowMessage(string message);
+		string ReoccurenceMessage
+		{ get;
+		}
 	}
 
 	public class ShowAlwaysPolicy :IRepeatNoticePolicy
@@ -423,6 +440,16 @@ namespace Palaso.Reporting
 		public bool ShouldShowErrorReportDialog(Exception exception)
 		{
 			return true;
+		}
+
+		public bool ShouldShowMessage(string message)
+		{
+			return true;
+		}
+
+		public string ReoccurenceMessage
+		{
+			get { return string.Empty; }
 		}
 	}
 
@@ -432,10 +459,20 @@ namespace Palaso.Reporting
 
 		public bool ShouldShowErrorReportDialog(Exception exception)
 		{
-			if(_alreadyReportedMessages.Contains(exception.Message))
+			return ShouldShowMessage(exception.Message);
+		}
+
+		public bool ShouldShowMessage(string message)
+		{
+			 if(_alreadyReportedMessages.Contains(message))
 				return false;
-			_alreadyReportedMessages.Add(exception.Message);
+			_alreadyReportedMessages.Add(message);
 			return true;
+		}
+
+		public string ReoccurenceMessage
+		{
+			get { return "Will not show again this session."; }
 		}
 	}
 }

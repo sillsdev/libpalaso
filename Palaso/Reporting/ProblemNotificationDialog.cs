@@ -4,21 +4,22 @@ using System.Windows.Forms;
 
 namespace Palaso.Reporting
 {
-	public partial class NonFatalErrorDialog : Form
+	public partial class ProblemNotificationDialog : Form
 	{
 		public static void Show(string message)
 		{
-			Show(message, "Problem", "&OK");
+			Show(message, "Problem", "&OK", string.Empty);
 		}
-		public static void Show(string message, string dialogTitle, string buttonLabel)
+		public static void Show(string message, string dialogTitle, string buttonLabel, string reocurrenceMessage)
 		{
-			NonFatalErrorDialog d = new NonFatalErrorDialog();
+			ProblemNotificationDialog d = new ProblemNotificationDialog();
 			d.Text = dialogTitle;
 			d._message.Text = message;
+			d._reoccurenceMessage.Text = reocurrenceMessage;
 			d.ShowDialog();
 		}
 
-		private NonFatalErrorDialog()
+		private ProblemNotificationDialog()
 		{
 			InitializeComponent();
 		}

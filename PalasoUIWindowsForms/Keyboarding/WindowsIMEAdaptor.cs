@@ -24,12 +24,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				else
 				{
-					Palaso.Reporting.NonFatalErrorDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
+					Palaso.Reporting.ProblemNotificationDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
 				}
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("There was an error trying to access the windows ime.");
+				Palaso.Reporting.ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating windows ime.");
+				Palaso.Reporting.ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show(
+				Palaso.Reporting.ProblemNotificationDialog.Show(
 					"There was a problem retrieving the active keyboard in from windows ime.");
 			}
 			return null;

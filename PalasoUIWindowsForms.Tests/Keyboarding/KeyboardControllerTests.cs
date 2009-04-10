@@ -48,7 +48,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
-		[Test, ExpectedException(typeof(ErrorReport.NonFatalMessageSentToUserException))]
+		[Test, ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
 			KeyboardController.ActivateKeyboard("foobar");
@@ -64,7 +64,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 				KeyboardController.ActivateKeyboard(keyboardName);
 				Assert.Fail("Should have thrown exception but didn't.");
 			}
-			catch (ErrorReport.NonFatalMessageSentToUserException)
+			catch (ErrorReport.ProblemNotificationSentToUserException)
 			{
 
 			}

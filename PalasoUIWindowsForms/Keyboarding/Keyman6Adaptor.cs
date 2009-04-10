@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -23,13 +24,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				InnerKeyman6Wrapper.ActivateKeyboard(name);
 			}
-			catch (Reporting.ErrorReport.NonFatalMessageSentToUserException)
+			catch (ErrorReport.ProblemNotificationSentToUserException)
 			{
 				throw; // needed for tests to know that a message box would have been shown
 			}
 			catch (Exception)
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("The keyboard '" + name + "' could not be activated using Keyman 6.");
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "The keyboard '{0}' could not be activated using Keyman 6.", name);
 			}
 		}
 
@@ -90,8 +91,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception)
 			{
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "The keyboard could not be deactivated using Keyman 6.");
+
 				// review: When in Rome...
-				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem deactivating keyman 6.");
+				Palaso.Reporting.ProblemNotificationDialog.Show("There was a problem deactivating keyman 6.");
 			}
 		}
 
@@ -108,7 +111,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception)
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("There was a problem looking for a keybaord in keyman 6.");
+				Palaso.Reporting.ProblemNotificationDialog.Show("There was a problem looking for a keybaord in keyman 6.");
 			}
 			return false;
 		}
@@ -126,7 +129,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception)
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show(
+				Palaso.Reporting.ProblemNotificationDialog.Show(
 					"There was a problem retrieving the active keyboard in keyman 6.");
 			}
 			return null;
@@ -178,7 +181,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 			if (!keymanLink.Initialize(false))
 			{
-				Palaso.Reporting.NonFatalErrorDialog.Show("Keyman6 could not be activated.");
+				Palaso.Reporting.ProblemNotificationDialog.Show("Keyman6 could not be activated.");
 				return;
 			}
 			keymanLink.SelectKeymanKeyboard(name, true);

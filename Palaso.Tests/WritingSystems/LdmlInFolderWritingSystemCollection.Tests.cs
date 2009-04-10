@@ -313,7 +313,7 @@ namespace Palaso.Tests.WritingSystems
 			AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation", _namespaceManager);
 			_writingSystem.Abbreviation = string.Empty;
 			_collection.SaveDefinition(_writingSystem);
-			AssertThatXmlIn.File(PathToWS).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation", _namespaceManager);
+			AssertThatXmlIn.File(PathToWS).HasNoMatchForXpath("ldml/special/palaso:abbreviation", _namespaceManager);
 		}
 
 		[Test]

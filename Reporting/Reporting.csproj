@@ -121,75 +121,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="app.config" />
-	<None Include="ReportingSetting.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>ReportingSetting.Designer.cs</LastGenOutput>
-	</None>
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="ConfigurationException.cs" />
-	<Compile Include="EmailMessage.cs" />
-	<Compile Include="ExceptionReportingDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="ErrorReport.cs" />
-	<Compile Include="ErrorReportTests.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="ExceptionHandler.cs" />
-	<Compile Include="ExceptionHelper.cs" />
-	<Compile Include="Logger.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="NonFatalErrorDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="NonFatalErrorDialog.Designer.cs">
-	  <DependentUpon>NonFatalErrorDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="UsageReporter.cs" />
-	<Compile Include="ReportingSetting.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>ReportingSetting.settings</DependentUpon>
-	</Compile>
-	<Compile Include="ReportingStrings.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>ReportingStrings.resx</DependentUpon>
-	</Compile>
-	<Compile Include="UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="MAPIHelper.cs" />
-	<Compile Include="UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<EmbeddedResource Include="ExceptionReportingDialog.resx">
-	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="NonFatalErrorDialog.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>NonFatalErrorDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ReportingStrings.resx">
-	  <SubType>Designer</SubType>
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>ReportingStrings.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="UserRegistrationDialog.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<Content Include="Usage.ico" />
   </ItemGroup>
   <ItemGroup>
 	<Folder Include="Resources\" />
