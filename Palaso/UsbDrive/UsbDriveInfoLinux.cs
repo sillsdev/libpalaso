@@ -5,7 +5,7 @@ using System.IO;
 using NDesk.DBus;
 using org.freedesktop.DBus;
 
-namespace Palaso.Backup
+namespace Palaso.UsbDrive
 {
 	internal class UsbDriveInfoLinux:UsbDriveInfo
 	{
@@ -71,7 +71,7 @@ namespace Palaso.Backup
 		public new static List<UsbDriveInfo> GetDrives()
 		{
 			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();
-			Connection conn = Bus.System;
+			Connection conn =  Bus.System;
 
 			ObjectPath halManagerPath = new ObjectPath("/org/freedesktop/Hal/Manager");
 			string halNameOnDbus = "org.freedesktop.Hal";
@@ -129,4 +129,5 @@ namespace Palaso.Backup
 		}
 	}
 }
+
 //#endif

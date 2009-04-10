@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Management;
-using NDesk.DBus;
-using org.freedesktop.DBus;
 
-namespace Palaso.Backup
+namespace Palaso.UsbDrive
 {
 	public abstract class UsbDriveInfo
 	{
@@ -43,5 +41,4 @@ namespace Palaso.Backup
 			DirectoryInfo path = drives[0].RootDirectory;
 		}
 	}
-
 }

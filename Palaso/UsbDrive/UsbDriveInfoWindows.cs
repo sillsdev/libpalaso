@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management;
 
-namespace Palaso.Backup
+namespace Palaso.UsbDrive
 {
 	internal class UsbDriveInfoWindows : UsbDriveInfo
 	{
@@ -44,9 +44,9 @@ namespace Palaso.Backup
 		{
 			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();
 			using (ManagementObjectSearcher driveSearcher =
-					new ManagementObjectSearcher(
-						"SELECT Caption, DeviceID FROM Win32_DiskDrive WHERE InterfaceType='USB'")
-					)
+				new ManagementObjectSearcher(
+					"SELECT Caption, DeviceID FROM Win32_DiskDrive WHERE InterfaceType='USB'")
+				)
 			{
 				// walk all USB WMI physical disks
 				foreach (ManagementObject drive in driveSearcher.Get())

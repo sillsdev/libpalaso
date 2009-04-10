@@ -71,6 +71,10 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\LinqBridge.dll</HintPath>
 	</Reference>
+	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\NDesk.DBus.dll</HintPath>
+	</Reference>
 	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\nunit.framework.dll</HintPath>
@@ -79,6 +83,7 @@
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Management" />
 	<Reference Include="System.Web" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
@@ -192,6 +197,10 @@
 	<Compile Include="Test\TestUtilities.cs" />
 	<Compile Include="Text\LanguageForm.cs" />
 	<Compile Include="Text\MultiTextBase.cs" />
+	<Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />
+	<Compile Include="UsbDrive\UsbDriveInfo.cs" />
+	<Compile Include="UsbDrive\UsbDriveInfoLinux.cs" />
+	<Compile Include="UsbDrive\UsbDriveInfoWindows.cs" />
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXml.cs" />

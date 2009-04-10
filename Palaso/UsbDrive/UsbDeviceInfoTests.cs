@@ -4,10 +4,8 @@ using System.IO;
 using System.Threading;
 using NUnit.Framework;
 
-namespace Palaso.Backup
+namespace Palaso.UsbDrive
 {
-	//In order for these tests to be relevant you must attach 2 usb drives to your computer and adjust
-	//their expected size and path in the TestFixtureSetup() method
 	[TestFixture]
 	//[Ignore("Hardware specific")]
 	public class UsbDeviceInfoTests
