@@ -20,6 +20,10 @@ namespace Palaso.UI.WindowsForms.i8n
 		private bool _alreadyChanging;
 		private bool _wiredToParent;
 		private Control _parent;
+		#if DEBUG
+		private string _nameOfParentContainer;
+		private StackTrace _constructionStackTrace;
+		#endif
 
 		public LocalizationHelper()
 		{
@@ -32,8 +36,11 @@ namespace Palaso.UI.WindowsForms.i8n
 			{
 				container.Add(this);
 			}
-
 			InitializeComponent();
+
+#if DEBUG
+			_constructionStackTrace = new StackTrace();
+#endif
 		}
 
 		public Control Parent
@@ -138,6 +145,10 @@ namespace Palaso.UI.WindowsForms.i8n
 
 		private void WireToControl(Control control)
 		{
+			#if DEBUG
+				_nameOfParentContainer = control.Name;
+			#endif
+
 			Debug.Assert(control != null);
 			if (IsAllowedControl(control))
 			{
@@ -257,7 +268,12 @@ namespace Palaso.UI.WindowsForms.i8n
 		{
 			if (Parent !=null)
 			{
-				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName + ".");
+
+#if DEBUG
+				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName + ".  Parent container name was '"+     _nameOfParentContainer+"'.\r\n"+this._constructionStackTrace.ToString());
+#else
+				;
+#endif
 			}
 
 		}
