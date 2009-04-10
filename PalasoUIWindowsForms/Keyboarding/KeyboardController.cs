@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -61,7 +62,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (!(s_languagesAlreadyShownKeyBoardNotFoundMessages.Contains(name)))
 				{
 					s_languagesAlreadyShownKeyBoardNotFoundMessages.Add(name, null);
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
 						"Could not find a keyboard ime that had a keyboard named '{0}'", name);
 
 				}

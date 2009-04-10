@@ -43,9 +43,9 @@ namespace TestApp
 			//
 			this.button1.Location = new System.Drawing.Point(34, 38);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(144, 23);
+			this.button1.Size = new System.Drawing.Size(226, 23);
 			this.button1.TabIndex = 0;
-			this.button1.Text = "NonFatal Dialog";
+			this.button1.Text = "Problem Notification with once per session";
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.button1_Click);
 			//

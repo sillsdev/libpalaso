@@ -345,7 +345,7 @@ namespace Palaso.Reporting
 			else if (ErrorReport.IsOkToInteractWithUser)
 			{
 				ProblemNotificationDialog.Show(message,
-										 UsageReporter.AppNameToUseInDialogs + " Error",
+										 UsageReporter.AppNameToUseInDialogs + " Problem",
 										 "&OK", policy.ReoccurenceMessage);
 
 			}
@@ -472,7 +472,7 @@ namespace Palaso.Reporting
 
 		public string ReoccurenceMessage
 		{
-			get { return "Will not show again this session."; }
+			get { return "This message will not be shown again this session."; }
 		}
 	}
 }

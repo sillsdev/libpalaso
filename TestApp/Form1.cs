@@ -19,7 +19,7 @@ namespace TestApp
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			Palaso.Reporting.ErrorReport.NotifyUserOfProblem("hello");
+			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "hello");
 		}
 
 		private void button2_Click(object sender, EventArgs e)
