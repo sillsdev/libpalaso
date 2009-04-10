@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace Palaso.Test
+namespace Palaso.TestUtilities
 {
 	public class TestUtilities
 	{

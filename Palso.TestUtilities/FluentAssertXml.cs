@@ -4,8 +4,11 @@ using System.Text;
 using System.Xml;
 using NUnit.Framework;
 
-namespace Palaso.Test
+namespace Palaso.TestUtilities
 {
+	//NB: if c# ever allows us to add static exension methods,
+	//then all this could be an extension on nunit's Assert class.
+
 	public class AssertThatXmlIn
 	{
 		public static AssertDom Dom(XmlDocument dom)

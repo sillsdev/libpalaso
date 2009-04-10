@@ -35,6 +35,13 @@ namespace Palaso.UsbDrive
 #endif
 		}
 
+		[Test, Ignore("do by hand when you have one plugged in")]
+		public void GetDrives_1DrivesArePluggedIn_DrivesAreReturned()
+		{
+			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.AreEqual(1, usbDrives.Count);
+		}
+
 		[Test]
 		public void GetDrives_2DrivesArePluggedIn_DrivesAreReturned()
 		{

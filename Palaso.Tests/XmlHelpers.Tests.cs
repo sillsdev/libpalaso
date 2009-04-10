@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.Test;
+using Palaso.TestUtilities;
+
 
 namespace Palaso.Tests
 {

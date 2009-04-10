@@ -5,17 +5,13 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>9.0.30729</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{CD4AF11C-C214-4D90-8F12-6DA97836B800}</ProjectGuid>
-	<OutputType>WinExe</OutputType>
+	<ProjectGuid>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</ProjectGuid>
+	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.Media.Tests</RootNamespace>
-	<AssemblyName>Palaso.Media.Tests</AssemblyName>
-	<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+	<RootNamespace>Palaso.TestUtilities</RootNamespace>
+	<AssemblyName>Palaso.TestUtilities</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
-	<TargetFrameworkSubset>
-	</TargetFrameworkSubset>
-	<StartupObject>
-	</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -40,46 +36,23 @@
 	  <HintPath>..\lib\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
+	<Reference Include="System.Xml.Linq">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
+	<Reference Include="System.Data.DataSetExtensions">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
 	<Reference Include="System.Data" />
-	<Reference Include="System.Drawing" />
-	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="AudioRecorderTests.cs" />
-	<Compile Include="SampleForm.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="SampleForm.Designer.cs">
-	  <DependentUpon>SampleForm.cs</DependentUpon>
-	</Compile>
+	<Compile Include="FluentAssertXml.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-	<EmbeddedResource Include="SampleForm.resx">
-	  <DependentUpon>SampleForm.cs</DependentUpon>
-	</EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-	<ProjectReference Include="..\Palaso.Media\Palaso.Media.csproj">
-	  <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
-	  <Name>Palaso.Media</Name>
-	</ProjectReference>
-	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
-	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
-	  <Name>Palaso.Tests</Name>
-	</ProjectReference>
-	<ProjectReference Include="..\Palaso\Palaso.csproj">
-	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-	  <Name>Palaso</Name>
-	</ProjectReference>
-	<ProjectReference Include="..\Palso.TestUtilities\Palaso.TestUtilities.csproj">
-	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
-	  <Name>Palaso.TestUtilities</Name>
-	</ProjectReference>
+	<Compile Include="TemporaryFolder.cs" />
+	<Compile Include="TestUtilities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

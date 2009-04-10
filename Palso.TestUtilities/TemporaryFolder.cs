@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
-namespace Palaso.Test
+namespace Palaso.TestUtilities
 {
 	public class TempLiftFile : TempFile
 	{

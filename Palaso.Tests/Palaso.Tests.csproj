@@ -84,6 +84,7 @@
 	<Compile Include="Spelling\WordTokenizerTests.cs" />
 	<Compile Include="Text\LanguageFormTest.cs" />
 	<Compile Include="Text\MultiTextBase.Tests.cs" />
+	<Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXmlTests.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParserTests.cs" />
@@ -101,6 +102,10 @@
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palso.TestUtilities\Palaso.TestUtilities.csproj">
+	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
+	  <Name>Palaso.TestUtilities</Name>
 	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

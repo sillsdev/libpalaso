@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.Test;
 using Palaso.WritingSystems;
+using Palaso.TestUtilities;
 
 namespace Palaso.Tests.WritingSystems
 {

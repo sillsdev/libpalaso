@@ -3,9 +3,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
-using Palaso.Test;
-using Palaso.Tests;
-using Palaso.Media;
+using Palaso.TestUtilities;
+
 
 namespace Palaso.Media.Tests
 {
