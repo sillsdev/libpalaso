@@ -89,10 +89,16 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
+	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
 	<Compile Include="Extensions\IEnumberableExtensions.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
+	<Compile Include="IO\FileUtils.cs" />
+	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
+	<Compile Include="Misc\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
+	<Compile Include="Misc\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
 	<Compile Include="Progress\Commands\BasicCommand.cs" />
@@ -142,7 +148,7 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resource.resx</DependentUpon>
 	</Compile>
-	<Compile Include="SFMReader.cs">
+	<Compile Include="IO\SFMReader.cs">
 	  <SubType>Code</SubType>
 	</Compile>
 	<Compile Include="Spart\Actions\ActionEventArgs.cs" />
@@ -188,6 +194,7 @@
 	<Compile Include="Annotations\Annotation.cs" />
 	<Compile Include="Annotations\IAnnotatable.cs" />
 	<Compile Include="Spelling\WordTokenizer.cs" />
+	<Compile Include="IO\TempFileForSafeWriting.cs" />
 	<Compile Include="Text\LanguageForm.cs" />
 	<Compile Include="Text\MultiTextBase.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfo.cs" />
@@ -210,7 +217,8 @@
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
-	<Compile Include="XmlHelpers.cs" />
+	<Compile Include="Xml\XmlHelpers.cs" />
+	<Compile Include="Xml\XmlUtils.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">

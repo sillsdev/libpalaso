@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
+using Palaso.IO;
 
 namespace Palaso.Tests
 {

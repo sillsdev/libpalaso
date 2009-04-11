@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Palaso
+namespace Palaso.IO
 {
 	public class SFMReader
 	{
