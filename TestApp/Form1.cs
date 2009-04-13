@@ -70,5 +70,12 @@ namespace TestApp
 			var d = new WritingSystemTest();
 			d.ShowDialog();
 		}
+
+		private void WritingSystemPickerButton_Click(object sender, EventArgs e)
+		{
+			var d = new WritingSystemPickerTestForm();
+			d.ShowDialog();
+
+		}
 	}
 }

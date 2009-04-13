@@ -99,6 +99,29 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SetCurrentIndexFromRfc4646_NotFound_ReturnsFalse()
+		{
+			Assert.IsFalse(_model.SetCurrentIndexFromRfc46464("bogus"));
+		}
+
+		[Test]
+		public void SetCurrentIndexFromRfc4646_NotFound_ReturnsTrueAndCurrentIsChanged()
+		{
+			_model.AddNew();
+			_model.CurrentISO = "ws1";
+			_model.CurrentRegion = "r";
+			_model.AddNew();
+			_model.CurrentISO = "ws2";
+			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("ws2"));
+			Assert.AreEqual(1, _model.CurrentIndex);
+			Assert.AreEqual("ws2", _model.CurrentISO);
+			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("ws1-r"));
+			Assert.AreEqual("ws1", _model.CurrentISO);
+			Assert.AreEqual(0, _model.CurrentIndex);
+
+		}
+
+		[Test]
 		public void CurrentSelectByIndex_GetCurrentCorrect()
 		{
 			_model.AddNew();

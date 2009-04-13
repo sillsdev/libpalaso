@@ -129,6 +129,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		/// <summary>
+		///
+		/// </summary>
+		/// <param name="rfc4646"></param>
+		/// <returns>false if the code wasn't found</returns>
+		public bool SetCurrentIndexFromRfc46464(string rfc4646)
+		{
+			var index = _writingSystemDefinitions.FindIndex(d => d.RFC4646 == rfc4646);
+			if(index<0)
+			{
+				return false;
+			}
+			CurrentIndex = index;
+			return true;
+		}
+
+		/// <summary>
 		/// The index of the currently selected WritingSystemDefinition from the list of
 		/// available definitions.  This will be -1 if there is no selection.
 		/// </summary>
@@ -546,7 +562,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVerboseDescription
 		{
-			get { return Current.VerboseDescription ?? string.Empty; }
+			get { return Current!=null ? Current.VerboseDescription : string.Empty; }
 		}
 
 		public string CurrentVersionDescription

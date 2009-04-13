@@ -27,6 +27,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_wsPropertiesPanel.BindToModel(_model);
 		}
 
+		public DialogResult  ShowDialog(string initiallySelectWritingSystemRfc4646)
+		{
+			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemRfc4646);
+			return this.ShowDialog();
+		}
+
 		private void _closeButton_Click(object sender, EventArgs e)
 		{
 			Close();
