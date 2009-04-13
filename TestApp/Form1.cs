@@ -64,5 +64,11 @@ namespace TestApp
 		{
 			ErrorReport.ReportNonFatalMessageWithStackTrace("{0} {1}", "hello","there");
 		}
+
+		private void button6_Click(object sender, EventArgs e)
+		{
+			var d = new WritingSystemTest();
+			d.ShowDialog();
+		}
 	}
 }
