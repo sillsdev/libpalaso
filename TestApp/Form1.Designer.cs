@@ -37,6 +37,8 @@ namespace TestApp
 			this.label2 = new System.Windows.Forms.Label();
 			this.button4 = new System.Windows.Forms.Button();
 			this.button5 = new System.Windows.Forms.Button();
+			this.button6 = new System.Windows.Forms.Button();
+			this.WritingSystemPickerButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// button1
@@ -123,17 +125,39 @@ namespace TestApp
 			this.button5.UseVisualStyleBackColor = true;
 			this.button5.Click += new System.EventHandler(this.OnNonFatalMessageWithStack);
 			//
+			// button6
+			//
+			this.button6.Location = new System.Drawing.Point(34, 263);
+			this.button6.Name = "button6";
+			this.button6.Size = new System.Drawing.Size(226, 23);
+			this.button6.TabIndex = 0;
+			this.button6.Text = "Writing System Dialog";
+			this.button6.UseVisualStyleBackColor = true;
+			this.button6.Click += new System.EventHandler(this.button6_Click);
+			//
+			// WritingSystemPickerButton
+			//
+			this.WritingSystemPickerButton.Location = new System.Drawing.Point(34, 293);
+			this.WritingSystemPickerButton.Name = "WritingSystemPickerButton";
+			this.WritingSystemPickerButton.Size = new System.Drawing.Size(221, 23);
+			this.WritingSystemPickerButton.TabIndex = 3;
+			this.WritingSystemPickerButton.Text = "Writing System Picker";
+			this.WritingSystemPickerButton.UseVisualStyleBackColor = true;
+			this.WritingSystemPickerButton.Click += new System.EventHandler(this.WritingSystemPickerButton_Click);
+			//
 			// Form1
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(287, 402);
+			this.Controls.Add(this.WritingSystemPickerButton);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this._keyman6TestBox);
 			this.Controls.Add(this._keymanTestBox);
 			this.Controls.Add(this.button3);
 			this.Controls.Add(this.button2);
+			this.Controls.Add(this.button6);
 			this.Controls.Add(this.button5);
 			this.Controls.Add(this.button4);
 			this.Controls.Add(this.button1);
@@ -155,5 +179,7 @@ namespace TestApp
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button button4;
 		private System.Windows.Forms.Button button5;
+		private System.Windows.Forms.Button button6;
+		private System.Windows.Forms.Button WritingSystemPickerButton;
 	}
 }

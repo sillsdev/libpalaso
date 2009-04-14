@@ -8,6 +8,9 @@ using Palaso.TestUtilities;
 
 namespace Palaso.Tests.WritingSystems
 {
+	/// REVIEW: There are no tests in this class!!!!!!!!!!!!!
+
+
 	[TestFixture]
 	public class LdmlInFolderWritingSystemStoreInterfaceTests : IWritingSystemStoreTests
 	{

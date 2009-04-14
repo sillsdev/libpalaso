@@ -129,6 +129,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		/// <summary>
+		///
+		/// </summary>
+		/// <param name="rfc4646"></param>
+		/// <returns>false if the code wasn't found</returns>
+		public bool SetCurrentIndexFromRfc46464(string rfc4646)
+		{
+			var index = _writingSystemDefinitions.FindIndex(d => d.RFC4646 == rfc4646);
+			if(index<0)
+			{
+				return false;
+			}
+			CurrentIndex = index;
+			return true;
+		}
+
+		/// <summary>
 		/// The index of the currently selected WritingSystemDefinition from the list of
 		/// available definitions.  This will be -1 if there is no selection.
 		/// </summary>
@@ -446,7 +462,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentISO
 		{
-			get { return Current.ISO ?? string.Empty; }
+			get { return Current == null ? string.Empty : (Current.ISO ?? string.Empty); }
 			set
 			{
 				if (Current.ISO != value)
@@ -459,7 +475,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentKeyboard
 		{
-			get { return string.IsNullOrEmpty(Current.Keyboard) ? "(default)" : Current.Keyboard; }
+			get
+			{
+				if(Current==null)
+					return string.Empty;
+				return string.IsNullOrEmpty(Current.Keyboard) ? "(default)" : Current.Keyboard;
+			}
 			set
 			{
 				if (value == "(default)")
@@ -476,7 +497,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentNativeName
 		{
-			get { return Current.NativeName ?? string.Empty; }
+			get { return Current == null ? string.Empty : (Current.NativeName ?? string.Empty); }
 			set
 			{
 				if (Current.NativeName != value)
@@ -489,7 +510,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRegion
 		{
-			get { return Current.Region ?? string.Empty; }
+			get { return  Current==null? string.Empty : (Current.Region ?? string.Empty); }
 			set
 			{
 				if (Current.Region != value)
@@ -502,7 +523,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRFC4646
 		{
-			get { return Current.RFC4646 ?? string.Empty; }
+			get { return Current==null? string.Empty : (Current.RFC4646 ?? string.Empty); }
 		}
 
 		public bool CurrentRightToLeftScript
@@ -546,7 +567,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVerboseDescription
 		{
-			get { return Current.VerboseDescription ?? string.Empty; }
+			get { return Current!=null ? Current.VerboseDescription : string.Empty; }
 		}
 
 		public string CurrentVersionDescription
