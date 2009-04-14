@@ -78,6 +78,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		public void IsReady_2DrivesAreNotMounted_ReturnsFalse()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
