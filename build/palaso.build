@@ -96,8 +96,6 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="../output/${configuration}/Palaso.Services.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="../output/${configuration}/PalasoReporting.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="../output/${configuration}/PalasoUIWindowsForms.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
