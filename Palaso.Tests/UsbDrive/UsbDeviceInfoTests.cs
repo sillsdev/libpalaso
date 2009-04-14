@@ -7,7 +7,6 @@ using NUnit.Framework;
 namespace Palaso.UsbDrive
 {
 	[TestFixture]
-	//[Ignore("Hardware specific")]
 	public class UsbDeviceInfoTests
 	{
 		private struct driveParamsForTests
@@ -35,7 +34,8 @@ namespace Palaso.UsbDrive
 #endif
 		}
 
-		[Test, Ignore("do by hand when you have one plugged in")]
+		[Test]
+		[Category("RequiresUSB")]
 		public void GetDrives_1DrivesArePluggedIn_DrivesAreReturned()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -43,6 +43,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		public void GetDrives_2DrivesArePluggedIn_DrivesAreReturned()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -50,6 +51,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -58,6 +60,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -66,6 +69,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		public void IsReady_2DrivesAreMounted_ReturnsTrue()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -82,6 +86,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		[ExpectedException(typeof(ArgumentException))]
 		public void RootDirectory_2DrivesAreNotMounted_Throws()
 		{

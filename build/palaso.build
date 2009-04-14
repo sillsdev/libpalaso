@@ -112,6 +112,7 @@
 			<exclude name="Windows IME"/>
 			<exclude name="Keyman6"/>
 			<exclude name="Keyman7"/>
+			<exclude name="RequiresUSB"/>
 		  </categories>
 			</test>
 		</nunit2>
