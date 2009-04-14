@@ -462,7 +462,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentISO
 		{
-			get { return Current.ISO ?? string.Empty; }
+			get { return Current == null ? string.Empty : (Current.ISO ?? string.Empty); }
 			set
 			{
 				if (Current.ISO != value)
@@ -475,7 +475,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentKeyboard
 		{
-			get { return string.IsNullOrEmpty(Current.Keyboard) ? "(default)" : Current.Keyboard; }
+			get
+			{
+				if(Current==null)
+					return string.Empty;
+				return string.IsNullOrEmpty(Current.Keyboard) ? "(default)" : Current.Keyboard;
+			}
 			set
 			{
 				if (value == "(default)")
@@ -492,7 +497,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentNativeName
 		{
-			get { return Current.NativeName ?? string.Empty; }
+			get { return Current == null ? string.Empty : (Current.NativeName ?? string.Empty); }
 			set
 			{
 				if (Current.NativeName != value)
@@ -505,7 +510,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRegion
 		{
-			get { return Current.Region ?? string.Empty; }
+			get { return  Current==null? string.Empty : (Current.Region ?? string.Empty); }
 			set
 			{
 				if (Current.Region != value)
@@ -518,7 +523,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRFC4646
 		{
-			get { return Current.RFC4646 ?? string.Empty; }
+			get { return Current==null? string.Empty : (Current.RFC4646 ?? string.Empty); }
 		}
 
 		public bool CurrentRightToLeftScript
