@@ -921,5 +921,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			OnAddOrDelete();
 			Current = ws;
 		}
+
+//        /// <summary>
+//        /// Cause the model to reload, if you've made changes
+//        /// (e.g., using a dialog to edit another copy of the mode)
+//        /// </summary>
+//        public void Refresh()
+//        {
+//
+//        }
 	}
 }

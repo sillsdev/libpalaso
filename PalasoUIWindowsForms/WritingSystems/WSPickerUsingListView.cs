@@ -39,8 +39,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model.ListColumnsChanged += ModelListColumnsChanged;
 			_model.SelectionChanged += ModelSelectionChanged;
 			_model.CurrentItemUpdated += ModelCurrentItemUpdated;
+			this.Disposed += OnDisposed;
 		}
 
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+			{
+				_model.ItemAddedOrDeleted -= ModelItemAddedOrDeleted;
+				_model.ListColumnsChanged -= ModelListColumnsChanged;
+				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
+			}
+		}
 		private void ModelItemAddedOrDeleted(object sender, EventArgs e)
 		{
 			RefreshListViewItems();
@@ -137,7 +148,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			try
 			{
 				_listView.SelectedIndices.Clear();
-				_listView.SelectedIndices.Add(_model.CurrentIndex);
+				if(_model.CurrentIndex > -1 && _model.CurrentIndex < _listView.Items.Count)
+					_listView.SelectedIndices.Add(_model.CurrentIndex);
 				OnSelectedIndexChanged();
 			}
 			finally

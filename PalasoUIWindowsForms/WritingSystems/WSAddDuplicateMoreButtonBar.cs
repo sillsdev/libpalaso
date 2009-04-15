@@ -29,6 +29,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model = model;
 			SetButtonStatus();
 			_model.SelectionChanged += ModelSelectionChanged;
+
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+				_model.SelectionChanged -= ModelSelectionChanged;
 		}
 
 		private void CreateMoreButtonImage()
@@ -85,6 +93,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_model.ImportFile(dialog.FileName);
 			}
+		}
+		public void Dispose()
+		{
 		}
 	}
 }

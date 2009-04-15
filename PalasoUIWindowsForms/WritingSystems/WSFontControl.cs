@@ -35,6 +35,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model.CurrentItemUpdated += ModelCurrentItemUpdated;
 			PopulateFontList();
 			UpdateFromModel();
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+				_model.SelectionChanged -= ModelSelectionChanged;
 		}
 
 		private void ModelSelectionChanged(object sender, EventArgs e)

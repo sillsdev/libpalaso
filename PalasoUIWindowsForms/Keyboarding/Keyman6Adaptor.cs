@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {

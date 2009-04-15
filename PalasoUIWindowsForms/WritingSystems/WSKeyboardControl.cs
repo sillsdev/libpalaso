@@ -39,6 +39,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				PopulateKeyboardList();
 				UpdateFromModel();
 			}
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+				_model.SelectionChanged -= ModelSelectionChanged;
 		}
 
 		private void PopulateKeyboardList()

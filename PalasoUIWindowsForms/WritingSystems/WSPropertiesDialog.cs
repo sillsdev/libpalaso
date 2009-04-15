@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 
@@ -17,6 +12,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			InitializeComponent();
 			_model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore());
+			_wsPropertiesPanel.BindToModel(_model);
+		}
+
+   /* turned out to be hard... so many events are bound to the model, when the dlg
+	* closes we'd need to carefully unsubscribe them alll.
+	* Better to try again with a weak event model*/
+		/// <summary>
+		/// Use this one to keep, say, a picker up to date with any change you make
+		/// while using the dialog.
+		/// </summary>
+		/// <param name="writingSystemModel"></param>
+		public WSPropertiesDialog(WritingSystemSetupPM writingSystemModel)
+		{
+			InitializeComponent();
+			_model = writingSystemModel;
 			_wsPropertiesPanel.BindToModel(_model);
 		}
 

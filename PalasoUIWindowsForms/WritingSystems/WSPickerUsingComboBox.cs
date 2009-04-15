@@ -1,13 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using Palaso.UI.WritingSystems;
-using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -35,30 +28,39 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
 			}
 			_model = model;
-			RefreshListView();
+			ReloadItems();
 			_model.ItemAddedOrDeleted += ModelItemAddedOrDeleted;
 			_model.ListColumnsChanged += ModelListColumnsChanged;
 			_model.SelectionChanged += ModelSelectionChanged;
 			_model.CurrentItemUpdated += ModelCurrentItemUpdated;
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+			{
+				_model.ItemAddedOrDeleted -= ModelItemAddedOrDeleted;
+				_model.ListColumnsChanged -= ModelListColumnsChanged;
+				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
+			}
 		}
 
 		private void ModelItemAddedOrDeleted(object sender, EventArgs e)
 		{
-			RefreshListViewItems();
+			ReloadItems();
 		}
 
 		private void ModelListColumnsChanged(object sender, EventArgs e)
 		{
-			RefreshListView();
+			ReloadItems();
 		}
 
-		private void RefreshListView()
-		{
-			RefreshListViewItems();
-		}
 
-		private void RefreshListViewItems()
+		private void ReloadItems()
 		{
+			var previous = SelectedIndex;
 			_changingSelection = true;
 			try
 			{
@@ -67,6 +69,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					Items.Add(item[0]);//hack
 				}
+				if(previous < Items.Count)
+					SelectedIndex = previous;
 			}
 			finally
 			{
@@ -157,6 +161,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void ModelCurrentItemUpdated(object sender, EventArgs e)
 		{
+			ReloadItems();
 
 		}
 	}

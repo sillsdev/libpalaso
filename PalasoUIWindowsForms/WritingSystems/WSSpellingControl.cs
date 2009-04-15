@@ -32,6 +32,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				model.CurrentItemUpdated += ModelCurrentItemUpdated;
 				model.SelectionChanged += ModelSelectionChanged;
 			}
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+			{
+				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
+				_model.SelectionChanged -= ModelSelectionChanged;
+			}
 		}
 
 		private void ModelSelectionChanged(object sender, EventArgs e)

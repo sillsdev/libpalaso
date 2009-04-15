@@ -116,6 +116,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			UpdateProxyFromModel();
 			UpdateTextFromModel();
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+				_model.SelectionChanged -= ModelSelectionChanged;
 		}
 
 		private void ModelSelectionChanged(object sender, EventArgs e)
