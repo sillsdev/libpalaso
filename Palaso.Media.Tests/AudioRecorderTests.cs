@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
+using System.Media;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
@@ -151,6 +153,50 @@ namespace Palaso.Media.Tests
 			   x.StopRecording();
 		   }
 	   }
+
+	   [Test]
+	   public void RecordThenPlay_SmokeTest()
+	   {
+		   using (var f = new TempFile())
+		   {
+			   var w = new BackgroundWorker();
+			   w.DoWork+=new DoWorkEventHandler((o,args)=> SystemSounds.Exclamation.Play());
+
+			   var x = new AudioRecorder(f.Path);
+			   x.StartRecording();
+			  w.RunWorkerAsync();
+			   Thread.Sleep(1000);
+			   x.StopRecording();
+			   x.Play();
+			   Thread.Sleep(1000);
+		   }
+	   }
+
+	   [Test]
+	   public void Play_GiveThaiFileName_ShouldHearTwoSounds()
+	   {
+		   using (var d = new TemporaryFolder("palaso media test"))
+		   {
+			   var soundPath = d.Combine("ก.wav");
+			   File.Create(soundPath).Close();
+			   using (var f = TempFile.TrackExisting(soundPath))
+			   {
+				   var w = new BackgroundWorker();
+				   w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
+
+				   var x = new AudioRecorder(f.Path);
+				   x.StartRecording();
+				   w.RunWorkerAsync();
+				   Thread.Sleep(1000);
+				   x.StopRecording();
+
+				   var y = new AudioRecorder(f.Path);
+				   y.Play();
+				   Thread.Sleep(1000);
+			   }
+		   }
+	   }
+
 
 	   /// <summary>
 	   /// for testing things while recording is happening

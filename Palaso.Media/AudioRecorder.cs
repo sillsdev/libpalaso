@@ -38,7 +38,9 @@ namespace Palaso.Media
 
 			_thinkWeAreRecording = true;
 			_recorder.ClearRecordedAudioDataBuffer();
-			_recorder.StartRecordingBufferedAudio();
+
+			_recorder.StartRecordingBufferedAudio(22000, SampleFormat.Signed16Bit);
+			//_recorder.StartRecordingBufferedAudio();
 			_startRecordingTime = DateTime.Now;
 
 		}
@@ -69,6 +71,7 @@ namespace Palaso.Media
 			get
 			{
 				//doesn't work: return _recorder.IsRecording; (bug has been reported)
+				//TODO: reportedly fixed in  irrKlang 1.1.3
 
 				return _thinkWeAreRecording;
 			}
@@ -76,6 +79,7 @@ namespace Palaso.Media
 
 		private byte[] GetRecordedAudioDataSafely()
 		{
+				//TODO: reportedly fixed in  irrKlang 1.1.3
 			//there is a bug (which I've reported) that we need to step carefully around
 			try
 			{
@@ -125,7 +129,54 @@ namespace Palaso.Media
 			//so, we need to make a new engine.
 			//   NO   _sound = _engine.Play2D(path, false);
 
-			_sound = new IrrKlang.ISoundEngine().Play2D(_path);
+			var engine = new IrrKlang.ISoundEngine();
+
+			//all this is about getting names with non-latin to play.
+			//we have to copy them to a temp file first
+			string tempPath;
+			if (MakeTempCopyIfNeededBecauseOfUnicode(_path, out tempPath))
+			{
+				try
+				{
+					_sound = engine.Play2D(tempPath);
+				}
+				finally
+				{
+					try
+					{
+						File.Delete(tempPath);
+					}
+					catch(Exception)
+					{
+						//swallow
+					}
+				}
+			}
+			else
+			{
+				_sound = engine.Play2D(_path);
+			}
+		}
+
+		/// <summary>
+		/// this version of irrklang can't play if there's non-latin in there
+		/// see http://www.ambiera.com/forum.php?t=601
+		/// </summary>
+		/// <returns>true if you need to use the provided temp file</returns>
+		private bool MakeTempCopyIfNeededBecauseOfUnicode(string path, out string tempPath)
+		{
+			var x = path.ToCharArray();
+			foreach (char c in x)
+			{
+				if(c > 128)
+				{
+					tempPath = Path.GetTempFileName();
+					File.Copy(path, tempPath, true);
+					return true;
+				}
+			}
+			tempPath = null;
+			return false;
 		}
 
 		public void SaveAsWav(string path)
