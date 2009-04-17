@@ -23,6 +23,11 @@ namespace Palaso.Media
 			_hint.Text = "";
 		}
 
+		public bool PlayOnly
+		{
+			get; set;
+		}
+
 		public string Path
 		{
 			get { return _path; }
@@ -51,12 +56,12 @@ namespace Palaso.Media
 				_recordButton.Image = global::Palaso.Media.Properties.Resources.recordDisabled16x16;
 			}
 
-			_recordButton.Enabled = _deleteButton.Enabled = mouseIsWithin;
+			_recordButton.Enabled = _deleteButton.Enabled = !PlayOnly && mouseIsWithin;
 			_playButton.Enabled = mouseIsWithin && !_recorder.IsPlaying;
 			_recordButton.FlatAppearance.BorderSize = mouseIsWithin ? 1 : 0;
 
 			_playButton.Visible =  exists && (_recorder.IsPlaying || _recorder.CanPlay);
-			 _deleteButton.Visible = mouseIsWithin && exists;
+			 _deleteButton.Visible = mouseIsWithin && exists && !PlayOnly ;
 
 			 bool mouseOverDeleteButton = RectangleToScreen(_deleteButton.Bounds).Contains(MousePosition);
 			 _deleteButton.FlatAppearance.BorderSize = mouseOverDeleteButton ? 1 : 0;
@@ -65,7 +70,7 @@ namespace Palaso.Media
 			 _playButton.FlatAppearance.BorderSize = mouseOverPlayButton ? 1 : 0;
 
 			_poorMansWaveform.Visible = false;//this was a good idea, but made the screen too busy //exists;
-			_recordButton.Visible = !exists;
+			_recordButton.Visible = !exists && !PlayOnly;
 
 
 		}
