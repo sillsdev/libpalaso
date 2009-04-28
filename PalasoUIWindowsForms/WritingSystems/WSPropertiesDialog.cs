@@ -6,7 +6,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPropertiesDialog : Form
 	{
-		private WritingSystemSetupPM _model;
+		private readonly WritingSystemSetupPM _model;
 
 		public WSPropertiesDialog()
 		{
@@ -40,7 +40,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public DialogResult  ShowDialog(string initiallySelectWritingSystemRfc4646)
 		{
 			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemRfc4646);
-			return this.ShowDialog();
+			return ShowDialog();
 		}
 
 		private void _closeButton_Click(object sender, EventArgs e)

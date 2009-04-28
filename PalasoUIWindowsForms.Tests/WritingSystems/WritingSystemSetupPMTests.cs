@@ -591,5 +591,21 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_model.ImportFile("Hopefully this file does not exist.xml");
 		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException))]
+		public void Export_NoCurrentSelection_Throws()
+		{
+			_model.ClearSelection ();
+			_model.ExportCurrentWritingSystemAsFile ("a.ldml");
+		}
+
+		[Test]
+		public void Export_CreatesFile()
+		{
+			_model.AddNew ();
+			string filePath = Path.GetTempFileName ();
+			_model.ExportCurrentWritingSystemAsFile (filePath);
+			Assert.IsTrue (File.Exists (filePath));
+		}
 	}
 }

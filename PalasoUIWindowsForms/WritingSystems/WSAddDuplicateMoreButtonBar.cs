@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -30,7 +26,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			SetButtonStatus();
 			_model.SelectionChanged += ModelSelectionChanged;
 
-			this.Disposed += OnDisposed;
+			Disposed += OnDisposed;
 		}
 
 		void OnDisposed(object sender, EventArgs e)
@@ -44,7 +40,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Bitmap downArrow = new Bitmap(11, 6);
 			Graphics g = Graphics.FromImage(downArrow);
 			g.FillRectangle(Brushes.Transparent, 0, 0, 11, 5);
-			g.FillPolygon(Brushes.Black, new Point[] { new Point(0, 0), new Point(10, 0), new Point(5, 5) });
+			g.FillPolygon(Brushes.Black, new[] { new Point(0, 0), new Point(10, 0), new Point(5, 5) });
 			_moreButton.Image = downArrow;
 		}
 
@@ -58,6 +54,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_model == null)
 				return;
 			bool enabled = _model.HasCurrentSelection;
+			_exportMenuItem.Enabled = enabled;
 			_duplicateButton.Enabled = enabled;
 			_deleteMenuItem.Enabled = enabled;
 		}
@@ -94,8 +91,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_model.ImportFile(dialog.FileName);
 			}
 		}
-		public void Dispose()
+
+		private void ExportMenuClick(object sender, EventArgs e)
 		{
+			SaveFileDialog dialog = new SaveFileDialog ();
+			dialog.Filter = "LDML files (*.ldml;*.xml)|*.ldml;*.xml|All files (*.*)|*.*";
+			dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			dialog.RestoreDirectory = true;
+			if (dialog.ShowDialog (this) == DialogResult.OK)
+			{
+				_model.ExportCurrentWritingSystemAsFile(dialog.FileName);
+			}
 		}
+
 	}
 }

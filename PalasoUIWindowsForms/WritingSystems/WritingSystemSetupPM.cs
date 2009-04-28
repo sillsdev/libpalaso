@@ -796,6 +796,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemStore.Save();
 		}
 
+		/// <summary>
+		/// Exports the current writing system to a file.
+		/// </summary>
+		/// <param name="filePath"></param>
+		public void ExportCurrentWritingSystemAsFile(string filePath)
+		{
+			if (!HasCurrentSelection) {
+				throw new InvalidOperationException ("Unable to export current selection when there is no current selection.");
+			}
+			LdmlAdaptor adaptor = new LdmlAdaptor ();
+			adaptor.Write (filePath, _currentWritingSystem, null);
+		}
+
 		private void SetAllPossibleAndRemoveOthers()
 		{
 			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
