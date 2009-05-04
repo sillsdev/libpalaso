@@ -45,13 +45,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _closeButton_Click(object sender, EventArgs e)
 		{
-			Close();
+			try
+			{
+				_model.Save ();
+				Close();
+			}
+			catch (ArgumentException exception)
+			{
+				MessageBox.Show (this, exception.Message);
+			}
 		}
 
-		protected override void OnClosed(EventArgs e)
-		{
-			_model.Save();
-			base.OnClosed(e);
-		}
 	}
 }

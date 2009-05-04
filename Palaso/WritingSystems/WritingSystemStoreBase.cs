@@ -100,7 +100,7 @@ namespace Palaso.WritingSystems
 			string newID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
 			if (_writingSystems.ContainsKey(newID) && newID != ws.StoreID)
 			{
-				throw new ArgumentException("Duplicate writing system already exists.  Please change this writing system before storing.");
+				throw new ArgumentException(String.Format("Unable to store writing system '{0:s}' because this id already exists.  Please change this writing system before storing.", newID));
 			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
