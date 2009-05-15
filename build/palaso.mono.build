@@ -133,7 +133,7 @@
 
 	<target name="rebuild" depends="clean, build" />
 
-	<target name="build-only" depends="make-output-dir, set-build-config, set-runtime-config, copy-lib-files">
+	<target name="build-only" depends="make-output-dir, set-build-config, set-runtime-config, copy-lib-files, assemblyinfo">
 		<nant target="build">
 			<properties>
 				<property name="build.defines" value="${build.defines}" />
