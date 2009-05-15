@@ -1,4 +1,5 @@
 hg purge
 hg pull
-hg update -C mono
+hg update -C $1
+shift
 $@
