@@ -1,0 +1,4 @@
+hg purge
+hg pull
+hg update -C mono
+$@
