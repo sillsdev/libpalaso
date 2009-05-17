@@ -25,6 +25,7 @@
 	</if>
 
 	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
+		<include name="Palaso.TestUtilities/Palaso.TestUtilities.proj.build" />
 		<include name="Palaso/Palaso.proj.build" />
 		<include name="Palaso.Tests/Palaso.Tests.proj.build" />
 		<include name="Palaso.Backup/Palaso.Backup.proj.build" />
