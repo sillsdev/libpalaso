@@ -104,7 +104,7 @@
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>
 	</ProjectReference>
-	<ProjectReference Include="..\Palso.TestUtilities\Palaso.TestUtilities.csproj">
+	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
 	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
 	  <Name>Palaso.TestUtilities</Name>
 	</ProjectReference>
