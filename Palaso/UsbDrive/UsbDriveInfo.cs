@@ -33,6 +33,7 @@ namespace Palaso.UsbDrive
 		}
 	}
 
+	/*
 	public class Test
 	{
 		static void la()
@@ -41,4 +42,5 @@ namespace Palaso.UsbDrive
 			DirectoryInfo path = drives[0].RootDirectory;
 		}
 	}
+	*/
 }

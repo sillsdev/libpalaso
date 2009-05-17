@@ -13,7 +13,6 @@ namespace Palaso.WritingSystems
 	{
 		private Dictionary<string, WritingSystemDefinition> _writingSystems;
 		private Dictionary<string, DateTime> _writingSystemsToIgnore;
-		private IWritingSystemStore _sharedStore;
 
 		/// <summary>
 		/// Use the default repository
