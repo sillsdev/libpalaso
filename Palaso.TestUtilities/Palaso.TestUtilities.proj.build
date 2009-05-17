@@ -1,10 +1,11 @@
 <project name="Palaso.TestUtitlies" default="build" basedir=".">
 	<!-- review <property name="resgen.exe" value="resgen2"/> -->
 	<target name="build">
-		<property name="build.namespace" value="Palaso" />
+		<property name="build.namespace" value="Palaso.TestUtilities" />
 		<property name="build.namespace.dir" value="${path::combine(project.resource.dir, build.namespace)}" />
 
 		<!-- review: usesourcepath will not work as the path of the source has been changed making it invalid -->
+		<!--
 		<copy todir="${build.namespace.dir}" >
 			<fileset basedir=".">
 				<include name="**/*.resx" />
@@ -25,7 +26,7 @@
 				<include name="${build.namespace.dir}/**/*.resx" />
 			</resources>
 		</resgen>
-
+		-->
 		<csc target="library"
 			output="${project.output.dir}/Palaso.TestUtilities.dll"
 			doc="${project.output.dir}/doc/Palaso.TestUtilities.xml"
@@ -44,9 +45,11 @@
 				<include name="System.dll" />
 				<include name="System.Xml.dll" />
 			</references>
+			<!--
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
 				<include name="${build.namespace.dir}/**/*.resources" />
 			</resources>
+			-->
 		</csc>
 	</target>
 
