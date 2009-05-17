@@ -43,6 +43,7 @@
 				<include name="icu.net.dll" />
 				<include name="NDesk.DBus.dll" />
 				<include name="System.dll" />
+				<include name="System.Configuration.dll" />
 				<include name="System.Drawing.dll" />
 				<include name="System.Windows.Forms.dll" />
 			</references>
