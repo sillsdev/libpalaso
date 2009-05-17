@@ -33,6 +33,8 @@
 			define="${build.defines}">
 			<nowarn>
 				<warning number="618,672"/>
+				<warning number="1584" />
+				<warning number="1570" />
 				<warning number="1699" if="${runtime.version=='2.0'}"/>
 			</nowarn>
 			<sources basedir=".">

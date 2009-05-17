@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Palaso.UsbDrive
@@ -15,6 +16,7 @@ namespace Palaso.UsbDrive
 			get;
 		}
 
+		[CLSCompliant(false)]
 		public abstract ulong TotalSize
 		{
 			get;
