@@ -4,6 +4,7 @@ using System.IO;
 
 namespace Palaso.UsbDrive
 {
+	[CLSCompliant (false)]
 	public abstract class UsbDriveInfo
 	{
 		public abstract bool IsReady
@@ -16,7 +17,6 @@ namespace Palaso.UsbDrive
 			get;
 		}
 
-		[CLSCompliant(false)]
 		public abstract ulong TotalSize
 		{
 			get;
