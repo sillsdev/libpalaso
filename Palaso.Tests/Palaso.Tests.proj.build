@@ -35,6 +35,7 @@
 			</sources>
 			<references basedir="${project.output.dir}">
 				<include name="nunit.framework.dll" />
+				<include name="Palaso.TestUtilities.dll" />
 				<include name="Palaso.dll" />
 			</references>
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
