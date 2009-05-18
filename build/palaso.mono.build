@@ -128,13 +128,13 @@
 		</foreach>
 	</target>
 
-	<target name="build" description="Build all targets.">
+	<target name="build" description="Build all targets." depends="assemblyinfo" >
 		<call target="build-only"/>
 	</target>
 
 	<target name="rebuild" depends="clean, build" />
 
-	<target name="build-only" depends="make-output-dir, set-build-config, set-runtime-config, copy-lib-files, assemblyinfo">
+	<target name="build-only" depends="make-output-dir, set-build-config, set-runtime-config, copy-lib-files">
 		<nant target="build">
 			<properties>
 				<property name="build.defines" value="${build.defines}" />
