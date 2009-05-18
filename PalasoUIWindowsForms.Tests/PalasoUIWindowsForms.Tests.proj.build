@@ -19,6 +19,8 @@
 			</resources>
 		</resgen>
 
+		<copy file="ImageGallery/ArtOfReadingIndexV3_en.txt" todir="${path::combine(project.output.dir, 'ImageGallery')}" />
+
 		<csc target="library"
 			output="${project.output.dir}/PalasoUIWindowsForms.Tests.dll"
 			doc="${project.output.dir}/doc/PalasoUIWindowsForms.Tests.xml"
