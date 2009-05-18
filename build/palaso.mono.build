@@ -251,6 +251,7 @@
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
 				<exclude name="KnownMonoIssue"/>
+				<exclude name="RequiresUSB"/>
 			</categories>
 			</test>
 		</nunit2>
