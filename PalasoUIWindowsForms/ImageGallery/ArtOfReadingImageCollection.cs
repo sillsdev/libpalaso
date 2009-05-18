@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Palaso.Extensions;
+using Palaso.Linq;
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
