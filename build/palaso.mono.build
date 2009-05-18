@@ -150,8 +150,6 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/Palaso.Tests.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/PalasoReporting.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/PalasoUIWindowsForms.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/AddSortKey.dll"/>
