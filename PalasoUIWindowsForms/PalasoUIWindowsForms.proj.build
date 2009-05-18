@@ -26,10 +26,12 @@
 			define="${build.defines}">
 			<nowarn>
 				<warning number="618,672"/>
+				<warning number="1570,1587"/> <!-- mono xml bugs -->
 				<warning number="1699" if="${runtime.version=='2.0'}"/>
 			</nowarn>
 			<sources basedir=".">
 				<include name="**/*.cs" />
+				<exclude name="WritingSystems/Deprecated/**" />
 			</sources>
 			<references basedir="${project.output.dir}">
 				<include name="System.dll" />
