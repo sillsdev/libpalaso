@@ -3,8 +3,7 @@ using System.IO;
 using Palaso.TestUtilities;
 
 
-namespace WeSay.Foundation.Tests.TestHelpers
-{
+namespace Palaso.TestUtilities {
 	[TestFixture]
 	public class TemporaryFolderTests
 	{

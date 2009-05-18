@@ -96,6 +96,7 @@
 	<Compile Include="Extensions\StringExtensions.cs" />
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
+	<Compile Include="Linq\MiscOperators.cs" />
 	<Compile Include="Misc\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
 	<Compile Include="Misc\IUserInterfaceMemory.cs" />

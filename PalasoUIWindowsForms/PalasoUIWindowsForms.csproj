@@ -151,35 +151,11 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
-	<Compile Include="WritingSystems\Deprecated\FontAndKeyboardControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\FontAndKeyboardControl.designer.cs">
-	  <DependentUpon>FontAndKeyboardControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\FontDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\FontDialog.Designer.cs">
-	  <DependentUpon>FontDialog.cs</DependentUpon>
-	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\PickerUsingComboBox.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\PickerUsingComboBox.Designer.cs">
-	  <DependentUpon>PickerUsingComboBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\PickerUsingListView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\PickerUsingListView.Designer.cs">
-	  <DependentUpon>PickerUsingListView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
 	  <SubType>Component</SubType>
@@ -212,24 +188,6 @@
 	</Compile>
 	<Compile Include="WritingSystems\WSKeyboardControl.Designer.cs">
 	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\WSListControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\WSListControl.Designer.cs">
-	  <DependentUpon>WSListControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\WSListDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\WSListDialog.Designer.cs">
-	  <DependentUpon>WSListDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\WSListItem.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\Deprecated\WSListItem.Designer.cs">
-	  <DependentUpon>WSListItem.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSPickerUsingListView.cs">
 	  <SubType>UserControl</SubType>
@@ -293,25 +251,9 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\FontAndKeyboardControl.resx">
-	  <DependentUpon>FontAndKeyboardControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\FontDialog.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>FontDialog.cs</DependentUpon>
-	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\PickerUsingComboBox.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>PickerUsingComboBox.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\PickerUsingListView.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>PickerUsingListView.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
@@ -332,18 +274,6 @@
 	<EmbeddedResource Include="WritingSystems\WSKeyboardControl.resx">
 	  <SubType>Designer</SubType>
 	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\WSListControl.resx">
-	  <DependentUpon>WSListControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\WSListDialog.resx">
-	  <DependentUpon>WSListDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\Deprecated\WSListItem.resx">
-	  <DependentUpon>WSListItem.cs</DependentUpon>
-	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingListView.resx">
 	  <DependentUpon>WSPickerUsingListView.cs</DependentUpon>

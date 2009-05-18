@@ -81,10 +81,6 @@
 	  <SubType>Designer</SubType>
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WritingSystemChooserTestForm.resx">
-	  <SubType>Designer</SubType>
-	  <DependentUpon>WritingSystemChooserTestForm.cs</DependentUpon>
-	</EmbeddedResource>
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -95,12 +91,6 @@
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
-	<Compile Include="WritingSystems\WritingSystemChooserTestForm.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemChooserTestForm.Designer.cs">
-	  <DependentUpon>WritingSystemChooserTestForm.cs</DependentUpon>
-	</Compile>
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
