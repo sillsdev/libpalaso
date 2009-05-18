@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using NUnit.Framework;
-using Palaso.IO;
-using Palaso.Tests;
-using Palaso.UI.WindowsForms.ImageGallery;
 using System.Linq;
 
+using Palaso.UI.WindowsForms.ImageGallery;
 
-namespace WeSay.LexicalTools.Tests
+using NUnit.Framework;
+
+namespace PalasoUIWindowsForms.Tests.ImageGallery
 {
 
 
