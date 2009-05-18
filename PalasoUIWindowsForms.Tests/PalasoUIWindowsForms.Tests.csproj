@@ -103,10 +103,6 @@
 	</Compile>
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
-	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
-	  <Name>Palaso.Tests</Name>
-	</ProjectReference>
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
 	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
 	  <Name>PalasoUIWindowsForms</Name>
