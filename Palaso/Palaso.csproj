@@ -51,29 +51,29 @@
   <ItemGroup>
 	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\icu.net.dll</HintPath>
+	  <HintPath>..\lib\common\icu.net.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\icu.net.dll.config">
+	<None Include="..\lib\common\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\icudt40.dll">
+	<None Include="..\lib\net2.0\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\icuin40.dll">
+	<None Include="..\lib\net2.0\icuin40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\icuuc40.dll">
+	<None Include="..\lib\net2.0\icuuc40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\LinqBridge.dll</HintPath>
+	  <HintPath>..\lib\net2.0\LinqBridge.dll</HintPath>
 	</Reference>
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\NDesk.DBus.dll</HintPath>
+	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.configuration" />
