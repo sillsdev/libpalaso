@@ -146,7 +146,7 @@
 				<property name="build.defines" value="${build.defines}" />
 				<property name="build.debug" value="${build.debug}" />
 				<property name="build.debug" value="${build.debug}" />
-				<property name="project.lib.dir" value="${project.lib.dir}" />
+				<!-- <property name="project.lib.dir" value="${project.lib.dir}" /> -->
 				<property name="project.output.dir" value="${project.output.dir}" />
 			</properties>
 			<buildfiles refid="project.buildfiles.src" />
@@ -548,20 +548,21 @@
 </target>
 
 <target name="copy-mono-lib-files" depends="make-output-dir, set-build-config, set-runtime-config">
-	<property name="project.lib.dir" value="${path::combine(project.lib.base.dir,runtime.platform)}"/>
-	<echo message="${project.lib.dir}" />
-	<copy todir="${project.output.dir}">
-		<fileset basedir="${project.lib.dir}">
-			<include name="*" />
+	<echo message="${project.lib.base.dir} platform ${runtime.platform}" />
+	<copy todir="${project.output.dir}" flatten="true">
+		<fileset basedir="${project.lib.base.dir}">
+			<include name="mono/*" />
+			<include name="common/*" />
 		</fileset>
 	</copy>
 </target>
 
 <target name="copy-windows-lib-files" depends="make-output-dir, set-build-config, set-runtime-config">
-	<property name="project.lib.dir" value="$project.lib.base.dir"/>
-	<copy todir="${project.output.dir}">
-		<fileset basedir="${project.lib.dir}">
-			<include name="*" />
+	<echo message="${project.lib.base.dir} platform ${runtime.platform}" />
+	<copy todir="${project.output.dir}" flatten="true">
+		<fileset basedir="${project.lib.base.dir}">
+			<include name="net2.0/*" />
+			<include name="common/*" />
 		</fileset>
 	</copy>
 </target>
