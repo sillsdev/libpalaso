@@ -36,9 +36,10 @@
 		<include name="Palaso.Backup/Palaso.Backup.proj.build" />
 		<!-- <include name="Reporting/Reporting.proj.build" /> -->
 		<include name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
+		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
+		<include name="Palaso.Media\Palaso.Media.proj.build" />
 		<include name="AddSortKey/AddSortKey.proj.build" />
 		<include name="TestApp/Reporting.TestApp.proj.build" />
-		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
 		<include name="Palaso.Services\Palaso.Services.proj.build" />
 		<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
 		<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
