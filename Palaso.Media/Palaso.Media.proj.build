@@ -16,7 +16,7 @@
 
 		<copy todir="${build.namespace.dir}" >
 			<fileset basedir=".">
-				<include name="**/*.txt" />
+				<include name="**/*.png" />
 			</fileset>
 		</copy>
 
