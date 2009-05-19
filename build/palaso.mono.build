@@ -1,8 +1,8 @@
 <project name="Palaso Build" default="build">
 
-<!-- ***************************************************************** -->
-<!-- ********* Set a few properties						   *********** -->
-<!-- ***************************************************************** -->
+	<!-- ***************************************************************** -->
+	<!-- ********* Set a few properties						   *********** -->
+	<!-- ***************************************************************** -->
 	<!-- Project build dir is the dir where the build script is located -->
 	<property name="project.bld.dir"  value="${project::get-base-directory()}"/>
 
@@ -19,11 +19,16 @@
 	<property name="os.platform" value="other"/>
 	<if test="${platform::is-win32()}">
 		<property name="os.platform" value="win32"/>
+		<!-- Default runtime configuration -->
+		<property name="runtime.config" value="net-2.0"/>
 	</if>
 	<if test="${platform::is-unix()}">
 		<property name="os.platform" value="linux"/>
+		<!-- Default runtime configuration -->
+		<property name="runtime.config" value="mono-2.0"/>
 	</if>
 
+	<!-- List of buildfiles for the individual projects. Order is relevant!-->
 	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
 		<include name="Palaso.TestUtilities/Palaso.TestUtilities.proj.build" />
 		<include name="Palaso/Palaso.proj.build" />
@@ -49,6 +54,7 @@
 				<include name="../output/**" />
 				<include name="../release/output/*" />
 				<exclude name="../.hg/**/*" />
+				<exclude name="../lib/**" />
 			</fileset>
 		</delete>
 
