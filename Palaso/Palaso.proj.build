@@ -14,17 +14,29 @@
 			</filterchain>
 		</copy>
 
-		<copy todir="${build.namespace.dir}" >
-			<fileset basedir=".">
-				<include name="**/*.txt" />
-			</fileset>
-		</copy>
+				<!-- review: this copy not reqd if resx in same folder as build -->
+				<copy todir="${build.namespace.dir}" >
+						<fileset basedir=".">
+								<include name="Resources/**/*" />
+						</fileset>
+				</copy>
 
-		<resgen todir="${build.namespace.dir}">
-			<resources>
-				<include name="${build.namespace.dir}/**/*.resx" />
-			</resources>
-		</resgen>
+				<foreach item="Folder" property="build.namespace.dir.current">
+						<in>
+								<items>
+										<include name="${build.namespace.dir}/**" />
+										<exclude name="${build.namespace.dir}/Resources" />
+								</items>
+						</in>
+						<do>
+								<echo message="Resource compiling ${build.namespace.dir.current}" />
+								<resgen todir="${build.namespace.dir.current}" usesourcepath="true">
+										<resources>
+												<include name="${build.namespace.dir.current}/*.resx" />
+										</resources>
+								</resgen>
+						</do>
+				</foreach>
 
 		<csc target="library"
 			output="${project.output.dir}/Palaso.dll"
