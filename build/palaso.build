@@ -94,6 +94,8 @@
 		</solution>
 		<property name="expected.output" value="../output/${configuration}/Palaso.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
+		<property name="expected.output" value="../output/${configuration}/Palaso.Media.dll"/>
+		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="../output/${configuration}/Palaso.Services.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="../output/${configuration}/PalasoUIWindowsForms.dll"/>
