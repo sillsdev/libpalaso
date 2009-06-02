@@ -311,8 +311,7 @@ namespace Palaso.Reporting
 			 PrepareDialog();
 			 _notificationText.Text = message;
 
-			 Exception innerMostException = null;
-			 _details.Text += "Message (not an exception): " + message + Environment.NewLine;
+			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
 			 _details.Text += Environment.NewLine;
 			 _details.Text += "--Stack--"+ Environment.NewLine;;
 			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;

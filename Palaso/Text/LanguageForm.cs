@@ -45,7 +45,7 @@ namespace Palaso.Text
 		{
 			get { return _writingSystemId; }
 
-			///needed for depersisting with netreflector
+			// needed for depersisting with netreflector
 			set
 			{
 				_writingSystemId = value;

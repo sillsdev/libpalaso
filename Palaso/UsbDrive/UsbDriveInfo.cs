@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Management;
 
 namespace Palaso.UsbDrive
 {
+	[CLSCompliant (false)]
 	public abstract class UsbDriveInfo
 	{
 		public abstract bool IsReady
@@ -33,6 +33,7 @@ namespace Palaso.UsbDrive
 		}
 	}
 
+	/*
 	public class Test
 	{
 		static void la()
@@ -41,4 +42,5 @@ namespace Palaso.UsbDrive
 			DirectoryInfo path = drives[0].RootDirectory;
 		}
 	}
+	*/
 }

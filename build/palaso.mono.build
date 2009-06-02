@@ -1,8 +1,8 @@
 <project name="Palaso Build" default="build">
 
-<!-- ***************************************************************** -->
-<!-- ********* Set a few properties						   *********** -->
-<!-- ***************************************************************** -->
+	<!-- ***************************************************************** -->
+	<!-- ********* Set a few properties						   *********** -->
+	<!-- ***************************************************************** -->
 	<!-- Project build dir is the dir where the build script is located -->
 	<property name="project.bld.dir"  value="${project::get-base-directory()}"/>
 
@@ -19,20 +19,27 @@
 	<property name="os.platform" value="other"/>
 	<if test="${platform::is-win32()}">
 		<property name="os.platform" value="win32"/>
+		<!-- Default runtime configuration -->
+		<property name="runtime.config" value="net-2.0"/>
 	</if>
 	<if test="${platform::is-unix()}">
 		<property name="os.platform" value="linux"/>
+		<!-- Default runtime configuration -->
+		<property name="runtime.config" value="mono-2.0"/>
 	</if>
 
+	<!-- List of buildfiles for the individual projects. Order is relevant!-->
 	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
+		<include name="Palaso.TestUtilities/Palaso.TestUtilities.proj.build" />
 		<include name="Palaso/Palaso.proj.build" />
 		<include name="Palaso.Tests/Palaso.Tests.proj.build" />
 		<include name="Palaso.Backup/Palaso.Backup.proj.build" />
-		<include name="Reporting/Reporting.proj.build" />
+		<!-- <include name="Reporting/Reporting.proj.build" /> -->
 		<include name="PalasoUIWindowsForms/PalasoUIWindowsForms.proj.build" />
+		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
+		<include name="Palaso.Media\Palaso.Media.proj.build" />
 		<include name="AddSortKey/AddSortKey.proj.build" />
 		<include name="TestApp/Reporting.TestApp.proj.build" />
-		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
 		<include name="Palaso.Services\Palaso.Services.proj.build" />
 		<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
 		<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
@@ -48,6 +55,7 @@
 				<include name="../output/**" />
 				<include name="../release/output/*" />
 				<exclude name="../.hg/**/*" />
+				<exclude name="../lib/**" />
 			</fileset>
 		</delete>
 
@@ -127,7 +135,7 @@
 		</foreach>
 	</target>
 
-	<target name="build" description="Build all targets.">
+	<target name="build" description="Build all targets." depends="assemblyinfo" >
 		<call target="build-only"/>
 	</target>
 
@@ -139,7 +147,7 @@
 				<property name="build.defines" value="${build.defines}" />
 				<property name="build.debug" value="${build.debug}" />
 				<property name="build.debug" value="${build.debug}" />
-				<property name="project.lib.dir" value="${project.lib.dir}" />
+				<!-- <property name="project.lib.dir" value="${project.lib.dir}" /> -->
 				<property name="project.output.dir" value="${project.output.dir}" />
 			</properties>
 			<buildfiles refid="project.buildfiles.src" />
@@ -148,8 +156,6 @@
 		<property name="expected.output" value="${project.output.dir}/Palaso.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/Palaso.Tests.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/PalasoReporting.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/PalasoUIWindowsForms.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
@@ -252,6 +258,7 @@
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
 				<exclude name="KnownMonoIssue"/>
+				<exclude name="RequiresUSB"/>
 			</categories>
 			</test>
 		</nunit2>
@@ -542,20 +549,21 @@
 </target>
 
 <target name="copy-mono-lib-files" depends="make-output-dir, set-build-config, set-runtime-config">
-	<property name="project.lib.dir" value="${path::combine(project.lib.base.dir,runtime.platform)}"/>
-	<echo message="${project.lib.dir}" />
-	<copy todir="${project.output.dir}">
-		<fileset basedir="${project.lib.dir}">
-			<include name="*" />
+	<echo message="${project.lib.base.dir} platform ${runtime.platform}" />
+	<copy todir="${project.output.dir}" flatten="true">
+		<fileset basedir="${project.lib.base.dir}">
+			<include name="mono/*" />
+			<include name="common/*" />
 		</fileset>
 	</copy>
 </target>
 
 <target name="copy-windows-lib-files" depends="make-output-dir, set-build-config, set-runtime-config">
-	<property name="project.lib.dir" value="$project.lib.base.dir"/>
-	<copy todir="${project.output.dir}">
-		<fileset basedir="${project.lib.dir}">
-			<include name="*" />
+	<echo message="${project.lib.base.dir} platform ${runtime.platform}" />
+	<copy todir="${project.output.dir}" flatten="true">
+		<fileset basedir="${project.lib.base.dir}">
+			<include name="net2.0/*" />
+			<include name="common/*" />
 		</fileset>
 	</copy>
 </target>
