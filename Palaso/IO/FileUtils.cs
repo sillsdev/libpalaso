@@ -34,6 +34,15 @@ namespace Palaso.IO
 			ReplaceFileWithUserInteractionIfNeeded(tempPath, inputPath, backupPath);
 		}
 
+		/// <summary>
+		/// NB: this is maybe not as general purpose as it looks.  It is  written for the case where
+		/// failing is not really an option, so it lets the user retry and tells them to kill the app
+		/// if they can't resolve it.  Aside from the fact that having a Die Die! button would be nice,
+		/// not all cases are going to need to fail like that.  We could change it:
+		/// 1) provide a "give up" button
+		/// 2) return FALSE if they give up
+		/// 3) leave it to the caller to abort the action in that case.
+		/// </summary>
 		public static void ReplaceFileWithUserInteractionIfNeeded(string tempPath,
 																  string inputPath,
 																  string backupPath)
@@ -46,12 +55,16 @@ namespace Palaso.IO
 					File.Replace(tempPath, inputPath, backupPath);
 					succeeded = true;
 				}
-
-				catch (IOException)
+				catch (UnauthorizedAccessException error)
 				{
-					//nb: we don't want to provide an option to cancel.  Better to crash than cancel.
 					ErrorReport.NotifyUserOfProblem(Application.ProductName +
-													" was unable to get at the dictionary file to update it.  Please ensure that WeSay isn't running with it open, then click the 'OK' button below. If you cannot figure out what program has the LIFT file open, the best choice is to kill WeSay Configuration Tool using the Task Manager (ctrl+alt+del), so that the configuration does not fall out of sync with the LIFT file.");
+						" was unable to update the file '"+inputPath+"'. The program was trying to copy the temp file from '"+tempPath+"' and create a backup at '"+backupPath+"'. If you cannot resolve this now, you'll need to kill this program so that files don't fall out of sync.  The error was: \r\n"+error.Message);
+				}
+
+				catch (IOException error)
+				{
+					ErrorReport.NotifyUserOfProblem(Application.ProductName +
+													" was unable to update the file '"+inputPath+"'.  Please ensure there is not another copy of this program running, nor any other program that might have that file open, then click the 'OK' button below. If you cannot figure out what program has the file open, the best choice is to kill this program (on Windows, use the Task Manager (ctrl+alt+del)). The error was: \r\n"+error.Message);
 				}
 			}
 			while (!succeeded);
