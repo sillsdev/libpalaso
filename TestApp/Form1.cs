@@ -77,5 +77,28 @@ namespace TestApp
 			d.ShowDialog();
 
 		}
+
+		private void button7_Click(object sender, EventArgs e)
+		{
+			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"
+			x
+x
+x
+x
+x
+x
+x
+x
+x
+x
+x
+x
+x
+xx
+x
+x
+x
+the end.");
+		}
 	}
 }

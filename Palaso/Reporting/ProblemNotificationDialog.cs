@@ -33,5 +33,21 @@ namespace Palaso.Reporting
 		{
 			this.Close();
 		}
+
+		private void _message_TextChanged(object sender, EventArgs e)
+		{
+			using(var g = this.CreateGraphics())
+			{
+				int textHeight = (int) Math.Ceiling(g.MeasureString(_message.Text, _message.Font, _message.Width).Height);
+				if(textHeight > _message.Height)
+				{
+					this.Height += (textHeight - _message.Height) + _message.Font.Height*2/*fudge*/;
+
+					//hack... I would just like to get it to not grow larger than the screen
+					if (this.Height > 600)
+						this.Height = 600;
+				}
+			}
+		}
 	}
 }

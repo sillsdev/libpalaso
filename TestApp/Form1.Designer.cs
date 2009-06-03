@@ -39,6 +39,7 @@ namespace TestApp
 			this.button5 = new System.Windows.Forms.Button();
 			this.button6 = new System.Windows.Forms.Button();
 			this.WritingSystemPickerButton = new System.Windows.Forms.Button();
+			this.button7 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// button1
@@ -53,7 +54,7 @@ namespace TestApp
 			//
 			// button2
 			//
-			this.button2.Location = new System.Drawing.Point(34, 79);
+			this.button2.Location = new System.Drawing.Point(34, 121);
 			this.button2.Name = "button2";
 			this.button2.Size = new System.Drawing.Size(144, 23);
 			this.button2.TabIndex = 0;
@@ -63,7 +64,7 @@ namespace TestApp
 			//
 			// button3
 			//
-			this.button3.Location = new System.Drawing.Point(34, 119);
+			this.button3.Location = new System.Drawing.Point(34, 161);
 			this.button3.Name = "button3";
 			this.button3.Size = new System.Drawing.Size(144, 23);
 			this.button3.TabIndex = 0;
@@ -73,7 +74,7 @@ namespace TestApp
 			//
 			// _keymanTestBox
 			//
-			this._keymanTestBox.Location = new System.Drawing.Point(155, 337);
+			this._keymanTestBox.Location = new System.Drawing.Point(155, 379);
 			this._keymanTestBox.Name = "_keymanTestBox";
 			this._keymanTestBox.Size = new System.Drawing.Size(100, 20);
 			this._keymanTestBox.TabIndex = 1;
@@ -82,7 +83,7 @@ namespace TestApp
 			// label1
 			//
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(23, 337);
+			this.label1.Location = new System.Drawing.Point(23, 379);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(126, 13);
 			this.label1.TabIndex = 2;
@@ -90,7 +91,7 @@ namespace TestApp
 			//
 			// _keyman6TestBox
 			//
-			this._keyman6TestBox.Location = new System.Drawing.Point(155, 364);
+			this._keyman6TestBox.Location = new System.Drawing.Point(155, 406);
 			this._keyman6TestBox.Name = "_keyman6TestBox";
 			this._keyman6TestBox.Size = new System.Drawing.Size(100, 20);
 			this._keyman6TestBox.TabIndex = 1;
@@ -99,7 +100,7 @@ namespace TestApp
 			// label2
 			//
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(23, 367);
+			this.label2.Location = new System.Drawing.Point(23, 409);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(126, 13);
 			this.label2.TabIndex = 2;
@@ -107,7 +108,7 @@ namespace TestApp
 			//
 			// button4
 			//
-			this.button4.Location = new System.Drawing.Point(34, 184);
+			this.button4.Location = new System.Drawing.Point(34, 226);
 			this.button4.Name = "button4";
 			this.button4.Size = new System.Drawing.Size(226, 23);
 			this.button4.TabIndex = 0;
@@ -117,7 +118,7 @@ namespace TestApp
 			//
 			// button5
 			//
-			this.button5.Location = new System.Drawing.Point(34, 223);
+			this.button5.Location = new System.Drawing.Point(34, 265);
 			this.button5.Name = "button5";
 			this.button5.Size = new System.Drawing.Size(226, 23);
 			this.button5.TabIndex = 0;
@@ -127,7 +128,7 @@ namespace TestApp
 			//
 			// button6
 			//
-			this.button6.Location = new System.Drawing.Point(34, 263);
+			this.button6.Location = new System.Drawing.Point(34, 305);
 			this.button6.Name = "button6";
 			this.button6.Size = new System.Drawing.Size(226, 23);
 			this.button6.TabIndex = 0;
@@ -137,7 +138,7 @@ namespace TestApp
 			//
 			// WritingSystemPickerButton
 			//
-			this.WritingSystemPickerButton.Location = new System.Drawing.Point(34, 293);
+			this.WritingSystemPickerButton.Location = new System.Drawing.Point(34, 335);
 			this.WritingSystemPickerButton.Name = "WritingSystemPickerButton";
 			this.WritingSystemPickerButton.Size = new System.Drawing.Size(221, 23);
 			this.WritingSystemPickerButton.TabIndex = 3;
@@ -145,11 +146,21 @@ namespace TestApp
 			this.WritingSystemPickerButton.UseVisualStyleBackColor = true;
 			this.WritingSystemPickerButton.Click += new System.EventHandler(this.WritingSystemPickerButton_Click);
 			//
+			// button7
+			//
+			this.button7.Location = new System.Drawing.Point(34, 67);
+			this.button7.Name = "button7";
+			this.button7.Size = new System.Drawing.Size(226, 23);
+			this.button7.TabIndex = 0;
+			this.button7.Text = "Really long Notification";
+			this.button7.UseVisualStyleBackColor = true;
+			this.button7.Click += new System.EventHandler(this.button7_Click);
+			//
 			// Form1
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(287, 402);
+			this.ClientSize = new System.Drawing.Size(287, 491);
 			this.Controls.Add(this.WritingSystemPickerButton);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -160,6 +171,7 @@ namespace TestApp
 			this.Controls.Add(this.button6);
 			this.Controls.Add(this.button5);
 			this.Controls.Add(this.button4);
+			this.Controls.Add(this.button7);
 			this.Controls.Add(this.button1);
 			this.Name = "Form1";
 			this.Text = "Form1";
@@ -181,5 +193,6 @@ namespace TestApp
 		private System.Windows.Forms.Button button5;
 		private System.Windows.Forms.Button button6;
 		private System.Windows.Forms.Button WritingSystemPickerButton;
+		private System.Windows.Forms.Button button7;
 	}
 }

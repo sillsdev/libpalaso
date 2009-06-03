@@ -49,6 +49,7 @@ namespace Palaso.Reporting
 			this._message.Size = new System.Drawing.Size(275, 167);
 			this._message.TabIndex = 0;
 			this._message.Text = "Blah blah";
+			this._message.TextChanged += new System.EventHandler(this._message_TextChanged);
 			//
 			// _icon
 			//
@@ -66,7 +67,7 @@ namespace Palaso.Reporting
 			this._acceptButton.Name = "_acceptButton";
 			this._acceptButton.Size = new System.Drawing.Size(75, 23);
 			this._acceptButton.TabIndex = 0;
-			this._acceptButton.Text = "&OK";
+			this._acceptButton.Text = "&OK.";
 			this._acceptButton.UseVisualStyleBackColor = true;
 			this._acceptButton.Click += new System.EventHandler(this._acceptButton_Click);
 			//
