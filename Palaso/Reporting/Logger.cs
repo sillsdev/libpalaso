@@ -133,9 +133,9 @@ namespace Palaso.Reporting
 					m_out.WriteLine(DateTime.Now.ToLongDateString());
 				}
 				else
-					m_out = File.AppendText(LogPath);
+					StartAppendingToLog();
 
-				m_minorEvents = new StringBuilder();
+				RestartMinorEvents();
 				this.WriteEventCore("App Launched with [" + System.Environment.CommandLine + "]");
 			}
 			catch
@@ -143,6 +143,16 @@ namespace Palaso.Reporting
 				// If the output file can not be created then just disable logging.
 				_singleton = null;
 			}
+		}
+
+		private void StartAppendingToLog()
+		{
+			m_out = File.AppendText(LogPath);
+		}
+
+		private void RestartMinorEvents()
+		{
+			m_minorEvents = new StringBuilder();
 		}
 
 		#region IDisposable & Co. implementation
@@ -292,9 +302,11 @@ namespace Palaso.Reporting
 				contents.Append(reader.ReadToEnd());
 				contents.AppendLine("Details of most recent events:");
 				contents.AppendLine(m_minorEvents.ToString());
-				m_minorEvents = new StringBuilder();
+
 			}
-			_singleton = new Logger(false);
+			RestartMinorEvents();
+			StartAppendingToLog();
+
 			return contents.ToString();
 		}
 
