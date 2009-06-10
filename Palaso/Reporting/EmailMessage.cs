@@ -7,19 +7,16 @@ namespace Palaso.Reporting
 {
 	public class EmailMessage
 	{
-		private string _body= "";
-		private string _address = "";
-		private string _subject = "";
-	  //  private string _attachmentPath;
+		//  private string _attachmentPath;
 
 		public void Send()
 		{
 			//string body = _body.Replace(System.Environment.NewLine, "%0A").Replace("\"", "%22").Replace("&", "%26");
-			string body = Uri.EscapeDataString(_body);
-			string subject = Uri.EscapeDataString(_subject);
+			string body = Uri.EscapeDataString(Body);
+			string subject = Uri.EscapeDataString(Subject);
 			System.Diagnostics.Process p = new Process();
 
-			p.StartInfo.FileName =String.Format("mailto:{0}?subject={1}&body={2}", _address, subject, body);
+			p.StartInfo.FileName =String.Format("mailto:{0}?subject={1}&body={2}", Address, subject, body);
 			p.StartInfo.UseShellExecute = true;
 			p.StartInfo.ErrorDialog = true;
 			p.Start();
@@ -28,45 +25,17 @@ namespace Palaso.Reporting
 		/// <summary>
 		///
 		/// </summary>
-		public string Address
-		{
-			set
-			{
-				_address = value;
-			}
-			get
-			{
-				return _address;
-			}
-		}
+		public string Address { get; set; }
+
 		/// <summary>
 		/// the  e-mail subject
 		/// </summary>
-		public string Subject
-		{
-			set
-			{
-				_subject = value;
-			}
-			get
-			{
-				return _subject;
-			}
-		}
+		public string Subject { get; set; }
+
 		/// <summary>
 		///
 		/// </summary>
-		public string Body
-		{
-			set
-			{
-			   _body = value;
-			}
-			get
-			{
-				return _body;
-			}
-		}
+		public string Body { get; set; }
 
 //        public string AttachmentPath
 //        {
@@ -75,5 +44,11 @@ namespace Palaso.Reporting
 //                _attachmentPath = value;
 //            }
 //        }
+		public EmailMessage()
+		{
+			Subject = "";
+			Body = "";
+			Address = "";
+		}
 	}
 }

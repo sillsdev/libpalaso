@@ -430,11 +430,17 @@ namespace Palaso.Reporting
 				//EmailMessage msg = new EmailMessage();
 				// This currently does not work. The main issue seems to be the length of the error report. mailto
 				// apparently has some limit on the length of the message, and we are exceeding that.
-				//make it safe, but does too much (like replacing spaces with +'s)
-				//string s = System.Web.HttpUtility.UrlPathEncode( m_details.Text);
-				//msg.Body = m_details.Text.Replace(Environment.NewLine, "%0A").Replace("\"", "%22").Replace("&", "%26");
+
 				EmailMessage msg = new EmailMessage();
-				msg.Body = "<Please paste the details of the crash here>";
+
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
+				{
+					msg.Body = _details.Text;
+				}
+				else
+				{
+					msg.Body = "<Please paste the details of the crash here>";
+				}
 				msg.Address = ErrorReport.EmailAddress;
 				msg.Subject = ErrorReport.EmailSubject;
 				msg.Send();
