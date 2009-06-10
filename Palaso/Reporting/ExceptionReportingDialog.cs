@@ -439,7 +439,7 @@ namespace Palaso.Reporting
 				}
 				else
 				{
-					msg.Body = "<Please paste the details of the crash here>";
+					msg.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
 				}
 				msg.Address = ErrorReport.EmailAddress;
 				msg.Subject = ErrorReport.EmailSubject;
