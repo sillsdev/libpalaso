@@ -1,54 +1,58 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace Palaso.Email
 {
-	public class EmailMessage
+	public class EmailMessage : IEmailMessage
 	{
-		//  private string _attachmentPath;
-
-		public void Send()
-		{
-			//string body = _body.Replace(System.Environment.NewLine, "%0A").Replace("\"", "%22").Replace("&", "%26");
-			string body = Uri.EscapeDataString(Body);
-			string subject = Uri.EscapeDataString(Subject);
-			System.Diagnostics.Process p = new Process();
-
-			p.StartInfo.FileName =String.Format("mailto:{0}?subject={1}&body={2}", Address, subject, body);
-			p.StartInfo.UseShellExecute = true;
-			p.StartInfo.ErrorDialog = true;
-			p.Start();
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public string Address { get; set; }
+		private List<string> _attachmentFilePaths;
+		private List<string> _to;
+		private List<string> _bcc;
+		private List<string> _cc;
 
 		/// <summary>
 		/// the  e-mail subject
 		/// </summary>
 		public string Subject { get; set; }
 
+		public IList<string> AttachmentFilePath
+		{
+			get { return _attachmentFilePaths; }
+		}
+
+		public IList<string> To
+		{
+			get { return _to; }
+		}
+
+		public IList<string> Cc
+		{
+			get { return _cc; }
+		}
+
+		public IList<string> Bcc
+		{
+			get { return _bcc; }
+		}
+
 		/// <summary>
 		///
 		/// </summary>
 		public string Body { get; set; }
 
-//        public string AttachmentPath
-//        {
-//            set
-//            {
-//                _attachmentPath = value;
-//            }
-//        }
 		public EmailMessage()
 		{
+			_to = new List<string>();
+			_cc = new List<string>();
+			_bcc = new List<string>();
+			_attachmentFilePaths = new List<string>();
 			Subject = "";
 			Body = "";
-			Address = "";
 		}
+
+		public bool Send(IEmailProvider provider)
+		{
+			return provider.SendMessage(this);
+		}
+
 	}
 }

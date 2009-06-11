@@ -413,9 +413,12 @@ namespace Palaso.Reporting
 
 			try
 			{
-				MAPI msg = new MAPI();
-				msg.AddRecipientTo(ErrorReport.EmailAddress);
-				if (msg.SendMailDirect(ErrorReport.EmailSubject, _details.Text))
+				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				var emailMessage = emailProvider.CreateMessage();
+				emailMessage.To.Add(ErrorReport.EmailAddress);
+				emailMessage.Subject = ErrorReport.EmailSubject;
+				emailMessage.Body = _details.Text;
+				if (emailMessage.Send(emailProvider))
 				{
 					CloseUp();
 					return;
@@ -423,7 +426,7 @@ namespace Palaso.Reporting
 			}
 			catch (Exception)
 			{
-				//swallow it and go to the mailto method
+				//swallow it and go to the alternate method
 			}
 
 			try
@@ -431,21 +434,23 @@ namespace Palaso.Reporting
 				//EmailMessage msg = new EmailMessage();
 				// This currently does not work. The main issue seems to be the length of the error report. mailto
 				// apparently has some limit on the length of the message, and we are exceeding that.
-
-				EmailMessage msg = new EmailMessage();
-
+				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				var emailMessage = emailProvider.CreateMessage();
+				emailMessage.To.Add(ErrorReport.EmailAddress);
+				emailMessage.Subject = ErrorReport.EmailSubject;
 				if (Environment.OSVersion.Platform == PlatformID.Unix)
 				{
-					msg.Body = _details.Text;
+					emailMessage.Body = _details.Text;
 				}
 				else
 				{
-					msg.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
+					emailMessage.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
 				}
-				msg.Address = ErrorReport.EmailAddress;
-				msg.Subject = ErrorReport.EmailSubject;
-				msg.Send();
-				CloseUp();
+				if (emailMessage.Send(emailProvider))
+				{
+					CloseUp();
+					return;
+				}
 			}
 			catch (Exception)
 			{
@@ -473,7 +478,7 @@ namespace Palaso.Reporting
 				{
 					//really can't handle an embedded error related to logging
 				}
-				this.Close();
+				Close();
 				return;
 			}
 			try

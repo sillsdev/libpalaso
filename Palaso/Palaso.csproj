@@ -90,6 +90,11 @@
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
+	<Compile Include="Email\EmailProviderFactory.cs" />
+	<Compile Include="Email\IEmailMessage.cs" />
+	<Compile Include="Email\IEmailProvider.cs" />
+	<Compile Include="Email\MailToEmailProvider.cs" />
+	<Compile Include="Email\MapiEmailProvider.cs" />
 	<Compile Include="Email\MAPIHelper.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
