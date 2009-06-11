@@ -178,7 +178,7 @@ namespace Palaso.Reporting
 				using (UsageEmailDialog d = new UsageEmailDialog())
 				{
 					d.TopLineText = topMessage;
-					d.EmailMessage.Address = emailAddress;
+					d.EmailMessage.To.Add(emailAddress);
 					d.EmailMessage.Subject =
 						string.Format("{0} {1} Report {2} Launches", UsageReporter.AppNameToUseInReporting, version,
 									  ReportingSetting.Default.Launches);

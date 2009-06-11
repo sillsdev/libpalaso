@@ -1,15 +1,14 @@
 using System;
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows.Forms;
-using Microsoft.Win32;
+using Palaso.Email; // TODO: Ideally we wouldn't need this here in the UI.
 
 namespace Palaso.Reporting
 {
 	/// <summary>
 	/// Summary description for UsageEmailDialog.
 	/// </summary>
-	public class UsageEmailDialog : Form, IDisposable
+	public class UsageEmailDialog : Form
 	{
 		private TabControl tabControl1;
 		private TabPage tabPage1;
@@ -19,7 +18,8 @@ namespace Palaso.Reporting
 		private LinkLabel btnNope;
 		private RichTextBox m_topLineText;
 
-		private EmailMessage _message = new EmailMessage();
+		private IEmailProvider _emailProvider;
+		private IEmailMessage _emailMessage;
 
 		/// <summary>
 		/// Required designer variable.
@@ -32,8 +32,10 @@ namespace Palaso.Reporting
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			this.richTextBox2.Text = "May we ask you a favor? We would like to send a tiny e-mail back to the software developers telling us of your progress.\nYou will be able to view the e-mail before it goes out. You do not need to be connected to the Internet right now...the e-mail will just open and you can save it in your outbox.";
-			this.m_topLineText.Text = string.Format(this.m_topLineText.Text, UsageReporter.AppNameToUseInDialogs);
+			richTextBox2.Text = "May we ask you a favor? We would like to send a tiny e-mail back to the software developers telling us of your progress.\nYou will be able to view the e-mail before it goes out. You do not need to be connected to the Internet right now...the e-mail will just open and you can save it in your outbox.";
+			m_topLineText.Text = string.Format(this.m_topLineText.Text, UsageReporter.AppNameToUseInDialogs);
+			_emailProvider = EmailProviderFactory.PreferredEmailProvider();
+			_emailMessage = _emailProvider.CreateMessage();
 
 		}
 
@@ -65,15 +67,11 @@ namespace Palaso.Reporting
 			}
 		}
 
-		public EmailMessage EmailMessage
+		public IEmailMessage EmailMessage
 		{
 			get
 			{
-				return _message;
-			}
-			set
-			{
-				_message = value;
+				return _emailMessage;
 			}
 		}
 
@@ -213,8 +211,8 @@ namespace Palaso.Reporting
 		{
 			try
 			{
-
-				EmailMessage.Send();
+				// TODO: This can be moved out to the caller rather than in the UI.
+				_emailMessage.Send(_emailProvider);
 			}
 			catch
 			{
