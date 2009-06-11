@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Palaso.Reporting
+namespace Palaso.Email
 {
 	public class EmailMessage
 	{

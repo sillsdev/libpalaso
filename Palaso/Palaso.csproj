@@ -2,7 +2,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -89,6 +89,8 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="Email\EmailMessage.cs" />
+	<Compile Include="Email\MAPIHelper.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
@@ -108,7 +110,6 @@
 	<Compile Include="Progress\ProgressState.cs" />
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
-	<Compile Include="Reporting\EmailMessage.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
 	<Compile Include="Reporting\ErrorReportTests.cs" />
 	<Compile Include="Reporting\ExceptionHandler.cs" />
@@ -117,7 +118,6 @@
 	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="Reporting\Logger.cs" />
-	<Compile Include="Reporting\MAPIHelper.cs" />
 	<Compile Include="Reporting\ProblemNotificationDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
