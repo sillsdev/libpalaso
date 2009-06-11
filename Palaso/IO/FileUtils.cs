@@ -11,6 +11,13 @@ namespace Palaso.IO
 	public class FileUtils
 	{
 
+		/// <summary>
+		/// NB: This will show a dialog if the file writing can't be done (subject to Palaso.Reporting settings).
+		/// It will throw whatever exception was encountered, if the user can't resolve it.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="pattern"></param>
+		/// <param name="replaceWith"></param>
 		public static void GrepFile(string inputPath, string pattern, string replaceWith)
 		{
 			Regex regex = new Regex(pattern, RegexOptions.Compiled);
@@ -35,16 +42,16 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// NB: this is maybe not as general purpose as it looks.  It is  written for the case where
-		/// failing is not really an option, so it lets the user retry and tells them to kill the app
-		/// if they can't resolve it.  Aside from the fact that having a Die Die! button would be nice,
-		/// not all cases are going to need to fail like that.  We could change it:
-		/// 1) provide a "give up" button
-		/// 2) return FALSE if they give up
-		/// 3) leave it to the caller to abort the action in that case.
+		/// If there is a problem doing the replace, a dialog is shown which tells the user
+		/// what happened, and lets them try to fix it.  It also lets them "Give up", in
+		/// which case this returns False.
 		/// </summary>
-		public static void ReplaceFileWithUserInteractionIfNeeded(string tempPath,
-																  string inputPath,
+		/// <param name="sourcePath"></param>
+		/// <param name="destinationPath"></param>
+		/// <param name="backupPath">can be null if you don't want a replacement</param>
+		/// <returns>if the user gives up, throws whatever exception the file system gave</returns>
+		public static void ReplaceFileWithUserInteractionIfNeeded(string sourcePath,
+																  string destinationPath,
 																  string backupPath)
 		{
 			bool succeeded = false;
@@ -52,23 +59,44 @@ namespace Palaso.IO
 			{
 				try
 				{
-					File.Replace(tempPath, inputPath, backupPath);
+					if ((Path.GetPathRoot(sourcePath) != Path.GetPathRoot(destinationPath))
+						||
+						((!string.IsNullOrEmpty(backupPath)) && (Path.GetPathRoot(sourcePath) != Path.GetPathRoot(backupPath))))
+					{
+						//can't use File.Replace or File.Move across volumes (sigh)
+						if(!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
+						{
+							File.Copy(destinationPath,backupPath,true);
+						}
+						File.Copy(sourcePath, destinationPath, true);
+						File.Delete(sourcePath);
+					}
+					else
+					{
+						File.Replace(sourcePath, destinationPath, backupPath);
+					}
 					succeeded = true;
 				}
 				catch (UnauthorizedAccessException error)
 				{
-					ErrorReport.NotifyUserOfProblem(Application.ProductName +
-						" was unable to update the file '"+inputPath+"'. The program was trying to copy the temp file from '"+tempPath+"' and create a backup at '"+backupPath+"'. If you cannot resolve this now, you'll need to kill this program so that files don't fall out of sync.  The error was: \r\n"+error.Message);
+					ReportFailedReplacement(destinationPath, error);
 				}
-
 				catch (IOException error)
 				{
-					ErrorReport.NotifyUserOfProblem(Application.ProductName +
-													" was unable to update the file '"+inputPath+"'.  Please ensure there is not another copy of this program running, nor any other program that might have that file open, then click the 'OK' button below. If you cannot figure out what program has the file open, the best choice is to kill this program (on Windows, use the Task Manager (ctrl+alt+del)). The error was: \r\n"+error.Message);
+					ReportFailedReplacement(destinationPath, error);
 				}
 			}
 			while (!succeeded);
 		}
 
+		private static void ReportFailedReplacement(string destinationPath, Exception error)
+		{
+			var result = ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Give Up", DialogResult.No,
+				Application.ProductName + " was unable to update the file '" + destinationPath + "'.  Please ensure there is not another copy of this program running, nor any other program that might have that file open, then click the 'OK' button below.\r\nThe error was: \r\n" + error.Message);
+			if(result == DialogResult.No)
+			{
+				throw error; // pass it up to the caller
+			}
+		}
 	}
 }

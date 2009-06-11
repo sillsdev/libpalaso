@@ -103,5 +103,11 @@ x
 x
 the end.");
 		}
+
+		private void _probWithExitButton_Click(object sender, EventArgs e)
+		{
+			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Foobar", DialogResult.No,
+															 "Notice, you can click Foobar.");
+		}
 	}
 }

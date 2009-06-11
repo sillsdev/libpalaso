@@ -32,6 +32,7 @@ namespace Palaso.Reporting
 			this._icon = new System.Windows.Forms.PictureBox();
 			this._acceptButton = new System.Windows.Forms.Button();
 			this._reoccurenceMessage = new System.Windows.Forms.Label();
+			this._alternateButton1 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this._icon)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -63,11 +64,11 @@ namespace Palaso.Reporting
 			//
 			this._acceptButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._acceptButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._acceptButton.Location = new System.Drawing.Point(285, 228);
+			this._acceptButton.Location = new System.Drawing.Point(280, 228);
 			this._acceptButton.Name = "_acceptButton";
-			this._acceptButton.Size = new System.Drawing.Size(75, 23);
+			this._acceptButton.Size = new System.Drawing.Size(80, 23);
 			this._acceptButton.TabIndex = 0;
-			this._acceptButton.Text = "&OK.";
+			this._acceptButton.Text = "&OK";
 			this._acceptButton.UseVisualStyleBackColor = true;
 			this._acceptButton.Click += new System.EventHandler(this._acceptButton_Click);
 			//
@@ -84,6 +85,19 @@ namespace Palaso.Reporting
 			this._reoccurenceMessage.Text = "Re-occurence message";
 			this._reoccurenceMessage.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			//
+			// _alternateButton1
+			//
+			this._alternateButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._alternateButton1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._alternateButton1.Location = new System.Drawing.Point(172, 228);
+			this._alternateButton1.Name = "_alternateButton1";
+			this._alternateButton1.Size = new System.Drawing.Size(102, 23);
+			this._alternateButton1.TabIndex = 3;
+			this._alternateButton1.Text = "&Caller Defined";
+			this._alternateButton1.UseVisualStyleBackColor = true;
+			this._alternateButton1.Visible = false;
+			this._alternateButton1.Click += new System.EventHandler(this.OnAlternateButton1_Click);
+			//
 			// ProblemNotificationDialog
 			//
 			this.AcceptButton = this._acceptButton;
@@ -93,6 +107,7 @@ namespace Palaso.Reporting
 			this.CancelButton = this._acceptButton;
 			this.ClientSize = new System.Drawing.Size(372, 263);
 			this.ControlBox = false;
+			this.Controls.Add(this._alternateButton1);
 			this.Controls.Add(this._reoccurenceMessage);
 			this.Controls.Add(this._acceptButton);
 			this.Controls.Add(this._icon);
@@ -114,5 +129,6 @@ namespace Palaso.Reporting
 		private System.Windows.Forms.PictureBox _icon;
 		internal System.Windows.Forms.Button _acceptButton;
 		private System.Windows.Forms.Label _reoccurenceMessage;
+		internal System.Windows.Forms.Button _alternateButton1;
 	}
 }

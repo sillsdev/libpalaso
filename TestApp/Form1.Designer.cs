@@ -40,6 +40,7 @@ namespace TestApp
 			this.button6 = new System.Windows.Forms.Button();
 			this.WritingSystemPickerButton = new System.Windows.Forms.Button();
 			this.button7 = new System.Windows.Forms.Button();
+			this._probWithExitButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// button1
@@ -156,11 +157,21 @@ namespace TestApp
 			this.button7.UseVisualStyleBackColor = true;
 			this.button7.Click += new System.EventHandler(this.button7_Click);
 			//
+			// _probWithExitButton
+			//
+			this._probWithExitButton.Location = new System.Drawing.Point(266, 38);
+			this._probWithExitButton.Name = "_probWithExitButton";
+			this._probWithExitButton.Size = new System.Drawing.Size(226, 23);
+			this._probWithExitButton.TabIndex = 0;
+			this._probWithExitButton.Text = "Problem Notification with Alternate Button";
+			this._probWithExitButton.UseVisualStyleBackColor = true;
+			this._probWithExitButton.Click += new System.EventHandler(this._probWithExitButton_Click);
+			//
 			// Form1
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(287, 491);
+			this.ClientSize = new System.Drawing.Size(505, 480);
 			this.Controls.Add(this.WritingSystemPickerButton);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -172,6 +183,7 @@ namespace TestApp
 			this.Controls.Add(this.button5);
 			this.Controls.Add(this.button4);
 			this.Controls.Add(this.button7);
+			this.Controls.Add(this._probWithExitButton);
 			this.Controls.Add(this.button1);
 			this.Name = "Form1";
 			this.Text = "Form1";
@@ -194,5 +206,6 @@ namespace TestApp
 		private System.Windows.Forms.Button button6;
 		private System.Windows.Forms.Button WritingSystemPickerButton;
 		private System.Windows.Forms.Button button7;
+		private System.Windows.Forms.Button _probWithExitButton;
 	}
 }

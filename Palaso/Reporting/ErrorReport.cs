@@ -330,24 +330,40 @@ namespace Palaso.Reporting
 			NotifyUserOfProblem(new ShowAlwaysPolicy(), message, args);
 		}
 
-		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
+		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
+		{
+			return NotifyUserOfProblem(policy, null, default(DialogResult), messageFmt, args);
+		}
+
+		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+									string alternateButton1Label,
+									DialogResult resultIfAlternateButtonPressed,
+									string messageFmt,
+									params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
 			if (!policy.ShouldShowMessage(message))
 			{
-				return;
+				return DialogResult.OK;
 			}
 
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				ErrorReport.s_previousNonFatalMessage = message;
+				return DialogResult.OK;
 			}
 			else if (ErrorReport.IsOkToInteractWithUser)
 			{
-				ProblemNotificationDialog.Show(message,
-										 UsageReporter.AppNameToUseInDialogs + " Problem",
-										 "&OK", policy.ReoccurenceMessage);
+				var dlg = new ProblemNotificationDialog(message, UsageReporter.AppNameToUseInDialogs + " Problem")
+				{
+					ReoccurenceMessage = policy.ReoccurenceMessage
 
+				};
+				if(!string.IsNullOrEmpty(alternateButton1Label))
+				{
+					dlg.EnableAlternateButton1(alternateButton1Label, resultIfAlternateButtonPressed);
+				}
+				return dlg.ShowDialog();
 			}
 			else
 			{

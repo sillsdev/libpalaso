@@ -62,6 +62,7 @@
 	<Compile Include="Base32Tests\Base32Tests.cs" />
 	<Compile Include="Base32Tests\Permuter.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
+	<Compile Include="IO\FileUtil.Tests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
 	<Compile Include="reporting\UsageReporter.Tests.cs" />
