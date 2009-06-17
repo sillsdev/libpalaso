@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
 using System.Linq;
@@ -83,6 +84,11 @@ namespace WeSay.LexicalTools.AddPictures
 		private void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			_okButton.Enabled = (_thumbnailViewer.SelectedItems.Count > 0);
+		}
+
+		private void PictureChooser_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			_thumbnailViewer.Closing();
 		}
 
 	}

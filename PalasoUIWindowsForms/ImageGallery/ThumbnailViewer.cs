@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using Palaso.UI.WindowsForms.ImageGallery;
@@ -58,9 +60,18 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 			else
 			{
-				LargeImageList.Images.Add(image); //Images[i].repl
-				int index = LargeImageList.Images.Count - 1;
-				Items[index - 1].ImageIndex = index;
+				 lock (this)
+				{
+					if (LargeImageList == null)
+					{
+						Debug.Fail("(Only seeing this in the debug version) Thumbnail viewer worker still woking after the form was closed.");
+						return;
+					}
+					LargeImageList.Images.Add(image); //Images[i].repl
+
+					int index = LargeImageList.Images.Count - 1;
+					Items[index - 1].ImageIndex = index;
+				}
 			}
 		}
 
@@ -177,6 +188,14 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		public CaptionMethodDelegate CaptionMethod
 		{
 			get; set;
+		}
+
+		public void Closing()
+		{
+			if (_thumbnailWorker != null)
+			{
+				_thumbnailWorker.CancelAsync();
+			}
 		}
 	}
 }

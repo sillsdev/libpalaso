@@ -1,4 +1,6 @@
-﻿namespace Palaso.UI.WindowsForms.ImageGallery
+﻿using System.Threading;
+
+namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	partial class ThumbnailViewer
 	{

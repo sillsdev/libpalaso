@@ -135,6 +135,7 @@ namespace WeSay.LexicalTools.AddPictures
 			this.ShowInTaskbar = false;
 			this.Text = "~Search Image Gallery";
 			this.Load += new System.EventHandler(this.PictureChooser_Load);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PictureChooser_FormClosing);
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
