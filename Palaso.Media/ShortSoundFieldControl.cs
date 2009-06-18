@@ -6,7 +6,7 @@ namespace Palaso.Media
 {
 	public partial class ShortSoundFieldControl : UserControl
 	{
-		private  AudioRecorder _recorder;
+		private ISimpleAudioSession _recorder;
 		private string _path;
 		private string _deleteButtonInstructions = "Delete this recording.";
 
@@ -34,7 +34,7 @@ namespace Palaso.Media
 			set
 			{
 				_path = value;
-				_recorder = new AudioRecorder(Path);
+				_recorder = AudioFactory.AudioSession(Path);
 				toolTip1.SetToolTip(_deleteButton, _deleteButtonInstructions +"\r\n"+_path);
 				_timer.Enabled = true;
 			}
@@ -111,7 +111,7 @@ namespace Palaso.Media
 		{
 			try
 			{
-				_recorder.StopRecording();
+				_recorder.StopRecordingAndSaveAsWav();
 			}
 			catch(Exception)
 			{

@@ -1,4 +1,4 @@
-﻿namespace Palaso.Media.SampleApp
+﻿namespace Palaso.Media.Tests
 {
 	partial class Form1
 	{
