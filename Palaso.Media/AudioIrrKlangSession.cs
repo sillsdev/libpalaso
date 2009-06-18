@@ -6,22 +6,22 @@ using IrrKlang;
 
 namespace Palaso.Media
 {
-	public class AudioRecorder
+	public class AudioIrrKlangSession : ISimpleAudioSession
 	{
 		private IAudioRecorder _recorder;
 		private ISoundEngine _engine;
 		private ISound _sound;
-		private string _path;
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
+		private readonly string _path;
 
 
-		public AudioRecorder(string path)
+		public AudioIrrKlangSession(string filePath)
 		{
-			_path = path;
 			_engine = new ISoundEngine();
 			_recorder = new IAudioRecorder(_engine);
+			_path = filePath;
 		}
 
 		public void Test()
@@ -29,6 +29,11 @@ namespace Palaso.Media
 			var engine = new ISoundEngine();
 			var recorder = new IAudioRecorder(engine);
 			var data = recorder.RecordedAudioData; //throws exception.  Should set data to null.
+		}
+
+		public string FilePath
+		{
+			get { return _path; }
 		}
 
 		public void StartRecording()
@@ -44,14 +49,14 @@ namespace Palaso.Media
 			_startRecordingTime = DateTime.Now;
 
 		}
-		public void StopRecording()
+		public void StopRecordingAndSaveAsWav()
 		{
 			if(!_thinkWeAreRecording)
 				throw new ApplicationException("Stop Recoding called when we weren't recording.  Use IsRecording to check first.");
 
 			_thinkWeAreRecording = false;
 			_recorder.StopRecordingAudio();
-			SaveAsWav(_path);
+			SaveAsWav(FilePath);
 			_recorder.ClearRecordedAudioDataBuffer();
 			_stopRecordingTime = DateTime.Now;
 		}
@@ -85,7 +90,7 @@ namespace Palaso.Media
 			{
 				return _recorder.RecordedAudioData;// will through if there's no data
 			}
-			catch (Exception)
+			catch (Exception) // review (CP): Throws what?
 			{
 				return null;
 			}

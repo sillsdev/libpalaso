@@ -6,7 +6,7 @@ namespace Palaso.Media
 {
 	public partial class SoundFieldControl : UserControl
 	{
-		private  AudioRecorder _recorder;
+		private  ISimpleAudioSession _recorder;
 		private string _path;
 
 		public SoundFieldControl()
@@ -26,7 +26,7 @@ namespace Palaso.Media
 			set
 			{
 				_path = value;
-				_recorder = new AudioRecorder(Path);
+				_recorder = AudioFactory.AudioSession(Path);
 				_timer.Enabled = true;
 			}
 		}
@@ -58,7 +58,7 @@ namespace Palaso.Media
 		{
 			if(_recorder.IsRecording)
 			{
-				_recorder.StopRecording();
+				_recorder.StopRecordingAndSaveAsWav();
 			}
 			else
 			{

@@ -16,7 +16,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void Construct_FileDoesNotExist_OK()
 	   {
-		   var x = new AudioRecorder(Path.GetRandomFileName());
+		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
 	   }
 
 	   [Test]
@@ -24,7 +24,7 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = new AudioRecorder(f.Path);
+			   var x = new AudioIrrKlangSession(f.Path);
 		   }
 	   }
 
@@ -33,15 +33,15 @@ namespace Palaso.Media.Tests
 	   public void Construct_FileDoesNotExist_DoesNotCreateFile()
 	   {
 		   var path = Path.GetRandomFileName();
-		   var x = new AudioRecorder(path);
+		   var x = new AudioIrrKlangSession(path);
 		   Assert.IsFalse(File.Exists(path));
 	   }
 
 	   [Test, ExpectedException(typeof(ApplicationException))]
 	   public void StopRecording_NotRecording_Throws()
 	   {
-		   var x = new AudioRecorder(Path.GetRandomFileName());
-		   x.StopRecording();
+		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
+		   x.StopRecordingAndSaveAsWav();
 	   }
 
 	   [Test]
@@ -62,7 +62,7 @@ namespace Palaso.Media.Tests
 		   {
 			   session.Recorder.StartRecording();
 			   Thread.Sleep(100);
-			   session.Recorder.StopRecording();
+			   session.Recorder.StopRecordingAndSaveAsWav();
 		   }
 	   }
 
@@ -78,14 +78,14 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void CanRecord_FileDoesNotExist_True()
 	   {
-		   var x = new AudioRecorder(Path.GetRandomFileName());
+		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
 		   Assert.IsTrue(x.CanRecord);
 	   }
 
 	   [Test]
 	   public void CanStop_NonExistantFile_False()
 	   {
-		   var x = new AudioRecorder(Path.GetRandomFileName());
+		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
 		   Assert.IsFalse(x.CanStop);
 	   }
 
@@ -94,7 +94,7 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = new AudioRecorder(f.Path);
+			   var x = new AudioIrrKlangSession(f.Path);
 			   Assert.IsTrue(x.CanRecord);
 		   }
 	   }
@@ -104,14 +104,14 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = new AudioRecorder(f.Path);
+			   var x = new AudioIrrKlangSession(f.Path);
 			   x.Play();
 		   }
 	   }
 	   [Test, ExpectedException(typeof(FileNotFoundException))]
 	   public void Play_FileDoesExist_Throws()
 	   {
-		   var x = new AudioRecorder(Path.GetRandomFileName());
+		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
 		   x.Play();
 	   }
 
@@ -133,10 +133,10 @@ namespace Palaso.Media.Tests
 		   using (var f = new TempFile())
 		   {
 			   var old = File.GetLastWriteTimeUtc(f.Path);
-			   var x = new AudioRecorder(f.Path);
+			   var x = new AudioIrrKlangSession(f.Path);
 			   x.StartRecording();
 			   Thread.Sleep(100);
-			   x.StopRecording();
+			   x.StopRecordingAndSaveAsWav();
 			   Assert.Greater(File.GetLastWriteTimeUtc(f.Path), old);
 		   }
 	   }
@@ -146,11 +146,11 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = new AudioRecorder(f.Path);
+			   var x = new AudioIrrKlangSession(f.Path);
 			   x.StartRecording();
 			   Thread.Sleep(100);
 			   Assert.IsTrue(x.IsRecording);
-			   x.StopRecording();
+			   x.StopRecordingAndSaveAsWav();
 		   }
 	   }
 
@@ -162,11 +162,11 @@ namespace Palaso.Media.Tests
 			   var w = new BackgroundWorker();
 			   w.DoWork+=new DoWorkEventHandler((o,args)=> SystemSounds.Exclamation.Play());
 
-			   var x = new AudioRecorder(f.Path);
+			   var x = new AudioIrrKlangSession(f.Path);
 			   x.StartRecording();
 			  w.RunWorkerAsync();
 			   Thread.Sleep(1000);
-			   x.StopRecording();
+			   x.StopRecordingAndSaveAsWav();
 			   x.Play();
 			   Thread.Sleep(1000);
 		   }
@@ -184,13 +184,13 @@ namespace Palaso.Media.Tests
 				   var w = new BackgroundWorker();
 				   w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
 
-				   var x = new AudioRecorder(f.Path);
+				   var x = new AudioIrrKlangSession(f.Path);
 				   x.StartRecording();
 				   w.RunWorkerAsync();
 				   Thread.Sleep(1000);
-				   x.StopRecording();
+				   x.StopRecordingAndSaveAsWav();
 
-				   var y = new AudioRecorder(f.Path);
+				   var y = new AudioIrrKlangSession(f.Path);
 				   y.Play();
 				   Thread.Sleep(1000);
 			   }
@@ -204,12 +204,12 @@ namespace Palaso.Media.Tests
 	   class RecordingSession:IDisposable
 	   {
 		   private TempFile _tempFile;
-		   private AudioRecorder _recorder;
+		   private AudioIrrKlangSession _recorder;
 
 		   public RecordingSession()
 		   {
 			   _tempFile = new TempFile();
-			   _recorder = new AudioRecorder(_tempFile.Path);
+			   _recorder = new AudioIrrKlangSession(_tempFile.Path);
 			   _recorder.StartRecording();
 			   Thread.Sleep(100);
 		   }
@@ -218,23 +218,23 @@ namespace Palaso.Media.Tests
 			  : this()
 		   {
 			   Thread.Sleep(1000);//record a second
-			   _recorder.StopRecording();
+			   _recorder.StopRecordingAndSaveAsWav();
 		   }
 
-		   public AudioRecorder Recorder
+		   public AudioIrrKlangSession Recorder
 		   {
 			   get { return _recorder; }
 		   }
 
 		   public void Stop()
 		   {
-			   _recorder.StopRecording();
+			   _recorder.StopRecordingAndSaveAsWav();
 		   }
 		   public void Dispose()
 		   {
 			   if (_recorder.IsRecording)
 			   {
-				   _recorder.StopRecording();
+				   _recorder.StopRecordingAndSaveAsWav();
 			   }
 			   _tempFile.Dispose();
 		   }
@@ -304,7 +304,7 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   AudioRecorder x = RecordSomething(f);
+			   AudioIrrKlangSession x = RecordSomething(f);
 			   Assert.IsFalse(x.IsRecording);
 		   }
 	   }
@@ -314,7 +314,7 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   AudioRecorder x = RecordSomething(f);
+			   AudioIrrKlangSession x = RecordSomething(f);
 			   Assert.IsTrue(x.CanPlay);
 		   }
 	   }
@@ -324,17 +324,17 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   AudioRecorder x = RecordSomething(f);
+			   AudioIrrKlangSession x = RecordSomething(f);
 			   x.Play();
 		   }
 	   }
 
-	   private AudioRecorder RecordSomething(TempFile f)
+	   private AudioIrrKlangSession RecordSomething(TempFile f)
 	   {
-		   var x = new AudioRecorder(f.Path);
+		   var x = new AudioIrrKlangSession(f.Path);
 		   x.StartRecording();
 		   Thread.Sleep(100);
-		   x.StopRecording();
+		   x.StopRecordingAndSaveAsWav();
 		   return x;
 	   }
 	}

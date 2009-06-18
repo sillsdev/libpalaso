@@ -4,16 +4,16 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Palaso.Media.SampleApp
+namespace Palaso.Media.Tests
 {
 	public partial class Form1 : Form
 	{
-		private readonly AudioRecorder _recorder;
+		private readonly AudioIrrKlangSession _recorder;
 		private string _path;
 
 		public Form1()
 		{
-//            _recorder = new AudioRecorder(_path);
+//            _recorder = new AudioIrrKlangSession(_path);
 			InitializeComponent();
 			soundFieldControl1.Path = Path.GetTempFileName().Replace(".tmp",".wav");
 //            UpdateScreen();
