@@ -200,7 +200,7 @@ namespace Palaso.Reporting
 			}
 			catch(Exception e)
 			{
-				Debug.Fail("Yikes. There was an error while trying to report an exception.",e.Message);
+				Debug.Fail("This errror could be reported normally: ",exception.Message);
 			}
 			return true;
 		}
