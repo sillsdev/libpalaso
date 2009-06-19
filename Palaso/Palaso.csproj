@@ -201,6 +201,7 @@
 	<Compile Include="Annotations\IAnnotatable.cs" />
 	<Compile Include="Spelling\WordTokenizer.cs" />
 	<Compile Include="IO\TempFileForSafeWriting.cs" />
+	<Compile Include="Text\ApproximateMatcher.cs" />
 	<Compile Include="Text\LanguageForm.cs" />
 	<Compile Include="Text\MultiTextBase.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfo.cs" />
