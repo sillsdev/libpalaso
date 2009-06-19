@@ -27,11 +27,24 @@ namespace Palaso.Email
 				}
 				toBuilder.Append(recipientTo[i]);
 			}
+			string commandLine = "";
+			if (message.AttachmentFilePath.Count == 0)
+			{
+				commandLine = String.Format("mailto:{0}?subject={1}&body={2}",
+											toBuilder, subject, body);
+			}
+			else
+			{
+				// review CP:throw if AttachmentFilePath.Count > 0 ?
+				string attachments = message.AttachmentFilePath[0];
+				commandLine = String.Format("mailto:{0}?subject={1}&attachments={2}&body={3}",
+											toBuilder, subject, attachments, body);
+			}
 			var p = new Process
 			{
 				StartInfo =
 				{
-					FileName = String.Format("mailto:{0}?subject={1}&body={2}", toBuilder, subject, body),
+					FileName = commandLine,
 					UseShellExecute = true,
 					ErrorDialog = true
 				}
