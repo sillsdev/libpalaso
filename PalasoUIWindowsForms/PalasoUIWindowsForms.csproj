@@ -253,8 +253,8 @@
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
-	  <SubType>Designer</SubType>
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
