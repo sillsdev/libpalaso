@@ -4,7 +4,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{13B5E313-1B26-4DAE-9E96-133768B62FD2}</ProjectGuid>
+	<ProjectGuid>{61464721-E6F7-4A59-B8F7-6A3E40E75AC3}</ProjectGuid>
 	<OutputType>WinExe</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>EmailTest</RootNamespace>
