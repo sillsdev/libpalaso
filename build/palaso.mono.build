@@ -39,12 +39,10 @@
 		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
 		<include name="Palaso.Media\Palaso.Media.proj.build" />
 		<include name="AddSortKey/AddSortKey.proj.build" />
-		<include name="TestApp/Reporting.TestApp.proj.build" />
 		<include name="Palaso.Services\Palaso.Services.proj.build" />
 		<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
 		<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
 		<include name="Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.proj.build" />
-		<include name="PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.proj.build" />
 	</fileset>
 
 	<target name="clean" description="Delete all previously compiled binaries.">
@@ -161,8 +159,6 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/AddSortKey.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/PalasoReporting.TestApp.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/PalasoUIWindowsForms.Tests.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/Palaso.Services.dll"/>
@@ -172,8 +168,6 @@
 		<property name="expected.output" value="${project.output.dir}/Palaso.Services.Dictionary.SampleClient.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/Palaso.Services.Tests.Server.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/PalasoUIWindowsForms.TestApp.exe"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
 
