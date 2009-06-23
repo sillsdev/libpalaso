@@ -74,9 +74,9 @@ namespace EmailTest
 			IEmailProvider emailProvider = Palaso.Email.EmailProviderFactory.PreferredEmailProvider();
 			IEmailMessage message = emailProvider.CreateMessage();
 			message.To.Add("nowhere@example.com");
-			message.AttachmentFilePath.Add("EmailTest.exe");
+			message.AttachmentFilePath.Add("/etc/hosts");
 			message.Subject = "Test Message";
-			message.Body = "Just a test message.";
+			message.Body = "Just a test message.\nWith more than one\nor two lines";
 			message.Send(emailProvider);
 		}
 
