@@ -2,7 +2,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -229,6 +229,7 @@
   <ItemGroup>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
@@ -252,8 +253,8 @@
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
-	  <SubType>Designer</SubType>
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
