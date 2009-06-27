@@ -145,7 +145,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_changingSelection = true;
 				try
 				{
-					if (value >= 0)
+				 //this if() was messing us up when the last item was deleted, s.t. value is -1
+					//see http://projects.palaso.org/issues/show/265  if (value >= 0)
 					{
 						base.SelectedIndex=value;
 					}

@@ -20,8 +20,8 @@ namespace Palaso.WritingSystems.Collation
 		private Debugger _debugger;
 		private bool _useDebugger;
 
-		// You will notice that the xml tags used don't always match my parser/rule variable name.  We have
-		// the creators of ldml and icu to thank for that.  Collation in ldml is based off of icu and is pretty
+		// You will notice that the xml tags used don't always match my parser/rule variable name.
+		// Collation in ldml is based off of icu and is pretty
 		// much a straight conversion of icu operators into xml tags.  Unfortunately, ICU refers to some constructs
 		// with one name (which I used for my variable names), but ldml uses a different name for the actual
 		// xml tag.
