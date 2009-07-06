@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,13 +10,12 @@
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>PalasoUIWindowsForms.Tests</RootNamespace>
 	<AssemblyName>PalasoUIWindowsForms.Tests</AssemblyName>
-	<StartupObject>
-	</StartupObject>
 	<FileUpgradeFlags>
 	</FileUpgradeFlags>
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>2.0</OldToolsVersion>
+	<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -41,6 +41,8 @@
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Release|AnyCPU' ">
 	<OutputPath>..\output\Mono Release\</OutputPath>
@@ -49,13 +51,14 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
+	<Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\net2.0\LinqBridge.dll</HintPath>
 	</Reference>
-	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
@@ -78,8 +81,8 @@
 	<Compile Include="Progress\TransformWithProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<EmbeddedResource Include="SuperToolTip\SuperToolTipTestForm.resx">
-	  <SubType>Designer</SubType>
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
 	  <SubType>Form</SubType>
@@ -91,6 +94,7 @@
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
+	<Compile Include="Keyboarding\ScimAdaptorTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">

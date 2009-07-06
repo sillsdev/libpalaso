@@ -15,6 +15,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			Windows = 1,
 			Keyman6 = 2,
 			Keyman7 = 4,
+			Scim = 8,
 			All = 255
 		} ;
 
