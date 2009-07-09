@@ -23,6 +23,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			public string Name;
 			public Engines engine;
+			public string Id;
 		}
 		public static List<KeyboardDescriptor> GetAvailableKeyboards(Engines engineKinds)
 		{
