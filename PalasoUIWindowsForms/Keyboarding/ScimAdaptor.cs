@@ -175,7 +175,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			public static void CloseConnectionToScimPanelWrapped()
 			{
-				CloseConnectionToScimPanel();
+				return_status = CloseConnectionToScimPanel();
+				throwExceptionIfNeeded(return_status);
 			}
 
 			public static void SetKeyboardWrapped(string keyboardToBeSelected)
@@ -245,7 +246,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			private static extern bool OpenConnectionToScimPanel();
 
 			[DllImport ("scimpanelcontroller")]
-			private static extern void CloseConnectionToScimPanel();
+			private static extern int CloseConnectionToScimPanel();
 
 			[DllImport ("scimpanelcontroller")]
 			private static extern int SetKeyboard(string keyboardToBeSelected);
