@@ -211,7 +211,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 		}
 
-
 		 /// <summary>
 		/// The main thing here is that it doesn't crash doing a LoadLibrary()
 		/// </summary>
@@ -240,6 +239,98 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 						  "Keyman 7 Not available");
 		}
 
+		[Test]
+		[Category("Scim")]
+		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
+		{
+			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
+		}
 
+		[Test]
+		[Category("Scim")]
+		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
+		{
+			ResetKeyboardToDefault();
+			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
+		}
+
+		[Test]
+		[Category("Scim")]
+		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
+		{
+			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
+			Assert.AreEqual("English/European", availableKeyboards[0].Name);
+			Assert.AreEqual("RAW CODE", availableKeyboards[1].Name);
+			Assert.AreEqual("English/Keyboard", availableKeyboards[2].Name);
+		}
+
+		[Test]
+		[Category("Scim")]
+		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
+		{
+			KeyboardController.ActivateKeyboard("English/European");
+			KeyboardController.DeactivateKeyboard();
+			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
+		}
+
+		[Test]
+		[Category("Scim")]
+		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
+		{
+			ResetKeyboardToDefault();
+			KeyboardController.ActivateKeyboard("English/European");
+			Assert.AreEqual("English/European", KeyboardController.GetActiveKeyboard());
+			ResetKeyboardToDefault();
+		}
+
+		[Test]
+		[Category("Scim")]
+		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
+		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
+		{
+			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
+		}
+
+		private void ResetKeyboardToDefault()
+		{
+			KeyboardController.DeactivateKeyboard();
+		}
+
+		[Test]
+		[Category("Scim not Running")]
+		public void Deactivate_ScimIsNotRunning_DoesNotThrow()
+		{
+			KeyboardController.DeactivateKeyboard();
+		}
+
+		[Test]
+		[Category("Scim not Running")]
+		public void ActivateKeyBoard_ScimIsNotRunning_DoesNotThrow()
+		{
+			KeyboardController.ActivateKeyboard("English/Keyboard");
+		}
+
+		[Test]
+		[Category("Scim not Running")]
+		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
+		{
+			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
+			Assert.AreEqual(0, availableKeyboards.Count);
+		}
+
+		[Test]
+		[Category("Scim not Running")]
+		public void GetActiveKeyboard_ScimIsNotRunning_ReturnsEmptyString()
+		{
+			string activeKeyboard = KeyboardController.GetActiveKeyboard();
+			Assert.IsEmpty(activeKeyboard);
+		}
+
+		[Test]
+		[Category("Scim not Running")]
+		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
+		{
+			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
+		}
 	}
 }

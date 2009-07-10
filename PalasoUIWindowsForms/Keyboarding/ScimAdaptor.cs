@@ -6,12 +6,17 @@ using System.IO;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
-	public class ScimAdaptor
+	internal class ScimAdaptor
 	{
 		const int MAXNUMBEROFSUPPORTEDKEYBOARDS = 50;
 
 		public static void ActivateKeyboard(string name)
 		{
+			if(!ScimIsRunning)
+			{
+				return;
+			}
+
 			if(HasKeyboardNamed(name))
 			{
 				ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
@@ -26,7 +31,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			else
 			{
-				throw new ArgumentOutOfRangeException("There is no Keyboard with the given name.");
+				throw new ArgumentOutOfRangeException("Scim does not have a Keyboard with that name!");
 			}
 		}
 
@@ -34,15 +39,96 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			get
 			{
+				List<KeyboardController.KeyboardDescriptor> availableKeyboardsAsDescriptors = new List<KeyboardController.KeyboardDescriptor>();
+				if(!ScimIsRunning)
+				{
+					return availableKeyboardsAsDescriptors;
+				}
+
 				List<ScimPanelControllerWrapper.KeyboardProperties> availableKeyboards = new List<ScimPanelControllerWrapper.KeyboardProperties>();
+
 				ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
 				availableKeyboards = ScimPanelControllerWrapper.GetListOfSupportedKeyboardsWrapped();
 				ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
-				return CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(availableKeyboards);
+				availableKeyboardsAsDescriptors = CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(availableKeyboards);
+				return availableKeyboardsAsDescriptors;
 			}
 		}
 
 		public static bool EngineAvailable
+		{
+			get
+			{
+				return ScimIsRunning;
+			}
+		}
+
+		public static void Deactivate()
+		{
+			if(!ScimIsRunning)
+			{
+				return;
+			}
+
+			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
+			ScimPanelControllerWrapper.SetKeyboardWrapped("");
+			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+		}
+
+		public static bool HasKeyboardNamed(string name)
+		{
+			bool keyBoardNameExists = false;
+
+			if(!ScimIsRunning)
+			{
+				return false;
+			}
+
+			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
+			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in ScimPanelControllerWrapper.GetListOfSupportedKeyboardsWrapped())
+			{
+				if(keyboard.name == name)
+				{
+					keyBoardNameExists = true;
+				}
+			}
+			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+
+			return keyBoardNameExists;
+		}
+
+		public static string GetActiveKeyboard()
+		{
+			if(!ScimIsRunning)
+			{
+				return "";
+			}
+
+			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
+			ScimPanelControllerWrapper.KeyboardProperties currentKeyboard = ScimPanelControllerWrapper.GetCurrentKeyboardWrapped();
+			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+			return currentKeyboard.name;
+		}
+
+		private static List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
+		{
+			List<KeyboardController.KeyboardDescriptor> keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
+			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in keyboardProperties)
+			{
+				KeyboardController.KeyboardDescriptor keyboardDescriptor = new KeyboardController.KeyboardDescriptor();
+				keyboardDescriptor.Name= keyboard.name;
+				keyboardDescriptor.engine = KeyboardController.Engines.Scim;
+				keyboardDescriptors.Add(keyboardDescriptor);
+			}
+			return keyboardDescriptors;
+		}
+
+		private static bool ConnectionToScimPanelISOpen()
+		{
+			return ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
+		}
+
+		private static bool ScimIsRunning
 		{
 			get
 			{
@@ -74,60 +160,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 				return connectionToScimPanelSucceeded;
 			}
-		}
-
-		public static void Deactivate()
-		{
-			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
-			ScimPanelControllerWrapper.SetKeyboardWrapped("");
-			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
-		}
-
-		public static bool HasKeyboardNamed(string name)
-		{
-			bool keyBoardNameExists = false;
-			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
-			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in ScimPanelControllerWrapper.GetListOfSupportedKeyboardsWrapped())
-			{
-				if(keyboard.name == name)
-				{
-					keyBoardNameExists = true;
-				}
-			}
-			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
-
-			return keyBoardNameExists;
-		}
-
-		public static string GetActiveKeyboard()
-		{
-			if(!EngineAvailable)
-			{
-				return "";
-			}
-
-			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
-			ScimPanelControllerWrapper.KeyboardProperties currentKeyboard = ScimPanelControllerWrapper.GetCurrentKeyboardWrapped();
-			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
-			return currentKeyboard.name;
-		}
-
-		private static List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
-		{
-			List<KeyboardController.KeyboardDescriptor> keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
-			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in keyboardProperties)
-			{
-				KeyboardController.KeyboardDescriptor keyboardDescriptor = new KeyboardController.KeyboardDescriptor();
-				keyboardDescriptor.Name= keyboard.name;
-				keyboardDescriptor.engine = KeyboardController.Engines.Scim;
-				keyboardDescriptors.Add(keyboardDescriptor);
-			}
-			return keyboardDescriptors;
-		}
-
-		private static bool ConnectionToScimPanelISOpen()
-		{
-			return ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
 		}
 
 		private class ScimPanelControllerWrapper
@@ -175,7 +207,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			public static void CloseConnectionToScimPanelWrapped()
 			{
-				return_status = CloseConnectionToScimPanel();
+				int return_status = CloseConnectionToScimPanel();
 				throwExceptionIfNeeded(return_status);
 			}
 
