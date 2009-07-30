@@ -8,7 +8,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 {
 	internal class ScimAdaptor
 	{
-		const int MAXNUMBEROFSUPPORTEDKEYBOARDS = 50;
+		private const int MAXNUMBEROFSUPPORTEDKEYBOARDS = 50;
+
+		public struct ContextInfo {
+			public int frontendClient;
+			public int context;
+		};
 
 		public static void ActivateKeyboard(string name)
 		{
@@ -16,7 +21,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return;
 			}
-
 			if(HasKeyboardNamed(name))
 			{
 				ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
@@ -110,6 +114,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return currentKeyboard.name;
 		}
 
+		public static ContextInfo GetCurrentInputContext(){
+			if(!ScimIsRunning)
+			{
+				throw new InvalidOperationException("Scim does not seem to be running! Please turn on Scim!");
+			}
+			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
+			ContextInfo currentContext;
+			ScimPanelControllerWrapper.ContextInfo currentContextFromWrapper =
+				ScimPanelControllerWrapper.GetCurrentInputContextWrapped();
+			currentContext.frontendClient = currentContextFromWrapper.frontendClient;
+			currentContext.context = currentContextFromWrapper.context;
+			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+			return currentContext;
+		}
+
 		private static List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
 		{
 			List<KeyboardController.KeyboardDescriptor> keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
@@ -192,6 +211,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			 }
 
+			public struct ContextInfo {
+				public int frontendClient;
+				public int context;
+			}
+
 
 			//These are the methods that wrap the marshalled library calls.
 			//These methods provide a prettier C# interface to the C function signatures
@@ -219,8 +243,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			public static KeyboardProperties GetCurrentKeyboardWrapped()
 			{
-				KeyboardProperties currentKeyboard = new KeyboardProperties();
-				int return_status = GetCurrentKeyboard(ref currentKeyboard);
+				KeyboardProperties currentKeyboard;
+				int return_status = GetCurrentKeyboard(out currentKeyboard);
 				throwExceptionIfNeeded(return_status);
 				return currentKeyboard;
 			}
@@ -228,6 +252,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			public static bool ConnectionToScimPanelIsOpenWrapped()
 			{
 				return ConnectionToScimPanelIsOpen();
+			}
+
+			public static ContextInfo GetCurrentInputContextWrapped()
+			{
+				ContextInfo currentContext;
+				int return_status = GetCurrentInputContext(out currentContext);
+				throwExceptionIfNeeded(return_status);
+				return currentContext;
 			}
 
 			public static List<KeyboardProperties> GetListOfSupportedKeyboardsWrapped()
@@ -267,6 +299,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 						throw new ArgumentOutOfRangeException("Scim does not contain a keyboard with this name!");
 					case 5:
 						throw new InvalidOperationException("There is no connection to the Scim Panel! Please call OpenConnectionToScimPanelWrapped before using this method");
+					case 6:
+						throw new IOException("There was a problem communicating with the Scim Panel! We recieved a corrupted packet from Scim.");
+					case 7:
+						throw new InvalidOperationException("No input context focused. You can not change the keyboard unless the current window has an input context.");
 					default:
 						throw new ApplicationException("An unknown status was returned by the ScimPanelController.");
 				}
@@ -284,7 +320,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			private static extern int SetKeyboard(string keyboardToBeSelected);
 
 			[DllImport ("scimpanelcontroller")]
-			private static extern int GetCurrentKeyboard(ref KeyboardProperties currentKeyboard);
+			private static extern int GetCurrentKeyboard(out KeyboardProperties currentKeyboard);
 
 			[DllImport ("scimpanelcontroller")]
 			private static extern bool ConnectionToScimPanelIsOpen();
@@ -292,6 +328,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			[DllImport ("scimpanelcontroller")]
 			private static extern int GetListOfSupportedKeyboards
 				([In, Out]KeyboardProperties[] supportedKeyboards, int maxNumberOfKeyboards, out IntPtr numberOfReturnedKeyboards);
+
+			[DllImport ("scimpanelcontroller")]
+			private static extern int GetCurrentInputContext (out ContextInfo currentContext);
 		}
 	}
 

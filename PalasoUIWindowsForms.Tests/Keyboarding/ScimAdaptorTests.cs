@@ -74,6 +74,21 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			ScimAdaptor.ActivateKeyboard("Nonexistant Keyboard");
 		}
 
+		[Test]
+		[Category("Scim")]
+		public void GetCurrentInputContext_ScimIsRunning_ReturnsContext()
+		{
+			const int unrealisticClientId = -2;
+			const int unrealisticContextClientId = -2;
+
+			ScimAdaptor.ContextInfo currentContext;
+			currentContext.frontendClient = unrealisticClientId;
+			currentContext.context = unrealisticContextClientId;
+			currentContext = ScimAdaptor.GetCurrentInputContext();
+			Assert.AreNotEqual(unrealisticClientId, currentContext.frontendClient);
+			Assert.AreNotEqual(unrealisticContextClientId, currentContext.context);
+		}
+
 		private void ResetKeyboardToDefault()
 		{
 			ScimAdaptor.Deactivate();
