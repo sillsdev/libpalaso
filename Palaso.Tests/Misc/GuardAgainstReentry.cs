@@ -53,11 +53,20 @@ namespace Palaso.Tests.Misc
 		}
 
 		[Test]
-		public void GuardAgainstReentry_WithoutReentry_WorksOk()
+		public void GuardAgainstReentry_WithoutReentryOnce_WorksOk()
 		{
 			var session = new TestSession();
 			WorkWithoutReentry(session);
 			Assert.AreEqual(1, session.WorkCount);
+		}
+
+		[Test]
+		public void GuardAgainstReentry_WithoutReentryTwice_WorksOk()
+		{
+			var session = new TestSession();
+			WorkWithoutReentry(session);
+			WorkWithoutReentry(session);
+			Assert.AreEqual(2, session.WorkCount);
 		}
 
 		private void WorkWithReentry(TestSession session, int count)
