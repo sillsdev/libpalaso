@@ -107,6 +107,7 @@
 	<Compile Include="Linq\MiscOperators.cs" />
 	<Compile Include="Misc\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
+	<Compile Include="Misc\GuardAgainstReentry.cs" />
 	<Compile Include="Misc\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />

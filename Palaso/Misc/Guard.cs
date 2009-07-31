@@ -56,5 +56,25 @@ namespace Palaso.Misc
 				return;
 			throw (TException)Activator.CreateInstance(typeof (TException), message);
 		}
+
+		public static GuardAgainstReentry AgainstReEntry(GuardAgainstReentry guard)
+		{
+			if (guard != null)
+			{
+				guard.EnterNotExpected();
+				return guard;
+			}
+			return new GuardAgainstReentry();
+		}
+
+		internal static GuardAgainstReentry AgainstReEntryExpected(GuardAgainstReentry guard)
+		{
+			if (guard != null)
+			{
+				guard.EnterExpected();
+				return guard;
+			}
+			return new GuardAgainstReentry();
+		}
 	}
 }
