@@ -223,8 +223,9 @@
 			<categories>
 				<exclude name="MouseSensitive"/>
 				<exclude name="Windows IME"/>
-				<exclude name="Keyman6"/>
-				<exclude name="Keyman7"/>
+						<exclude name="Keyman6"/>
+						<exclude name="Keyman7"/>
+				<exclude name="Scim"/>
 				<exclude name="Mono Known Issue"/>
 			</categories>
 			</test>
@@ -252,6 +253,7 @@
 				<exclude name="Windows IME"/>
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
+				<exclude name="Scim"/>
 				<exclude name="KnownMonoIssue"/>
 				<exclude name="RequiresUSB"/>
 			</categories>
