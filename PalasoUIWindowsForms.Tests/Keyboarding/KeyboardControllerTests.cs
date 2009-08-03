@@ -305,25 +305,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Scim not Running")]
-		public void ActivateKeyBoard_ScimIsNotRunning_DoesNotThrow()
-		{
-			KeyboardController.ActivateKeyboard("English/Keyboard");
-		}
-
-		[Test]
-		[Category("Scim not Running")]
 		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
 			Assert.AreEqual(0, availableKeyboards.Count);
-		}
-
-		[Test]
-		[Category("Scim not Running")]
-		public void GetActiveKeyboard_ScimIsNotRunning_ReturnsEmptyString()
-		{
-			string activeKeyboard = KeyboardController.GetActiveKeyboard();
-			Assert.IsEmpty(activeKeyboard);
 		}
 
 		[Test]

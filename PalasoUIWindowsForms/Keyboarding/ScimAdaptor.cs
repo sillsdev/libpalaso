@@ -32,6 +32,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		//handler then actually does the switching.
 		public static void ActivateKeyboard(string name)
 		{
+			if(!ScimIsRunning)
+			{
+				return;
+			}
 			if(!HasKeyboardNamed(name))
 			{
 				throw new ArgumentOutOfRangeException("Scim does not have a Keyboard with that name!" + name);

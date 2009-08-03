@@ -112,6 +112,7 @@
 		  <categories>
 			<exclude name="MouseSensitive"/>
 			<exclude name="Windows IME"/>
+			<exclude name="Scim"/>
 			<exclude name="Keyman6"/>
 			<exclude name="Keyman7"/>
 			<exclude name="RequiresUSB"/>
