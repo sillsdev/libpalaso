@@ -201,6 +201,7 @@
 					<exclude name="Windows IME"/>
 					<exclude name="Keyman6"/>
 					<exclude name="Keyman7"/>
+					<exclude name="Scim"/>
 					<exclude name="Mono Known Issue"/>
 				</categories>
 				</test>
