@@ -23,6 +23,7 @@
 			output="${project.output.dir}/PalasoUIWindowsForms.dll"
 			doc="${project.output.dir}/doc/PalasoUIWindowsForms.xml"
 			debug="${build.debug}"
+			unsafe="true"
 			define="${build.defines}">
 			<nowarn>
 				<warning number="618,672"/>
