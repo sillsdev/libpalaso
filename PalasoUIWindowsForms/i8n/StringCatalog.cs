@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using Palaso.Misc;
 
 namespace Palaso.UI.WindowsForms.i8n
 {
@@ -31,7 +32,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			_inInternationalizationTestMode = pathToPoFile == "test";
 			if (!_inInternationalizationTestMode)
 			{
-				TextReader reader = (TextReader) File.OpenText(pathToPoFile);
+				var reader = (TextReader) File.OpenText(pathToPoFile);
 				try
 				{
 					string id = null;
@@ -51,7 +52,7 @@ namespace Palaso.UI.WindowsForms.i8n
 							}
 							//id = null;
 						}
-							//handle multi-line messages
+						//handle multi-line messages
 						else if (line.StartsWith("\"") && !string.IsNullOrEmpty(id))
 						{
 							string s = GetStringBetweenQuotes(line);
@@ -80,7 +81,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			SetupUIFont(labelFontName,  labelFontSizeInPoints);
 		}
 
-		private void SetupUIFont(string labelFontName, float labelFontSizeInPoints)
+		private static void SetupUIFont(string labelFontName, float labelFontSizeInPoints)
 		{
 			if (_inInternationalizationTestMode)
 			{
@@ -97,7 +98,7 @@ namespace Palaso.UI.WindowsForms.i8n
 				}
 				catch (Exception)
 				{
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(
+					Reporting.ErrorReport.NotifyUserOfProblem(
 						"Could not find the requested UI font '{0}'.  Will use a generic font instead.",
 						labelFontName);
 				}
@@ -147,23 +148,31 @@ namespace Palaso.UI.WindowsForms.i8n
 
 		public static string Get(string id, string translationNotes)
 		{
-			if (!String.IsNullOrEmpty(id) && id[0] == '~')
+			if (!String.IsNullOrEmpty(id))
 			{
-				id = id.Substring(1);
+				if (id[0] == '~')
+				{
+					id = id.Substring(1);
+				}
+				else
+				{
+					Reporting.ErrorReport.ReportNonFatalMessageWithStackTrace(
+						"Localization error. The following string will not appear in the template.\n\n{0}\n",
+						id
+					);
+				}
 			}
-			if (_singleton == null) //todo: this should not be needed
-			{
-				return id;
-			}
+			Guard.AgainstNull(_singleton, "_singleton"); // todo: this should not be needed
 
+			if (!_singleton._catalog.ContainsValue(id))
+			{
+				return id.ToUpper();
+			}
 			if (_inInternationalizationTestMode)
 			{
-				return "*"+_singleton[id];
+				return "*" + _singleton[id];
 			}
-			else
-			{
-				return _singleton[id];
-			}
+			return _singleton[id];
 		}
 
 
@@ -177,6 +186,7 @@ namespace Palaso.UI.WindowsForms.i8n
 		{
 			int s = line.IndexOf('"');
 			int f = line.LastIndexOf('"');
+			string x = "";
 			return line.Substring(s + 1, f - (s + 1));
 		}
 
