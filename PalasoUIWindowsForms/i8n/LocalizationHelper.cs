@@ -182,9 +182,12 @@ namespace Palaso.UI.WindowsForms.i8n
 			{
 				control.TextChanged -= OnTextChanged;
 				control.FontChanged -= OnFontChanged;
-				control.Text = _originalControlProperties[control].Text;
-				control.Font = _originalControlProperties[control].Font;
-				_originalControlProperties.Remove(control);
+				if (_originalControlProperties.ContainsKey(control))//Added because once, on mono (WS-14891) somehow this wasn't true (probably not this control's fault, but still...)
+				{
+					control.Text = _originalControlProperties[control].Text;
+					control.Font = _originalControlProperties[control].Font;
+					_originalControlProperties.Remove(control);
+				}
 			}
 		}
 
