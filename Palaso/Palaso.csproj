@@ -55,6 +55,7 @@
 	</Reference>
 	<None Include="..\lib\common\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  <Link>WritingSystems\icu.net.dll.config</Link>
 	</None>
 	<None Include="..\lib\net2.0\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -89,6 +90,15 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="Data\DictionaryEqualityComparer.cs" />
+	<Compile Include="Data\IDataMapper.cs" />
+	<Compile Include="Data\MemoryDataMapper.cs" />
+	<Compile Include="Data\PreciseDateTime.cs" />
+	<Compile Include="Data\RecordToken.cs" />
+	<Compile Include="Data\RecordTokenComparer.cs" />
+	<Compile Include="Data\RecordTokenToStringAdapter.cs" />
+	<Compile Include="Data\RepositoryId.cs" />
+	<Compile Include="Data\ResultSet.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
 	<Compile Include="Email\EmailProviderFactory.cs" />
 	<Compile Include="Email\IEmailMessage.cs" />

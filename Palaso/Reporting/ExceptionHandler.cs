@@ -198,9 +198,9 @@ namespace Palaso.Reporting
 					}
 				}
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
-				Debug.Fail("This errror could be reported normally: ",exception.Message);
+				Debug.Fail("This error could not be reported normally: ",exception.Message);
 			}
 			return true;
 		}
