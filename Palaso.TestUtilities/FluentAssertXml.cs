@@ -110,6 +110,23 @@ namespace Palaso.TestUtilities
 			Assert.IsNotNull(node, "Not matched: " + xpath);
 		}
 
+		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count)
+		{
+			var nodes = NodeOrDom.SelectNodes(xpath);
+			if (nodes==null)
+			{
+				Console.WriteLine("Expected {0} but got 0 matches for {1}",count,  xpath);
+				PrintNodeToConsole(NodeOrDom);
+				Assert.AreEqual(count,0);
+			}
+			else if (nodes.Count != count)
+			{
+				Console.WriteLine("Expected {0} but got {1} matches for {2}",count, nodes.Count, xpath);
+				PrintNodeToConsole(NodeOrDom);
+				Assert.AreEqual(count, nodes.Count, "matches for "+xpath);
+			}
+		}
+
 		public static void PrintNodeToConsole(XmlNode node)
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();

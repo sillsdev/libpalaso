@@ -2,7 +2,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.21022</ProductVersion>
+	<ProductVersion>9.0.30729</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{13B5E313-1B26-4DAE-9E96-133768B62FD2}</ProjectGuid>
 	<OutputType>WinExe</OutputType>
@@ -74,6 +74,10 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\..\lib\net2.0\irrKlang.NET2.0.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Deployment" />
@@ -135,6 +139,10 @@
 	</Compile>
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\..\Palaso.Media\Palaso.Media.csproj">
+	  <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
+	  <Name>Palaso.Media</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
 	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
 	  <Name>PalasoUIWindowsForms</Name>
