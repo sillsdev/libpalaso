@@ -178,16 +178,15 @@ namespace Palaso.UI.WindowsForms.i8n
 		private void UnwireFromControl(Control control)
 		{
 			Debug.Assert(control != null);
-			if (IsAllowedControl(control))
+			// In modal forms mono can call Dispose twice, resulting in two attempts to unwire
+			// the control.
+			if (IsAllowedControl(control) && _originalControlProperties.ContainsKey(control))//Added because once, on mono (WS-14891) somehow this wasn't true (probably not this control's fault, but still...))
 			{
 				control.TextChanged -= OnTextChanged;
 				control.FontChanged -= OnFontChanged;
-				if (_originalControlProperties.ContainsKey(control))//Added because once, on mono (WS-14891) somehow this wasn't true (probably not this control's fault, but still...)
-				{
-					control.Text = _originalControlProperties[control].Text;
-					control.Font = _originalControlProperties[control].Font;
-					_originalControlProperties.Remove(control);
-				}
+				control.Text = _originalControlProperties[control].Text;
+				control.Font = _originalControlProperties[control].Font;
+				_originalControlProperties.Remove(control);
 			}
 		}
 
