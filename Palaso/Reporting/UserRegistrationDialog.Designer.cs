@@ -41,19 +41,20 @@ namespace Palaso.Reporting
 			//
 			// _emailAddress
 			//
+			this._emailAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._emailAddress.Location = new System.Drawing.Point(114, 161);
+			this._emailAddress.MaximumSize = new System.Drawing.Size(228, 24);
 			this._emailAddress.Name = "_emailAddress";
-			this._emailAddress.Size = new System.Drawing.Size(228, 20);
+			this._emailAddress.Size = new System.Drawing.Size(228, 21);
 			this._emailAddress.TabIndex = 0;
 			this._emailAddress.TextChanged += new System.EventHandler(this._emailAddress_TextChanged);
 			//
 			// _noticeLabel
 			//
-			this._noticeLabel.AutoSize = true;
 			this._noticeLabel.Location = new System.Drawing.Point(23, 198);
 			this._noticeLabel.MaximumSize = new System.Drawing.Size(330, 0);
 			this._noticeLabel.Name = "_noticeLabel";
-			this._noticeLabel.Size = new System.Drawing.Size(330, 104);
+			this._noticeLabel.Size = new System.Drawing.Size(330, 112);
 			this._noticeLabel.TabIndex = 1;
 			this._noticeLabel.Text = resources.GetString("_noticeLabel.Text");
 			//
@@ -102,21 +103,19 @@ namespace Palaso.Reporting
 			//
 			// _thePitchLabel
 			//
-			this._thePitchLabel.AutoSize = true;
 			this._thePitchLabel.Location = new System.Drawing.Point(23, 44);
 			this._thePitchLabel.MaximumSize = new System.Drawing.Size(330, 0);
 			this._thePitchLabel.Name = "_thePitchLabel";
-			this._thePitchLabel.Size = new System.Drawing.Size(330, 52);
+			this._thePitchLabel.Size = new System.Drawing.Size(330, 69);
 			this._thePitchLabel.TabIndex = 5;
 			this._thePitchLabel.Text = resources.GetString("_thePitchLabel.Text");
 			//
 			// label3
 			//
-			this.label3.AutoSize = true;
 			this.label3.Location = new System.Drawing.Point(47, 116);
 			this.label3.MaximumSize = new System.Drawing.Size(310, 0);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(307, 26);
+			this.label3.Size = new System.Drawing.Size(310, 42);
 			this.label3.TabIndex = 5;
 			this.label3.Text = "Allow the developers to receive usage statistics when I happen to use this tool a" +
 				"nd be online at the same time.";
