@@ -29,10 +29,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void InitializeComponent()
 		{
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this._testArea = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
 			this._keyboardComboBox = new System.Windows.Forms.ComboBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this._testArea = new System.Windows.Forms.TextBox();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -59,39 +59,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer1.TabIndex = 0;
 			this.splitContainer1.TabStop = false;
 			//
-			// _testArea
-			//
-			this._testArea.AcceptsReturn = true;
-			this._testArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this._testArea.Location = new System.Drawing.Point(0, 16);
-			this._testArea.Multiline = true;
-			this._testArea.Name = "_testArea";
-			this._testArea.Size = new System.Drawing.Size(460, 96);
-			this._testArea.TabIndex = 1;
-			this._testArea.Text = "Use this area to type something to test out your keyboard.";
-			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
-			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
-			//
-			// label1
-			//
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(3, 0);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(56, 13);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "&Test Area:";
-			//
-			// label2
-			//
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(3, 0);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(60, 13);
-			this.label2.TabIndex = 0;
-			this.label2.Text = "&Keyboards:";
-			//
 			// _keyboardComboBox
 			//
 			this._keyboardComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -107,6 +74,37 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._keyboardComboBox.TabIndex = 1;
 			this._keyboardComboBox.TextChanged += new System.EventHandler(this._keyboardComboBox_TextChanged);
 			//
+			// label2
+			//
+			this.label2.Location = new System.Drawing.Point(3, 0);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(454, 13);
+			this.label2.TabIndex = 0;
+			this.label2.Text = "&Keyboards:";
+			//
+			// label1
+			//
+			this.label1.Location = new System.Drawing.Point(3, 0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(454, 13);
+			this.label1.TabIndex = 0;
+			this.label1.Text = "&Test Area:";
+			//
+			// _testArea
+			//
+			this._testArea.AcceptsReturn = true;
+			this._testArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._testArea.Location = new System.Drawing.Point(0, 16);
+			this._testArea.Multiline = true;
+			this._testArea.Name = "_testArea";
+			this._testArea.Size = new System.Drawing.Size(460, 96);
+			this._testArea.TabIndex = 1;
+			this._testArea.Text = "Use this area to type something to test out your keyboard.";
+			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
+			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
+			//
 			// WSKeyboardControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -115,7 +113,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Name = "WSKeyboardControl";
 			this.Size = new System.Drawing.Size(460, 297);
 			this.splitContainer1.Panel1.ResumeLayout(false);
-			this.splitContainer1.Panel1.PerformLayout();
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			this.splitContainer1.Panel2.PerformLayout();
 			this.splitContainer1.ResumeLayout(false);

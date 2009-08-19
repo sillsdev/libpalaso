@@ -441,16 +441,17 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._statusLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+			this._statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._statusLabel.Location = new System.Drawing.Point(9, 52);
 			this._statusLabel.Name = "_statusLabel";
-			this._statusLabel.Size = new System.Drawing.Size(279, 18);
+			this._statusLabel.Size = new System.Drawing.Size(277, 23);
 			this._statusLabel.TabIndex = 12;
 			//
 			// _progressBar
 			//
 			this._progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._progressBar.Location = new System.Drawing.Point(9, 75);
+			this._progressBar.Location = new System.Drawing.Point(9, 78);
 			this._progressBar.Name = "_progressBar";
 			this._progressBar.Size = new System.Drawing.Size(279, 18);
 			this._progressBar.TabIndex = 11;
@@ -472,9 +473,9 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._progressLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this._progressLabel.Location = new System.Drawing.Point(9, 99);
+			this._progressLabel.Location = new System.Drawing.Point(9, 104);
 			this._progressLabel.Name = "_progressLabel";
-			this._progressLabel.Size = new System.Drawing.Size(210, 18);
+			this._progressLabel.Size = new System.Drawing.Size(216, 14);
 			this._progressLabel.TabIndex = 9;
 			//
 			// _showWindowIfTakingLongTimeTimer
@@ -493,9 +494,10 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._overviewLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._overviewLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+			this._overviewLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._overviewLabel.Location = new System.Drawing.Point(9, 7);
 			this._overviewLabel.Name = "_overviewLabel";
-			this._overviewLabel.Size = new System.Drawing.Size(280, 37);
+			this._overviewLabel.Size = new System.Drawing.Size(277, 42);
 			this._overviewLabel.TabIndex = 8;
 			//
 			// ProgressDialog
@@ -514,8 +516,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			this.MinimizeBox = false;
 			this.Name = "ProgressDialog";
 			this.Text = "Palaso";
-			this.Shown += new System.EventHandler(this.ProgressDialog_Shown);
 			this.Load += new System.EventHandler(this.ProgressDialog_Load);
+			this.Shown += new System.EventHandler(this.ProgressDialog_Shown);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

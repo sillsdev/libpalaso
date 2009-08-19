@@ -133,16 +133,16 @@ namespace Palaso.Reporting
 			this._details.Name = "_details";
 			this._details.ReadOnly = true;
 			//
-			// _closeButton
+			// _sendAndCloseButton
 			//
-			resources.ApplyResources(this._sendAndCloseButton, "_closeButton");
+			resources.ApplyResources(this._sendAndCloseButton, "_sendAndCloseButton");
 			this._sendAndCloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._sendAndCloseButton.Name = "_sendAndCloseButton";
 			this._sendAndCloseButton.Click += new System.EventHandler(this.btnClose_Click);
 			//
-			// m_notification
+			// _pleaseHelpText
 			//
-			resources.ApplyResources(this._pleaseHelpText, "m_notification");
+			resources.ApplyResources(this._pleaseHelpText, "_pleaseHelpText");
 			this._pleaseHelpText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this._pleaseHelpText.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._pleaseHelpText.ForeColor = System.Drawing.Color.Black;
@@ -155,16 +155,16 @@ namespace Palaso.Reporting
 			this._attemptToContinueLabel.ForeColor = System.Drawing.Color.Firebrick;
 			this._attemptToContinueLabel.Name = "_attemptToContinueLabel";
 			//
-			// _linkJustExit
+			// _dontSendEmailLink
 			//
-			resources.ApplyResources(this._dontSendEmailLink, "_linkJustExit");
+			resources.ApplyResources(this._dontSendEmailLink, "_dontSendEmailLink");
 			this._dontSendEmailLink.Name = "_dontSendEmailLink";
 			this._dontSendEmailLink.TabStop = true;
 			this._dontSendEmailLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnJustExit_LinkClicked);
 			//
-			// _userMessage
+			// _notificationText
 			//
-			resources.ApplyResources(this._notificationText, "_userMessage");
+			resources.ApplyResources(this._notificationText, "_notificationText");
 			this._notificationText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this._notificationText.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._notificationText.ForeColor = System.Drawing.Color.Black;

@@ -127,11 +127,10 @@
 			//
 			// label1
 			//
-			this.label1.AutoSize = true;
 			this.label1.ForeColor = System.Drawing.Color.DarkRed;
 			this.label1.Location = new System.Drawing.Point(249, 5);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(1244, 13);
+			this.label1.Size = new System.Drawing.Size(1244, 14);
 			this.label1.TabIndex = 5;
 			this.label1.Text = resources.GetString("label1.Text");
 			this.label1.Visible = false;

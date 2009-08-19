@@ -75,12 +75,11 @@ namespace Palaso.Reporting
 			// _reoccurenceMessage
 			//
 			this._reoccurenceMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._reoccurenceMessage.AutoSize = true;
 			this._reoccurenceMessage.ForeColor = System.Drawing.Color.Gray;
 			this._reoccurenceMessage.Location = new System.Drawing.Point(20, 228);
 			this._reoccurenceMessage.MaximumSize = new System.Drawing.Size(250, 300);
 			this._reoccurenceMessage.Name = "_reoccurenceMessage";
-			this._reoccurenceMessage.Size = new System.Drawing.Size(120, 13);
+			this._reoccurenceMessage.Size = new System.Drawing.Size(146, 23);
 			this._reoccurenceMessage.TabIndex = 2;
 			this._reoccurenceMessage.Text = "Re-occurence message";
 			this._reoccurenceMessage.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
