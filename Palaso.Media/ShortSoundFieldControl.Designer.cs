@@ -93,7 +93,8 @@
 			this._recordButton.TabIndex = 1;
 			this._recordButton.TabStop = false;
 			this._recordButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.toolTip1.SetToolTip(this._recordButton, "Hold down the mouse button while talking, then release.  Like a walkie-talkie.");
+			this.toolTip1.SetToolTip(this._recordButton, "Hold down the mouse button while talking, then release.  Like a walkie-talkie.  C" +
+					"lick with the shift-key down to select a pre-recorded sound file.");
 			this._recordButton.UseVisualStyleBackColor = false;
 			this._recordButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnRecordDown);
 			this._recordButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnRecordUp);
