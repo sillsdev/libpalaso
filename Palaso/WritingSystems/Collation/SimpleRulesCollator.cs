@@ -215,7 +215,7 @@ namespace Palaso.WritingSystems.Collation
 			/// <returns></returns>
 			public string ConvertToIcuTailoringRule(String s)
 			{
-				result = string.Empty;
+				_result = string.Empty;
 				_currentCollationElement = new StringBuilder();
 				_currentCollationLines = new Queue<string>();
 				_currentCollationGroups = new Queue<string>();
@@ -226,7 +226,7 @@ namespace Palaso.WritingSystems.Collation
 				ParserMatch match = _collationRules.Parse(sc);
 				Debug.Assert(match.Success);
 				Debug.Assert(sc.AtEnd);
-				return result;
+				return _result;
 			}
 
 			public bool ValidateSimpleCollationRules(string rules, out string message)
@@ -271,7 +271,7 @@ namespace Palaso.WritingSystems.Collation
 
 			private List<string> _usedCollationElements;
 
-			private string result;
+			private string _result;
 
 			#region Semantic Actions
 
@@ -402,7 +402,7 @@ namespace Palaso.WritingSystems.Collation
 					}
 				}
 
-				result = sb.ToString();
+				_result = sb.ToString();
 			}
 
 			#endregion
