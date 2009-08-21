@@ -343,26 +343,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 
 			//These are the marshalled library calls
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern bool OpenConnectionToScimPanel();
 
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern int CloseConnectionToScimPanel();
 
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern int SetKeyboard(string keyboardToBeSelected);
 
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern int GetCurrentKeyboard(out KeyboardProperties currentKeyboard);
 
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern bool ConnectionToScimPanelIsOpen();
 
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern int GetListOfSupportedKeyboards
 				([In, Out]KeyboardProperties[] supportedKeyboards, int maxNumberOfKeyboards, out IntPtr numberOfReturnedKeyboards);
 
-			[DllImport ("scimpanelcontroller")]
+			[DllImport ("scimpanelcontroller-1.0")]
 			private static extern int GetCurrentInputContext (out ContextInfo currentContext);
 		}
 	}
