@@ -51,10 +51,10 @@ namespace Palaso.Reporting
 			//
 			// _noticeLabel
 			//
-			this._noticeLabel.Location = new System.Drawing.Point(23, 198);
+			this._noticeLabel.Location = new System.Drawing.Point(23, 185);
 			this._noticeLabel.MaximumSize = new System.Drawing.Size(330, 0);
 			this._noticeLabel.Name = "_noticeLabel";
-			this._noticeLabel.Size = new System.Drawing.Size(330, 112);
+			this._noticeLabel.Size = new System.Drawing.Size(330, 125);
 			this._noticeLabel.TabIndex = 1;
 			this._noticeLabel.Text = resources.GetString("_noticeLabel.Text");
 			//
