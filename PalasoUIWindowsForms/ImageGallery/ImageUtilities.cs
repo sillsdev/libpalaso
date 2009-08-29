@@ -10,6 +10,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 	{
 		public static Image GetThumbNail(string imagePath, int imgWidth, int imgHeight, Color borderColor)
 		{
+
 			Bitmap bmp;
 
 			try
@@ -25,9 +26,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			imgWidth = bmp.Width > imgWidth ? imgWidth : bmp.Width;
 			imgHeight = bmp.Height > imgHeight ? imgHeight : bmp.Height;
 
-			Bitmap retBmp = new Bitmap(imgWidth, imgHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
-
-			Graphics grp = Graphics.FromImage(retBmp);
 
 
 			int tnWidth = imgWidth, tnHeight = imgHeight;
@@ -40,15 +38,30 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			int iLeft = (imgWidth / 2) - (tnWidth / 2);
 			int iTop = (imgHeight / 2) - (tnHeight / 2);
 
+#if MONO
+			Image x = bmp.GetThumbnailImage(imgWidth, imgHeight, callbackOnAbort, IntPtr.Zero);
+			return x;
+#else
+
+			Bitmap retBmp = new Bitmap(imgWidth, imgHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
+			Graphics grp = Graphics.FromImage(retBmp);
 			grp.PixelOffsetMode = PixelOffsetMode.None;
 			grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
 			grp.DrawImage(bmp, iLeft, iTop, tnWidth, tnHeight);
 
 			Pen pn = new Pen(borderColor, 1); //Color.Wheat
+
+
 			grp.DrawRectangle(pn, 0, 0, retBmp.Width - 1, retBmp.Height - 1);
 
 			return retBmp;
+#endif
+		}
+
+		private static bool callbackOnAbort()
+		{
+			return false;
 		}
 	}
 }

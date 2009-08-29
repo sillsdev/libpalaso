@@ -114,6 +114,15 @@ namespace Palaso.WritingSystems.Collation.Tests
 			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
 		}
 
+
+		[Test]
+		public void ConvertToIcuRules_NoHyphenInRules_HasIgnoreHyphen()
+		{
+			//&[last primary ignorable] <<< '-' <<<
+			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
+		}
+
+
 		[Test]
 		public void ConvertToIcuRules_SingleElementWithBlanks()
 		{

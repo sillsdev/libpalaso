@@ -27,7 +27,7 @@ namespace Palaso.WritingSystems.Collation
 			}
 			catch (DllNotFoundException e)
 			{
-				throw new DllNotFoundException("Currently SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
+				throw new DllNotFoundException("SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
 			}
 		}
 
@@ -211,9 +211,9 @@ namespace Palaso.WritingSystems.Collation
 			/// <summary>
 			/// Parse a string and return parse match
 			/// </summary>
-			/// <param name="s"></param>
+			/// <param name="rules"></param>
 			/// <returns></returns>
-			public string ConvertToIcuTailoringRule(String s)
+			public string ConvertToIcuTailoringRule(String rules)
 			{
 				_result = string.Empty;
 				_currentCollationElement = new StringBuilder();
@@ -222,7 +222,7 @@ namespace Palaso.WritingSystems.Collation
 				_currentCollationElements = new Queue<string>();
 				_usedCollationElements = new List<string>();
 
-				StringScanner sc = new StringScanner(s);
+				StringScanner sc = new StringScanner(rules);
 				ParserMatch match = _collationRules.Parse(sc);
 				Debug.Assert(match.Success);
 				Debug.Assert(sc.AtEnd);
