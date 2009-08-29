@@ -117,13 +117,6 @@
   <resheader name="writer">
 	<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="_noticeLabel.Text" xml:space="preserve">
-	<value>Your email address will not be shared with anyone nor added to any email list.  It will help the developers to  know who's using this tool and give us a way of contacting you if we detect problems.
-
-If you don't have an email address,  please enter your name instead.
-
-If you have a firewall, please give {0} permission to access the internet.</value>
-  </data>
   <data name="_thePitchLabel.Text" xml:space="preserve">
 	<value>The development of this free program is done (and funded by) people who want to "Do some good".  Please allow {0} to tell us that someone is using it, so we can know a bit of what Good is being Done, and know whether to continue to improve it.</value>
   </data>
