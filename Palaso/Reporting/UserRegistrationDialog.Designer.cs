@@ -103,6 +103,7 @@ namespace Palaso.Reporting
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(295, 56);
 			this.label3.TabIndex = 6;
+			this.label3.TabStop = false;
 			this.label3.Text = "Allow the developers to receive usage statistics when I happen to use this tool a" +
 				"nd be online at the same time.";
 			//
@@ -117,6 +118,7 @@ namespace Palaso.Reporting
 			this._noticeLabel.Name = "_noticeLabel";
 			this._noticeLabel.Size = new System.Drawing.Size(316, 77);
 			this._noticeLabel.TabIndex = 6;
+			this._noticeLabel.TabStop = false;
 			this._noticeLabel.Text = "Your email address will not be shared with anyone nor added to any email list.  I" +
 				"t will help the developers to  know who\'s using this tool and give us a way of c" +
 				"ontacting you if we detect problems.  ";
@@ -127,11 +129,12 @@ namespace Palaso.Reporting
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._thePitchLabel.BackColor = System.Drawing.SystemColors.Control;
 			this._thePitchLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._thePitchLabel.Location = new System.Drawing.Point(47, 34);
+			this._thePitchLabel.Location = new System.Drawing.Point(26, 34);
 			this._thePitchLabel.Multiline = true;
 			this._thePitchLabel.Name = "_thePitchLabel";
-			this._thePitchLabel.Size = new System.Drawing.Size(316, 92);
+			this._thePitchLabel.Size = new System.Drawing.Size(337, 92);
 			this._thePitchLabel.TabIndex = 7;
+			this._thePitchLabel.TabStop = false;
 			this._thePitchLabel.Text = resources.GetString("_thePitchLabel.Text");
 			//
 			// UserRegistrationDialog

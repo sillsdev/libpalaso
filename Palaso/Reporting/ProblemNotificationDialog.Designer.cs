@@ -31,8 +31,8 @@ namespace Palaso.Reporting
 			this._message = new System.Windows.Forms.TextBox();
 			this._icon = new System.Windows.Forms.PictureBox();
 			this._acceptButton = new System.Windows.Forms.Button();
-			this._reoccurenceMessage = new System.Windows.Forms.Label();
 			this._alternateButton1 = new System.Windows.Forms.Button();
+			this._reoccurenceMessage = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this._icon)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -72,18 +72,6 @@ namespace Palaso.Reporting
 			this._acceptButton.UseVisualStyleBackColor = true;
 			this._acceptButton.Click += new System.EventHandler(this._acceptButton_Click);
 			//
-			// _reoccurenceMessage
-			//
-			this._reoccurenceMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._reoccurenceMessage.ForeColor = System.Drawing.Color.Gray;
-			this._reoccurenceMessage.Location = new System.Drawing.Point(20, 228);
-			this._reoccurenceMessage.MaximumSize = new System.Drawing.Size(250, 300);
-			this._reoccurenceMessage.Name = "_reoccurenceMessage";
-			this._reoccurenceMessage.Size = new System.Drawing.Size(146, 23);
-			this._reoccurenceMessage.TabIndex = 2;
-			this._reoccurenceMessage.Text = "Re-occurence message";
-			this._reoccurenceMessage.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			//
 			// _alternateButton1
 			//
 			this._alternateButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -97,6 +85,22 @@ namespace Palaso.Reporting
 			this._alternateButton1.Visible = false;
 			this._alternateButton1.Click += new System.EventHandler(this.OnAlternateButton1_Click);
 			//
+			// _reoccurenceMessage
+			//
+			this._reoccurenceMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._reoccurenceMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._reoccurenceMessage.Enabled = false;
+			this._reoccurenceMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._reoccurenceMessage.ForeColor = System.Drawing.Color.Gray;
+			this._reoccurenceMessage.Location = new System.Drawing.Point(12, 228);
+			this._reoccurenceMessage.Multiline = true;
+			this._reoccurenceMessage.Name = "_reoccurenceMessage";
+			this._reoccurenceMessage.ReadOnly = true;
+			this._reoccurenceMessage.Size = new System.Drawing.Size(154, 35);
+			this._reoccurenceMessage.TabIndex = 4;
+			this._reoccurenceMessage.Text = "Re-occurence message";
+			//
 			// ProblemNotificationDialog
 			//
 			this.AcceptButton = this._acceptButton;
@@ -106,9 +110,9 @@ namespace Palaso.Reporting
 			this.CancelButton = this._acceptButton;
 			this.ClientSize = new System.Drawing.Size(372, 263);
 			this.ControlBox = false;
+			this.Controls.Add(this._acceptButton);
 			this.Controls.Add(this._alternateButton1);
 			this.Controls.Add(this._reoccurenceMessage);
-			this.Controls.Add(this._acceptButton);
 			this.Controls.Add(this._icon);
 			this.Controls.Add(this._message);
 			this.MaximizeBox = false;
@@ -127,7 +131,7 @@ namespace Palaso.Reporting
 		internal System.Windows.Forms.TextBox _message;
 		private System.Windows.Forms.PictureBox _icon;
 		internal System.Windows.Forms.Button _acceptButton;
-		private System.Windows.Forms.Label _reoccurenceMessage;
 		internal System.Windows.Forms.Button _alternateButton1;
+		internal System.Windows.Forms.TextBox _reoccurenceMessage;
 	}
 }
