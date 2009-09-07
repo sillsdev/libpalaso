@@ -171,6 +171,23 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
 
+	<target name="build-for-wesay" depends="build-only">
+		<copy todir="${project.base.dir}/../wesay/lib/mono">
+			<fileset basedir="${project.output.dir}">
+				<include name="*.dll" />
+				<exclude name="*.Tests.dll" />
+				<exclude name="*.Test.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${project.base.dir}/../wesay/output/linux/mono/2.0/Debug">
+			<fileset basedir="${project.output.dir}">
+				<include name="*.dll" />
+				<exclude name="*.Tests.dll" />
+				<exclude name="*.Test.dll" />
+			</fileset>
+		</copy>
+	</target>
+
 	<target name="test" depends="build-only">
 		<call target="test-noservices-only"/>
 	</target>

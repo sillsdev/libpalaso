@@ -36,7 +36,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			int verticalOffset = (destinationHeight / 2) - (actualHeight / 2);
 
 #if MONO
-			Image x = bmp.GetThumbnailImage(destinationWidth, destinationHeight, callbackOnAbort, IntPtr.Zero);
+			Image x = bmp.GetThumbnailImage(destinationWidth, destinationHeight, callbackOnAbort, System.IntPtr.Zero);
 			return x;
 #else
 
