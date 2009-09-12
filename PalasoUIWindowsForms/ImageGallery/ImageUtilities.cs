@@ -42,9 +42,9 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 //            return x;
 
 
-			Bitmap retBmp = new Bitmap(destinationWidth, destinationHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
+			Bitmap retBmp = new Bitmap(destinationWidth, destinationHeight);//, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
 			Graphics grp = Graphics.FromImage(retBmp);
-			grp.PixelOffsetMode = PixelOffsetMode.None;
+			//grp.PixelOffsetMode = PixelOffsetMode.None;
 		 //guessing that this is the problem?   grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
 			grp.DrawImage(bmp, horizontalOffset, verticalOffset, actualWidth, actualHeight);
