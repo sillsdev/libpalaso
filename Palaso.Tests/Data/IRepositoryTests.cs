@@ -205,11 +205,11 @@ namespace Palaso.Tests.Data
 		private T item;
 		private RepositoryId id;
 
-		protected bool hasPersistOnCreate;
+		protected bool _hasPersistOnCreate;
 
 		protected IRepositoryCreateItemTransitionTests()
 		{
-			hasPersistOnCreate = true;
+			_hasPersistOnCreate = true;
 		}
 
 		public IDataMapper<T> DataMapperUnderTest
@@ -271,7 +271,7 @@ namespace Palaso.Tests.Data
 			}
 			else
 			{
-				if (hasPersistOnCreate)
+				if (_hasPersistOnCreate)
 				{
 					CreateNewRepositoryFromPersistedData();
 					RepositoryId[] listOfItems = DataMapperUnderTest.GetAllItems();
