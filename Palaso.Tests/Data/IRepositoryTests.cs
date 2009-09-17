@@ -205,6 +205,13 @@ namespace Palaso.Tests.Data
 		private T item;
 		private RepositoryId id;
 
+		protected bool hasPersistOnCreate;
+
+		protected IRepositoryCreateItemTransitionTests()
+		{
+			hasPersistOnCreate = true;
+		}
+
 		public IDataMapper<T> DataMapperUnderTest
 		{
 			get
@@ -259,15 +266,23 @@ namespace Palaso.Tests.Data
 		public void CreatedItemHasBeenPersisted()
 		{
 			SetState();
-			if (!DataMapperUnderTest.CanPersist) {}
+			if (!DataMapperUnderTest.CanPersist)
+			{
+			}
 			else
 			{
-				CreateNewRepositoryFromPersistedData();
-				RepositoryId[] listOfItems = DataMapperUnderTest.GetAllItems();
-				Assert.AreEqual(1, listOfItems.Length);
-				//Would be nice if this worked.. but it doesn't because we have equals for LexEntry is still by reference
-				//T itemFromPersistedData = DataMapperUnderTest.GetItem(listOfItems[0]);
-				//Assert.AreEqual(item, itemFromPersistedData);
+				if (hasPersistOnCreate)
+				{
+					CreateNewRepositoryFromPersistedData();
+					RepositoryId[] listOfItems = DataMapperUnderTest.GetAllItems();
+					Assert.AreEqual(1, listOfItems.Length);
+					//Would be nice if this worked.. but it doesn't because we have equals for LexEntry is still by reference
+					//T itemFromPersistedData = DataMapperUnderTest.GetItem(listOfItems[0]);
+					//Assert.AreEqual(item, itemFromPersistedData);
+				} else
+				{
+					Assert.Ignore("This repository does not persist on CreateItem");
+				}
 			}
 		}
 
