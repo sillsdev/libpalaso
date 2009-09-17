@@ -27,7 +27,14 @@ namespace Palaso.IO
 				File.Delete(pending);
 			}
 			File.Move(_tempPath, pending);//NB: Replace() is tempting but failes across volumes
-			File.Replace(pending, _realFilePath, _realFilePath+".bak");
+			if (File.Exists(_realFilePath))
+			{
+				File.Replace(pending, _realFilePath, _realFilePath + ".bak");
+			}
+			else
+			{
+				File.Move(pending, _realFilePath);
+			}
 		}
 	}
 }
