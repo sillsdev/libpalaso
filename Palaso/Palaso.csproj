@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -88,9 +88,6 @@
 	<Reference Include="System.Xml" />
 	<None Include="Resources\scriptNames.txt" />
 	<None Include="Reporting\app.config" />
-	<None Include="Reporting\ReportingSetting.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	</None>
 	<None Include="Resources\languageCodes.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +146,7 @@
 	<Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
 	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Reporting\ReportingSetting.Designer.cs">
-	  <DependentUpon>ReportingSetting.settings</DependentUpon>
-	</Compile>
+	<Compile Include="Reporting\ReportingSettings.cs" />
 	<Compile Include="Reporting\ReportingStrings.Designer.cs">
 	  <DependentUpon>ReportingStrings.resx</DependentUpon>
 	</Compile>
@@ -240,7 +235,6 @@
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
-	<Compile Include="Reporting\ReportingSetting.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
