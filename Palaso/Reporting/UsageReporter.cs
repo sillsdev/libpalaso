@@ -17,9 +17,9 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// call this each time the application is launched
 		/// </summary>
-		public static void RecordLaunch(ReportingSettings settings)
+		public static void RecordLaunch()
 		{
-		   GetUserIdentifierIfNeeded(settings);
+		   GetUserIdentifierIfNeeded();
 
 		   //MakeLaunchDateSafe();
 
