@@ -12,28 +12,29 @@ namespace Palaso.Reporting
 	{
 		private static string s_appNameToUseInDialogs;
 		private static string s_appNameToUseInReporting;
+		private static ReportingSettings s_settings;
 
 		/// <summary>
 		/// call this each time the application is launched
 		/// </summary>
-		public static void RecordLaunch()
+		public static void RecordLaunch(ReportingSettings settings)
 		{
-		   GetUserIdentifierIfNeeded();
+		   GetUserIdentifierIfNeeded(settings);
 
-		   MakeLaunchDateSafe();
+		   //MakeLaunchDateSafe();
 
 //            int launchCount = 1 + int.Parse(RegistryAccess.GetStringRegistryValue("launches", "0"));
 //            RegistryAccess.SetStringRegistryValue("launches", launchCount.ToString());
-			if (DateTime.UtcNow.Date != ReportingSetting.Default.LastLaunchDate.Date)
+			if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
 			{
-				ReportingSetting.Default.LastLaunchDate = DateTime.UtcNow.Date;
-				ReportingSetting.Default.Launches++;
-				ReportingSetting.Default.Save();
+				s_settings.LastLaunchDate = DateTime.UtcNow.Date;
+				s_settings.Launches++;
+				//ReportingSetting.Default.Save();
 				AttemptHttpReport();
 			}
 		}
 
-		private static void GetUserIdentifierIfNeeded()
+		private static void GetUserIdentifierIfNeeded( )
 		{
 			//nb, this tries to share the id between applications that might want it,
 			//so the user doesn't have to be asked again.
@@ -42,20 +43,20 @@ namespace Palaso.Reporting
 			Directory.CreateDirectory(dir);
 			string path = Path.Combine(dir, "UserIdentifier.txt");
 		   // ReportingSetting.Default.Identifier = "";
-			if (!ReportingSetting.Default.HaveShowRegistrationDialog)
+			if (!s_settings.HaveShowRegistrationDialog)
 			{
-					ReportingSetting.Default.HaveShowRegistrationDialog = true;
+					s_settings.HaveShowRegistrationDialog = true;
 					UserRegistrationDialog dlg = new UserRegistrationDialog();
 					if (File.Exists(path))
 					{
-						ReportingSetting.Default.UserIdentifier = File.ReadAllText(path);
+						s_settings.UserIdentifier = File.ReadAllText(path);
 					}
 					dlg.ShowDialog();
-					ReportingSetting.Default.UserIdentifier = dlg.EmailAddress;
-					ReportingSetting.Default.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
+					s_settings.UserIdentifier = dlg.EmailAddress;
+					s_settings.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
 
-				   ReportingSetting.Default.Save();
-					File.WriteAllText(path, ReportingSetting.Default.UserIdentifier);
+					//ReportingSetting.Default.Save();
+					File.WriteAllText(path, s_settings.UserIdentifier);
 			}
 
 		}
@@ -63,18 +64,18 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// cover an apparent bug in the generated code when you do a get but the datetime is null
 		/// </summary>
-		private static void MakeLaunchDateSafe()
+		private static void MakeLaunchDateSafe( )
 		{
 			try
 			{
-				DateTime dummy = ReportingSetting.Default.LastLaunchDate;
+				DateTime dummy = s_settings.LastLaunchDate;
 			}
 			catch
 			{
-				ReportingSetting.Default.LastLaunchDate = default(DateTime);
+				s_settings.LastLaunchDate = default(DateTime);
 			}
 		}
-
+/*
 		/// <summary>
 		/// could be the email, but might not be
 		/// </summary>
@@ -87,6 +88,19 @@ namespace Palaso.Reporting
 			set
 			{
 				ReportingSetting.Default.UserIdentifier = value;
+			}
+		}
+*/
+
+		public static ReportingSettings AppReportingSettings
+		{
+			get
+			{
+				return s_settings;
+			}
+			set
+			{
+				s_settings = value;
 			}
 		}
 
@@ -129,8 +143,12 @@ namespace Palaso.Reporting
 		public static void ResetSettingsForTests()
 		{
 		   // RegistryAccess.SetStringRegistryValue("launches", "0");
-			ReportingSetting.Default.Launches=0;
-			ReportingSetting.Default.Reset();
+			if (s_settings == null)
+			{
+				s_settings = new ReportingSettings();
+			}
+
+			s_settings.Launches=0;
 			MakeLaunchDateSafe();
 		}
 
@@ -144,12 +162,11 @@ namespace Palaso.Reporting
 			MakeLaunchDateSafe();
 
 			//avoid asking the user more than once on the special reporting days
-			if (DateTime.UtcNow.Date != ReportingSetting.Default.LastLaunchDate.Date)
+			if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
 			{
-
 				foreach (int launch in intervals)
 				{
-					if (launch == ReportingSetting.Default.Launches)
+					if (launch == s_settings.Launches)
 					{
 						SendReport(emailAddress, topMessage);
 						break;
@@ -180,11 +197,15 @@ namespace Palaso.Reporting
 					d.TopLineText = topMessage;
 					d.EmailMessage.To.Add(emailAddress);
 					d.EmailMessage.Subject =
-						string.Format("{0} {1} Report {2} Launches", UsageReporter.AppNameToUseInReporting, version,
-									  ReportingSetting.Default.Launches);
+						string.Format("{0} {1} Report {2} Launches",
+									  UsageReporter.AppNameToUseInReporting,
+									  version,
+									  s_settings.Launches);
 					d.EmailMessage.Body =
-						string.Format("app={0} version={1} launches={2}", UsageReporter.AppNameToUseInReporting, version,
-									  ReportingSetting.Default.Launches);
+						string.Format("app={0} version={1} launches={2}",
+									  UsageReporter.AppNameToUseInReporting,
+									  version,
+									  s_settings.Launches);
 					d.ShowDialog();
 				}
 			}
@@ -195,13 +216,13 @@ namespace Palaso.Reporting
 		{
 			try
 			{
-				if(!ReportingSetting.Default.OkToPingBasicUsageData)
+				if(!s_settings.OkToPingBasicUsageData)
 					return false;
 
 				Dictionary<string, string> parameters = new Dictionary<string, string>();
 				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
 				parameters.Add("version", ErrorReport.VersionNumberString);
-				parameters.Add("launches", ReportingSetting.Default.Launches.ToString());
+				parameters.Add("launches", s_settings.Launches.ToString());
 
 				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
 				return result == "OK";

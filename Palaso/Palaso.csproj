@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -14,6 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>2.0</OldToolsVersion>
+	<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -39,6 +41,8 @@
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Release|AnyCPU' ">
 	<OutputPath>..\output\Mono Release\</OutputPath>
@@ -47,15 +51,15 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\icu.net.dll</HintPath>
 	</Reference>
 	<None Include="..\lib\common\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  <Link>WritingSystems\icu.net.dll.config</Link>
 	</None>
 	<None Include="..\lib\net2.0\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -66,24 +70,28 @@
 	<None Include="..\lib\net2.0\icuuc40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-  </ItemGroup>
-  <ItemGroup>
-	<Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
+	<Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\net2.0\LinqBridge.dll</HintPath>
 	</Reference>
-	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
+	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.configuration" />
+	<Reference Include="System.Configuration" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Management" />
 	<Reference Include="System.Web" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
+	<None Include="Resources\scriptNames.txt" />
+	<None Include="Reporting\app.config" />
+	<None Include="Reporting\ReportingSetting.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	</None>
+	<None Include="Resources\languageCodes.txt" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Base32\Base32Convert.cs" />
@@ -143,13 +151,9 @@
 	</Compile>
 	<Compile Include="Reporting\ReportingSetting.Designer.cs">
 	  <DependentUpon>ReportingSetting.settings</DependentUpon>
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	</Compile>
 	<Compile Include="Reporting\ReportingStrings.Designer.cs">
 	  <DependentUpon>ReportingStrings.resx</DependentUpon>
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
 	</Compile>
 	<Compile Include="Reporting\UsageEmailDialog.cs">
 	  <SubType>Form</SubType>
@@ -162,8 +166,6 @@
 	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Resource.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resource.resx</DependentUpon>
 	</Compile>
 	<Compile Include="IO\SFMReader.cs">
@@ -238,6 +240,7 @@
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
+	<Compile Include="Reporting\ReportingSetting.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
@@ -249,9 +252,8 @@
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ReportingStrings.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>ReportingStrings.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
+	  <Generator>ResXFileCodeGenerator</Generator>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\UsageEmailDialog.resx">
 	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
@@ -264,19 +266,7 @@
 	<EmbeddedResource Include="Resource.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>Resource.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Resources\scriptNames.txt" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Reporting\app.config" />
-	<None Include="Reporting\ReportingSetting.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>ReportingSetting.Designer.cs</LastGenOutput>
-	</None>
-	<None Include="Resources\languageCodes.txt" />
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />

@@ -175,15 +175,11 @@
 		<copy todir="${project.base.dir}/../wesay/lib/mono">
 			<fileset basedir="${project.output.dir}">
 				<include name="*.dll" />
-				<exclude name="*.Tests.dll" />
-				<exclude name="*.Test.dll" />
 			</fileset>
 		</copy>
 		<copy todir="${project.base.dir}/../wesay/output/linux/mono/2.0/Debug">
 			<fileset basedir="${project.output.dir}">
 				<include name="*.dll" />
-				<exclude name="*.Tests.dll" />
-				<exclude name="*.Test.dll" />
 			</fileset>
 		</copy>
 	</target>

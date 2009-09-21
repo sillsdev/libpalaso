@@ -14,6 +14,7 @@ namespace Palaso.Tests.reporting
 		{
 			UsageReporter.AppNameToUseInDialogs = "PalasoUnitTest";
 			UsageReporter.AppNameToUseInReporting = "PalasoUnitTest";
+			UsageReporter.AppReportingSettings = new ReportingSettings();
 			UsageReporter.RecordLaunch();
 		}
 	}
