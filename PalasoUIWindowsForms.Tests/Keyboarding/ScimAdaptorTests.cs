@@ -7,13 +7,13 @@ using System.Collections.Generic;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
-	public class ScimAdaptorTests
+	public class ScimPanelControllerTests
 	{
 		[Test]
 		[Category("Scim")]
 		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
-			Assert.IsTrue(ScimAdaptor.EngineAvailable);
+			Assert.IsTrue(ScimPanelController.Singleton.EngineAvailable);
 		}
 
 		[Test]
@@ -21,39 +21,39 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			ResetKeyboardToDefault();
-			Assert.AreEqual("English/Keyboard", ScimAdaptor.GetActiveKeyboard());
+			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.GetActiveKeyboard());
 		}
 
 		[Test]
 		[Category("Scim")]
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
-			Assert.AreEqual("English/European", ScimAdaptor.KeyboardDescriptors[0].Name);
-			Assert.AreEqual("RAW CODE", ScimAdaptor.KeyboardDescriptors[1].Name);
-			Assert.AreEqual("English/Keyboard", ScimAdaptor.KeyboardDescriptors[2].Name);
+			Assert.AreEqual("English/European", ScimPanelController.Singleton.KeyboardDescriptors[0].Name);
+			Assert.AreEqual("RAW CODE", ScimPanelController.Singleton.KeyboardDescriptors[1].Name);
+			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.KeyboardDescriptors[2].Name);
 		}
 
 		[Test]
 		[Category("Scim")]
 		public void HasKeyboardNamed_ScimHasKeyboard_ReturnsTrue()
 		{
-			Assert.IsTrue(ScimAdaptor.HasKeyboardNamed("English/Keyboard"));
+			Assert.IsTrue(ScimPanelController.Singleton.HasKeyboardNamed("English/Keyboard"));
 		}
 
 		[Test]
 		[Category("Scim")]
 		public void HasKeyboardNamed_ScimDoesNotHaveKeyboard_ReturnsFalse()
 		{
-			Assert.IsFalse(ScimAdaptor.HasKeyboardNamed("Nonexistant Keyboard"));
+			Assert.IsFalse(ScimPanelController.Singleton.HasKeyboardNamed("Nonexistant Keyboard"));
 		}
 
 		[Test]
 		[Category("Scim")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
-			ScimAdaptor.ActivateKeyboard("English/European");
-			ScimAdaptor.Deactivate();
-			Assert.AreEqual("English/Keyboard", ScimAdaptor.GetActiveKeyboard());
+			ScimPanelController.Singleton.ActivateKeyboard("English/European");
+			ScimPanelController.Singleton.Deactivate();
+			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.GetActiveKeyboard());
 		}
 
 		[Test]
@@ -62,8 +62,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			ResetKeyboardToDefault();
-			ScimAdaptor.ActivateKeyboard("English/European");
-			Assert.AreEqual("English/European", ScimAdaptor.GetActiveKeyboard());
+			ScimPanelController.Singleton.ActivateKeyboard("English/European");
+			Assert.AreEqual("English/European", ScimPanelController.Singleton.GetActiveKeyboard());
 			ResetKeyboardToDefault();
 			//This test fails because of the timer workaround that we were forced to
 			//implement due to the fact that mono switches the X input context AFTER
@@ -75,7 +75,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
-			ScimAdaptor.ActivateKeyboard("Nonexistant Keyboard");
+			ScimPanelController.Singleton.ActivateKeyboard("Nonexistant Keyboard");
 		}
 
 		[Test]
@@ -85,38 +85,38 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			const int unrealisticClientId = -2;
 			const int unrealisticContextClientId = -2;
 
-			ScimAdaptor.ContextInfo currentContext;
+			ScimPanelController.ContextInfo currentContext;
 			currentContext.frontendClient = unrealisticClientId;
 			currentContext.context = unrealisticContextClientId;
-			currentContext = ScimAdaptor.GetCurrentInputContext();
+			currentContext = ScimPanelController.Singleton.GetCurrentInputContext();
 			Assert.AreNotEqual(unrealisticClientId, currentContext.frontendClient);
 			Assert.AreNotEqual(unrealisticContextClientId, currentContext.context);
 		}
 
 		private void ResetKeyboardToDefault()
 		{
-			ScimAdaptor.Deactivate();
+			ScimPanelController.Singleton.Deactivate();
 		}
 
 		[Test]
 		[Category("Scim not Running")]
 		public void Deactivate_ScimIsNotRunning_DoesNotThrow()
 		{
-			ScimAdaptor.Deactivate();
+			ScimPanelController.Singleton.Deactivate();
 		}
 
 		[Test]
 		[Category("Scim not Running")]
 		public void ActivateKeyBoard_ScimIsNotRunning_DoesNotThrow()
 		{
-			ScimAdaptor.ActivateKeyboard("English/Keyboard");
+			ScimPanelController.Singleton.ActivateKeyboard("English/Keyboard");
 		}
 
 		[Test]
 		[Category("Scim not Running")]
 		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = ScimAdaptor.KeyboardDescriptors;
+			List<KeyboardController.KeyboardDescriptor> availableKeyboards = ScimPanelController.Singleton.KeyboardDescriptors;
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 
@@ -124,7 +124,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Scim not Running")]
 		public void GetActiveKeyboard_ScimIsNotRunning_ReturnsEmptyString()
 		{
-			string activeKeyboard = ScimAdaptor.GetActiveKeyboard();
+			string activeKeyboard = ScimPanelController.Singleton.GetActiveKeyboard();
 			Assert.IsEmpty(activeKeyboard);
 		}
 
@@ -132,14 +132,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Scim not Running")]
 		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
 		{
-			Assert.IsFalse(ScimAdaptor.EngineAvailable);
+			Assert.IsFalse(ScimPanelController.Singleton.EngineAvailable);
 		}
 
 		[Test]
 		[Category("Scim not Running")]
 		public void HasKeyboardNamed_ScimIsNotRunning_ReturnsFalse()
 		{
-			Assert.IsFalse(ScimAdaptor.HasKeyboardNamed("English/Keyboard"));
+			Assert.IsFalse(ScimPanelController.Singleton.HasKeyboardNamed("English/Keyboard"));
 		}
 	}
 }

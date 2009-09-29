@@ -7,8 +7,23 @@ using System.IO;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
-	internal class ScimAdaptor
+	internal class ScimPanelController
 	{
+		//This nested class is part of the singleton pattern as implemented at
+		//http://www.yoda.arachsys.com/csharp/singleton.html
+		//This implementation supplies thread safety and lazy loading
+		class Nested
+		{
+			// Explicit static constructor to tell C# compiler
+			// not to mark type as beforefieldinit
+			static Nested()
+			{
+			}
+
+			internal static readonly ScimPanelController singleton = new ScimPanelController();
+		}
+
+
 		private const int MAXNUMBEROFSUPPORTEDKEYBOARDS = 50;
 		private static Timer _timerToOvercomeContextSwitchingBug = new Timer();
 		static string _keyboardNameForTimerToSwitchTo = "";
@@ -18,13 +33,23 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			public int context;
 		};
 
-		static ScimAdaptor()
+		public static ScimPanelController Singleton
+		{
+			get
+			{
+				return Nested.singleton;
+			}
+		}
+
+
+
+		private ScimPanelController()
 		{
 			_timerToOvercomeContextSwitchingBug.Interval = 1;
 			_timerToOvercomeContextSwitchingBug.Tick += TimerActivateKeyboard;
 		}
 
-		private static void OpenConnectionIfNecassary()
+		private void OpenConnectionIfNecassary()
 		{
 			if(!ConnectionToScimPanelIsOpen())
 			{
@@ -38,7 +63,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		//which naturally leads to some unexpected behavior.
 		//As a result we instead start a timer that waits 1 ms and then fires an event whose
 		//handler then actually does the switching.
-		public static void ActivateKeyboard(string name)
+		public void ActivateKeyboard(string name)
 		{
 			if(!HasKeyboardNamed(name))
 			{
@@ -51,7 +76,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		public static void TimerActivateKeyboard(Object sender, EventArgs e)
+		public void TimerActivateKeyboard(Object sender, EventArgs e)
 		{
 			_timerToOvercomeContextSwitchingBug.Stop();
 			if(HasKeyboardNamed(_keyboardNameForTimerToSwitchTo))
@@ -71,7 +96,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{
@@ -87,7 +112,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		public static bool EngineAvailable
+		public bool EngineAvailable
 		{
 			get
 			{
@@ -95,14 +120,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		public static void Deactivate()
+		public void Deactivate()
 		{
 			try {OpenConnectionIfNecassary();}
 			catch{return;}
 			ScimPanelControllerWrapper.SetKeyboardWrapped("");
 		}
 
-		public static bool HasKeyboardNamed(string name)
+		public bool HasKeyboardNamed(string name)
 		{
 			bool keyBoardNameExists = false;
 
@@ -120,7 +145,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return keyBoardNameExists;
 		}
 
-		public static string GetActiveKeyboard()
+		public string GetActiveKeyboard()
 		{
 			try {OpenConnectionIfNecassary();}
 			catch{return "";}
@@ -129,7 +154,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return currentKeyboard.name;
 		}
 
-		public static ContextInfo GetCurrentInputContext()
+		public ContextInfo GetCurrentInputContext()
 		{
 			try {OpenConnectionIfNecassary();}
 			catch{throw new InvalidOperationException("Scim does not seem to be running! Please turn on Scim!");}
@@ -143,7 +168,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return currentContext;
 		}
 
-		private static List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
+		private List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
 		{
 			List<KeyboardController.KeyboardDescriptor> keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
 			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in keyboardProperties)
@@ -156,12 +181,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return keyboardDescriptors;
 		}
 
-		private static bool ConnectionToScimPanelIsOpen()
+		private bool ConnectionToScimPanelIsOpen()
 		{
 			return ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
 		}
 
-		private static bool ScimIsRunning
+		private bool ScimIsRunning
 		{
 			get
 			{
