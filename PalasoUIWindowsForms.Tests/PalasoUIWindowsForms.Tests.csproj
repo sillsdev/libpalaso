@@ -94,7 +94,7 @@
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
-	<Compile Include="Keyboarding\ScimAdaptorTests.cs" />
+	<Compile Include="Keyboarding\ScimPanelControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
