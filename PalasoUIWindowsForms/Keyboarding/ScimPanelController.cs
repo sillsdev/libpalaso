@@ -41,17 +41,20 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-
-
 		private ScimPanelController()
 		{
 			_timerToOvercomeContextSwitchingBug.Interval = 1;
 			_timerToOvercomeContextSwitchingBug.Tick += TimerActivateKeyboard;
 		}
 
+		~ScimPanelController()
+		{
+			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+		}
+
 		private void OpenConnectionIfNecassary()
 		{
-			if(!ConnectionToScimPanelIsOpen())
+			if(!ConnectionToScimPanelIsOpen)
 			{
 				ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
 			}
@@ -65,6 +68,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		//handler then actually does the switching.
 		public void ActivateKeyboard(string name)
 		{
+			OpenConnectionIfNecassary();
 			if(!HasKeyboardNamed(name))
 			{
 				throw new ArgumentOutOfRangeException("Scim does not have a Keyboard with that name!" + name);
@@ -81,7 +85,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			_timerToOvercomeContextSwitchingBug.Stop();
 			if(HasKeyboardNamed(_keyboardNameForTimerToSwitchTo))
 			{
-				ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
 				foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in ScimPanelControllerWrapper.GetListOfSupportedKeyboardsWrapped())
 				{
 					if(keyboard.name == _keyboardNameForTimerToSwitchTo)
@@ -159,7 +162,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			try {OpenConnectionIfNecassary();}
 			catch{throw new InvalidOperationException("Scim does not seem to be running! Please turn on Scim!");}
 
-			ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
 			ContextInfo currentContext;
 			ScimPanelControllerWrapper.ContextInfo currentContextFromWrapper =
 				ScimPanelControllerWrapper.GetCurrentInputContextWrapped();
@@ -181,9 +183,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return keyboardDescriptors;
 		}
 
-		private bool ConnectionToScimPanelIsOpen()
+		private bool ConnectionToScimPanelIsOpen
 		{
-			return ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
+			get{
+				return ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
+			}
 		}
 
 		private bool ScimIsRunning
@@ -194,7 +198,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 				if (Environment.OSVersion.Platform != PlatformID.Unix){return false;}
 
-				if(ConnectionToScimPanelIsOpen()){return true;}
+				if(ConnectionToScimPanelIsOpen){return true;}
 
 				try
 				{
