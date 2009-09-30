@@ -227,6 +227,7 @@
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Keyboarding\ScimAdaptor.cs" />
+	<Compile Include="Keyboarding\ScimPanelController.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
