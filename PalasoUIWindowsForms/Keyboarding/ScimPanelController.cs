@@ -68,7 +68,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		//handler then actually does the switching.
 		public void ActivateKeyboard(string name)
 		{
-			OpenConnectionIfNecassary();
+			try{OpenConnectionIfNecassary();}
+			catch{return;}
+
 			if(!HasKeyboardNamed(name))
 			{
 				throw new ArgumentOutOfRangeException("Scim does not have a Keyboard with that name!" + name);
@@ -185,8 +187,29 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		private bool ConnectionToScimPanelIsOpen
 		{
-			get{
-				return ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
+			get
+			{
+				bool connectionIsOpen = false;
+				try
+				{
+					connectionIsOpen = ScimPanelControllerWrapper.ConnectionToScimPanelIsOpenWrapped();
+				}
+				catch(DllNotFoundException dllNotFound)
+				{
+					connectionIsOpen = false;
+					return connectionIsOpen;
+				}
+				catch(EntryPointNotFoundException entryPointNotFound)
+				{
+					connectionIsOpen = false;
+					return connectionIsOpen;
+				}
+				catch(IOException ioException)
+				{
+					connectionIsOpen = false;
+					return connectionIsOpen;
+				}
+				return connectionIsOpen;
 			}
 		}
 
@@ -194,35 +217,23 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			get
 			{
-				bool connectionToScimPanelSucceeded = false;
-
-				if (Environment.OSVersion.Platform != PlatformID.Unix){return false;}
-
-				if(ConnectionToScimPanelIsOpen){return true;}
-
-				try
+				if (Environment.OSVersion.Platform != PlatformID.Unix)
 				{
-					ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();
+					return false;
 				}
-				catch(DllNotFoundException dllNotFound)
+				else if (ConnectionToScimPanelIsOpen)
 				{
-					connectionToScimPanelSucceeded = false;
-					return connectionToScimPanelSucceeded;
+					return true;
 				}
-				catch(EntryPointNotFoundException entryPointNotFound)
+				else
 				{
-					connectionToScimPanelSucceeded = false;
-					return connectionToScimPanelSucceeded;
-				}
-				catch(IOException ioException)
-				{
-					connectionToScimPanelSucceeded = false;
-					return connectionToScimPanelSucceeded;
-				}
-				connectionToScimPanelSucceeded = true;
-				ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+					try{ScimPanelControllerWrapper.OpenConnectionToScimPanelWrapped();}
+					catch{return false;}
 
-				return connectionToScimPanelSucceeded;
+					ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+
+					return true;
+				}
 			}
 		}
 
