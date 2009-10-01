@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{6E16866F-FF8D-4136-AD67-36AFE3626432}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -94,7 +94,6 @@
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
-	<Compile Include="Keyboarding\ScimPanelControllerTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
