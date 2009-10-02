@@ -67,7 +67,7 @@ namespace Palaso.Misc
 			return new GuardAgainstReentry();
 		}
 
-		internal static GuardAgainstReentry AgainstReEntryExpected(GuardAgainstReentry guard)
+		public static GuardAgainstReentry AgainstReEntryExpected(GuardAgainstReentry guard)
 		{
 			if (guard != null)
 			{

@@ -4,18 +4,19 @@ namespace Palaso.Misc
 {
 	public class GuardAgainstReentry : IDisposable
 	{
-		private int _entryCount;
+
+		public int EntryCount { get; private set; }
 
 		public GuardAgainstReentry()
 		{
-			_entryCount = 0;
+			EntryCount = 0;
 			EnterExpected();
 		}
 
 		public void EnterNotExpected()
 		{
-			_entryCount++;
-			if (_entryCount > 1)
+			EntryCount++;
+			if (EntryCount > 1)
 			{
 				throw new ApplicationException("Function reentry unexpected");
 			}
@@ -24,17 +25,18 @@ namespace Palaso.Misc
 
 		public bool HasEntered
 		{
-			get { return _entryCount > 1; }
+			get { return EntryCount > 1; }
 		}
 
 		public void Dispose()
 		{
-			_entryCount--;
+			EntryCount--;
 		}
 
 		public void EnterExpected()
 		{
-			_entryCount++;
+			EntryCount++;
+			Console.WriteLine("Palaso: EntryCount {0}", EntryCount);
 		}
 	}
 }
