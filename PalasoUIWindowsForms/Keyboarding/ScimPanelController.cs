@@ -49,7 +49,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		~ScimPanelController()
 		{
-			ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+			if(ConnectionToScimPanelIsOpen)
+			{
+				ScimPanelControllerWrapper.CloseConnectionToScimPanelWrapped();
+			}
 		}
 
 		private void OpenConnectionIfNecassary()
