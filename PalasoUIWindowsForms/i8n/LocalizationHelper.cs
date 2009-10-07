@@ -155,9 +155,18 @@ namespace Palaso.UI.WindowsForms.i8n
 				// Debug.WriteLine("Wiring to " + control.Name);
 				control.TextChanged += OnTextChanged;
 				control.FontChanged += OnFontChanged;
+				control.MouseClick += OnControlClicked;
 				_originalControlProperties.Add(control, new TextFontPair(control.Text, control.Font));
 				OnTextChanged(control, null);
 				OnFontChanged(control, null);
+			}
+		}
+
+		private void OnControlClicked(object sender, MouseEventArgs e)
+		{
+			if(e.Button == MouseButtons.Right && (Control.ModifierKeys == Keys.Control))
+			{
+				Console.WriteLine("Clicked!!");
 			}
 		}
 
@@ -184,6 +193,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			{
 				control.TextChanged -= OnTextChanged;
 				control.FontChanged -= OnFontChanged;
+				control.MouseClick -= OnControlClicked;
 				control.Text = _originalControlProperties[control].Text;
 				control.Font = _originalControlProperties[control].Font;
 				_originalControlProperties.Remove(control);

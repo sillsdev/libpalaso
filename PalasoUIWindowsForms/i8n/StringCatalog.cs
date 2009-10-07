@@ -187,6 +187,9 @@ namespace Palaso.UI.WindowsForms.i8n
 				string s = _catalog[id.Replace("&&","&")];
 				if (s == null)
 				{
+#if DEBUG
+					return id.ToUpper();
+#endif
 					return id;
 				}
 				else
