@@ -25,6 +25,16 @@ namespace PalasoUIWindowsForms.Tests.i8n
 			return poFile;
 		}
 
+		private TempFile GetSimplePoTemplateFile()
+		{
+			string[] fileContent = new string[2];
+			fileContent[0] = "msgid \"This is test input\"";
+			fileContent[1] = "";
+
+			var potFile = new TempFile(fileContent);
+			return potFile;
+		}
+
 		public void Dispose()
 		{
 		}
@@ -57,7 +67,7 @@ namespace PalasoUIWindowsForms.Tests.i8n
 		}
 
 		[Test]
-		public void LocalizationHelperAttachedToParentOfLabel_LabelTextIsSet_LabelTextIsLocalized()
+		public void LocalizationHelperAttachedToMainWindow_ChildControlsTextIsSet_ChildControlsTextIsLocalized()
 		{
 			using (var env = new Environment())
 			{
@@ -89,6 +99,26 @@ namespace PalasoUIWindowsForms.Tests.i8n
 					_localizationHelper.EndInit();
 
 					_label.Text = "This string has not been localized.";
+					Assert.AreEqual(_label.Text, "This string has not been localized.");
+				}
+			}
+		}
+
+		[Test]
+		public void LocalizationHelperAttachedToLabel_LabelTextIsSetToUntranslatedStringWhichIsAlsoNotInTemplateFile_LabelTextIsAddedToTemplate()
+		{
+			using (var env = new Environment())
+			{
+				env.CreateSimpleStringCatalog();
+				CreateFormWithLabel();
+
+				using (_localizationHelper = new LocalizationHelper())
+				{
+					_localizationHelper.Parent = _label;
+					_localizationHelper.EndInit();
+
+					_label.Text = "This string has not been localized and is not in Template file.";
+					throw new NotImplementedException();
 					Assert.AreEqual(_label.Text, "This string has not been localized.");
 				}
 			}

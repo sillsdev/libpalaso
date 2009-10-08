@@ -75,6 +75,7 @@
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="i8n\LocalizationHelperTests.cs">
 	</Compile>
+	<Compile Include="i8n\PotIOTests.cs" />
 	<Compile Include="i8n\StringCatalogTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="Keyboarding\KeyboardControllerTests.cs" />

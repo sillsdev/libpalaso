@@ -78,7 +78,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			var hints = control as ILocalizableControl;
 			if (hints==null || hints.ShouldModifyFont)
 			{
-				control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				control.Font = StringCatalog.ActiveStringCatalog.ModifyFontForLocalization(control.Font);
 			}
 			_alreadyChanging = false;
 		}
@@ -102,7 +102,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			if (!String.IsNullOrEmpty(control.Text))
 				//don't try to translation, for example, buttons with no label
 			{
-				control.Text = StringCatalog.Get(control.Text);
+				control.Text = StringCatalog.ActiveStringCatalog.Get(control.Text);
 			}
 			_alreadyChanging = false;
 		}
