@@ -36,7 +36,6 @@ namespace Palaso.Misc
 		public void EnterExpected()
 		{
 			EntryCount++;
-			Console.WriteLine("Palaso: EntryCount {0}", EntryCount);
 		}
 	}
 }
