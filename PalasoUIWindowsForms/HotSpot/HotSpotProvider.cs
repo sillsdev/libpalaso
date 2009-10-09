@@ -287,8 +287,8 @@ namespace Palaso.UI.WindowsForms.HotSpot
 						}
 						break;
 #if MONO
-// 					case 0x286:	//IME_CHAR
-//					case 0x10F:	//IME_COMPOSITION
+					case 0x286:	//IME_CHAR
+					case 0x10F:	//IME_COMPOSITION
 						//These two messages cause an extra character to be drawn by mono
 						//At this time (Oct 9 2009) we are not sure wether this is a bug with mono
 						//or with our code and we will need to do further testing (also under windows)
@@ -296,7 +296,7 @@ namespace Palaso.UI.WindowsForms.HotSpot
 						//were being displayed for each keystroke.
 						//See WS-15008 for a full description of the problem and a roadmap for fixing it
 //						//base.WndProc(ref m);
-//					break;
+					break;
 #endif
 					default:
 						base.WndProc(ref m);
