@@ -192,7 +192,13 @@ namespace Palaso.UI.WindowsForms.i8n
 
 		private static bool IsAllowedControl(Control control)
 		{
-			return control is Label || control is IButtonControl || control is TabControl || control is Form;
+			return control is Label ||
+				   control is GroupBox ||
+				   control is ButtonBase ||
+				   control is IButtonControl ||
+				   control is TabControl ||
+				   control is TabPage ||
+				   control is Form;
 		}
 
 		#region ISupportInitialize Members
