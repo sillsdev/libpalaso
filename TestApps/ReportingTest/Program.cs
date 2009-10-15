@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
+using Palaso.Reporting;
 
 namespace TestApp
 {
@@ -12,9 +12,20 @@ namespace TestApp
 		[STAThread]
 		static void Main()
 		{
+			SetupErrorHandling();
+
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new Form1());
 		}
+
+		private static void SetupErrorHandling()
+		{
+			Logger.Init();
+			ErrorReport.EmailAddress = "nowhere@palaso.org";
+			ErrorReport.AddStandardProperties();
+			ExceptionHandler.Init();
+		}
+
 	}
 }
