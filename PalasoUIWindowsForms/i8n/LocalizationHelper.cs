@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.i8n
 		#if DEBUG
 		private string _nameOfParentContainer;
 		private StackTrace _constructionStackTrace;
-		#endif
+#endif
 
 		public LocalizationHelper()
 		{
@@ -42,6 +42,8 @@ namespace Palaso.UI.WindowsForms.i8n
 			_constructionStackTrace = new StackTrace();
 #endif
 		}
+
+
 
 		public Control Parent
 		{
@@ -155,10 +157,17 @@ namespace Palaso.UI.WindowsForms.i8n
 				// Debug.WriteLine("Wiring to " + control.Name);
 				control.TextChanged += OnTextChanged;
 				control.FontChanged += OnFontChanged;
+				control.MouseClick += OnMouseClicked;
 				_originalControlProperties.Add(control, new TextFontPair(control.Text, control.Font));
 				OnTextChanged(control, null);
 				OnFontChanged(control, null);
 			}
+		}
+
+		private void OnMouseClicked(object sender, MouseEventArgs e)
+		{
+			if(Control.ModifierKeys == Keys.Alt && sender is Control)
+				MessageBox.Show("fired on "+((Control)sender).Name);
 		}
 
 		private void UnwireFromChildren(Control control)
@@ -215,6 +224,7 @@ namespace Palaso.UI.WindowsForms.i8n
 				_wiredToParent = true;
 				WireToControl(_parent);
 				WireToChildren(Parent);
+
 			}
 		}
 
