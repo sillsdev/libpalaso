@@ -1,0 +1,178 @@
+<mockup version="1.0" skin="sketch" measuredW="966" measuredH="640" mockupW="741" mockupH="590">
+  <controls>
+	<control controlID="1" controlTypeID="com.balsamiq.mockups::Button" x="640" y="236" w="-1" h="-1" measuredW="85" measuredH="28" zOrder="4" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Search...</text>
+	  </controlProperties>
+	</control>
+	<control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="409" y="238" w="-1" h="-1" measuredW="149" measuredH="25" zOrder="5" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Language%20Name%20%26%20Code</text>
+	  </controlProperties>
+	</control>
+	<control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="440" y="263" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="6" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Name%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="500" y="262" w="-1" h="-1" measuredW="32" measuredH="25" zOrder="7" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Thai</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="70" controlTypeID="com.balsamiq.mockups::List" x="222" y="131" w="142" h="408" measuredW="100" measuredH="126" zOrder="3" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>English%0AThai%0A%20%0A%20%0A%20%0AOther%20Languages</text>
+		<borderStyle>none</borderStyle>
+		<selectedIndex>-1</selectedIndex>
+		<color>16777215</color>
+	  </controlProperties>
+	</control>
+	<control controlID="13" controlTypeID="com.balsamiq.mockups::Label" x="500" y="287" w="-1" h="-1" measuredW="19" measuredH="25" zOrder="9" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>th</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="6" controlTypeID="com.balsamiq.mockups::Label" x="440" y="288" w="-1" h="-1" measuredW="39" measuredH="25" zOrder="8" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Code%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="80" controlTypeID="com.balsamiq.mockups::Paragraph" x="239" y="258" w="125" h="128" measuredW="200" measuredH="140" zOrder="10" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Add%20French%0AAdd%20German%0AAdd%20Portugese%0AAdd%20Spanish%0AAdd%20Tok%20Pisin</text>
+		<underline>false</underline>
+		<bold>false</bold>
+		<color>5000268</color>
+	  </controlProperties>
+	</control>
+	<control controlID="19" controlTypeID="com.balsamiq.mockups::Label" x="409" y="333" w="-1" h="-1" measuredW="216" measuredH="25" zOrder="11" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Abbrevation%20to%20use%20in%20field%20labels</text>
+	  </controlProperties>
+	</control>
+	<control controlID="20" controlTypeID="com.balsamiq.mockups::TextInput" x="640" y="330" w="65" h="-1" measuredW="27" measuredH="29" zOrder="12" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>th</text>
+	  </controlProperties>
+	</control>
+	<control controlID="77" controlTypeID="com.balsamiq.mockups::Icon" x="274" y="567" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="13" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<icon>DownTriangleIcon%7Cxsmall</icon>
+	  </controlProperties>
+	</control>
+	<control controlID="23" controlTypeID="com.balsamiq.mockups::Canvas" x="371" y="121" w="570" h="428" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<backgroundAlpha>0</backgroundAlpha>
+		<color>16777215</color>
+	  </controlProperties>
+	</control>
+	<control controlID="88" controlTypeID="com.balsamiq.mockups::Label" x="409" y="393" w="-1" h="-1" measuredW="55" measuredH="25" zOrder="14" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Special%3A</text>
+	  </controlProperties>
+	</control>
+	<control controlID="89" controlTypeID="com.balsamiq.mockups::Paragraph" x="230" y="176" w="125" h="22" measuredW="200" measuredH="140" zOrder="15" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Add%20Language</text>
+		<underline>false</underline>
+		<bold>false</bold>
+		<color>255</color>
+	  </controlProperties>
+	</control>
+	<control controlID="90" controlTypeID="com.balsamiq.mockups::Icon" x="268" y="567" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="16" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<icon>DownTriangleIcon%7Cxsmall</icon>
+	  </controlProperties>
+	</control>
+	<control controlID="94" controlTypeID="com.balsamiq.mockups::TitleWindow" x="356" y="150" w="439" h="480" measuredW="450" measuredH="400" zOrder="17" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Add%20Writing%20System%20For%20Language...</text>
+		<topheight>26</topheight>
+		<bottomheight>0</bottomheight>
+	  </controlProperties>
+	</control>
+	<control controlID="95" controlTypeID="com.balsamiq.mockups::Button" x="224" y="558" w="91" h="-1" measuredW="77" measuredH="28" zOrder="18" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>More%20%20%20%20</text>
+		<state>disabled</state>
+	  </controlProperties>
+	</control>
+	<control controlID="96" controlTypeID="com.balsamiq.mockups::Icon" x="284" y="564" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="19" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<icon>DownTriangleIcon%7Cxsmall</icon>
+	  </controlProperties>
+	</control>
+	<control controlID="99" controlTypeID="com.balsamiq.mockups::Label" x="385" y="408" w="-1" h="-1" measuredW="304" measuredH="25" zOrder="20" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Copy%20initial%20Fonts%2C%20Sorting%2C%20and%20Keyboard%20from%3A</text>
+	  </controlProperties>
+	</control>
+	<control controlID="100" controlTypeID="com.balsamiq.mockups::Label" x="385" y="198" w="-1" h="-1" measuredW="184" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Find%20language%20in%20Ethnologue%3A</text>
+	  </controlProperties>
+	</control>
+	<control controlID="101" controlTypeID="com.balsamiq.mockups::List" x="425" y="242" w="335" h="124" measuredW="100" measuredH="126" zOrder="22" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Name%09Code%0AKumzari%09zum%0ATokano%09zuh%0AZeem%09%09zua%0AZulu%09%09zu</text>
+		<selectedIndex>3</selectedIndex>
+		<hasHeader>true</hasHeader>
+		<verticalScrollbar>true</verticalScrollbar>
+	  </controlProperties>
+	</control>
+	<control controlID="103" controlTypeID="com.balsamiq.mockups::TextInput" x="573" y="198" w="187" h="-1" measuredW="27" measuredH="29" zOrder="23" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>zu</text>
+	  </controlProperties>
+	</control>
+	<control controlID="104" controlTypeID="com.balsamiq.mockups::Button" x="695" y="586" w="-1" h="-1" measuredW="65" measuredH="28" zOrder="24" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Cancel</text>
+	  </controlProperties>
+	</control>
+	<control controlID="105" controlTypeID="com.balsamiq.mockups::Button" x="618" y="586" w="68" h="-1" measuredW="43" measuredH="28" zOrder="25" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>OK</text>
+	  </controlProperties>
+	</control>
+	<control controlID="107" controlTypeID="com.balsamiq.mockups::List" x="425" y="433" w="335" h="114" measuredW="100" measuredH="210" zOrder="26" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>None%0A---%0AArabic%0AEnglish%0AChinese%0AFrench%0AGerman%0APortugese%0ASpanish%0AThai</text>
+		<selectedIndex>0</selectedIndex>
+		<hasHeader>false</hasHeader>
+		<verticalScrollbar>true</verticalScrollbar>
+	  </controlProperties>
+	</control>
+	<control controlID="108" controlTypeID="com.balsamiq.mockups::Link" x="386" y="596" w="-1" h="-1" measuredW="141" measuredH="19" zOrder="27" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>If%20you%20can%27t%20find%20the%20language...</text>
+		<size>9</size>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="109" controlTypeID="com.balsamiq.mockups::Label" x="215" y="40" w="-1" h="-1" measuredW="219" measuredH="29" zOrder="28" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>After%20clicking%20AddLanguage</text>
+		<size>16</size>
+	  </controlProperties>
+	</control>
+	<control controlID="56" controlTypeID="com.balsamiq.mockups::Button" x="864" y="558" w="76" h="-1" measuredW="56" measuredH="28" zOrder="2" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Close</text>
+		<state>disabled</state>
+	  </controlProperties>
+	</control>
+	<control controlID="57" controlTypeID="com.balsamiq.mockups::TitleWindow" x="215" y="88" w="741" h="516" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Set%20Up%20Writing%20Systems</text>
+		<topheight>37</topheight>
+		<bottomheight>0</bottomheight>
+	  </controlProperties>
+	</control>
+  </controls>
+</mockup>

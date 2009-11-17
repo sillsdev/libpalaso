@@ -223,6 +223,7 @@ namespace Palaso.Reporting
 				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
 				parameters.Add("version", ErrorReport.VersionNumberString);
 				parameters.Add("launches", s_settings.Launches.ToString());
+				parameters.Add("user", s_settings.UserIdentifier);
 
 				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
 				return result == "OK";
