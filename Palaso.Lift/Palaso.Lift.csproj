@@ -56,9 +56,6 @@
   <ItemGroup>
 	<Compile Include="CommonEnumerations.cs" />
 	<Compile Include="FlagState.cs" />
-	<Compile Include="UiBindings\IBindableControl.cs" />
-	<Compile Include="UiBindings\ICountGiver.cs" />
-	<Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
 	<Compile Include="ILiftReader.cs" />
 	<Compile Include="ILiftReaderWriterProvider.cs" />
 	<Compile Include="ILiftWriter.cs" />

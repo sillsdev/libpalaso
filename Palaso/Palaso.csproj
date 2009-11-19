@@ -213,6 +213,9 @@
 	<Compile Include="Text\ApproximateMatcher.cs" />
 	<Compile Include="Text\LanguageForm.cs" />
 	<Compile Include="Text\MultiTextBase.cs" />
+	<Compile Include="UiBindings\IBindableControl.cs" />
+	<Compile Include="UiBindings\ICountGiver.cs" />
+	<Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfo.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfoLinux.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfoWindows.cs" />

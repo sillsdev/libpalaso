@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Palaso.Lift.UiBindings
+namespace Palaso.UiBindings
 {
 	public interface IBindableControl<TValueType>
 	{

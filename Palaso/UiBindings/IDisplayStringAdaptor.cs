@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Palaso.Lift.UiBindings
+namespace Palaso.UiBindings
 {
 	public interface IDisplayStringAdaptor
 	{

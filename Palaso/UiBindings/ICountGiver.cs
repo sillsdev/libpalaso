@@ -1,4 +1,4 @@
-﻿namespace Palaso.Lift.UiBindings
+﻿namespace Palaso.UiBindings
 {
 	public interface ICountGiver
 	{

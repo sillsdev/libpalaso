@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using Palaso.Lift.UiBindings;
+using Palaso.UiBindings;
 
 namespace Palaso.Lift
 {

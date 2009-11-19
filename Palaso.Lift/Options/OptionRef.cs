@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 using Palaso.Annotations;
-using Palaso.Lift.UiBindings;
+using Palaso.UiBindings;
 
 namespace Palaso.Lift.Options
 {
