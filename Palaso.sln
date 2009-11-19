@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp", "TestAp
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195} = {DB44F49C-D8C6-434F-81ED-28EA5C9E8195}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Lift", "Palaso.Lift\Palaso.Lift.csproj", "{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Lift.Tests", "Palaso.Lift.Tests\Palaso.Lift.Tests.csproj", "{FE61F837-8EAA-4FD7-824A-9949194430DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +163,22 @@ Global
 		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Mono Release|Any CPU.Build.0 = Mono Release|Any CPU
 		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13B5E313-1B26-4DAE-9E96-133768B62FD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
