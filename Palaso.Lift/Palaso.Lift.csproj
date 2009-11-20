@@ -61,6 +61,9 @@
 	<Compile Include="ILiftWriter.cs" />
 	<Compile Include="LiftDataMapper.cs" />
 	<Compile Include="Migration\LiftPreparer.cs" />
+	<Compile Include="Model\LexExampleSentence.cs" />
+	<Compile Include="Model\LexRelation.cs" />
+	<Compile Include="Model\LexSense.cs" />
 	<Compile Include="MultiText.cs" />
 	<Compile Include="Options\Option.cs" />
 	<Compile Include="Options\OptionRef.cs" />
