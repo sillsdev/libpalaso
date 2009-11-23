@@ -13,14 +13,5 @@ namespace Palaso.DictionaryServices.Lift
 		{
 		}
 
-		/// <summary>
-		/// unit tests only
-		/// </summary>
-		/// <param name="filePath"></param>
-		internal WeSayLiftDataMapper(string filePath)
-			: this(filePath, null, new ProgressState(), new WeSayLiftReaderWriterProvider(new ProgressState(), new OptionsList(), new string[]{} ))
-		{
-		}
-
 	}
 }

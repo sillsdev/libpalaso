@@ -31,6 +31,14 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+	<Reference Include="LiftIO, Version=1.1.32.0, Culture=neutral, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\net2.0\LiftIO.dll</HintPath>
+	</Reference>
+	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -45,7 +53,36 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="Lift\LexEntryFromLiftBuilderTests.cs" />
+	<Compile Include="Lift\LiftExportTests.cs" />
+	<Compile Include="Lift\LiftPreparer.Tests.cs" />
+	<Compile Include="Lift\LiftRepositoryTests.cs" />
+	<Compile Include="Lift\LiftRoundTripTests.cs" />
+	<Compile Include="Model\LexEntryTests.cs" />
+	<Compile Include="Model\LexRelationTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\Palaso.DictionaryServices\Palaso.DictionaryServices.csproj">
+	  <Project>{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}</Project>
+	  <Name>Palaso.DictionaryServices</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">
+	  <Project>{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}</Project>
+	  <Name>Palaso.Lift</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
+	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
+	  <Name>Palaso.Tests</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
+	  <Name>Palaso.TestUtilities</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
+	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
