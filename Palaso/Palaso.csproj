@@ -117,6 +117,7 @@
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
 	<Compile Include="Extensions\IEnumberableExtensions.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
+	<Compile Include="I8N\StringCatalog.cs" />
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
 	<Compile Include="Linq\MiscOperators.cs" />

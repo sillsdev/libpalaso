@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using Palaso.Data;
+using Palaso.I8N;
 using Palaso.Lift;
 using Palaso.Lift.Model;
 using Palaso.Reporting;

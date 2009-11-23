@@ -68,6 +68,7 @@
 	<Compile Include="Options\Option.cs" />
 	<Compile Include="Options\OptionRef.cs" />
 	<Compile Include="Options\OptionRefCollection.cs" />
+	<Compile Include="Options\OptionsList.cs" />
 	<Compile Include="PalasoDataObject.cs" />
 	<Compile Include="PictureRef.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />

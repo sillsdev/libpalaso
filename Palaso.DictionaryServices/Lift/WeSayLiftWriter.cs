@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using LiftIO.Validation;
 using Palaso.Annotations;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
