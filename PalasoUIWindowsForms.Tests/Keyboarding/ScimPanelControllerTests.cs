@@ -17,7 +17,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
 		[Category("Scim")]
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
@@ -50,7 +49,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Scim")]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			ScimPanelController.Singleton.ActivateKeyboard("English/European");
@@ -59,7 +57,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
 		[Category("Scim")]
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
