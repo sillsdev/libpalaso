@@ -1,6 +1,4 @@
-using Palaso.Lift;
-using Palaso.Lift.Options;
-using Palaso.Progress;
+using Palaso.DictionaryServices.Model;
 
 namespace WeSay.LexicalModel
 {

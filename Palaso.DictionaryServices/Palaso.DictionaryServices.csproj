@@ -45,7 +45,23 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="Lift\LexEntryFromLiftBuilder.cs" />
+	<Compile Include="Lift\WeSayLiftDataMapper.cs" />
+	<Compile Include="Lift\WeSayLiftReader.cs" />
+	<Compile Include="Lift\WeSayLiftReaderWriterProvider.cs" />
+	<Compile Include="Lift\WeSayLiftWriter.cs" />
+	<Compile Include="Model\LexEntry.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">
+	  <Project>{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}</Project>
+	  <Name>Palaso.Lift</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
+	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

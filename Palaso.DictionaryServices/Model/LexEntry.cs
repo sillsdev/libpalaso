@@ -8,9 +8,9 @@ using Palaso.Lift;
 using Palaso.Lift.Model;
 using Palaso.Reporting;
 using Palaso.Text;
-using Palaso.UI.WindowsForms.i8n;
+//using Palaso.UI.WindowsForms.i8n;
 
-namespace WeSay.LexicalModel
+namespace Palaso.DictionaryServices.Model
 {
 	/// <summary>
 	/// A Lexical Entry is what makes up our lexicon/dictionary.  In
@@ -56,7 +56,7 @@ namespace WeSay.LexicalModel
 			public static bool Contains(string fieldName)
 			{
 				List<string> list =
-						new List<string>(new string[] { LexicalUnit, Citation, BaseForm, CrossReference, Sense, LiteralMeaning });
+					new List<string>(new string[] { LexicalUnit, Citation, BaseForm, CrossReference, Sense, LiteralMeaning });
 				return list.Contains(fieldName);
 			}
 		} ;
@@ -145,8 +145,8 @@ namespace WeSay.LexicalModel
 				if (!String.IsNullOrEmpty(_lexicalForm.GetFirstAlternative()))
 				{
 					_id =
-							_lexicalForm.GetFirstAlternative().Trim().Normalize(
-									NormalizationForm.FormD) + "_" + Guid;
+						_lexicalForm.GetFirstAlternative().Trim().Normalize(
+							NormalizationForm.FormD) + "_" + Guid;
 					NotifyPropertyChanged("id");
 				}
 				else if (doCreateEvenIfNoLexemeForm)
@@ -482,7 +482,7 @@ namespace WeSay.LexicalModel
 		public void AddRelationTarget(string relationName, string targetId)
 		{
 			LexRelationCollection relations =
-					GetOrCreateProperty<LexRelationCollection>(relationName);
+				GetOrCreateProperty<LexRelationCollection>(relationName);
 			relations.Relations.Add(new LexRelation(relationName, targetId, this));
 		}
 
@@ -500,5 +500,4 @@ namespace WeSay.LexicalModel
 			return formForLogging;
 		}
 	}
-
 }

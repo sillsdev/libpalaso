@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
-using Palaso.Lift.Options;
 using Palaso.Progress;
 
-namespace WeSay.LexicalModel
+namespace Palaso.DictionaryServices.Lift
 {
 	public class WeSayLiftReaderWriterProvider : ILiftReaderWriterProvider<LexEntry>
 	{
@@ -14,7 +14,7 @@ namespace WeSay.LexicalModel
 		public WeSayLiftReaderWriterProvider(ProgressState progressState, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields)
 		{
 			_progressState = progressState;
-			this._idsOfSingleOptionFields = idsOfSingleOptionFields;
+			_idsOfSingleOptionFields = idsOfSingleOptionFields;
 			_semanticDomainsList = semanticDomainsList;
 		}
 

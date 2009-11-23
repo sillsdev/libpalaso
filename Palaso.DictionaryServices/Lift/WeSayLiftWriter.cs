@@ -5,14 +5,14 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using LiftIO.Validation;
 using Palaso.Annotations;
+using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Model;
 using Palaso.Lift.Options;
 using Palaso.Text;
 
-namespace WeSay.LexicalModel
+namespace Palaso.DictionaryServices.Lift
 {
 	public class WeSayLiftWriter : ILiftWriter<LexEntry>
 	{

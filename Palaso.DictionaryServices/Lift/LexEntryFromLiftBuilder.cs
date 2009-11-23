@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using LiftIO.Parsing;
 using Palaso.Data;
+using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Model;
 using Palaso.Lift.Options;
 using Palaso.Text;
 
-namespace WeSay.LexicalModel
+namespace Palaso.DictionaryServices.Lift
 {
 	/// <summary>
 	/// This class is called by the LiftParser, as it encounters each element of a lift file.
