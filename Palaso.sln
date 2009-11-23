@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Lift", "Palaso.Lift\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Lift.Tests", "Palaso.Lift.Tests\Palaso.Lift.Tests.csproj", "{FE61F837-8EAA-4FD7-824A-9949194430DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryServices", "Palaso.DictionaryServices\Palaso.DictionaryServices.csproj", "{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryServices.Tests", "Palaso.DictionaryServices.Tests\Palaso.DictionaryServices.Tests.csproj", "{CC84BDED-CECD-466A-9397-F5D83527B218}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +183,22 @@ Global
 		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Mono Release|Any CPU.Build.0 = Release|Any CPU
 		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE61F837-8EAA-4FD7-824A-9949194430DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC84BDED-CECD-466A-9397-F5D83527B218}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
