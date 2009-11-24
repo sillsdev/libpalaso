@@ -1,0 +1,1403 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Xml;
+using LiftIO.Validation;
+using Palaso.DictionaryServices.Model;
+using Palaso.TestUtilities;
+using Palaso.Lift;
+using Palaso.Lift.Options;
+using Palaso.Lift.Model;
+using Palaso.DictionaryServices.Lift;
+
+using NUnit.Framework;
+
+namespace Palaso.DictionaryServices.Tests.Lift
+{
+	[TestFixture]
+	public class LiftExportTests
+	{
+
+		class LiftExportTestSessionBase : IDisposable
+		{
+			protected WeSayLiftWriter _liftWriter;
+
+			private readonly StringBuilder _stringBuilder;
+			protected readonly string _filePath;
+
+			public LiftExportTestSessionBase()
+			{
+				_filePath = Path.GetTempFileName();
+				_stringBuilder = new StringBuilder();
+			}
+
+			public void Dispose()
+			{
+				if (_liftWriter != null)
+				{
+					LiftWriter.Dispose();
+				}
+				File.Delete(_filePath);
+			}
+
+			public string FilePath
+			{
+				get { return _filePath; }
+			}
+
+			public StringBuilder StringBuilder
+			{
+				get { return _stringBuilder; }
+			}
+
+			public WeSayLiftWriter LiftWriter
+			{
+				get { return _liftWriter; }
+			}
+
+			public LexEntry CreateItem()
+			{
+				return new LexEntry();
+			}
+
+			public void AddTestLexEntry(string lexicalForm)
+			{
+				LexEntry entry = CreateItem();
+				entry.LexicalForm["test"] = lexicalForm;
+				LiftWriter.Add(entry);
+			}
+
+			public void AddTwoTestLexEntries()
+			{
+				AddTestLexEntry("sunset");
+				AddTestLexEntry("flower");
+				LiftWriter.End();
+			}
+
+		}
+
+		class LiftExportAsFragmentTestSession : LiftExportTestSessionBase
+		{
+			public LiftExportAsFragmentTestSession()
+			{
+				_liftWriter = new WeSayLiftWriter(StringBuilder, true);
+			}
+
+		}
+
+		class LiftExportAsFullDocumentTestSession : LiftExportTestSessionBase
+		{
+			public LiftExportAsFullDocumentTestSession()
+			{
+				_liftWriter = new WeSayLiftWriter(StringBuilder, false);
+			}
+		}
+
+		class LiftExportAsFileTestSession : LiftExportTestSessionBase
+		{
+			public LiftExportAsFileTestSession()
+			{
+				_liftWriter = new WeSayLiftWriter(_filePath);
+			}
+
+		}
+
+		[SetUp]
+		public void Setup()
+		{
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			GC.Collect();
+		}
+
+		private static void AssertHasAtLeastOneMatch(string xpath, LiftExportTestSessionBase session)
+		{
+			AssertThatXmlIn.String(session.StringBuilder.ToString()).
+				HasAtLeastOneMatchForXpath(xpath);
+//            XmlDocument doc = new XmlDocument();
+//            doc.LoadXml(_stringBuilder.ToString());
+//            XmlNode node = doc.SelectSingleNode(xpath);
+//            if (node == null)
+//            {
+//                XmlWriterSettings settings = new XmlWriterSettings();
+//                settings.Indent = true;
+//                settings.ConformanceLevel = ConformanceLevel.Fragment;
+//                XmlWriter writer = XmlWriter.Create(Console.Out, settings);
+//                doc.WriteContentTo(writer);
+//                writer.Flush();
+//            }
+//            Assert.IsNotNull(node);
+		}
+
+		private static string GetSenseElement(LexSense sense)
+		{
+			return string.Format("<sense id=\"{0}\">", sense.GetOrCreateId());
+		}
+
+		private static string GetStringAttributeOfTopElement(string attribute, LiftExportTestSessionBase session)
+		{
+			var doc = new XmlDocument();
+			doc.LoadXml(session.StringBuilder.ToString());
+			return doc.FirstChild.Attributes[attribute].ToString();
+		}
+
+		private static void ShouldContain(string s, LiftExportTestSessionBase session)
+		{
+			session.LiftWriter.End(); //review: todo this shouldn't be here, it should be in the test
+			Assert.IsTrue(session.StringBuilder.ToString().Contains(s),
+						  "\n'{0}' is not contained in\n'{1}'",
+						  s,
+						  session.StringBuilder.ToString());
+		}
+
+		private static void CheckAnswer(string answer, LiftExportTestSessionBase session)
+		{
+			session.LiftWriter.End(); //review: todo this shouldn't be here, it should be in the test
+			Assert.AreEqual(answer, session.StringBuilder.ToString());
+		}
+
+		[Test]
+		public void AddUsingWholeList_TwoEntries_HasTwoEntries()
+		{
+			using (var session = new LiftExportAsFullDocumentTestSession())
+			{
+				session.AddTwoTestLexEntries();
+				var doc = new XmlDocument();
+				doc.LoadXml(session.StringBuilder.ToString());
+				Assert.AreEqual(2, doc.SelectNodes("lift/entry").Count);
+			}
+		}
+
+		[Test]
+		public void AttributesWithProblematicCharacters()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.Gloss["x\"y"] = "test";
+				session.LiftWriter.Add(sense);
+				CheckAnswer(
+					GetSenseElement(sense) + "<gloss lang=\"x&quot;y\"><text>test</text></gloss></sense>",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void BlankExample()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				session.LiftWriter.Add(new LexExampleSentence());
+				CheckAnswer("<example />", session);
+			}
+		}
+
+		[Test]
+		public void BlankGrammi()
+		{
+			var sense = new LexSense();
+			var o = sense.GetOrCreateProperty<OptionRef>(
+				LexSense.WellKnownProperties.PartOfSpeech
+				);
+			o.Value = string.Empty;
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense[not(grammatical-info)]", session);
+				AssertHasAtLeastOneMatch("sense[not(trait)]", session);
+			}
+		}
+
+		[Test]
+		public void BlankMultiText()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				session.LiftWriter.Add(null, new MultiText());
+				CheckAnswer("", session);
+			}
+		}
+
+		[Test]
+		public void BlankSense()
+		{
+			LexSense sense = new LexSense();
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				session.LiftWriter.Add(sense);
+				CheckAnswer(
+					String.Format("<sense id=\"{0}\" />", sense.GetOrCreateId()),
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void Citation()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				var citation = entry.GetOrCreateProperty<MultiText>(
+					LexEntry.WellKnownProperties.Citation
+					);
+				citation["zz"] = "orange";
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry/citation/form[@lang='zz']/text[text()='orange']", session);
+				AssertHasAtLeastOneMatch("entry/citation/form[@lang='zz'][not(trait)]", session);
+				AssertHasAtLeastOneMatch("entry[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void CitationWithStarredForm()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var e = session.CreateItem();
+				var citation = e.GetOrCreateProperty<MultiText>(
+					LexEntry.WellKnownProperties.Citation
+					);
+				citation.SetAlternative("x", "orange");
+				citation.SetAnnotationOfAlternativeIsStarred("x", true);
+				// _lexEntryRepository.SaveItem(e);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch(
+					"entry/citation/form[@lang='x']/annotation[@name='flag' and @value='1']",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void CustomMultiTextOnEntry()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var entry = session.CreateItem();
+
+				var m = entry.GetOrCreateProperty<MultiText>("flubadub");
+				m["zz"] = "orange";
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry/field[@type='flubadub']/form[@lang='zz' and text='orange']", session);
+			}
+		}
+
+		[Test]
+		public void CustomMultiTextOnExample()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var example = new LexExampleSentence();
+				var m = example.GetOrCreateProperty<MultiText>("flubadub");
+				m["zz"] = "orange";
+				session.LiftWriter.Add(example);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("example/field[@type='flubadub']/form[@lang='zz' and text='orange']", session);
+			}
+		}
+
+		[Test]
+		public void CustomMultiTextOnSense()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				var m = sense.GetOrCreateProperty<MultiText>("flubadub");
+				m["zz"] = "orange";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense/field[@type='flubadub']/form[@lang='zz' and text='orange']", session);
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefCollectionOnEntry()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flubs", "colors");
+				LexEntry entry = session.CreateItem();
+
+				var o = entry.GetOrCreateProperty<OptionRefCollection>("flubs");
+				o.AddRange(new[] {"orange", "blue"});
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry/trait[@name='flubs' and @value='orange']", session);
+				AssertHasAtLeastOneMatch("entry/trait[@name='flubs' and @value='blue']", session);
+				AssertHasAtLeastOneMatch("entry[count(trait) =2]", session);
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefCollectionOnExample()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flubs", "colors");
+				var example = new LexExampleSentence();
+				var o = example.GetOrCreateProperty<OptionRefCollection>("flubs");
+				o.AddRange(new[] {"orange", "blue"});
+				session.LiftWriter.Add(example);
+				session.LiftWriter.End();
+				Assert.AreEqual(
+					"<example><trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></example>",
+					session.StringBuilder.ToString()
+					);
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefCollectionOnSense()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flubs", "colors");
+				var sense = new LexSense();
+				var o = sense.GetOrCreateProperty<OptionRefCollection>("flubs");
+				o.AddRange(new[] {"orange", "blue"});
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				Assert.AreEqual(
+					GetSenseElement(sense) +
+					"<trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></sense>",
+					session.StringBuilder.ToString());
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefOnEntry()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flub", "kindsOfFlubs");
+				LexEntry entry = session.CreateItem();
+
+				var o = entry.GetOrCreateProperty<OptionRef>("flub");
+				o.Value = "orange";
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch(
+					"entry/trait[@name='flub' and @value='orange']",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefOnExample()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flub", "kindsOfFlubs");
+				var example = new LexExampleSentence();
+				var o = example.GetOrCreateProperty<OptionRef>("flub");
+				o.Value = "orange";
+				session.LiftWriter.Add(example);
+				session.LiftWriter.End();
+				Assert.AreEqual(
+					"<example><trait name=\"flub\" value=\"orange\" /></example>",
+					session.StringBuilder.ToString()
+					);
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefOnSense()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flub", "kindsOfFlubs");
+				var sense = new LexSense();
+				var o = sense.GetOrCreateProperty<OptionRef>("flub");
+				o.Value = "orange";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				Assert.AreEqual(
+					GetSenseElement(sense) + "<trait name=\"flub\" value=\"orange\" /></sense>",
+					session.StringBuilder.ToString()
+					);
+			}
+		}
+
+		[Test]
+		public void CustomOptionRefOnSenseWithGrammi()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				//_fieldToOptionListName.Add("flub", "kindsOfFlubs");
+				var sense = new LexSense();
+				var grammi = sense.GetOrCreateProperty<OptionRef>(
+					LexSense.WellKnownProperties.PartOfSpeech
+					);
+				grammi.Value = "verb";
+
+				var o = sense.GetOrCreateProperty<OptionRef>("flub");
+				o.Value = "orange";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense/trait[@name='flub' and @value='orange']", session);
+				AssertHasAtLeastOneMatch("sense[count(trait)=1]", session);
+			}
+		}
+
+		[Test]
+		public void DefinitionOnSense_OutputAsDefinition()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				var m = sense.GetOrCreateProperty<MultiText>(
+					LexSense.WellKnownProperties.Definition
+					);
+				m["zz"] = "orange";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense/definition/form[@lang='zz']/text[text()='orange']", session);
+				AssertHasAtLeastOneMatch("sense[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void DeletedEntry()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var entry = new LexEntry();
+				session.LiftWriter.AddDeletedEntry(entry);
+				session.LiftWriter.End();
+				Assert.IsNotNull(GetStringAttributeOfTopElement("dateDeleted", session));
+			}
+		}
+
+		[Test]
+		public void DocumentStart()
+		{
+			using (var session = new LiftExportAsFullDocumentTestSession())
+			{
+				//NOTE: the utf-16 here is an artifact of the xmlwriter when writing to a stringbuilder,
+				//which is what we use for tests.  The file version puts out utf-8
+				//CheckAnswer("<?xml version=\"1.0\" encoding=\"utf-16\"?><lift producer=\"WeSay.1Pt0Alpha\"/>");// xmlns:flex=\"http://fieldworks.sil.org\" />");
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch(string.Format("lift[@version='{0}']", Validator.LiftVersion), session);
+				AssertHasAtLeastOneMatch(string.Format("lift[@producer='{0}']", WeSayLiftWriter.ProducerString), session);
+			}
+		}
+
+		[Test]
+		public void EmptyCustomMultiText()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.GetOrCreateProperty<MultiText>("flubadub");
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void EmptyCustomOptionRef()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.GetOrCreateProperty<OptionRef>("flubadub");
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense[not(trait)]", session);
+			}
+		}
+
+		[Test]
+		public void EmptyCustomOptionRefCollection()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.GetOrCreateProperty<OptionRefCollection>("flubadub");
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense[not(trait)]", session);
+			}
+		}
+
+		[Test]
+		public void EmptyDefinitionOnSense_NotOutput()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.GetOrCreateProperty<MultiText>(LexSense.WellKnownProperties.Definition);
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense[not(definition)]", session);
+				AssertHasAtLeastOneMatch("sense[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void EmptyExampleSource_NoAttribute()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var ex = new LexExampleSentence();
+				ex.GetOrCreateProperty<OptionRef>(
+					LexExampleSentence.WellKnownProperties.Source
+					);
+				session.LiftWriter.Add(ex);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("example[not(@source)]", session);
+			}
+		}
+
+		[Test]
+		public void EmptyNoteOnEntry_NoOutput()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.GetOrCreateProperty<MultiText>(PalasoDataObject.WellKnownProperties.Note);
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry[not(note)]", session);
+				AssertHasAtLeastOneMatch("entry[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void Entry_EntryHasIdWithInvalidXMLCharacters_CharactersEscaped()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				// technically the only invalid characters in an attribute are & < and " (when surrounded by ")
+				entry.Id = "<>&\"\'";
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				ShouldContain("id=\"&lt;&gt;&amp;&quot;'\"", session);
+			}
+		}
+
+		[Test]
+		public void Entry_HasId_RemembersId()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.Id = "my id";
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				ShouldContain("id=\"my id\"", session);
+			}
+		}
+
+		[Test]
+		public void Entry_NoId_GetsHumanReadableId()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var entry = session.CreateItem();
+				entry.LexicalForm["test"] = "lexicalForm";
+				//_lexEntryRepository.SaveItem(entry);
+				// make dateModified different than dateCreated
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				ShouldContain(
+					string.Format(
+						"id=\"{0}\"",
+						WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
+						),
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void EntryGuid()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				session.LiftWriter.Add(entry);
+				ShouldContain(string.Format("guid=\"{0}\"", entry.Guid), session);
+			}
+		}
+
+		[Test]
+		public void EmptyRelationNotOutput()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.AddRelationTarget(LexEntry.WellKnownProperties.BaseForm, string.Empty);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				Assert.IsFalse(session.StringBuilder.ToString().Contains("relation"));
+			}
+		}
+
+		[Test]
+		public void EntryHasDateCreated()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				ShouldContain(
+					string.Format(
+						"dateCreated=\"{0}\"",
+						entry.CreationTime.ToString("yyyy-MM-ddThh:mm:ssZ")
+						),
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void EntryHasDateModified()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.LexicalForm["test"] = "lexicalForm";
+				// make dateModified different than dateCreated
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				ShouldContain(
+					string.Format(
+						"dateModified=\"{0}\"",
+						entry.ModificationTime.ToString("yyyy-MM-ddThh:mm:ssZ")
+						), session
+					);
+			}
+		}
+
+		[Test]
+		public void EntryWithSenses()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.LexicalForm["blue"] = "ocean";
+				LexSense sense1 = new LexSense();
+				sense1.Gloss["a"] = "aaa";
+				entry.Senses.Add(sense1);
+				LexSense sense2 = new LexSense();
+				sense2.Gloss["b"] = "bbb";
+				entry.Senses.Add(sense2);
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+
+				ShouldContain(
+					string.Format(
+						GetSenseElement(sense1) +
+						"<gloss lang=\"a\"><text>aaa</text></gloss></sense>" +
+						GetSenseElement(sense2) +
+						"<gloss lang=\"b\"><text>bbb</text></gloss></sense></entry>"
+						), session
+					);
+				AssertHasAtLeastOneMatch("entry[count(sense)=2]", session);
+			}
+		}
+
+		[Test]
+		public void ExampleSentence()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexExampleSentence example = new LexExampleSentence();
+				example.Sentence["blue"] = "ocean's eleven";
+				example.Sentence["red"] = "red sunset tonight";
+				session.LiftWriter.Add(example);
+				// review cp no end
+				CheckAnswer(
+					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form></example>",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void ExampleSentenceWithTranslation()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexExampleSentence example = new LexExampleSentence();
+				example.Sentence["blue"] = "ocean's eleven";
+				example.Sentence["red"] = "red sunset tonight";
+				example.Translation["green"] = "blah blah";
+				session.LiftWriter.Add(example);
+				CheckAnswer(
+					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void ExampleSourceAsAttribute()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexExampleSentence ex = new LexExampleSentence();
+				OptionRef z = ex.GetOrCreateProperty<OptionRef>(
+					LexExampleSentence.WellKnownProperties.Source
+					);
+				z.Value = "hearsay";
+
+				session.LiftWriter.Add(ex);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("example[@source='hearsay']", session);
+			}
+		}
+
+		[Test]
+		public void FlagCleared_NoOutput()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+
+				entry.SetFlag("ATestFlag");
+				entry.ClearFlag("ATestFlag");
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry[not(trait)]", session);
+			}
+		}
+
+		[Test]
+		public void FlagOnEntry_OutputAsTrait()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+
+				entry.SetFlag("ATestFlag");
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry/trait[@name='ATestFlag' and @value]", session);
+			}
+		}
+
+		/* this is not relevant, as we are currently using form_guid as the id
+		[Test]
+		public void DuplicateFormsGetHomographNumbers()
+		{
+			LexEntry entry = new LexEntry();
+			entry.LexicalForm["blue"] = "ocean";
+			session.LiftWriter.Add(entry);
+			session.LiftWriter.Add(entry);
+			session.LiftWriter.Add(entry);
+		  session.LiftWriter.End();
+		  Assert.IsTrue(_stringBuilder.ToString().Contains("\"ocean\""), "ocean not contained in {0}", _stringBuilder.ToString());
+		  Assert.IsTrue(_stringBuilder.ToString().Contains("ocean_2"), "ocean_2 not contained in {0}", _stringBuilder.ToString());
+		  Assert.IsTrue(_stringBuilder.ToString().Contains("ocean_3"), "ocean_3 not contained in {0}", _stringBuilder.ToString());
+		}
+		*/
+
+		[Test]
+		public void GetHumanReadableId_EntryHasId_GivesId()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.Id = "my id";
+				//_lexEntryRepository.SaveItem(entry);
+				Assert.AreEqual(
+					"my id",
+					WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
+					);
+			}
+		}
+
+		/* this tests a particular implementation detail (idCounts), which isn't used anymore:
+		[Test]
+		public void GetHumanReadableId_EntryHasId_RegistersId()
+		{
+			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual(1, idCounts["my id"]);
+		}
+		*/
+
+		/* this is not relevant, as we are currently using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasAlreadyUsedId_GivesIncrementedId()
+		{
+			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual("my id_2", WeSayLiftWriter.GetHumanReadableId(entry, idCounts));
+		}
+		*/
+		/* this is not relevant, as we are currently using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasAlreadyUsedId_IncrementsIdCount()
+		{
+			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual(2, idCounts["my id"]);
+		}
+		*/
+		/* this is not relevant, as we are currently using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasNoIdAndNoLexicalForms_GivesDefaultId()
+		{
+			LexEntry entry = new LexEntry();
+			Assert.AreEqual("NoForm", WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+		}
+		*/
+
+		/*      this is not currently relevant, as we are now using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasNoIdAndNoLexicalFormsButAlreadyUsedId_GivesIncrementedDefaultId()
+		{
+			LexEntry entry = new LexEntry();
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual("NoForm_2", WeSayLiftWriter.GetHumanReadableId(entry, idCounts));
+		}
+		*/
+
+		/*      this is not currently relevant, as we are now using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasNoId_GivesIdMadeFromFirstLexicalForm()
+		{
+			LexEntry entry = new LexEntry();
+			entry.LexicalForm["green"] = "grass";
+			entry.LexicalForm["blue"] = "ocean";
+
+			Assert.AreEqual("grass", WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+		}
+		*/
+
+		/*      this is not currently relevant, as we are now using form_guid as the id
+
+		[Test]
+		public void GetHumanReadableId_EntryHasNoId_RegistersIdMadeFromFirstLexicalForm()
+		{
+			LexEntry entry = new LexEntry();
+			entry.LexicalForm["green"] = "grass";
+			entry.LexicalForm["blue"] = "ocean";
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual(1, idCounts["grass"]);
+		}
+		*/
+		/*      this is not currently relevant, as we are now using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasNoIdAndIsSameAsAlreadyEncountered_GivesIncrementedId()
+		{
+			LexEntry entry = new LexEntry();
+			entry.LexicalForm["green"] = "grass";
+			entry.LexicalForm["blue"] = "ocean";
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual("grass_2", WeSayLiftWriter.GetHumanReadableId(entry, idCounts));
+		}
+		*/
+		/*      this is not currently relevant, as we are now using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_EntryHasNoIdAndIsSameAsAlreadyEncountered_IncrementsIdCount()
+		{
+			LexEntry entry = new LexEntry();
+			entry.LexicalForm["green"] = "grass";
+			entry.LexicalForm["blue"] = "ocean";
+			Dictionary<string, int> idCounts = new Dictionary<string, int>();
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual(2, idCounts["grass"]);
+		}
+		*/
+		/*      this is not currently relevant, as we are now using form_guid as the id
+		[Test]
+		public void GetHumanReadableId_IdsDifferByWhiteSpaceTypeOnly_WhitespaceTreatedAsSpaces()
+		{
+			LexEntry entry = new LexEntry();
+			entry.LexicalForm["green"] = "string\t1\n2\r3 4";
+			Assert.AreEqual("string 1 2 3 4", WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+		}
+		*/
+
+		[Test]
+		public void GetHumanReadableId_IdIsSpace_NoForm()
+		{
+			var entry = new LexEntry(" ", Guid.NewGuid());
+			Assert.IsTrue(
+				WeSayLiftWriter.GetHumanReadableId(
+					entry, new Dictionary<string, int>()
+					).StartsWith("Id'dPrematurely_")
+				);
+		}
+
+		[Test]
+		public void GetHumanReadableId_IdIsSpace_TreatedAsThoughNonExistentId()
+		{
+			var entry = new LexEntry(" ", Guid.NewGuid());
+			entry.LexicalForm["green"] = "string";
+			Assert.IsTrue(
+				WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()).StartsWith
+					("string"));
+		}
+
+		[Test]
+		public void Gloss()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.Gloss["blue"] = "ocean";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch(
+					"sense/gloss[@lang='blue']/text[text()='ocean']",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void Gloss_MultipleGlossesSplitIntoSeparateEntries()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.Gloss["a"] = "aaa; bbb; ccc";
+				sense.Gloss["x"] = "xx";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense[count(gloss)=4]", session);
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='aaa']", session);
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='bbb']", session);
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='ccc']", session);
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='x' and text='xx']", session);
+			}
+		}
+
+		[Test]
+		public void GlossWithProblematicCharacters()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				sense.Gloss["blue"] = "LessThan<GreaterThan>Ampersan&";
+				session.LiftWriter.Add(sense);
+				CheckAnswer(
+					GetSenseElement(sense) +
+					"<gloss lang=\"blue\"><text>LessThan&lt;GreaterThan&gt;Ampersan&amp;</text></gloss></sense>"
+					, session
+					);
+			}
+		}
+
+		[Test]
+		public void GlossWithStarredForm()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				sense.Gloss.SetAlternative("x", "orange");
+				sense.Gloss.SetAnnotationOfAlternativeIsStarred("x", true);
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='x']/annotation[@name='flag' and @value='1']", session);
+			}
+		}
+
+		[Test]
+		public void Grammi()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				var o = sense.GetOrCreateProperty<OptionRef>(
+					LexSense.WellKnownProperties.PartOfSpeech
+					);
+				o.Value = "orange";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense/grammatical-info[@value='orange']", session);
+				AssertHasAtLeastOneMatch("sense[not(trait)]", session);
+			}
+		}
+
+		[Test]
+		public void GrammiWithStarredForm()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				OptionRef o = sense.GetOrCreateProperty<OptionRef>(
+					LexSense.WellKnownProperties.PartOfSpeech
+					);
+				o.Value = "orange";
+				o.IsStarred = true;
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch(
+					"sense/grammatical-info[@value='orange']/annotation[@name='flag' and @value='1']",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void LexemeForm_SingleWritingSystem()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry e = session.CreateItem();
+				e.LexicalForm["xx"] = "foo";
+				//_lexEntryRepository.SaveItem(e);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+
+				AssertHasAtLeastOneMatch("//lexical-unit/form[@lang='xx']", session);
+			}
+		}
+
+		[Test]
+		public void LexEntry_becomes_entry()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+
+				Assert.IsTrue(session.StringBuilder.ToString().StartsWith("<entry"));
+			}
+		}
+
+		[Test]
+		public void LexicalUnit()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry e = session.CreateItem();
+				e.LexicalForm.SetAlternative("x", "orange");
+				//_lexEntryRepository.SaveItem(e);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry/lexical-unit/form[@lang='x']/text[text()='orange']", session);
+				AssertHasAtLeastOneMatch("entry/lexical-unit/form[@lang='x'][not(trait)]", session);
+			}
+		}
+
+		[Test]
+		public void LexicalUnitWithStarredForm()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry e = session.CreateItem();
+
+				e.LexicalForm.SetAlternative("x", "orange");
+				e.LexicalForm.SetAnnotationOfAlternativeIsStarred("x", true);
+				//_lexEntryRepository.SaveItem(e);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+
+				AssertHasAtLeastOneMatch(
+					"entry/lexical-unit/form[@lang='x']/annotation[@name='flag' and @value='1']",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void LexSense_becomes_sense()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				Assert.IsTrue(session.StringBuilder.ToString().StartsWith("<sense"));
+			}
+		}
+
+		[Test]
+		public void MultiText()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				MultiText text = new MultiText();
+				text["blue"] = "ocean";
+				text["red"] = "sunset";
+				session.LiftWriter.Add(null, text);
+				CheckAnswer(
+					"<form lang=\"blue\"><text>ocean</text></form><form lang=\"red\"><text>sunset</text></form>",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void NoteOnEntry_OutputAsNote()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+
+				MultiText m =
+					entry.GetOrCreateProperty<MultiText>(PalasoDataObject.WellKnownProperties.Note);
+				m["zz"] = "orange";
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("entry/note/form[@lang='zz' and text='orange']", session);
+				AssertHasAtLeastOneMatch("entry[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void NoteOnExample_OutputAsNote()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexExampleSentence example = new LexExampleSentence();
+				MultiText m =
+					example.GetOrCreateProperty<MultiText>(PalasoDataObject.WellKnownProperties.Note);
+				m["zz"] = "orange";
+				session.LiftWriter.Add(example);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("example/note/form[@lang='zz' and text='orange']", session);
+				AssertHasAtLeastOneMatch("example[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void NoteOnSense_OutputAsNote()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				MultiText m =
+					sense.GetOrCreateProperty<MultiText>(PalasoDataObject.WellKnownProperties.Note);
+				m["zz"] = "orange";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasAtLeastOneMatch("sense/note/form[@lang='zz' and text='orange']", session);
+				AssertHasAtLeastOneMatch("sense[not(field)]", session);
+			}
+		}
+
+		[Test]
+		public void Picture_OutputAsPictureURLRef()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				PictureRef p = sense.GetOrCreateProperty<PictureRef>("Picture");
+				p.Value = "bird.jpg";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				CheckAnswer(GetSenseElement(sense) + "<illustration href=\"bird.jpg\" /></sense>", session);
+			}
+		}
+
+		[Test]
+		public void Picture_OutputAsPictureWithCaption()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				PictureRef p = sense.GetOrCreateProperty<PictureRef>("Picture");
+				p.Value = "bird.jpg";
+				p.Caption = new MultiText();
+				p.Caption["aa"] = "aCaption";
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				CheckAnswer(
+					GetSenseElement(sense) +
+					"<illustration href=\"bird.jpg\"><label><form lang=\"aa\"><text>aCaption</text></form></label></illustration></sense>",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void Sense_HasId_RemembersId()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense s = new LexSense();
+				s.Id = "my id";
+				session.LiftWriter.Add(s);
+				session.LiftWriter.End();
+				ShouldContain("id=\"my id\"", session);
+			}
+		}
+
+		[Test]
+		public void Sense_NoId_GetsId()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				ShouldContain(string.Format("id=\"{0}\"", sense.Id), session);
+			}
+		}
+
+		[Test]
+		public void SensesAreLastObjectsInEntry() // this helps conversions to sfm
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+
+				entry.LexicalForm["blue"] = "ocean";
+
+				LexSense sense1 = new LexSense();
+				sense1.Gloss["a"] = "aaa";
+				entry.Senses.Add(sense1);
+				LexSense sense2 = new LexSense();
+				sense2.Gloss["b"] = "bbb";
+				entry.Senses.Add(sense2);
+
+				MultiText citation =
+					entry.GetOrCreateProperty<MultiText>(LexEntry.WellKnownProperties.Citation);
+				citation["zz"] = "orange";
+
+				MultiText note =
+					entry.GetOrCreateProperty<MultiText>(PalasoDataObject.WellKnownProperties.Note);
+				note["zz"] = "orange";
+
+				MultiText field = entry.GetOrCreateProperty<MultiText>("custom");
+				field["zz"] = "orange";
+
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+
+				ShouldContain(
+					string.Format(GetSenseElement(sense1) +
+								  "<gloss lang=\"a\"><text>aaa</text></gloss></sense>" +
+								  GetSenseElement(sense2) +
+								  "<gloss lang=\"b\"><text>bbb</text></gloss></sense></entry>"
+						), session
+					);
+			}
+		}
+
+		[Test]
+		public void SenseWithExample()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexSense sense = new LexSense();
+				LexExampleSentence example = new LexExampleSentence();
+				example.Sentence["red"] = "red sunset tonight";
+				sense.ExampleSentences.Add(example);
+				session.LiftWriter.Add(sense);
+				CheckAnswer(GetSenseElement(sense) +
+							"<example><form lang=\"red\"><text>red sunset tonight</text></form></example></sense>",
+							session
+					);
+			}
+		}
+
+		[Test]
+		public void SenseWithSynonymRelations()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+
+				var synonymRelationType = new LexRelationType(
+					"synonym",
+					LexRelationType.Multiplicities.Many,
+					LexRelationType.TargetTypes.Sense
+					);
+
+				var antonymRelationType = new LexRelationType(
+					"antonym",
+					LexRelationType.Multiplicities.Many,
+					LexRelationType.TargetTypes.Sense
+					);
+
+				var relations = new LexRelationCollection();
+				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+
+				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "one", sense));
+				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "two", sense));
+				relations.Relations.Add(new LexRelation(antonymRelationType.ID, "bee", sense));
+
+				session.LiftWriter.Add(sense);
+				CheckAnswer(GetSenseElement(sense) +
+							"<relation type=\"synonym\" ref=\"one\" /><relation type=\"synonym\" ref=\"two\" /><relation type=\"antonym\" ref=\"bee\" /></sense>",
+							session
+					);
+			}
+		}
+
+		[Test]
+		public void WriteToFile()
+		{
+			using (var session = new LiftExportAsFileTestSession())
+			{
+				session.AddTwoTestLexEntries();
+				var doc = new XmlDocument();
+				doc.Load(session.FilePath);
+				Assert.AreEqual(2, doc.SelectNodes("lift/entry").Count);
+			}
+		}
+
+		[Test]
+		public void Add_MultiTextWithWellFormedXML_IsExportedAsXML()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", "This <span href=\"reference\">is well formed</span> XML!");
+				session.LiftWriter.Add(null, multiText);
+				CheckAnswer(
+					"<form lang=\"de\"><text>This <span href=\"reference\">is well formed</span> XML!</text></form>",
+					session
+					);
+			}
+		}
+
+		[Test]
+		public void Add_MultiTextWithMalFormedXML_IsExportedText()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", "This <span href=\"reference\">is not well formed<span> XML!");
+				session.LiftWriter.Add(null, multiText);
+				CheckAnswer(
+					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well formed&lt;span&gt; XML!</text></form>",
+					session
+					);
+			}
+		}
+	}
+}
