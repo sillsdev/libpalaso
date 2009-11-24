@@ -144,7 +144,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			TestTraitRoundTripped("//entry/note",
 								  (e, traits) =>
 									  {
-										  WeSayDataObject note = _builder.MergeInNote(e, "color",
+										  PalasoDataObject note = _builder.MergeInNote(e, "color",
 																		  new LiftMultiText("v", "hello world"), traits);
 										 traits.ForEach(t =>_builder.MergeInTrait(note, t));
 									  });
