@@ -1,6 +1,6 @@
 using System;
 
-namespace Palaso.Misc
+namespace Palaso.Code
 {
 	public class GuardAgainstReentry : IDisposable
 	{

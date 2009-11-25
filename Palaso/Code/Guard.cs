@@ -2,7 +2,7 @@ using System;
 
 //two of these methods originally from RhinoCommons
 
-namespace Palaso.Misc
+namespace Palaso.Code
 {
 	/// <summary>
 	/// Helper class for guard statements, which allow prettier
