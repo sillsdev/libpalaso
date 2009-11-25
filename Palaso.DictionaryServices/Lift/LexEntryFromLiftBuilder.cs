@@ -23,7 +23,7 @@ namespace Palaso.DictionaryServices.Lift
 			ILexiconMerger<PalasoDataObject, LexEntry, LexSense, LexExampleSentence>,
 			IDisposable
 	{
-		public class EntryCreatedEventArgs: EventArgs
+		internal class EntryCreatedEventArgs: EventArgs
 		{
 			public readonly LexEntry Entry;
 

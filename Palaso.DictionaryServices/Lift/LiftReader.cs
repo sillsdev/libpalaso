@@ -12,7 +12,7 @@ using Palaso.Reporting;
 
 namespace Palaso.DictionaryServices.Lift
 {
-	public class WeSayLiftReader : ILiftReader<LexEntry>
+	public class LiftReader : ILiftReader<LexEntry>
 	{
 		private readonly ProgressState _progressState;
 		private readonly OptionsList _semanticDomainsList; // Review: how is this used in LexEntryFromLiftBuilder.
@@ -22,7 +22,7 @@ namespace Palaso.DictionaryServices.Lift
 		/// </summary>
 		private readonly IEnumerable<string> _idsOfSingleOptionFields;
 
-		 public WeSayLiftReader(ProgressState progressState, OptionsList semanticDomainsList, IEnumerable<string>  namesOfSingleOptionFields)
+		 public LiftReader(ProgressState progressState, OptionsList semanticDomainsList, IEnumerable<string>  namesOfSingleOptionFields)
 		{
 			_progressState = progressState;
 			_semanticDomainsList = semanticDomainsList;
@@ -100,11 +100,11 @@ namespace Palaso.DictionaryServices.Lift
 		#region IDisposable Members
 
 #if DEBUG
-		~WeSayLiftReader()
+		~LiftReader()
 		{
 			if (!_disposed)
 			{
-				throw new ApplicationException("Disposed not explicitly called on WeSayLiftReader.");
+				throw new ApplicationException("Disposed not explicitly called on LiftReader.");
 			}
 		}
 #endif

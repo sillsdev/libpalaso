@@ -50,10 +50,10 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Lift\LexEntryFromLiftBuilder.cs" />
-	<Compile Include="Lift\WeSayLiftDataMapper.cs" />
-	<Compile Include="Lift\WeSayLiftReader.cs" />
-	<Compile Include="Lift\WeSayLiftReaderWriterProvider.cs" />
-	<Compile Include="Lift\WeSayLiftWriter.cs" />
+	<Compile Include="Lift\LiftDataMapper.cs" />
+	<Compile Include="Lift\LiftReader.cs" />
+	<Compile Include="Lift\LiftReaderWriterProvider.cs" />
+	<Compile Include="Lift\LiftWriter.cs" />
 	<Compile Include="Model\LexEntry.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

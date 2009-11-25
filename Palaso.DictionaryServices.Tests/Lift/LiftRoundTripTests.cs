@@ -15,7 +15,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 	[TestFixture]
 	public class LiftRoundTripTests
 	{
-		private WeSayLiftWriter _liftWriter;
+		private LiftWriter _liftWriter;
 		private StringBuilder _stringBuilder;
 		private LexEntryFromLiftBuilder _builder;
 		private MemoryDataMapper<LexEntry> _dataMapper;
@@ -24,7 +24,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public void Setup()
 		{
 			_stringBuilder = new StringBuilder();
-			_liftWriter = new WeSayLiftWriter(_stringBuilder, false);
+			_liftWriter = new LiftWriter(_stringBuilder, false);
 			_dataMapper = new MemoryDataMapper<LexEntry>();
 			_builder = new LexEntryFromLiftBuilder(_dataMapper, null);
 		}

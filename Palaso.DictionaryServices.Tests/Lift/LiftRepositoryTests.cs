@@ -63,11 +63,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			_tempFolder.Delete();
 		}
 
-		public static WeSayLiftDataMapper CreateDataMapper(string filePath)
+		public static LiftDataMapper CreateDataMapper(string filePath)
 		{
-			return new WeSayLiftDataMapper(
+			return new LiftDataMapper(
 				filePath, null, new ProgressState(),
-				new WeSayLiftReaderWriterProvider(
+				new LiftReaderWriterProvider(
 					new ProgressState(), new OptionsList(), new string[] { }
 				)
 			);
@@ -90,7 +90,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (File.OpenWrite(_persistedFilePath))
 			{
-				using(WeSayLiftDataMapper dataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath))
+				using(LiftDataMapper dataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath))
 				{
 				}
 			}
@@ -128,7 +128,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		   [ExpectedException(typeof(IOException))]
 		   public void LiftIsLocked_ReturnsTrue()
 		   {
-			   Assert.IsTrue(((WeSayLiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
+			   Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
 			   FileStream streamForPermissionChecking = null;
 			   try
 			   {
@@ -156,11 +156,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			FileStream fileStream = File.OpenWrite(persistedFilePath);
 			Assert.IsTrue(fileStream.CanWrite);
 
-			// Close it before creating the WeSayLiftDataMapper.
+			// Close it before creating the LiftDataMapper.
 			fileStream.Close();
 
-			// WeSayLiftDataMapper constructor shouldn't throw an IOException.
-			using (WeSayLiftDataMapper liftDataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(persistedFilePath))
+			// LiftDataMapper constructor shouldn't throw an IOException.
+			using (LiftDataMapper liftDataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(persistedFilePath))
 			{
 			}
 			Assert.IsTrue(true); // Constructor didn't throw.
@@ -207,7 +207,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		   [ExpectedException(typeof(IOException))]
 		   public void LiftIsLocked_ReturnsTrue()
 		   {
-			   Assert.IsTrue(((WeSayLiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
+			   Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
 			   FileStream streamForPermissionChecking = null;
 			   try
 			   {
@@ -266,7 +266,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		 public void LiftIsLocked_ReturnsTrue()
 		 {
 			 SetState();
-			 Assert.IsTrue(((WeSayLiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
+			 Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
 			 FileStream streamForPermissionChecking = null;
 			 try
 			 {
@@ -320,7 +320,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			  public void LiftIsLocked_ReturnsTrue()
 			  {
 				  SetState();
-				  Assert.IsTrue(((WeSayLiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
+				  Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
 				  FileStream streamForPermissionChecking = null;
 				  try
 				  {
@@ -373,7 +373,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				public void LiftIsLocked_ReturnsTrue()
 				{
 					SetState();
-					Assert.IsTrue(((WeSayLiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
+					Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
 					FileStream streamForPermissionChecking = null;
 					try
 					{
@@ -427,7 +427,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				public void LiftIsLocked_ReturnsTrue()
 				{
 					SetState();
-					Assert.IsTrue(((WeSayLiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
+					Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
 					FileStream streamForPermissionChecking = null;
 					try
 					{
@@ -473,7 +473,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public void LockedFile_Throws()
 		{
 			Assert.IsTrue(_fileStream.CanWrite);
-			WeSayLiftDataMapper liftDataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			LiftDataMapper liftDataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 	}
 }

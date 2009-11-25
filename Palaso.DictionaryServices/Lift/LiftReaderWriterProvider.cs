@@ -6,13 +6,13 @@ using Palaso.Progress;
 
 namespace Palaso.DictionaryServices.Lift
 {
-	public class WeSayLiftReaderWriterProvider : ILiftReaderWriterProvider<LexEntry>
+	public class LiftReaderWriterProvider : ILiftReaderWriterProvider<LexEntry>
 	{
 		private readonly ProgressState _progressState;
 		private readonly OptionsList _semanticDomainsList;
 		private readonly IEnumerable<string> _idsOfSingleOptionFields;
 
-		public WeSayLiftReaderWriterProvider(ProgressState progressState, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields)
+		public LiftReaderWriterProvider(ProgressState progressState, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields)
 		{
 			_progressState = progressState;
 			_idsOfSingleOptionFields = idsOfSingleOptionFields;
@@ -21,12 +21,12 @@ namespace Palaso.DictionaryServices.Lift
 
 		public ILiftWriter<LexEntry> CreateWriter(string liftFilePath)
 		{
-			return new WeSayLiftWriter(liftFilePath);
+			return new LiftWriter(liftFilePath);
 		}
 
 		public ILiftReader<LexEntry> CreateReader()
 		{
-			return new WeSayLiftReader(_progressState, _semanticDomainsList, _idsOfSingleOptionFields);
+			return new LiftReader(_progressState, _semanticDomainsList, _idsOfSingleOptionFields);
 		}
 	}
 }

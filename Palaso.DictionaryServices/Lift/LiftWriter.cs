@@ -15,7 +15,7 @@ using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Lift
 {
-	public class WeSayLiftWriter : ILiftWriter<LexEntry>
+	public class LiftWriter : ILiftWriter<LexEntry>
 	{
 		public const string LiftDateTimeFormat = "yyyy-MM-ddThh:mm:ssZ";
 		private readonly XmlWriter _writer;
@@ -26,7 +26,7 @@ namespace Palaso.DictionaryServices.Lift
 		protected StackTrace _constructionStack;
 		#endif
 
-		private WeSayLiftWriter()
+		private LiftWriter()
 		{
 			#if DEBUG
 			_constructionStack = new StackTrace();
@@ -35,7 +35,7 @@ namespace Palaso.DictionaryServices.Lift
 			_allIdsExportedSoFar = new Dictionary<string, int>();
 		}
 
-		public WeSayLiftWriter(string path): this()
+		public LiftWriter(string path): this()
 		{
 			_disposed = true; // Just in case we throw in the constructor
 			_writer = XmlWriter.Create(path, PrepareSettings(false));
@@ -43,7 +43,7 @@ namespace Palaso.DictionaryServices.Lift
 			_disposed = false;
 		}
 
-		public WeSayLiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
+		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
 		{
 			_writer = XmlWriter.Create(builder, PrepareSettings(produceFragmentOnly));
 			if (!produceFragmentOnly)
@@ -649,11 +649,11 @@ namespace Palaso.DictionaryServices.Lift
 		#region IDisposable Members
 
 #if DEBUG
-		~WeSayLiftWriter()
+		~LiftWriter()
 		{
 			if (!_disposed)
 			{
-				throw new ApplicationException("Disposed not explicitly called on WeSayLiftWriter." + "\n" + _constructionStack);
+				throw new ApplicationException("Disposed not explicitly called on LiftWriter." + "\n" + _constructionStack);
 			}
 		}
 #endif

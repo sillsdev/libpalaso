@@ -32,7 +32,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		private void CreateLiftFileForTesting(string liftVersion, string xmlEntries)
 		{
-			Utilities.CreateEmptyLiftFile(_liftFilePath, WeSayLiftWriter.ProducerString, true);
+			Utilities.CreateEmptyLiftFile(_liftFilePath, LiftWriter.ProducerString, true);
 			//overwrite the blank lift file
 			string liftContents =
 				String.Format(

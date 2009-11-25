@@ -21,7 +21,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		class LiftExportTestSessionBase : IDisposable
 		{
-			protected WeSayLiftWriter _liftWriter;
+			protected LiftWriter _liftWriter;
 
 			private readonly StringBuilder _stringBuilder;
 			protected readonly string _filePath;
@@ -51,7 +51,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				get { return _stringBuilder; }
 			}
 
-			public WeSayLiftWriter LiftWriter
+			public LiftWriter LiftWriter
 			{
 				get { return _liftWriter; }
 			}
@@ -81,7 +81,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			public LiftExportAsFragmentTestSession()
 			{
-				_liftWriter = new WeSayLiftWriter(StringBuilder, true);
+				_liftWriter = new LiftWriter(StringBuilder, true);
 			}
 
 		}
@@ -90,7 +90,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			public LiftExportAsFullDocumentTestSession()
 			{
-				_liftWriter = new WeSayLiftWriter(StringBuilder, false);
+				_liftWriter = new LiftWriter(StringBuilder, false);
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			public LiftExportAsFileTestSession()
 			{
-				_liftWriter = new WeSayLiftWriter(_filePath);
+				_liftWriter = new LiftWriter(_filePath);
 			}
 
 		}
@@ -493,7 +493,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				//CheckAnswer("<?xml version=\"1.0\" encoding=\"utf-16\"?><lift producer=\"WeSay.1Pt0Alpha\"/>");// xmlns:flex=\"http://fieldworks.sil.org\" />");
 				session.LiftWriter.End();
 				AssertHasAtLeastOneMatch(string.Format("lift[@version='{0}']", Validator.LiftVersion), session);
-				AssertHasAtLeastOneMatch(string.Format("lift[@producer='{0}']", WeSayLiftWriter.ProducerString), session);
+				AssertHasAtLeastOneMatch(string.Format("lift[@producer='{0}']", LiftWriter.ProducerString), session);
 			}
 		}
 
@@ -623,7 +623,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				ShouldContain(
 					string.Format(
 						"id=\"{0}\"",
-						WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
+						LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
 						),
 					session
 					);
@@ -828,7 +828,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				//_lexEntryRepository.SaveItem(entry);
 				Assert.AreEqual(
 					"my id",
-					WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
+					LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
 					);
 			}
 		}
@@ -839,7 +839,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableId(entry, idCounts);
 			Assert.AreEqual(1, idCounts["my id"]);
 		}
 		*/
@@ -850,8 +850,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
-			Assert.AreEqual("my id_2", WeSayLiftWriter.GetHumanReadableId(entry, idCounts));
+			LiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual("my id_2", LiftWriter.GetHumanReadableId(entry, idCounts));
 		}
 		*/
 		/* this is not relevant, as we are currently using form_guid as the id
@@ -860,8 +860,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableId(entry, idCounts);
 			Assert.AreEqual(2, idCounts["my id"]);
 		}
 		*/
@@ -870,7 +870,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public void GetHumanReadableId_EntryHasNoIdAndNoLexicalForms_GivesDefaultId()
 		{
 			LexEntry entry = new LexEntry();
-			Assert.AreEqual("NoForm", WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+			Assert.AreEqual("NoForm", LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
 		}
 		*/
 
@@ -880,8 +880,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry();
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
-			Assert.AreEqual("NoForm_2", WeSayLiftWriter.GetHumanReadableId(entry, idCounts));
+			LiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual("NoForm_2", LiftWriter.GetHumanReadableId(entry, idCounts));
 		}
 		*/
 
@@ -893,7 +893,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 
-			Assert.AreEqual("grass", WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+			Assert.AreEqual("grass", LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
 		}
 		*/
 
@@ -906,7 +906,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableId(entry, idCounts);
 			Assert.AreEqual(1, idCounts["grass"]);
 		}
 		*/
@@ -918,8 +918,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
-			Assert.AreEqual("grass_2", WeSayLiftWriter.GetHumanReadableId(entry, idCounts));
+			LiftWriter.GetHumanReadableId(entry, idCounts);
+			Assert.AreEqual("grass_2", LiftWriter.GetHumanReadableId(entry, idCounts));
 		}
 		*/
 		/*      this is not currently relevant, as we are now using form_guid as the id
@@ -930,8 +930,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
-			WeSayLiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableId(entry, idCounts);
 			Assert.AreEqual(2, idCounts["grass"]);
 		}
 		*/
@@ -941,7 +941,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry();
 			entry.LexicalForm["green"] = "string\t1\n2\r3 4";
-			Assert.AreEqual("string 1 2 3 4", WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+			Assert.AreEqual("string 1 2 3 4", LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
 		}
 		*/
 
@@ -950,7 +950,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			Assert.IsTrue(
-				WeSayLiftWriter.GetHumanReadableId(
+				LiftWriter.GetHumanReadableId(
 					entry, new Dictionary<string, int>()
 					).StartsWith("Id'dPrematurely_")
 				);
@@ -962,7 +962,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			entry.LexicalForm["green"] = "string";
 			Assert.IsTrue(
-				WeSayLiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()).StartsWith
+				LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()).StartsWith
 					("string"));
 		}
 
