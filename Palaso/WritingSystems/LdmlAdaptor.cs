@@ -250,21 +250,18 @@ namespace Palaso.WritingSystems
 			XmlReaderSettings readerSettings = new XmlReaderSettings();
 			readerSettings.CloseInput = true;
 			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
-			string rulesType = string.Empty;
+			string rulesTypeAsString = string.Empty;
+			WritingSystemDefinition.SortRulesType rulesType = WritingSystemDefinition.SortRulesType.OtherLanguage;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
 				if (FindElement(collationReader, "special"))
 				{
 					collationReader.Read();
-					rulesType = GetSpecialValue(collationReader, "sortRulesType");
+					rulesTypeAsString = GetSpecialValue(collationReader, "sortRulesType");
 				}
+				ws.SortUsing = (WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), rulesTypeAsString);
 			}
-			if (!Enum.IsDefined(typeof (WritingSystemDefinition.SortRulesType), rulesType))
-			{
-				rulesType = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
-			}
-			ws.SortUsing = rulesType;
-			switch ((WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), rulesType))
+			switch (ws.SortUsing)
 			{
 				case WritingSystemDefinition.SortRulesType.OtherLanguage:
 					ReadCollationRulesForOtherLanguage(collationXml, ws);
@@ -304,7 +301,7 @@ namespace Palaso.WritingSystems
 				if (!foundValue)
 				{
 					// missing base alias element, fall back to ICU rules
-					ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+					ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU;
 					ReadCollationRulesForCustomICU(collationXml, ws);
 				}
 			}
@@ -324,7 +321,7 @@ namespace Palaso.WritingSystems
 				return;
 			}
 			// fall back to ICU rules if Simple rules don't work
-			ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU;
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
@@ -728,15 +725,15 @@ namespace Palaso.WritingSystems
 				needToCopy = false;
 			}
 
-			if (string.IsNullOrEmpty(ws.SortUsing) || !Enum.IsDefined(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
-			{
-				if (needToCopy)
-				{
-					// copy whole existing node - invalid/undefined collation rules in our definition
-					writer.WriteNode(reader, false);
-				}
-				return;
-			}
+			//if (string.IsNullOrEmpty(ws.SortUsing) || !Enum.IsDefined(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
+			//{
+			//    if (needToCopy)
+			//    {
+			//        // copy whole existing node - invalid/undefined collation rules in our definition
+			//        writer.WriteNode(reader, false);
+			//    }
+			//    return;
+			//}
 			if (needToCopy && reader.IsEmptyElement)
 			{
 				reader.Skip();
@@ -757,7 +754,7 @@ namespace Palaso.WritingSystems
 			}
 
 			writer.WriteStartElement("collation");
-			switch ((WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
+			switch (ws.SortUsing)
 			{
 				case WritingSystemDefinition.SortRulesType.OtherLanguage:
 					WriteCollationRulesFromOtherLanguage(writer, reader, ws);
@@ -773,7 +770,7 @@ namespace Palaso.WritingSystems
 					throw new ApplicationException(message);
 			}
 			WriteBeginSpecialElement(writer);
-			WriteSpecialValue(writer, "sortRulesType", ws.SortUsing);
+			WriteSpecialValue(writer, "sortRulesType", ws.SortUsing.ToString());
 			writer.WriteEndElement();
 			if (needToCopy)
 			{
@@ -790,7 +787,7 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == "OtherLanguage");
+			Debug.Assert(ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage);
 
 			// Since the alias element gets all information from another source,
 			// we should remove all other elements in this collation element.  We
@@ -809,7 +806,7 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == "CustomSimple");
+			Debug.Assert(ws.SortUsing == WritingSystemDefinition.SortRulesType.CustomSimple);
 
 			string message;
 			// avoid throwing exception, just don't save invalid data
@@ -825,7 +822,7 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == "CustomICU");
+			Debug.Assert(ws.SortUsing == WritingSystemDefinition.SortRulesType.CustomICU);
 			WriteCollationRulesFromICUString(writer, reader, ws.SortRules);
 		}
 

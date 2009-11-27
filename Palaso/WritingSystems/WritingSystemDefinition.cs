@@ -46,7 +46,7 @@ namespace Palaso.WritingSystems
 		private float _defaultFontSize;
 		private string _keyboard;
 
-		private string _sortUsing;
+		private SortRulesType _sortUsing;
 		private string _sortRules;
 		private string _spellCheckingId;
 
@@ -401,6 +401,14 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public string Id
+		{
+			get
+			{
+				return RFC4646;
+			}
+		}
+
 		public string VerboseDescription
 		{
 			get
@@ -626,17 +634,17 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string SortUsing
+		public SortRulesType SortUsing
 		{
-			get { return _sortUsing ?? string.Empty; }
+			get { return _sortUsing; }
 			set
 			{
-				if (!Enum.IsDefined(typeof (SortRulesType), value))
+				if (value != _sortUsing)
 				{
-					throw new ArgumentOutOfRangeException("Invalid SortUsing option");
+					_sortUsing = value;
+					_collator = null;
+					Modified = true;
 				}
-				_collator = null;
-				UpdateString(ref _sortUsing, value);
 			}
 		}
 
@@ -673,7 +681,7 @@ namespace Palaso.WritingSystems
 			{
 				if (_collator == null)
 				{
-					switch ((SortRulesType)Enum.Parse(typeof(SortRulesType), SortUsing))
+					switch (SortUsing)
 					{
 						case SortRulesType.CustomSimple:
 							_collator = new SimpleRulesCollator(SortRules);
@@ -700,7 +708,7 @@ namespace Palaso.WritingSystems
 			message = null;
 			try
 			{
-				switch ((SortRulesType) Enum.Parse(typeof (SortRulesType), SortUsing))
+				switch (SortUsing)
 				{
 					case SortRulesType.CustomICU:
 						return IcuRulesCollator.ValidateSortRules(SortRules, out message);
@@ -721,8 +729,7 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemDefinition Clone()
 		{
-			WritingSystemDefinition ws =
-				new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
+			var ws = new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
 			ws._defaultFontName = _defaultFontName;
 			ws._defaultFontSize = _defaultFontSize;
 			ws._keyboard = _keyboard;
@@ -735,5 +742,6 @@ namespace Palaso.WritingSystems
 			ws._dateModified = _dateModified;
 			return ws;
 		}
+
 	}
 }
