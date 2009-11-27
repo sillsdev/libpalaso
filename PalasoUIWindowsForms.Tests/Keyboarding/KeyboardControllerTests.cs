@@ -320,5 +320,77 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
 		}
+
+		[Test]
+		[Category("IBus")]
+		public void EngineAvailable_IBusIsSetUpAndConfiguredCorrectly_ReturnsTrue()
+		{
+			// needed for focus
+			RequiresWindow();
+
+			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
+		}
+
+		[Test]
+		[Category("IBus")]
+		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
+		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
+		{
+			// needed for focus
+			RequiresWindow();
+
+			KeyboardController.DeactivateKeyboard();
+			KeyboardController.GetActiveKeyboard();
+		}
+
+		[Test]
+		[Category("IBus")]
+		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
+		{
+			// needed for focus
+			RequiresWindow();
+
+			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
+
+			// Because I don't want this to be tighly coupled with a particular IBus setup just check some keyboards exist.
+			Assert.AreNotEqual(0, availableKeyboards.Count);
+		}
+
+		[Test]
+		[Category("IBus")]
+		public void Deactivate_IBusIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
+		{
+			// needed for focus
+			RequiresWindow();
+
+			KeyboardController.ActivateKeyboard("am:sera");
+			KeyboardController.DeactivateKeyboard();
+			Assert.AreEqual("am:sera", KeyboardController.GetActiveKeyboard());
+		}
+
+		[Test]
+		[Category("IBus")]
+		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
+		{
+			// needed for focus
+			RequiresWindow();
+
+			KeyboardController.DeactivateKeyboard();
+			KeyboardController.ActivateKeyboard("am:sera");
+			Assert.AreEqual("am:sera", KeyboardController.GetActiveKeyboard());
+			KeyboardController.DeactivateKeyboard();
+		}
+
+		[Test]
+		[Category("IBus")]
+		[Ignore("To make this this test to pass have to change established bahaviour - IE currently ActivateKeyboard checks to see if Keyboard exists.")]
+		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
+		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
+		{
+			// needed for focus
+			RequiresWindow();
+
+			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
+		}
 	}
 }

@@ -78,6 +78,7 @@
 	<Reference Include="System.Drawing.Design" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
+	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="HotSpot\HotSpot.cs" />
@@ -228,6 +229,8 @@
 	</Compile>
 	<Compile Include="Keyboarding\ScimAdaptor.cs" />
 	<Compile Include="Keyboarding\ScimPanelController.cs" />
+	<Compile Include="Keyboarding\IBusAdaptor.cs" />
+	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">

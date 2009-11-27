@@ -16,6 +16,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			Keyman6 = 2,
 			Keyman7 = 4,
 			Scim = 8,
+			IBus = 16,
 			All = 255
 		} ;
 
@@ -41,6 +42,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				keyboards.AddRange(Keyman7Adaptor.KeyboardDescriptors);
 			}
+			if ((engineKinds & Engines.IBus) == Engines.IBus)
+			{
+				keyboards.AddRange(IBusAdaptor.KeyboardDescriptors);
+			}
 			if ((engineKinds & Engines.Scim) == Engines.Scim)
 			{
 				keyboards.AddRange(ScimAdaptor.KeyboardDescriptors);
@@ -63,6 +68,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				Keyman7Adaptor.ActivateKeyboard(name);
 			}
+			else if (IBusAdaptor.HasKeyboardNamed(name))
+			{
+				IBusAdaptor.ActivateKeyboard(name);
+			}
 			else if (ScimAdaptor.HasKeyboardNamed(name))
 			{
 				ScimAdaptor.ActivateKeyboard(name);
@@ -83,6 +92,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static string GetActiveKeyboard()
 		{
 #if MONO
+			name = IBusAdaptor.GetActiveKeyboard();
+			if (!string.IsNullOrEmpty(name))
+				return name;
+
 			string name = ScimAdaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
 				return name;
@@ -105,6 +118,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static void DeactivateKeyboard()
 		{
 #if MONO
+			IBusAdaptor.Deactivate();
 			ScimAdaptor.Deactivate();
 #else
 
@@ -117,6 +131,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static bool EngineAvailable(Engines engine)
 		{
 #if MONO
+			if ((engine & Engines.IBus) == Engines.IBus)
+			{
+				return IBusAdaptor.EngineAvailable;
+			}
 			if ((engine & Engines.Scim) == Engines.Scim)
 			{
 				return ScimAdaptor.EngineAvailable;
