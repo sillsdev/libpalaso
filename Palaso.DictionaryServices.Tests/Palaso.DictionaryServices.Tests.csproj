@@ -44,6 +44,7 @@
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
+	<Reference Include="System.Drawing" />
 	<Reference Include="System.Xml.Linq">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
@@ -54,6 +55,15 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="LexEntryRepositoryCachingTests.cs" />
+	<Compile Include="LexEntryRepositoryCreatedFromPersistedData.cs" />
+	<Compile Include="LexEntryRepositoryCreateItemTransitionTests.cs" />
+	<Compile Include="LexEntryRepositoryDeleteAllItemsTransitionTests.cs" />
+	<Compile Include="LexEntryRepositoryDeleteIdTransitionTests.cs" />
+	<Compile Include="LexEntryRepositoryDeleteItemTransitionTests.cs" />
+	<Compile Include="LexEntryRepositoryEventTests.cs" />
+	<Compile Include="LexEntryRepositoryStateUnitializedTests.cs" />
+	<Compile Include="LexEntryRepositoryTests.cs" />
 	<Compile Include="Lift\LexEntryFromLiftBuilderTests.cs" />
 	<Compile Include="Lift\LiftExportTests.cs" />
 	<Compile Include="Lift\LiftPreparer.Tests.cs" />

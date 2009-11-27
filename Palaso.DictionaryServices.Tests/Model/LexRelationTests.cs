@@ -10,21 +10,16 @@ namespace Palaso.DictionaryServices.Tests.Model
 	public class LexRelationTests
 	{
 		private string _filePath;
-		//private LexEntryRepository _lexEntryRepository;
 
 		[SetUp]
 		public void Setup()
 		{
-			//WeSayWordsProject.InitializeForTests();
-
 			_filePath = Path.GetTempFileName();
-			//_lexEntryRepository = new LexEntryRepository(_filePath);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			//_lexEntryRepository.Dispose();
 			File.Delete(_filePath);
 		}
 

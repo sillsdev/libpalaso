@@ -49,6 +49,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="LiftLexEntryRepository.cs" />
 	<Compile Include="Lift\LexEntryFromLiftBuilder.cs" />
 	<Compile Include="Lift\LiftDataMapper.cs" />
 	<Compile Include="Lift\LiftReader.cs" />

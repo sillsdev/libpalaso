@@ -95,6 +95,7 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="Data\DelegateQuery.cs" />
 	<Compile Include="Data\DictionaryEqualityComparer.cs" />
 	<Compile Include="Data\IDataMapper.cs" />
 	<Compile Include="Data\MemoryDataMapper.cs" />
@@ -104,6 +105,8 @@
 	<Compile Include="Data\RecordTokenToStringAdapter.cs" />
 	<Compile Include="Data\RepositoryId.cs" />
 	<Compile Include="Data\ResultSet.cs" />
+	<Compile Include="Data\ResultSetCache.cs" />
+	<Compile Include="Data\ResultSetCacheManager.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
 	<Compile Include="Email\EmailProviderFactory.cs" />
 	<Compile Include="Email\IEmailMessage.cs" />
