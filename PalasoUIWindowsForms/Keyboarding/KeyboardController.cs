@@ -92,11 +92,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static string GetActiveKeyboard()
 		{
 #if MONO
-			name = IBusAdaptor.GetActiveKeyboard();
+			string name = IBusAdaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
 				return name;
 
-			string name = ScimAdaptor.GetActiveKeyboard();
+			name = ScimAdaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
 				return name;
 #else
