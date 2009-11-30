@@ -8,6 +8,7 @@ using System.Xml;
 using LiftIO.Validation;
 using Palaso.Annotations;
 using Palaso.DictionaryServices.Model;
+using Palaso.Extensions;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.Text;
@@ -111,7 +112,7 @@ namespace Palaso.DictionaryServices.Lift
 			List<string> propertiesAlreadyOutput = new List<string>();
 
 			Writer.WriteStartElement("entry");
-			Writer.WriteAttributeString("id", GetHumanReadableId(entry, _allIdsExportedSoFar));
+			Writer.WriteAttributeString("id", GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, _allIdsExportedSoFar));
 
 			if (order > 0)
 			{
@@ -169,7 +170,7 @@ namespace Palaso.DictionaryServices.Lift
 		/// idsAndCounts will produce different results each time it runs
 		/// </remarks>
 		/// <returns>A base id composed with its count</returns>
-		public static string GetHumanReadableId(LexEntry entry, Dictionary<string, int> idsAndCounts)
+		public static string GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts)
 		{
 			string id = entry.GetOrCreateId(true);
 			/*         if (id == null || id.Length == 0)       // if the entry doesn't claim to have an id
@@ -195,7 +196,7 @@ namespace Palaso.DictionaryServices.Lift
 				idsAndCounts.Add(id, 1);
 			}
 			*/
-			return id;
+			return id.EscapeAnyUnicodeCharactersIllegalInXml();
 		}
 
 		public void Add(LexSense sense)
@@ -530,7 +531,10 @@ namespace Palaso.DictionaryServices.Lift
 				string wrappedTextToExport = "<text>" + form.Form + "</text>";
 				XmlReaderSettings fragmentReaderSettings = new XmlReaderSettings();
 				fragmentReaderSettings.ConformanceLevel = ConformanceLevel.Fragment;
-				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader(wrappedTextToExport));
+
+				string scaryUnicodeEscaped = wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml();
+				string safeFromScaryUnicodeSoItStaysEscaped = scaryUnicodeEscaped.Replace("&#x", "");
+				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader(safeFromScaryUnicodeSoItStaysEscaped));
 
 				bool isTextWellFormedXml = true;
 				try
@@ -547,12 +551,12 @@ namespace Palaso.DictionaryServices.Lift
 
 				if(isTextWellFormedXml)
 				{
-					Writer.WriteRaw(wrappedTextToExport);
+					Writer.WriteRaw(wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml());// .WriteRaw(wrappedTextToExport);
 				}
 				else
 				{
 					Writer.WriteStartElement("text");
-					Writer.WriteString(form.Form);
+					Writer.WriteRaw(form.Form.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
 					Writer.WriteEndElement();
 				}
 				WriteFlags(form);
@@ -634,7 +638,7 @@ namespace Palaso.DictionaryServices.Lift
 		public void AddDeletedEntry(LexEntry entry)
 		{
 			Writer.WriteStartElement("entry");
-			Writer.WriteAttributeString("id", GetHumanReadableId(entry, _allIdsExportedSoFar));
+			Writer.WriteAttributeString("id", GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, _allIdsExportedSoFar));
 			Writer.WriteAttributeString("dateCreated",
 										entry.CreationTime.ToString(LiftDateTimeFormat));
 			Writer.WriteAttributeString("dateModified",

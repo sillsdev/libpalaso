@@ -182,7 +182,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					GetSenseElement(sense) + "<gloss lang=\"x&quot;y\"><text>test</text></gloss></sense>",
 					session
-					);
+				);
 			}
 		}
 
@@ -202,7 +202,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			var sense = new LexSense();
 			var o = sense.GetOrCreateProperty<OptionRef>(
 				LexSense.WellKnownProperties.PartOfSpeech
-				);
+			);
 			o.Value = string.Empty;
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -233,7 +233,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					String.Format("<sense id=\"{0}\" />", sense.GetOrCreateId()),
 					session
-					);
+				);
 			}
 		}
 
@@ -245,7 +245,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				LexEntry entry = session.CreateItem();
 				var citation = entry.GetOrCreateProperty<MultiText>(
 					LexEntry.WellKnownProperties.Citation
-					);
+				);
 				citation["zz"] = "orange";
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
@@ -264,7 +264,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				var e = session.CreateItem();
 				var citation = e.GetOrCreateProperty<MultiText>(
 					LexEntry.WellKnownProperties.Citation
-					);
+				);
 				citation.SetAlternative("x", "orange");
 				citation.SetAnnotationOfAlternativeIsStarred("x", true);
 				// _lexEntryRepository.SaveItem(e);
@@ -273,7 +273,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				AssertHasAtLeastOneMatch(
 					"entry/citation/form[@lang='x']/annotation[@name='flag' and @value='1']",
 					session
-					);
+				);
 			}
 		}
 
@@ -354,7 +354,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				Assert.AreEqual(
 					"<example><trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></example>",
 					session.StringBuilder.ToString()
-					);
+				);
 			}
 		}
 
@@ -392,7 +392,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				AssertHasAtLeastOneMatch(
 					"entry/trait[@name='flub' and @value='orange']",
 					session
-					);
+				);
 			}
 		}
 
@@ -410,7 +410,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				Assert.AreEqual(
 					"<example><trait name=\"flub\" value=\"orange\" /></example>",
 					session.StringBuilder.ToString()
-					);
+				);
 			}
 		}
 
@@ -428,7 +428,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				Assert.AreEqual(
 					GetSenseElement(sense) + "<trait name=\"flub\" value=\"orange\" /></sense>",
 					session.StringBuilder.ToString()
-					);
+				);
 			}
 		}
 
@@ -441,7 +441,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				var sense = new LexSense();
 				var grammi = sense.GetOrCreateProperty<OptionRef>(
 					LexSense.WellKnownProperties.PartOfSpeech
-					);
+				);
 				grammi.Value = "verb";
 
 				var o = sense.GetOrCreateProperty<OptionRef>("flub");
@@ -461,7 +461,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				var sense = new LexSense();
 				var m = sense.GetOrCreateProperty<MultiText>(
 					LexSense.WellKnownProperties.Definition
-					);
+				);
 				m["zz"] = "orange";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
@@ -557,7 +557,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				var ex = new LexExampleSentence();
 				ex.GetOrCreateProperty<OptionRef>(
 					LexExampleSentence.WellKnownProperties.Source
-					);
+				);
 				session.LiftWriter.Add(ex);
 				session.LiftWriter.End();
 				AssertHasAtLeastOneMatch("example[not(@source)]", session);
@@ -622,10 +622,10 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				ShouldContain(
 					string.Format(
 						"id=\"{0}\"",
-						LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
-						),
+						LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>())
+					),
 					session
-					);
+				);
 			}
 		}
 
@@ -665,9 +665,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 					string.Format(
 						"dateCreated=\"{0}\"",
 						entry.CreationTime.ToString("yyyy-MM-ddThh:mm:ssZ")
-						),
+					),
 					session
-					);
+				);
 			}
 		}
 
@@ -686,8 +686,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 					string.Format(
 						"dateModified=\"{0}\"",
 						entry.ModificationTime.ToString("yyyy-MM-ddThh:mm:ssZ")
-						), session
-					);
+					), session
+				);
 			}
 		}
 
@@ -713,8 +713,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 						"<gloss lang=\"a\"><text>aaa</text></gloss></sense>" +
 						GetSenseElement(sense2) +
 						"<gloss lang=\"b\"><text>bbb</text></gloss></sense></entry>"
-						), session
-					);
+					), session
+				);
 				AssertHasAtLeastOneMatch("entry[count(sense)=2]", session);
 			}
 		}
@@ -732,7 +732,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form></example>",
 					session
-					);
+				);
 			}
 		}
 
@@ -749,7 +749,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>",
 					session
-					);
+				);
 			}
 		}
 
@@ -761,7 +761,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				LexExampleSentence ex = new LexExampleSentence();
 				OptionRef z = ex.GetOrCreateProperty<OptionRef>(
 					LexExampleSentence.WellKnownProperties.Source
-					);
+				);
 				z.Value = "hearsay";
 
 				session.LiftWriter.Add(ex);
@@ -827,8 +827,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				//_lexEntryRepository.SaveItem(entry);
 				Assert.AreEqual(
 					"my id",
-					LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>())
-					);
+					LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>())
+				);
 			}
 		}
 
@@ -838,7 +838,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
 			Assert.AreEqual(1, idCounts["my id"]);
 		}
 		*/
@@ -849,8 +849,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
-			Assert.AreEqual("my id_2", LiftWriter.GetHumanReadableId(entry, idCounts));
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
+			Assert.AreEqual("my id_2", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts));
 		}
 		*/
 		/* this is not relevant, as we are currently using form_guid as the id
@@ -859,8 +859,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
-			LiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
 			Assert.AreEqual(2, idCounts["my id"]);
 		}
 		*/
@@ -869,7 +869,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public void GetHumanReadableId_EntryHasNoIdAndNoLexicalForms_GivesDefaultId()
 		{
 			LexEntry entry = new LexEntry();
-			Assert.AreEqual("NoForm", LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+			Assert.AreEqual("NoForm", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()));
 		}
 		*/
 
@@ -879,8 +879,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry();
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
-			Assert.AreEqual("NoForm_2", LiftWriter.GetHumanReadableId(entry, idCounts));
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
+			Assert.AreEqual("NoForm_2", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts));
 		}
 		*/
 
@@ -892,7 +892,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 
-			Assert.AreEqual("grass", LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+			Assert.AreEqual("grass", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()));
 		}
 		*/
 
@@ -905,7 +905,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
 			Assert.AreEqual(1, idCounts["grass"]);
 		}
 		*/
@@ -917,8 +917,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
-			Assert.AreEqual("grass_2", LiftWriter.GetHumanReadableId(entry, idCounts));
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
+			Assert.AreEqual("grass_2", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts));
 		}
 		*/
 		/*      this is not currently relevant, as we are now using form_guid as the id
@@ -929,8 +929,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			entry.LexicalForm["green"] = "grass";
 			entry.LexicalForm["blue"] = "ocean";
 			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableId(entry, idCounts);
-			LiftWriter.GetHumanReadableId(entry, idCounts);
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
+			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
 			Assert.AreEqual(2, idCounts["grass"]);
 		}
 		*/
@@ -940,7 +940,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			LexEntry entry = new LexEntry();
 			entry.LexicalForm["green"] = "string\t1\n2\r3 4";
-			Assert.AreEqual("string 1 2 3 4", LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()));
+			Assert.AreEqual("string 1 2 3 4", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()));
 		}
 		*/
 
@@ -949,10 +949,10 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			Assert.IsTrue(
-				LiftWriter.GetHumanReadableId(
+				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(
 					entry, new Dictionary<string, int>()
-					).StartsWith("Id'dPrematurely_")
-				);
+				).StartsWith("Id'dPrematurely_")
+			);
 		}
 
 		[Test]
@@ -961,7 +961,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			entry.LexicalForm["green"] = "string";
 			Assert.IsTrue(
-				LiftWriter.GetHumanReadableId(entry, new Dictionary<string, int>()).StartsWith
+				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()).StartsWith
 					("string"));
 		}
 
@@ -977,7 +977,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				AssertHasAtLeastOneMatch(
 					"sense/gloss[@lang='blue']/text[text()='ocean']",
 					session
-					);
+				);
 			}
 		}
 
@@ -1009,9 +1009,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.Add(sense);
 				CheckAnswer(
 					GetSenseElement(sense) +
-					"<gloss lang=\"blue\"><text>LessThan&lt;GreaterThan&gt;Ampersan&amp;</text></gloss></sense>"
+						"<gloss lang=\"blue\"><text>LessThan&lt;GreaterThan&gt;Ampersan&amp;</text></gloss></sense>"
 					, session
-					);
+				);
 			}
 		}
 
@@ -1037,7 +1037,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				var sense = new LexSense();
 				var o = sense.GetOrCreateProperty<OptionRef>(
 					LexSense.WellKnownProperties.PartOfSpeech
-					);
+				);
 				o.Value = "orange";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
@@ -1054,7 +1054,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				LexSense sense = new LexSense();
 				OptionRef o = sense.GetOrCreateProperty<OptionRef>(
 					LexSense.WellKnownProperties.PartOfSpeech
-					);
+				);
 				o.Value = "orange";
 				o.IsStarred = true;
 				session.LiftWriter.Add(sense);
@@ -1062,7 +1062,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				AssertHasAtLeastOneMatch(
 					"sense/grammatical-info[@value='orange']/annotation[@name='flag' and @value='1']",
 					session
-					);
+				);
 			}
 		}
 
@@ -1125,7 +1125,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				AssertHasAtLeastOneMatch(
 					"entry/lexical-unit/form[@lang='x']/annotation[@name='flag' and @value='1']",
 					session
-					);
+				);
 			}
 		}
 
@@ -1153,7 +1153,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					"<form lang=\"blue\"><text>ocean</text></form><form lang=\"red\"><text>sunset</text></form>",
 					session
-					);
+				);
 			}
 		}
 
@@ -1235,9 +1235,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				CheckAnswer(
 					GetSenseElement(sense) +
-					"<illustration href=\"bird.jpg\"><label><form lang=\"aa\"><text>aCaption</text></form></label></illustration></sense>",
+						"<illustration href=\"bird.jpg\"><label><form lang=\"aa\"><text>aCaption</text></form></label></illustration></sense>",
 					session
-					);
+				);
 			}
 		}
 
@@ -1301,8 +1301,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 								  "<gloss lang=\"a\"><text>aaa</text></gloss></sense>" +
 								  GetSenseElement(sense2) +
 								  "<gloss lang=\"b\"><text>bbb</text></gloss></sense></entry>"
-						), session
-					);
+					), session
+				);
 			}
 		}
 
@@ -1319,7 +1319,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(GetSenseElement(sense) +
 							"<example><form lang=\"red\"><text>red sunset tonight</text></form></example></sense>",
 							session
-					);
+				);
 			}
 		}
 
@@ -1334,13 +1334,13 @@ namespace Palaso.DictionaryServices.Tests.Lift
 					"synonym",
 					LexRelationType.Multiplicities.Many,
 					LexRelationType.TargetTypes.Sense
-					);
+				);
 
 				var antonymRelationType = new LexRelationType(
 					"antonym",
 					LexRelationType.Multiplicities.Many,
 					LexRelationType.TargetTypes.Sense
-					);
+				);
 
 				var relations = new LexRelationCollection();
 				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
@@ -1353,7 +1353,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(GetSenseElement(sense) +
 							"<relation type=\"synonym\" ref=\"one\" /><relation type=\"synonym\" ref=\"two\" /><relation type=\"antonym\" ref=\"bee\" /></sense>",
 							session
-					);
+				);
 			}
 		}
 
@@ -1380,7 +1380,53 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					"<form lang=\"de\"><text>This <span href=\"reference\">is well formed</span> XML!</text></form>",
 					session
-					);
+				);
+			}
+		}
+
+		[Test]
+		public void Add_MultiTextWithWellFormedXMLAndScaryCharacter_IsExportedAsXML()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", "This <span href=\"reference\">is well \u001F formed</span> XML!");
+				session.LiftWriter.Add(null, multiText);
+				CheckAnswer(
+					"<form lang=\"de\"><text>This <span href=\"reference\">is well &#x1F; formed</span> XML!</text></form>",
+					session
+				);
+			}
+		}
+		[Test]
+		public void Add_MultiTextWithScaryUnicodeChar_IsExported()
+		{
+			//  1F is the character for "Segment Separator" and you can insert it by right-clicking in windows
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", "This has a segment separator character at the end\u001F");
+				session.LiftWriter.Add(null, multiText);
+				CheckAnswer(
+					"<form lang=\"de\"><text>This has a segment separator character at the end&#x1F;</text></form>",
+					session
+				);
+			}
+		}
+
+		[Test]
+		public void Add_MalformedXmlWithWithScaryUnicodeChar_IsExportedAsText()
+		{
+			//  1F is the character for "Segment Separator" and you can insert it by right-clicking in windows
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", "This <span href=\"reference\">is not well \u001F formed<span> XML!");
+				session.LiftWriter.Add(null, multiText);
+				CheckAnswer(
+					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well &#x1F; formed&lt;span&gt; XML!</text></form>",
+					session
+				);
 			}
 		}
 
@@ -1395,7 +1441,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				CheckAnswer(
 					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well formed&lt;span&gt; XML!</text></form>",
 					session
-					);
+				);
 			}
 		}
 	}

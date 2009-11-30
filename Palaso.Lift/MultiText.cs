@@ -4,6 +4,10 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using LiftIO;
+using Palaso.Text;
+using Palaso.Extensions;
+using LiftIO.Parsing;
 using System.Linq;
 using LiftIO.Parsing;
 using Palaso.Text;
@@ -115,7 +119,10 @@ namespace Palaso.Lift
 				writer.WriteStartElement("form");
 				writer.WriteAttributeString("lang", form.WritingSystemId);
 				//notice, no <text> wrapper
-				writer.WriteString(form.Form);
+
+				//the following makes us safe against codes like 0x1F, which can be easily
+				//introduced via a right-click menu in a standard edit box (at least on windows)
+				writer.WriteString(form.Form.EscapeAnyUnicodeCharactersIllegalInXml());
 				writer.WriteEndElement();
 			}
 		}

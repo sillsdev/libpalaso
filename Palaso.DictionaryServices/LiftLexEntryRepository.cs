@@ -60,8 +60,7 @@ namespace Palaso.DictionaryServices
 #if DEBUG
 			_constructionStackTrace = new StackTrace();
 #endif
-			_decoratedDataMapper = new LiftDataMapper(path, null, new ProgressState(),
-													  new LiftReaderWriterProvider(new ProgressState(), new OptionsList(), new string[] { }));
+			_decoratedDataMapper = new LiftDataMapper(path, null, new string[] {}, new ProgressState());
 			_disposed = false;
 		}
 
