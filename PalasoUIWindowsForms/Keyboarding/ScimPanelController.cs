@@ -25,8 +25,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 
 		private const int MAXNUMBEROFSUPPORTEDKEYBOARDS = 50;
-		private static Timer _timerToOvercomeContextSwitchingBug = new Timer();
-		static string _keyboardNameForTimerToSwitchTo = "";
 
 		public struct ContextInfo {
 			public int frontendClient;
@@ -39,12 +37,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return Nested.singleton;
 			}
-		}
-
-		private ScimPanelController()
-		{
-			_timerToOvercomeContextSwitchingBug.Interval = 1;
-			_timerToOvercomeContextSwitchingBug.Tick += TimerActivateKeyboard;
 		}
 
 		~ScimPanelController()
@@ -63,12 +55,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		//As of 3-Aug-2009 mono has a bug where the X input context is actually switched
-		//AFTER the OnEnter and OnFocused events are fired. Thus switching the keyboard
-		//in the respective event handlers actually switches it for the LAST context
-		//which naturally leads to some unexpected behavior.
-		//As a result we instead start a timer that waits 1 ms and then fires an event whose
-		//handler then actually does the switching.
 		public void ActivateKeyboard(string name)
 		{
 			try{OpenConnectionIfNecassary();}
@@ -78,30 +64,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				throw new ArgumentOutOfRangeException("Scim does not have a Keyboard with that name!" + name);
 			}
-			_keyboardNameForTimerToSwitchTo = name;
-			if(!_timerToOvercomeContextSwitchingBug.Enabled)
+			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in ScimPanelControllerWrapper.GetListOfSupportedKeyboardsWrapped())
 			{
-				_timerToOvercomeContextSwitchingBug.Start();
-			}
-		}
-
-		public void TimerActivateKeyboard(Object sender, EventArgs e)
-		{
-			_timerToOvercomeContextSwitchingBug.Stop();
-			if(HasKeyboardNamed(_keyboardNameForTimerToSwitchTo))
-			{
-				foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in ScimPanelControllerWrapper.GetListOfSupportedKeyboardsWrapped())
+				if(keyboard.name == name)
 				{
-					if(keyboard.name == _keyboardNameForTimerToSwitchTo)
-					{
-							ScimPanelControllerWrapper.SetKeyboardWrapped(keyboard.uuid);
-					}
+						ScimPanelControllerWrapper.SetKeyboardWrapped(keyboard.uuid);
 				}
 			}
-			else
-			{
-				throw new ArgumentOutOfRangeException("Scim does not have a Keyboard with that name!" + _keyboardNameForTimerToSwitchTo);
-			}
+
 		}
 
 		public List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors

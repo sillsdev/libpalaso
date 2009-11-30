@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.21022</ProductVersion>
+	<ProductVersion>9.0.30729</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -95,6 +95,7 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="Code\RequireThat.cs" />
 	<Compile Include="Data\DelegateQuery.cs" />
 	<Compile Include="Data\DictionaryEqualityComparer.cs" />
 	<Compile Include="Data\IDataMapper.cs" />
@@ -124,9 +125,10 @@
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
 	<Compile Include="Linq\MiscOperators.cs" />
-	<Compile Include="Misc\Guard.cs" />
+	<Compile Include="Code\Detect.cs" />
+	<Compile Include="Code\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
-	<Compile Include="Misc\GuardAgainstReentry.cs" />
+	<Compile Include="Code\GuardAgainstReentry.cs" />
 	<Compile Include="Misc\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />

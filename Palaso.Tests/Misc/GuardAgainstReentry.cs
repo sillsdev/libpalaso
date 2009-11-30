@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Palaso.Misc;
+using Palaso.Code;
 
 namespace Palaso.Tests.Misc
 {

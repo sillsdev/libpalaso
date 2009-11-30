@@ -82,6 +82,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static string GetActiveKeyboard()
 		{
+#if MONO
+			string name = ScimAdaptor.GetActiveKeyboard();
+			if (!string.IsNullOrEmpty(name))
+				return name;
+#else
 			string name = Keyman6Adaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
 				return name;
@@ -90,27 +95,33 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			if (!string.IsNullOrEmpty(name))
 				return name;
 
-			name = ScimAdaptor.GetActiveKeyboard();
-			if (!string.IsNullOrEmpty(name))
-				return name;
-
 			name = WindowsIMEAdaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
 				return name;
-
+#endif
 			return null;
 		}
 
 		public static void DeactivateKeyboard()
 		{
+#if MONO
+			ScimAdaptor.Deactivate();
+#else
+
 			Keyman6Adaptor.Deactivate();
 			Keyman7Adaptor.Deactivate();
-			ScimAdaptor.Deactivate();
 			WindowsIMEAdaptor.Deactivate();
+#endif
 		}
 
 		public static bool EngineAvailable(Engines engine)
 		{
+#if MONO
+			if ((engine & Engines.Scim) == Engines.Scim)
+			{
+				return ScimAdaptor.EngineAvailable;
+			}
+#else
 			if ((engine & Engines.Windows) == Engines.Windows)
 			{
 				return WindowsIMEAdaptor.EngineAvailable;
@@ -123,10 +134,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return Keyman7Adaptor.EngineAvailable;
 			}
-			if ((engine & Engines.Scim) == Engines.Scim)
-			{
-				return ScimAdaptor.EngineAvailable;
-			}
+#endif
 			Debug.Fail("Unrecognized engine enumeration");
 			return false;
 		}

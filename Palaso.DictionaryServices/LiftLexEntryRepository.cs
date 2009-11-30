@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Palaso.Code;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift.Options;
 using Palaso.UiBindings;
-using Palaso.Misc;
 using Palaso.Progress;
 using Palaso.Text;
 using Palaso.WritingSystems;

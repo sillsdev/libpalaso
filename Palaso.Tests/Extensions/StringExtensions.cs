@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
 using NUnit.Framework;
 using Palaso.Extensions;
 
@@ -55,5 +58,28 @@ namespace Palaso.Tests.Extensions
 			Assert.AreEqual("hello", list[0]);
 			Assert.AreEqual("bye", list[1]);
 		}
+
+		[Test]
+		public void EscapeAnyUnicodeCharactersIllegalInXml_HasMixOfXmlAndIllegalChars_GivesXmlWithEscapedChars()
+		{
+			var s  ="This <span href=\"reference\">is well \u001F formed</span> XML!";
+			Assert.AreEqual("This <span href=\"reference\">is well &#x1F; formed</span> XML!",
+				s.EscapeAnyUnicodeCharactersIllegalInXml());
+		}
+
+		[Test]
+		public void EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml_HasMixOfXmlAndIllegalChars_GivesPureTextEscapedChars()
+		{
+			var s = "This <span href=\"reference\">is not really \u001F xml.";
+			Assert.AreEqual("This &lt;span href=\"reference\"&gt;is not really &#x1F; xml.",
+				s.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
+//
+//            XmlDocument x = new XmlDocument();
+//            x.LoadXml("<hello>&#x1f;</hello>");
+//            var writer = XmlWriter.Create(Path.GetTempFileName());
+//            writer.WriteElementString("x", x.InnerText);
+//
+//            writer.WriteNode(z);
+		 }
 	}
 }
