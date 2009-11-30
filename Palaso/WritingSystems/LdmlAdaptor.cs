@@ -725,15 +725,16 @@ namespace Palaso.WritingSystems
 				needToCopy = false;
 			}
 
-			//if (string.IsNullOrEmpty(ws.SortUsing) || !Enum.IsDefined(typeof(WritingSystemDefinition.SortRulesType), ws.SortUsing))
-			//{
-			//    if (needToCopy)
-			//    {
-			//        // copy whole existing node - invalid/undefined collation rules in our definition
-			//        writer.WriteNode(reader, false);
-			//    }
-			//    return;
-			//}
+			if (ws.SortUsing == WritingSystemDefinition.SortRulesType.DefaultOrdering)
+			{
+				if (needToCopy)
+				{
+					// copy whole existing node - invalid/undefined collation rules in our definition
+					writer.WriteNode(reader, false);
+				}
+				return;
+			}
+
 			if (needToCopy && reader.IsEmptyElement)
 			{
 				reader.Skip();

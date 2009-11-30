@@ -14,6 +14,11 @@ namespace Palaso.WritingSystems
 		public enum SortRulesType
 		{
 			/// <summary>
+			/// Default Unicode ordering rules
+			/// </summary>
+			[Description("Default Ordering")]
+			DefaultOrdering,
+			/// <summary>
 			/// Custom Simple (Shoebox/Toolbox) style rules
 			/// </summary>
 			[Description("Custom Simple (Shoebox style) rules")]
@@ -50,17 +55,9 @@ namespace Palaso.WritingSystems
 		private string _sortRules;
 		private string _spellCheckingId;
 
-		private bool _modified;
-		private bool _markedForDeletion;
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
-
-		/// <summary>
-		/// Other classes that persist this need to know when our id changed, so the can
-		/// clean up the old copy which is based on the old name.
-		/// </summary>
-		private string _storeID;
 
 		/// <summary>
 		/// singleton
@@ -74,6 +71,7 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemDefinition()
 		{
+			_sortUsing = SortRulesType.DefaultOrdering;
 			LoadScriptOptions();
 			Modified = false;
 		}
@@ -162,9 +160,6 @@ namespace Palaso.WritingSystems
 
 		public class LanguageCode
 		{
-			private string _code;
-			private string _name;
-
 			public LanguageCode(string code, string name)
 			{
 				Code = code;
@@ -172,29 +167,9 @@ namespace Palaso.WritingSystems
 			}
 
 
-			public string Name
-			{
-				get
-				{
-					return _name;
-				}
-				set
-				{
-					_name = value;
-				}
-			}
+			public string Name { get; set; }
 
-			public string Code
-			{
-				get
-				{
-					return _code;
-				}
-				set
-				{
-					_code = value;
-				}
-			}
+			public string Code { get; set; }
 
 			public static int CompareByName(LanguageCode x, LanguageCode y)
 			{
@@ -217,7 +192,7 @@ namespace Palaso.WritingSystems
 					}
 					else
 					{
-						return x._name.CompareTo(y._name);
+						return x.Name.CompareTo(y.Name);
 					}
 				}
 			}
@@ -333,17 +308,7 @@ namespace Palaso.WritingSystems
 		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		public string StoreID
-		{
-			get
-			{
-				return _storeID;
-			}
-			set
-			{
-				_storeID = value;
-			}
-		}
+		public string StoreID { get; set; }
 
 		public string DisplayLabel
 		{
@@ -353,20 +318,14 @@ namespace Palaso.WritingSystems
 				{
 					return _abbreviation;
 				}
-				else
+				if (!String.IsNullOrEmpty(_iso))
 				{
-					if (!String.IsNullOrEmpty(_iso))
-					{
-						return _iso;
-					}
-					else
-					{
-						if (!String.IsNullOrEmpty(_languageName))
-						{
-							string n = _languageName;
-							return n.Substring(0, n.Length > 4 ? 4 : n.Length);
-						}
-					}
+					return _iso;
+				}
+				if (!String.IsNullOrEmpty(_languageName))
+				{
+					string n = _languageName;
+					return n.Substring(0, n.Length > 4 ? 4 : n.Length);
 				}
 				return "???";
 			}
@@ -376,15 +335,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				string id;
-				if (String.IsNullOrEmpty(ISO))
-				{
-					id = "unknown";
-				}
-				else
-				{
-					id = ISO;
-				}
+				string id = String.IsNullOrEmpty(ISO) ? "unknown" : ISO;
 				if (!String.IsNullOrEmpty(Script))
 				{
 					id += "-" + Script;
@@ -413,7 +364,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				StringBuilder summary = new StringBuilder();
+				var summary = new StringBuilder();
 				if (!String.IsNullOrEmpty(_variant))
 				{
 					summary.AppendFormat("{0}", _variant);
@@ -438,11 +389,7 @@ namespace Palaso.WritingSystems
 			get
 			{
 				ScriptOption option = CurrentScriptOption;
-				if (option==null)
-				{
-					return _script;
-				}
-				return option.Label; //unrecognized, so return raw code
+				return option == null ? _script : option.Label;
 			}
 		}
 
@@ -458,7 +405,7 @@ namespace Palaso.WritingSystems
 				{
 					script = "latn";
 				}
-				foreach (WritingSystemDefinition.ScriptOption option in _scriptOptions)
+				foreach (var option in _scriptOptions)
 				{
 					if (option.Code == script)
 					{
@@ -477,29 +424,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool Modified
-		{
-			get
-			{
-				return _modified;
-			}
-			set
-			{
-				_modified = value;
-			}
-		}
+		public bool Modified { get; set; }
 
-		public bool MarkedForDeletion
-		{
-			get
-			{
-				return _markedForDeletion;
-			}
-			set
-			{
-				_markedForDeletion = value;
-			}
-		}
+		public bool MarkedForDeletion { get; set; }
 
 		public string DefaultFontName
 		{
@@ -577,34 +504,19 @@ namespace Palaso.WritingSystems
 
 		public class ScriptOption
 		{
-			private string _label;
-			private string _code;
-
 			public ScriptOption(string label, string code)
 			{
-				_label = label;
-				_code = code;
+				Label = label;
+				Code = code;
 			}
 
-			public string Code
-			{
-				get
-				{
-					return _code;
-				}
-			}
+			public string Code { get; private set; }
 
-			public string Label
-			{
-				get
-				{
-					return _label;
-				}
-			}
+			public string Label { get; private set; }
 
 			public override string ToString()
 			{
-				return _label;
+				return Label;
 			}
 
 			public static int CompareScriptOptions(ScriptOption x, ScriptOption y)
@@ -615,22 +527,13 @@ namespace Palaso.WritingSystems
 					{
 						return 0;
 					}
-					else
-					{
-						return -1;
-					}
+					return -1;
 				}
-				else
+				if (y == null)
 				{
-					if (y == null)
-					{
-						return 1;
-					}
-					else
-					{
-						return x.Label.CompareTo(y.Label);
-					}
+					return 1;
 				}
+				return x.Label.CompareTo(y.Label);
 			}
 		}
 
@@ -683,6 +586,9 @@ namespace Palaso.WritingSystems
 				{
 					switch (SortUsing)
 					{
+						case SortRulesType.DefaultOrdering:
+							_collator = new SystemCollator(null);
+							break;
 						case SortRulesType.CustomSimple:
 							_collator = new SimpleRulesCollator(SortRules);
 							break;
@@ -706,25 +612,27 @@ namespace Palaso.WritingSystems
 		public bool ValidateCollationRules(out string message)
 		{
 			message = null;
-			try
+			switch (SortUsing)
 			{
-				switch (SortUsing)
-				{
-					case SortRulesType.CustomICU:
-						return IcuRulesCollator.ValidateSortRules(SortRules, out message);
-					case SortRulesType.CustomSimple:
-						return SimpleRulesCollator.ValidateSimpleRules(SortRules, out message);
-					case SortRulesType.OtherLanguage:
+				case SortRulesType.DefaultOrdering:
+					return String.IsNullOrEmpty(SortRules);
+				case SortRulesType.CustomICU:
+					return IcuRulesCollator.ValidateSortRules(SortRules, out message);
+				case SortRulesType.CustomSimple:
+					return SimpleRulesCollator.ValidateSimpleRules(SortRules, out message);
+				case SortRulesType.OtherLanguage:
+					try
+					{
 						new SystemCollator(SortRules);
-						break;
-				}
+					}
+					catch (Exception e)
+					{
+						message = String.Format("Error while validating sorting rules: {0}", e.Message);
+						return false;
+					}
+					return true;
 			}
-			catch (Exception e)
-			{
-				message = String.Format("Error while validating sorting rules: {0}", e.Message);
-				return false;
-			}
-			return true;
+			return false;
 		}
 
 		public WritingSystemDefinition Clone()

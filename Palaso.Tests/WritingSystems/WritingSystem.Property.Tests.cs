@@ -208,21 +208,29 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesAllNeededMembers()
 		{
 			// Put any fields to ignore in this string surrounded by "|"
-			const string ignoreFields = "|_modified|_markedForDeletion|_storeID|_collator|";
+			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|";
 			// values to use for testing different types
-			Dictionary<Type, object> valuesToSet = new Dictionary<Type, object>();
-			valuesToSet.Add(typeof (float), 3.14f);
-			valuesToSet.Add(typeof (bool), true);
-			valuesToSet.Add(typeof (string), "Foo");
-			valuesToSet.Add(typeof (DateTime), DateTime.Now);
-			valuesToSet.Add(typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
-			foreach (FieldInfo fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			var valuesToSet = new Dictionary<Type, object>
 			{
-				if (ignoreFields.Contains("|" + fieldInfo.Name + "|"))
+				{typeof (float), 3.14f},
+				{typeof (bool), true},
+				{typeof (string), "Foo"},
+				{typeof (DateTime), DateTime.Now},
+				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU}
+			};
+			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			{
+				var fieldName = fieldInfo.Name;
+				if (fieldInfo.Name.Contains("<"))
+				{
+					var splitResult = fieldInfo.Name.Split(new[] {'<', '>'});
+					fieldName = splitResult[1];
+				}
+				if (ignoreFields.Contains("|" + fieldName + "|"))
 				{
 					continue;
 				}
-				WritingSystemDefinition ws = new WritingSystemDefinition();
+				var ws = new WritingSystemDefinition();
 				if (valuesToSet.ContainsKey(fieldInfo.FieldType))
 				{
 					fieldInfo.SetValue(ws, valuesToSet[fieldInfo.FieldType]);
@@ -236,9 +244,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void NoSortUsing_ValidateSortRules_IsFalse()
+		public void SortUsingDefaultOrdering_ValidateSortRulesWhenEmpty_IsTrue()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
+			var ws = new WritingSystemDefinition();
+			string message;
+			Assert.IsTrue(ws.ValidateCollationRules(out message));
+		}
+
+		[Test]
+		public void SortUsingDefaultOrdering_ValidateSortRulesWhenNotEmpty_IsFalse()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.SortRules = "abcd";
 			string message;
 			Assert.IsFalse(ws.ValidateCollationRules(out message));
 		}
