@@ -3,7 +3,7 @@ using System.ComponentModel;
 using Palaso.Lift;
 using Palaso.UiBindings;
 
-namespace Palaso.Lift.Model
+namespace Palaso.DictionaryServices.Model
 {
 	public class LexRelationType
 	{

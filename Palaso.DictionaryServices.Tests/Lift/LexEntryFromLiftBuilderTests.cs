@@ -6,7 +6,6 @@ using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
-using Palaso.Lift.Model;
 using Palaso.Lift.Options;
 
 using NUnit.Framework;

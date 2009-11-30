@@ -4,7 +4,7 @@ using System.ComponentModel;
 using Palaso.Lift;
 using Palaso.Reporting;
 
-namespace Palaso.Lift.Model
+namespace Palaso.DictionaryServices.Model
 {
 	public sealed class LexSense: PalasoDataObject
 	{

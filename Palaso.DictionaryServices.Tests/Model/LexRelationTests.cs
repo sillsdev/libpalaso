@@ -1,6 +1,6 @@
 using System.IO;
 using NUnit.Framework;
-using Palaso.Lift.Model;
+using Palaso.DictionaryServices.Model;
 
 // TODO Can this be moved up to Palaso.Lift.Tests?
 

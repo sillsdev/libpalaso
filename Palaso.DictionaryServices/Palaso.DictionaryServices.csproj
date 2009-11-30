@@ -56,6 +56,9 @@
 	<Compile Include="Lift\LiftReaderWriterProvider.cs" />
 	<Compile Include="Lift\LiftWriter.cs" />
 	<Compile Include="Model\LexEntry.cs" />
+	<Compile Include="Model\LexExampleSentence.cs" />
+	<Compile Include="Model\LexRelation.cs" />
+	<Compile Include="Model\LexSense.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

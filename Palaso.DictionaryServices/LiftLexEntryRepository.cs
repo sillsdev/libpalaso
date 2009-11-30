@@ -9,7 +9,6 @@ using Palaso.UiBindings;
 using Palaso.Misc;
 using Palaso.Progress;
 using Palaso.Text;
-using Palaso.Lift.Model;
 using Palaso.WritingSystems;
 
 #if MONO

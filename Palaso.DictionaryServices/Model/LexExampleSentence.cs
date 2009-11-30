@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Palaso.Lift;
 
-namespace Palaso.Lift.Model
+namespace Palaso.DictionaryServices.Model
 {
 	public sealed class LexExampleSentence: PalasoDataObject
 	{
