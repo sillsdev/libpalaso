@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Enchant;
+using Palaso.I8N;
 using Palaso.Reporting;
 using Palaso.UI.WindowsForms.HotSpot;
 using Palaso.Spelling;

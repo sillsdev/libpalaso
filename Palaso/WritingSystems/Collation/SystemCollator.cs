@@ -32,6 +32,11 @@ namespace Palaso.WritingSystems.Collation
 			return _cultureInfo.CompareInfo.Compare(x, y);
 		}
 
+		public int Compare(object x, object y)
+		{
+			return Compare((string)x, (string)y);
+		}
+
 		private static CultureInfo GetCultureInfoFromWritingSystemId(string cultureId)
 		{
 			CultureInfo ci;

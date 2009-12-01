@@ -149,10 +149,10 @@ namespace Palaso.Tests.WritingSystems
 			// Put any properties to ignore in this string surrounded by "|"
 			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|";
 			// special test values to use for properties that are particular
-			Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
-			Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
-			firstValueSpecial.Add("SortUsing", "CustomSimple");
-			secondValueSpecial.Add("SortUsing", "CustomICU");
+			//Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
+			//Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
+			//firstValueSpecial.Add("SortUsing", "CustomSimple");
+			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
 			Dictionary<Type, object> firstValueToSet = new Dictionary<Type, object>();
 			Dictionary<Type, object> secondValueToSet = new Dictionary<Type, object>();
@@ -164,6 +164,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (string), "Y");
 			firstValueToSet.Add(typeof (DateTime), new DateTime(2007, 12, 31));
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
+			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
+			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
 				// skip read-only or ones in the ignore list
@@ -178,12 +180,12 @@ namespace Palaso.Tests.WritingSystems
 				// We use the setting twice method so we don't require a getter on the property.
 				try
 				{
-					if (firstValueSpecial.ContainsKey(propertyInfo.Name) && secondValueSpecial.ContainsKey(propertyInfo.Name))
-					{
-						propertyInfo.SetValue(ws, firstValueSpecial[propertyInfo.Name], null);
-						propertyInfo.SetValue(ws, secondValueSpecial[propertyInfo.Name], null);
-					}
-					else if (firstValueToSet.ContainsKey(propertyInfo.PropertyType) && secondValueToSet.ContainsKey(propertyInfo.PropertyType))
+					//if (firstValueSpecial.ContainsKey(propertyInfo.Name) && secondValueSpecial.ContainsKey(propertyInfo.Name))
+					//{
+					//    propertyInfo.SetValue(ws, firstValueSpecial[propertyInfo.Name], null);
+					//    propertyInfo.SetValue(ws, secondValueSpecial[propertyInfo.Name], null);
+					//}
+					if (firstValueToSet.ContainsKey(propertyInfo.PropertyType) && secondValueToSet.ContainsKey(propertyInfo.PropertyType))
 					{
 						propertyInfo.SetValue(ws, firstValueToSet[propertyInfo.PropertyType], null);
 						propertyInfo.SetValue(ws, secondValueToSet[propertyInfo.PropertyType], null);
@@ -206,20 +208,29 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesAllNeededMembers()
 		{
 			// Put any fields to ignore in this string surrounded by "|"
-			const string ignoreFields = "|_modified|_markedForDeletion|_storeID|_collator|";
+			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|";
 			// values to use for testing different types
-			Dictionary<Type, object> valuesToSet = new Dictionary<Type, object>();
-			valuesToSet.Add(typeof (float), 3.14f);
-			valuesToSet.Add(typeof (bool), true);
-			valuesToSet.Add(typeof (string), "Foo");
-			valuesToSet.Add(typeof (DateTime), DateTime.Now);
-			foreach (FieldInfo fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			var valuesToSet = new Dictionary<Type, object>
 			{
-				if (ignoreFields.Contains("|" + fieldInfo.Name + "|"))
+				{typeof (float), 3.14f},
+				{typeof (bool), true},
+				{typeof (string), "Foo"},
+				{typeof (DateTime), DateTime.Now},
+				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU}
+			};
+			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+			{
+				var fieldName = fieldInfo.Name;
+				if (fieldInfo.Name.Contains("<"))
+				{
+					var splitResult = fieldInfo.Name.Split(new[] {'<', '>'});
+					fieldName = splitResult[1];
+				}
+				if (ignoreFields.Contains("|" + fieldName + "|"))
 				{
 					continue;
 				}
-				WritingSystemDefinition ws = new WritingSystemDefinition();
+				var ws = new WritingSystemDefinition();
 				if (valuesToSet.ContainsKey(fieldInfo.FieldType))
 				{
 					fieldInfo.SetValue(ws, valuesToSet[fieldInfo.FieldType]);
@@ -232,17 +243,19 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException)) ]
-		public void InvalidSortUsing_Throws()
+		[Test]
+		public void SortUsingDefaultOrdering_ValidateSortRulesWhenEmpty_IsTrue()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SortUsing = "invalid";
+			var ws = new WritingSystemDefinition();
+			string message;
+			Assert.IsTrue(ws.ValidateCollationRules(out message));
 		}
 
 		[Test]
-		public void NoSortUsing_ValidateSortRules_IsFalse()
+		public void SortUsingDefaultOrdering_ValidateSortRulesWhenNotEmpty_IsFalse()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
+			var ws = new WritingSystemDefinition();
+			ws.SortRules = "abcd";
 			string message;
 			Assert.IsFalse(ws.ValidateCollationRules(out message));
 		}
