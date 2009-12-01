@@ -198,9 +198,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
 
-			if (!HasKeyboardNamed (name))
-				throw new Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException ("Keyboard doesn't exist");
-
 			inputContextBus.InputContext.SetEngine (name);
 		}
 
