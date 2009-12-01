@@ -30,6 +30,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			List<KeyboardDescriptor> keyboards = new List<KeyboardDescriptor>();
 
+#if MONO
+			if ((engineKinds & Engines.IBus) == Engines.IBus)
+			{
+				keyboards.AddRange(IBusAdaptor.KeyboardDescriptors);
+			}
+			if ((engineKinds & Engines.Scim) == Engines.Scim)
+			{
+				keyboards.AddRange(ScimAdaptor.KeyboardDescriptors);
+			}
+#else
 			if ((engineKinds & Engines.Windows) == Engines.Windows)
 			{
 				keyboards.AddRange(WindowsIMEAdaptor.KeyboardDescriptors);
@@ -42,20 +52,23 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				keyboards.AddRange(Keyman7Adaptor.KeyboardDescriptors);
 			}
-			if ((engineKinds & Engines.IBus) == Engines.IBus)
-			{
-				keyboards.AddRange(IBusAdaptor.KeyboardDescriptors);
-			}
-			if ((engineKinds & Engines.Scim) == Engines.Scim)
-			{
-				keyboards.AddRange(ScimAdaptor.KeyboardDescriptors);
-			}
+#endif
 
 			return keyboards;
 		}
 
 		public static void ActivateKeyboard(string name)
 		{
+#if MONO
+			if (IBusAdaptor.HasKeyboardNamed(name))
+			{
+				IBusAdaptor.ActivateKeyboard(name);
+			}
+			else if (ScimAdaptor.HasKeyboardNamed(name))
+			{
+				ScimAdaptor.ActivateKeyboard(name);
+			}
+#else
 			if (WindowsIMEAdaptor.HasKeyboardNamed(name))
 			{
 				WindowsIMEAdaptor.ActivateKeyboard(name);
@@ -68,14 +81,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				Keyman7Adaptor.ActivateKeyboard(name);
 			}
-			else if (IBusAdaptor.HasKeyboardNamed(name))
-			{
-				IBusAdaptor.ActivateKeyboard(name);
-			}
-			else if (ScimAdaptor.HasKeyboardNamed(name))
-			{
-				ScimAdaptor.ActivateKeyboard(name);
-			}
+#endif
 			else
 			{
 				if (!(s_languagesAlreadyShownKeyBoardNotFoundMessages.Contains(name)))
@@ -121,7 +127,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			IBusAdaptor.Deactivate();
 			ScimAdaptor.Deactivate();
 #else
-
 			Keyman6Adaptor.Deactivate();
 			Keyman7Adaptor.Deactivate();
 			WindowsIMEAdaptor.Deactivate();
