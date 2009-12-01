@@ -1,7 +1,7 @@
-<project name="Palaso.DictionaryServices" default="build" basedir=".">
+<project name="Palaso.DictionaryServices.Tests" default="build" basedir=".">
 	<!-- review <property name="resgen.exe" value="resgen2"/> -->
 	<target name="build">
-		<property name="build.namespace" value="Palaso.DictionaryServices" />
+		<property name="build.namespace" value="Palaso.DictionaryServices.Tests" />
 		<property name="build.namespace.dir" value="${path::combine(project.resource.dir, build.namespace)}" />
 
 		<!-- review: usesourcepath will not work as the path of the source has been changed making it invalid -->
@@ -39,8 +39,8 @@
 				</foreach>
 
 		<csc target="library"
-			output="${project.output.dir}/Palaso.DictionaryServices.dll"
-			doc="${project.output.dir}/doc/Palaso.DictionaryServices.xml"
+			output="${project.output.dir}/Palaso.DictionaryServices.Tests.dll"
+			doc="${project.output.dir}/doc/Palaso.DictionaryServices.Tests.xml"
 			debug="${build.debug}"
 			define="${build.defines}">
 			<nowarn>
@@ -56,6 +56,9 @@
 				<include name="LiftIO.dll" />
 				<include name="Palaso.dll" />
 				<include name="Palaso.Lift.dll" />
+				<include name="Palaso.DictionaryServices.dll" />
+				<include name="Palaso.Tests.dll" />
+				<include name="Palaso.TestUtilities.dll" />
 				<include name="System.dll" />
 				<include name="System.Core.dll" />
 				<include name="System.Data.dll" />
