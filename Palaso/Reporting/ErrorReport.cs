@@ -438,11 +438,17 @@ namespace Palaso.Reporting
 			}
 		}
 
+		/// <summary>
+		/// this is for interacting with test code which doesn't want to allow an actual UI
+		/// </summary>
 		public class ProblemNotificationSentToUserException : ApplicationException
 		{
 			public ProblemNotificationSentToUserException(string message) : base(message) {}
 		}
 
+		/// <summary>
+		/// this is for interacting with test code which doesn't want to allow an actual UI
+		/// </summary>
 		public class NonFatalExceptionWouldHaveBeenMessageShownToUserException : ApplicationException
 		{
 			public NonFatalExceptionWouldHaveBeenMessageShownToUserException(Exception e)  : base(e.Message, e) { }
