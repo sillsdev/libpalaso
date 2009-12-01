@@ -34,6 +34,7 @@
 				<include name="**/*.cs" />
 			</sources>
 			<references basedir="${project.output.dir}">
+				<include name="System.Drawing.dll" />
 				<include name="nunit.framework.dll" />
 				<include name="Palaso.TestUtilities.dll" />
 				<include name="Palaso.dll" />
