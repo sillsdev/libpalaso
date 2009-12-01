@@ -1,8 +1,9 @@
 using System;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.Keyboarding;
-using System.Text;
 using System.Collections.Generic;
+
+#if MONO
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
@@ -139,3 +140,5 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 	}
 }
+
+#endif
