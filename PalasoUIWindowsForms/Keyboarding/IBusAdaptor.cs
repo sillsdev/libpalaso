@@ -34,7 +34,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				directory = System.Environment.GetEnvironmentVariable ("HOME");
 
 				if (String.IsNullOrEmpty (directory))
-					throw new Exception ("$XDG_CONFIG_HOME or $HOME Environment not set");
+					throw new ApplicationException ("$XDG_CONFIG_HOME or $HOME Environment not set");
 
 				directory = Path.Combine (directory, ".config");
 			}
@@ -63,7 +63,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			FileInfo[] files = di.GetFiles (filter);
 
 			if (files.Length != 1)
-				throw new Exception (String.Format ("Unable to locate IBus Config file in directory {0} with filter {1}. DISPLAY = {2}: {3}", directory, filter, display, files.Length < 1 ? "Unable to locate file" : "Too many files"));
+				throw new ApplicationException (String.Format ("Unable to locate IBus Config file in directory {0} with filter {1}. DISPLAY = {2}: {3}", directory, filter, display, files.Length < 1 ? "Unable to locate file" : "Too many files"));
 
 			return files[0].FullName;
 
@@ -88,13 +88,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					string[] toks = line.Split ("=".ToCharArray (), 2);
 					if (toks.Length != 2 || toks[1] == String.Empty)
-						throw new Exception (String.Format ("IBUS config file : {0} not as expected for line {1}. Expected IBUS_ADDRESS='some socket'", filename, line));
+						throw new ApplicationException (String.Format ("IBUS config file : {0} not as expected for line {1}. Expected IBUS_ADDRESS='some socket'", filename, line));
 
 					return toks[1];
 				}
 			}
 
-			throw new Exception (String.Format ("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_ADDRESS));
+			throw new ApplicationException (String.Format ("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_ADDRESS));
 		}
 
 		/// <summary>
@@ -277,7 +277,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
 				object engine = inputContextBus.InputContext.GetEngine ();
 				if (engine == null)
-					throw new Exception ("Focused Input Context doesn't have an active Keyboard/Engine");
+					throw new ApplicationException ("Focused Input Context doesn't have an active Keyboard/Engine");
 
 				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engine, typeof(IBusEngineDesc));
 				return engineDesc.longname;
