@@ -224,7 +224,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		[Ignore("To make this this test to pass have to change established bahaviour - IE currently ActivateKeyboard checks to see if Keyboard exists.")]
 		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
