@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -96,6 +96,7 @@
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
 	<Compile Include="Code\RequireThat.cs" />
+	<Compile Include="Data\DelegateQuery.cs" />
 	<Compile Include="Data\DictionaryEqualityComparer.cs" />
 	<Compile Include="Data\IDataMapper.cs" />
 	<Compile Include="Data\MemoryDataMapper.cs" />
@@ -105,6 +106,8 @@
 	<Compile Include="Data\RecordTokenToStringAdapter.cs" />
 	<Compile Include="Data\RepositoryId.cs" />
 	<Compile Include="Data\ResultSet.cs" />
+	<Compile Include="Data\ResultSetCache.cs" />
+	<Compile Include="Data\ResultSetCacheManager.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
 	<Compile Include="Email\EmailProviderFactory.cs" />
 	<Compile Include="Email\IEmailMessage.cs" />
@@ -118,6 +121,7 @@
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
 	<Compile Include="Extensions\IEnumberableExtensions.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
+	<Compile Include="I8N\StringCatalog.cs" />
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
 	<Compile Include="Linq\MiscOperators.cs" />
@@ -215,6 +219,9 @@
 	<Compile Include="Text\ApproximateMatcher.cs" />
 	<Compile Include="Text\LanguageForm.cs" />
 	<Compile Include="Text\MultiTextBase.cs" />
+	<Compile Include="UiBindings\IBindableControl.cs" />
+	<Compile Include="UiBindings\ICountGiver.cs" />
+	<Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfo.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfoLinux.cs" />
 	<Compile Include="UsbDrive\UsbDriveInfoWindows.cs" />

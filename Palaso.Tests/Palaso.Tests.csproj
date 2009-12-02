@@ -55,6 +55,7 @@
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
+	<Reference Include="System.Drawing" />
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +72,7 @@
 	<Compile Include="Data\PalasoTestItem.cs" />
 	<Compile Include="Data\TestRepositoryId.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
+	<Compile Include="I8N\StringCatalogTests.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
 	<Compile Include="Misc\GuardAgainstReentry.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />

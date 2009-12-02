@@ -73,7 +73,6 @@
 	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTests.cs" />
 	<Compile Include="Hotspot\HotSpotTests.cs" />
-	<Compile Include="i8n\StringCatalogTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />

@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-namespace Palaso.UI.WindowsForms.i8n
+namespace Palaso.I8N
 {
 	public class StringCatalog
 	{

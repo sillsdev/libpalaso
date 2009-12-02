@@ -333,7 +333,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					WritingSystemDefinition ws = _writingSystemDefinitions[i];
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
-					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage.ToString()
+					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
 						&& !string.IsNullOrEmpty(ws.RFC4646) && prohibitedList.Contains(ws.SortRules)
 						&& !prohibitedList.Contains(ws.RFC4646))
 					{
@@ -611,13 +611,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSortUsing
 		{
-			get { return Current.SortUsing ?? string.Empty; }
+			get { return Current.SortUsing.ToString(); }
 			set
 			{
-				if (Current.SortUsing != value)
+				if (!String.IsNullOrEmpty(value))
 				{
-					Current.SortUsing = value;
-					OnCurrentItemUpdated();
+					var valueAsSortUsing = (WritingSystemDefinition.SortRulesType)Enum.Parse(typeof (WritingSystemDefinition.SortRulesType), value);
+					if (valueAsSortUsing != Current.SortUsing)
+					{
+						Current.SortUsing = valueAsSortUsing;
+						OnCurrentItemUpdated();
+					}
 				}
 			}
 		}

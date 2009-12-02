@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Palaso.WritingSystems.Collation;
 
 namespace Palaso.Data
 {
@@ -321,18 +322,18 @@ namespace Palaso.Data
 
 		public SortDefinition(string field, IComparer comparer)
 		{
-			this._field = field;
-			this._comparer = comparer;
+			_field = field;
+			_comparer = comparer;
 		}
 
 		public string Field
 		{
-			get { return this._field; }
+			get { return _field; }
 		}
 
 		public IComparer Comparer
 		{
-			get { return this._comparer; }
+			get { return _comparer; }
 		}
 	}
 }
