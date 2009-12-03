@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace PalasoUIWindowsForms.Tests
 {
 
-
+	[TestFixture]
 	public class IBusAdaptorTests
 	{
 		private Form _window;
@@ -87,7 +87,7 @@ namespace PalasoUIWindowsForms.Tests
 
 		[Test]
 		[Category("IBus")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
+		[ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
