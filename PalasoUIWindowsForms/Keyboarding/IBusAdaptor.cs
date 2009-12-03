@@ -198,6 +198,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
 
+			if(!HasKeyboardNamed(name))
+			{
+				throw new ArgumentOutOfRangeException("IBus does not have a Keyboard with that name!" + name);
+			}
+
 			inputContextBus.InputContext.SetEngine (name);
 		}
 
