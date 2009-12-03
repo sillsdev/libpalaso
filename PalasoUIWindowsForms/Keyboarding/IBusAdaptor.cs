@@ -223,9 +223,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		}
 
-		public static IEnumerable<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
 		{
-			get { return GetKeyboardDescriptors (); }
+			get { return new List<KeyboardController.KeyboardDescriptor>(GetKeyboardDescriptors () ); }
 		}
 
 		public static bool EngineAvailable
