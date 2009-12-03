@@ -88,6 +88,7 @@
 	<Compile Include="i8n\LocalizationHelper.cs">
 	  <SubType>Component</SubType>
 	</Compile>
+	<Compile Include="i8n\StringCatalog.cs" />
 	<Compile Include="i8n\LocalizationHelper.designer.cs">
 	  <DependentUpon>LocalizationHelper.cs</DependentUpon>
 	</Compile>
