@@ -212,7 +212,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		protected static IEnumerable<KeyboardController.KeyboardDescriptor> GetKeyboardDescriptors ()
 		{
-			EnsureConnection ();
+			try
+			{
+				EnsureConnection ();
+			}
+			catch
+			{
+				return false;
+			}
 
 			IBus ibus = new IBus (_connection);
 			object[] engines = ibus.InputBus.ListActiveEngines ();
