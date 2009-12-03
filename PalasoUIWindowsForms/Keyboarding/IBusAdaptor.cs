@@ -272,11 +272,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static string GetActiveKeyboard ()
 		{
-			EnsureConnection ();
-
-			IBus ibus = new IBus (_connection);
 			try
 			{
+				EnsureConnection ();
+
+				IBus ibus = new IBus (_connection);
+
 				string inputContextPath = ibus.GetFocusedInputContextPath ();
 
 				IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
@@ -288,7 +289,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				return engineDesc.longname;
 			} catch (Exception e)
 			{
-				throw new Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException (e.Message);
+				return String.Empty;
 			}
 		}
 	}
