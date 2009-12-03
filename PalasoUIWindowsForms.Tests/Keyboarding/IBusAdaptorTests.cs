@@ -55,14 +55,14 @@ namespace PalasoUIWindowsForms.Tests
 
 		[Test]
 		[Category("IBus")]
-		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_KeyboardsReturned()
+		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_0KeyboardsReturned()
 		{
 			// needed for focus
 			RequiresWindow();
 
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = IBusAdaptor.KeyboardDescriptors;
 
-			// Because I don't want this to be tighly coupled with a particular IBus setup just check some keyboards exist.
+			// Assuming default ibus install doesn't have any active keyboards
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 
