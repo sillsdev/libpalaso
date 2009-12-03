@@ -13,6 +13,12 @@ namespace PalasoUIWindowsForms.Tests
 	{
 		private Form _window;
 
+		[SetUp]
+		public void Setup()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+		}
+
 		private void RequiresWindow()
 		{
 			_window = new Form();
