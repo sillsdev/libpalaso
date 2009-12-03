@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Palaso.Reporting;
 
 using NDesk.DBus;
 using org.freedesktop.DBus;
@@ -275,9 +276,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			try
 			{
 				EnsureConnection ();
+			}
+			catch
+			{
+				return String.Empty;
+			}
 
-				IBus ibus = new IBus (_connection);
+			IBus ibus = new IBus (_connection);
 
+			try
+			{
 				string inputContextPath = ibus.GetFocusedInputContextPath ();
 
 				IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
@@ -287,8 +295,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engine, typeof(IBusEngineDesc));
 				return engineDesc.longname;
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+																 "Could not get ActiveKeyboard");
 				return String.Empty;
 			}
 		}
