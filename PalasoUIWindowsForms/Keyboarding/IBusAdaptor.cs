@@ -192,7 +192,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void ActivateKeyboard (string name)
 		{
-			EnsureConnection ();
+			try
+			{
+				EnsureConnection ();
+			}
+			catch
+			{
+				return;
+			}
 
 			IBus ibus = new IBus (_connection);
 			string inputContextPath = ibus.GetFocusedInputContextPath ();
@@ -258,7 +265,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void Deactivate ()
 		{
-			EnsureConnection ();
+			try
+			{
+				EnsureConnection ();
+			}
+			catch
+			{
+				return;
+			}
 
 			IBus ibus = new IBus (_connection);
 			string inputContextPath = ibus.GetFocusedInputContextPath ();

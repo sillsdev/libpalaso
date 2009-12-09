@@ -5,7 +5,7 @@ using Palaso.UI.WindowsForms.Keyboarding;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-namespace PalasoUIWindowsForms.Tests
+namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 
 	[TestFixture]
@@ -103,7 +103,7 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 		[Test]
-		[Category("IBus NotRunning")]
+		[Category("IBus not Running")]
 		public void EngineAvailable_IBusNotRunning_ReturnsFalse()
 		{
 			// needed for focus
@@ -113,7 +113,7 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 		[Test]
-		[Category("IBus NotRunning")]
+		[Category("IBus not Running")]
 		public void GetActiveKeyboard_IBusNotRunning_ReturnsEmptyString()
 		{
 			// needed for focus
@@ -123,7 +123,7 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 		[Test]
-		[Category("IBus NotRunning")]
+		[Category("IBus not Running")]
 		public void KeyboardDescriptors_IBusNotRunning_EmptyListReturned()
 		{
 			// needed for focus
@@ -135,7 +135,7 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 		[Test]
-		[Category("IBus NotRunning")]
+		[Category("IBus not Running")]
 		public void Deactivate_IBusNotRunning_DoesNotThrow()
 		{
 			// needed for focus
@@ -145,7 +145,7 @@ namespace PalasoUIWindowsForms.Tests
 		}
 
 		[Test]
-		[Category("IBus NotRunning")]
+		[Category("IBus not Running")]
 		public void ActivateKeyBoard_IBusNotRunning_DoesNotThrow()
 		{
 			// needed for focus

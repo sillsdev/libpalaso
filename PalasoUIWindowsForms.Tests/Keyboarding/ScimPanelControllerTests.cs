@@ -3,12 +3,27 @@ using NUnit.Framework;
 using Palaso.UI.WindowsForms.Keyboarding;
 using System.Text;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class ScimPanelControllerTests
 	{
+		private Form _window;
+
+		private void RequiresWindowForFocus()
+		{
+			_window = new Form();
+			TextBox box = new TextBox();
+			box.Dock = DockStyle.Fill;
+			_window.Controls.Add(box);
+
+			_window.Show();
+			box.Select();
+			Application.DoEvents();
+		}
+
 		[Test]
 		[Category("Scim")]
 		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
@@ -20,6 +35,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Scim")]
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
+			RequiresWindowForFocus();
 			ResetKeyboardToDefault();
 			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.GetActiveKeyboard());
 		}
@@ -51,6 +67,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Scim")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
+			RequiresWindowForFocus();
 			ScimPanelController.Singleton.ActivateKeyboard("English/European");
 			ScimPanelController.Singleton.Deactivate();
 			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.GetActiveKeyboard());
@@ -60,6 +77,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Scim")]
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
+			RequiresWindowForFocus();
 			ResetKeyboardToDefault();
 			ScimPanelController.Singleton.ActivateKeyboard("English/European");
 			Assert.AreEqual("English/European", ScimPanelController.Singleton.GetActiveKeyboard());
