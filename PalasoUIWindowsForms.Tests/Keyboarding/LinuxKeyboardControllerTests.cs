@@ -18,7 +18,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			ErrorReport.IsOkToInteractWithUser = false;
 		}
 
-		private void RequiresWindow()
+		private void RequiresWindowForFocus()
 		{
 			_window = new Form();
 			TextBox box = new TextBox();
@@ -89,9 +89,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Scim")]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
+			RequiresWindowForFocus();
 			ResetKeyboardToDefault();
 			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
 		}
@@ -107,20 +107,20 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
 		[Category("Scim")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
+			RequiresWindowForFocus();
 			KeyboardController.ActivateKeyboard("English/European");
 			KeyboardController.DeactivateKeyboard();
 			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
 		[Category("Scim")]
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
+			RequiresWindowForFocus();
 			ResetKeyboardToDefault();
 			KeyboardController.ActivateKeyboard("English/European");
 			Assert.AreEqual("English/European", KeyboardController.GetActiveKeyboard());
@@ -141,15 +141,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Scim not Running")]
-		public void Deactivate_ScimIsNotRunning_DoesNotThrow()
+		[Category("No IM Running")]
+		public void Deactivate_NoIMRunning_DoesNotThrow()
 		{
 			KeyboardController.DeactivateKeyboard();
 		}
 
 		[Test]
-		[Category("Scim not Running")]
-		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
+		[Category("No IM Running")]
+		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
 			Assert.AreEqual(0, availableKeyboards.Count);
@@ -163,11 +163,18 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
+		[Category("IBus not Running")]
+		public void EngineAvailable_IBusIsnotRunning_returnsFalse()
+		{
+			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
+		}
+
+		[Test]
 		[Category("IBus")]
 		public void EngineAvailable_IBusIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
 			// needed for focus
-			RequiresWindow();
+			RequiresWindowForFocus();
 
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
 		}
@@ -178,7 +185,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
-			RequiresWindow();
+			RequiresWindowForFocus();
 
 			KeyboardController.DeactivateKeyboard();
 			KeyboardController.GetActiveKeyboard();
@@ -186,15 +193,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
+		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_0KeyboardsReturned()
 		{
 			// needed for focus
-			RequiresWindow();
+			RequiresWindowForFocus();
 
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
 
-			// Because I don't want this to be tighly coupled with a particular IBus setup just check some keyboards exist.
-			Assert.AreNotEqual(0, availableKeyboards.Count);
+			// Assuming default ibus install doesn't have any active keyboards
+			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 
 		[Test]
@@ -202,7 +209,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void Deactivate_IBusIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			// needed for focus
-			RequiresWindow();
+			RequiresWindowForFocus();
 
 			KeyboardController.ActivateKeyboard("am:sera");
 			KeyboardController.DeactivateKeyboard();
@@ -214,7 +221,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			// needed for focus
-			RequiresWindow();
+			RequiresWindowForFocus();
 
 			KeyboardController.DeactivateKeyboard();
 			KeyboardController.ActivateKeyboard("am:sera");
@@ -228,7 +235,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
-			RequiresWindow();
+			RequiresWindowForFocus();
 
 			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
 		}
