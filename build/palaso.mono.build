@@ -273,6 +273,7 @@
 				<exclude name="Scim"/>
 				<exclude name="KnownMonoIssue"/>
 				<exclude name="RequiresUSB"/>
+				<exclude name="IBus"/>
 			</categories>
 			</test>
 		</nunit2>
