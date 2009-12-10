@@ -1,3 +1,4 @@
+#if MONO
 using System;
 using NUnit.Framework;
 using Palaso.Reporting;
@@ -154,3 +155,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 	}
 }
+#endif

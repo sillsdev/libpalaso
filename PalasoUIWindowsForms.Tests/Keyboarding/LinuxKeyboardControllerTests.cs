@@ -1,3 +1,4 @@
+#if MONO
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -241,3 +242,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 	}
 }
+#endif
