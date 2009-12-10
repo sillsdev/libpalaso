@@ -72,7 +72,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (!(s_languagesAlreadyShownKeyBoardNotFoundMessages.Contains(name)))
 				{
 					s_languagesAlreadyShownKeyBoardNotFoundMessages.Add(name, null);
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
 						"Could not find a keyboard ime that had a keyboard named '{0}'", name);
 
 				}
