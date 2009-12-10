@@ -193,12 +193,12 @@ namespace Palaso.UI.WindowsForms.Spelling
 			}
 			if (strip.Items.Count == 0)
 			{
-				item = new ToolStripMenuItem(StringCatalog.Get("(No Spelling Suggestions)"));
+				item = new ToolStripMenuItem(StringCatalog.ActiveStringCatalog.Get("(No Spelling Suggestions)"));
 				item.Enabled = false;
 				strip.Items.Add(item);
 			}
 			strip.Items.Add(new ToolStripSeparator());
-			item = new ToolStripMenuItem(StringCatalog.Get("Add to Dictionary"));
+			item = new ToolStripMenuItem(StringCatalog.ActiveStringCatalog.Get("Add to Dictionary"));
 			item.Tag = hotSpot;
 			item.Click += OnAddToDictionary;
 			strip.Items.Add(item);

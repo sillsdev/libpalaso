@@ -1,8 +1,9 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.21022</ProductVersion>
+	<ProductVersion>9.0.30729</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{13B5E313-1B26-4DAE-9E96-133768B62FD2}</ProjectGuid>
 	<OutputType>WinExe</OutputType>
@@ -14,6 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>2.0</OldToolsVersion>
+	<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -24,9 +26,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<OutputType>WinExe</OutputType>
-	<AssemblyName>TestApp</AssemblyName>
 	<RootNamespace>TestApp</RootNamespace>
-	<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -37,10 +37,8 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<OutputType>WinExe</OutputType>
-	<AssemblyName>TestApp</AssemblyName>
 	<DebugSymbols>true</DebugSymbols>
 	<RootNamespace>TestApp</RootNamespace>
-	<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Debug|AnyCPU' ">
@@ -51,9 +49,7 @@
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
 	<OutputType>WinExe</OutputType>
-	<AssemblyName>TestApp</AssemblyName>
 	<RootNamespace>TestApp</RootNamespace>
-	<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	<Optimize>true</Optimize>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<WarningLevel>4</WarningLevel>
@@ -66,14 +62,16 @@
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
 	<OutputType>WinExe</OutputType>
-	<AssemblyName>TestApp</AssemblyName>
 	<DebugSymbols>true</DebugSymbols>
 	<RootNamespace>TestApp</RootNamespace>
-	<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\..\lib\net2.0\irrKlang.NET2.0.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Deployment" />
@@ -91,13 +89,12 @@
 	<Compile Include="Program.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<EmbeddedResource Include="Form1.resx">
-	  <SubType>Designer</SubType>
 	  <DependentUpon>Form1.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Properties\Resources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
+	  <Generator>ResXFileCodeGenerator</Generator>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystemPickerTestForm.resx">
 	  <DependentUpon>WritingSystemPickerTestForm.cs</DependentUpon>
@@ -108,18 +105,13 @@
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<Compile Include="Properties\Resources.Designer.cs">
-	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Resources.resx</DependentUpon>
-	  <DesignTime>True</DesignTime>
 	</Compile>
 	<None Include="Properties\Settings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	</None>
 	<Compile Include="Properties\Settings.Designer.cs">
-	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Settings.settings</DependentUpon>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	</Compile>
 	<Compile Include="WritingSystemPickerTestForm.cs">
 	  <SubType>Form</SubType>
@@ -135,6 +127,10 @@
 	</Compile>
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\..\Palaso.Media\Palaso.Media.csproj">
+	  <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
+	  <Name>Palaso.Media</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
 	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
 	  <Name>PalasoUIWindowsForms</Name>

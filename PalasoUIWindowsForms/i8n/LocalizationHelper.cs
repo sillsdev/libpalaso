@@ -80,7 +80,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			var hints = control as ILocalizableControl;
 			if (hints==null || hints.ShouldModifyFont)
 			{
-				control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				control.Font = StringCatalog.ActiveStringCatalog.ModifyFontForLocalization(control.Font);
 			}
 			_alreadyChanging = false;
 		}
@@ -104,7 +104,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			if (!String.IsNullOrEmpty(control.Text))
 				//don't try to translation, for example, buttons with no label
 			{
-				control.Text = StringCatalog.Get(control.Text);
+				control.Text = StringCatalog.ActiveStringCatalog.Get(control.Text);
 			}
 			_alreadyChanging = false;
 		}
@@ -168,6 +168,7 @@ namespace Palaso.UI.WindowsForms.i8n
 		{
 			if(Control.ModifierKeys == Keys.Alt && sender is Control)
 				MessageBox.Show("fired on "+((Control)sender).Name);
+			}
 		}
 
 		private void UnwireFromChildren(Control control)
@@ -187,10 +188,13 @@ namespace Palaso.UI.WindowsForms.i8n
 		private void UnwireFromControl(Control control)
 		{
 			Debug.Assert(control != null);
-			if (IsAllowedControl(control))
+			// In modal forms mono can call Dispose twice, resulting in two attempts to unwire
+			// the control.
+			if (IsAllowedControl(control) && _originalControlProperties.ContainsKey(control))//Added because once, on mono (WS-14891) somehow this wasn't true (probably not this control's fault, but still...))
 			{
 				control.TextChanged -= OnTextChanged;
 				control.FontChanged -= OnFontChanged;
+				control.MouseClick -= OnMouseClicked;
 				control.Text = _originalControlProperties[control].Text;
 				control.Font = _originalControlProperties[control].Font;
 				_originalControlProperties.Remove(control);
@@ -199,7 +203,13 @@ namespace Palaso.UI.WindowsForms.i8n
 
 		private static bool IsAllowedControl(Control control)
 		{
-			return control is Label || control is IButtonControl || control is TabControl || control is Form;
+			return control is Label ||
+				   control is GroupBox ||
+				   control is ButtonBase ||
+				   control is IButtonControl ||
+				   control is TabControl ||
+				   control is TabPage ||
+				   control is Form;
 		}
 
 		#region ISupportInitialize Members

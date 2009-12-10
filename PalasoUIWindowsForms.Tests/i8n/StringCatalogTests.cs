@@ -83,7 +83,7 @@ msgstr 'first'
 		public void GetFormatted_FoundCorrectString_Formats()
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
-			Assert.AreEqual("first=one", StringCatalog.GetFormatted("oneParam", "blah blah", "one"));
+			Assert.AreEqual("first=one", StringCatalog.ActiveStringCatalog.GetFormatted("oneParam", "blah blah", "one"));
 		}
 
 /* TODO we haven't implemented this detection yet
@@ -104,7 +104,7 @@ msgstr 'first'
 			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
 			using(new Palaso.Reporting.ErrorReport.NonFatalErrorReportExpected())
 			{
-				var answer = StringCatalog.GetFormatted("oneParam", "blah blah");
+				var answer = StringCatalog.ActiveStringCatalog.GetFormatted("oneParam", "blah blah");
 				Assert.AreEqual("!!first={0}", answer);
 			}
 		}
@@ -157,7 +157,7 @@ msgstr 'first'
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, "Onyx", 30);
 			Font normal = new Font(System.Drawing.FontFamily.GenericSerif, 20);
-			Font localized = StringCatalog.ModifyFontForLocalization(normal);
+			Font localized = StringCatalog.ActiveStringCatalog.ModifyFontForLocalization(normal);
 			Assert.AreEqual(41,Math.Floor(localized.SizeInPoints));
 		}
 		[Test]
@@ -165,7 +165,7 @@ msgstr 'first'
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSansSerif.Name, 30);
 			Font normal = new Font(FontFamily.GenericSerif, 20);
-			Font localized = StringCatalog.ModifyFontForLocalization(normal);
+			Font localized = StringCatalog.ActiveStringCatalog.ModifyFontForLocalization(normal);
 			Assert.AreEqual(FontFamily.GenericSansSerif.Name, localized.FontFamily.Name);
 		}
 		[Test]
@@ -173,7 +173,7 @@ msgstr 'first'
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.Epsilon);
 			Font normal = new Font(FontFamily.GenericSerif, Single.Epsilon);
-			Font localized = StringCatalog.ModifyFontForLocalization(normal);
+			Font localized = StringCatalog.ActiveStringCatalog.ModifyFontForLocalization(normal);
 			Assert.IsNotNull(localized);
 		}
 		[Test]
@@ -181,7 +181,7 @@ msgstr 'first'
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.MaxValue);
 			Font normal = new Font(FontFamily.GenericSerif, Single.MaxValue);
-			Font localized = StringCatalog.ModifyFontForLocalization(normal);
+			Font localized = StringCatalog.ActiveStringCatalog.ModifyFontForLocalization(normal);
 			Assert.IsNotNull(localized);
 		}
 	}

@@ -52,11 +52,14 @@ namespace Palaso.Media
 		public void StopRecordingAndSaveAsWav()
 		{
 			if(!_thinkWeAreRecording)
-				throw new ApplicationException("Stop Recoding called when we weren't recording.  Use IsRecording to check first.");
+				throw new ApplicationException("Stop Recording called when we weren't recording.  Use IsRecording to check first.");
 
 			_thinkWeAreRecording = false;
 			_recorder.StopRecordingAudio();
-			SaveAsWav(FilePath);
+			if (_recorder.RecordedAudioData!=null)
+			{
+				SaveAsWav(FilePath);
+			}
 			_recorder.ClearRecordedAudioDataBuffer();
 			_stopRecordingTime = DateTime.Now;
 		}

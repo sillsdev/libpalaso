@@ -61,6 +61,15 @@
 	<Compile Include="Base32Tests\Base32HexTests.cs" />
 	<Compile Include="Base32Tests\Base32Tests.cs" />
 	<Compile Include="Base32Tests\Permuter.cs" />
+	<Compile Include="Data\DictionaryContentAsserter.cs" />
+	<Compile Include="Data\DictionaryEqualityComparerTests.cs" />
+	<Compile Include="Data\IRepositoryTests.cs" />
+	<Compile Include="Data\MemoryRepositoryTests.cs" />
+	<Compile Include="Data\PreciseDateTimeTests.cs" />
+	<Compile Include="Data\RecordTokenTests.cs" />
+	<Compile Include="Data\ResultSetTests.cs" />
+	<Compile Include="Data\PalasoTestItem.cs" />
+	<Compile Include="Data\TestRepositoryId.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
 	<Compile Include="Misc\GuardAgainstReentry.cs" />

@@ -93,7 +93,8 @@
 			this._recordButton.TabIndex = 1;
 			this._recordButton.TabStop = false;
 			this._recordButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.toolTip1.SetToolTip(this._recordButton, "Hold down the mouse button while talking, then release.  Like a walkie-talkie.");
+			this.toolTip1.SetToolTip(this._recordButton, "Hold down the mouse button while talking, then release.  Like a walkie-talkie.  C" +
+					"lick with the shift-key down to select a pre-recorded sound file.");
 			this._recordButton.UseVisualStyleBackColor = false;
 			this._recordButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnRecordDown);
 			this._recordButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnRecordUp);
@@ -127,11 +128,10 @@
 			//
 			// label1
 			//
-			this.label1.AutoSize = true;
 			this.label1.ForeColor = System.Drawing.Color.DarkRed;
 			this.label1.Location = new System.Drawing.Point(249, 5);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(1244, 13);
+			this.label1.Size = new System.Drawing.Size(1244, 14);
 			this.label1.TabIndex = 5;
 			this.label1.Text = resources.GetString("label1.Text");
 			this.label1.Visible = false;

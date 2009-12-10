@@ -81,10 +81,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _aboutLink
 			//
 			this._aboutLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutLink.AutoSize = true;
 			this._aboutLink.Location = new System.Drawing.Point(12, 301);
 			this._aboutLink.Name = "_aboutLink";
-			this._aboutLink.Size = new System.Drawing.Size(119, 13);
+			this._aboutLink.Size = new System.Drawing.Size(196, 14);
 			this._aboutLink.TabIndex = 2;
 			this._aboutLink.TabStop = true;
 			this._aboutLink.Text = "About ISO 639-3 Codes";
@@ -93,10 +92,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _aboutLink639_1
 			//
 			this._aboutLink639_1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutLink639_1.AutoSize = true;
 			this._aboutLink639_1.Location = new System.Drawing.Point(12, 273);
 			this._aboutLink639_1.Name = "_aboutLink639_1";
-			this._aboutLink639_1.Size = new System.Drawing.Size(119, 13);
+			this._aboutLink639_1.Size = new System.Drawing.Size(196, 14);
 			this._aboutLink639_1.TabIndex = 3;
 			this._aboutLink639_1.TabStop = true;
 			this._aboutLink639_1.Text = "About ISO 639-1 Codes";
@@ -111,11 +109,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// label1
 			//
-			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(12, 13);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(53, 17);
+			this.label1.Size = new System.Drawing.Size(65, 19);
 			this.label1.TabIndex = 5;
 			this.label1.Text = "Search";
 			//
@@ -123,7 +120,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._searchTimer.Tick += new System.EventHandler(this._searchTimer_Tick);
 			//
-			// SearchISOCodeDialog
+			// LookupISOCodeDialog
 			//
 			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -137,7 +134,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this.listView1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "SearchISOCodeDialog";
+			this.Name = "LookupISOCodeDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "Lookup ISO Code...";

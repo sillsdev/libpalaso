@@ -79,7 +79,7 @@
 
 	<target name="revision_teamcityhg">
 		<property name="teamcity" value="${environment::get-variable('BUILD_NUMBER')}" />
-		<regex pattern="^(?'revision'[^:]*)" input="${teamcity}" />
+		<regex pattern="^(?'revision'[^:-]*)" input="${teamcity}" />
 		<property name="revision" value="${string::trim(revision)}" />
 		<echo message="Revision: ${revision}" />
 	</target>
@@ -171,6 +171,19 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
 
+	<target name="build-for-wesay" depends="build-only">
+		<copy todir="${project.base.dir}/../wesay/lib/mono">
+			<fileset basedir="${project.output.dir}">
+				<include name="*.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${project.base.dir}/../wesay/output/linux/mono/2.0/Debug">
+			<fileset basedir="${project.output.dir}">
+				<include name="*.dll" />
+			</fileset>
+		</copy>
+	</target>
+
 	<target name="test" depends="build-only">
 		<call target="test-noservices-only"/>
 	</target>
@@ -201,6 +214,7 @@
 					<exclude name="Windows IME"/>
 					<exclude name="Keyman6"/>
 					<exclude name="Keyman7"/>
+					<exclude name="Scim"/>
 					<exclude name="Mono Known Issue"/>
 				</categories>
 				</test>
@@ -222,8 +236,9 @@
 			<categories>
 				<exclude name="MouseSensitive"/>
 				<exclude name="Windows IME"/>
-				<exclude name="Keyman6"/>
-				<exclude name="Keyman7"/>
+						<exclude name="Keyman6"/>
+						<exclude name="Keyman7"/>
+				<exclude name="Scim"/>
 				<exclude name="Mono Known Issue"/>
 			</categories>
 			</test>
@@ -251,6 +266,7 @@
 				<exclude name="Windows IME"/>
 				<exclude name="Keyman6"/>
 				<exclude name="Keyman7"/>
+				<exclude name="Scim"/>
 				<exclude name="KnownMonoIssue"/>
 				<exclude name="RequiresUSB"/>
 			</categories>

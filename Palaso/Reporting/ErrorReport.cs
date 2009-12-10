@@ -335,6 +335,15 @@ namespace Palaso.Reporting
 			return NotifyUserOfProblem(policy, null, default(DialogResult), messageFmt, args);
 		}
 
+		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
+		{
+			var result = NotifyUserOfProblem(new ShowAlwaysPolicy(), "Details", DialogResult.Yes, messageFmt, args);
+			if (result == DialogResult.Yes)
+			{
+				ErrorReport.ReportNonFatalException(error);
+			}
+		}
+
 		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 									string alternateButton1Label,
 									DialogResult resultIfAlternateButtonPressed,

@@ -95,6 +95,11 @@ namespace Palaso.Media
 
 		private void OnRecordDown(object sender, MouseEventArgs e)
 		{
+			if (Control.ModifierKeys == Keys.Shift)
+			{
+				LetUserSelectPrerecordedFile();
+				return;
+			}
 			//allow owner one last chance to set a path (which may be sensitive to other ui controls)
 			if (BeforeStartingToRecord!=null)
 				BeforeStartingToRecord.Invoke(this, null);
@@ -109,6 +114,8 @@ namespace Palaso.Media
 
 		private void OnRecordUp(object sender, MouseEventArgs e)
 		{
+			if(!_recorder.IsRecording)
+				return;
 			try
 			{
 				_recorder.StopRecordingAndSaveAsWav();
@@ -118,9 +125,12 @@ namespace Palaso.Media
 				//swallow it review: initial reason is that they didn't hold it down long enough, could detect and give message
 			}
 
-			if(_recorder.LastRecordingMilliseconds < 500 && File.Exists(_path))
+			if(_recorder.LastRecordingMilliseconds < 500)
 			{
-				File.Delete(_path);
+				if (File.Exists(_path))
+				{
+					File.Delete(_path);
+				}
 				_hint.Text = "Hold down the record button while talking.";
 			}
 			else
@@ -132,6 +142,34 @@ namespace Palaso.Media
 			{
 				SoundRecorded.Invoke(this, null);
 			}
+		}
+
+
+		private void LetUserSelectPrerecordedFile()
+		{
+			try
+			{
+				var dlg = new OpenFileDialog();
+				dlg.DefaultExt = ".wav";
+				dlg.Multiselect = false;
+				dlg.RestoreDirectory = true;
+				dlg.AutoUpgradeEnabled = true;
+				dlg.Filter = "sound files (*.wav)|*.wav";
+				if (DialogResult.OK != dlg.ShowDialog())
+				{
+					return;
+				}
+				if (File.Exists(Path))
+					File.Delete(Path);
+
+				File.Copy(dlg.FileName, Path);
+			}
+			catch (Exception error)
+			{
+				MessageBox.Show(error.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			UpdateScreen();
+
 		}
 
 		private void OnClickPlay(object sender, MouseEventArgs e)

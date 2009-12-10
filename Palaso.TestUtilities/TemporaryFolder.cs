@@ -236,9 +236,14 @@ namespace Palaso.TestUtilities
 		}
 
 
-		public string Combine(string innerFileName)
+		public string Combine(params string[] partsOfThePath)
 		{
-			return System.IO.Path.Combine(_path, innerFileName);
+			string result = _path;
+			foreach (var s in partsOfThePath)
+			{
+				result = System.IO.Path.Combine(result, s);
+			}
+			return result;
 		}
 	}
 }

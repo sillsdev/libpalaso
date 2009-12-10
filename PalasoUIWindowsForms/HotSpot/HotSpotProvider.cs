@@ -258,6 +258,7 @@ namespace Palaso.UI.WindowsForms.HotSpot
 
 				switch (m.Msg)
 				{
+
 					case WM_PAINT:
 						OnWmPaint();
 						break;

@@ -1,16 +1,16 @@
 using System;
 using System.Drawing;
 using System.IO;
-using Palaso.Misc;
 
 namespace Palaso.UI.WindowsForms.i8n
 {
 	public class StringCatalog
 	{
 		private System.Collections.Specialized.StringDictionary _catalog;
-		private static StringCatalog _singleton;
-		private static Font _font;
-		private static bool _inInternationalizationTestMode;
+		string _pathToPoFile;
+		private Font _font;
+		private bool _inInternationalizationTestMode;
+		private static StringCatalog _activeStringCatalog;
 
 		/// <summary>
 		/// Construct with no actual string file
@@ -28,11 +28,12 @@ namespace Palaso.UI.WindowsForms.i8n
 		}
 		public StringCatalog(string pathToPoFile, string labelFontName, float labelFontSizeInPoints)
 		{
+			_pathToPoFile = pathToPoFile;
 			Init();
 			_inInternationalizationTestMode = pathToPoFile == "test";
 			if (!_inInternationalizationTestMode)
 			{
-				var reader = (TextReader) File.OpenText(pathToPoFile);
+				TextReader reader = (TextReader) File.OpenText(pathToPoFile);
 				try
 				{
 					string id = null;
@@ -52,7 +53,7 @@ namespace Palaso.UI.WindowsForms.i8n
 							}
 							//id = null;
 						}
-						//handle multi-line messages
+							//handle multi-line messages
 						else if (line.StartsWith("\"") && !string.IsNullOrEmpty(id))
 						{
 							string s = GetStringBetweenQuotes(line);
@@ -81,7 +82,23 @@ namespace Palaso.UI.WindowsForms.i8n
 			SetupUIFont(labelFontName,  labelFontSizeInPoints);
 		}
 
-		private static void SetupUIFont(string labelFontName, float labelFontSizeInPoints)
+		public static StringCatalog ActiveStringCatalog
+		{
+			get
+			{
+				if(_activeStringCatalog == null)
+				{
+					_activeStringCatalog = new StringCatalog();
+				}
+				return _activeStringCatalog;
+			}
+			set
+			{
+				_activeStringCatalog = value;
+			}
+		}
+
+		private void SetupUIFont(string labelFontName, float labelFontSizeInPoints)
 		{
 			if (_inInternationalizationTestMode)
 			{
@@ -98,14 +115,14 @@ namespace Palaso.UI.WindowsForms.i8n
 				}
 				catch (Exception)
 				{
-					Reporting.ErrorReport.NotifyUserOfProblem(
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(
 						"Could not find the requested UI font '{0}'.  Will use a generic font instead.",
 						labelFontName);
 				}
 			}
 		}
 
-		public static string Get(string id)
+		public string Get(string id)
 		{
 			return Get(id,  String.Empty);
 		}
@@ -119,7 +136,7 @@ namespace Palaso.UI.WindowsForms.i8n
 		/// <param name="translationNotes">just for the string scanner's use</param>
 		/// <param name="args">arguments to the string, used in string.format</param>
 		/// <returns></returns>
-		public static string GetFormatted(string id, string translationNotes, params object[] args)
+		public string GetFormatted(string id, string translationNotes, params object[] args)
 		{
 			//todo: this doesn't notice if the catalog has too few arugment slots, e.g.
 			//if it says "blah" when it should say "blah{0}"
@@ -146,9 +163,9 @@ namespace Palaso.UI.WindowsForms.i8n
 			}
 		}
 
-		public static string Get(string id, string translationNotes)
+		public string Get(string id, string translationNotes)
 		{
-			if (!String.IsNullOrEmpty(id))
+		   if (!String.IsNullOrEmpty(id))
 			{
 				if (id[0] == '~')
 				{
@@ -168,17 +185,19 @@ namespace Palaso.UI.WindowsForms.i8n
 			{
 				return id.ToUpper();
 			}
-			if (_inInternationalizationTestMode)
+		if (_inInternationalizationTestMode)
 			{
-				return "*" + _singleton[id];
+				return "*"+this[id];
 			}
-			return _singleton[id];
+			else
+			{
+				return this[id];
+			}
 		}
 
 
 		private void Init()
 		{
-			_singleton = this;
 			_catalog = new System.Collections.Specialized.StringDictionary();
 		}
 
@@ -186,7 +205,6 @@ namespace Palaso.UI.WindowsForms.i8n
 		{
 			int s = line.IndexOf('"');
 			int f = line.LastIndexOf('"');
-			string x = "";
 			return line.Substring(s + 1, f - (s + 1));
 		}
 
@@ -197,6 +215,9 @@ namespace Palaso.UI.WindowsForms.i8n
 				string s = _catalog[id.Replace("&&","&")];
 				if (s == null)
 				{
+#if DEBUG
+					return id.ToUpper();
+#endif
 					return id;
 				}
 				else
@@ -206,7 +227,7 @@ namespace Palaso.UI.WindowsForms.i8n
 			}
 		}
 
-		public static Font LabelFont
+		public Font LabelFont
 		{
 			get
 			{
@@ -221,14 +242,14 @@ namespace Palaso.UI.WindowsForms.i8n
 				_font = value;
 			}
 		}
-		public static Font ModifyFontForLocalization(Font incoming)
+		public Font ModifyFontForLocalization(Font incoming)
 		{
 			float sBaseFontSizeInPoints = (float)8.25;
-			float points = incoming.SizeInPoints + (StringCatalog.LabelFont.SizeInPoints- sBaseFontSizeInPoints);
+			float points = incoming.SizeInPoints + (LabelFont.SizeInPoints- sBaseFontSizeInPoints);
 			//float points = incoming.SizeInPoints * (StringCatalog.LabelFont.SizeInPoints / sBaseFontSizeInPoints);
 			// 0 < points <= System.Single.MaxValue must be true or Font will throw
 			points = Math.Max(Single.Epsilon, Math.Min(Single.MaxValue, points));
-			return new Font(StringCatalog.LabelFont.Name, points, incoming.Style);
+			return new Font(LabelFont.Name, points, incoming.Style);
 
 		}
 	}

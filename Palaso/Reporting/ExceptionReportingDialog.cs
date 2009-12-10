@@ -11,7 +11,6 @@ namespace Palaso.Reporting
 	{
 		#region Member variables
 
-		private Label label2;
 		private Label label3;
 		private TextBox _details;
 		private TextBox _pleaseHelpText;
@@ -23,6 +22,7 @@ namespace Palaso.Reporting
 		private Button _sendAndCloseButton;
 		 private LinkLabel _dontSendEmailLink;
 		 private TextBox _notificationText;
+		 private TextBox textBox1;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -98,7 +98,6 @@ namespace Palaso.Reporting
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExceptionReportingDialog));
-			this.label2 = new System.Windows.Forms.Label();
 			this.m_reproduce = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this._details = new System.Windows.Forms.TextBox();
@@ -107,12 +106,8 @@ namespace Palaso.Reporting
 			this._attemptToContinueLabel = new System.Windows.Forms.Label();
 			this._dontSendEmailLink = new System.Windows.Forms.LinkLabel();
 			this._notificationText = new System.Windows.Forms.TextBox();
+			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
-			//
-			// label2
-			//
-			resources.ApplyResources(this.label2, "label2");
-			this.label2.Name = "label2";
 			//
 			// m_reproduce
 			//
@@ -133,16 +128,16 @@ namespace Palaso.Reporting
 			this._details.Name = "_details";
 			this._details.ReadOnly = true;
 			//
-			// _closeButton
+			// _sendAndCloseButton
 			//
-			resources.ApplyResources(this._sendAndCloseButton, "_closeButton");
+			resources.ApplyResources(this._sendAndCloseButton, "_sendAndCloseButton");
 			this._sendAndCloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._sendAndCloseButton.Name = "_sendAndCloseButton";
 			this._sendAndCloseButton.Click += new System.EventHandler(this.btnClose_Click);
 			//
-			// m_notification
+			// _pleaseHelpText
 			//
-			resources.ApplyResources(this._pleaseHelpText, "m_notification");
+			resources.ApplyResources(this._pleaseHelpText, "_pleaseHelpText");
 			this._pleaseHelpText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this._pleaseHelpText.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._pleaseHelpText.ForeColor = System.Drawing.Color.Black;
@@ -155,21 +150,30 @@ namespace Palaso.Reporting
 			this._attemptToContinueLabel.ForeColor = System.Drawing.Color.Firebrick;
 			this._attemptToContinueLabel.Name = "_attemptToContinueLabel";
 			//
-			// _linkJustExit
+			// _dontSendEmailLink
 			//
-			resources.ApplyResources(this._dontSendEmailLink, "_linkJustExit");
+			resources.ApplyResources(this._dontSendEmailLink, "_dontSendEmailLink");
 			this._dontSendEmailLink.Name = "_dontSendEmailLink";
 			this._dontSendEmailLink.TabStop = true;
 			this._dontSendEmailLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnJustExit_LinkClicked);
 			//
-			// _userMessage
+			// _notificationText
 			//
-			resources.ApplyResources(this._notificationText, "_userMessage");
+			resources.ApplyResources(this._notificationText, "_notificationText");
 			this._notificationText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this._notificationText.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._notificationText.ForeColor = System.Drawing.Color.Black;
 			this._notificationText.Name = "_notificationText";
 			this._notificationText.ReadOnly = true;
+			//
+			// textBox1
+			//
+			resources.ApplyResources(this.textBox1, "textBox1");
+			this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox1.ForeColor = System.Drawing.Color.Black;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.ReadOnly = true;
 			//
 			// ExceptionReportingDialog
 			//
@@ -179,13 +183,13 @@ namespace Palaso.Reporting
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.CancelButton = this._sendAndCloseButton;
 			this.ControlBox = false;
+			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this._dontSendEmailLink);
 			this.Controls.Add(this.m_reproduce);
 			this.Controls.Add(this._notificationText);
 			this.Controls.Add(this._pleaseHelpText);
 			this.Controls.Add(this._details);
 			this.Controls.Add(this._attemptToContinueLabel);
-			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this._sendAndCloseButton);
 			this.KeyPreview = true;
@@ -360,6 +364,8 @@ namespace Palaso.Reporting
 		 private void PrepareDialog()
 		 {
 			 CheckDisposed();
+			 Font = SystemFonts.MessageBoxFont;
+
 			 //
 			 // Required for Windows Form Designer support
 			 //
