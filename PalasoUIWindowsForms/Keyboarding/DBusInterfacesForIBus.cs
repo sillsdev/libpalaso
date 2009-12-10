@@ -30,6 +30,7 @@ namespace org.freedesktop.IBus
 	}
 
 	[Interface("org.freedesktop.IBus")]
+	[CLSCompliant (false)]
 	public interface IIBus : Introspectable
 	{
 		[return: Argument ("address")]
@@ -57,6 +58,7 @@ namespace org.freedesktop.IBus
 
 	// TODO: add signals?
 	[Interface("org.freedesktop.IBus.InputContext")]
+	[CLSCompliant (false)]
 	public interface InputContext : Introspectable
 	{
 		void ProcessKeyEvent(uint keyval, uint keycode, uint state, out bool handled);
@@ -87,6 +89,7 @@ namespace org.freedesktop.IBus
 	}
 
 	[Interface("org.freedesktop.IBus.Panel")]
+	[CLSCompliant (false)]
 	public interface Panel : Introspectable
 	{
 		void UpdateLookupTable(object lookup_table, bool visible);
