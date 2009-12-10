@@ -44,6 +44,7 @@
 			debug="${build.debug}"
 			define="${build.defines}">
 			<nowarn>
+				<warning number="1591"/>
 				<warning number="618,672"/>
 				<warning number="1584" />
 				<warning number="1570" />
