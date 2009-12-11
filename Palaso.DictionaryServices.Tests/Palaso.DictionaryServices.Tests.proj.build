@@ -58,6 +58,7 @@
 				<include name="Palaso.dll" />
 				<include name="Palaso.Lift.dll" />
 				<include name="Palaso.DictionaryServices.dll" />
+				<include name="Nunit.Framework.dll" />
 				<include name="Palaso.Tests.dll" />
 				<include name="Palaso.TestUtilities.dll" />
 				<include name="System.dll" />

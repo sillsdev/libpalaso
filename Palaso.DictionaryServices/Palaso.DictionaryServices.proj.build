@@ -57,8 +57,6 @@
 				<include name="LiftIO.dll" />
 				<include name="Palaso.dll" />
 				<include name="Palaso.Lift.dll" />
-				<include name="Palaso.DictionaryServices.dll" />
-				<include name="nunit.framework.dll" />
 				<include name="System.dll" />
 				<include name="System.Core.dll" />
 				<include name="System.Data.dll" />
