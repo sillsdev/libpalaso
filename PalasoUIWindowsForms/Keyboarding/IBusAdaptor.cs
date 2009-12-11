@@ -226,7 +226,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch
 			{
-				return false;
+				yield break;
 			}
 
 			IBus ibus = new IBus (_connection);
