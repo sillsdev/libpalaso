@@ -29,6 +29,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var items= new List<WritingSystemTreeItem>();
 
 			AddStoreLanguages(items);
+			items.Add(new WritingSystemCreateUnknownTreeItem());
+
 			AddOtherLanguages(items);
 			return items;
 		}
@@ -77,7 +79,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//var otherDefsNotInStore = OtherKnownWritingSystems.Except(_store.WritingSystemDefinitions);
 			item.Children = from definition in OtherKnownWritingSystems
 							where !_store.WritingSystemDefinitions.Contains(definition)
-							select new WritingSystemTreeItem(definition.DisplayLabel);
+							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(definition);
 			items.Add(item );
 		}
 	}
@@ -91,7 +93,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public string Text { get; set; }
 
 		public IEnumerable<WritingSystemTreeItem> Children { get; set; }
-
+	   public override string ToString()
+		{
+			return  Text;
+		}
 	}
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
 	{
@@ -100,6 +105,35 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public WritingSystemDefinitionTreeItem(WritingSystemDefinition definition):base(definition.DisplayLabel)
 		{
 			Definition = definition;
+		}
+		public override string ToString()
+		{
+			return  Definition.DisplayLabel;
+		}
+	}
+
+	public class WritingSystemCreationTreeItem : WritingSystemTreeItem
+	{
+		public WritingSystemDefinition Definition { get; set; }
+
+		public WritingSystemCreationTreeItem(WritingSystemDefinition definition)
+			: base(definition.DisplayLabel)
+		{
+			Definition = definition;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("Add {0}", Definition.DisplayLabel);
+		}
+	}
+
+	public class WritingSystemCreateUnknownTreeItem : WritingSystemTreeItem
+	{
+
+		public WritingSystemCreateUnknownTreeItem()
+			: base("Add Language")
+		{
 		}
 	}
 }

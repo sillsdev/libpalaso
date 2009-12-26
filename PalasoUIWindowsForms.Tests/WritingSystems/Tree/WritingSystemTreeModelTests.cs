@@ -22,6 +22,15 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		}
 
 		[Test]
+		public void GetTopLevelItems_OffersAddLanguageChoice()
+		{
+			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
+			var model = new WritingSystemTreeModel(writingSystemStore);
+			WritingSystemTreeItem firstAdd = model.GetTopLevelItems().First(i => i.GetType() == typeof(WritingSystemCreateUnknownTreeItem));
+			Assert.AreEqual("Add Language", firstAdd.ToString());
+		}
+
+		[Test]
 		public void GetTopLevelItems_StoreIsEmptyButOtherLanguagesAreAvailable_GivesOtherLanguageChoiceHeader()
 		{
 			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
@@ -84,6 +93,33 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 		}
 
+
+		[Test, Ignore("not yet")]
+		public void GetTopLevelItems_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
+		{
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", "ipa", string.Empty, string.Empty, "Edolo", "edo", false);
+			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
+			writingSystemStore.Set(etrIpa);
+			writingSystemStore.Set(etr);
+			var model = new WritingSystemTreeModel(writingSystemStore);
+			var items = model.GetTopLevelItems();
+
+			var children = items.First().Children;
+			Assert.IsFalse(children.Any(item=>((WritingSystemCreationTreeItem) item).Definition.Script=="ipa"));
+		}
+		[Test, Ignore("not yet")]
+		public void GetTopLevelItems_HasNormalOnly_IncludesItemToCreateIPA()
+		{
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
+			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
+			writingSystemStore.Set(etr);
+			var model = new WritingSystemTreeModel(writingSystemStore);
+			var items = model.GetTopLevelItems();
+
+			var children = items.First().Children;
+			Assert.IsTrue(children.Any(item => ((WritingSystemCreationTreeItem)item).Definition.Script == "ipa"));
+		}
 	}
 
 
