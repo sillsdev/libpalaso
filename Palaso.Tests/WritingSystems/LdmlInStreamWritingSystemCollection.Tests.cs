@@ -456,9 +456,9 @@ namespace Palaso.Tests.WritingSystems
 			return false;
 		}
 
-		class DummyWritingSystemProvider : IWritingSystemProvider
+		class DummyWritingSystemProvider : IEnumerable<WritingSystemDefinition>
 		{
-			#region IWritingSystemProvider Members
+			#region IEnumerable<WritingSystemDefinition> Members
 
 			public IEnumerable<WritingSystemDefinition> ActiveOSLanguages
 			{

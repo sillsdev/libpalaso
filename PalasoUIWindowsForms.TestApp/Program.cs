@@ -26,19 +26,19 @@ namespace PalasoUIWindowsForms.TestApp
 			Application.Run(dialog);
 #endif
 
-#if  TESTING_WS
+//#if  TESTING_WS
 			string tempPath = Path.GetTempPath() + "WS-Test";
 			Directory.CreateDirectory(tempPath);
 			Application.Run(new WSPropertiesDialog(tempPath));
-#endif
-//#if TESTING_ARTOFREADING
+//#endif
+#if TESTING_ARTOFREADING
 			var images = new ArtOfReadingImageCollection();
 			images.LoadIndex(@"C:\palaso\output\debug\ImageGallery\artofreadingindexv3_en.txt");
 			images.RootImagePath = @"c:\art of reading\images";
 			var form = new PictureChooser(images, "duck");
 			Application.Run(form);
 			Console.WriteLine("REsult: " + form.ChosenPath);
-//#endif
+#endif
 		}
 	}
 }

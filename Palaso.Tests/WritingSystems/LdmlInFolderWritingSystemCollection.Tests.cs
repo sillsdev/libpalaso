@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -45,7 +46,7 @@ namespace Palaso.Tests.WritingSystems
 			}
 			_testPaths.Add(testPath);
 			LdmlInFolderWritingSystemStore store = new LdmlInFolderWritingSystemStore(testPath);
-			store.DontAddDefaultDefinitions = true;
+			//store.DontAddDefaultDefinitions = true;
 			return store;
 		}
 	}
@@ -68,7 +69,7 @@ namespace Palaso.Tests.WritingSystems
 				Directory.Delete(_testPath, true);
 			}
 			_collection = new LdmlInFolderWritingSystemStore(_testPath);
-			_collection.DontAddDefaultDefinitions = true;
+//            _collection.DontAddDefaultDefinitions = true;
 			Console.WriteLine("Writing System Path: {0}", _testPath);
 			_namespaceManager = new XmlNamespaceManager(new NameTable());
 			_namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
@@ -408,14 +409,14 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LoadDefinitionCanFabricateEnglish()
 		{
-			_collection.DontAddDefaultDefinitions = false;
+			//_collection.DontAddDefaultDefinitions = false;
 			Assert.AreEqual("English",_collection.LoadDefinition("en-Latn").LanguageName);
 		}
 
 		[Test]
 		public void DefaultDefinitionListIncludesActiveOSLanguages()
 		{
-			_collection.DontAddDefaultDefinitions = false;
+		  //  _collection.DontAddDefaultDefinitions = false;
 			_collection.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 			_collection.LoadAllDefinitions();
 			IEnumerable<WritingSystemDefinition> list = _collection.WritingSystemDefinitions;
@@ -425,7 +426,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void DefaultLanguageNotAddedIfInTrash()
 		{
-			_collection.DontAddDefaultDefinitions = false;
+		   // _collection.DontAddDefaultDefinitions = false;
 			_collection.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 			_collection.LoadAllDefinitions();
 			IEnumerable<WritingSystemDefinition> list = _collection.WritingSystemDefinitions;
@@ -435,7 +436,7 @@ namespace Palaso.Tests.WritingSystems
 			_collection.Remove(ws2.ISO);
 
 			Palaso.WritingSystems.LdmlInFolderWritingSystemStore repository = new LdmlInFolderWritingSystemStore(_testPath);
-			repository.DontAddDefaultDefinitions = false;
+		  //  repository.DontAddDefaultDefinitions = false;
 			repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 			Assert.IsFalse(ContainsLanguageWithName(repository.WritingSystemDefinitions, "test"));
 
@@ -451,19 +452,19 @@ namespace Palaso.Tests.WritingSystems
 			return false;
 		}
 
-		class DummyWritingSystemProvider : IWritingSystemProvider
+		class DummyWritingSystemProvider : IEnumerable<WritingSystemDefinition>
 		{
-			#region IWritingSystemProvider Members
 
-			public IEnumerable<WritingSystemDefinition> ActiveOSLanguages
+			public IEnumerator<WritingSystemDefinition> GetEnumerator()
 			{
-				get
-				{
 					yield return new WritingSystemDefinition("tst", "", "", "", "test", "", false);
-				}
 			}
 
-			#endregion
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+
 		}
 	}
 }

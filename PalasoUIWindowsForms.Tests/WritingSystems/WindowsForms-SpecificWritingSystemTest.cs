@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.WritingSystems;
@@ -25,19 +26,17 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
-			IWritingSystemProvider provider =
+			IEnumerable<WritingSystemDefinition> provider =
 				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
-			IEnumerator<WritingSystemDefinition> enumerator = provider.ActiveOSLanguages.GetEnumerator();
-			enumerator.MoveNext();
-			Assert.IsNotNull(enumerator.Current);
+			Assert.IsNotNull(provider.First());
 		}
 
 //        [Test]
 //        public void GetGoodPropertiesOutOfCulture()
 //        {
-//            IWritingSystemProvider provider =
+//            IEnumerable<WritingSystemDefinition> provider =
 //                new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
-//            foreach (WritingSystemDefinition language in provider.ActiveOSLanguages)
+//            foreach (WritingSystemDefinition language in provider.WritingSystems)
 //            {
 ////                if (language.ISO == "eng")
 ////                {

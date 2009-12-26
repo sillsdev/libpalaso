@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
@@ -6,7 +7,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public class WritingSystemFromWindowsLocaleProvider : IWritingSystemProvider
+	public class WritingSystemFromWindowsLocaleProvider : IEnumerable<WritingSystemDefinition>
 	{
 //        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
 //        {
@@ -28,32 +29,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //            return null;
 //        }
 
-		public IEnumerable<WritingSystemDefinition> ActiveOSLanguages
-		{
-			get
-			{
-//            foreach (CultureInfo info in CultureInfo.GetCultures(CultureTypes.AllCultures ))
-//            {
-//                Debug.WriteLine(string.Format("{0} {1}", info.Name, info.EnglishName));
-//            }
-
-				foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
-				{
-					string region = string.Empty;
-					if (Environment.OSVersion.Platform != PlatformID.Unix)
-					{
-						region = GetRegion(language);
-					}
-					WritingSystemDefinition def =
-							new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", region, "",
-														language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName,
-														language.Culture.TextInfo.IsRightToLeft);
-					def.NativeName = language.Culture.NativeName;
-					def.Keyboard = language.LayoutName;
-					yield return def;
-				}
-			}
-		}
 
 		private static string GetRegion(InputLanguage language) {
 #if MONO // CultureAndRegionInfoBuilder not supported by Mono
@@ -64,5 +39,33 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			return b.TwoLetterISORegionName;
 #endif
 		}
+
+		#region Implementation of IEnumerable
+
+		public IEnumerator<WritingSystemDefinition> GetEnumerator()
+		{
+			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
+			{
+				string region = string.Empty;
+				if (Environment.OSVersion.Platform != PlatformID.Unix)
+				{
+					region = GetRegion(language);
+				}
+				WritingSystemDefinition def =
+						new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", region, "",
+													language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName,
+													language.Culture.TextInfo.IsRightToLeft);
+				def.NativeName = language.Culture.NativeName;
+				def.Keyboard = language.LayoutName;
+				yield return def;
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		#endregion
 	}
 }

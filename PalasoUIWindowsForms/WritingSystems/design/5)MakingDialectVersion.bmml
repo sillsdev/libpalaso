@@ -34,7 +34,7 @@
 		<bold>false</bold>
 	  </controlProperties>
 	</control>
-	<control controlID="128" controlTypeID="com.balsamiq.mockups::Button" x="937" y="157" w="72" h="-1" measuredW="65" measuredH="28" zOrder="30" locked="false" isInGroup="-1">
+	<control controlID="128" controlTypeID="com.balsamiq.mockups::Button" x="937" y="157" w="72" h="-1" measuredW="65" measuredH="28" zOrder="29" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Cancel</text>
 	  </controlProperties>
@@ -53,7 +53,7 @@
 		</control>
 	  </groupChildrenDescriptors>
 	</control>
-	<control controlID="130" controlTypeID="com.balsamiq.mockups::Paragraph" x="38" y="177" w="125" h="88" measuredW="200" measuredH="140" zOrder="32" locked="false" isInGroup="-1">
+	<control controlID="130" controlTypeID="com.balsamiq.mockups::Paragraph" x="38" y="177" w="125" h="88" measuredW="200" measuredH="140" zOrder="31" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Add%20Edelo%20%28Voice%29%0AAdd%20Edelo%20%28Dialect%29%0AAdd%20Edelo%20%28Other%29</text>
 		<underline>false</underline>
@@ -74,7 +74,7 @@
 		<selectedIndex>3</selectedIndex>
 	  </controlProperties>
 	</control>
-	<control controlID="80" controlTypeID="com.balsamiq.mockups::Paragraph" x="41" y="317" w="125" h="108" measuredW="200" measuredH="140" zOrder="16" locked="false" isInGroup="-1">
+	<control controlID="80" controlTypeID="com.balsamiq.mockups::Paragraph" x="41" y="317" w="125" h="108" measuredW="200" measuredH="140" zOrder="15" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Add%20French%0AAdd%20German%0AAdd%20Portugese%0AAdd%20Spanish%0AAdd%20Thai</text>
 		<underline>false</underline>
@@ -82,7 +82,7 @@
 		<color>6710886</color>
 	  </controlProperties>
 	</control>
-	<control controlID="129" controlTypeID="com.balsamiq.mockups::Label" x="11" y="0" w="-1" h="-1" measuredW="260" measuredH="29" zOrder="31" locked="false" isInGroup="-1">
+	<control controlID="129" controlTypeID="com.balsamiq.mockups::Label" x="11" y="0" w="-1" h="-1" measuredW="260" measuredH="29" zOrder="30" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>After%20clicking%20Add%20Edelo%20Dialect</text>
 		<size>16</size>
@@ -96,11 +96,6 @@
 	<control controlID="20" controlTypeID="com.balsamiq.mockups::TextInput" x="436" y="280" w="65" h="-1" measuredW="34" measuredH="29" zOrder="10" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>eth</text>
-	  </controlProperties>
-	</control>
-	<control controlID="77" controlTypeID="com.balsamiq.mockups::Icon" x="70" y="527" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="15" locked="false" isInGroup="-1">
-	  <controlProperties>
-		<icon>DownTriangleIcon%7Cxsmall</icon>
 	  </controlProperties>
 	</control>
 	<control controlID="23" controlTypeID="com.balsamiq.mockups::Canvas" x="167" y="81" w="570" h="428" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1">
@@ -120,7 +115,7 @@
 		<text>etr-edelooo</text>
 	  </controlProperties>
 	</control>
-	<control controlID="108" controlTypeID="com.balsamiq.mockups::Paragraph" x="585" y="333" w="117" h="136" measuredW="200" measuredH="140" zOrder="17" locked="false" isInGroup="-1">
+	<control controlID="108" controlTypeID="com.balsamiq.mockups::Paragraph" x="585" y="333" w="117" h="136" measuredW="200" measuredH="140" zOrder="16" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Only%20fill%20these%20in%20if%20you%20need%20to%20distinguish%20this%20writing%20system%20from%20others%2C%20based%20on%20region%20or%20other%20variant%20condition.</text>
 		<size>12</size>
@@ -128,42 +123,42 @@
 		<color>10066329</color>
 	  </controlProperties>
 	</control>
-	<control controlID="109" controlTypeID="com.balsamiq.mockups::ComboBox" x="267" y="335" w="310" h="-1" measuredW="172" measuredH="25" zOrder="18" locked="false" isInGroup="-1">
+	<control controlID="109" controlTypeID="com.balsamiq.mockups::ComboBox" x="267" y="335" w="310" h="-1" measuredW="172" measuredH="25" zOrder="17" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Script/Region/Variant</text>
 	  </controlProperties>
 	</control>
-	<control controlID="110" controlTypeID="com.balsamiq.mockups::Label" x="267" y="403" w="50" h="25" measuredW="50" measuredH="25" zOrder="19" locked="false" isInGroup="-1">
+	<control controlID="110" controlTypeID="com.balsamiq.mockups::Label" x="267" y="403" w="50" h="25" measuredW="50" measuredH="25" zOrder="18" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Region%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="111" controlTypeID="com.balsamiq.mockups::Label" x="267" y="438" w="58" h="25" measuredW="58" measuredH="25" zOrder="20" locked="false" isInGroup="-1">
+	<control controlID="111" controlTypeID="com.balsamiq.mockups::Label" x="267" y="438" w="58" h="25" measuredW="58" measuredH="25" zOrder="19" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Variant%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="112" controlTypeID="com.balsamiq.mockups::Label" x="267" y="367" w="51" h="25" measuredW="51" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
+	<control controlID="112" controlTypeID="com.balsamiq.mockups::Label" x="267" y="367" w="51" h="25" measuredW="51" measuredH="25" zOrder="20" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Script%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="113" controlTypeID="com.balsamiq.mockups::Label" x="205" y="333" w="55" h="25" measuredW="55" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
+	<control controlID="113" controlTypeID="com.balsamiq.mockups::Label" x="205" y="333" w="55" h="25" measuredW="55" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Special%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="114" controlTypeID="com.balsamiq.mockups::ComboBox" x="335" y="367" w="242" h="-1" measuredW="32" measuredH="24" zOrder="23" locked="false" isInGroup="-1">
+	<control controlID="114" controlTypeID="com.balsamiq.mockups::ComboBox" x="335" y="367" w="242" h="-1" measuredW="32" measuredH="24" zOrder="22" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text/>
 	  </controlProperties>
 	</control>
-	<control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="335" y="400" w="242" h="-1" measuredW="32" measuredH="24" zOrder="24" locked="false" isInGroup="-1">
+	<control controlID="115" controlTypeID="com.balsamiq.mockups::ComboBox" x="335" y="400" w="242" h="-1" measuredW="32" measuredH="24" zOrder="23" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text/>
 	  </controlProperties>
 	</control>
-	<control controlID="116" controlTypeID="com.balsamiq.mockups::TextInput" x="335" y="436" w="242" h="-1" measuredW="58" measuredH="29" zOrder="25" locked="false" isInGroup="-1">
+	<control controlID="116" controlTypeID="com.balsamiq.mockups::TextInput" x="335" y="436" w="242" h="-1" measuredW="58" measuredH="29" zOrder="24" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>edelooo</text>
 	  </controlProperties>
@@ -175,24 +170,24 @@
 		<bottomheight>0</bottomheight>
 	  </controlProperties>
 	</control>
-	<control controlID="123" controlTypeID="com.balsamiq.mockups::TitleWindow" x="773" y="63" w="291" h="149" measuredW="450" measuredH="400" zOrder="26" locked="false" isInGroup="-1">
+	<control controlID="123" controlTypeID="com.balsamiq.mockups::TitleWindow" x="773" y="63" w="291" h="149" measuredW="450" measuredH="400" zOrder="25" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Add%20dialect%20of%20Edelo</text>
 		<topheight>26</topheight>
 		<bottomheight>0</bottomheight>
 	  </controlProperties>
 	</control>
-	<control controlID="125" controlTypeID="com.balsamiq.mockups::TextInput" x="894" y="111" w="108" h="-1" measuredW="57" measuredH="29" zOrder="27" locked="false" isInGroup="-1">
+	<control controlID="125" controlTypeID="com.balsamiq.mockups::TextInput" x="894" y="111" w="108" h="-1" measuredW="57" measuredH="29" zOrder="26" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>edolooo</text>
 	  </controlProperties>
 	</control>
-	<control controlID="126" controlTypeID="com.balsamiq.mockups::Label" x="805" y="111" w="-1" h="-1" measuredW="89" measuredH="25" zOrder="28" locked="false" isInGroup="-1">
+	<control controlID="126" controlTypeID="com.balsamiq.mockups::Label" x="805" y="111" w="-1" h="-1" measuredW="89" measuredH="25" zOrder="27" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Dialect%20name%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="127" controlTypeID="com.balsamiq.mockups::Button" x="845" y="157" w="72" h="-1" measuredW="43" measuredH="28" zOrder="29" locked="false" isInGroup="-1">
+	<control controlID="127" controlTypeID="com.balsamiq.mockups::Button" x="845" y="157" w="72" h="-1" measuredW="43" measuredH="28" zOrder="28" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>OK</text>
 	  </controlProperties>

@@ -61,7 +61,7 @@
 		<selectedIndex>3</selectedIndex>
 	  </controlProperties>
 	</control>
-	<control controlID="80" controlTypeID="com.balsamiq.mockups::Paragraph" x="62" y="391" w="125" h="108" measuredW="200" measuredH="140" zOrder="16" locked="false" isInGroup="-1">
+	<control controlID="80" controlTypeID="com.balsamiq.mockups::Paragraph" x="62" y="391" w="125" h="108" measuredW="200" measuredH="140" zOrder="15" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Add%20French%0AAdd%20German%0AAdd%20Portugese%0AAdd%20Spanish%0AAdd%20Thai</text>
 		<underline>false</underline>
@@ -79,12 +79,7 @@
 		<text>eth</text>
 	  </controlProperties>
 	</control>
-	<control controlID="77" controlTypeID="com.balsamiq.mockups::Icon" x="90" y="555" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="15" locked="false" isInGroup="-1">
-	  <controlProperties>
-		<icon>DownTriangleIcon%7Cxsmall</icon>
-	  </controlProperties>
-	</control>
-	<control controlID="86" controlTypeID="com.balsamiq.mockups::Paragraph" x="605" y="351" w="117" h="136" measuredW="200" measuredH="140" zOrder="17" locked="false" isInGroup="-1">
+	<control controlID="86" controlTypeID="com.balsamiq.mockups::Paragraph" x="605" y="351" w="117" h="136" measuredW="200" measuredH="140" zOrder="16" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Only%20fill%20these%20in%20if%20you%20need%20to%20distinguish%20this%20writing%20system%20from%20others%2C%20based%20on%20region%20or%20other%20variant%20condition.</text>
 		<size>12</size>
@@ -98,17 +93,17 @@
 		<color>16777215</color>
 	  </controlProperties>
 	</control>
-	<control controlID="88" controlTypeID="com.balsamiq.mockups::ComboBox" x="287" y="353" w="310" h="-1" measuredW="295" measuredH="25" zOrder="18" locked="false" isInGroup="-1">
+	<control controlID="88" controlTypeID="com.balsamiq.mockups::ComboBox" x="287" y="353" w="310" h="-1" measuredW="295" measuredH="25" zOrder="17" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Script/Region/Variant%20From%20Official%20Lists</text>
 	  </controlProperties>
 	</control>
-	<control controlID="89" controlTypeID="com.balsamiq.mockups::Label" x="287" y="421" w="50" h="25" measuredW="50" measuredH="25" zOrder="19" locked="false" isInGroup="-1">
+	<control controlID="89" controlTypeID="com.balsamiq.mockups::Label" x="287" y="421" w="50" h="25" measuredW="50" measuredH="25" zOrder="18" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Region%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="90" controlTypeID="com.balsamiq.mockups::Label" x="287" y="456" w="58" h="25" measuredW="58" measuredH="25" zOrder="20" locked="false" isInGroup="-1">
+	<control controlID="90" controlTypeID="com.balsamiq.mockups::Label" x="287" y="456" w="58" h="25" measuredW="58" measuredH="25" zOrder="19" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Variant%3A</text>
 	  </controlProperties>
@@ -118,22 +113,22 @@
 		<text>etr_thai</text>
 	  </controlProperties>
 	</control>
-	<control controlID="92" controlTypeID="com.balsamiq.mockups::Label" x="225" y="351" w="55" h="25" measuredW="55" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
+	<control controlID="92" controlTypeID="com.balsamiq.mockups::Label" x="225" y="351" w="55" h="25" measuredW="55" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Special%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="93" controlTypeID="com.balsamiq.mockups::ComboBox" x="355" y="385" w="242" h="-1" measuredW="60" measuredH="25" zOrder="23" locked="false" isInGroup="-1">
+	<control controlID="93" controlTypeID="com.balsamiq.mockups::ComboBox" x="355" y="385" w="242" h="-1" measuredW="60" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Thai</text>
 	  </controlProperties>
 	</control>
-	<control controlID="94" controlTypeID="com.balsamiq.mockups::ComboBox" x="355" y="418" w="242" h="-1" measuredW="32" measuredH="24" zOrder="24" locked="false" isInGroup="-1">
+	<control controlID="94" controlTypeID="com.balsamiq.mockups::ComboBox" x="355" y="418" w="242" h="-1" measuredW="32" measuredH="24" zOrder="23" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text/>
 	  </controlProperties>
 	</control>
-	<control controlID="95" controlTypeID="com.balsamiq.mockups::ComboBox" x="355" y="457" w="242" h="-1" measuredW="32" measuredH="24" zOrder="25" locked="false" isInGroup="-1">
+	<control controlID="95" controlTypeID="com.balsamiq.mockups::ComboBox" x="355" y="457" w="242" h="-1" measuredW="32" measuredH="24" zOrder="24" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text/>
 	  </controlProperties>
@@ -144,22 +139,22 @@
 		<text>Edelo%28Thai%29</text>
 	  </controlProperties>
 	</control>
-	<control controlID="97" controlTypeID="com.balsamiq.mockups::Label" x="793" y="242" w="51" h="25" measuredW="51" measuredH="25" zOrder="27" locked="false" isInGroup="-1">
+	<control controlID="97" controlTypeID="com.balsamiq.mockups::Label" x="793" y="242" w="51" h="25" measuredW="51" measuredH="25" zOrder="26" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Script%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="98" controlTypeID="com.balsamiq.mockups::ComboBox" x="844" y="242" w="242" h="-1" measuredW="32" measuredH="24" zOrder="28" locked="false" isInGroup="-1">
+	<control controlID="98" controlTypeID="com.balsamiq.mockups::ComboBox" x="844" y="242" w="242" h="-1" measuredW="32" measuredH="24" zOrder="27" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text/>
 	  </controlProperties>
 	</control>
-	<control controlID="91" controlTypeID="com.balsamiq.mockups::Label" x="287" y="385" w="51" h="25" measuredW="51" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
+	<control controlID="91" controlTypeID="com.balsamiq.mockups::Label" x="287" y="385" w="51" h="25" measuredW="51" measuredH="25" zOrder="20" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Script%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="100" controlTypeID="com.balsamiq.mockups::Tooltip" x="947" y="249" w="256" h="140" measuredW="1167" measuredH="140" zOrder="30" locked="false" isInGroup="-1">
+	<control controlID="100" controlTypeID="com.balsamiq.mockups::Tooltip" x="947" y="249" w="256" h="140" measuredW="1167" measuredH="140" zOrder="29" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Enter%20something%20here%20if%20you%20need%20to%20distinguish%20between%20writing%20systems%20of%20the%20same%20language%20in%20different%20scripts.%20%20For%20example%2C%20Chinese%20could%20be%20written%20in%20simplified%20or%20traditional%20script.</text>
 		<tooltipDirection>NW</tooltipDirection>
@@ -167,7 +162,7 @@
 		<bold>false</bold>
 	  </controlProperties>
 	</control>
-	<control controlID="101" controlTypeID="com.balsamiq.mockups::Tooltip" x="913" y="427" w="256" h="138" measuredW="1107" measuredH="138" zOrder="31" locked="false" isInGroup="-1">
+	<control controlID="101" controlTypeID="com.balsamiq.mockups::Tooltip" x="913" y="427" w="256" h="138" measuredW="1107" measuredH="138" zOrder="30" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Enter%20something%20here%20if%20you%20need%20to%20distinguish%20between%20writing%20systems%20of%20the%20same%20language%20in%20different%20places.%20%20For%20example%2C%20English%20is%20spelled%20differently%20in%20the%20USA%20and%20UK.</text>
 		<tooltipDirection>SW</tooltipDirection>
@@ -175,27 +170,27 @@
 		<bold>false</bold>
 	  </controlProperties>
 	</control>
-	<control controlID="102" controlTypeID="com.balsamiq.mockups::ComboBox" x="870" y="82" w="284" h="-1" measuredW="64" measuredH="112" zOrder="32" locked="false" isInGroup="-1">
+	<control controlID="102" controlTypeID="com.balsamiq.mockups::ComboBox" x="870" y="82" w="284" h="-1" measuredW="64" measuredH="112" zOrder="31" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>None%0AIPA%20Phonetic%20Transcription%0AVoice%20Recording%0AScript/Region/Variant%20From%20Official%20Lists%0ACustom</text>
 	  </controlProperties>
 	</control>
-	<control controlID="103" controlTypeID="com.balsamiq.mockups::Label" x="808" y="80" w="-1" h="-1" measuredW="55" measuredH="25" zOrder="33" locked="false" isInGroup="-1">
+	<control controlID="103" controlTypeID="com.balsamiq.mockups::Label" x="808" y="80" w="-1" h="-1" measuredW="55" measuredH="25" zOrder="32" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Special%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="96" controlTypeID="com.balsamiq.mockups::Label" x="790" y="550" w="50" h="25" measuredW="50" measuredH="25" zOrder="26" locked="false" isInGroup="-1">
+	<control controlID="96" controlTypeID="com.balsamiq.mockups::Label" x="790" y="550" w="50" h="25" measuredW="50" measuredH="25" zOrder="25" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Region%3A</text>
 	  </controlProperties>
 	</control>
-	<control controlID="99" controlTypeID="com.balsamiq.mockups::ComboBox" x="856" y="550" w="242" h="-1" measuredW="32" measuredH="24" zOrder="29" locked="false" isInGroup="-1">
+	<control controlID="99" controlTypeID="com.balsamiq.mockups::ComboBox" x="856" y="550" w="242" h="-1" measuredW="32" measuredH="24" zOrder="28" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text/>
 	  </controlProperties>
 	</control>
-	<control controlID="108" controlTypeID="com.balsamiq.mockups::Paragraph" x="57" y="206" w="125" h="88" measuredW="200" measuredH="140" zOrder="35" locked="false" isInGroup="-1">
+	<control controlID="108" controlTypeID="com.balsamiq.mockups::Paragraph" x="57" y="206" w="125" h="88" measuredW="200" measuredH="140" zOrder="34" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>Add%20Edelo%20%28Voice%29%0AAdd%20Edelo%20%28Dialect%29%0AAdd%20Edelo%20%28Other%29</text>
 		<underline>false</underline>
@@ -203,7 +198,7 @@
 		<color>6710886</color>
 	  </controlProperties>
 	</control>
-	<control controlID="107" controlTypeID="com.balsamiq.mockups::Label" x="31" y="26" w="-1" h="-1" measuredW="493" measuredH="29" zOrder="34" locked="false" isInGroup="-1">
+	<control controlID="107" controlTypeID="com.balsamiq.mockups::Label" x="31" y="26" w="-1" h="-1" measuredW="493" measuredH="29" zOrder="33" locked="false" isInGroup="-1">
 	  <controlProperties>
 		<text>After%20clicking%20Add%20Edelo%20%28Other%29%20and%20choosing%20the%20Thai%20Script</text>
 		<size>16</size>

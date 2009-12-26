@@ -11,9 +11,6 @@ namespace Palaso.WritingSystems
 	{
 		private const string _kExtension = ".ldml";
 		private string _path;
-		private bool _dontAddDefaultDefinitions;
-
-		private IWritingSystemProvider _systemWritingSystemProvider;
 
 		/// <summary>
 		/// Use the default repository
@@ -108,10 +105,10 @@ namespace Palaso.WritingSystems
 			}
 
 
-			 if (!_dontAddDefaultDefinitions )
-			 {
+		   //  if (!DontAddDefaultDefinitions )
+		   //  {
 				 AddActiveOSLanguages();
-			 }
+		   //  }
 
 //
 //            if (!_dontAddDefaultDefinitions && FindAlreadyLoadedWritingSystem("en") == null)
@@ -132,9 +129,9 @@ namespace Palaso.WritingSystems
 
 		private void AddActiveOSLanguages()
 		{
-			if (_systemWritingSystemProvider != null)
+			if (SystemWritingSystemProvider != null)
 			{
-				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider.ActiveOSLanguages)
+				foreach (WritingSystemDefinition ws in SystemWritingSystemProvider)
 				{
 					if (null == FindAlreadyLoadedWritingSystem(ws.RFC4646))
 					{
@@ -147,35 +144,15 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		/// <summary>
-		/// useful for unit tests
-		/// </summary>
-		public bool DontAddDefaultDefinitions
-		{
-			get
-			{
-				return _dontAddDefaultDefinitions;
-			}
-			set
-			{
-				_dontAddDefaultDefinitions = value;
-			}
-		}
-
+//        /// <summary>
+//        /// useful for unit tests
+//        /// </summary>
+//        public bool DontAddDefaultDefinitions { get; set; }
+//
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
-		public IWritingSystemProvider SystemWritingSystemProvider
-		{
-			get
-			{
-				return _systemWritingSystemProvider;
-			}
-			set
-			{
-				_systemWritingSystemProvider = value;
-			}
-		}
+		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider { get; set; }
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
 		{
