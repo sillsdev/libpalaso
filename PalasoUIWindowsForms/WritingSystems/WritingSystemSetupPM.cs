@@ -133,7 +133,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		/// <param name="rfc4646"></param>
 		/// <returns>false if the code wasn't found</returns>
-		public bool SetCurrentIndexFromRfc46464(string rfc4646)
+		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
 			var index = _writingSystemDefinitions.FindIndex(d => d.RFC4646 == rfc4646);
 			if(index<0)
@@ -742,7 +742,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// Creates a new writing system and selects it.
 		/// </summary>
 		/// <returns></returns>
-		public void AddNew()
+		public virtual void AddNew()
 		{
 			if (!_usingStore)
 			{
@@ -947,5 +947,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        {
 //
 //        }
+		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
