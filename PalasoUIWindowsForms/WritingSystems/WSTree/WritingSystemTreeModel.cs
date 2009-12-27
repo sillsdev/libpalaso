@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using System.Windows.Forms;
 using Palaso.WritingSystems;
 using System.Linq;
 
@@ -13,11 +16,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public class WritingSystemTreeModel
 	{
 		private readonly IWritingSystemStore _store;
+		private EventHandler _updateDisplay;
 
 		public WritingSystemTreeModel(IWritingSystemStore store)
 		{
 			_store = store;
 		}
+
+		/// <summary>
+		/// Given some existing writiting system definitions for a language, what other ones might they want ot add?
+		/// </summary>
+		public IWritingSystemVariantSuggestor Suggestor{get;set;}
 
 		/// <summary>
 		/// Normally, the major-langauge WritingSystems which the user is likely to want to add
@@ -39,16 +48,25 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var x = new List<WritingSystemDefinition>(_store.WritingSystemDefinitions);
 
-			var isoGroups = x.GroupBy(def=>def.ISO);
+			var systemsOfSameLanguage = x.GroupBy(def=>def.ISO);
 
 
-			foreach (var defsWithSameIso in isoGroups)
+			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{
-				var mainDef = ChooseMainDefinitionOfLanguage(defsWithSameIso);
-				var item = new WritingSystemDefinitionTreeItem(mainDef);
-				item.Children = from def in defsWithSameIso
-								where def != mainDef
-								select (WritingSystemTreeItem) new WritingSystemDefinitionTreeItem(def);
+				var primaryDefinition = ChooseMainDefinitionOfLanguage(defsOfSameLanguage);
+				var item = new WritingSystemDefinitionTreeItem(primaryDefinition);
+				item.Children = new List<WritingSystemTreeItem>(from def in defsOfSameLanguage
+								where def != primaryDefinition
+								select (WritingSystemTreeItem) new WritingSystemDefinitionTreeItem(def));
+				if (Suggestor != null)
+				{
+					foreach (
+						WritingSystemDefinition oneTheyMightWantToAdd in
+							Suggestor.GetSuggestions(primaryDefinition, defsOfSameLanguage))
+					{
+						item.Children.Add(new WritingSystemCreationTreeItem(oneTheyMightWantToAdd));
+					}
+				}
 				items.Add(item);
 			}
 		}
@@ -77,11 +95,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			var item = new WritingSystemTreeItem("Other Languages");
 			//var otherDefsNotInStore = OtherKnownWritingSystems.Except(_store.WritingSystemDefinitions);
-			item.Children = from definition in OtherKnownWritingSystems
+			item.Children = new List<WritingSystemTreeItem>( from definition in OtherKnownWritingSystems
 							where !_store.WritingSystemDefinitions.Contains(definition)
-							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(definition);
+							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(definition));
 			items.Add(item );
 		}
+
+		public void ViewLoaded(EventHandler handler)
+		{
+		   _updateDisplay = handler;
+		   _updateDisplay.Invoke(this, null);
+		}
+	}
+
+	public interface IWritingSystemVariantSuggestor
+	{
+		IEnumerable<WritingSystemDefinition> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage);
 	}
 
 	public class WritingSystemTreeItem
@@ -92,10 +121,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 		public string Text { get; set; }
 
-		public IEnumerable<WritingSystemTreeItem> Children { get; set; }
+		public List<WritingSystemTreeItem> Children { get; set; }
 	   public override string ToString()
 		{
 			return  Text;
+		}
+
+		public TreeNode MakeTreeNode()
+		{
+			var node = new TreeNode(Text, Children.Select(n => n.MakeTreeNode()).ToArray());
+			node.Tag=this;
+			node.ForeColor = ForeColor;
+			return node;
+		}
+
+		protected virtual Color ForeColor
+		{
+			get { return System.Drawing.Color.Black; }
 		}
 	}
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
@@ -126,6 +168,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			return string.Format("Add {0}", Definition.DisplayLabel);
 		}
+
+
 	}
 
 	public class WritingSystemCreateUnknownTreeItem : WritingSystemTreeItem
@@ -135,5 +179,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			: base("Add Language")
 		{
 		}
+
+		protected virtual Color ForeColor
+		{
+			get { return System.Drawing.Color.Blue; }
+		}
+
 	}
 }

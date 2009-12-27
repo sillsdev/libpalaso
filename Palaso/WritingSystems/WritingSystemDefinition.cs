@@ -489,6 +489,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The windows "NativeName" from the Culture class
+		/// </summary>
 		public string NativeName
 		{
 			get

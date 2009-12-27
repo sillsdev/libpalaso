@@ -158,7 +158,7 @@
 	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\WritingSystemTreeModel.cs" />
+	<Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -231,6 +231,13 @@
 	<Compile Include="Keyboarding\ScimPanelController.cs" />
 	<Compile Include="Keyboarding\IBusAdaptor.cs" />
 	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
+	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.Designer.cs">
+	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSTree\WritingSystemVariantSuggestor.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
@@ -304,6 +311,9 @@
 	<EmbeddedResource Include="WritingSystems\WSSpellingControl.resx">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSTree\WritingSystemTreeView.resx">
+	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -13,22 +13,16 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 	public class WritingSystemTreeModelTests
 	{
 		[Test]
-		public void GetTopLevelItems_OtherKnownWritingSystemsIsNull_GivesNoOtherLanguagesHeader()
+		public void GetTopLevelItems_OtherKnownWritingSystemsIsNull_Ok()
 		{
 			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
 			var model = new WritingSystemTreeModel(writingSystemStore);
 			model.OtherKnownWritingSystems = null;
-			Assert.AreEqual(0, model.GetTopLevelItems().Count());
+			var items = model.GetTopLevelItems().ToArray();
+			Assert.AreEqual("Add Language", items[0].Text);
+			Assert.AreEqual(1, items.Count());
 		}
 
-		[Test]
-		public void GetTopLevelItems_OffersAddLanguageChoice()
-		{
-			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
-			var model = new WritingSystemTreeModel(writingSystemStore);
-			WritingSystemTreeItem firstAdd = model.GetTopLevelItems().First(i => i.GetType() == typeof(WritingSystemCreateUnknownTreeItem));
-			Assert.AreEqual("Add Language", firstAdd.ToString());
-		}
 
 		[Test]
 		public void GetTopLevelItems_StoreIsEmptyButOtherLanguagesAreAvailable_GivesOtherLanguageChoiceHeader()
@@ -36,10 +30,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
 			var model = new WritingSystemTreeModel(writingSystemStore);
 			model.OtherKnownWritingSystems =  new List<WritingSystemDefinition>(new []{new WritingSystemDefinition("xyz")});
-			var items = model.GetTopLevelItems();
-			Assert.AreEqual(1, items.Count());
-			Assert.AreEqual("Other Languages", items.First().Text);
-			var otherLanguages = items.First().Children;
+			var items = model.GetTopLevelItems().ToArray();
+			Assert.AreEqual(2, items.Count());
+			Assert.AreEqual("Add Language", items[0].Text);
+			Assert.AreEqual("Other Languages", items[1].Text);
+			var otherLanguages = items[1].Children;
 			Assert.AreEqual(1,otherLanguages.Count());
 		}
 
@@ -55,10 +50,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			writingSystemStore.Set(overlapDefinition);
 			var model = new WritingSystemTreeModel(writingSystemStore);
 			model.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { overlapDefinition, notUsedYetDefinition });
-			var items = model.GetTopLevelItems();
-			Assert.AreEqual(1, items.Count());
-			Assert.AreEqual("Other Languages", items.First().Text);
-			var otherLanguages = items.First().Children;
+			var items = model.GetTopLevelItems().ToArray();
+			Assert.AreEqual(3, items.Count());
+			Assert.AreEqual("xyz", items[0].Text);
+			Assert.AreEqual("Add Language", items[1].Text);
+			Assert.AreEqual("Other Languages", items[2].Text);
+			var otherLanguages = items[2].Children;
 			Assert.AreEqual(1, otherLanguages.Count());
 	  }
 
@@ -71,8 +68,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			writingSystemStore.Set(abc);
 			writingSystemStore.Set(xyz);
 			var model = new WritingSystemTreeModel(writingSystemStore);
-			var items = model.GetTopLevelItems();
-			Assert.AreEqual(2, items.Count());
+			var items = model.GetTopLevelItems().ToArray();
+			Assert.AreEqual(3, items.Count());
+			Assert.AreEqual("abc", items[0].Text);
+			Assert.AreEqual("xyz", items[1].Text);
+			Assert.AreEqual("Add Language", items[2].Text);
 		}
 
 		[Test]
@@ -84,8 +84,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			writingSystemStore.Set(etrIpa);
 			writingSystemStore.Set(etr);
 			var model = new WritingSystemTreeModel(writingSystemStore);
-			var items = model.GetTopLevelItems();
-			Assert.AreEqual(1, items.Count());
+			var items = model.GetTopLevelItems().ToArray();
+			Assert.AreEqual(2, items.Count());
+			Assert.AreEqual("edo", items[0].Text);
+			Assert.AreEqual("Add Language", items[1].Text);
 
 			var subDefinitions = items.First().Children;
 			Assert.AreEqual(1, subDefinitions.Count());
@@ -94,27 +96,18 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		}
 
 
-		[Test, Ignore("not yet")]
-		public void GetTopLevelItems_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
-		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", "ipa", string.Empty, string.Empty, "Edolo", "edo", false);
-			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
-			writingSystemStore.Set(etrIpa);
-			writingSystemStore.Set(etr);
-			var model = new WritingSystemTreeModel(writingSystemStore);
-			var items = model.GetTopLevelItems();
 
-			var children = items.First().Children;
-			Assert.IsFalse(children.Any(item=>((WritingSystemCreationTreeItem) item).Definition.Script=="ipa"));
-		}
-		[Test, Ignore("not yet")]
-		public void GetTopLevelItems_HasNormalOnly_IncludesItemToCreateIPA()
+		/// <summary>
+		/// Other details of this behavior are tested in the class used as the suggestor
+		/// </summary>
+		[Test]
+		public void GetTopLevelItems_UsesSuggestor()
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
 			IWritingSystemStore writingSystemStore = new WritingSystemStoreBase();
 			writingSystemStore.Set(etr);
 			var model = new WritingSystemTreeModel(writingSystemStore);
+			model.Suggestor = new WritingSystemVariantSuggestor();
 			var items = model.GetTopLevelItems();
 
 			var children = items.First().Children;
