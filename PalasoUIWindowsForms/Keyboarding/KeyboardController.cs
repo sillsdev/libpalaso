@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -160,6 +162,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 #endif
 			Debug.Fail("Unrecognized engine enumeration");
 			return false;
+		}
+
+		//returns the first keyboard that looks like it handles ipa, or string.empty
+		public static string GetIpaKeyboardIfAvailable()
+		{
+			return GetAvailableKeyboards(Engines.All).First(k=>k.Name.ToLower().Contains("ipa")).Name;
 		}
 	}
 }
