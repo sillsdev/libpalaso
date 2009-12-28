@@ -71,6 +71,7 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemDefinition()
 		{
+			_iso=_abbreviation = _script=_languageName = _variant = _region =_nativeName = string.Empty;
 			_sortUsing = SortRulesType.DefaultOrdering;
 			LoadScriptOptions();
 			Modified = false;
@@ -80,6 +81,7 @@ namespace Palaso.WritingSystems
 			: this()
 		{
 			_iso = iso;
+			_abbreviation = _script = _languageName = _variant = _region = _nativeName = string.Empty;
 		}
 
 		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
@@ -331,6 +333,27 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public string ListLabel
+		{
+			get
+			{
+				string n = string.Empty;
+				if (!String.IsNullOrEmpty(_languageName))
+				{
+					n=_languageName;
+				}
+				else
+				{
+					n = DisplayLabel;
+				}
+				if (!String.IsNullOrEmpty(_script))
+				{
+					n+=" ("+_abbreviation+")";
+				}
+
+				return n;
+			}
+		}
 		public string RFC4646
 		{
 			get

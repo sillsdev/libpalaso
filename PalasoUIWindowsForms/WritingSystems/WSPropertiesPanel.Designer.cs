@@ -30,9 +30,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-			this._picker = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingListView();
-			this._buttonBar = new Palaso.UI.WindowsForms.WritingSystems.WSAddDuplicateMoreButtonBar();
+			this._treeView = new Palaso.UI.WindowsForms.WritingSystems.WSTree.WritingSystemTreeView();
 			this._propertiesTabControl = new Palaso.UI.WindowsForms.WritingSystems.WSPropertiesTabControl();
+			this._buttonBar = new Palaso.UI.WindowsForms.WritingSystems.WSAddDuplicateMoreButtonBar();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -69,24 +69,31 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// splitContainer2.Panel1
 			//
-			this.splitContainer2.Panel1.Controls.Add(this._picker);
+			this.splitContainer2.Panel1.Controls.Add(this._treeView);
 			//
 			// splitContainer2.Panel2
 			//
 			this.splitContainer2.Panel2.Controls.Add(this._propertiesTabControl);
 			this.splitContainer2.Size = new System.Drawing.Size(841, 422);
-			this.splitContainer2.SplitterDistance = 243;
+			this.splitContainer2.SplitterDistance = 303;
 			this.splitContainer2.SplitterWidth = 10;
 			this.splitContainer2.TabIndex = 0;
 			//
-			// _picker
+			// _treeView
 			//
-			this._picker.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._picker.Location = new System.Drawing.Point(0, 0);
-			this._picker.Name = "_picker";
-			this._picker.SelectedIndex = -1;
-			this._picker.Size = new System.Drawing.Size(243, 422);
-			this._picker.TabIndex = 0;
+			this._treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._treeView.Location = new System.Drawing.Point(0, 0);
+			this._treeView.Name = "_treeView";
+			this._treeView.Size = new System.Drawing.Size(303, 422);
+			this._treeView.TabIndex = 1;
+			//
+			// _propertiesTabControl
+			//
+			this._propertiesTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._propertiesTabControl.Location = new System.Drawing.Point(0, 0);
+			this._propertiesTabControl.Name = "_propertiesTabControl";
+			this._propertiesTabControl.Size = new System.Drawing.Size(528, 422);
+			this._propertiesTabControl.TabIndex = 0;
 			//
 			// _buttonBar
 			//
@@ -96,14 +103,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._buttonBar.Name = "_buttonBar";
 			this._buttonBar.Size = new System.Drawing.Size(841, 31);
 			this._buttonBar.TabIndex = 0;
-			//
-			// _propertiesTabControl
-			//
-			this._propertiesTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._propertiesTabControl.Location = new System.Drawing.Point(0, 0);
-			this._propertiesTabControl.Name = "_propertiesTabControl";
-			this._propertiesTabControl.Size = new System.Drawing.Size(588, 422);
-			this._propertiesTabControl.TabIndex = 0;
 			//
 			// WSPropertiesPanel
 			//
@@ -127,8 +126,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private WSAddDuplicateMoreButtonBar _buttonBar;
 		private System.Windows.Forms.SplitContainer splitContainer2;
-		private WSPickerUsingListView _picker;
 		private WSPropertiesTabControl _propertiesTabControl;
+		private Palaso.UI.WindowsForms.WritingSystems.WSTree.WritingSystemTreeView _treeView;
 
 	}
 }

@@ -204,6 +204,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void ModelCurrentItemUpdated(object sender, EventArgs e)
 		{
+			if(SelectedIndex<0)
+				return;
+
 			string[] currentItem = _model.WritingSystemListCurrentItem;
 			ListViewItem listViewItem = _listView.Items[SelectedIndex];
 			listViewItem.Text = currentItem[0];

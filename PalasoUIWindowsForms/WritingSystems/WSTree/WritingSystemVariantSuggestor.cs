@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -15,13 +16,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public IEnumerable<WritingSystemDefinition> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
-			var first = existingWritingSystemsForLanguage.First();
+			if(string.IsNullOrEmpty(primary.ISO))
+				yield break;
+
 			if (!existingWritingSystemsForLanguage.Any(def => def.Script == "ipa" && string.IsNullOrEmpty(def.Variant)))
 			{
-				var x= new WritingSystemDefinition(first.ISO, "ipa",first.Region, first.Variant, first.LanguageName, "ipa", first.RightToLeftScript);
-				x.DefaultFontSize = first.DefaultFontSize;
+				var x= new WritingSystemDefinition(primary.ISO, "ipa",primary.Region, primary.Variant, primary.LanguageName, "ipa", false);
+				x.DefaultFontSize = primary.DefaultFontSize;
 				x.DefaultFontName = fontsForIPA.FirstOrDefault(FontExists);
-				x.Keyboard = "ipa";
+
+				x.Keyboard = Keyboarding.KeyboardController.GetIpaKeyboardIfAvailable();
 				yield return x;
 			}
 		}

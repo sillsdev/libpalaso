@@ -22,14 +22,14 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		{
 			_writingSystemStore = new WritingSystemStoreBase();
 			_mockSetupModel = new Mock<WritingSystemSetupPM>(_writingSystemStore);
-			_model = new WritingSystemTreeModel(_writingSystemStore, _mockSetupModel.Object);
+			_model = new WritingSystemTreeModel(_mockSetupModel.Object);
 		}
 
 		[Test]
 		public void GetTopLevelItems_OtherKnownWritingSystemsIsNull_Ok()
 		{
 			_model.OtherKnownWritingSystems = null;
-			var items = _model.GetTopLevelItems().ToArray();
+			var items = _model.GetTreeItems().ToArray();
 			Assert.AreEqual("Add Language", items[0].Text);
 			Assert.AreEqual(1, items.Count());
 		}
@@ -39,7 +39,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		public void GetTopLevelItems_StoreIsEmptyButOtherLanguagesAreAvailable_GivesOtherLanguageChoiceHeader()
 		{
 			_model.OtherKnownWritingSystems =  new List<WritingSystemDefinition>(new []{new WritingSystemDefinition("xyz")});
-			var items = _model.GetTopLevelItems().ToArray();
+			var items = _model.GetTreeItems().ToArray();
 			Assert.AreEqual(2, items.Count());
 			Assert.AreEqual("Add Language", items[0].Text);
 			Assert.AreEqual("Other Languages", items[1].Text);
@@ -57,7 +57,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var notUsedYetDefinition = new WritingSystemDefinition("abc");
 			_writingSystemStore.Set(overlapDefinition);
 			_model.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { overlapDefinition, notUsedYetDefinition });
-			var items = _model.GetTopLevelItems().ToArray();
+			var items = _model.GetTreeItems().ToArray();
 			Assert.AreEqual(3, items.Count());
 			Assert.AreEqual("xyz", items[0].Text);
 			Assert.AreEqual("Add Language", items[1].Text);
@@ -73,7 +73,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var abc = new WritingSystemDefinition("abc");
 			_writingSystemStore.Set(abc);
 			_writingSystemStore.Set(xyz);
-			var items = _model.GetTopLevelItems().ToArray();
+			var items = _model.GetTreeItems().ToArray();
 			Assert.AreEqual(3, items.Count());
 			Assert.AreEqual("abc", items[0].Text);
 			Assert.AreEqual("xyz", items[1].Text);
@@ -87,7 +87,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var etrIpa = new WritingSystemDefinition("etr", "ipa", string.Empty, string.Empty, "Edolo", "edo", false);
 			_writingSystemStore.Set(etrIpa);
 			_writingSystemStore.Set(etr);
-			var items = _model.GetTopLevelItems().ToArray();
+			var items = _model.GetTreeItems().ToArray();
 			Assert.AreEqual(2, items.Count());
 			Assert.AreEqual("edo", items[0].Text);
 			Assert.AreEqual("Add Language", items[1].Text);
@@ -107,7 +107,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
 			_writingSystemStore.Set(etr);
 			_model.Suggestor = new WritingSystemVariantSuggestor();
-			var items = _model.GetTopLevelItems();
+			var items = _model.GetTreeItems();
 
 			var children = items.First().Children;
 			Assert.IsTrue(children.Any(item => ((WritingSystemCreationTreeItem)item).Definition.Script == "ipa"));
@@ -119,7 +119,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			/* the tree would look like this:
 			  Add Language  <-- we're clicking this one
 			*/
-			var items = _model.GetTopLevelItems();
+			var items = _model.GetTreeItems();
 			items.First().Clicked();
 			_mockSetupModel.Setup(m => m.AddNew());
 			_mockSetupModel.Verify(m => m.AddNew(), "Should have called the AddNew method on the setup model");
@@ -136,7 +136,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			var def = new WritingSystemDefinition("xyz");
 			_model.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { def });
-			var items = _model.GetTopLevelItems();
+			var items = _model.GetTreeItems();
 			_mockSetupModel.Setup(m => m.AddPredefinedDefinition(def));
 
 
@@ -154,12 +154,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			var def = new WritingSystemDefinition("xyz");
 			_writingSystemStore.Set(def);
-			var items = _model.GetTopLevelItems();
-			_mockSetupModel.Setup(m => m.SetCurrentIndexFromRfc46464("xyz"));
+			var items = _model.GetTreeItems();
+			_mockSetupModel.Setup(m => m.SetCurrentDefinition(def));
 
 
 			items.First().Clicked();
-			_mockSetupModel.Verify(m => m.SetCurrentIndexFromRfc46464("xyz"));
+			_mockSetupModel.Verify(m => m.SetCurrentDefinition(def));
 		}
 	}
 

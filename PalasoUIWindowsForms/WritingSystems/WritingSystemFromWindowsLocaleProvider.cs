@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
+using System.Linq;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -44,6 +45,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public IEnumerator<WritingSystemDefinition> GetEnumerator()
 		{
+			var defs = GetLanguageAndKeyboardCombinations();
+			var tst = defs.GroupBy(d => d.RFC4646);
+			//now just return the unique ones (Works because no keyboard in the rfc4646)
+			var unique= defs.GroupBy(d => d.RFC4646)
+				.Select(g => g.First());
+			return unique.GetEnumerator();
+		}
+
+		private IEnumerable<WritingSystemDefinition> GetLanguageAndKeyboardCombinations()
+		{
 			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 			{
 				string region = string.Empty;
@@ -52,9 +63,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					region = GetRegion(language);
 				}
 				WritingSystemDefinition def =
-						new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", region, "",
-													language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName,
-													language.Culture.TextInfo.IsRightToLeft);
+					new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", region, "",
+												language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName,
+												language.Culture.TextInfo.IsRightToLeft);
 				def.NativeName = language.Culture.NativeName;
 				def.Keyboard = language.LayoutName;
 				yield return def;

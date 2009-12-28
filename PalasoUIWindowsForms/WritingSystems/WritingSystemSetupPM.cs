@@ -64,7 +64,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_currentIndex = 0;
 			_writingSystemStore = null;
 			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
-			_writingSystemDefinitions.Add(ws);
+			WritingSystemDefinitions.Add(ws);
 			_deletedWritingSystemDefinitions = null;
 			_usingStore = false;
 		}
@@ -108,7 +108,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// available on WritingSystemDefinition.  This is needed to ensure that the UI
 		/// stays up to date with any changes to the underlying WritingSystemDefinition.
 		/// </summary>
-		private WritingSystemDefinition Current
+		internal WritingSystemDefinition CurrentDefinition
 		{
 			get
 			{
@@ -123,7 +123,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (_currentWritingSystem == value)
 					return;
 				_currentWritingSystem = value;
-				_currentIndex = value == null ? -1 : _writingSystemDefinitions.FindIndex(value.Equals);
+				_currentIndex = value == null ? -1 : WritingSystemDefinitions.FindIndex(value.Equals);
 				OnSelectionChanged();
 			}
 		}
@@ -135,8 +135,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
-			var index = _writingSystemDefinitions.FindIndex(d => d.RFC4646 == rfc4646);
+			var index = WritingSystemDefinitions.FindIndex(d => d.RFC4646 == rfc4646);
 			if(index<0)
+			{
+				return false;
+			}
+			CurrentIndex = index;
+			return true;
+		}
+
+		public virtual bool SetCurrentDefinition(WritingSystemDefinition definition)
+		{
+			var index = WritingSystemDefinitions.FindIndex(d => d == definition);
+			if (index < 0)
 			{
 				return false;
 			}
@@ -160,13 +171,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					throw new InvalidOperationException("Unable to change selection without writing system store.");
 				}
-				if (value < -1 || value >= _writingSystemDefinitions.Count)
+				if (value < -1 || value >= WritingSystemDefinitions.Count)
 				{
 					throw new ArgumentOutOfRangeException();
 				}
 				_currentIndex = value;
 				WritingSystemDefinition oldCurrentWS = _currentWritingSystem;
-				_currentWritingSystem = value == -1 ? null : _writingSystemDefinitions[value];
+				_currentWritingSystem = value == -1 ? null : WritingSystemDefinitions[value];
 				// we can't just check indexes as it doesn't work if the list has changed
 				if (oldCurrentWS != _currentWritingSystem)
 				{
@@ -174,6 +185,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 			}
 		}
+
+//        public WritingSystemDefinition CurrentDefinition
+//        {
+//            get
+//            {
+//                if(CurrentIndex>-1)
+//                    return _writingSystemDefinitions[CurrentIndex];
+//                return null;
+//            }
+//        }
 
 		/// <summary>
 		/// Returns true if there is a WritingSystemDefinition currently selected
@@ -183,7 +204,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return Current != null;
+				return CurrentDefinition != null;
 			}
 		}
 
@@ -206,7 +227,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				foreach (WritingSystemDefinition definition in _writingSystemDefinitions)
+				foreach (WritingSystemDefinition definition in WritingSystemDefinitions)
 				{
 					yield return new string[]{definition.DisplayLabel};
 				}
@@ -227,10 +248,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					return new bool[] {false};
 				}
 				Dictionary<string, int> idList = new Dictionary<string, int>();
-				bool[] canSave = new bool[_writingSystemDefinitions.Count];
-				for (int i = 0; i < _writingSystemDefinitions.Count; i++)
+				bool[] canSave = new bool[WritingSystemDefinitions.Count];
+				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = _writingSystemStore.GetNewStoreIDWhenSet(_writingSystemDefinitions[i]);
+					string id = _writingSystemStore.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -253,7 +274,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return new string[] { Current.DisplayLabel } ;
+				return new string[] { CurrentDefinition.DisplayLabel } ;
 			}
 		}
 
@@ -264,7 +285,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return _writingSystemDefinitions.Count;
+				return WritingSystemDefinitions.Count;
 			}
 		}
 
@@ -280,7 +301,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					return false;
 				}
-				return Current == null ? false : WritingSystemListCanSave[CurrentIndex];
+				return CurrentDefinition == null ? false : WritingSystemListCanSave[CurrentIndex];
 			}
 		}
 
@@ -323,14 +344,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				List<string> prohibitedList = new List<string>();
-				if (Current != null && !string.IsNullOrEmpty(Current.RFC4646))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.RFC4646))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(Current.RFC4646);
+					prohibitedList.Add(CurrentDefinition.RFC4646);
 				}
-				for (int i = 0; i < _writingSystemDefinitions.Count; i++)
+				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					WritingSystemDefinition ws = _writingSystemDefinitions[i];
+					WritingSystemDefinition ws = WritingSystemDefinitions[i];
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
@@ -392,12 +413,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentLanguageName
 		{
-			get { return Current.LanguageName ?? string.Empty; }
+			get { return CurrentDefinition.LanguageName ?? string.Empty; }
 			set
 			{
-				if (Current.LanguageName != value)
+				if (CurrentDefinition.LanguageName != value)
 				{
-					Current.LanguageName = value;
+					CurrentDefinition.LanguageName = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -405,12 +426,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentAbbreviation
 		{
-			get { return Current.Abbreviation ?? string.Empty; }
+			get { return CurrentDefinition.Abbreviation ?? string.Empty; }
 			set
 			{
-				if (Current.Abbreviation != value)
+				if (CurrentDefinition.Abbreviation != value)
 				{
-					Current.Abbreviation = value;
+					CurrentDefinition.Abbreviation = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -418,12 +439,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public DateTime CurrentDateModified
 		{
-			get { return Current.DateModified; }
+			get { return CurrentDefinition.DateModified; }
 			set
 			{
-				if (Current.DateModified != value)
+				if (CurrentDefinition.DateModified != value)
 				{
-					Current.DateModified = value;
+					CurrentDefinition.DateModified = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -431,12 +452,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentDefaultFontName
 		{
-			get { return Current.DefaultFontName ?? string.Empty; }
+			get { return CurrentDefinition.DefaultFontName ?? string.Empty; }
 			set
 			{
-				if (Current.DefaultFontName != value)
+				if (CurrentDefinition.DefaultFontName != value)
 				{
-					Current.DefaultFontName = value;
+					CurrentDefinition.DefaultFontName = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -444,12 +465,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public float CurrentDefaultFontSize
 		{
-			get { return Current.DefaultFontSize; }
+			get { return CurrentDefinition.DefaultFontSize; }
 			set
 			{
-				if (Current.DefaultFontSize != value)
+				if (CurrentDefinition.DefaultFontSize != value)
 				{
-					Current.DefaultFontSize = value;
+					CurrentDefinition.DefaultFontSize = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -457,17 +478,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentDisplayLabel
 		{
-			get { return Current.DisplayLabel ?? string.Empty; }
+			get { return CurrentDefinition.DisplayLabel ?? string.Empty; }
 		}
 
 		public string CurrentISO
 		{
-			get { return Current == null ? string.Empty : (Current.ISO ?? string.Empty); }
+			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.ISO ?? string.Empty); }
 			set
 			{
-				if (Current.ISO != value)
+				if (CurrentDefinition.ISO != value)
 				{
-					Current.ISO = value;
+					CurrentDefinition.ISO = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -477,9 +498,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				if(Current==null)
+				if(CurrentDefinition==null)
 					return string.Empty;
-				return string.IsNullOrEmpty(Current.Keyboard) ? "(default)" : Current.Keyboard;
+				return string.IsNullOrEmpty(CurrentDefinition.Keyboard) ? "(default)" : CurrentDefinition.Keyboard;
 			}
 			set
 			{
@@ -487,9 +508,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					value = string.Empty;
 				}
-				if (Current.Keyboard != value)
+				if (CurrentDefinition.Keyboard != value)
 				{
-					Current.Keyboard = value;
+					CurrentDefinition.Keyboard = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -497,12 +518,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentNativeName
 		{
-			get { return Current == null ? string.Empty : (Current.NativeName ?? string.Empty); }
+			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.NativeName ?? string.Empty); }
 			set
 			{
-				if (Current.NativeName != value)
+				if (CurrentDefinition.NativeName != value)
 				{
-					Current.NativeName = value;
+					CurrentDefinition.NativeName = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -510,12 +531,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRegion
 		{
-			get { return  Current==null? string.Empty : (Current.Region ?? string.Empty); }
+			get { return  CurrentDefinition==null? string.Empty : (CurrentDefinition.Region ?? string.Empty); }
 			set
 			{
-				if (Current.Region != value)
+				if (CurrentDefinition.Region != value)
 				{
-					Current.Region = value;
+					CurrentDefinition.Region = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -523,17 +544,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRFC4646
 		{
-			get { return Current==null? string.Empty : (Current.RFC4646 ?? string.Empty); }
+			get { return CurrentDefinition==null? string.Empty : (CurrentDefinition.RFC4646 ?? string.Empty); }
 		}
 
 		public bool CurrentRightToLeftScript
 		{
-			get { return Current.RightToLeftScript; }
+			get { return CurrentDefinition.RightToLeftScript; }
 			set
 			{
-				if (Current.RightToLeftScript != value)
+				if (CurrentDefinition.RightToLeftScript != value)
 				{
-					Current.RightToLeftScript = value;
+					CurrentDefinition.RightToLeftScript = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -541,12 +562,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentScript
 		{
-			get { return Current.Script ?? string.Empty; }
+			get { return CurrentDefinition.Script ?? string.Empty; }
 			set
 			{
-				if (Current.Script != value)
+				if (CurrentDefinition.Script != value)
 				{
-					Current.Script = value;
+					CurrentDefinition.Script = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -554,12 +575,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVariant
 		{
-			get { return Current.Variant ?? string.Empty; }
+			get { return CurrentDefinition.Variant ?? string.Empty; }
 			set
 			{
-				if (Current.Variant != value)
+				if (CurrentDefinition.Variant != value)
 				{
-					Current.Variant = value;
+					CurrentDefinition.Variant = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -567,17 +588,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVerboseDescription
 		{
-			get { return Current!=null ? Current.VerboseDescription : string.Empty; }
+			get { return CurrentDefinition!=null ? CurrentDefinition.VerboseDescription : string.Empty; }
 		}
 
 		public string CurrentVersionDescription
 		{
-			get { return Current.VersionDescription ?? string.Empty; }
+			get { return CurrentDefinition.VersionDescription ?? string.Empty; }
 			set
 			{
-				if (Current.VersionDescription != value)
+				if (CurrentDefinition.VersionDescription != value)
 				{
-					Current.VersionDescription = value;
+					CurrentDefinition.VersionDescription = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -585,12 +606,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVersionNumber
 		{
-			get { return Current.VersionNumber ?? string.Empty; }
+			get { return CurrentDefinition.VersionNumber ?? string.Empty; }
 			set
 			{
-				if (Current.VersionNumber != value)
+				if (CurrentDefinition.VersionNumber != value)
 				{
-					Current.VersionNumber = value;
+					CurrentDefinition.VersionNumber = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -598,12 +619,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSpellCheckingId
 		{
-			get { return Current.SpellCheckingId ?? string.Empty; }
+			get { return CurrentDefinition.SpellCheckingId ?? string.Empty; }
 			set
 			{
-				if (Current.SpellCheckingId != value)
+				if (CurrentDefinition.SpellCheckingId != value)
 				{
-					Current.SpellCheckingId = value;
+					CurrentDefinition.SpellCheckingId = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -611,15 +632,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSortUsing
 		{
-			get { return Current.SortUsing.ToString(); }
+			get { return CurrentDefinition.SortUsing.ToString(); }
 			set
 			{
 				if (!String.IsNullOrEmpty(value))
 				{
 					var valueAsSortUsing = (WritingSystemDefinition.SortRulesType)Enum.Parse(typeof (WritingSystemDefinition.SortRulesType), value);
-					if (valueAsSortUsing != Current.SortUsing)
+					if (valueAsSortUsing != CurrentDefinition.SortUsing)
 					{
-						Current.SortUsing = valueAsSortUsing;
+						CurrentDefinition.SortUsing = valueAsSortUsing;
 						OnCurrentItemUpdated();
 					}
 				}
@@ -628,16 +649,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSortRules
 		{
-			get { return Current.SortRules ?? string.Empty; }
+			get { return CurrentDefinition.SortRules ?? string.Empty; }
 			set
 			{
-				if (Current.SortRules != value)
+				if (CurrentDefinition.SortRules != value)
 				{
-					Current.SortRules = value;
+					CurrentDefinition.SortRules = value;
 					OnCurrentItemUpdated();
 				}
 			}
 		}
+
+		public List<WritingSystemDefinition> WritingSystemDefinitions
+		{
+			get { return _writingSystemDefinitions; }
+		}
+
+
 
 		#endregion
 
@@ -688,7 +716,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void ClearSelection()
 		{
-			Current = null;
+			CurrentDefinition = null;
 		}
 
 		/// <summary>
@@ -706,10 +734,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			// new index will be next writing system or previous if this was the last in the list
 			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
-			string idToDelete = Current.StoreID;
-			Current.MarkedForDeletion = true;
-			_deletedWritingSystemDefinitions.Add(Current);
-			_writingSystemDefinitions.RemoveAt(CurrentIndex);
+			string idToDelete = CurrentDefinition.StoreID;
+			CurrentDefinition.MarkedForDeletion = true;
+			_deletedWritingSystemDefinitions.Add(CurrentDefinition);
+			WritingSystemDefinitions.RemoveAt(CurrentIndex);
 			CurrentIndex = newIndex;
 			// if it doesn't have a store ID, it shouldn't be in the store
 			if (!string.IsNullOrEmpty(idToDelete))
@@ -732,10 +760,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			WritingSystemDefinition ws = _writingSystemStore.MakeDuplicate(Current);
-			_writingSystemDefinitions.Insert(CurrentIndex+1, ws);
+			WritingSystemDefinition ws = _writingSystemStore.MakeDuplicate(CurrentDefinition);
+			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
-			Current = ws;
+			CurrentDefinition = ws;
 		}
 
 		/// <summary>
@@ -750,9 +778,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
 			ws.Abbreviation = "New";
-			_writingSystemDefinitions.Add(ws);
+			WritingSystemDefinitions.Add(ws);
+			CurrentDefinition = ws;
 			OnAddOrDelete();
-			Current = ws;
 		}
 
 		private void OnAddOrDelete()
@@ -824,7 +852,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// NOTE: It is not a good idea to remove and then add all writing systems, even though it would
 			// NOTE: accomplish the same goal as any information in the LDML file not used by palaso would be lost.
 			Dictionary<WritingSystemDefinition, string> cantSet = new Dictionary<WritingSystemDefinition, string>();
-			foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
+			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
 				if (_writingSystemStore.CanSet(ws))
 				{
@@ -862,11 +890,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void ActivateCurrentKeyboard()
 		{
-			if (Current == null)
+			if (CurrentDefinition == null)
 				return;
-			if (!string.IsNullOrEmpty(Current.Keyboard))
+			if (!string.IsNullOrEmpty(CurrentDefinition.Keyboard))
 			{
-				KeyboardController.ActivateKeyboard(Current.Keyboard);
+				KeyboardController.ActivateKeyboard(CurrentDefinition.Keyboard);
 			}
 		}
 
@@ -878,16 +906,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns>Sorted string</returns>
 		public string TestSort(string testString)
 		{
-			if (Current == null)
+			if (CurrentDefinition == null)
 				return testString;
 			if (testString == null)
 				return testString;
-			if (Current.Collator == null)
+			if (CurrentDefinition.Collator == null)
 				return testString;
 			List<SortKey> stringList = new List<SortKey>();
 			foreach (string str in testString.Split(new char[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
 			{
-				stringList.Add(Current.Collator.GetSortKey(str));
+				stringList.Add(CurrentDefinition.Collator.GetSortKey(str));
 			}
 			stringList.Sort(SortKey.Compare);
 			string result = string.Empty;
@@ -905,12 +933,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns>True if rules are valid, otherwise false.</returns>
 		public bool ValidateCurrentSortRules(out string message)
 		{
-			if (Current == null)
+			if (CurrentDefinition == null)
 			{
 				message = null;
 				return true;
 			}
-			return Current.ValidateCollationRules(out message);
+			return CurrentDefinition.ValidateCollationRules(out message);
 		}
 
 		/// <summary>
@@ -934,9 +962,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			LdmlAdaptor _adaptor = new LdmlAdaptor();
 			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
 			_adaptor.Read(fileName, ws);
-			_writingSystemDefinitions.Add(ws);
+			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
-			Current = ws;
+			CurrentDefinition = ws;
 		}
 
 //        /// <summary>
@@ -949,7 +977,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        }
 		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
 		{
-			throw new NotImplementedException();
+			if (!_usingStore)
+			{
+				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+			}
+			WritingSystemDefinitions.Add(definition);
+			CurrentDefinition = definition;
+			OnAddOrDelete();
 		}
 	}
 }

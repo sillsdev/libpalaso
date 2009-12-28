@@ -21,8 +21,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			_model = model;
 			_buttonBar.BindToModel(_model);
-			_picker.BindToModel(_model);
 			_propertiesTabControl.BindToModel(_model);
+
+			var treeModel = new WritingSystemTreeModel(_model);
+			treeModel.Suggestor = new WritingSystemVariantSuggestor();
+			treeModel.OtherKnownWritingSystems = new WritingSystemFromWindowsLocaleProvider();
+			_treeView.BindToModel(treeModel);
 		}
 	}
 }
