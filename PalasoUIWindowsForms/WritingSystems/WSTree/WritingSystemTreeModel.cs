@@ -85,6 +85,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			items.Add(new NullTreeItem());
 
 			AddOtherLanguages(items);
+
+			while(items.Last() is NullTreeItem)
+				items.RemoveAt(items.Count -1);
+
 			return items;
 		}
 
@@ -152,9 +156,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var item = new WritingSystemTreeItem("Other Languages", null);
 			//var otherDefsNotInStore = OtherKnownWritingSystems.Except(_store.WritingSystemDefinitions);
 			item.Children = new List<WritingSystemTreeItem>( from definition in OtherKnownWritingSystems
-							where !_setupModel.WritingSystemDefinitions.Contains(definition)
+							where !_setupModel.WritingSystemDefinitions.Any(def=>def.RFC4646 == definition.RFC4646)
 							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(definition, OnClickAddCertainDefinition));
-			items.Add(item );
+			if(item.Children.Count()>0)
+				items.Add(item );
 		}
 
 		private void OnClickAddCertainDefinition(WritingSystemTreeItem treeItem)
@@ -197,12 +202,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var node = new TreeNode(Text, Children.Select(n => n.MakeTreeNode()).ToArray());
 			node.Tag=this;
 			node.ForeColor = ForeColor;
-			if(this is WritingSystemCreationTreeItem)
-			{
-				node.NodeFont = new Font(SystemFonts.MessageBoxFont.Name, 8);
-			}
-			else
-				node.NodeFont = new Font(SystemFonts.MessageBoxFont.Name, 11);
+			node.NodeFont = this.Font;
 			return node;
 		}
 
@@ -210,7 +210,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get { return System.Drawing.Color.Black; }
 		}
-
+		protected virtual Font Font
+		{
+			get { return new Font(SystemFonts.MessageBoxFont.Name, 8); }
+		}
 		public virtual void Clicked()
 		{
 			if (_clickAction != null)
@@ -225,6 +228,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public NullTreeItem() : base(string.Empty, new Action<WritingSystemTreeItem>(x=> { }))
 		{
 		}
+
+
 	}
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
 	{
@@ -235,6 +240,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			: base(definition.ListLabel, clickAction)
 		{
 			Definition = definition;
+		}
+		protected override Font Font
+		{
+			get { return new Font(SystemFonts.MessageBoxFont.Name, 11); }
 		}
    }
 
@@ -248,7 +257,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 		protected override Color ForeColor
 		{
-			get { return System.Drawing.Color.Blue; }
+			get { return System.Drawing.Color.DarkBlue; }
+		}
+
+		protected override Font Font
+		{
+			get { return new Font(SystemFonts.MessageBoxFont.Name, 8); }
 		}
 	}
 
@@ -262,8 +276,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		protected override Color ForeColor
 		{
-			get { return System.Drawing.Color.Blue; }
+			get { return System.Drawing.Color.DarkBlue; }
 		}
 
+		protected override Font Font
+		{
+			get { return new Font(SystemFonts.MessageBoxFont.Name, 8); }
+		}
 	}
 }

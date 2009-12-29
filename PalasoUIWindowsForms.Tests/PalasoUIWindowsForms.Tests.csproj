@@ -94,7 +94,7 @@
 	</Compile>
 	<Compile Include="Widgets\PromptTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeItemTests.cs" />
-	<Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestor.cs" />
+	<Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestorTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />

@@ -47,20 +47,30 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		/// THe point here is, don't show a language under other, once it has been added to the collection
 		/// </summary>
 		[Test]
+		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotOfferToCreateItAgain()
+		{
+			var red = new WritingSystemDefinition("red");
+			var blue = new WritingSystemDefinition("blue");
+			var osBlue = blue.Clone();
+			var green = new WritingSystemDefinition("green");
+			_model.OtherKnownWritingSystems = new[]{blue, green};
+			SetDefinitionsInStore(new[] { red, blue });
+			AssertTreeNodeLabels("red", "blue","", "Add Language","", "Other Languages", "+Add green" /*notice, no blue*/);
+
+	  }
+
+
+		[Test]
 		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotGiveLanguageChoiceHeader()
 		{
 			var red = new WritingSystemDefinition("red");
 			var blue = new WritingSystemDefinition("blue");
-			var green = new WritingSystemDefinition("green");
-			_model.OtherKnownWritingSystems = new[]{blue, green};
+			_model.OtherKnownWritingSystems = new[] { blue };
 			SetDefinitionsInStore(new[] { red, blue });
-			AssertTreeNodeLabels("red", "blue","", "Add Language","", "Other Languages", "+Add green");
+			AssertTreeNodeLabels("red", "blue", "", "Add Language");
 
-//            var items = _model.GetTreeItems().ToArray();
-//            var otherLanguages = items.Last().Children;
-//            Assert.AreEqual(1, otherLanguages.Count());
+		}
 
-	  }
 		private void AssertTreeNodeLabels(params string[] names)
 		{
 			var items = _model.GetTreeItems().ToArray();
@@ -81,23 +91,33 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 					itemText = items[x].Text;
 					childIndex = 0;
 				}
-
-
 				if (names[i] != itemText)
 				{
-					Console.Write("exp: ");
-					foreach (var s in names)
-					{
-						Console.Write(s+", ");
-					}
-					Console.WriteLine();
-					Console.Write("got: ");
-					foreach (var item in items)
-					{
-						Console.Write(item.Text+", ");
-					}
+					PrintExpectationsVsActual(names, items);
 				}
 				Assert.AreEqual(names[i], itemText);
+				int total=0;
+				foreach (var item in items)
+				{
+					++total;
+					total+=item.Children.Count();
+				}
+				if(names.Count()!=total)
+					PrintExpectationsVsActual(names, items);
+				Assert.AreEqual(names.Count(), total,"the actual nodes exceded the number of expected ones");
+			}
+		}
+
+		private void PrintExpectationsVsActual(string[] names, WritingSystemTreeItem[] items)
+		{
+			Console.Write("exp: ");
+			names.ToList().ForEach(c => Console.Write(c + ", "));
+			Console.WriteLine();
+			Console.Write("got: ");
+			foreach (var item in items)
+			{
+				Console.Write(item.Text+", ");
+				item.Children.ForEach(c=>Console.Write(c.Text+", "));
 			}
 		}
 

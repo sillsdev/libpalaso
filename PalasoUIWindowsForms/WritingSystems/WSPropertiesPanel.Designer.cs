@@ -75,7 +75,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this.splitContainer2.Panel2.Controls.Add(this._propertiesTabControl);
 			this.splitContainer2.Size = new System.Drawing.Size(841, 422);
-			this.splitContainer2.SplitterDistance = 303;
+			this.splitContainer2.SplitterDistance = 222;
 			this.splitContainer2.SplitterWidth = 10;
 			this.splitContainer2.TabIndex = 0;
 			//
@@ -84,7 +84,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._treeView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._treeView.Location = new System.Drawing.Point(0, 0);
 			this._treeView.Name = "_treeView";
-			this._treeView.Size = new System.Drawing.Size(303, 422);
+			this._treeView.Size = new System.Drawing.Size(222, 422);
 			this._treeView.TabIndex = 1;
 			//
 			// _propertiesTabControl
@@ -92,7 +92,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._propertiesTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._propertiesTabControl.Location = new System.Drawing.Point(0, 0);
 			this._propertiesTabControl.Name = "_propertiesTabControl";
-			this._propertiesTabControl.Size = new System.Drawing.Size(528, 422);
+			this._propertiesTabControl.Size = new System.Drawing.Size(609, 422);
 			this._propertiesTabControl.TabIndex = 0;
 			//
 			// _buttonBar

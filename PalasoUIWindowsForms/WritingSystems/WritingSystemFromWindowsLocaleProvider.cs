@@ -46,7 +46,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public IEnumerator<WritingSystemDefinition> GetEnumerator()
 		{
 			var defs = GetLanguageAndKeyboardCombinations();
-			var tst = defs.GroupBy(d => d.RFC4646);
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
 			var unique= defs.GroupBy(d => d.RFC4646)
 				.Select(g => g.First());
@@ -62,14 +61,33 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					region = GetRegion(language);
 				}
+
+
+				var name = TrimOffCountryNameOfMajorLanguage(language);
+
 				WritingSystemDefinition def =
-					new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", region, "",
-												language.Culture.EnglishName, language.Culture.ThreeLetterISOLanguageName,
+
+					new WritingSystemDefinition(language.Culture.TwoLetterISOLanguageName, "", region, "",
+												name, language.Culture.ThreeLetterISOLanguageName,
 												language.Culture.TextInfo.IsRightToLeft);
 				def.NativeName = language.Culture.NativeName;
 				def.Keyboard = language.LayoutName;
+				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
+				def.SortRules = language.Culture.IetfLanguageTag;
+				def.DefaultFontSize = 12;
 				yield return def;
 			}
+		}
+
+		/// <summary>
+		/// It's confusing for people to be presented with "English (UnitedStates)" or Icelandic (Iceland)
+		/// </summary>
+		private string TrimOffCountryNameOfMajorLanguage(InputLanguage language)
+		{
+			var name = language.Culture.EnglishName;
+			if (name.StartsWith("English"))
+				name = "English";
+			return name;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

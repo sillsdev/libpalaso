@@ -29,7 +29,7 @@ namespace Palaso.WritingSystems
 			[Description("Custom ICU rules")]
 			CustomICU,
 			/// <summary>
-			/// Use the sort rules from another language
+			/// Use the sort rules from another language. When this is set, the SortRules are interpretted as a cultureId for the language to sort like.
 			/// </summary>
 			[Description("Same as another language")]
 			OtherLanguage
@@ -75,6 +75,7 @@ namespace Palaso.WritingSystems
 			_sortUsing = SortRulesType.DefaultOrdering;
 			LoadScriptOptions();
 			Modified = false;
+			_defaultFontSize = 10; //arbitrary
 		}
 
 		public WritingSystemDefinition(string iso)

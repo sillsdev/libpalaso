@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,15 +9,28 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public class WritingSystemVariantSuggestor: IWritingSystemVariantSuggestor
 	{
+		private readonly bool _supressSuggestionsForMajorWorldLanguages;
+
 		/// <summary>
 		/// these are ordered in terms of perference, so the last one is just the fallback
 		/// </summary>
 		string[] fontsForIPA = { "arial unicode ms", "lucinda sans unicode", "doulous sil", FontFamily.GenericSansSerif.Name };
 
 
+		public WritingSystemVariantSuggestor()
+		{
+		   SuppressSuggesstionsForMajorWorldLanguages=true;
+		}
+
+		public bool SuppressSuggesstionsForMajorWorldLanguages { get; set; }
+
 		public IEnumerable<WritingSystemDefinition> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
 			if(string.IsNullOrEmpty(primary.ISO))
+				yield break;
+
+			if(SuppressSuggesstionsForMajorWorldLanguages
+				&& new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.ISO))
 				yield break;
 
 			if (!existingWritingSystemsForLanguage.Any(def => def.Script == "ipa" && string.IsNullOrEmpty(def.Variant)))

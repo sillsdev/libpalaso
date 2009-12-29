@@ -45,5 +45,24 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			Assert.IsFalse(suggestions.Any(defn => defn.Script == "ipa"));
 		}
+
+
+		/// <summary>
+		/// For English, it's very unlikely that they'll want to add IPA, in a app like wesay
+		/// </summary>
+		[Test]
+		public void GetSuggestions_MajorWorlLanguage_SuggestsOnlyIfSuppressSuggesstionsForMajorWorldLanguagesIsFalse()
+		{
+			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "English", "eng", false);
+			var list = new List<WritingSystemDefinition>(new[] { english });
+			var suggestor = new WritingSystemVariantSuggestor();
+			suggestor.SuppressSuggesstionsForMajorWorldLanguages =false;
+			var suggestions = suggestor.GetSuggestions(english, list);
+			Assert.IsTrue(suggestions.Any(defn => defn.Script == "ipa"));
+
+			suggestor.SuppressSuggesstionsForMajorWorldLanguages =true;
+			suggestions = suggestor.GetSuggestions(english, list);
+			Assert.IsFalse(suggestions.Any(defn => defn.Script == "ipa"));
+		}
 	}
 }
