@@ -348,7 +348,7 @@ namespace Palaso.WritingSystems
 				}
 				if (!String.IsNullOrEmpty(_script))
 				{
-					n+=" ("+_abbreviation+")";
+					n+=" ("+_script+")";
 				}
 
 				return n;

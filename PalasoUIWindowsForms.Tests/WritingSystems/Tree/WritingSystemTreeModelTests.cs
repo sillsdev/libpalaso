@@ -22,62 +22,97 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		{
 			_writingSystemStore = new WritingSystemStoreBase();
 			_mockSetupModel = new Mock<WritingSystemSetupPM>(_writingSystemStore);
+			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model = new WritingSystemTreeModel(_mockSetupModel.Object);
 		}
 
 		[Test]
 		public void GetTopLevelItems_OtherKnownWritingSystemsIsNull_Ok()
 		{
+			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model.OtherKnownWritingSystems = null;
-			var items = _model.GetTreeItems().ToArray();
-			Assert.AreEqual("Add Language", items[0].Text);
-			Assert.AreEqual(1, items.Count());
+			 AssertTreeNodeLabels("Add Language");
 		}
 
 
 		[Test]
 		public void GetTopLevelItems_StoreIsEmptyButOtherLanguagesAreAvailable_GivesOtherLanguageChoiceHeader()
 		{
+			SetDefinitionsInStore(new WritingSystemDefinition[]{});
 			_model.OtherKnownWritingSystems =  new List<WritingSystemDefinition>(new []{new WritingSystemDefinition("xyz")});
-			var items = _model.GetTreeItems().ToArray();
-			Assert.AreEqual(2, items.Count());
-			Assert.AreEqual("Add Language", items[0].Text);
-			Assert.AreEqual("Other Languages", items[1].Text);
-			var otherLanguages = items[1].Children;
-			Assert.AreEqual(1,otherLanguages.Count());
+			AssertTreeNodeLabels("Add Language", "", "Other Languages", "+Add xyz");
 		}
 
 		/// <summary>
 		/// THe point here is, don't show a language under other, once it has been added to the collection
 		/// </summary>
 		[Test]
-		public void GetTopLevelItems_StoreHasAllOsLanguages_DoesNotGiveLanguageChoiceHeader()
+		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotGiveLanguageChoiceHeader()
 		{
-			var overlapDefinition = new WritingSystemDefinition("xyz");
-			var notUsedYetDefinition = new WritingSystemDefinition("abc");
-			_writingSystemStore.Set(overlapDefinition);
-			_model.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { overlapDefinition, notUsedYetDefinition });
-			var items = _model.GetTreeItems().ToArray();
-			Assert.AreEqual(3, items.Count());
-			Assert.AreEqual("xyz", items[0].Text);
-			Assert.AreEqual("Add Language", items[1].Text);
-			Assert.AreEqual("Other Languages", items[2].Text);
-			var otherLanguages = items[2].Children;
-			Assert.AreEqual(1, otherLanguages.Count());
+			var red = new WritingSystemDefinition("red");
+			var blue = new WritingSystemDefinition("blue");
+			var green = new WritingSystemDefinition("green");
+			_model.OtherKnownWritingSystems = new[]{blue, green};
+			SetDefinitionsInStore(new[] { red, blue });
+			AssertTreeNodeLabels("red", "blue","", "Add Language","", "Other Languages", "+Add green");
+
+//            var items = _model.GetTreeItems().ToArray();
+//            var otherLanguages = items.Last().Children;
+//            Assert.AreEqual(1, otherLanguages.Count());
+
 	  }
+		private void AssertTreeNodeLabels(params string[] names)
+		{
+			var items = _model.GetTreeItems().ToArray();
+			int childIndex = 0;
+			for (int i = 0, x=-1; i < names.Count(); i++)
+			{
+				string itemText;
+				if (!string.IsNullOrEmpty(names[i]) && names[i].Substring(0, 1) == "+")
+				{
+					var child = items[x].Children[childIndex];
+					itemText = "+"+child.Text;
+					++childIndex;
+				}
+				else
+				{
+					//if we aren't looking at a child node, move to the next top level node
+					++x;
+					itemText = items[x].Text;
+					childIndex = 0;
+				}
+
+
+				if (names[i] != itemText)
+				{
+					Console.Write("exp: ");
+					foreach (var s in names)
+					{
+						Console.Write(s+", ");
+					}
+					Console.WriteLine();
+					Console.Write("got: ");
+					foreach (var item in items)
+					{
+						Console.Write(item.Text+", ");
+					}
+				}
+				Assert.AreEqual(names[i], itemText);
+			}
+		}
 
 		[Test]
 		public void GetTopLevelItems_TwoLanguagesInStore_GivesBoth()
 		{
 			var xyz = new WritingSystemDefinition("xyz");
 			var abc = new WritingSystemDefinition("abc");
-			_writingSystemStore.Set(abc);
-			_writingSystemStore.Set(xyz);
-			var items = _model.GetTreeItems().ToArray();
-			Assert.AreEqual(3, items.Count());
-			Assert.AreEqual("abc", items[0].Text);
-			Assert.AreEqual("xyz", items[1].Text);
-			Assert.AreEqual("Add Language", items[2].Text);
+			SetDefinitionsInStore(new[] { abc, xyz });
+			AssertTreeNodeLabels( "abc", "xyz","", "Add Language");
+		}
+
+		private void SetDefinitionsInStore(IEnumerable<WritingSystemDefinition> defs)
+		{
+			_mockSetupModel.SetupGet(x => x.WritingSystemDefinitions).Returns(new List<WritingSystemDefinition>(defs));
 		}
 
 		[Test]
@@ -85,17 +120,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
 			var etrIpa = new WritingSystemDefinition("etr", "ipa", string.Empty, string.Empty, "Edolo", "edo", false);
-			_writingSystemStore.Set(etrIpa);
-			_writingSystemStore.Set(etr);
-			var items = _model.GetTreeItems().ToArray();
-			Assert.AreEqual(2, items.Count());
-			Assert.AreEqual("edo", items[0].Text);
-			Assert.AreEqual("Add Language", items[1].Text);
-
-			var subDefinitions = items.First().Children;
-			Assert.AreEqual(1, subDefinitions.Count());
-			Assert.AreEqual(etrIpa, ((WritingSystemDefinitionTreeItem)subDefinitions.First()).Definition);
-
+			SetDefinitionsInStore(new[] { etr,etrIpa });
+			AssertTreeNodeLabels("Edolo", "+Edolo (ipa)", "", "Add Language");
 		}
 
 		/// <summary>
@@ -105,12 +131,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		public void GetTopLevelItems_UsesSuggestor()
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			_writingSystemStore.Set(etr);
+			SetDefinitionsInStore(new WritingSystemDefinition[] {etr });
 			_model.Suggestor = new WritingSystemVariantSuggestor();
-			var items = _model.GetTreeItems();
-
-			var children = items.First().Children;
-			Assert.IsTrue(children.Any(item => ((WritingSystemCreationTreeItem)item).Definition.Script == "ipa"));
+			AssertTreeNodeLabels("Edolo", "+Add Edolo (ipa)", "", "Add Language");
 		}
 
 		[Test]
@@ -153,7 +176,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			 */
 
 			var def = new WritingSystemDefinition("xyz");
-			_writingSystemStore.Set(def);
+			SetDefinitionsInStore(new WritingSystemDefinition[] { def });
 			var items = _model.GetTreeItems();
 			_mockSetupModel.Setup(m => m.SetCurrentDefinition(def));
 

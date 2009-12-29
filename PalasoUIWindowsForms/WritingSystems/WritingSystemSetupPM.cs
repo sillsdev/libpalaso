@@ -660,7 +660,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public List<WritingSystemDefinition> WritingSystemDefinitions
+		public virtual List<WritingSystemDefinition> WritingSystemDefinitions
 		{
 			get { return _writingSystemDefinitions; }
 		}
