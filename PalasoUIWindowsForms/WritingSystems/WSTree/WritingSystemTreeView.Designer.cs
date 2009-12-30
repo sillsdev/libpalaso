@@ -72,6 +72,7 @@
 			this.treeView1.Size = new System.Drawing.Size(150, 365);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+			this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
 			this.treeView1.Click += new System.EventHandler(this.treeView1_Click);
 			//
 			// WritingSystemTreeView

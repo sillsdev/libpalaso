@@ -34,6 +34,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
 		/// <summary>
+		/// UI layer can set this to something which shows a dialog to get the basic info
+		/// </summary>
+		public Func<WritingSystemDefinition> MethodToShowUiToBootstrapNewDefinition;
+
+		/// <summary>
 		/// Creates the presentation model object based off of a writing system store of some sort.
 		/// </summary>
 		public WritingSystemSetupPM(IWritingSystemStore writingSystemStore)
@@ -776,8 +781,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
-			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
-			ws.Abbreviation = "New";
+			WritingSystemDefinition ws=null;
+			if (MethodToShowUiToBootstrapNewDefinition == null)
+			{
+				ws = _writingSystemStore.CreateNew();
+				ws.Abbreviation = "New";
+			}
+			else
+			{
+				ws = MethodToShowUiToBootstrapNewDefinition();
+			}
+			if(ws==null)//cancelled
+				return;
 			WritingSystemDefinitions.Add(ws);
 			CurrentDefinition = ws;
 			OnAddOrDelete();

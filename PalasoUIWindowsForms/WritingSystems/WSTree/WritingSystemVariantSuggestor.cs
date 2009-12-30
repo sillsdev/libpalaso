@@ -7,10 +7,13 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
+	public interface IWritingSystemVariantSuggestor
+	{
+		IEnumerable<WritingSystemDefinition> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage);
+	}
+
 	public class WritingSystemVariantSuggestor: IWritingSystemVariantSuggestor
 	{
-		private readonly bool _supressSuggestionsForMajorWorldLanguages;
-
 		/// <summary>
 		/// these are ordered in terms of perference, so the last one is just the fallback
 		/// </summary>

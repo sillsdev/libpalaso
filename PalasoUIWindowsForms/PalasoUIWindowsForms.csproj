@@ -158,6 +158,7 @@
 	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
 	  <SubType>Component</SubType>

@@ -55,7 +55,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			bool enabled = _model.HasCurrentSelection;
 			_exportMenuItem.Enabled = enabled;
-			_duplicateButton.Enabled = enabled;
+			_duplicateMenuItem.Enabled = enabled;
+			if(enabled)
+			{
+				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", _model.CurrentLanguageName);
+				_deleteMenuItem.Text = string.Format("Delete {0}", _model.CurrentLanguageName);
+				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", _model.CurrentLanguageName);
+			}
 			_deleteMenuItem.Enabled = enabled;
 		}
 

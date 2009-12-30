@@ -58,8 +58,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 					}
 				}
 			}
+			//if there is no current selection, need to create a dummy invisible node
+			//to be selected, else the tree view control selects the first one
+			if(selectedItem ==null)
+			{
+				treeView1.SelectedNode =  treeView1.Nodes.Add(string.Empty);
+			}
+
 			treeView1.EndUpdate();
-			treeView1.AfterSelect += treeView1_AfterSelect;
+			 treeView1.AfterSelect += treeView1_AfterSelect;
 		}
 
 		private void WritingSystemTreeView_Load(object sender, EventArgs e)
@@ -86,6 +93,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			((WritingSystemTreeItem) treeView1.SelectedNode.Tag).Clicked();
 		   // OnUpdateDisplay(this, null);
 
+		}
+
+		private void treeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+		{
+			e.Cancel =e.Node.Tag!=null && !((WritingSystemTreeItem)e.Node.Tag).CanSelect;
 		}
 	}
 }
