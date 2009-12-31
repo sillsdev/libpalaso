@@ -47,7 +47,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			var unique= defs.GroupBy(d => d.RFC4646)
+			var unique= defs.GroupBy(d => d.RFC5646)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}

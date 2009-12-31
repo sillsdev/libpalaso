@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
 using System.Windows.Forms;
+using Palaso.Code;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
 
@@ -140,7 +142,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.RFC4646 == rfc4646);
+			var index = WritingSystemDefinitions.FindIndex(d => d.RFC5646 == rfc4646);
 			if(index<0)
 			{
 				return false;
@@ -349,10 +351,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				List<string> prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.RFC4646))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.RFC5646))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.RFC4646);
+					prohibitedList.Add(CurrentDefinition.RFC5646);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -360,10 +362,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
-						&& !string.IsNullOrEmpty(ws.RFC4646) && prohibitedList.Contains(ws.SortRules)
-						&& !prohibitedList.Contains(ws.RFC4646))
+						&& !string.IsNullOrEmpty(ws.RFC5646) && prohibitedList.Contains(ws.SortRules)
+						&& !prohibitedList.Contains(ws.RFC5646))
 					{
-						prohibitedList.Add(ws.RFC4646);
+						prohibitedList.Add(ws.RFC5646);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -375,12 +377,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// but don't include empty definitions or ones that would cause a cycle
 				//foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
 				//{
-				//    if (string.IsNullOrEmpty(ws.RFC4646) || prohibitedList.Contains(ws.RFC4646))
+				//    if (string.IsNullOrEmpty(ws.RFC5646) || prohibitedList.Contains(ws.RFC5646))
 				//    {
 				//        continue;
 				//    }
 				//    returnedOne = true;
-				//    yield return new KeyValuePair<string, string>(ws.RFC4646, ws.DisplayLabel);
+				//    yield return new KeyValuePair<string, string>(ws.RFC5646, ws.DisplayLabel);
 				//}
 				if (returnedOne)
 				{
@@ -410,7 +412,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		#region CurrentWritingSystemProperties
 
 // Properties not (yet) mirrored:
-//                Current.CurrentScriptOption; // ro - ScriptOption
+//                Current.ScriptOption; // ro - ScriptOption
 //                Current.ScriptOptions; // ro - List<ScriptOption>
 //                Current.MarkedForDeletion; // bool
 //                Current.Modified; // bool
@@ -549,7 +551,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRFC4646
 		{
-			get { return CurrentDefinition==null? string.Empty : (CurrentDefinition.RFC4646 ?? string.Empty); }
+			get
+			{
+				if (CurrentDefinition == null)
+				{
+					return string.Empty;
+				}
+				else
+				{
+					return CurrentDefinition.RFC5646 ?? string.Empty;
+				}
+			}
+//            set
+//            {
+//                Palaso.Code.Guard.AgainstNull(CurrentDefinition, "CurrentDefinition");
+//                CurrentDefinition.RFC5646 = value;
+//            }
 		}
 
 		public bool CurrentRightToLeftScript
@@ -565,7 +582,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public string CurrentScript
+		public string CurrentScriptCode
 		{
 			get { return CurrentDefinition.Script ?? string.Empty; }
 			set
@@ -573,6 +590,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (CurrentDefinition.Script != value)
 				{
 					CurrentDefinition.Script = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public bool CurrentIsVoice
+		{
+			get { return CurrentDefinition==null ? false : _currentWritingSystem.IsVoice; }
+			set
+			{
+				Guard.AgainstNull(CurrentDefinition,"CurrentDefinition");
+				if (CurrentDefinition.IsVoice != value)
+				{
+					CurrentDefinition.IsVoice = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -670,7 +701,90 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return _writingSystemDefinitions; }
 		}
 
+		public enum SelectionsForSpecialCombo
+		{
+			None=0,
+			Ipa=1,
+			Voice=2,
+			ScriptRegionVariant=3,
+			Custom=4
+		}
+		public SelectionsForSpecialCombo SelectionForSpecialCombo
+		{
+			get
+			{
+				//TODO: this is really too simplistic
 
+				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
+				{
+					return SelectionsForSpecialCombo.Ipa;
+				}
+				if (_currentWritingSystem.IsVoice)
+				{
+					return SelectionsForSpecialCombo.Voice;
+				}
+//                if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
+//                {
+//                    return SelectionsForSpecialCombo.Custom;
+//                }
+				if (!string.IsNullOrEmpty(_currentWritingSystem.Script))
+				{
+					if(WritingSystemDefinition.ScriptOptions.Any(s=>s.Code==_currentWritingSystem.Script))
+					{
+						return SelectionsForSpecialCombo.ScriptRegionVariant;
+					}
+					return SelectionsForSpecialCombo.Custom;
+				}
+
+				if (!string.IsNullOrEmpty(_currentWritingSystem.Region))
+				{
+					return SelectionsForSpecialCombo.ScriptRegionVariant;
+				}
+				return SelectionsForSpecialCombo.None;
+			}
+		}
+
+		public IpaStatusChoices CurrentIpaStatus
+		{
+			 get
+			{
+				if(_currentWritingSystem==null  )
+					return IpaStatusChoices.NotIpa;
+				return _currentWritingSystem.IpaStatus;
+			}
+			set
+			{
+				Guard.AgainstNull(_currentWritingSystem, "CurrentWritingSystem");
+				if (_currentWritingSystem.IpaStatus != value)
+				{
+					_currentWritingSystem.IpaStatus = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public ScriptOption CurrentScriptOption
+		{
+			get
+			{
+				if(_currentWritingSystem==null  )
+					return null;
+
+				return _currentWritingSystem.ScriptOption;
+				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
+			}
+			set
+			{
+				if(value==null)
+				{
+					CurrentScriptCode=string.Empty;
+				}
+				else
+				{
+					CurrentScriptCode = value.Code;
+				}
+			}
+		}
 
 		#endregion
 

@@ -73,7 +73,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ReadsScriptRegistry()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Greater(ws.ScriptOptions.Count,4);
+			Assert.Greater(WritingSystemDefinition.ScriptOptions.Count, 4);
 		}
 
 
@@ -114,7 +114,7 @@ namespace Palaso.Tests.WritingSystems
 		public void HasLotsOfScriptOptions()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Greater(ws.ScriptOptions.Count, 40);
+			Assert.Greater(WritingSystemDefinition.ScriptOptions.Count, 40);
 		}
 
 
@@ -122,14 +122,14 @@ namespace Palaso.Tests.WritingSystems
 		public void CurrentScriptOptionReturnCorrectScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "Kore", "", "", "", "", false);
-			Assert.AreEqual("Korean", ws.CurrentScriptOption.Label);
+			Assert.AreEqual("Korean", ws.ScriptOption.Label);
 		}
 
 		[Test]
 		public void CurrentScriptOptionReturnsNullWithUnrecognizedScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "blah", "", "", "", "", false);
-			Assert.IsNull(ws.CurrentScriptOption);
+			Assert.IsNull(ws.ScriptOption);
 		}
 
 		[Test]
@@ -155,6 +155,10 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
+
+			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
+			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
+
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
 				// skip read-only or ones in the ignore list
@@ -185,9 +189,9 @@ namespace Palaso.Tests.WritingSystems
 									propertyInfo.PropertyType.Name);
 					}
 				}
-				catch
+				catch(Exception error)
 				{
-					Assert.Fail("Error setting property WritingSystemDefinition.{0}", propertyInfo.Name);
+					Assert.Fail("Error setting property WritingSystemDefinition.{0},{1}", propertyInfo.Name, error.ToString());
 				}
 				Assert.IsTrue(ws.Modified, "Modifying WritingSystemDefinition.{0} did not change modified flag.", propertyInfo.Name);
 			}

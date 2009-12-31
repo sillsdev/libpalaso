@@ -39,12 +39,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._aboutPage = new System.Windows.Forms.TabPage();
 			this._aboutControl = new Palaso.UI.WindowsForms.WritingSystems.WSAboutControl();
 			this._tabControl = new System.Windows.Forms.TabControl();
+			this._identifiersPage = new System.Windows.Forms.TabPage();
+			this._identifiersControl = new Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers.WSIdentifierView();
 			this._sortingPage.SuspendLayout();
 			this._keyboardsPage.SuspendLayout();
 			this._fontsPage.SuspendLayout();
 			this._spellingPage.SuspendLayout();
 			this._aboutPage.SuspendLayout();
 			this._tabControl.SuspendLayout();
+			this._identifiersPage.SuspendLayout();
 			this.SuspendLayout();
 			//
 			// _sortingPage
@@ -151,6 +154,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _tabControl
 			//
+			this._tabControl.Controls.Add(this._identifiersPage);
 			this._tabControl.Controls.Add(this._aboutPage);
 			this._tabControl.Controls.Add(this._spellingPage);
 			this._tabControl.Controls.Add(this._fontsPage);
@@ -162,6 +166,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._tabControl.SelectedIndex = 0;
 			this._tabControl.Size = new System.Drawing.Size(678, 424);
 			this._tabControl.TabIndex = 0;
+			//
+			// _identifiersPage
+			//
+			this._identifiersPage.BackColor = System.Drawing.Color.White;
+			this._identifiersPage.Controls.Add(this._identifiersControl);
+			this._identifiersPage.Location = new System.Drawing.Point(4, 22);
+			this._identifiersPage.Name = "_identifiersPage";
+			this._identifiersPage.Padding = new System.Windows.Forms.Padding(3);
+			this._identifiersPage.Size = new System.Drawing.Size(670, 398);
+			this._identifiersPage.TabIndex = 6;
+			this._identifiersPage.Text = "Identifiers";
+			//
+			// _identifiersControl
+			//
+			this._identifiersControl.Location = new System.Drawing.Point(0, 3);
+			this._identifiersControl.Name = "_identifiersControl";
+			this._identifiersControl.Size = new System.Drawing.Size(577, 317);
+			this._identifiersControl.TabIndex = 0;
 			//
 			// WSPropertiesTabControl
 			//
@@ -176,6 +198,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._spellingPage.ResumeLayout(false);
 			this._aboutPage.ResumeLayout(false);
 			this._tabControl.ResumeLayout(false);
+			this._identifiersPage.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -193,6 +216,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.TabPage _aboutPage;
 		private WSAboutControl _aboutControl;
 		private System.Windows.Forms.TabControl _tabControl;
+		private System.Windows.Forms.TabPage _identifiersPage;
+		private Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers.WSIdentifierView _identifiersControl;
 
 	}
 }

@@ -145,6 +145,12 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\BetterLabel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterLabel.designer.cs">
+	  <DependentUpon>BetterLabel.cs</DependentUpon>
+	</Compile>
 	<Compile Include="Widgets\ControlListBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -157,6 +163,42 @@
 	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.Designer.cs">
+	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.Designer.cs">
+	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.Designer.cs">
+	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.Designer.cs">
+	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.Designer.cs">
+	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.Designer.cs">
+	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
@@ -261,6 +303,9 @@
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="Widgets\BetterLabel.resx">
+	  <DependentUpon>BetterLabel.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Widgets\ControlListBox.resx">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -268,6 +313,24 @@
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSIdentifiers\NothingSpecialView.resx">
+	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSIdentifiers\IpaIdentifierView.resx">
+	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSIdentifiers\CustomIdentifierView.resx">
+	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.resx">
+	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.resx">
+	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSIdentifiers\WSIdentifierView.resx">
+	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>

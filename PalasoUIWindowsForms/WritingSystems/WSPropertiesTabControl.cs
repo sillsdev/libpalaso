@@ -22,6 +22,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			_model = model;
 			_aboutControl.BindToModel(_model);
+			_identifiersControl.BindToModel(_model);
 			_fontControl.BindToModel(_model);
 			_keyboardControl.BindToModel(_model);
 			_sortControl.BindToModel(_model);

@@ -30,6 +30,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			treeModel.Suggestor = new WritingSystemVariantSuggestor();
 			treeModel.OtherKnownWritingSystems = new WritingSystemFromWindowsLocaleProvider();
 			_treeView.BindToModel(treeModel);
+			_model.SelectionChanged += UpdateHeaders;
+			_model.CurrentItemUpdated += UpdateHeaders;
+			UpdateHeaders(null, null);
+		}
+
+		private void UpdateHeaders(object sender, EventArgs e)
+		{
+			if(_model.CurrentDefinition ==null)
+			{
+				_rfc4646.Text = "";
+				_languageName.Text = "";
+			}
+			else
+			{
+				_rfc4646.Text = _model.CurrentDefinition.RFC5646;
+				_languageName.Text = _model.CurrentDefinition.ListLabel;
+			}
 		}
 
 		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
@@ -39,6 +56,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if(dlg.DialogResult!=DialogResult.OK)
 				return null;
 			return new WritingSystemDefinition(dlg.ISOCode, string.Empty,string.Empty,string.Empty, dlg.ISOCodeAndName.Name, dlg.ISOCode,false);
+		}
+
+		private void _propertiesTabControl_Load(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

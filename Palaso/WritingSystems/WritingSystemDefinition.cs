@@ -71,16 +71,15 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// For overridding the other identifier fields, to specify a custom RFC5646
 		/// </summary>
-		private string _customLanguageTag;
+		//private string _customLanguageTag;
 
 
 		public WritingSystemDefinition()
 		{
 			_iso=_abbreviation = _script=_languageName = _variant = _region =_nativeName = string.Empty;
 			_sortUsing = SortRulesType.DefaultOrdering;
-			LoadScriptOptions();
 			Modified = false;
-			_defaultFontSize = 10; //arbitrary
+		   // _defaultFontSize = 10; //arbitrary
 		}
 
 		public WritingSystemDefinition(string iso)
@@ -105,7 +104,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// parse in the text of the script registry we get from http://unicode.org/iso15924/iso15924-text.html
 		/// </summary>
-		private static void LoadScriptOptions()
+		private static void LoadScriptOptionsIfNeeded()
 		{
 		  if (_scriptOptions.Count > 0)
 			  return;
@@ -264,14 +263,31 @@ namespace Palaso.WritingSystems
 					default:
 						break;
 					case IpaStatusChoices.Ipa:
+						IsVoice =false;
 						Variant = _variant + "-fonipa";
 						break;
 					case IpaStatusChoices.IpaPhonemic:
+						IsVoice = false;
 						Variant = _variant + "-fonipa-x-emic";
 						break;
 					case IpaStatusChoices.IpaPhonetic:
+						IsVoice = false;
 						Variant = _variant + "-fonipa-x-etic";
 						break;
+				}
+			}
+		}
+
+		public bool IsVoice
+		{
+			get { return _variant.Contains("Zxxx"); }
+			set
+			{
+				Variant = _variant.Replace("Zxxx", "");
+				if (value)
+				{
+					IpaStatus = IpaStatusChoices.NotIpa;
+					Variant = _variant + "-Zxxx";
 				}
 			}
 		}
@@ -407,11 +423,31 @@ namespace Palaso.WritingSystems
 				{
 					n = DisplayLabel;
 				}
-				if (!String.IsNullOrEmpty(_script))
+				if(IpaStatus != IpaStatusChoices.NotIpa)
+				{
+					switch (IpaStatus)
+					{
+						case IpaStatusChoices.Ipa:
+							n += " (IPA)";
+							break;
+						case IpaStatusChoices.IpaPhonetic:
+							n += " (IPA-etic)";
+							break;
+						case IpaStatusChoices.IpaPhonemic:
+							n += " (IPA-emic)";
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				}
+				else if (!String.IsNullOrEmpty(_script))
 				{
 					n+=" ("+_script+")";
 				}
-
+				if (IsVoice)
+				{
+					n+=" (voice)";
+				}
 				return n;
 			}
 		}
@@ -419,10 +455,10 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				if(!string.IsNullOrEmpty(_customLanguageTag))
-				{
-					return _customLanguageTag;
-				}
+//                if(!string.IsNullOrEmpty(_customLanguageTag))
+//                {
+//                    return _customLanguageTag;
+//                }
 				string id = String.IsNullOrEmpty(ISO) ? "unknown" : ISO;
 				if (!String.IsNullOrEmpty(Script))
 				{
@@ -438,10 +474,10 @@ namespace Palaso.WritingSystems
 				}
 				return id;
 			}
-			set
-			{
-				_customLanguageTag=value;
-			}
+//            set
+//            {
+//                _customLanguageTag=value;
+//            }
 		}
 
 		public string Id
@@ -480,7 +516,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				ScriptOption option = CurrentScriptOption;
+				ScriptOption option = ScriptOption;
 				return option == null ? _script : option.Label;
 			}
 		}
@@ -488,7 +524,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// If we don't have an option for the current script, returns null
 		/// </summary>
-		public ScriptOption CurrentScriptOption
+		public ScriptOption ScriptOption
 		{
 			get
 			{
@@ -497,7 +533,7 @@ namespace Palaso.WritingSystems
 				{
 					script = "latn";
 				}
-				foreach (var option in _scriptOptions)
+				foreach (var option in ScriptOptions)
 				{
 					if (option.Code == script)
 					{
@@ -508,10 +544,11 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public List<ScriptOption> ScriptOptions
+		public static List<ScriptOption> ScriptOptions
 		{
 			get
 			{
+				LoadScriptOptionsIfNeeded();
 				return _scriptOptions;
 			}
 		}
@@ -597,41 +634,6 @@ namespace Palaso.WritingSystems
 		}
 
 
-		public class ScriptOption
-		{
-			public ScriptOption(string label, string code)
-			{
-				Label = label;
-				Code = code;
-			}
-
-			public string Code { get; private set; }
-
-			public string Label { get; private set; }
-
-			public override string ToString()
-			{
-				return Label;
-			}
-
-			public static int CompareScriptOptions(ScriptOption x, ScriptOption y)
-			{
-				if (x == null)
-				{
-					if (y == null)
-					{
-						return 0;
-					}
-					return -1;
-				}
-				if (y == null)
-				{
-					return 1;
-				}
-				return x.Label.CompareTo(y.Label);
-			}
-		}
-
 		public SortRulesType SortUsing
 		{
 			get { return _sortUsing; }
@@ -699,6 +701,8 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+
+
 		/// <summary>
 		/// Tests whether the current custom collation rules are valid.
 		/// </summary>
@@ -748,7 +752,42 @@ namespace Palaso.WritingSystems
 
 	}
 
-			public enum IpaStatusChoices
+	public class ScriptOption
+	{
+		public ScriptOption(string label, string code)
+		{
+			Label = label;
+			Code = code;
+		}
+
+		public string Code { get; private set; }
+
+		public string Label { get; private set; }
+
+		public override string ToString()
+		{
+			return Label;
+		}
+
+		public static int CompareScriptOptions(ScriptOption x, ScriptOption y)
+		{
+			if (x == null)
+			{
+				if (y == null)
+				{
+					return 0;
+				}
+				return -1;
+			}
+			if (y == null)
+			{
+				return 1;
+			}
+			return x.Label.CompareTo(y.Label);
+		}
+	}
+
+	public enum IpaStatusChoices
 		{
 			NotIpa,
 			Ipa,

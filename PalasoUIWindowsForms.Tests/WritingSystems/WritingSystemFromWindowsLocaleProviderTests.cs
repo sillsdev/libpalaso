@@ -41,7 +41,7 @@ namespace PalasoUIWindowsForms.Tests
 			IEnumerable<WritingSystemDefinition> provider =
 				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
 			Assert.IsNotNull(provider.First());
-			foreach (var group in provider.GroupBy(d=>d.RFC4646))
+			foreach (var group in provider.GroupBy(d=>d.RFC5646))
 			{
 				Assert.AreEqual(1, group.Count());
 			}
@@ -57,7 +57,7 @@ namespace PalasoUIWindowsForms.Tests
 ////                if (language.ISO == "eng")
 ////                {
 ////                    Assert.AreEqual("Latn",language.Script);
-////                    Assert.AreEqual("en-Latn", language.RFC4646);
+////                    Assert.AreEqual("en-Latn", language.RFC5646);
 ////                }
 //            }
 //        }

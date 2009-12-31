@@ -607,5 +607,48 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.ExportCurrentWritingSystemAsFile (filePath);
 			Assert.IsTrue (File.Exists (filePath));
 		}
+
+		[Test]
+		public void SelectionForSpecialCombo_IpaIsOnlyQualifier_GivesIpa()
+		{
+			_model.AddNew();
+			_model.CurrentDefinition.IpaStatus = IpaStatusChoices.Ipa;
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
+			_model.CurrentDefinition.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
+			_model.CurrentDefinition.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
+		}
+
+		[Test]
+		public void SelectionForSpecialCombo_VoiceIsOnlyQualifier_GivesVoice()
+		{
+			_model.AddNew();
+			_model.CurrentDefinition.IsVoice = true;
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Voice, _model.SelectionForSpecialCombo);
+		}
+
+		[Test]
+		public void SelectionForSpecialCombo_HasRegion_GivesScriptRegionVariant()
+		{
+			_model.AddNew();
+			_model.CurrentRegion = "x";
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+		}
+		[Test]
+		public void SelectionForSpecialCombo_HasKnownScript_GivesScriptRegionVariant()
+		{
+			_model.AddNew();
+			_model.CurrentScriptCode = "Cyrl";
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+		}
+		[Test]
+		public void SelectionForSpecialCombo_HasUnknownScript_GivesCustom()
+		{
+			_model.AddNew();
+			_model.CurrentScriptCode = "foobar";
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
+		}
+
 	}
 }

@@ -40,10 +40,12 @@
 			//
 			// treeView1
 			//
+			this.treeView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.treeView1.HideSelection = false;
-			this.treeView1.Location = new System.Drawing.Point(0, 0);
+			this.treeView1.Location = new System.Drawing.Point(10, 10);
+			this.treeView1.Margin = new System.Windows.Forms.Padding(113, 113, 3, 3);
 			this.treeView1.Name = "treeView1";
 			treeNode1.Name = "Node0";
 			treeNode1.NodeFont = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -69,7 +71,7 @@
 			this.treeView1.ShowNodeToolTips = true;
 			this.treeView1.ShowPlusMinus = false;
 			this.treeView1.ShowRootLines = false;
-			this.treeView1.Size = new System.Drawing.Size(150, 365);
+			this.treeView1.Size = new System.Drawing.Size(138, 353);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
@@ -79,9 +81,12 @@
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.White;
+			this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.Controls.Add(this.treeView1);
 			this.Name = "WritingSystemTreeView";
-			this.Size = new System.Drawing.Size(150, 365);
+			this.Padding = new System.Windows.Forms.Padding(10, 10, 0, 0);
+			this.Size = new System.Drawing.Size(148, 363);
 			this.Load += new System.EventHandler(this.WritingSystemTreeView_Load);
 			this.ResumeLayout(false);
 

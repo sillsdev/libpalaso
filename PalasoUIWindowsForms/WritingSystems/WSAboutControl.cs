@@ -147,7 +147,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_proxy.Name = _model.CurrentLanguageName;
 				_proxy.Abbreviation = _model.CurrentAbbreviation;
 				_proxy.ISO = _model.CurrentISO;
-				_proxy.Script = _model.CurrentScript;
+				_proxy.Script = _model.CurrentScriptCode;
 				_proxy.Region = _model.CurrentRegion;
 				_proxy.Variant = _model.CurrentVariant;
 				_pgAbout.Enabled = true;
@@ -166,7 +166,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_model.CurrentLanguageName = _proxy.Name;
 				_model.CurrentAbbreviation = _proxy.Abbreviation;
 				_model.CurrentISO = _proxy.ISO;
-				_model.CurrentScript = _proxy.Script;
+				_model.CurrentScriptCode = _proxy.Script;
 				_model.CurrentRegion = _proxy.Region;
 				_model.CurrentVariant = _proxy.Variant;
 			}

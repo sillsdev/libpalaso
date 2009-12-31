@@ -155,7 +155,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var item = new WritingSystemTreeItem("Other Languages", null);
 			//var otherDefsNotInStore = OtherKnownWritingSystems.Except(_store.WritingSystemDefinitions);
 			item.Children = new List<WritingSystemTreeItem>( from definition in OtherKnownWritingSystems
-							where !_setupModel.WritingSystemDefinitions.Any(def=>def.RFC4646 == definition.RFC4646)
+							where !_setupModel.WritingSystemDefinitions.Any(def=>def.RFC5646 == definition.RFC5646)
 							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(definition, OnClickAddCertainDefinition));
 			if(item.Children.Count()>0)
 				items.Add(item );

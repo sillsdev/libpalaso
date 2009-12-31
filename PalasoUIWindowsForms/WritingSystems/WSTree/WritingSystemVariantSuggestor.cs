@@ -36,11 +36,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				&& new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.ISO))
 				yield break;
 
-			if (!existingWritingSystemsForLanguage.Any(def => def.Script == "ipa" && string.IsNullOrEmpty(def.Variant)))
+			if (!existingWritingSystemsForLanguage.Any(def => def.IpaStatus!=IpaStatusChoices.NotIpa))
 			{
-				var x= new WritingSystemDefinition(primary.ISO, "ipa",primary.Region, primary.Variant, primary.LanguageName, "ipa", false);
+				var x= new WritingSystemDefinition(primary.ISO, string.Empty,primary.Region, string.Empty, primary.LanguageName, "ipa", false);
 				x.DefaultFontSize = primary.DefaultFontSize;
 				x.DefaultFontName = fontsForIPA.FirstOrDefault(FontExists);
+				x.IpaStatus = IpaStatusChoices.Ipa;
 
 				x.Keyboard = Keyboarding.KeyboardController.GetIpaKeyboardIfAvailable();
 				yield return x;

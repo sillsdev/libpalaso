@@ -1,0 +1,50 @@
+﻿using System;
+using System.Windows.Forms;
+
+namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
+{
+	public partial class CustomIdentifierView : UserControl
+	{
+		private readonly WritingSystemSetupPM _model;
+		private bool _updatingFromModel;
+
+		public CustomIdentifierView(WritingSystemSetupPM model)
+		{
+			_model = model;
+			InitializeComponent();
+			if (model != null)
+			{
+				model.SelectionChanged += UpdateDisplayFromModel;
+			}
+			UpdateDisplayFromModel(null,null);
+		}
+
+		private void UpdateDisplayFromModel(object sender, EventArgs e)
+		{
+			if (_model.CurrentDefinition != null)
+			{
+				_updatingFromModel = true;
+				_languageTag.Text = _model.CurrentRFC4646;
+				_updatingFromModel = false;
+			}
+		}
+
+		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("http://www.w3.org/International/articles/language-tags/");
+		}
+
+		public string ChoiceName
+		{
+			get{return "Custom";}
+		}
+
+		private void _languageTag_TextChanged(object sender, EventArgs e)
+		{
+			if(                _updatingFromModel)
+				return;
+  //          _model.CurrentRFC4646 = _languageTag.Text;
+		}
+
+	}
+}

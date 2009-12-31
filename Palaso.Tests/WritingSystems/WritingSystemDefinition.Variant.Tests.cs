@@ -118,5 +118,14 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(IpaStatusChoices.IpaPhonemic, ws.IpaStatus);
 			Assert.AreEqual("a-b-fonipa-x-emic", ws.Variant);
 		}
+		[Test]
+		public void SetIpaStatus_SetIpaWasVoice_RemovesVoice()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "a-b";
+			ws.IsVoice=true;
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			Assert.AreEqual("a-b-fonipa", ws.Variant);
+		}
 	}
 }

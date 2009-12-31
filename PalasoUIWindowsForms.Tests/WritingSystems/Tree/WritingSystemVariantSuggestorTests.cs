@@ -24,7 +24,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var ipa = suggestions.First(defn => defn.Script == "ipa");
 
 			Assert.AreEqual("etr", ipa.ISO);
-			Assert.AreEqual("ipa", ipa.Script);
+			Assert.AreEqual("fonipa", ipa.Variant);
 			Assert.AreEqual("Edolo", ipa.LanguageName);
 			Assert.IsTrue(string.IsNullOrEmpty(ipa.NativeName));
 			Assert.AreEqual("region", ipa.Region);
@@ -38,12 +38,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		public void GetSuggestions_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", "ipa", string.Empty, string.Empty, "Edolo", "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa","Edolo", "edo", false);
 			var list = new List<WritingSystemDefinition>(new[] { etr, etrIpa });
 			var suggestor = new WritingSystemVariantSuggestor();
 			var suggestions = suggestor.GetSuggestions(etr, list);
 
-			Assert.IsFalse(suggestions.Any(defn => defn.Script == "ipa"));
+			Assert.IsFalse(suggestions.Any(defn => defn.Variant == "fonipa"));
 		}
 
 
@@ -58,11 +58,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var suggestor = new WritingSystemVariantSuggestor();
 			suggestor.SuppressSuggesstionsForMajorWorldLanguages =false;
 			var suggestions = suggestor.GetSuggestions(english, list);
-			Assert.IsTrue(suggestions.Any(defn => defn.Script == "ipa"));
+			Assert.IsTrue(suggestions.Any(defn => defn.Variant == "fonipa"));
 
 			suggestor.SuppressSuggesstionsForMajorWorldLanguages =true;
 			suggestions = suggestor.GetSuggestions(english, list);
-			Assert.IsFalse(suggestions.Any(defn => defn.Script == "ipa"));
+			Assert.IsFalse(suggestions.Any(defn => defn.Variant == "fonipa"));
 		}
 	}
 }

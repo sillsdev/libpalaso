@@ -41,7 +41,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 ////                if (language.ISO == "eng")
 ////                {
 ////                    Assert.AreEqual("Latn",language.Script);
-////                    Assert.AreEqual("en-Latn", language.RFC4646);
+////                    Assert.AreEqual("en-Latn", language.RFC5646);
 ////                }
 //            }
 //        }

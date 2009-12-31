@@ -139,9 +139,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		public void GetTopLevelItems_OneLanguageIsChildOfAnother_GivesParentOnly()
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", "ipa", string.Empty, string.Empty, "Edolo", "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,"fonipa",  "Edolo", "edo", false);
 			SetDefinitionsInStore(new[] { etr,etrIpa });
-			AssertTreeNodeLabels("Edolo", "+Edolo (ipa)", "", "Add Language");
+			AssertTreeNodeLabels("Edolo", "+Edolo (IPA)", "", "Add Language");
 		}
 
 		/// <summary>
@@ -153,7 +153,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
 			SetDefinitionsInStore(new WritingSystemDefinition[] {etr });
 			_model.Suggestor = new WritingSystemVariantSuggestor();
-			AssertTreeNodeLabels("Edolo", "+Add Edolo (ipa)", "", "Add Language");
+			AssertTreeNodeLabels("Edolo", "+Add Edolo (IPA)", "", "Add Language");
 		}
 
 		[Test]
