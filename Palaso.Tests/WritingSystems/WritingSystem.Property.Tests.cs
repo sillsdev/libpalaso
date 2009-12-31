@@ -9,17 +9,6 @@ namespace Palaso.Tests.WritingSystems
 	[TestFixture]
 	public class WritingSystemPropertyTests
 	{
-		[SetUp]
-		public void Setup()
-		{
-
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-
-		}
 
 
 		[Test]
@@ -55,29 +44,29 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Rfc4646WhenJustISO()
+		public void Rfc5646WhenJustISO()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso","","","","","", false);
-			Assert.AreEqual("iso", ws.RFC4646);
+			Assert.AreEqual("iso", ws.RFC5646);
 		}
 		[Test]
-		public void Rfc4646WhenIsoAndScript()
+		public void Rfc5646WhenIsoAndScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "scrip", "", "", "", "", false);
-			Assert.AreEqual("iso-scrip", ws.RFC4646);
+			Assert.AreEqual("iso-scrip", ws.RFC5646);
 		}
 
 		[Test]
-		public void Rfc4646WhenIsoAndRegion()
+		public void Rfc5646WhenIsoAndRegion()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "", "where", "", "", "", false);
-			Assert.AreEqual("iso-where", ws.RFC4646);
+			Assert.AreEqual("iso-where", ws.RFC5646);
 		}
 		[Test]
-		public void Rfc4646WhenIsoScriptRegionVariant()
+		public void Rfc5646WhenIsoScriptRegionVariant()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "scrip", "regn", "var", "", "", false);
-			Assert.AreEqual("iso-scrip-regn-var", ws.RFC4646);
+			Assert.AreEqual("iso-scrip-regn-var", ws.RFC5646);
 		}
 
 		[Test]
@@ -259,5 +248,7 @@ namespace Palaso.Tests.WritingSystems
 			string message;
 			Assert.IsFalse(ws.ValidateCollationRules(out message));
 		}
+
+
 	}
 }

@@ -70,7 +70,7 @@ namespace Palaso.WritingSystems
 
 		public string GetFileName(WritingSystemDefinition ws)
 		{
-			return GetFileNameFromIdentifier(ws.RFC4646);
+			return GetFileNameFromIdentifier(ws.RFC5646);
 		}
 
 		private static string GetFileNameFromIdentifier(string identifier)
@@ -133,9 +133,9 @@ namespace Palaso.WritingSystems
 			{
 				foreach (WritingSystemDefinition ws in SystemWritingSystemProvider)
 				{
-					if (null == FindAlreadyLoadedWritingSystem(ws.RFC4646))
+					if (null == FindAlreadyLoadedWritingSystem(ws.RFC5646))
 					{
-						if (!HaveMatchingDefinitionInTrash(ws.RFC4646))
+						if (!HaveMatchingDefinitionInTrash(ws.RFC5646))
 						{
 							Set(ws);
 						}
@@ -158,7 +158,7 @@ namespace Palaso.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				if(ws.RFC4646 == rfc4646 )
+				if(ws.RFC5646 == rfc4646 )
 					return ws;
 			}
 			return null;

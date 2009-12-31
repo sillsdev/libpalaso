@@ -9,7 +9,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about
 		/// an already-existing writing system.  Set should be called when there is a change
-		/// that updates the RFC4646 information.
+		/// that updates the RFC5646 information.
 		/// </summary>
 		void Set(WritingSystemDefinition ws);
 

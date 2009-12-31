@@ -194,10 +194,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
 			ws1.ISO = "en";
-			Assert.AreEqual("en", ws1.RFC4646);
+			Assert.AreEqual("en", ws1.RFC5646);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variant = "latn";
-			Assert.AreEqual("en-latn", ws2.RFC4646);
+			Assert.AreEqual("en-latn", ws2.RFC5646);
 
 			StoreUnderTest.Set(ws1);
 			Assert.AreEqual(1, StoreUnderTest.Count);

@@ -96,7 +96,7 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			string newID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
 			if (_writingSystems.ContainsKey(newID) && newID != ws.StoreID)
 			{
 				throw new ArgumentException(String.Format("Unable to store writing system '{0:s}' because this id already exists.  Please change this writing system before storing.", newID));
@@ -118,7 +118,7 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			return (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+			return (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
 		}
 
 		public bool CanSet(WritingSystemDefinition ws)
@@ -127,7 +127,7 @@ namespace Palaso.WritingSystems
 			{
 				return false;
 			}
-			string newID = (!String.IsNullOrEmpty(ws.RFC4646)) ? ws.RFC4646 : "unknown";
+			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
 			return newID == ws.StoreID || !_writingSystems.ContainsKey(newID);
 		}
 
@@ -177,9 +177,9 @@ namespace Palaso.WritingSystems
 				{
 					throw new ArgumentNullException("rhs", "rhs contains a null WritingSystemDefinition");
 				}
-				if (_writingSystems.ContainsKey(ws.RFC4646))
+				if (_writingSystems.ContainsKey(ws.RFC5646))
 				{
-					if (!_writingSystemsToIgnore.ContainsKey(ws.RFC4646) && (ws.DateModified > _writingSystems[ws.RFC4646].DateModified))
+					if (!_writingSystemsToIgnore.ContainsKey(ws.RFC5646) && (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}
