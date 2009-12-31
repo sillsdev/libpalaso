@@ -68,6 +68,11 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		private static List<LanguageCode> _languageCodes;
 
+		/// <summary>
+		/// For overridding the other identifier fields, to specify a custom RFC5646
+		/// </summary>
+		private string _customLanguageTag;
+
 
 		public WritingSystemDefinition()
 		{
@@ -105,7 +110,7 @@ namespace Palaso.WritingSystems
 		  if (_scriptOptions.Count > 0)
 			  return;
 
-		  //this one isn't an official script
+		  //this one isn't an official script: REVIEW: we're not using fonipa, whichis a VARIANT, not a script
 		  _scriptOptions.Add(new ScriptOption("IPA", "Zipa"));
 			//to help people find Latin
 		  _scriptOptions.Add(new ScriptOption("Roman (Latin)", "Latn"));
@@ -220,6 +225,60 @@ namespace Palaso.WritingSystems
 			set { _dateModified = value; }
 		}
 
+
+		/// <summary>
+		/// Note: this treats the etic and emic extensions as if they were variants, which we can get
+		/// away with for now, but maybe not if this class grows to be extension aware.
+		/// Ideally, these should be suffixes rather than private use
+		/// </summary>
+		public IpaStatusChoices IpaStatus
+		{
+			get
+			{
+				if( _variant.Contains("fonipa-x-emic"))
+				{
+					return IpaStatusChoices.IpaPhonemic;
+				}
+				if (_variant.Contains("fonipa-x-etic"))
+				{
+					return IpaStatusChoices.IpaPhonetic;
+				}
+				if (_variant.Contains("fonipa"))
+				{
+					return IpaStatusChoices.Ipa;
+				}
+				return IpaStatusChoices.NotIpa;
+			}
+
+			set
+			{
+				/* "There are some variant subtags that have no prefix field,
+				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
+				 * should appear after any other variant subtags with prefix information."
+				 */
+				Variant = _variant.Replace("-x-etic", "");
+				Variant = _variant.Replace("-x-emic", "");
+				Variant = _variant.Replace("fonipa", "");
+				switch (value)
+				{
+					default:
+						break;
+					case IpaStatusChoices.Ipa:
+						Variant = _variant + "-fonipa";
+						break;
+					case IpaStatusChoices.IpaPhonemic:
+						Variant = _variant + "-fonipa-x-emic";
+						break;
+					case IpaStatusChoices.IpaPhonetic:
+						Variant = _variant + "-fonipa-x-etic";
+						break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Todo: this could/should become an ordered list of variant tags
+		/// </summary>
 		public string Variant
 		{
 			get
@@ -228,6 +287,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
 				UpdateString(ref _variant, value);
 			}
 		}
@@ -355,10 +415,14 @@ namespace Palaso.WritingSystems
 				return n;
 			}
 		}
-		public string RFC4646
+		public string RFC5646
 		{
 			get
 			{
+				if(!string.IsNullOrEmpty(_customLanguageTag))
+				{
+					return _customLanguageTag;
+				}
 				string id = String.IsNullOrEmpty(ISO) ? "unknown" : ISO;
 				if (!String.IsNullOrEmpty(Script))
 				{
@@ -374,13 +438,17 @@ namespace Palaso.WritingSystems
 				}
 				return id;
 			}
+			set
+			{
+				_customLanguageTag=value;
+			}
 		}
 
 		public string Id
 		{
 			get
 			{
-				return RFC4646;
+				return RFC5646;
 			}
 		}
 
@@ -403,7 +471,7 @@ namespace Palaso.WritingSystems
 					summary.AppendFormat(" written in {0} script", CurrentScriptOptionLabel);
 				}
 
-				summary.AppendFormat(". ({0})", RFC4646);
+				summary.AppendFormat(". ({0})", RFC5646);
 				return summary.ToString().Trim();
 			}
 		}
@@ -679,4 +747,12 @@ namespace Palaso.WritingSystems
 		}
 
 	}
+
+			public enum IpaStatusChoices
+		{
+			NotIpa,
+			Ipa,
+			IpaPhonetic,
+			IpaPhonemic
+		}
 }
