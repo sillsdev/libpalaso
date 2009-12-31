@@ -423,18 +423,19 @@ namespace Palaso.WritingSystems
 				{
 					n = DisplayLabel;
 				}
+				string details = "";
 				if(IpaStatus != IpaStatusChoices.NotIpa)
 				{
 					switch (IpaStatus)
 					{
 						case IpaStatusChoices.Ipa:
-							n += " (IPA)";
+							details += "IPA-";
 							break;
 						case IpaStatusChoices.IpaPhonetic:
-							n += " (IPA-etic)";
+							details += "IPA-etic-";
 							break;
 						case IpaStatusChoices.IpaPhonemic:
-							n += " (IPA-emic)";
+							details += "IPA-emic-";
 							break;
 						default:
 							throw new ArgumentOutOfRangeException();
@@ -442,13 +443,26 @@ namespace Palaso.WritingSystems
 				}
 				else if (!String.IsNullOrEmpty(_script))
 				{
-					n+=" ("+_script+")";
+					details += _script+"-";
 				}
+				if (!String.IsNullOrEmpty(_region))
+				{
+					details += _region + "-";
+				}
+				if (IpaStatus == IpaStatusChoices.NotIpa && !String.IsNullOrEmpty(_variant))
+				{
+					details += _variant + "-";
+				}
+
 				if (IsVoice)
 				{
-					n+=" (voice)";
+					details = details.Replace("Zxxx-", "");
+					details += "voice";
 				}
-				return n;
+				details = details.Trim(new char[] { '-' });
+				if (details.Length > 0)
+					details = " ("+details + ")";
+				return n+details;
 			}
 		}
 		public string RFC5646

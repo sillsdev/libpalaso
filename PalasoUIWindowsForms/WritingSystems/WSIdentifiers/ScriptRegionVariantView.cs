@@ -9,7 +9,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
-	public partial class ScriptRegionVariantView : UserControl
+	public partial class ScriptRegionVariantView : UserControl, ISelectableIdentifierOptions
 	{
 		private bool _updatingFromModel;
 		private readonly WritingSystemSetupPM _model;
@@ -22,7 +22,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			{
 				model.SelectionChanged += UpdateDisplayFromModel;
 			}
-			UpdateDisplayFromModel(null, null);
+			_scriptCombo.Items.AddRange(WritingSystemDefinition.ScriptOptions.ToArray());
+			_scriptCombo.DisplayMember = "Label";
 		}
 
 		private void UpdateDisplayFromModel(object sender, EventArgs e)
@@ -75,5 +76,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			}
 		}
 
+		#region Implementation of ISelectableIdentifierOptions
+
+		public void Selected()
+		{
+			UpdateDisplayFromModel(null, null);
+		}
+
+		#endregion
 	}
 }

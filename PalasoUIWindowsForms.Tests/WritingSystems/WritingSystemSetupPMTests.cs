@@ -627,6 +627,14 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentDefinition.IsVoice = true;
 			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Voice, _model.SelectionForSpecialCombo);
 		}
+		[Test]
+		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesScriptRegionVariant()
+		{
+			_model.AddNew();
+			_model.CurrentRegion = "r";
+			_model.CurrentVariant = "fonipa";
+			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+		}
 
 		[Test]
 		public void SelectionForSpecialCombo_HasRegion_GivesScriptRegionVariant()

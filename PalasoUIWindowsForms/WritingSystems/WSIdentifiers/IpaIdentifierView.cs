@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
-	public partial class IpaIdentifierView : UserControl
+
+	public partial class IpaIdentifierView : UserControl, ISelectableIdentifierOptions
 	{
 		private readonly WritingSystemSetupPM _model;
 		private bool _updatingFromModel;
@@ -13,11 +15,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			_model = model;
 			InitializeComponent();
+
 			if (model != null)
 			{
 				model.SelectionChanged += UpdateDisplayFromModel;
 			}
-			UpdateDisplayFromModel(null,null);
 		}
 
 		private void UpdateDisplayFromModel(object sender, EventArgs e)
@@ -25,8 +27,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			if (_model.CurrentDefinition != null)
 			{
 				_updatingFromModel = true;
+
 				//minus one because we skip the "not ipa" choice
-				comboBox1.SelectedItem = _model.CurrentIpaStatus-1;
+				comboBox1.SelectedIndex =(int) _model.CurrentIpaStatus-1;
 				_updatingFromModel = false;
 			}
 		}
@@ -45,5 +48,25 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			_model.CurrentIpaStatus =1+(IpaStatusChoices) comboBox1.SelectedIndex;
 		}
+
+		#region Implementation of ISelectableIdentifierOptions
+
+		public void Selected()
+		{
+			if (_model != null && _model.CurrentDefinition != null)
+			{
+				_model.CurrentRegion = string.Empty;
+				_model.CurrentScriptCode = string.Empty;
+				//if we're here, the user wants some kind of ipa
+				if (_model.CurrentIpaStatus == IpaStatusChoices.NotIpa)
+				{
+					_model.CurrentIpaStatus = IpaStatusChoices.Ipa;
+				}
+			}
+			UpdateDisplayFromModel(null, null);
+
+		}
+
+		#endregion
 	}
 }

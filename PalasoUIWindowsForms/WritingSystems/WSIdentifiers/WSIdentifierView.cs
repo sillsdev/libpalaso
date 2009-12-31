@@ -31,9 +31,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 //            UpdateProxyFromModel();
 			this.Disposed += OnDisposed;
 
-			AddDetailsControl(new NothingSpecialView());
+			AddDetailsControl(new NothingSpecialView(model));
 			AddDetailsControl(new IpaIdentifierView(model));
-			AddDetailsControl(new VoiceIdentifierView());
+			AddDetailsControl(new VoiceIdentifierView(model));
 			AddDetailsControl(new ScriptRegionVariantView(model));
 			//AddDetailsControl(new CustomIdentifierView(model));
 			comboBox1.DisplayMember = "ChoiceName";
@@ -54,16 +54,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			{
 				this.Enabled = true;
 				_abbreviation.Text = _model.CurrentAbbreviation;
-				_name.Text = _model.CurrentLanguageName;
-				_code.Text=_model.CurrentISO;
+//                _name.Text = _model.CurrentLanguageName;
+				//_code.Text=_model.CurrentISO;
 				comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
 			}
 			else
 			{
 				this.Enabled = false;
 				_abbreviation.Text = string.Empty;
-				_name.Text = string.Empty;
-				_code.Text = string.Empty;
+  //              _name.Text = string.Empty;
+			   // _code.Text = string.Empty;
 				comboBox1.SelectedIndex = 0;
 			}
 		}
@@ -94,7 +94,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (comboBox1.SelectedItem == null)
+			if (comboBox1.SelectedItem == null || _model.CurrentDefinition==null)
 				return;
 //
 //            if(_detailPanel.Controls.Count>1)
@@ -104,11 +104,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 //            }
 			_detailPanel.Controls.Clear();
 			_detailPanel.Controls.Add((Control)comboBox1.SelectedItem);
+			((ISelectableIdentifierOptions)comboBox1.SelectedItem).Selected();
 
-			if (_model.CurrentDefinition != null)
-			{
-				_model.CurrentIsVoice = comboBox1.SelectedItem is VoiceIdentifierView;
-			}
+//            if (_model.CurrentDefinition != null)
+//            {
+//                _model.CurrentIsVoice = comboBox1.SelectedItem is VoiceIdentifierView;
+//            }
+
 		}
+	}
+
+	public interface ISelectableIdentifierOptions
+	{
+		void Selected();
 	}
 }

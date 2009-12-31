@@ -111,8 +111,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _languageName
 			//
+			this._languageName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._languageName.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._languageName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._languageName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._languageName.Location = new System.Drawing.Point(4, 4);
 			this._languageName.Multiline = true;
 			this._languageName.Name = "_languageName";

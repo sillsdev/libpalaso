@@ -715,10 +715,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				//TODO: this is really too simplistic
 
-				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
-				{
-					return SelectionsForSpecialCombo.Ipa;
-				}
+
 				if (_currentWritingSystem.IsVoice)
 				{
 					return SelectionsForSpecialCombo.Voice;
@@ -739,6 +736,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (!string.IsNullOrEmpty(_currentWritingSystem.Region))
 				{
 					return SelectionsForSpecialCombo.ScriptRegionVariant;
+				}
+				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
+				{
+					return SelectionsForSpecialCombo.Ipa;
 				}
 				return SelectionsForSpecialCombo.None;
 			}
