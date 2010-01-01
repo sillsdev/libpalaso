@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -15,13 +9,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public WSPropertiesTabControl()
 		{
 			InitializeComponent();
-//            _aboutControl.TextChanged += delegate { _aboutPage.Text = _aboutControl.Text; };
 		}
 
 		public void BindToModel(WritingSystemSetupPM model)
 		{
 			_model = model;
-//            _aboutControl.BindToModel(_model);
 			_identifiersControl.BindToModel(_model);
 			_fontControl.BindToModel(_model);
 			_keyboardControl.BindToModel(_model);
