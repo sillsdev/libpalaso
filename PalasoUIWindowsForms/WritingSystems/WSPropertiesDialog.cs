@@ -6,13 +6,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPropertiesDialog : Form
 	{
-		private readonly WritingSystemSetupPM _model;
+		private readonly WritingSystemSetupModel _model;
 
 		public WSPropertiesDialog()
 		{
 			InitializeComponent();
-			_model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore());
-			_wsPropertiesPanel.BindToModel(_model);
+			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore());
+			_writingSystemSetupView.BindToModel(_model);
 		}
 
    /* turned out to be hard... so many events are bound to the model, when the dlg
@@ -23,18 +23,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// while using the dialog.
 		/// </summary>
 		/// <param name="writingSystemModel"></param>
-		public WSPropertiesDialog(WritingSystemSetupPM writingSystemModel)
+		public WSPropertiesDialog(WritingSystemSetupModel writingSystemModel)
 		{
 			InitializeComponent();
 			_model = writingSystemModel;
-			_wsPropertiesPanel.BindToModel(_model);
+			_writingSystemSetupView.BindToModel(_model);
 		}
 
 		public WSPropertiesDialog(string writingSystemStorePath)
 		{
 			InitializeComponent();
-			_model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
-			_wsPropertiesPanel.BindToModel(_model);
+			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
+			_writingSystemSetupView.BindToModel(_model);
 		}
 
 		public DialogResult  ShowDialog(string initiallySelectWritingSystemRfc4646)

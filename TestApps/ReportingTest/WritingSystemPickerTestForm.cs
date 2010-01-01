@@ -12,14 +12,14 @@ namespace TestApp
 {
 	public partial class WritingSystemPickerTestForm : Form
 	{
-		private WritingSystemSetupPM _wsModel;
+		private WritingSystemSetupModel _wsModel;
 		private IWritingSystemStore _store;
 		public WritingSystemPickerTestForm()
 		{
 			InitializeComponent();
 
 			_store = new LdmlInFolderWritingSystemStore();
-			_wsModel = new WritingSystemSetupPM(_store);
+			_wsModel = new WritingSystemSetupModel(_store);
 			_wsModel.SelectionChanged += new EventHandler(_wsModel_SelectionChanged);
 			this.wsPickerUsingListView1.BindToModel(_wsModel);
 			this.pickerUsingComboBox1.BindToModel(_wsModel);

@@ -16,7 +16,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	[TestFixture]
 	public class WritingSystemSetupPMTests
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 		string _testFilePath;
 
 		[SetUp]
@@ -24,7 +24,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_testFilePath = Path.GetTempFileName();
 			IWritingSystemStore writingSystemStore = new LdmlInXmlWritingSystemStore();
-			_model = new WritingSystemSetupPM(writingSystemStore);
+			_model = new WritingSystemSetupModel(writingSystemStore);
 		}
 
 		[TearDown]
@@ -36,7 +36,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void KeyboardNames_HasAtLeastOneKeyboard()
 		{
-			IEnumerable<string> keyboard = WritingSystemSetupPM.KeyboardNames;
+			IEnumerable<string> keyboard = WritingSystemSetupModel.KeyboardNames;
 			IEnumerator<string> it = keyboard.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current keyboard {0}", it.Current));
@@ -47,7 +47,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void FontFamilies_HasAtLeastOneFont()
 		{
-			IEnumerable<FontFamily> font = WritingSystemSetupPM.FontFamilies;
+			IEnumerable<FontFamily> font = WritingSystemSetupModel.FontFamilies;
 			IEnumerator<FontFamily> it = font.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current font {0}", it.Current.Name));
@@ -362,7 +362,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void SortUsingOptions_ReturnsAtLeastOne()
 		{
-			Assert.IsTrue(WritingSystemSetupPM.SortUsingOptions.GetEnumerator().MoveNext());
+			Assert.IsTrue(WritingSystemSetupModel.SortUsingOptions.GetEnumerator().MoveNext());
 		}
 
 		[Test]
@@ -419,63 +419,63 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_DeleteThrows()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.DeleteCurrent();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_AddNewThrows()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.AddNew();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_ClearSelectionThrows()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.ClearSelection();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_ChangingCurrentIndex_Throws()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.CurrentIndex = -1;
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_DuplicateCurrent_Throws()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.DuplicateCurrent();
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_Save_Throws()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.Save();
 		}
 
 		[Test]
 		public void SingleWSMode_HasOnlyOne()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			Assert.AreEqual(1, _model.WritingSystemCount);
 		}
 
 		[Test]
 		public void SingleWSMode_WSIsSelected()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			Assert.IsTrue(_model.HasCurrentSelection);
 		}
 
 		[Test]
 		public void SingleWSMode_UsingStore_IsFalse()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			Assert.IsFalse(_model.UsingWritingSystemStore);
 		}
 
@@ -570,7 +570,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void ImportFile_SingleWSMode_Throws()
 		{
-			_model = new WritingSystemSetupPM(new WritingSystemDefinition());
+			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.ImportFile("foo.xml");
 		}
 
@@ -613,11 +613,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_model.AddNew();
 			_model.CurrentDefinition.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
 			_model.CurrentDefinition.IpaStatus = IpaStatusChoices.IpaPhonemic;
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
 			_model.CurrentDefinition.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
 		}
 
 		[Test]
@@ -625,7 +625,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_model.AddNew();
 			_model.CurrentDefinition.IsVoice = true;
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Voice, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Voice, _model.SelectionForSpecialCombo);
 		}
 		[Test]
 		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesScriptRegionVariant()
@@ -633,7 +633,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.AddNew();
 			_model.CurrentRegion = "r";
 			_model.CurrentVariant = "fonipa";
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
 
 		[Test]
@@ -641,21 +641,21 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_model.AddNew();
 			_model.CurrentRegion = "x";
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
 		[Test]
 		public void SelectionForSpecialCombo_HasKnownScript_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
 			_model.CurrentScriptCode = "Cyrl";
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
 		[Test]
 		public void SelectionForSpecialCombo_HasUnknownScript_GivesCustom()
 		{
 			_model.AddNew();
 			_model.CurrentScriptCode = "foobar";
-			Assert.AreEqual(WritingSystemSetupPM.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
 		}
 
 	}

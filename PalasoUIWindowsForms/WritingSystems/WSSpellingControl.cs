@@ -10,7 +10,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSSpellingControl : UserControl
 	{
-		private WritingSystemSetupPM _model;
+		private WritingSystemSetupModel _model;
 		private bool _changingModel;
 
 		public WSSpellingControl()
@@ -18,7 +18,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			if (_model != null)
 			{

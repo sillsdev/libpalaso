@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSAddDuplicateMoreButtonBar : UserControl
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 
 		public WSAddDuplicateMoreButtonBar()
 		{
@@ -15,7 +15,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			CreateMoreButtonImage();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			Debug.Assert(model != null);
 			if (_model != null)

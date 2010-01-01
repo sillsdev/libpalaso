@@ -1,6 +1,6 @@
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	partial class WSPropertiesPanel
+	partial class WritingSystemSetupView
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -144,12 +144,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._buttonBar.Size = new System.Drawing.Size(841, 31);
 			this._buttonBar.TabIndex = 0;
 			//
-			// WSPropertiesPanel
+			// WritingSystemSetupView
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.splitContainer1);
-			this.Name = "WSPropertiesPanel";
+			this.Name = "WritingSystemSetupView";
 			this.Size = new System.Drawing.Size(841, 461);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);

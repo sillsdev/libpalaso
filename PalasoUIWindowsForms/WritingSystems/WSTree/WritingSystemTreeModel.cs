@@ -14,11 +14,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// </summary>
 	public class WritingSystemTreeModel
 	{
-		private readonly WritingSystemSetupPM _setupModel;
+		private readonly WritingSystemSetupModel _setupModel;
 		private EventHandler _updateDisplay;
 		public event EventHandler UpdateDisplay;
 
-		public WritingSystemTreeModel(WritingSystemSetupPM setupModel)
+		public WritingSystemTreeModel(WritingSystemSetupModel setupModel)
 		{
 			_setupModel = setupModel;
 			_setupModel.ItemAddedOrDeleted += new EventHandler(OnSetupModel_ItemAddedOrDeleted);

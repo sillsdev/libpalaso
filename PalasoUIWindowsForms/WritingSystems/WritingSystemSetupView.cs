@@ -9,16 +9,16 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public partial class WSPropertiesPanel : UserControl
+	public partial class WritingSystemSetupView : UserControl
 	{
-		private WritingSystemSetupPM _model;
+		private WritingSystemSetupModel _model;
 
-		public WSPropertiesPanel()
+		public WritingSystemSetupView()
 		{
 			InitializeComponent();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			_model = model;
 			_model.MethodToShowUiToBootstrapNewDefinition= ShowCreateNewWritingSystemDialog;

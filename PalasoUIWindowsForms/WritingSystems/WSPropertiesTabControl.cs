@@ -4,14 +4,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPropertiesTabControl : UserControl
 	{
-		private WritingSystemSetupPM _model;
+		private WritingSystemSetupModel _model;
 
 		public WSPropertiesTabControl()
 		{
 			InitializeComponent();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			_model = model;
 			_identifiersControl.BindToModel(_model);

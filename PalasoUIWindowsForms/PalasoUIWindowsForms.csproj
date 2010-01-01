@@ -208,14 +208,8 @@
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.Designer.cs">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\WritingSystemSetupPM.cs" />
+	<Compile Include="WritingSystems\WritingSystemSetupModel.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProvider.cs" />
-	<Compile Include="WritingSystems\WSAboutControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSAboutControl.Designer.cs">
-	  <DependentUpon>WSAboutControl.cs</DependentUpon>
-	</Compile>
 	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -246,11 +240,11 @@
 	<Compile Include="WritingSystems\WSPropertiesDialog.Designer.cs">
 	  <DependentUpon>WSPropertiesDialog.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\WSPropertiesPanel.cs">
+	<Compile Include="WritingSystems\WritingSystemSetupView.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="WritingSystems\WSPropertiesPanel.Designer.cs">
-	  <DependentUpon>WSPropertiesPanel.cs</DependentUpon>
+	<Compile Include="WritingSystems\WritingSystemSetupView.Designer.cs">
+	  <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSPropertiesTabControl.cs">
 	  <SubType>UserControl</SubType>
@@ -336,10 +330,6 @@
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSAboutControl.resx">
-	  <DependentUpon>WSAboutControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSAddDuplicateMoreButtonBar.resx">
 	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -360,8 +350,8 @@
 	  <DependentUpon>WSPropertiesDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSPropertiesPanel.resx">
-	  <DependentUpon>WSPropertiesPanel.cs</DependentUpon>
+	<EmbeddedResource Include="WritingSystems\WritingSystemSetupView.resx">
+	  <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPropertiesTabControl.resx">

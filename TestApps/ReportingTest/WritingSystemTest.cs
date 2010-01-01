@@ -12,7 +12,7 @@ namespace TestApp
 {
 	public partial class WritingSystemTest : Form
 	{
-		private WritingSystemSetupPM _wsModel;
+		private WritingSystemSetupModel _wsModel;
 		private IWritingSystemStore _store;
 
 		public WritingSystemTest()
@@ -21,7 +21,7 @@ namespace TestApp
 			InitializeComponent();
 
 			_store = new LdmlInFolderWritingSystemStore();
-			_wsModel = new WritingSystemSetupPM(_store);
+			_wsModel = new WritingSystemSetupModel(_store);
 			this.wsPropertiesPanel1.BindToModel(_wsModel);
 		}
 

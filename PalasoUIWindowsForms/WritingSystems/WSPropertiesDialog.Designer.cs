@@ -28,19 +28,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._wsPropertiesPanel = new Palaso.UI.WindowsForms.WritingSystems.WSPropertiesPanel();
+			this._writingSystemSetupView = new Palaso.UI.WindowsForms.WritingSystems.WritingSystemSetupView();
 			this._closeButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
-			// _wsPropertiesPanel
+			// _writingSystemSetupView
 			//
-			this._wsPropertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this._writingSystemSetupView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._wsPropertiesPanel.Location = new System.Drawing.Point(1, 12);
-			this._wsPropertiesPanel.Name = "_wsPropertiesPanel";
-			this._wsPropertiesPanel.Size = new System.Drawing.Size(841, 461);
-			this._wsPropertiesPanel.TabIndex = 0;
+			this._writingSystemSetupView.Location = new System.Drawing.Point(1, 12);
+			this._writingSystemSetupView.Name = "_writingSystemSetupView";
+			this._writingSystemSetupView.Size = new System.Drawing.Size(841, 461);
+			this._writingSystemSetupView.TabIndex = 0;
 			//
 			// _closeButton
 			//
@@ -59,7 +59,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(855, 479);
 			this.Controls.Add(this._closeButton);
-			this.Controls.Add(this._wsPropertiesPanel);
+			this.Controls.Add(this._writingSystemSetupView);
 			this.Name = "WSPropertiesDialog";
 			this.Text = "Writing Systems";
 			this.ResumeLayout(false);
@@ -68,7 +68,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#endregion
 
-		private WSPropertiesPanel _wsPropertiesPanel;
+		private WritingSystemSetupView _writingSystemSetupView;
 		private System.Windows.Forms.Button _closeButton;
 	}
 }

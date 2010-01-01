@@ -12,7 +12,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPickerUsingListView : UserControl
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 		private bool _changingSelection;
 
 		public event EventHandler SelectedIndexChanged;
@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_listView.SelectedIndexChanged += ListViewSelectionChanged;
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			Debug.Assert(model != null);
 			if (_model != null)

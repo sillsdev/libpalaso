@@ -5,9 +5,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
 	public partial class NothingSpecialView : UserControl, ISelectableIdentifierOptions
 	{
-		private readonly WritingSystemSetupPM _model;
+		private readonly WritingSystemSetupModel _model;
 
-		public NothingSpecialView(WritingSystemSetupPM model)
+		public NothingSpecialView(WritingSystemSetupModel model)
 		{
 			_model = model;
 			InitializeComponent();

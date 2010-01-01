@@ -12,7 +12,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSSortControl : UserControl
 	{
-		private WritingSystemSetupPM _model;
+		private WritingSystemSetupModel _model;
 		private readonly Hashtable _sortUsingValueMap;
 		private Hashtable _languageOptionMap;
 		private bool _changingModel;
@@ -24,7 +24,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			InitializeComponent();
 			_sortUsingValueMap = new Hashtable();
-			foreach (KeyValuePair<string, string> sortUsingOption in WritingSystemSetupPM.SortUsingOptions)
+			foreach (KeyValuePair<string, string> sortUsingOption in WritingSystemSetupModel.SortUsingOptions)
 			{
 				int index = _sortUsingComboBox.Items.Add(sortUsingOption.Value);
 				_sortUsingValueMap[sortUsingOption.Key] = index;
@@ -34,7 +34,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontSize = _sortRulesTextBox.Font.SizeInPoints;
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			if (_model != null)
 			{

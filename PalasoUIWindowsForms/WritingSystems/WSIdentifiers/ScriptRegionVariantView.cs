@@ -12,9 +12,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 	public partial class ScriptRegionVariantView : UserControl, ISelectableIdentifierOptions
 	{
 		private bool _updatingFromModel;
-		private readonly WritingSystemSetupPM _model;
+		private readonly WritingSystemSetupModel _model;
 
-		public ScriptRegionVariantView(WritingSystemSetupPM model)
+		public ScriptRegionVariantView(WritingSystemSetupModel model)
 		{
 			_model = model;
 			InitializeComponent();

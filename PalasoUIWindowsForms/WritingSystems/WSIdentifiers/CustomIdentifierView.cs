@@ -5,10 +5,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
 	public partial class CustomIdentifierView : UserControl
 	{
-		private readonly WritingSystemSetupPM _model;
+		private readonly WritingSystemSetupModel _model;
 		private bool _updatingFromModel;
 
-		public CustomIdentifierView(WritingSystemSetupPM model)
+		public CustomIdentifierView(WritingSystemSetupModel model)
 		{
 			_model = model;
 			InitializeComponent();

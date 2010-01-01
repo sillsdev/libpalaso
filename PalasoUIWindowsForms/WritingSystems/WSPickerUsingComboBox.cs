@@ -6,7 +6,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPickerUsingComboBox : ComboBox
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 		private bool _changingSelection;
 
 		public event EventHandler SelectedComboIndexChanged;
@@ -17,7 +17,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			SelectedIndexChanged += ComboSelectionChanged;
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			Debug.Assert(model != null);
 			if (_model != null)

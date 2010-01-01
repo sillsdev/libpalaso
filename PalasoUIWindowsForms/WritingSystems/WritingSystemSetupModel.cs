@@ -18,15 +18,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// This is the presentation model for the UI for setting up Writing Systems using either
 	/// a writing system store or a single writing system.
 	/// In order to use any of the provided UI elements within your own forms, you need to
-	/// instantiate a WritingSystemSetupPM object and bind the UI elements to that object.
-	/// WSPropertiesDialog provides its own WritingSystemSetupPM object and can be used by itself.
+	/// instantiate a WritingSystemSetupModel object and bind the UI elements to that object.
+	/// WSPropertiesDialog provides its own WritingSystemSetupModel object and can be used by itself.
 	/// </summary>
 	/// <example><code>
-	/// WritingSystemSetupPM model = new WritingSystemSetupPM(new LdmlInFolderWritingSystemStore();
-	/// WSPropertiesPanel panel = new WSPropertiesPanel();
+	/// WritingSystemSetupModel model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore();
+	/// WritingSystemSetupView panel = new WritingSystemSetupView();
 	/// panel.BindToModel(model);
 	/// </code></example>
-	public class WritingSystemSetupPM
+	public class WritingSystemSetupModel
 	{
 		private readonly bool _usingStore;
 		private WritingSystemDefinition _currentWritingSystem;
@@ -43,7 +43,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <summary>
 		/// Creates the presentation model object based off of a writing system store of some sort.
 		/// </summary>
-		public WritingSystemSetupPM(IWritingSystemStore writingSystemStore)
+		public WritingSystemSetupModel(IWritingSystemStore writingSystemStore)
 		{
 			if (writingSystemStore == null)
 			{
@@ -61,7 +61,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// This is the easiest form to use if you only want part of the UI elements or only operate on
 		/// one WritingSystemDefiniion
 		/// </summary>
-		public WritingSystemSetupPM(WritingSystemDefinition ws)
+		public WritingSystemSetupModel(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{

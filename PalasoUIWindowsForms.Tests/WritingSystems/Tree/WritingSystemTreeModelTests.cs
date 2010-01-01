@@ -15,13 +15,13 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 	{
 		private IWritingSystemStore _writingSystemStore;
 		private WritingSystemTreeModel _model;
-		private Mock<WritingSystemSetupPM> _mockSetupModel;
+		private Mock<WritingSystemSetupModel> _mockSetupModel;
 
 		[SetUp]
 		public void Setup()
 		{
 			_writingSystemStore = new WritingSystemStoreBase();
-			_mockSetupModel = new Mock<WritingSystemSetupPM>(_writingSystemStore);
+			_mockSetupModel = new Mock<WritingSystemSetupModel>(_writingSystemStore);
 			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model = new WritingSystemTreeModel(_mockSetupModel.Object);
 		}

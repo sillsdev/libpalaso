@@ -11,13 +11,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
 	public partial class WSIdentifierView : UserControl
 	{
-		private WritingSystemSetupPM _model;
+		private WritingSystemSetupModel _model;
 
 		public WSIdentifierView()
 		{
 			InitializeComponent();
 		}
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			if (_model != null)
 			{

@@ -8,10 +8,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 	public partial class IpaIdentifierView : UserControl, ISelectableIdentifierOptions
 	{
-		private readonly WritingSystemSetupPM _model;
+		private readonly WritingSystemSetupModel _model;
 		private bool _updatingFromModel;
 
-		public IpaIdentifierView(WritingSystemSetupPM model)
+		public IpaIdentifierView(WritingSystemSetupModel model)
 		{
 			_model = model;
 			InitializeComponent();
