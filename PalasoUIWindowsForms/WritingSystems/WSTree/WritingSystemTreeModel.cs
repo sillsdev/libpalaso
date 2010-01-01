@@ -23,6 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_setupModel = setupModel;
 			_setupModel.ItemAddedOrDeleted += new EventHandler(OnSetupModel_ItemAddedOrDeleted);
 			_setupModel.CurrentItemUpdated += new EventHandler(OnCurrentItemUpdated);
+			Suggestor = new WritingSystemSuggestor();
 		}
 
 		void OnCurrentItemUpdated(object sender, EventArgs e)
@@ -44,12 +45,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <summary>
 		/// Given some existing writiting system definitions for a language, what other ones might they want ot add?
 		/// </summary>
-		public IWritingSystemVariantSuggestor Suggestor{get;set;}
+		public WritingSystemSuggestor Suggestor{get; set;}
 
-		/// <summary>
-		/// Normally, the major-langauge WritingSystems which the user is likely to want to add
-		/// </summary>
-		public IEnumerable<WritingSystemDefinition> OtherKnownWritingSystems { get; set; }
 
 		public WritingSystemTreeItem GetSelectedItem(IEnumerable<WritingSystemTreeItem> items)
 		{
@@ -107,10 +104,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (Suggestor != null)
 				{
 					foreach (
-						WritingSystemDefinition oneTheyMightWantToAdd in
+						IWritingSystemDefinitionSuggestion suggestion in
 							Suggestor.GetSuggestions(primaryDefinition, defsOfSameLanguage))
 					{
-						var treeItem = new WritingSystemCreationTreeItem(oneTheyMightWantToAdd, OnClickAddCertainDefinition);
+						var treeItem = new WritingSystemCreationTreeItem(suggestion, OnClickAddCertainDefinition);
 						item.Children.Add(treeItem);
 					}
 				}
@@ -150,20 +147,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void AddOtherLanguages(List<WritingSystemTreeItem> items)
 		{
-			if (OtherKnownWritingSystems == null)
-				return;
 			var item = new WritingSystemTreeItem("Other Languages", null);
-			//var otherDefsNotInStore = OtherKnownWritingSystems.Except(_store.WritingSystemDefinitions);
-			item.Children = new List<WritingSystemTreeItem>( from definition in OtherKnownWritingSystems
-							where !_setupModel.WritingSystemDefinitions.Any(def=>def.RFC5646 == definition.RFC5646)
-							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(definition, OnClickAddCertainDefinition));
+			item.Children = new List<WritingSystemTreeItem>(from suggestion in this.Suggestor.GetOtherLanguageSuggestions(_setupModel.WritingSystemDefinitions)
+							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(suggestion, OnClickAddCertainDefinition));
 			if(item.Children.Count()>0)
 				items.Add(item );
 		}
 
 		private void OnClickAddCertainDefinition(WritingSystemTreeItem treeItem)
 		{
-			_setupModel.AddPredefinedDefinition(((WritingSystemCreationTreeItem)treeItem).Definition);
+			var suggestionItem = (WritingSystemCreationTreeItem)treeItem;
+			var def = suggestionItem.ShowDialogIfNeededAndGetDefinition();
+			if (def != null)//if the didn't cancel
+			{
+				_setupModel.AddPredefinedDefinition(def);
+			}
 		}
 
 		public void ViewLoaded()

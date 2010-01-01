@@ -19,7 +19,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// a writing system store or a single writing system.
 	/// In order to use any of the provided UI elements within your own forms, you need to
 	/// instantiate a WritingSystemSetupModel object and bind the UI elements to that object.
-	/// WSPropertiesDialog provides its own WritingSystemSetupModel object and can be used by itself.
+	/// WritingSystemSetupDialog provides its own WritingSystemSetupModel object and can be used by itself.
 	/// </summary>
 	/// <example><code>
 	/// WritingSystemSetupModel model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore();
@@ -35,6 +35,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
+
+		/// <summary>
+		/// Use this to set the appropriate kinds of writing systems according to your
+		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
+		/// </summary>
+		public WritingSystemSuggestor WritingSystemSuggestor { get; private set; }
+
 		/// <summary>
 		/// UI layer can set this to something which shows a dialog to get the basic info
 		/// </summary>
@@ -49,6 +56,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new ArgumentNullException("writingSystemStore");
 			}
+			WritingSystemSuggestor = new WritingSystemSuggestor();
+
 			_writingSystemStore = writingSystemStore;
 			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemStore.WritingSystemDefinitions);
 			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
@@ -67,6 +76,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
+			WritingSystemSuggestor = new WritingSystemSuggestor();
+
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
 			_writingSystemStore = null;

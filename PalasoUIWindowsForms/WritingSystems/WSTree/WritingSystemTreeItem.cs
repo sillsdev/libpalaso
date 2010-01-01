@@ -78,6 +78,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			Definition = definition;
 		}
+
+		protected WritingSystemDefinitionTreeItem(Action<WritingSystemTreeItem> clickAction)
+			: base("label", clickAction)
+		{
+		}
+
 		protected override Font Font
 		{
 			get { return kExistingItemFont; }
@@ -90,12 +96,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 	public class WritingSystemCreationTreeItem : WritingSystemDefinitionTreeItem
 	{
+		private readonly IWritingSystemDefinitionSuggestion _suggestion;
 
-		public WritingSystemCreationTreeItem(WritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
-			: base(definition, clickAction)
+		public WritingSystemCreationTreeItem(IWritingSystemDefinitionSuggestion suggestion, Action<WritingSystemTreeItem> clickAction)
+			: base(clickAction)
 		{
-			Text = "Add " + definition.ListLabel;
+			_suggestion = suggestion;
+			Text = "Add " + suggestion.Label;
 		}
+
 		protected override Color ForeColor
 		{
 			get { return System.Drawing.Color.DarkBlue; }
@@ -109,6 +118,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		protected override Font Font
 		{
 			get { return kLabelFont; }
+		}
+
+		public WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
+		{
+			return _suggestion.ShowDialogIfNeededAndGetDefinition();
 		}
 	}
 

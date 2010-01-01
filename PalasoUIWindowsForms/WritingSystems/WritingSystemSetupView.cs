@@ -27,12 +27,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_propertiesTabControl.BindToModel(_model);
 
 			var treeModel = new WritingSystemTreeModel(_model);
-			treeModel.Suggestor = new WritingSystemVariantSuggestor();
-			treeModel.OtherKnownWritingSystems = new WritingSystemFromWindowsLocaleProvider();
+			treeModel.Suggestor = model.WritingSystemSuggestor;
 			_treeView.BindToModel(treeModel);
 			_model.SelectionChanged += UpdateHeaders;
 			_model.CurrentItemUpdated += UpdateHeaders;
 			UpdateHeaders(null, null);
+		}
+
+		/// <summary>
+		/// Use this to set the appropriate kinds of writing systems according to your
+		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
+		/// </summary>
+		public WritingSystemSuggestor WritingSystemSuggestor
+		{
+			get { return _model.WritingSystemSuggestor; }
 		}
 
 		private void UpdateHeaders(object sender, EventArgs e)

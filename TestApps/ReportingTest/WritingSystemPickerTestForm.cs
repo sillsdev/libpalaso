@@ -32,7 +32,7 @@ namespace TestApp
 
 		private void OnEditWsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			using (var d = new WSPropertiesDialog(_wsModel))
+			using (var d = new WritingSystemSetupDialog(_wsModel))
 			{
 				if (_wsModel.HasCurrentSelection)
 				{

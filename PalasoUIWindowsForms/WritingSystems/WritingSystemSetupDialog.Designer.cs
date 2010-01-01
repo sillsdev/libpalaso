@@ -1,6 +1,6 @@
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	partial class WSPropertiesDialog
+	partial class WritingSystemSetupDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -53,14 +53,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._closeButton.UseVisualStyleBackColor = true;
 			this._closeButton.Click += new System.EventHandler(this._closeButton_Click);
 			//
-			// WSPropertiesDialog
+			// WritingSystemSetupDialog
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(855, 479);
 			this.Controls.Add(this._closeButton);
 			this.Controls.Add(this._writingSystemSetupView);
-			this.Name = "WSPropertiesDialog";
+			this.Name = "WritingSystemSetupDialog";
 			this.Text = "Writing Systems";
 			this.ResumeLayout(false);
 

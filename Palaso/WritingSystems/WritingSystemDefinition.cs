@@ -287,6 +287,7 @@ namespace Palaso.WritingSystems
 				if (value)
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
+					Keyboard=string.Empty;
 					Variant = _variant + "-Zxxx";
 				}
 			}

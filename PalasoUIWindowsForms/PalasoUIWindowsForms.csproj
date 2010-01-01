@@ -158,6 +158,12 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
+	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.Designer.cs">
+	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -234,11 +240,11 @@
 	<Compile Include="WritingSystems\WSPickerUsingListView.Designer.cs">
 	  <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\WSPropertiesDialog.cs">
+	<Compile Include="WritingSystems\WritingSystemSetupDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="WritingSystems\WSPropertiesDialog.Designer.cs">
-	  <DependentUpon>WSPropertiesDialog.cs</DependentUpon>
+	<Compile Include="WritingSystems\WritingSystemSetupDialog.Designer.cs">
+	  <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WritingSystemSetupView.cs">
 	  <SubType>UserControl</SubType>
@@ -274,7 +280,7 @@
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.Designer.cs">
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\WSTree\WritingSystemVariantSuggestor.cs" />
+	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
@@ -303,6 +309,9 @@
 	<EmbeddedResource Include="Widgets\ControlListBox.resx">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
+	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
@@ -346,8 +355,8 @@
 	  <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSPropertiesDialog.resx">
-	  <DependentUpon>WSPropertiesDialog.cs</DependentUpon>
+	<EmbeddedResource Include="WritingSystems\WritingSystemSetupDialog.resx">
+	  <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WritingSystemSetupView.resx">

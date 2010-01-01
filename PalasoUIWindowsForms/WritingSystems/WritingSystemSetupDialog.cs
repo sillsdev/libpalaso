@@ -4,15 +4,24 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	public partial class WSPropertiesDialog : Form
+	public partial class WritingSystemSetupDialog : Form
 	{
 		private readonly WritingSystemSetupModel _model;
 
-		public WSPropertiesDialog()
+		public WritingSystemSetupDialog()
 		{
 			InitializeComponent();
 			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore());
 			_writingSystemSetupView.BindToModel(_model);
+		}
+
+		/// <summary>
+		/// Use this to set the appropriate kinds of writing systems according to your
+		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
+		/// </summary>
+		public WritingSystemSuggestor WritingSystemSuggestor
+		{
+			get { return _model.WritingSystemSuggestor; }
 		}
 
    /* turned out to be hard... so many events are bound to the model, when the dlg
@@ -23,14 +32,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// while using the dialog.
 		/// </summary>
 		/// <param name="writingSystemModel"></param>
-		public WSPropertiesDialog(WritingSystemSetupModel writingSystemModel)
+		public WritingSystemSetupDialog(WritingSystemSetupModel writingSystemModel)
 		{
 			InitializeComponent();
 			_model = writingSystemModel;
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		public WSPropertiesDialog(string writingSystemStorePath)
+		public WritingSystemSetupDialog(string writingSystemStorePath)
 		{
 			InitializeComponent();
 			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
