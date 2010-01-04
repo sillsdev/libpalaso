@@ -206,6 +206,7 @@
 	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.Designer.cs">
 	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestion.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.cs">

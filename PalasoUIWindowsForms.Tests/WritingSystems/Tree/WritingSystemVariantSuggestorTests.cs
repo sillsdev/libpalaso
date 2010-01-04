@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.WritingSystems;
+using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree

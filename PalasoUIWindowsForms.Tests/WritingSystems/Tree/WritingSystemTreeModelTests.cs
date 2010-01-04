@@ -6,6 +6,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.WritingSystems;
+using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
@@ -162,7 +163,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
 			SetDefinitionsInStore(new WritingSystemDefinition[] {etr });
 			_model.Suggestor.SuggestIpa = true;
-			AssertTreeNodeLabels("Edolo", "+Add Edolo (IPA)", "", "Add Language");
+			AssertTreeNodeLabels("Edolo", "+Add IPA writing system for Edolo", "", "Add Language");
 		}
 
 		[Test]

@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using Palaso.Code;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -747,6 +748,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (!string.IsNullOrEmpty(_currentWritingSystem.Region))
 				{
 					return SelectionsForSpecialCombo.ScriptRegionVariant;
+				}
+				if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
+				{
+					if(!_currentWritingSystem.Variant.StartsWith("fonipa"))
+						return SelectionsForSpecialCombo.ScriptRegionVariant;
 				}
 				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
 				{
