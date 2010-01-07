@@ -97,7 +97,10 @@ namespace Palaso.Media
 		{
 			if (Control.ModifierKeys == Keys.Shift)
 			{
-				LetUserSelectPrerecordedFile();
+				if(LetUserSelectPrerecordedFile() && SoundRecorded != null)
+				{
+					SoundRecorded.Invoke(this, null);
+				}
 				return;
 			}
 			//allow owner one last chance to set a path (which may be sensitive to other ui controls)
@@ -145,7 +148,7 @@ namespace Palaso.Media
 		}
 
 
-		private void LetUserSelectPrerecordedFile()
+		private bool LetUserSelectPrerecordedFile()
 		{
 			try
 			{
@@ -157,7 +160,7 @@ namespace Palaso.Media
 				dlg.Filter = "sound files (*.wav)|*.wav";
 				if (DialogResult.OK != dlg.ShowDialog())
 				{
-					return;
+					return false;
 				}
 				if (File.Exists(Path))
 					File.Delete(Path);
@@ -169,7 +172,7 @@ namespace Palaso.Media
 				MessageBox.Show(error.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			UpdateScreen();
-
+			return true;
 		}
 
 		private void OnClickPlay(object sender, MouseEventArgs e)
