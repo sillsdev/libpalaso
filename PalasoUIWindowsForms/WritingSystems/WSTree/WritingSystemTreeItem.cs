@@ -10,13 +10,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public  class WritingSystemTreeItem
 	{
-		protected readonly Action<WritingSystemTreeItem> _clickAction;
+		protected readonly Action<WritingSystemTreeItem> ClickAction;
 		protected static Font kLabelFont=new Font(SystemFonts.MessageBoxFont.Name, 8);
 		protected static Font kHeaderFont=new Font(SystemFonts.MessageBoxFont.Name, 8);
 		public WritingSystemTreeItem(string text, Action<WritingSystemTreeItem> clickAction)
 		{
 			Children = new List<WritingSystemTreeItem>();
-			_clickAction = clickAction;
+			ClickAction = clickAction;
 			Text=text;
 		}
 
@@ -51,9 +51,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public virtual void Clicked()
 		{
-			if (_clickAction != null)
+			if (ClickAction != null)
 			{
-				_clickAction(this);
+				ClickAction(this);
 			}
 		}
 
