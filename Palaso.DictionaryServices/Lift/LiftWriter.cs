@@ -391,6 +391,8 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				if(string.IsNullOrEmpty(relation.Key))
 					continue;
+				if(!EntryDoesExist(relation.TargetId))
+					continue;
 
 				Writer.WriteStartElement("relation");
 				Writer.WriteAttributeString("type", GetOutputRelationName(relation));
@@ -399,6 +401,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteEndElement();
 			}
 		}
+
+		protected virtual bool EntryDoesExist(string id)
+		{
+			return true;// real implementations would check
+		}
+
 
 		protected virtual string GetOutputRelationName(LexRelation relation)
 		{
