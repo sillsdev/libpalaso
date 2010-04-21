@@ -51,14 +51,7 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 		private void AddToDictionary(string language, string s)
 		{
-			try
-			{
-				_dictionaries[language].Add(s);
-			}
-			catch (Exception error)
-			{
-				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchangt Spell-Checking system: \r\n{0}", error.Message);
-			}
+			_dictionaries[language].Add(s);
 			_hotSpotProvider.RefreshAll();
 		}
 
@@ -70,7 +63,8 @@ namespace Palaso.UI.WindowsForms.Spelling
 			}
 			catch (Exception error)
 			{
-				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchangt Spell-Checking system: \r\n{0}", error.Message);
+				//the actual error messages are always worthless, talking about corrupted memory
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
 			}
 			return new List<string>();
 		}
@@ -83,7 +77,8 @@ namespace Palaso.UI.WindowsForms.Spelling
 			}
 			catch (Exception error)
 			{
-				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchangt Spell-Checking system: \r\n{0}", error.Message);
+				//the actual error messages are always worthless, talking about corrupted memory
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
 			}
 			return true;//review
 		}
@@ -237,23 +232,23 @@ namespace Palaso.UI.WindowsForms.Spelling
 			return string.Empty;
 		}
 
-		public void SetLanguageForSpellChecking(Control c, string value)
+		public void SetLanguageForSpellChecking(Control control, string language)
 		{
-			if (c == null)
+			if (control == null)
 			{
 				throw new ArgumentNullException();
 			}
-			if (!CanExtend(c))
+			if (!CanExtend(control))
 			{
 				throw new ArgumentException("Control must be derived from TextBoxBase");
 			}
-			if (String.IsNullOrEmpty(value))
+			if (String.IsNullOrEmpty(language))
 			{
 				if (_hotSpotProvider != null)
 				{
-					_hotSpotProvider.SetEnableHotSpots(c, false);
+					_hotSpotProvider.SetEnableHotSpots(control, false);
 				}
-				_extendees.Remove(c);
+				_extendees.Remove(control);
 			}
 			else
 			{
@@ -261,21 +256,25 @@ namespace Palaso.UI.WindowsForms.Spelling
 				{
 					try
 					{
-						if (_broker.DictionaryExists(value))
+						if (_broker.DictionaryExists(language))
 						{
-							if (!_dictionaries.ContainsKey(value))
+							if (!_dictionaries.ContainsKey(language))
 							{
-								_dictionaries.Add(value, _broker.RequestDictionary(value));
+								_dictionaries.Add(language, _broker.RequestDictionary(language));
+
 							}
-							_hotSpotProvider.SetEnableHotSpots(c, true);
+							_hotSpotProvider.SetEnableHotSpots(control, true);
 						}
 					}
 					catch (Exception error)
 					{
-						ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchangt Spell-Checking system: \r\n{0}", error.Message);
+						//the actual error messages are always worthless, talking about corrupted memory
+						//ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
+
+						//The number of false errors here is so high that for now, let's not bother to scare the user
 					}
 				}
-				_extendees[c] = value;
+				_extendees[control] = language;
 			}
 		}
 	}

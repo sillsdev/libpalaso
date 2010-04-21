@@ -24,7 +24,7 @@ namespace Palaso.DictionaryServices.Lift
 
 			public ILiftWriter<LexEntry> CreateWriter(string liftFilePath)
 			{
-				return new LiftWriter(liftFilePath);
+				return new LiftWriter(liftFilePath, LiftWriter.ByteOrderStyle.BOM);
 			}
 
 			public ILiftReader<LexEntry> CreateReader()

@@ -97,7 +97,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			public LiftExportAsFileTestSession()
 			{
-				_liftWriter = new LiftWriter(_filePath);
+				_liftWriter = new LiftWriter(_filePath, LiftWriter.ByteOrderStyle.BOM);
 			}
 
 		}

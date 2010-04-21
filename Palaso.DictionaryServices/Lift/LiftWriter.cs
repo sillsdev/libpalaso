@@ -35,24 +35,36 @@ namespace Palaso.DictionaryServices.Lift
 			_allIdsExportedSoFar = new Dictionary<string, int>();
 		}
 
-		public LiftWriter(string path): this()
+		public enum ByteOrderStyle
+		{
+			BOM,
+			NoBOM
+		} ;
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="includeByteOrderMark">PrinceXML (at least v7 chokes if given a BOM, Lexique Pro chokes without it) </param>
+		public LiftWriter(string path, ByteOrderStyle byteOrderStyle)
+			: this()
 		{
 			_disposed = true; // Just in case we throw in the constructor
-			_writer = XmlWriter.Create(path, PrepareSettings(false));
+			_writer = XmlWriter.Create(path, PrepareSettings(false, byteOrderStyle));
 			Start();
 			_disposed = false;
 		}
 
 		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
 		{
-			_writer = XmlWriter.Create(builder, PrepareSettings(produceFragmentOnly));
+			_writer = XmlWriter.Create(builder, PrepareSettings(produceFragmentOnly, LiftWriter.ByteOrderStyle.BOM));
 			if (!produceFragmentOnly)
 			{
 				Start();
 			}
 		}
 
-		private static XmlWriterSettings PrepareSettings(bool produceFragmentOnly)
+		private static XmlWriterSettings PrepareSettings(bool produceFragmentOnly, ByteOrderStyle byteOrderStyle)
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			if (produceFragmentOnly)
@@ -64,9 +76,14 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				settings.Indent = true;
 			}
-			// this will give you a bom, which messes up princexml :settings.Encoding = Encoding.UTF8;
-			Encoding utf8NoBom = new UTF8Encoding(false);
-			settings.Encoding = utf8NoBom;
+			if (byteOrderStyle == ByteOrderStyle.BOM)
+				settings.Encoding = Encoding.UTF8;
+			else
+			{
+				Encoding utf8NoBom = new UTF8Encoding(false);
+				settings.Encoding = utf8NoBom;
+			}
+
 			settings.NewLineOnAttributes = false;
 			settings.CloseOutput = true;
 			return settings;
@@ -391,6 +408,8 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				if(string.IsNullOrEmpty(relation.Key))
 					continue;
+				if(!EntryDoesExist(relation.TargetId))
+					continue;
 
 				Writer.WriteStartElement("relation");
 				Writer.WriteAttributeString("type", GetOutputRelationName(relation));
@@ -399,6 +418,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteEndElement();
 			}
 		}
+
+		protected virtual bool EntryDoesExist(string id)
+		{
+			return true;// real implementations would check
+		}
+
 
 		protected virtual string GetOutputRelationName(LexRelation relation)
 		{
