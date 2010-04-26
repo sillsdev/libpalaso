@@ -43,6 +43,10 @@ namespace Palaso.TestUtilities
 		private TempLiftFile()
 		{
 		}
+
+		/// <summary>
+		/// Create a TempLiftFile based on a pre-existing file, which will be deleted when this is disposed.
+		/// </summary>
 		public static TempLiftFile TrackExisting(string path)
 		{
 			Debug.Assert(File.Exists(path));
@@ -53,6 +57,10 @@ namespace Palaso.TestUtilities
 
 	}
 
+	/// <summary>
+	/// This is useful for unit tests.  When it is disposed, it will delete the file.
+	/// </summary>
+	/// <example>using(f = new TemporaryFile(){}</example>
 	public class TempFile : IDisposable
 	{
 		protected string _path;
@@ -66,6 +74,9 @@ namespace Palaso.TestUtilities
 		{
 		}
 
+		/// <summary>
+		/// Create a tempfile within the given parent folder
+		/// </summary>
 		public TempFile(TemporaryFolder parentFolder)
 		{
 			if (parentFolder != null)
@@ -101,11 +112,6 @@ namespace Palaso.TestUtilities
 			File.Delete(_path);
 		}
 
-
-		//        public static TempFile TrackExisting(string path)
-		//        {
-		//            return new TempFile(path, false);
-		//        }
 		public static TempFile CopyOf(string pathToExistingFile)
 		{
 			TempFile t = new TempFile();
@@ -118,6 +124,9 @@ namespace Palaso.TestUtilities
 			_path = existingPath;
 		}
 
+		/// <summary>
+		/// Create a TempFile based on a pre-existing file, which will be deleted when this is disposed.
+		/// </summary>
 		public static TempFile TrackExisting(string path)
 		{
 			return new TempFile(path, false);
@@ -142,11 +151,18 @@ namespace Palaso.TestUtilities
 		}
 	}
 
+	/// <summary>
+	/// This is useful for unit tests.  When it is disposed, it works hard to empty and remove the folder.
+	/// </summary>
+	/// <example>using(f = new TemporaryFolder("My Export Tests"){}</example>
 	public class TemporaryFolder : IDisposable
 	{
 		private string _path;
 
 
+		/// <summary>
+		/// Create a TemporaryFolder based on a pre-existing directory, which will be deleted when this is disposed.
+		/// </summary>
 		static public TemporaryFolder TrackExisting(string path)
 		{
 			Debug.Assert(Directory.Exists(path));
@@ -182,7 +198,16 @@ namespace Palaso.TestUtilities
 			Directory.CreateDirectory(_path);
 		}
 
+		[Obsolete("Path is preferred")]
 		public string FolderPath
+		{
+			get { return _path; }
+		}
+
+		/// <summary>
+		/// Same as FolderPath, but I repent of that poor name
+		/// </summary>
+		public string Path
 		{
 			get { return _path; }
 		}
@@ -236,6 +261,10 @@ namespace Palaso.TestUtilities
 		}
 
 
+		/// <summary>
+		/// Similar to Path.Combine, but you don't have to specify the location of the temporaryfolder itself, and you can add multiple parts to combine.
+		/// </summary>
+		/// <example> string path = t.Combine("stuff", "toys", "ball.txt")</example>
 		public string Combine(params string[] partsOfThePath)
 		{
 			string result = _path;

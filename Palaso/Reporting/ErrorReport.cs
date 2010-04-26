@@ -202,7 +202,7 @@ namespace Palaso.Reporting
 			public void Dispose()
 			{
 				s_justRecordNonFatalMessagesForTesting= previousJustRecordNonFatalMessagesForTesting;
-				if (s_previousNonFatalMessage == null)
+				if (s_previousNonFatalException == null &&  s_previousNonFatalMessage == null)
 					throw new Exception("Non Fatal Error Report was expected but wasn't generated.");
 				s_previousNonFatalMessage = null;
 			}
