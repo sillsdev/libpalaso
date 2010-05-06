@@ -498,6 +498,15 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		public void WhiteSpace_IsIgnored()
+		{
+			_collationXml = "<rules>\r\n<reset before=\"primary\">\r\n<first_non_ignorable />\r\n</reset>\r\n<p>a</p>\r\n<sc>bcd</sc>\r\n</rules>";
+			string simple;
+			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
+			Assert.AreEqual("a b c d", simple);
+		}
+
+		[Test]
 		public void PrimaryDifference_ProducesCorrectSimpleRules()
 		{
 			_collationXml = "<rules><reset before=\"primary\"><first_non_ignorable /></reset><p>a</p><p>b</p></rules>";

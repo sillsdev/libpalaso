@@ -71,6 +71,7 @@ namespace Palaso.WritingSystems.Collation
 			XmlReaderSettings readerSettings = new XmlReaderSettings();
 			readerSettings.CloseInput = true;
 			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+			readerSettings.IgnoreWhitespace = true;
 			rules = null;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
