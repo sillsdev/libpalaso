@@ -140,6 +140,11 @@ namespace Palaso.WritingSystems
 					ws.DefaultFontSize = fontSize;
 				}
 				ws.Keyboard = GetSpecialValue(reader, "defaultKeyboard");
+				string isLegacyEncoded = GetSpecialValue(reader, "isLegacyEncoded");
+				if (!String.IsNullOrEmpty(isLegacyEncoded))
+				{
+					ws.IsLegacyEncoded = Convert.ToBoolean(isLegacyEncoded);
+				}
 				ws.LanguageName = GetSpecialValue(reader, "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "spellCheckingId");
 			}
@@ -669,6 +674,10 @@ namespace Palaso.WritingSystems
 				WriteSpecialValue(writer, "defaultFontSize", ws.DefaultFontSize.ToString());
 			}
 			WriteSpecialValue(writer, "defaultKeyboard", ws.Keyboard);
+			if (ws.IsLegacyEncoded)
+			{
+				WriteSpecialValue(writer, "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
+			}
 			WriteSpecialValue(writer, "languageName", ws.LanguageName);
 			if (ws.SpellCheckingId != ws.ISO)
 			{

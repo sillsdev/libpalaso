@@ -292,6 +292,31 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void CanSaveAndReadIsUnicode()
+		{
+			_writingSystem.ISO = "en";
+			Assert.IsFalse(_writingSystem.IsLegacyEncoded);
+			_writingSystem.IsLegacyEncoded = true;
+			Assert.IsTrue(_writingSystem.IsLegacyEncoded);
+			_collection.SaveDefinition(_writingSystem);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			Assert.IsTrue(ws2.IsLegacyEncoded);
+		}
+
+		[Test]
+		public void IsUnicode_TrueByDefault()
+		{
+			_writingSystem.ISO = "en";
+			_collection.SaveDefinition(_writingSystem);
+
+			//here, the task is not to overwrite what was in ther already
+			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			Assert.IsFalse(ws2.IsLegacyEncoded);
+		}
+
+		[Test]
 		public void CanRemoveVariant()
 		{
 			_writingSystem.ISO = "en";

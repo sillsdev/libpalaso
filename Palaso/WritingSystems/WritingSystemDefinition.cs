@@ -41,6 +41,7 @@ namespace Palaso.WritingSystems
 		private string _languageName;
 		private string _script;
 		private string _abbreviation;
+		private bool _isLegacyEncoded;
 
 		private string _versionNumber;
 		private string _versionDescription;
@@ -79,6 +80,7 @@ namespace Palaso.WritingSystems
 			_iso=_abbreviation = _script=_languageName = _variant = _region =_nativeName = string.Empty;
 			_sortUsing = SortRulesType.DefaultOrdering;
 			Modified = false;
+			IsLegacyEncoded = false;
 		   // _defaultFontSize = 10; //arbitrary
 		}
 
@@ -716,6 +718,21 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public bool IsLegacyEncoded
+		{
+			get
+			{
+				return _isLegacyEncoded;
+			}
+			set
+			{
+				if(value != _isLegacyEncoded)
+				{
+					Modified = true;
+					_isLegacyEncoded = value;
+				}
+			}
+		}
 
 
 		/// <summary>
@@ -762,6 +779,7 @@ namespace Palaso.WritingSystems
 			ws._sortRules = _sortRules;
 			ws._spellCheckingId = _spellCheckingId;
 			ws._dateModified = _dateModified;
+			ws._isLegacyEncoded = _isLegacyEncoded;
 			return ws;
 		}
 
