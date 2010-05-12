@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Palaso.Extensions;
+using Palaso.Linq;
 
 #if MONO
 // FIXME: Would prefer that LinqBridge didn't implement ForEach as per standard

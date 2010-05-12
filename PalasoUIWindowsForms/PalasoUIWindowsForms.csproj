@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>2.0</OldToolsVersion>
-	<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -66,10 +66,6 @@
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
-	</Reference>
-	<Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\LinqBridge.dll</HintPath>
 	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
@@ -386,6 +382,11 @@
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>
 	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
