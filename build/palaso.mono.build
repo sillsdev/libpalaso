@@ -43,10 +43,6 @@
 		<include name="PalasoUIWindowsForms.Tests/PalasoUIWindowsForms.Tests.proj.build" />
 		<include name="Palaso.Media\Palaso.Media.proj.build" />
 		<include name="AddSortKey/AddSortKey.proj.build" />
-		<include name="Palaso.Services\Palaso.Services.proj.build" />
-		<include name="Palaso.Services.Tests\Palaso.Services.Tests.proj.build" />
-		<include name="Palaso.Services.Dictionary.SampleClient\Palaso.Services.Dictionary.SampleClient.proj.build" />
-		<include name="Palaso.Services.Tests.Server\Palaso.Services.Tests.Server.proj.build" />
 	</fileset>
 
 	<target name="clean" description="Delete all previously compiled binaries.">
@@ -165,14 +161,6 @@
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 		<property name="expected.output" value="${project.output.dir}/PalasoUIWindowsForms.Tests.dll"/>
 		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/Palaso.Services.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/Palaso.Services.Tests.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/Palaso.Services.Dictionary.SampleClient.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
-		<property name="expected.output" value="${project.output.dir}/Palaso.Services.Tests.Server.dll"/>
-		<fail unless="${file::exists(expected.output)}">Output file doesn't exist in ${expected.output}</fail>
 	</target>
 
 	<target name="build-for-wesay" depends="build-only">
@@ -256,14 +244,12 @@
 		<echo message="*******************************************************************"/>
 		<echo message="******                  Begin Test Run                       ******"/>
 		<echo message="*******************************************************************"/>
-		<echo message="Warning: Palaso.Service is currently not tested under mono."/>
 
 		<nunit2 haltonfailure="false" failonerror="true">
 			<formatter type="Plain"/>
 			<test>
 			<assemblies>
 				<include name="${project.output.dir}/*.Tests.dll" />
-				<exclude name="${project.output.dir}/Palaso.Services*.dll" />
 			</assemblies>
 			<categories>
 				<exclude name="MouseSensitive"/>
@@ -290,7 +276,6 @@
 		<echo message="*******************************************************************"/>
 		<echo message="******                  Begin Test Run                       ******"/>
 		<echo message="*******************************************************************"/>
-		<echo message="Warning: Palaso.Service is currently not tested under mono."/>
 
 		<path id="project.testfiles">
 			<pathelement file="${project.output.dir}/Palaso.Tests.dll" />
