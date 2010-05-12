@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using Exortech.NetReflector;
 using Palaso.Extensions;
 using Palaso.UiBindings;
 
@@ -33,7 +32,6 @@ namespace Palaso.Lift.Options
 
 		#endregion
 
-		[ReflectorProperty("key", Required = true)]
 		[XmlElement("key")]
 		public string Key
 		{
