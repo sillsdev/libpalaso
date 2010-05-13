@@ -13,21 +13,6 @@
 		</delete>
 	</target>
 
-	<target name="revision_svn">
-		<property name="svn.info.log" value="svninfo.txt"/>
-		<exec
-			program="svn.exe"
-			basedir="C:\Program Files\Subversion\bin"
-			commandline="info http://code.wesay.org/Palaso/trunk/Palaso"
-			output="${svn.info.log}"
-		/>
-		<loadfile property="svn.head.revision" file="${svn.info.log}" />
-		<regex pattern="^Revision: (?'revision'.*)$" input="${svn.head.revision}" options="Multiline" />
-		<property name="revision" value="${string::trim(revision)}" />
-		<echo message="Revision: ${revision}" />
-		<delete file="${svn.info.log}" />
-	</target>
-
 	<target name="revision_teamcityhg">
 		<property name="teamcity" value="${environment::get-variable('BUILD_NUMBER')}" />
 		<regex pattern="^(?'revision'[^:-]*)" input="${teamcity}" />
@@ -36,9 +21,11 @@
 	</target>
 
 	<target name="version" depends="revision_teamcityhg">
-		<loadfile property="version" file="version.txt">
+	<!-- this file is checked in, and has a single line, like this: 0.7.${revision} -->
+	<loadfile property="version" file="version.txt">
 			<filterchain>
-				<expandproperties />
+		<!-- now replace the "revision" above with what was computed in revision_teamcityhg -->
+		<expandproperties />
 			</filterchain>
 		</loadfile>
 		<property name="version" value="${string::trim(version)}" />
