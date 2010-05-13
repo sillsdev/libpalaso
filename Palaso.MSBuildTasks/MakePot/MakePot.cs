@@ -9,79 +9,36 @@ namespace Palaso.BuildTasks.MakePot
 {
 	public class MakePot: Task
 	{
-		Dictionary<string, List<string>> _entries = new Dictionary<string, List<string>>();
-		private string _projectId;
-		private string _msdIdBugsTo;
-		private string _outputFile;
-		private ITaskItem[] _csharpFiles;
-		private ITaskItem[] _xmlFiles;
-		private string _xpathToStrings;
+		readonly Dictionary<string, List<string>> _entries = new Dictionary<string, List<string>>();
 
+		public ITaskItem[] CSharpFiles { get; set; }
 
-		public ITaskItem[] CSharpFiles
-		{
-			get
-			{
-				return _csharpFiles;
-			}
-			set
-			{
-				_csharpFiles = value;
-			}
-		}
-
-		public ITaskItem[] XmlFiles
-		{
-			get
-			{
-				return _xmlFiles;
-			}
-			set
-			{
-				_xmlFiles = value;
-			}
-		}
+		public ITaskItem[] XmlFiles { get; set; }
 
 		[Required]
-		public string ProjectId
-		{
-			get { return _projectId; }
-			set { _projectId = value; }
-		}
+		public string ProjectId { get; set; }
 
-		public string MsdIdBugsTo
-		{
-			get { return _msdIdBugsTo; }
-			set { _msdIdBugsTo = value; }
-		}
+		public string MsdIdBugsTo { get; set; }
 
 		[Required]
-		public string OutputFile
-		{
-			get { return _outputFile; }
-			set { _outputFile = value; }
-		}
+		public string OutputFile { get; set; }
 
-		public string XpathToStrings
-		{
-			get { return _xpathToStrings; }
-			set { _xpathToStrings = value; }
-		}
+		public string XpathToStrings { get; set; }
 
 		public override bool Execute()
 		{
-			using (StreamWriter writer = File.CreateText(_outputFile))
+			using (StreamWriter writer = File.CreateText(OutputFile))
 			{
-				if (_xmlFiles != null)
+				if (XmlFiles != null)
 				{
-					foreach (ITaskItem file in _xmlFiles)
+					foreach (ITaskItem file in XmlFiles)
 					{
 						ProcessXmlFile(file);
 					}
 				}
-				if (_csharpFiles != null)
+				if (CSharpFiles != null)
 				{
-					foreach (ITaskItem file in _csharpFiles)
+					foreach (ITaskItem file in CSharpFiles)
 					{
 						ProcessSrcFile(file.ItemSpec);
 					}
@@ -114,7 +71,6 @@ namespace Palaso.BuildTasks.MakePot
 			writer.WriteLine("\"Content-Type: text/plain; charset=UTF-8\"");
 			writer.WriteLine("\"Content-Transfer-Encoding: 8bit\"");
 		}
-
 
 		private void ProcessXmlFile(ITaskItem  fileSpec)
 		{
@@ -172,7 +128,7 @@ namespace Palaso.BuildTasks.MakePot
 			}
 		}
 
-		private void WriteEntry(string key, List<string> comments, StreamWriter writer)
+		private static void WriteEntry(string key, List<string> comments, StreamWriter writer)
 		{
 			writer.WriteLine("");
 			foreach (string s in comments)
