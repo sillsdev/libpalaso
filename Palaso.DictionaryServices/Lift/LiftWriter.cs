@@ -100,7 +100,7 @@ namespace Palaso.DictionaryServices.Lift
 
 		public static string ProducerString
 		{
-			get { return "WeSay " + Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return "Palaso.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 
 		protected XmlWriter Writer
