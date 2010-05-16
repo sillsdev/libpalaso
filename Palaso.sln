@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryServices",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryServices.Tests", "Palaso.DictionaryServices.Tests\Palaso.DictionaryServices.Tests.csproj", "{CC84BDED-CECD-466A-9397-F5D83527B218}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTaskTests", "BuildTaskTests\Palaso.BuildTaskTests.csproj", "{C1DFF344-3B97-4265-A465-C14A84BA19F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,14 @@ Global
 		{CC84BDED-CECD-466A-9397-F5D83527B218}.Mono Release|Any CPU.Build.0 = Release|Any CPU
 		{CC84BDED-CECD-466A-9397-F5D83527B218}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC84BDED-CECD-466A-9397-F5D83527B218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Mono Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Mono Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Mono Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Mono Release|Any CPU.Build.0 = Release|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1DFF344-3B97-4265-A465-C14A84BA19F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
