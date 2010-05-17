@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -67,11 +68,12 @@ namespace Palaso.BuildTasks.StampAssemblies
 		{
 			try
 			{
+				Debug.WriteLine(string.Format(msg,args));
 				Log.LogMessage(msg,args);
 			}
 			catch (Exception)
 			{
-				//swalllow... logging fails in the unit test environment, where the log isn't really set up
+				//swallow... logging fails in the unit test environment, where the log isn't really set up
 			}
 		}
 
@@ -80,6 +82,8 @@ namespace Palaso.BuildTasks.StampAssemblies
 			string result = "";
 			for (int i = 0; i < 4; i++)
 			{
+				SafeLog("StampAssemblies: incoming[{0}]={1}", i, incoming.parts[i]);
+				SafeLog("StampAssemblies: existing[{0}]={1}", i, existing.parts[i]);
 				if(incoming.parts[i] != "*")
 				{
 					result += incoming.parts[i] + ".";
@@ -88,6 +92,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 				{
 					if(existing.parts[i] == "*")
 					{
+						SafeLog("StampAssemblies: existing.parts[i] == '*'");
 						result += "0.";
 					}
 					else
