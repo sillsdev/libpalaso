@@ -36,7 +36,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 
 				try
 				{
-					Log.LogMessage("StampAssemblies: Contents: {0}",contents);
+//					Log.LogMessage("StampAssemblies: Contents: {0}",contents);
 				}
 				catch (Exception)
 				{
@@ -87,7 +87,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 				}
 				else
 				{
-					if(existing.parts[i] != "*")
+					if(existing.parts[i] == "*")
 					{
 						result += "0.";
 					}
