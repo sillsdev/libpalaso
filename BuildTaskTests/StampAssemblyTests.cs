@@ -87,5 +87,19 @@ namespace BuildTaskTests
 			var s = stamper.GetModifiedContents(content, "*.*.345.6");
 			Assert.IsTrue(s.Contains("0.0.345.6"));
 		}
+
+		[Test]
+		public void GetModifiedContents_Existing1000_UseZeroAsNeeded()
+		{
+			var stamper = new StampAssemblies();
+			var content =
+				@"// You can specify all the values or you can default the Revision and Build Numbers
+// by using the '*' as shown below:
+[assembly: AssemblyVersion(""1.0.0.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f");
+			Assert.IsTrue(s.Contains("1.0.121.0"));
+		}
 	}
 }

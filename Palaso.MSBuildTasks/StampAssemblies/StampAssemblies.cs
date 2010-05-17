@@ -31,17 +31,10 @@ namespace Palaso.BuildTasks.StampAssemblies
 			foreach (var inputAssemblyPath in InputAssemblyPaths)
 			{
 				var path = inputAssemblyPath.ItemSpec;
-
 				var contents = File.ReadAllText(path);
 
-				try
-				{
-//					Log.LogMessage("StampAssemblies: Contents: {0}",contents);
-				}
-				catch (Exception)
-				{
-					//swalllow... logging fails in the unit test environment, where the log isn't really set up
-				}
+				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
+				SafeLog("StampAssemblies: Contents: {0}",contents);
 
 				File.WriteAllText(path,  GetModifiedContents(contents, Version));
 			}
@@ -55,15 +48,9 @@ namespace Palaso.BuildTasks.StampAssemblies
 
 			string newVersionString = MergeTemplates(versionTemplateInBuildScript, versionTemplateInFile);
 
-			try
-			{
-				Log.LogMessage("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
-							   versionTemplateInFile.ToString(), incomingVersion, newVersionString);
-			}
-			catch (Exception)
-			{
-				//swalllow... logging fails in the unit test environment, where the log isn't really set up
-			}
+			SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
+				versionTemplateInFile.ToString(), incomingVersion, newVersionString);
+
 
 			var replacement = string.Format(
 				"[assembly: AssemblyVersion(\"{0}\")]",
@@ -74,6 +61,18 @@ namespace Palaso.BuildTasks.StampAssemblies
 				newVersionString);
 			contents = Regex.Replace(contents, @"\[assembly: AssemblyFileVersion\("".*""\)\]", replacement);
 			return contents;
+		}
+
+		private void SafeLog(string msg, params object[] args)
+		{
+			try
+			{
+				Log.LogMessage(msg,args);
+			}
+			catch (Exception)
+			{
+				//swalllow... logging fails in the unit test environment, where the log isn't really set up
+			}
 		}
 
 		public string MergeTemplates(VersionParts incoming, VersionParts existing)
