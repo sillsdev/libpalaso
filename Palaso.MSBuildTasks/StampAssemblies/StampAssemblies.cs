@@ -87,7 +87,14 @@ namespace Palaso.BuildTasks.StampAssemblies
 				}
 				else
 				{
-					result += existing.parts[i] + ".";
+					if(existing.parts[i] != "*")
+					{
+						result += "0.";
+					}
+					else
+					{
+						result += existing.parts[i] + ".";
+					}
 				}
 			}
 			return result.TrimEnd(new char[] {'.'});
@@ -111,11 +118,11 @@ namespace Palaso.BuildTasks.StampAssemblies
 		public VersionParts ParseVersionString(string contents)
 		{
 			var result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)\.(.+)");
-			if(result.Groups.Count ==0)
+			if(result.Groups.Count <5)
 			{
 				//handle 1.0.*  (I'm not good enough with regex to
 				//overcome greediness and get a single pattern to work for both situations).
-				result = Regex.Match(contents, @"(.+)\.(.+)\.\*");
+				result = Regex.Match(contents, @"(.+)\.(.+)\.(\*)");
 			}
 			var v = new VersionParts();
 			v.parts[0] = result.Groups[1].Value;

@@ -58,7 +58,7 @@ namespace BuildTaskTests
 		/// Test that our regex doesn't choke on "1.0.*"
 		/// </summary>
 		[Test]
-		public void GetModifiedContents_IncomingHasShortForm_PreserveIncoming()
+		public void GetModifiedContents_ExistingHasShortForm_TreatsMissingAsStar()
 		{
 			var stamper = new StampAssemblies();
 			var content =
@@ -69,6 +69,23 @@ namespace BuildTaskTests
 
 			var s = stamper.GetModifiedContents(content, "*.*.345.6");
 			Assert.IsTrue(s.Contains("1.2.345.6"));
+		}
+
+		/// <summary>
+		/// Test the situation we've seen with team city where the existing is *.*.*.*"
+		/// </summary>
+		[Test]
+		public void GetModifiedContents_ExistingAllStars_UseZeroAsNeeded()
+		{
+			var stamper = new StampAssemblies();
+			var content =
+				@"// You can specify all the values or you can default the Revision and Build Numbers
+// by using the '*' as shown below:
+[assembly: AssemblyVersion(""*.*.*.*"")]
+[assembly: AssemblyFileVersion(""*.*.*.*"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.345.6");
+			Assert.IsTrue(s.Contains("0.0.345.6"));
 		}
 	}
 }
