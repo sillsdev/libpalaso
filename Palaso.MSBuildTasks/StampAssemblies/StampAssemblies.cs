@@ -111,6 +111,12 @@ namespace Palaso.BuildTasks.StampAssemblies
 		public VersionParts ParseVersionString(string contents)
 		{
 			var result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)\.(.+)");
+			if(result.Groups.Count ==0)
+			{
+				//handle 1.0.*  (I'm not good enough with regex to
+				//overcome greediness and get a single pattern to work for both situations).
+				result = Regex.Match(contents, @"(.+)\.(.+)\.\*");
+			}
 			var v = new VersionParts();
 			v.parts[0] = result.Groups[1].Value;
 			v.parts[1] = result.Groups[2].Value;
@@ -121,7 +127,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 			{
 				if(string.IsNullOrEmpty(v.parts[i]))
 				{
-					v.parts[i] = "0";
+					v.parts[i] = "*";
 				}
 			}
 			//can't propogate a hash code, though it's nice (for build server display purposes)

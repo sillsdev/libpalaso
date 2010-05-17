@@ -55,20 +55,20 @@ namespace BuildTaskTests
 		}
 
 		/// <summary>
-		/// Regression test... for some reason team city gives us assemblyInfo's like this
+		/// Test that our regex doesn't choke on "1.0.*"
 		/// </summary>
 		[Test]
-		public void GetModifiedContents_MissingAssemblyVersion_StillGetValidVersion()
+		public void GetModifiedContents_IncomingHasShortForm_PreserveIncoming()
 		{
 			var stamper = new StampAssemblies();
 			var content =
 				@"// You can specify all the values or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion(""..."")]
-[assembly: AssemblyFileVersion(""..."")]";
+[assembly: AssemblyVersion(""1.2.*"")]
+[assembly: AssemblyFileVersion(""1.2.*"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.0");
-			Assert.IsTrue(s.Contains("0.0.123.0"));
+			var s = stamper.GetModifiedContents(content, "*.*.345.6");
+			Assert.IsTrue(s.Contains("1.2.345.6"));
 		}
 	}
 }
