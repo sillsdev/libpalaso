@@ -13,6 +13,11 @@ namespace Palaso.BuildTasks.StampAssemblies
 		public class VersionParts
 		{
 			public string[] parts = new string[4];
+
+			public override string ToString()
+			{
+				return string.Format("{0}.{1}.{2}.{3}", parts[0], parts[1], parts[2], parts[3]);
+			}
 		}
 
 		[Required]
@@ -40,6 +45,16 @@ namespace Palaso.BuildTasks.StampAssemblies
 			var versionTemplateInBuildScript = ParseVersionString(incomingVersion);
 
 			string newVersionString = MergeTemplates(versionTemplateInBuildScript, versionTemplateInFile);
+
+			try
+			{
+				Log.LogMessage("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.", incomingVersion,
+							   versionTemplateInFile.ToString(), newVersionString);
+			}
+			catch (Exception)
+			{
+				//swalllow... logging fails in the unit test environment, where the log isn't really set up
+			}
 
 			var replacement = string.Format(
 				"[assembly: AssemblyVersion(\"{0}\")]",
