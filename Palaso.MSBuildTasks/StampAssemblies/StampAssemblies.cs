@@ -35,7 +35,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 				var contents = File.ReadAllText(path);
 
 				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
-				SafeLog("StampAssemblies: Contents: {0}",contents);
+				//SafeLog("StampAssemblies: Contents: {0}",contents);
 
 				File.WriteAllText(path,  GetModifiedContents(contents, Version));
 			}
@@ -82,8 +82,8 @@ namespace Palaso.BuildTasks.StampAssemblies
 			string result = "";
 			for (int i = 0; i < 4; i++)
 			{
-				SafeLog("StampAssemblies: incoming[{0}]={1}", i, incoming.parts[i]);
-				SafeLog("StampAssemblies: existing[{0}]={1}", i, existing.parts[i]);
+				//SafeLog("StampAssemblies: incoming[{0}]={1}", i, incoming.parts[i]);
+				//SafeLog("StampAssemblies: existing[{0}]={1}", i, existing.parts[i]);
 				if(incoming.parts[i] != "*")
 				{
 					result += incoming.parts[i] + ".";
