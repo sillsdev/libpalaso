@@ -34,6 +34,15 @@ namespace Palaso.BuildTasks.StampAssemblies
 
 				var contents = File.ReadAllText(path);
 
+				try
+				{
+					Log.LogMessage("StampAssemblies: Contents: {0}",contents);
+				}
+				catch (Exception)
+				{
+					//swalllow... logging fails in the unit test environment, where the log isn't really set up
+				}
+
 				File.WriteAllText(path,  GetModifiedContents(contents, Version));
 			}
 			return true;
@@ -48,8 +57,8 @@ namespace Palaso.BuildTasks.StampAssemblies
 
 			try
 			{
-				Log.LogMessage("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.", incomingVersion,
-							   versionTemplateInFile.ToString(), newVersionString);
+				Log.LogMessage("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
+							   versionTemplateInFile.ToString(), incomingVersion, newVersionString);
 			}
 			catch (Exception)
 			{
@@ -108,6 +117,13 @@ namespace Palaso.BuildTasks.StampAssemblies
 			v.parts[2] = result.Groups[3].Value;
 			v.parts[3] = result.Groups[4].Value;
 
+			for (int i = 0; i < 4; i++)
+			{
+				if(string.IsNullOrEmpty(v.parts[i]))
+				{
+					v.parts[i] = "0";
+				}
+			}
 			//can't propogate a hash code, though it's nice (for build server display purposes)
 			//to send it through to us. So for now, we just strip it out.
 			if(v.parts[3].IndexOfAny(new char[]{'a','b','c','d','e','f'}) >-1)
