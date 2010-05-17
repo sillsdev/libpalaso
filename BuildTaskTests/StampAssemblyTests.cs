@@ -29,7 +29,7 @@ namespace BuildTaskTests
 		}
 
 		[Test]
-		public void Execute_LastTwoLeftToBuildScript_CorrectMerge()
+		public void GetModifiedContents_LastTwoLeftToBuildScript_CorrectMerge()
 		{
 			var stamper = new StampAssemblies();
 			var content = @"// You can specify all the values or you can default the Revision and Build Numbers
@@ -41,5 +41,17 @@ namespace BuildTaskTests
 			Assert.IsTrue(s.Contains("0.7.123.456"));
 		}
 
+		[Test]
+		public void GetModifiedContents_LastPartIsHash_HashReplacedWithZero()
+		{
+			var stamper = new StampAssemblies();
+			var content = @"// You can specify all the values or you can default the Revision and Build Numbers
+// by using the '*' as shown below:
+[assembly: AssemblyVersion(""0.7.*.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712");
+			Assert.IsTrue(s.Contains("0.7.123.0"));
+		}
 	}
 }

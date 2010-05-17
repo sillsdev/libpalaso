@@ -93,6 +93,13 @@ namespace Palaso.BuildTasks.StampAssemblies
 			v.parts[2] = result.Groups[3].Value;
 			v.parts[3] = result.Groups[4].Value;
 
+			//can't propogate a hash code, though it's nice (for build server display purposes)
+			//to send it through to us. So for now, we just strip it out.
+			if(v.parts[3].IndexOfAny(new char[]{'a','b','c','d','e','f'}) >-1)
+			{
+				v.parts[3] = "0";
+			}
+
 			return v;
 		}
 	}
