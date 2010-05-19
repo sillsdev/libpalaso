@@ -595,6 +595,22 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
+		public void Entry_ScaryUnicodeCharacter_SafeXmlEmitted()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.LexicalForm["test"] = '\u001F'.ToString();
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+
+				var doc = new XmlDocument();
+				//this next line will crash if things aren't safe
+				doc.LoadXml(session.StringBuilder.ToString());
+			}
+		}
+
+		[Test]
 		public void Entry_HasId_RemembersId()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())

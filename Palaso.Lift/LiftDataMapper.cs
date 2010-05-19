@@ -339,7 +339,7 @@ namespace Palaso.Lift
 				}
 				catch (Exception e)
 				{
-					ErrorReport.NotifyUserOfProblem(
+					ErrorReport.NotifyUserOfProblem(e,
 							"Could not finish updating LIFT dictionary file. Will try again later." + Environment.NewLine + " (" + e.Message + ")");
 				}
 #if DEBUG
