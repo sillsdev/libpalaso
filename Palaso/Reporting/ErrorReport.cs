@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -340,7 +341,7 @@ namespace Palaso.Reporting
 			var result = NotifyUserOfProblem(new ShowAlwaysPolicy(), "Details", DialogResult.Yes, messageFmt, args);
 			if (result == DialogResult.Yes)
 			{
-				ErrorReport.ReportNonFatalException(error);
+				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
 			}
 		}
 
@@ -383,16 +384,18 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// </summary>
+		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
+		{
+			var s = string.Format(message, args);
+			ExceptionReportingDialog.ReportMessage(s, error, false);
+		}
+
+		/// <summary>
+		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Use this one only when you don't have an exception (else you're not reporting the exception's message)
+		/// </summary>
 		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
-//            try
-//            {
-//                throw new ApplicationException(string.Format(message, args));
-//            }
-//            catch (Exception e)
-//            {
-//                ReportNonFatalException(e);
-//            }
 			var s = string.Format(message, args);
 			var stack =  new System.Diagnostics.StackTrace(true);
 			ExceptionReportingDialog.ReportMessage(s,stack, false);
@@ -408,7 +411,7 @@ namespace Palaso.Reporting
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// </summary>
 		public static void ReportNonFatalException(Exception exception)
 		{

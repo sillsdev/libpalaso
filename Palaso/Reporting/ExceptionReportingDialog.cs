@@ -258,10 +258,21 @@ namespace Palaso.Reporting
 
 			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
 			{
-				dlg.Report(message, stack, null);
+				dlg.Report(message, string.Empty, stack, null);
 			}
 		}
+		internal static void ReportMessage(string message, Exception error, bool isLethal)
+		{
+			if (s_doIgnoreReport)
+			{
+				return;            // ignore message if we are showing from a previous error
+			}
 
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			{
+				dlg.Report(message, error.Message, new StackTrace(error), null);
+			}
+		}
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
@@ -311,14 +322,19 @@ namespace Palaso.Reporting
 			ShowReportDialogIfAppropriate(owningForm);
 		}
 
-		 public void Report(string message, StackTrace stackTrace, Form owningForm)
+		 public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
 		 {
 			 PrepareDialog();
 			 _notificationText.Text = message;
 
 			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
 			 _details.Text += Environment.NewLine;
-			 _details.Text += "--Stack--"+ Environment.NewLine;;
+			 if(!string.IsNullOrEmpty(messageBeforeStack))
+			 {
+				_details.Text += messageBeforeStack;
+				_details.Text += Environment.NewLine;
+			 }
+			_details.Text += "--Stack--"+ Environment.NewLine;;
 			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
 
 
@@ -377,6 +393,7 @@ namespace Palaso.Reporting
 				 BackColor = Color.FromArgb(255, 255, 192); //yellow
 				 _notificationText.BackColor = BackColor;
 				 _pleaseHelpText.BackColor = BackColor;
+				 textBox1.BackColor = BackColor;
 				 _dontSendEmailLink.Text = "Don't Send Email";
 			 }
 		 }
