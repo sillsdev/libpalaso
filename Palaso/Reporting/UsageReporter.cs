@@ -12,7 +12,7 @@ namespace Palaso.Reporting
 	{
 		private static string s_appNameToUseInDialogs;
 		private static string s_appNameToUseInReporting;
-		private static ReportingSettings s_settings;
+		private static ReportingSettings s_settings = new ReportingSettings();
 
 		/// <summary>
 		/// call this each time the application is launched

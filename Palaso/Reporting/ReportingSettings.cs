@@ -12,7 +12,10 @@ namespace Palaso.Reporting
 
 		public ReportingSettings()
 		{
-			// TODO set defaults
+			UserIdentifier = string.Empty;
+			LastLaunchDate = default(DateTime);
+			OkToPingBasicUsageData = true;
+			HaveShowRegistrationDialog = false;
 		}
 
 		public int Launches
