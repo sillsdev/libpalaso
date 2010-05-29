@@ -95,6 +95,7 @@
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\PromptTests.cs" />
+	<Compile Include="WritingSystems\UITests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeItemTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestorTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
@@ -106,6 +107,10 @@
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
+	  <Name>Palaso.TestUtilities</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
 	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
 	  <Name>PalasoUIWindowsForms</Name>
@@ -116,6 +121,9 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
+	<None Include="PalasoUIWindowsForms.Tests.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
 	<None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>

@@ -926,8 +926,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if(ws==null)//cancelled
 				return;
 			WritingSystemDefinitions.Add(ws);
-			CurrentDefinition = ws;
 			OnAddOrDelete();
+			CurrentDefinition = ws;
 		}
 
 		private void OnAddOrDelete()
