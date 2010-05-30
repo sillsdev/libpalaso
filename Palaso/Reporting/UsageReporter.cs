@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
+using Palaso.Code;
 
 namespace Palaso.Reporting
 {
@@ -12,30 +13,29 @@ namespace Palaso.Reporting
 	{
 		private static string s_appNameToUseInDialogs;
 		private static string s_appNameToUseInReporting;
-		private static ReportingSettings s_settings = new ReportingSettings();
+		private static ReportingSettings s_settings;
 
 		/// <summary>
 		/// call this each time the application is launched
 		/// </summary>
 		public static void RecordLaunch()
 		{
+			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
+
 		   GetUserIdentifierIfNeeded();
 
-		   //MakeLaunchDateSafe();
-
-//            int launchCount = 1 + int.Parse(RegistryAccess.GetStringRegistryValue("launches", "0"));
-//            RegistryAccess.SetStringRegistryValue("launches", launchCount.ToString());
-			if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
+			 if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
 			{
 				s_settings.LastLaunchDate = DateTime.UtcNow.Date;
 				s_settings.Launches++;
-				//ReportingSetting.Default.Save();
 				AttemptHttpReport();
 			}
 		}
 
 		private static void GetUserIdentifierIfNeeded( )
 		{
+			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
+
 			//nb, this tries to share the id between applications that might want it,
 			//so the user doesn't have to be asked again.
 
@@ -55,7 +55,9 @@ namespace Palaso.Reporting
 					s_settings.UserIdentifier = dlg.EmailAddress;
 					s_settings.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
 
-					//ReportingSetting.Default.Save();
+					//NB: the current system requires that the caller do the saving
+					//of the other settings.
+
 					File.WriteAllText(path, s_settings.UserIdentifier);
 			}
 
@@ -91,6 +93,20 @@ namespace Palaso.Reporting
 			}
 		}
 */
+
+		/// <summary>
+		/// The deal here is, Cambell changed this so that it is the responsibility of
+		/// the client to set this, and then save the settings.
+		/// E.g., in the Settings.Designer.cs, add
+		///
+		///     [UserScopedSetting()]
+		///		[DebuggerNonUserCode()]
+		///		public Palaso.Reporting.ReportingSettings Reporting
+		///		{
+		///			get { return ((Palaso.Reporting.ReportingSettings)(this["Reporting"])); }
+		///			set { this["Reporting"] = value; }
+		///		}
+		/// </summary>
 
 		public static ReportingSettings AppReportingSettings
 		{
@@ -159,6 +175,8 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void DoTrivialUsageReport(string emailAddress, string topMessage, int[] intervals)
 		{
+			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
+
 			MakeLaunchDateSafe();
 
 			//avoid asking the user more than once on the special reporting days
@@ -214,6 +232,8 @@ namespace Palaso.Reporting
 
 		public static bool AttemptHttpReport()
 		{
+			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
+
 			try
 			{
 				if(!s_settings.OkToPingBasicUsageData)
