@@ -31,7 +31,7 @@
 			this.wsPickerUsingListView1 = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingListView();
 			this._currentWsLabel = new System.Windows.Forms.Label();
 			this._editWsLink = new System.Windows.Forms.LinkLabel();
-			this.pickerUsingComboBox1 = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingComboBox();
+			this.pickerUsingComboBox1 = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingComboBox(TODO);
 			this.SuspendLayout();
 			//
 			// wsPickerUsingListView1

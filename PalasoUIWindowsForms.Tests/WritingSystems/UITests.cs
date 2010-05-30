@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -24,6 +25,21 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			}
 		}
 
+		[Test, Ignore("By hand only")]
+		public void WritingSystemSetupViewWithComboAttached()
+		{
+			using (var folder = new TemporaryFolder("WS-Test"))
+			{
+				var f = new Form();
+				f.Size=new Size(800,600);
+				var model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore(folder.Path));
+				var v = new WritingSystemSetupView(model);
+				var combo = new WSPickerUsingComboBox(model);
+				f.Controls.Add(combo);
+				f.Controls.Add(v);
+				f.ShowDialog();
+			}
+		}
 	}
 
 }

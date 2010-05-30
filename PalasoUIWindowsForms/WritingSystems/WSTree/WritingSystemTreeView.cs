@@ -87,7 +87,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if (treeView1.SelectedNode == null)
+			if (treeView1.SelectedNode == null ||
+				treeView1.SelectedNode.Tag==null)//hack
 				return;
 
 			((WritingSystemTreeItem) treeView1.SelectedNode.Tag).Clicked();
