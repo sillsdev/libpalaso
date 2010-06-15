@@ -79,6 +79,7 @@
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ControlExtensions.cs" />
 	<Compile Include="HotSpot\HotSpot.cs" />
 	<Compile Include="HotSpot\HotSpotProvider.cs" />
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
