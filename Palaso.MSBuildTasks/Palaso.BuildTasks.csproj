@@ -68,6 +68,7 @@
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="MakeWixForDirTree\IdToGuidDatabase.cs" />
 	<Compile Include="MakeWixForDirTree\MakeWixForDirTree.cs" />
+	<Compile Include="FileUpdate.cs" />
 	<Compile Include="SubString\Split.cs" />
   </ItemGroup>
   <ItemGroup>
