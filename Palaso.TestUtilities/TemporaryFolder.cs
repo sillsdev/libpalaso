@@ -149,6 +149,31 @@ namespace Palaso.TestUtilities
 			}
 			return new TempFile(path, true);
 		}
+
+		/// <summary>
+		/// Use this one when it's important to have a certain file extension
+		/// </summary>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public static TempFile WithExtension(string extension)
+		{
+			extension = extension.TrimStart('.');
+			var path = System.IO.Path.GetRandomFileName() + "."+extension;
+			File.Create(path).Close();
+			return TempFile.TrackExisting(path);
+		}
+
+		/// <summary>
+		/// Used to make a real file out of a resource for the purpose of testing
+		/// </summary>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public static TempFile FromResource(Stream resource, string extension)
+		{
+			var f = TempFile.WithExtension(extension);
+			byte[] buffer = new byte[resource.Length + 1];
+			resource.Read(buffer, 0, (int)resource.Length);
+			File.WriteAllBytes(f.Path, buffer);
+			return f;
+		}
 	}
 
 	/// <summary>

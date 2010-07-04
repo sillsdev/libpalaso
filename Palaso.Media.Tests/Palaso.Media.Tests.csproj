@@ -51,6 +51,12 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="AudioRecorderTests.cs" />
+	<Compile Include="MediaInfoTests.cs" />
+	<Compile Include="Properties\Resources.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>Resources.resx</DependentUpon>
+	</Compile>
 	<Compile Include="SampleForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -60,6 +66,10 @@
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="Properties\Resources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
 	<EmbeddedResource Include="SampleForm.resx">
 	  <DependentUpon>SampleForm.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -85,6 +95,9 @@
 	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
 	  <Name>Palaso.TestUtilities</Name>
 	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\finished.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

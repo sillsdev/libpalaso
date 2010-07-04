@@ -53,6 +53,7 @@
 	<Compile Include="AudioIrrKlangSession.cs" />
 	<Compile Include="AudioNullSession.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
+	<Compile Include="MediaInfo.cs" />
 	<Compile Include="ShortSoundFieldControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
