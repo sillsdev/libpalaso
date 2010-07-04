@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 
@@ -16,20 +13,48 @@ namespace Palaso.Media
 		private  MediaInfo(string ffmpegOutput)
 		{
 			Audio = new AudioInfo(ffmpegOutput);
+			if (ffmpegOutput.Contains("Video:"))
+			{
+				Video = new VideoInfo(ffmpegOutput);
+			}
 
+		}
+
+		///<summary>
+		/// Returns false if it can't find ffmpeg
+		///</summary>
+		static public bool HaveNecessaryComponents
+		{
+			get
+			{
+				var p = new Process();
+				p.StartInfo.FileName = "ffmpeg";
+				p.StartInfo.RedirectStandardError = true;
+				p.StartInfo.UseShellExecute = false;
+				p.StartInfo.CreateNoWindow = true;
+				try
+				{
+					p.Start();
+				}
+				catch (Exception)
+				{
+					return false;
+				}
+				return true;
+			}
 		}
 
 		static public MediaInfo GetInfo(string path)
 		{
 			var p = new Process();
-			p.StartInfo.FileName = "ffmpeg";
+			p.StartInfo.FileName = "ffmpegx";
 			p.StartInfo.Arguments = ( "-i " + "\""+path+"\"");
 			p.StartInfo.RedirectStandardError = true;
 			p.StartInfo.UseShellExecute = false;
 			p.StartInfo.CreateNoWindow = true;
 			p.Start();
 
-			string error = p.StandardError.ReadToEnd();
+			string ffmpegOutput = p.StandardError.ReadToEnd();
 			if(!p.WaitForExit(3000))
 			{
 				try
@@ -41,16 +66,35 @@ namespace Palaso.Media
 				}
 				throw new ApplicationException("FFMpeg seems to have hung");
 			}
-			return new MediaInfo(error);
+			return new MediaInfo(ffmpegOutput);
 		}
 
 		public AudioInfo Audio { get; private set;}
 		public VideoInfo Video { get; private set;}
 		//future public ImageInfo Image { get; private set;}
 
+		/// <summary>
+		/// used by both audio and video, so it lives up here
+		/// </summary>
+		internal static TimeSpan GetDuration(string ffmpegOutput)
+		{
+				var match = Regex.Match(ffmpegOutput, "Duration: ([^,]*),");
+				if (match.Groups.Count == 2)
+				{
+					var durationString = match.Groups[1].Value;
+
+					TimeSpan durationTime;
+					if (TimeSpan.TryParse(durationString, out durationTime))
+					{
+						return durationTime;
+					}
+				}
+				return default(TimeSpan);
+		}
+
+
 		public class AudioInfo
 		{
-			public enum AudioEncoding {Other, Wav, Mp3}
 
 			internal AudioInfo(string ffmpegOutput)
 			{
@@ -63,6 +107,12 @@ namespace Palaso.Media
 
 			private void ExtractEncoding(string ffmpegOutput)
 			{
+
+				var match = Regex.Match(ffmpegOutput, "Audio: ([^,]*)");
+				if (match.Groups.Count == 2)
+				{
+					Encoding = match.Groups[1].Value;
+				}
 			}
 
 			private void ExtractChannels(string ffmpegOutput)
@@ -71,7 +121,6 @@ namespace Palaso.Media
 
 			private void ExtractSamplesPerSecond(string ffmpegOutput)
 			{
-			//	var match = Regex.Match(ffmpegOutput, "bitrate: (.*) kb");
 				var match = Regex.Match(ffmpegOutput, ", (.*) Hz");
 				if (match.Groups.Count == 2)
 				{
@@ -88,41 +137,87 @@ namespace Palaso.Media
 
 			private void ExtractBitDepth(string ffmpegOutput)
 			{
+				var match = Regex.Match(ffmpegOutput, ", s(.*),");
+				if (match.Groups.Count == 2)
+				{
+					var value = match.Groups[1].Value;
+
+					//todo: find out if we will really get s16, s24, s96, etc.
+					int depth;
+					if (int.TryParse(value, out depth))
+					{
+						BitDepth = depth;
+					}
+				}
 			}
 
 			private void ExtractDuration(string ffmpegOutput)
 			{
-				var match  = Regex.Match(ffmpegOutput, "Duration: (.*),");
-				if (match.Groups.Count == 2)
-				{
-					var durationString = match.Groups[1].Value;
-
-					TimeSpan durationTime;
-					if (TimeSpan.TryParse(durationString, out durationTime))
-					{
-						Duration = durationTime;
-					}
-				}
+				Duration = MediaInfo.GetDuration(ffmpegOutput);
 			}
+
+
 
 			public TimeSpan Duration { get; private set;}
 			public int ChannelCount { get; private set;}
 			public int SamplesPerSecond { get; private set;}
 			public int BitDepth { get; private set;}
-			public AudioEncoding Encoding { get; private set;}
+			public string Encoding { get; private set;}
 		}
+
+
 		public class VideoInfo
 		{
-			public enum VideoEncoding {Other}//todo
-
-			internal VideoInfo()
+			internal VideoInfo(string ffmpegOutput)
 			{
+				ExtractDuration(ffmpegOutput);
+				ExtractEncoding(ffmpegOutput);
+				ExtractFramesPerSecond(ffmpegOutput);
+				ExtractResolution(ffmpegOutput);
 			}
+
+			private void ExtractResolution(string ffmpegOutput)
+			{
+				//e.g. , 176x144 [PAR 12:11 DAR 4:3],
+				//e.g. p, 320x240, 1
+				var match = Regex.Match(ffmpegOutput, @" (\d*x\d*)");
+				if (match.Groups.Count == 2)
+				{
+					Resolution = match.Groups[1].Value;
+				}
+			}
+
+			private void ExtractFramesPerSecond(string ffmpegOutput)
+			{
+				var match = Regex.Match(ffmpegOutput, ", ([^,]*) fps");
+				if (match.Groups.Count == 2)
+				{
+					int fps;
+					if (int.TryParse(match.Groups[1].Value, out fps))
+					{
+						FramesPerSecond = fps;
+					}
+				}
+			}
+
+			private void ExtractEncoding(string ffmpegOutput)
+			{
+				var match = Regex.Match(ffmpegOutput, "Video: ([^,]*)");
+				if (match.Groups.Count == 2)
+				{
+					Encoding = match.Groups[1].Value;
+				}
+			}
+
+			private void ExtractDuration(string ffmpegOutput)
+			{
+				Duration = MediaInfo.GetDuration(ffmpegOutput);
+			}
+
 			public TimeSpan Duration { get; private set;}
 			public int FramesPerSecond { get; private set;}
-			public int HorizontalResolution { get; private set;}
-			public int VerticalResolution { get; private set;}
-			public VideoEncoding Encoding { get; private set;}
+			public string Resolution { get; private set;}
+			public string Encoding { get; private set;}
 		}
 		/* future
 		public class ImageInfo

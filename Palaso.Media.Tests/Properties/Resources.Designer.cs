@@ -65,5 +65,12 @@ namespace Palaso.Media.Tests.Properties {
 				return ResourceManager.GetStream("finished", resourceCulture);
 			}
 		}
+
+		internal static byte[] tiny {
+			get {
+				object obj = ResourceManager.GetObject("tiny", resourceCulture);
+				return ((byte[])(obj));
+			}
+		}
 	}
 }
