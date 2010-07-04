@@ -10,8 +10,14 @@ namespace Palaso.Media
 	/// </summary>
 	public class MediaInfo
 	{
+		/// <summary>
+		/// The actual ffmpeg output
+		/// </summary>
+		public string RawData;
+
 		private  MediaInfo(string ffmpegOutput)
 		{
+			RawData = ffmpegOutput;
 			Audio = new AudioInfo(ffmpegOutput);
 			if (ffmpegOutput.Contains("Video:"))
 			{
@@ -47,7 +53,7 @@ namespace Palaso.Media
 		static public MediaInfo GetInfo(string path)
 		{
 			var p = new Process();
-			p.StartInfo.FileName = "ffmpegx";
+			p.StartInfo.FileName = "ffmpeg";
 			p.StartInfo.Arguments = ( "-i " + "\""+path+"\"");
 			p.StartInfo.RedirectStandardError = true;
 			p.StartInfo.UseShellExecute = false;
@@ -117,11 +123,23 @@ namespace Palaso.Media
 
 			private void ExtractChannels(string ffmpegOutput)
 			{
+				var match = Regex.Match(ffmpegOutput, ", ([^,]*) channels");
+				if (match.Groups.Count == 2)
+				{
+					var value = match.Groups[1].Value;
+
+					int channelCount;
+
+					if (int.TryParse(value, out channelCount))
+					{
+						this.ChannelCount = channelCount;
+					}
+				}
 			}
 
 			private void ExtractSamplesPerSecond(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, ", (.*) Hz");
+				var match = Regex.Match(ffmpegOutput, ", ([^,]*) Hz");
 				if (match.Groups.Count == 2)
 				{
 					var value = match.Groups[1].Value;
@@ -137,7 +155,7 @@ namespace Palaso.Media
 
 			private void ExtractBitDepth(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, ", s(.*),");
+				var match = Regex.Match(ffmpegOutput, @", s(\d+),");
 				if (match.Groups.Count == 2)
 				{
 					var value = match.Groups[1].Value;

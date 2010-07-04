@@ -91,6 +91,17 @@ namespace Palaso.Media.Tests
 
 		[Test]
 		[Category("RequiresFfmpeg")]
+		public void AudioInfo_Channels_Correct()
+		{
+			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
+			{
+				var info = MediaInfo.GetInfo(file.Path);
+				Assert.AreEqual(1, info.Audio.ChannelCount);
+			}
+		}
+
+		[Test]
+		[Category("RequiresFfmpeg")]
 		public void AudioInfo_BitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
