@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 namespace Palaso.Extensions
@@ -56,6 +57,20 @@ namespace Palaso.Extensions
 			_xmlNodeUsedForEscaping.InnerText = text;
 			text = _xmlNodeUsedForEscaping.InnerXml;
 			return text;
+		}
+
+		/// <summary>
+		/// Similar to Path.Combine, but you don't have to specify the location of the temporaryfolder itself, and you can add multiple parts to combine.
+		/// </summary>
+		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
+		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
+		{
+			string result = rootPath.ToString();
+			foreach (var s in partsOfThePath)
+			{
+				result = Path.Combine(result, s);
+			}
+			return result;
 		}
 
 	}
