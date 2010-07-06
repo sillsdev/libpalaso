@@ -100,7 +100,7 @@
 	<None Include="Resources\finished.wav" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\tiny.wmv" />
+	<None Include="Resources\tiny.mov" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

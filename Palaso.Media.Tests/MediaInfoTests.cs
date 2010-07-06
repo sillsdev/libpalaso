@@ -24,8 +24,8 @@ namespace Palaso.Media.Tests
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
 			{
 				var info = MediaInfo.GetInfo(file.Path);
-				Assert.AreEqual(660, info.Video.Duration.TotalMilliseconds);
-				Assert.AreEqual(660, info.Audio.Duration.TotalMilliseconds);
+				Assert.AreEqual(3060, info.Video.Duration.TotalMilliseconds);
+				Assert.AreEqual(3060, info.Audio.Duration.TotalMilliseconds);
 			}
 		}
 
@@ -36,7 +36,7 @@ namespace Palaso.Media.Tests
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
 			{
 				var info = MediaInfo.GetInfo(file.Path);
-				Assert.AreEqual("wmv3", info.Video.Encoding);
+				Assert.AreEqual("mpeg4", info.Video.Encoding);
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace Palaso.Media.Tests
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
 			{
 				var info = MediaInfo.GetInfo(file.Path);
-				Assert.AreEqual("320x240", info.Video.Resolution);
+				Assert.AreEqual("176x144", info.Video.Resolution);
 			}
 		}
 

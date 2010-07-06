@@ -60,7 +60,7 @@ namespace Palaso.Extensions
 		}
 
 		/// <summary>
-		/// Similar to Path.Combine, but you don't have to specify the location of the temporaryfolder itself, and you can add multiple parts to combine.
+		/// Similar to Path.Combine, but it combines as may parts as you have into a single, platform-appropriate path.
 		/// </summary>
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
 		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
