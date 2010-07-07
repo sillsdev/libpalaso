@@ -52,6 +52,7 @@
 	<Compile Include="AudioFactory.cs" />
 	<Compile Include="AudioIrrKlangSession.cs" />
 	<Compile Include="AudioNullSession.cs" />
+	<Compile Include="FFmpegRunner.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
 	<Compile Include="MediaInfo.cs" />
 	<Compile Include="ShortSoundFieldControl.cs">
