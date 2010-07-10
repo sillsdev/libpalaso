@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Palaso.Code;
 using Palaso.Reporting;
 using Palaso.Extensions;
 
@@ -91,5 +92,26 @@ namespace Palaso.IO
 			}
 		}
 
+
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[distFileFolderName]/[subPath]  or
+		/// [applicationFolder]/[subPath]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("DistFiles", "realeaseNotes.htm");</example>
+		public static string GetFileDistributedWithApplication(string distFileFolderName, string subPath)
+		{
+			var x = FileLocator.DirectoryOfApplicationOrSolution;
+			var dirIfUsingDistFilesFolder = Path.Combine(x, distFileFolderName);
+			if (Directory.Exists(dirIfUsingDistFilesFolder))
+			{
+				x = dirIfUsingDistFilesFolder;
+			}
+			RequireThat.Directory(x).Exists();
+			var filePath = Path.Combine(x, subPath);
+			RequireThat.File(filePath).Exists();
+			return filePath;
+		}
 	}
 }
