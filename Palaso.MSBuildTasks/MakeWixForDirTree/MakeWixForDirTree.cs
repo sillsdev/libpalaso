@@ -330,7 +330,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 						</Component>
 					 */
 
-				string id = GetSafeDirectoryId(dirPath, parentDirectoryId);
+				string id = GetSafeDirectoryId(string.Empty, parentDirectoryId);
 
 				XmlElement componentElement = doc.CreateElement("Component", XMLNS);
 				componentElement.SetAttribute("Id", id);
@@ -360,6 +360,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			if (Path.GetFullPath(_rootDir) != directoryPath)
 			{
 				id+="." + Path.GetFileName(directoryPath);
+				id = id.TrimEnd('.'); //for the case where directoryPath is intentionally empty
 			}
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 			return id;
