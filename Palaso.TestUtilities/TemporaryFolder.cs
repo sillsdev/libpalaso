@@ -187,6 +187,17 @@ namespace Palaso.TestUtilities
 			File.WriteAllBytes(f.Path, resource);
 			return f;
 		}
+
+		/// <summary>
+		/// Used to move a file to a new path
+		/// </summary>
+		/// <param name="resource">e.g., a video resource</param>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public void MoveTo(string path)
+		{
+			File.Move(Path, path);
+			_path = path;
+		}
 	}
 
 	/// <summary>
