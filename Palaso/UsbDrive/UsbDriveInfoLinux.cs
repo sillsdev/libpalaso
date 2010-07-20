@@ -35,6 +35,11 @@ namespace Palaso.UsbDrive
 			get { return TryGetDevicePropertyInteger(_volumeDevice, "volume.size"); }
 		}
 
+		public override ulong AvailableFreeSpace
+		{
+			get { throw new NotImplementedException("TotalFreeSpace not implemented in Mono yet."); }
+		}
+
 		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
 		{
 			//if the property does not exist, we don't care
