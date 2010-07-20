@@ -267,7 +267,7 @@ namespace Palaso.DictionaryServices
 
 			HeadwordQuery headWordQuery = new HeadwordQuery(writingSystemDefinition);
 
-			ResultSet<LexEntry> resultsFromCache = GetFromCache(headWordQuery);
+			ResultSet<LexEntry> resultsFromCache = GetResultsFromCache(headWordQuery);
 
 			string previousHeadWord = null;
 			int homographNumber = 1;
@@ -409,10 +409,10 @@ namespace Palaso.DictionaryServices
 		private ResultSet<LexEntry> GetAllEntriesSortedByGuid()
 		{
 			GuidQuery guidQuery = new GuidQuery();
-			return GetFromCache(guidQuery);
+			return GetResultsFromCache(guidQuery);
 		}
 
-		private ResultSet<LexEntry> GetFromCache(IQuery<LexEntry> query)
+		private ResultSet<LexEntry> GetResultsFromCache(IQuery<LexEntry> query)
 		{
 			if (_caches[query.Label] == null)
 			{
@@ -426,26 +426,8 @@ namespace Palaso.DictionaryServices
 
 		private ResultSet<LexEntry> GetAllEntriesSortedById()
 		{
-			string cacheName = String.Format("sortedById");
-			if (_caches[cacheName] == null)
-			{
-				var IdQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entryToQuery)
-						{
-							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							tokenFieldsAndValues.Add("Id", entryToQuery.Id);
-							return new[] { tokenFieldsAndValues };
-						});
-				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(IdQuery);
-
-				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Id", Comparer<string>.Default);
-
-				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, IdQuery));
-			}
-			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
-
-			return resultsFromCache;
+			IdQuery idQuery = new IdQuery();
+			return GetResultsFromCache(idQuery);
 		}
 
 		/// <summary>
@@ -464,7 +446,7 @@ namespace Palaso.DictionaryServices
 
 			DefinitionOrGlossQuery definitionOrGlossQuery = new DefinitionOrGlossQuery(writingSystemDefinition);
 
-			return GetFromCache(definitionOrGlossQuery);
+			return GetResultsFromCache(definitionOrGlossQuery);
 		}
 
 		/// <summary>

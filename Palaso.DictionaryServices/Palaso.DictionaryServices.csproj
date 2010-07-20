@@ -67,6 +67,7 @@
 	<Compile Include="Queries\HeadwordQuery.cs">
 	  <SubType>Code</SubType>
 	</Compile>
+	<Compile Include="Queries\IdQuery.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">
