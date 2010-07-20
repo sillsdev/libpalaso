@@ -68,6 +68,7 @@
 	  <SubType>Code</SubType>
 	</Compile>
 	<Compile Include="Queries\IdQuery.cs" />
+	<Compile Include="Queries\LexicalFormQuery.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">

@@ -380,30 +380,9 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			string cacheName = String.Format("sortedByLexicalForm_{0}", writingSystemDefinition.Id);
-			if (_caches[cacheName] == null)
-			{
-				var lexicalFormQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entryToQuery)
-						{
-							var tokenFieldsAndValues = new Dictionary<string, object>();
-							string headWord = entryToQuery.LexicalForm[writingSystemDefinition.Id];
-							if (String.IsNullOrEmpty(headWord)){
-								headWord = null;
-							}
-							tokenFieldsAndValues.Add("Form", headWord);
-							return new[] { tokenFieldsAndValues };
-						});
-				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(lexicalFormQuery);
+			LexicalFormQuery lexicalFormQuery = new LexicalFormQuery(writingSystemDefinition);
 
-				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
-
-				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, lexicalFormQuery));
-			}
-			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
-
-			return resultsFromCache;
+			return GetResultsFromCache(lexicalFormQuery);
 		}
 
 		private ResultSet<LexEntry> GetAllEntriesSortedByGuid()
