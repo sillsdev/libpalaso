@@ -328,44 +328,8 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			string cacheName = String.Format("sortedByLexicalFormOrAlternative_{0}", writingSystemDefinition.Id);
-			if (_caches[cacheName] == null)
-			{
-				var lexicalFormWithAlternativeQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entryToQuery)
-						{
-							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.Id];
-							string writingSystemOfForm = writingSystemDefinition.Id;
-							if (lexicalform == "")
-							{
-								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.Id);
-								foreach (LanguageForm form in entryToQuery.LexicalForm.Forms)
-								{
-									if(form.Form == lexicalform)
-									{
-										writingSystemOfForm = form.WritingSystemId;
-									}
-								}
-								if (lexicalform == "")
-								{
-									lexicalform = null;
-								}
-							}
-							tokenFieldsAndValues.Add("Form", lexicalform);
-							tokenFieldsAndValues.Add("WritingSystem", writingSystemOfForm);
-							return new[] { tokenFieldsAndValues };
-						});
-				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(lexicalFormWithAlternativeQuery);
-
-				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
-
-				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, lexicalFormWithAlternativeQuery));
-			}
-			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
-
-			return resultsFromCache;
+			LexicalFormOrAlternativeQuery lexicalFormOrAlternativeQuery = new LexicalFormOrAlternativeQuery(writingSystemDefinition);
+			return GetResultsFromCache(lexicalFormOrAlternativeQuery);
 		}
 
 		/// <summary>
