@@ -148,7 +148,26 @@ namespace Palaso.Data
 					results.Add(new RecordToken<T>(this, result, GetId(item)));
 				}
 			}
-			return new ResultSet<T>(this, results);
+			return GetSortedRecordTokens(query, results);
+		}
+
+		private ResultSet<T> GetSortedRecordTokens(IQuery<T> query, List<RecordToken<T>> results)
+		{
+			SortedDictionary<RecordToken<T>, object> sortedRecordTokens;
+			if (query.SortDefinitions == null)
+			{
+				sortedRecordTokens = new SortedDictionary<RecordToken<T>, object>(); //sort by RepositoryId
+			}
+			else
+			{
+				RecordTokenComparer<T> comparerForSorting = new RecordTokenComparer<T>(query.SortDefinitions);
+				sortedRecordTokens = new SortedDictionary<RecordToken<T>, object>(comparerForSorting);
+			}
+			foreach (RecordToken<T> recordtoken in results)
+			{
+				sortedRecordTokens.Add(recordtoken, null);
+			}
+			return new ResultSet<T>(this, sortedRecordTokens.Keys);
 		}
 
 		public virtual int CountAllItems()

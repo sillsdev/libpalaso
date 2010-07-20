@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Palaso.Data;
 
@@ -19,6 +20,16 @@ namespace Palaso.Data
 		public IEnumerable<IDictionary<string, object>> GetResults(T item)
 		{
 			return _method(item);
+		}
+
+		public SortDefinition[] SortDefinitions
+		{
+			get { return null; }
+		}
+
+		public string Label
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		#endregion

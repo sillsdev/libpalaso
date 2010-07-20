@@ -14,6 +14,16 @@ namespace Palaso.Tests.Data
 			var result = new Dictionary<string, object> { { "key1", null } };
 			return new[] { result };
 		}
+
+		public SortDefinition[] SortDefinitions
+		{
+			get { return null; }
+		}
+
+		public string Label
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 
 	public abstract class IRepositoryStateUnitializedTests<T> where T : class, new()

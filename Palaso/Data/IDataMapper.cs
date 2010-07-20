@@ -6,6 +6,8 @@ namespace Palaso.Data
 	public interface IQuery<T> where T: class, new()
 	{
 		IEnumerable<IDictionary<string, object>> GetResults(T item);
+		SortDefinition[] SortDefinitions { get; }
+		string Label { get; }
 	}
 
 	public interface IDataMapper<T>: IDisposable where T : class, new()

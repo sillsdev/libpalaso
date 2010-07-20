@@ -35,11 +35,17 @@ namespace Palaso.Data
 			Add(resultSetToCache, queryToCache);
 		}
 
+		public ResultSetCache(IDataMapper<T> dataMapperQueried, ResultSet<T> resultSetToCache, IQuery<T> queryToCache)
+			: this(dataMapperQueried, queryToCache.SortDefinitions)
+		{
+			Add(resultSetToCache, queryToCache);
+		}
+
 		private void SortNewResultSetIntoCachedResultSet(ResultSet<T> resultSetToCache)
 		{
 			foreach (RecordToken<T> token in resultSetToCache)
 			{
-					_sortedTokens.Add(token, null);
+				_sortedTokens.Add(token, null);
 			}
 		}
 

@@ -5,6 +5,7 @@ using Palaso.Code;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
+using Palaso.DictionaryServices.Queries;
 using Palaso.Lift.Options;
 using Palaso.UiBindings;
 using Palaso.Progress;
@@ -39,7 +40,7 @@ namespace Palaso.DictionaryServices
 		//public event EventHandler<EntryEventArgs> AfterEntryAdded;  I (JH) don't know how to tell the difference between new and modified
 
 
-		readonly ResultSetCacheManager<LexEntry> _caches = new ResultSetCacheManager<LexEntry>();
+		readonly ResultSetCacheManager<LexEntry> _caches;
 
 		//hack to prevent sending nested Save calls, which was causing a bug when
 		//the exporter caused an item to get a new id, which led eventually to the list thinking it was modified, etc...
@@ -61,6 +62,7 @@ namespace Palaso.DictionaryServices
 			_constructionStackTrace = new StackTrace();
 #endif
 			_decoratedDataMapper = new LiftDataMapper(path, null, new string[] {}, new ProgressState());
+			_caches = new ResultSetCacheManager<LexEntry>(_decoratedDataMapper);
 			_disposed = false;
 		}
 
@@ -264,32 +266,14 @@ namespace Palaso.DictionaryServices
 			}
 
 			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.Id);
-			if (_caches[cacheName] == null)
+			HeadwordQuery headWordQuery = new HeadwordQuery(writingSystemDefinition);
+			if (_caches[headWordQuery.Label] == null)
 			{
-				var headWordQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entryToQuery)
-						{
-							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string headWord = entryToQuery.VirtualHeadWord[writingSystemDefinition.Id];
-							if (String.IsNullOrEmpty(headWord))
-							{
-								headWord = null;
-							}
-							tokenFieldsAndValues.Add("Form",headWord);
-							return new[] { tokenFieldsAndValues };
-						});
-
 				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(headWordQuery);
-				var sortOrder = new SortDefinition[4];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
-				sortOrder[1] = new SortDefinition("OrderForRoundTripping", Comparer<int>.Default);
-				sortOrder[2] = new SortDefinition("OrderInFile", Comparer<int>.Default);
-				sortOrder[3] = new SortDefinition("CreationTime", Comparer<DateTime>.Default);
 
-				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, headWordQuery));
-				// _caches.Add(headWordQuery, /* itemsMatching */ results); // review cp Refactor caches to this signature.
+				_caches.Add(headWordQuery, itemsMatching);
 			}
-			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
+				ResultSet<LexEntry> resultsFromCache = _caches[headWordQuery.Label].GetResultSet();
 
 			string previousHeadWord = null;
 			int homographNumber = 1;
