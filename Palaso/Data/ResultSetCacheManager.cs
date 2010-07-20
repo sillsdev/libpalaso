@@ -33,11 +33,7 @@ namespace Palaso.Data
 
 		public void Add(IQuery<T> query , ResultSet<T> resultSetToCache)
 		{
-			if(resultSetToCache.DataMapper != _associatedDataMapper)
-			{
-				throw new InvalidOperationException("The ResultSet that you are trying to Add to this Cache was created from a different IDataMapper.");
-			}
-			ResultSetCache<T>  cacheToAdd = new ResultSetCache<T>(_associatedDataMapper, query.SortDefinitions, resultSetToCache, query);
+			ResultSetCache<T>  cacheToAdd = new ResultSetCache<T>(_associatedDataMapper, resultSetToCache, query);
 			labelToResultSetCacheMap.Add(query.Label, cacheToAdd);
 		}
 

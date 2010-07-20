@@ -62,7 +62,10 @@
 	<Compile Include="Model\LexRelation.cs" />
 	<Compile Include="Model\LexSense.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="Queries\HeadwordQuery.cs" />
+	<Compile Include="Queries\DefinitionOrGlossQuery.cs" />
+	<Compile Include="Queries\HeadwordQuery.cs">
+	  <SubType>Code</SubType>
+	</Compile>
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">

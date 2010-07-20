@@ -475,86 +475,15 @@ namespace Palaso.DictionaryServices
 			}
 
 			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.Id);
-			if (_caches[cacheName] == null)
+
+			DefinitionOrGlossQuery definitionOrGlossQuery = new DefinitionOrGlossQuery(writingSystemDefinition);
+
+			if (_caches[definitionOrGlossQuery.Label] == null)
 			{
-				var definitionQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entryToQuery)
-						{
-							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
-
-							int senseNumber = 0;
-							foreach (LexSense sense in entryToQuery.Senses)
-							{
-								var rawDefinition = sense.Definition[writingSystemDefinition.Id];
-								var definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
-
-								var rawGloss = sense.Gloss[writingSystemDefinition.Id];
-								var glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
-
-								var definitionAndGlosses = MergeListsWhileExcludingDoublesAndEmptyStrings(definitions, glosses);
-
-
-								if(definitionAndGlosses.Count == 0)
-								{
-									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-									tokenFieldsAndValues.Add("Form", null);
-									tokenFieldsAndValues.Add("Sense", senseNumber);
-									fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
-								}
-								else
-								{
-									foreach (string definition in definitionAndGlosses)
-									{
-										IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-										tokenFieldsAndValues.Add("Form", definition);
-										tokenFieldsAndValues.Add("Sense", senseNumber);
-										fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
-									}
-								}
-
-								senseNumber++;
-							}
-							return fieldsandValuesForRecordTokens;
-						});
-				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(definitionQuery);
-
-				var sortOrder = new SortDefinition[2];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
-				sortOrder[1] = new SortDefinition("Sense", Comparer<int>.Default);
-				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, definitionQuery));
+				ResultSet<LexEntry> results = _decoratedDataMapper.GetItemsMatching(definitionOrGlossQuery);
+				_caches.Add(definitionOrGlossQuery, results);
 			}
-			return _caches[cacheName].GetResultSet();
-		}
-
-		private static List<string> MergeListsWhileExcludingDoublesAndEmptyStrings(IEnumerable<string> list1, IEnumerable<string> list2)
-		{
-			var mergedList = new List<string>();
-			foreach (string definitionElement in list1)
-			{
-				if((!mergedList.Contains(definitionElement)) && (definitionElement != ""))
-				{
-					mergedList.Add(definitionElement);
-				}
-			}
-			foreach (string glossElement in list2)
-			{
-				if (!mergedList.Contains(glossElement) && (glossElement != ""))
-				{
-					mergedList.Add(glossElement);
-				}
-			}
-			return mergedList;
-		}
-
-		private static List<string> GetTrimmedElementsSeperatedBySemiColon(string text)
-		{
-			var textElements = new List<string>();
-			foreach (string textElement in text.Split(new[] { ';' }))
-			{
-				string textElementTrimmed = textElement.Trim();
-				textElements.Add(textElementTrimmed);
-			}
-			return textElements;
+			return _caches[definitionOrGlossQuery.Label].GetResultSet();
 		}
 
 		/// <summary>
