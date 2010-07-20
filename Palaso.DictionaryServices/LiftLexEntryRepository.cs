@@ -265,15 +265,9 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.Id);
 			HeadwordQuery headWordQuery = new HeadwordQuery(writingSystemDefinition);
-			if (_caches[headWordQuery.Label] == null)
-			{
-				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(headWordQuery);
 
-				_caches.Add(headWordQuery, itemsMatching);
-			}
-				ResultSet<LexEntry> resultsFromCache = _caches[headWordQuery.Label].GetResultSet();
+			ResultSet<LexEntry> resultsFromCache = GetFromCache(headWordQuery);
 
 			string previousHeadWord = null;
 			int homographNumber = 1;
@@ -414,24 +408,18 @@ namespace Palaso.DictionaryServices
 
 		private ResultSet<LexEntry> GetAllEntriesSortedByGuid()
 		{
-			string cacheName = String.Format("sortedByGuid");
-			if (_caches[cacheName] == null)
+			GuidQuery guidQuery = new GuidQuery();
+			return GetFromCache(guidQuery);
+		}
+
+		private ResultSet<LexEntry> GetFromCache(IQuery<LexEntry> query)
+		{
+			if (_caches[query.Label] == null)
 			{
-				var guidQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entryToQuery)
-						{
-							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							tokenFieldsAndValues.Add("Guid", entryToQuery.Guid);
-							return new[] { tokenFieldsAndValues };
-						});
-				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(guidQuery);
-
-				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Guid", Comparer<Guid>.Default);
-
-				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, guidQuery));
+				ResultSet<LexEntry> results = _decoratedDataMapper.GetItemsMatching(query);
+				_caches.Add(query,results);
 			}
-			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
+			ResultSet<LexEntry> resultsFromCache = _caches[query.Label].GetResultSet();
 
 			return resultsFromCache;
 		}
@@ -474,16 +462,9 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.Id);
-
 			DefinitionOrGlossQuery definitionOrGlossQuery = new DefinitionOrGlossQuery(writingSystemDefinition);
 
-			if (_caches[definitionOrGlossQuery.Label] == null)
-			{
-				ResultSet<LexEntry> results = _decoratedDataMapper.GetItemsMatching(definitionOrGlossQuery);
-				_caches.Add(definitionOrGlossQuery, results);
-			}
-			return _caches[definitionOrGlossQuery.Label].GetResultSet();
+			return GetFromCache(definitionOrGlossQuery);
 		}
 
 		/// <summary>
