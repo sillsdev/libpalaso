@@ -473,57 +473,8 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("lexicalUnitWritingSystemDefinition");
 			}
-			string cachename = String.Format("GlossesSortedByLexicalForm_{0}", lexicalUnitWritingSystemDefinition);
-			if (_caches[cachename] == null)
-			{
-				var MatchingGlossQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entry)
-						{
-							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
-							int senseNumber = 0;
-							foreach (LexSense sense in entry.Senses)
-							{
-								foreach (LanguageForm form in sense.Gloss.Forms)
-								{
-									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-									string lexicalForm = entry.LexicalForm[lexicalUnitWritingSystemDefinition.Id];
-									if (String.IsNullOrEmpty(lexicalForm))
-									{
-										lexicalForm = null;
-									}
-									tokenFieldsAndValues.Add("Form", lexicalForm);
-
-									string gloss = form.Form;
-									if (String.IsNullOrEmpty(gloss))
-									{
-										gloss = null;
-									}
-									tokenFieldsAndValues.Add("Gloss", gloss);
-
-									string glossWritingSystem = form.WritingSystemId;
-									if (String.IsNullOrEmpty(glossWritingSystem))
-									{
-										glossWritingSystem = null;
-									}
-									tokenFieldsAndValues.Add("GlossWritingSystem", glossWritingSystem);
-									tokenFieldsAndValues.Add("SenseNumber", senseNumber);
-									fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
-								}
-								senseNumber++;
-							}
-							return fieldsandValuesForRecordTokens;
-						}
-					);
-				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(MatchingGlossQuery);
-				var sortDefinition = new SortDefinition[4];
-				sortDefinition[0] = new SortDefinition("Form", lexicalUnitWritingSystemDefinition.Collator);
-				sortDefinition[1] = new SortDefinition("Gloss", StringComparer.InvariantCulture);
-				sortDefinition[2] = new SortDefinition("GlossWritingSystem", StringComparer.InvariantCulture);
-				sortDefinition[3] = new SortDefinition("SenseNumber", Comparer<int>.Default);
-				var cache = new ResultSetCache<LexEntry>(this, sortDefinition, itemsMatchingQuery, MatchingGlossQuery);
-				_caches.Add(cachename, cache);
-			}
-			return _caches[cachename].GetResultSet();
+		   LexicalFormsWithGlossesQuery lexicalFormWithGlossesQuery = new LexicalFormsWithGlossesQuery(lexicalUnitWritingSystemDefinition);
+			return GetResultsFromCache(lexicalFormWithGlossesQuery);
 		}
 
 		/// <summary>
