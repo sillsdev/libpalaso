@@ -399,71 +399,10 @@ namespace Palaso.DictionaryServices
 		/// </summary>
 		/// <param name="fieldName"></param>
 		/// <returns></returns>
-		public ResultSet<LexEntry> GetEntriesWithSemanticDomainSortedBySemanticDomain(
-			string fieldName)
+		public ResultSet<LexEntry> GetEntriesWithSemanticDomainSortedBySemanticDomain()
 		{
-			if (fieldName == null)
-			{
-				throw new ArgumentNullException("fieldName");
-			}
-
-			string cachename = String.Format("Semanticdomains_{0}", fieldName);
-
-			if (_caches[cachename] == null)
-			{
-				var semanticDomainsQuery = new DelegateQuery<LexEntry>(
-					delegate(LexEntry entry)
-						{
-							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
-							foreach (LexSense sense in entry.Senses)
-							{
-								foreach (KeyValuePair<string, object> pair in sense.Properties)
-								{
-									if (pair.Key == fieldName)
-									{
-										var semanticDomains = (OptionRefCollection) pair.Value;
-										foreach (string semanticDomain in semanticDomains.Keys)
-										{
-											IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-											string domain = semanticDomain;
-											if (String.IsNullOrEmpty(semanticDomain))
-											{
-												domain = null;
-											}
-											if (CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(fieldsandValuesForRecordTokens, domain))
-											{
-												continue; //This is to avoid duplicates
-											}
-											tokenFieldsAndValues.Add("SemanticDomain", domain);
-											fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
-										}
-									}
-								}
-							}
-							return fieldsandValuesForRecordTokens;
-						}
-					);
-				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(semanticDomainsQuery);
-				var sortDefinition = new SortDefinition[2];
-				sortDefinition[0] = new SortDefinition("SemanticDomain", StringComparer.InvariantCulture);
-				sortDefinition[1] = new SortDefinition("Sense", Comparer<int>.Default);
-				var cache =
-					new ResultSetCache<LexEntry>(this, sortDefinition, itemsMatchingQuery, semanticDomainsQuery);
-				_caches.Add(cachename, cache);
-			}
-			return _caches[cachename].GetResultSet();
-		}
-
-		private static bool CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(IEnumerable<IDictionary<string, object>> fieldsandValuesForRecordTokens, string domain)
-		{
-			foreach (var tokenInfo in fieldsandValuesForRecordTokens)
-			{
-				if((string)tokenInfo["SemanticDomain"] == domain)
-				{
-					return true;
-				}
-			}
-			return false;
+			SemanticDomainQuery semanticDomainQuery = new SemanticDomainQuery();
+			return GetResultsFromCache(semanticDomainQuery);
 		}
 
 

@@ -71,6 +71,7 @@
 	<Compile Include="Queries\IdQuery.cs" />
 	<Compile Include="Queries\LexicalFormQuery.cs" />
 	<Compile Include="Queries\LexicalFormsWithGlossesQuery.cs" />
+	<Compile Include="Queries\SemanticDomainQuery.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">
