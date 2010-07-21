@@ -34,7 +34,7 @@ namespace Palaso.Data
 		public void Add(IQuery<T> query , ResultSet<T> resultSetToCache)
 		{
 			ResultSetCache<T>  cacheToAdd = new ResultSetCache<T>(_associatedDataMapper, resultSetToCache, query);
-			labelToResultSetCacheMap.Add(query.Label, cacheToAdd);
+			labelToResultSetCacheMap.Add(query.UniqueLabel, cacheToAdd);
 		}
 
 		public void Remove(string cacheLabel)

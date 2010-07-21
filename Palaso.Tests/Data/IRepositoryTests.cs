@@ -20,7 +20,7 @@ namespace Palaso.Tests.Data
 			get { return null; }
 		}
 
-		public string Label
+		public string UniqueLabel
 		{
 			get { throw new NotImplementedException(); }
 		}

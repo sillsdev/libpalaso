@@ -7,7 +7,7 @@ namespace Palaso.Data
 	{
 		IEnumerable<IDictionary<string, object>> GetResults(T item);
 		SortDefinition[] SortDefinitions { get; }
-		string Label { get; }
+		string UniqueLabel { get; }
 	}
 
 	public interface IDataMapper<T>: IDisposable where T : class, new()

@@ -26,7 +26,7 @@ namespace Palaso.DictionaryServices.Queries
 			}
 		}
 
-		public string Label
+		public string UniqueLabel
 		{
 			get { return "GuidQuery"; }
 		}

@@ -357,12 +357,12 @@ namespace Palaso.DictionaryServices
 
 		private ResultSet<LexEntry> GetResultsFromCache(IQuery<LexEntry> query)
 		{
-			if (_caches[query.Label] == null)
+			if (_caches[query.UniqueLabel] == null)
 			{
 				ResultSet<LexEntry> results = _decoratedDataMapper.GetItemsMatching(query);
 				_caches.Add(query,results);
 			}
-			ResultSet<LexEntry> resultsFromCache = _caches[query.Label].GetResultSet();
+			ResultSet<LexEntry> resultsFromCache = _caches[query.UniqueLabel].GetResultSet();
 
 			return resultsFromCache;
 		}
