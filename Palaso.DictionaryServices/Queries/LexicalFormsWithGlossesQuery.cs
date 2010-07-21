@@ -18,7 +18,7 @@ namespace Palaso.DictionaryServices.Queries
 			_writingSystemDefinition = wsDef;
 		}
 
-		public IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
+		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
 		{
 			var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
 			int senseNumber = 0;
@@ -55,7 +55,7 @@ namespace Palaso.DictionaryServices.Queries
 			return fieldsandValuesForRecordTokens;
 		}
 
-		public SortDefinition[] SortDefinitions
+		public override IEnumerable<SortDefinition>SortDefinitions
 		{
 			get
 			{
@@ -68,7 +68,7 @@ namespace Palaso.DictionaryServices.Queries
 			}
 		}
 
-		public string UniqueLabel
+		public override string UniqueLabel
 		{
 			get { return "LexicalFormsWithGlossesQuery"; }
 		}

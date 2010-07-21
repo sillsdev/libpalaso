@@ -9,18 +9,18 @@ namespace Palaso.Tests.Data
 {
 	internal class TestQuery<T> : IQuery<T> where T : class, new()
 	{
-		public IEnumerable<IDictionary<string, object>> GetResults(T item)
+		public override IEnumerable<IDictionary<string, object>> GetResults(T item)
 		{
 			var result = new Dictionary<string, object> { { "key1", null } };
 			return new[] { result };
 		}
 
-		public SortDefinition[] SortDefinitions
+		public override IEnumerable<SortDefinition> SortDefinitions
 		{
 			get { return null; }
 		}
 
-		public string UniqueLabel
+		public override string UniqueLabel
 		{
 			get { throw new NotImplementedException(); }
 		}

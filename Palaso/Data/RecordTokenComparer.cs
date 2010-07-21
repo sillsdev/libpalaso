@@ -6,7 +6,7 @@ namespace Palaso.Data
 	public sealed class RecordTokenComparer<T>: IComparer<RecordToken<T>> where T : class, new()
 	{
 		private readonly IEnumerable<SortDefinition> _sortDefinitions;
-		public RecordTokenComparer(params SortDefinition[] sortDefinitions)
+		public RecordTokenComparer(IEnumerable<SortDefinition> sortDefinitions)
 		{
 			if (sortDefinitions == null)
 			{
@@ -17,6 +17,12 @@ namespace Palaso.Data
 				throw new ArgumentException("sortDefinitions cannot be an empty array");
 			}
 			_sortDefinitions = sortDefinitions;
+		}
+
+		public RecordTokenComparer(SortDefinition sortDefinitions):
+			this(new List<SortDefinition>{sortDefinitions})
+		{
+
 		}
 
 		#region IComparer<RecordToken> Members

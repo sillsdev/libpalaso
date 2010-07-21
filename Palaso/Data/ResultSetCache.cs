@@ -10,7 +10,7 @@ namespace Palaso.Data
 		private List<IQuery<T>> _cachedQueries = new List<IQuery<T>>();
 		private readonly IDataMapper<T> _dataMapperQueried;
 
-		public ResultSetCache(IDataMapper<T> dataMapperQueried, SortDefinition[] sortDefinitions)
+		public ResultSetCache(IDataMapper<T> dataMapperQueried, IEnumerable<SortDefinition> sortDefinitions)
 		{
 			if (dataMapperQueried == null)
 			{

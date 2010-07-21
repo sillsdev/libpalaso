@@ -17,7 +17,7 @@ namespace Palaso.DictionaryServices.Queries
 			_writingSystemDefinition = writingSystemDefinition;
 		}
 
-		public IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
+		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
 		{
 			IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
 			string headWord = entryToQuery.VirtualHeadWord[_writingSystemDefinition.Id];
@@ -29,7 +29,7 @@ namespace Palaso.DictionaryServices.Queries
 			return new[] { tokenFieldsAndValues };
 		}
 
-		public SortDefinition[] SortDefinitions
+		public override IEnumerable<SortDefinition> SortDefinitions
 		{
 			get
 			{
@@ -39,7 +39,7 @@ namespace Palaso.DictionaryServices.Queries
 			}
 		}
 
-		public string UniqueLabel
+		public override string UniqueLabel
 		{
 			get { return "HeadwordQuery" + _writingSystemDefinition.Id; }
 		}

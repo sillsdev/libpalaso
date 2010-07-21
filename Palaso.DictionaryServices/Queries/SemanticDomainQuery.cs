@@ -10,7 +10,7 @@ namespace Palaso.DictionaryServices.Queries
 {
 	class SemanticDomainQuery:IQuery<LexEntry>
 	{
-		public IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
+		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
 		{
 			var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
 			foreach (LexSense sense in entryToQuery.Senses)
@@ -53,7 +53,7 @@ namespace Palaso.DictionaryServices.Queries
 			return false;
 		}
 
-		public SortDefinition[] SortDefinitions
+		public override IEnumerable<SortDefinition> SortDefinitions
 		{
 			get
 			{
@@ -64,7 +64,7 @@ namespace Palaso.DictionaryServices.Queries
 			}
 		}
 
-		public string UniqueLabel
+		public override string UniqueLabel
 		{
 			get { return "SemanticDomainQuery"; }
 		}

@@ -1,13 +1,34 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Palaso.Data
 {
-	public interface IQuery<T> where T: class, new()
+	public abstract class IQuery<T> where T: class, new()
 	{
-		IEnumerable<IDictionary<string, object>> GetResults(T item);
-		SortDefinition[] SortDefinitions { get; }
-		string UniqueLabel { get; }
+		abstract public IEnumerable<IDictionary<string, object>> GetResults(T item);
+		abstract public IEnumerable<SortDefinition> SortDefinitions { get; }
+		abstract public string UniqueLabel { get; }
+
+		public static IQuery<T> operator &(IQuery<T> thisQuery, IQuery<T> thatQuery)
+		{
+			DelegateQuery<T>.DelegateMethod newGetResults =
+				delegate(T t)
+					{
+						List<IDictionary<string, object>> combinedResults = new List<IDictionary<string, object>>();
+						combinedResults.AddRange(thisQuery.GetResults(t));
+						combinedResults.AddRange(thatQuery.GetResults(t));
+						return combinedResults;
+					};
+
+			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
+			newSortDefinitions.AddRange(thisQuery.SortDefinitions);
+			newSortDefinitions.AddRange(thisQuery.SortDefinitions);
+
+			string newUniqueLabel = thisQuery.UniqueLabel + " & " + thatQuery.UniqueLabel;
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel);
+		}
 	}
 
 	public interface IDataMapper<T>: IDisposable where T : class, new()

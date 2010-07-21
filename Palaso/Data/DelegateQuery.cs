@@ -9,10 +9,10 @@ namespace Palaso.Data
 	{
 		public delegate IEnumerable<IDictionary<string, object>> DelegateMethod(T item);
 		DelegateMethod _method;
-		private SortDefinition[] _sortorder;
+		private IEnumerable<SortDefinition> _sortorder;
 		private string _uniqueLabel;
 
-		public DelegateQuery(DelegateMethod method, SortDefinition[] sortorder, string uniqueLabel)
+		public DelegateQuery(DelegateMethod method, IEnumerable<SortDefinition> sortorder, string uniqueLabel)
 		{
 			_method = method;
 			_sortorder = sortorder;
@@ -21,17 +21,17 @@ namespace Palaso.Data
 
 		#region IQuery<T> Members
 
-		public IEnumerable<IDictionary<string, object>> GetResults(T item)
+		public override IEnumerable<IDictionary<string, object>> GetResults(T item)
 		{
 			return _method(item);
 		}
 
-		public SortDefinition[] SortDefinitions
+		public override IEnumerable<SortDefinition> SortDefinitions
 		{
 			get { return _sortorder; }
 		}
 
-		public string UniqueLabel
+		public override string UniqueLabel
 		{
 			get { return _uniqueLabel; }
 		}
