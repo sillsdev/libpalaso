@@ -338,7 +338,7 @@ namespace Palaso.Reporting
 
 		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
 		{
-			NotifyUserOfProblem(new ShowAlwaysPolicy(), "Details", error, messageFmt, args);
+			NotifyUserOfProblem(new ShowAlwaysPolicy(), error, messageFmt, args);
 		}
 
 		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
