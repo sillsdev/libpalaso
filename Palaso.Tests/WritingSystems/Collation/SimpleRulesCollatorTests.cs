@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
+using Palaso.WritingSystems.Collation;
 using Spart;
 
-namespace Palaso.WritingSystems.Collation.Tests
+namespace Palaso.Tests.WritingSystems.Collation
 {
 	[TestFixture]
 	public class SimpleRulesCollatorTests

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using NUnit.Framework;
+using Palaso.UsbDrive;
 
-namespace Palaso.UsbDrive
+namespace Palaso.Tests.UsbDrive
 {
 	[TestFixture]
 	public class UsbDeviceInfoTests

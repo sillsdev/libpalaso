@@ -3,7 +3,7 @@ using System.Text;
 using NUnit.Framework;
 using Palaso.Data;
 
-namespace WeSay.Data.Tests
+namespace Palaso.Tests.Data
 {
 	public class DictionaryContentAsserter<K, V>: IAsserter
 	{

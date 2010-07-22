@@ -29,7 +29,7 @@ using NUnit.Framework;
 using Spart.Parsers;
 using Spart.Scanners;
 
-namespace Spart.Tests.Parsers
+namespace Palaso.Tests.Spart.Parsers
 {
 
 	[TestFixture]

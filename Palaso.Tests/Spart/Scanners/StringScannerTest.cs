@@ -25,13 +25,11 @@
 ///
 
 using System;
+using Spart.Scanners;
+using NUnit.Framework;
 
-namespace Spart.Tests.Scanners
+namespace Palaso.Tests.Spart.Scanners
 {
-	using Spart.Scanners;
-	using Spart.Parsers;
-	using NUnit.Framework;
-
 	[TestFixture]
 	public class StringScannerTest
 	{
