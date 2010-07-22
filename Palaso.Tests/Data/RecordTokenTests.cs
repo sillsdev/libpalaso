@@ -77,13 +77,7 @@ namespace Palaso.Tests.Data
 		}
 	}
 
-	/// <summary>
-	/// NOTE: starting with Resharper 5, these tests get run by themselves, and they all fail
-	/// I think the (old) and expected behavior was to ignore them in isolation, because the
-	/// class is *not* marked as a [TestFixture].  I don't know the correct way to fix this,
-	/// so I'm just adding this note, for now.
-	/// </summary>
-	public class RecordTokenTestsBase
+	public abstract class RecordTokenTestsBase
 	{
 		private RecordToken<PalasoTestItem> _token;
 
