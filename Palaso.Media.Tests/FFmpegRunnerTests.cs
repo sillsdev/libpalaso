@@ -12,14 +12,14 @@ namespace Palaso.Media.Tests
 	public class FFmpegRunnerTests
 	{
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
 			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void ExtractMp3Audio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))

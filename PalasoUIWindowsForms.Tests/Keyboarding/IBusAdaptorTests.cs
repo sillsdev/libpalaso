@@ -33,7 +33,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus")]
+		[NUnit.Framework.Category("IBus")]
 		public void EngineAvailable_IBusIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
 			// needed for focus
@@ -43,8 +43,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
+		[NUnit.Framework.Category("IBus")]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
@@ -55,7 +55,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus")]
+		[NUnit.Framework.Category("IBus")]
 		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_0KeyboardsReturned()
 		{
 			// needed for focus
@@ -68,7 +68,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus")]
+		[NUnit.Framework.Category("IBus")]
 		public void Deactivate_IBusIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			// needed for focus
@@ -80,7 +80,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus")]
+		[NUnit.Framework.Category("IBus")]
 		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			// needed for focus
@@ -93,8 +93,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus")]
-		[ExpectedException( typeof(ArgumentOutOfRangeException))]
+		[NUnit.Framework.Category("IBus")]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
@@ -104,7 +104,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus not Running")]
+		[NUnit.Framework.Category("IBus not Running")]
 		public void EngineAvailable_IBusNotRunning_ReturnsFalse()
 		{
 			// needed for focus
@@ -114,7 +114,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus not Running")]
+		[NUnit.Framework.Category("IBus not Running")]
 		public void GetActiveKeyboard_IBusNotRunning_ReturnsEmptyString()
 		{
 			// needed for focus
@@ -124,7 +124,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus not Running")]
+		[NUnit.Framework.Category("IBus not Running")]
 		public void KeyboardDescriptors_IBusNotRunning_EmptyListReturned()
 		{
 			// needed for focus
@@ -136,7 +136,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus not Running")]
+		[NUnit.Framework.Category("IBus not Running")]
 		public void Deactivate_IBusNotRunning_DoesNotThrow()
 		{
 			// needed for focus
@@ -146,7 +146,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("IBus not Running")]
+		[NUnit.Framework.Category("IBus not Running")]
 		public void ActivateKeyBoard_IBusNotRunning_DoesNotThrow()
 		{
 			// needed for focus

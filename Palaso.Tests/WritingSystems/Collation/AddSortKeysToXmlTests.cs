@@ -71,7 +71,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_DocumentNull_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(null,
@@ -83,7 +83,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_XPathSourceNull_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -95,7 +95,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(XPathException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(XPathException))]
 		public void AddSortKeys_XPathSourceEmpty_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -107,7 +107,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_XPathDestinationNull_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -119,7 +119,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(XPathException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(XPathException))]
 		public void AddSortKeys_XPathDestinationEmpty_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -131,7 +131,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_AttributeNull_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -143,7 +143,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_AttributeEmpty_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -156,7 +156,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_PrefixNull_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -169,7 +169,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_PrefixEmpty_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -182,7 +182,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_PrefixInvalidCharacter_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -195,7 +195,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_UriNull_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -208,7 +208,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_UriEmpty_Throws()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,

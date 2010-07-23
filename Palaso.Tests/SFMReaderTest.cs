@@ -708,7 +708,7 @@ namespace Palaso.Tests
 			Assert.AreEqual("tag2", test.ReadNextTag());
 		}
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void ReadNextTextThenReadInitialText_Throw()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
@@ -719,7 +719,7 @@ namespace Palaso.Tests
 			test.ReadInitialText();
 		}
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void ReadNextTagThenReadInitialText_Throw()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(

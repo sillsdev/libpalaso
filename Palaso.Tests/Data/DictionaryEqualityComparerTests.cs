@@ -91,7 +91,7 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void GetHashCode_Null_Throws()
 		{
 			var comparer = new DictionaryEqualityComparer<string, string>();

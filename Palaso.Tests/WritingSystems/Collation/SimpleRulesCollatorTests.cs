@@ -395,7 +395,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithNoData_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -403,7 +403,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithBlank_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -411,7 +411,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithSingleItem_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -419,7 +419,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithSingleDigraph_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -427,7 +427,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithSingleUnicodeCharacterReference_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -435,7 +435,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithCharacterAndUnicodeCharacterReference_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -443,7 +443,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithDigraphUnicodeCharacterReference_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -451,7 +451,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithUnicodeCharacterReferenceAndCharacter_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -460,7 +460,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_NestedParenthesis_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -468,7 +468,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_SingleCollatingElementInParenthesis_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -476,7 +476,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutCloseOnSameLineOneGroup_Throws()
 		{
 			//Expected: group close ')'
@@ -484,7 +484,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutCloseOnSameLine_Throws()
 		{
 			//Expected: group close ')'
@@ -492,7 +492,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutClose_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -500,7 +500,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutCloseWithBlanks_Throws()
 		{
 			// expected 2 or more collation elements in collation group
@@ -508,7 +508,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnmatchedCloseParenthesis_Throws()
 		{
 			// Invalid Character
@@ -516,7 +516,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_UnmatchedCloseParenthesisWithBlanks_Throws()
 		{
 			// Invalid Character
@@ -524,7 +524,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_BackslashWithNoCharacterFollowing_Throws()
 		{
 			// Invalid unicode character escape sequence
@@ -532,7 +532,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithSpaceAfterBackSlash_Throws()
 		{
 			// Invalid unicode character escape sequence
@@ -540,7 +540,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithUpperCaseU_Throws()
 		{
 			// Invalid unicode character escape sequence
@@ -548,7 +548,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithSpaceAfterU_Throws()
 		{
 			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
@@ -556,7 +556,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithOnlyOneHexDigit_Throws()
 		{
 			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
@@ -564,7 +564,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithOnlyTwoHexDigits_Throws()
 		{
 			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
@@ -572,7 +572,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithOnlyThreeHexDigits_Throws()
 		{
 			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
@@ -645,7 +645,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_CollationElementUsedTwice_Throws()
 		{
 			// duplicate collation element
@@ -661,7 +661,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ParserErrorException))]
 		public void ParseError_CorrectLineAndOffset()
 		{
 			VerifyParserError("scr0006", "ph\na A)\nb B\nc C",2,4);

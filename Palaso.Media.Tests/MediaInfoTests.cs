@@ -11,14 +11,14 @@ namespace Palaso.Media.Tests
 	public class MediaInfoTests
 	{
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
 			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -30,7 +30,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_Encoding_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -42,7 +42,7 @@ namespace Palaso.Media.Tests
 
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_Resolution_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -53,7 +53,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_MessedUpFramesPerSecond_LeavesEmpty()
 		{
 			//NB: our current sample has ffmpeg saying:
@@ -67,7 +67,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -79,7 +79,7 @@ namespace Palaso.Media.Tests
 
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_SampleFrequency_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -90,7 +90,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_Channels_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -101,7 +101,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_BitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -112,7 +112,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void GetMediaInfo_AudioFile_VideoInfoAndImageInfoAreNull()
 		{
 			using(var file = TempFile.FromResource(Resources.finished,".wav"))

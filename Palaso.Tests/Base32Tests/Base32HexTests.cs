@@ -153,7 +153,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void Decode_CharacterNotInAlphabet_throws()
 		{
 			Base32Convert.FromBase32HexString("#y======",
@@ -168,7 +168,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void Decode_MisplacedPaddingCharacter_throws()
 		{
 			Base32Convert.FromBase32HexString("m=y======",
@@ -177,7 +177,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Decode_null_throws()
 		{
 			Base32Convert.FromBase32HexString(null,
@@ -217,14 +217,14 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_1_throws()
 		{
 			Base32Convert.FromBase32HexString("1", Base32FormattingOptions.None);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_3_throws()
 		{
 			Base32Convert.FromBase32HexString("123",
@@ -232,7 +232,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_6_throws()
 		{
 			Base32Convert.FromBase32HexString("123456",
@@ -240,7 +240,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void Decode_WrongNumberOfPaddingCharacters_throws()
 		{
 			Base32Convert.FromBase32HexString("my=====",
@@ -249,7 +249,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_CharacterNotInAlphabet_throws()
 		{
 			Base32Convert.FromBase32HexString("#y", Base32FormattingOptions.None);
@@ -262,14 +262,14 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void DecodeOmitPadding_null_throws()
 		{
 			Base32Convert.FromBase32HexString(null, Base32FormattingOptions.None);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_PaddingCharacter_throws()
 		{
 			Base32Convert.FromBase32HexString("my======",
@@ -314,7 +314,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Encode_null_throws()
 		{
 			Base32Convert.ToBase32HexString(null,
@@ -340,7 +340,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void EncodeOmitPadding_null_throws()
 		{
 			Base32Convert.ToBase32HexString(null, Base32FormattingOptions.None);
@@ -358,7 +358,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[Category("Long Running")] // ~7 seconds
+		[NUnit.Framework.Category("Long Running")] // ~7 seconds
 		public void EncodeThenDecode_Roundtrip()
 		{
 			byte[] bytes =
@@ -384,7 +384,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[Category("Long Running")] // ~7 seconds
+		[NUnit.Framework.Category("Long Running")] // ~7 seconds
 		public void EncodeThenDecodeNoPadding_Roundtrip()
 		{
 			byte[] bytes =

@@ -9,7 +9,7 @@ namespace Palaso.Tests.Spelling
 	public class SpellingwordTokenizerTests
 	{
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void PassNULL_Throws()
 		{
 			foreach (WordTokenizer.Token t in WordTokenizer.TokenizeText(null))

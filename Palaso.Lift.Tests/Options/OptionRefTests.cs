@@ -46,7 +46,7 @@ namespace Palaso.Lift.Tests
 		}
 
 		[Test]
-//        [ExpectedException(typeof(ArgumentException))]
+//        [NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void CompareTo_OtherIsNotOptionRef_Throws()
 		{
 			OptionRef reference = new OptionRef();

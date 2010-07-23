@@ -66,7 +66,7 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ObjectDisposedException))]
 		public void CanExtend_CalledAfterDisposed_Throws()
 		{
 			Prompt prompt = new Prompt();
@@ -78,14 +78,14 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void GetPrompt_Null_Throws()
 		{
 			_prompt.GetPrompt(null);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void GetPrompt_ComboBox_Throws()
 		{
 			using (ComboBox comboBox = new ComboBox())
@@ -115,7 +115,7 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ObjectDisposedException))]
 		public void GetPrompt_CalledAfterDisposed_Throws()
 		{
 			Prompt prompt = new Prompt();
@@ -137,14 +137,14 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void SetPrompt_NullControl_EmptyString()
 		{
 			_prompt.SetPrompt(null, "value");
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void SetPrompt_ComboBox_Throws()
 		{
 			using (ComboBox comboBox = new ComboBox())
@@ -168,7 +168,7 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ObjectDisposedException))]
 		public void SetPrompt_CalledAfterDisposed_Throws()
 		{
 			Prompt prompt = new Prompt();
@@ -204,7 +204,7 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ObjectDisposedException))]
 		public void GetIsPromptVisible_CalledAfterDisposed_Throws()
 		{
 			Prompt prompt = new Prompt();
@@ -216,7 +216,7 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ObjectDisposedException))]
 		public void GetSite_CalledAfterDisposed_Throws()
 		{
 			Prompt prompt = new Prompt();
@@ -225,7 +225,7 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ObjectDisposedException))]
 		public void SetSite_CalledAfterDisposed_Throws()
 		{
 			Prompt prompt = new Prompt();

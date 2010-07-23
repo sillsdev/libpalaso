@@ -30,14 +30,14 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepository_Throws()
 		{
 			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8)));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepositoryId_Throws()
 		{
 			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null));
@@ -52,7 +52,7 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepository_Throws()
 		{
 			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null,
@@ -61,14 +61,14 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullResults_Throws()
 		{
 			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8)));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepositoryId_Throws()
 		{
 			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper,
@@ -96,7 +96,7 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void GetIndexer_NullFieldName_Throws()
 		{
 			Token[null] = null;

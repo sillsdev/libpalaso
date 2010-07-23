@@ -56,14 +56,14 @@ namespace Palaso.Tests.Spart.Parsers.Composite
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Constructor2()
 		{
 			RepetitionParser rp = new RepetitionParser(null, 0, 1);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentOutOfRangeException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentOutOfRangeException))]
 		public void Constructor3()
 		{
 			RepetitionParser rp = new RepetitionParser(Parser, 1, 0);
