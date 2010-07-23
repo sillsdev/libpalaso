@@ -296,13 +296,13 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			Assert.AreEqual(4, _model.WritingSystemCount);
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void DuplicateCurrent_NoCurrent_ThrowsInvalidOperation()
 		{
 			_model.DuplicateCurrent();
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void DeleteCurrent_NoCurrent_ThrowsInvalidOperation()
 		{
 			_model.DeleteCurrent();
@@ -416,42 +416,42 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			}
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_DeleteThrows()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.DeleteCurrent();
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_AddNewThrows()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.AddNew();
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_ClearSelectionThrows()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.ClearSelection();
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_ChangingCurrentIndex_Throws()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.CurrentIndex = -1;
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_DuplicateCurrent_Throws()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.DuplicateCurrent();
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void SingleWSMode_Save_Throws()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
@@ -567,32 +567,32 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void ImportFile_SingleWSMode_Throws()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
 			_model.ImportFile("foo.xml");
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void ImportFile_Null_Throws()
 		{
 			_model.ImportFile(null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void ImportFile_EmptyString_Throws()
 		{
 			_model.ImportFile(String.Empty);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void ImportFile_FileDoesntExist_Throws()
 		{
 			_model.ImportFile("Hopefully this file does not exist.xml");
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void Export_NoCurrentSelection_Throws()
 		{
 			_model.ClearSelection ();

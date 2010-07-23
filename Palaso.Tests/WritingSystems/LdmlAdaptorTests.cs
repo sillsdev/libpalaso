@@ -21,49 +21,49 @@ namespace Palaso.Tests.WritingSystems
 			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "English", "eng", false);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void ReadFromFile_NullFileName_Throws()
 		{
 			_adaptor.Read((string)null, _ws);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void ReadFromFile_NullWritingSystem_Throws()
 		{
 			_adaptor.Read("foo.ldml", null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void ReadFromXmlReader_NullXmlReader_Throws()
 		{
 			_adaptor.Read((XmlReader)null, _ws);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void ReadFromXmlReader_NullWritingSystem_Throws()
 		{
 			_adaptor.Read(XmlReader.Create(new StringReader("<ldml/>")), null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToFile_NullFileName_Throws()
 		{
 			_adaptor.Write((string)null, _ws, null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToFile_NullWritingSystem_Throws()
 		{
 			_adaptor.Write("foo.ldml", null, null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToXmlWriter_NullXmlReader_Throws()
 		{
 			_adaptor.Write((XmlWriter)null, _ws, null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void WriteToXmlWriter_NullWritingSystem_Throws()
 		{
 			_adaptor.Write(XmlWriter.Create(new MemoryStream()), null, null);

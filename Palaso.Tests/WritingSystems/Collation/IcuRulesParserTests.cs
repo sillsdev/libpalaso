@@ -614,7 +614,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 			Assert.AreEqual("<rules><reset>'\\&lt;&amp;</reset></rules>", _xmlText.ToString());
 		}
 
-		[Test, ExpectedException(typeof(ApplicationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ApplicationException))]
 		public void InvalidIcu_Throws()
 		{
 			_icuParser.WriteIcuRules(_writer, "&a <<<< b");

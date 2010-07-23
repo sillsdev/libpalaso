@@ -49,7 +49,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
-		[Test, ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
 			KeyboardController.ActivateKeyboard("foobar");

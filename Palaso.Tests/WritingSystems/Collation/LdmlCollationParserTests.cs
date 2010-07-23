@@ -465,7 +465,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 			Assert.AreEqual("& \\(", icu);
 		}
 
-		[Test, ExpectedException(typeof(ApplicationException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ApplicationException))]
 		public void InvalidLdml_Throws()
 		{
 			_collationXml = "<rules><m>a</m></rules>";

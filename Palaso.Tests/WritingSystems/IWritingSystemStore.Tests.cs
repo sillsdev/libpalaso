@@ -205,7 +205,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(2, StoreUnderTest.Count);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void StoreTwoOfSame_Throws()
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition("foo");
@@ -283,56 +283,56 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(ws1.VersionNumber, ws2.VersionNumber);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void GetNull_Throws()
 		{
 			StoreUnderTest.Get(null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void Get_NotInStore_Throws()
 		{
 			StoreUnderTest.Get("I sure hope this isn't in the store.");
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void NewerInNull_Throws()
 		{
 			StoreUnderTest.WritingSystemsNewerIn(null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void NewerInNullDefinition_Throws()
 		{
 			WritingSystemDefinition[] list = new WritingSystemDefinition[] {null};
 			StoreUnderTest.WritingSystemsNewerIn(list);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void SetNull_Throws()
 		{
 			StoreUnderTest.Set(null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void MakeDuplicateNull_Throws()
 		{
 			StoreUnderTest.MakeDuplicate(null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void RemoveNull_Throws()
 		{
 			StoreUnderTest.Remove(null);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void Remove_NotInStore_Throws()
 		{
 			StoreUnderTest.Remove("This isn't in the store!");
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void GetNewStoreIDWhenSet_Null_Throws()
 		{
 			StoreUnderTest.GetNewStoreIDWhenSet(null);
