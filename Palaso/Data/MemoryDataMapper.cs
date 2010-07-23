@@ -153,21 +153,21 @@ namespace Palaso.Data
 
 		private ResultSet<T> GetSortedRecordTokens(IQuery<T> query, List<RecordToken<T>> results)
 		{
-			SortedDictionary<RecordToken<T>, object> sortedRecordTokens;
+			SortedListAllowsDuplicates<RecordToken<T>> sortedRecordTokens;
 			if (query.SortDefinitions == null)
 			{
-				sortedRecordTokens = new SortedDictionary<RecordToken<T>, object>(); //sort by RepositoryId
+				sortedRecordTokens = new SortedListAllowsDuplicates<RecordToken<T>>(); //sort by RepositoryId
 			}
 			else
 			{
 				RecordTokenComparer<T> comparerForSorting = new RecordTokenComparer<T>(query.SortDefinitions);
-				sortedRecordTokens = new SortedDictionary<RecordToken<T>, object>(comparerForSorting);
+				sortedRecordTokens = new SortedListAllowsDuplicates<RecordToken<T>>(comparerForSorting);
 			}
 			foreach (RecordToken<T> recordtoken in results)
 			{
-				sortedRecordTokens.Add(recordtoken, null);
+				sortedRecordTokens.Add(recordtoken);
 			}
-			return new ResultSet<T>(this, sortedRecordTokens.Keys);
+			return new ResultSet<T>(this, sortedRecordTokens);
 		}
 
 		public virtual int CountAllItems()
