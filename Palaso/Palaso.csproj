@@ -111,6 +111,7 @@
 	<Compile Include="Data\ResultSet.cs" />
 	<Compile Include="Data\ResultSetCache.cs" />
 	<Compile Include="Data\ResultSetCacheManager.cs" />
+	<Compile Include="Data\SortedListAllowsDuplicates.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
 	<Compile Include="Email\EmailProviderFactory.cs" />
 	<Compile Include="Email\IEmailMessage.cs" />

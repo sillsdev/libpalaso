@@ -77,6 +77,7 @@
 	<Compile Include="Data\RecordTokenTests.cs" />
 	<Compile Include="Data\ResultSetTests.cs" />
 	<Compile Include="Data\PalasoTestItem.cs" />
+	<Compile Include="Data\SortedListAllowsDuplicatesTests.cs" />
 	<Compile Include="Data\TestRepositoryId.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
 	<Compile Include="I8N\StringCatalogTests.cs" />
