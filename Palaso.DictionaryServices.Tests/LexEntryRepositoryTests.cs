@@ -792,8 +792,8 @@ namespace WeSay.LexicalModel.Tests
 		[Test]
 		public void GetLexEntryWithMatchingGuid_GuidIsEmpty_Throws()
 		{
-						Assert.Throws<ArgumentNullException>(()=>
-_repository.GetLexEntryWithMatchingGuid(Guid.Empty));
+			Assert.Throws<ArgumentOutOfRangeException>(()=>
+				_repository.GetLexEntryWithMatchingGuid(Guid.Empty));
 		}
 
 		[Test]
