@@ -65,12 +65,12 @@ namespace Palaso.LexicalModel.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void CompareTo_OtherIsNotOptionRef_Throws()
 		{
 			OptionRef reference = new OptionRef();
 			string other = "";
-			Assert.AreEqual(0, reference.CompareTo(other));
+			Assert.Throws<ArgumentException>(() =>
+reference.CompareTo(other));
 		}
 
 		public void NotifyPropertyChanged(string property)

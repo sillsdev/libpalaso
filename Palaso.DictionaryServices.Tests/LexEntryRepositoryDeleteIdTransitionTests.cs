@@ -35,7 +35,8 @@ namespace WeSay.LexicalModel.Tests
 		{
 			SetState();
 			Item.Senses.Add(new LexSense());
-			DataMapperUnderTest.SaveItem(Item);
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
+				DataMapperUnderTest.SaveItem(Item));
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()

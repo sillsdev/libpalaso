@@ -69,10 +69,10 @@ namespace WeSay.LexicalModel.Tests.Foundation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Create_Null_Throws()
 		{
-			MultiText multiText = MultiText.Create((LiftMultiText)null);
+			Assert.Throws<ArgumentNullException>(() =>
+				MultiText.Create((LiftMultiText)null));
 		}
 
 		[Test]
@@ -223,10 +223,10 @@ namespace WeSay.LexicalModel.Tests.Foundation
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void StripMarkers_FormNull_Throws()
 		{
-			MultiText.StripMarkers(null);
+			Assert.Throws<ArgumentNullException>(() =>
+MultiText.StripMarkers(null));
 		}
 
 	}
