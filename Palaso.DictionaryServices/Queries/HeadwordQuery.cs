@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,10 +12,18 @@ namespace Palaso.DictionaryServices.Queries
 	class HeadwordQuery:IQuery<LexEntry>
 	{
 		private WritingSystemDefinition _writingSystemDefinition;
+		private IComparer _comparer;
+
+		public HeadwordQuery(Comparer<string> guidComparer, WritingSystemDefinition writingSystemDefinition)
+		{
+			_writingSystemDefinition = writingSystemDefinition;
+			_comparer = guidComparer;
+		}
 
 		public HeadwordQuery(WritingSystemDefinition writingSystemDefinition)
 		{
 			_writingSystemDefinition = writingSystemDefinition;
+			_comparer = writingSystemDefinition.Collator;
 		}
 
 		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
@@ -34,7 +43,7 @@ namespace Palaso.DictionaryServices.Queries
 			get
 			{
 				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Form", _writingSystemDefinition.Collator);
+				sortOrder[0] = new SortDefinition("Form", _comparer);
 				return sortOrder;
 			}
 		}
