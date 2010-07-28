@@ -9,6 +9,18 @@ namespace Palaso.DictionaryServices.Queries
 {
 	class GuidQuery:IQuery<LexEntry>
 	{
+		private Comparer<Guid> _comparer;
+
+		public GuidQuery(Comparer<Guid> guidComparer)
+		{
+			_comparer = guidComparer;
+		}
+
+		public GuidQuery()
+		{
+			_comparer = Comparer<Guid>.Default;
+		}
+
 		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
 		{
 			IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
@@ -21,7 +33,7 @@ namespace Palaso.DictionaryServices.Queries
 			get
 			{
 				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Guid", Comparer<Guid>.Default);
+				sortOrder[0] = new SortDefinition("Guid", _comparer);
 				return sortOrder;
 			}
 		}
