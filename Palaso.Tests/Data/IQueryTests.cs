@@ -82,21 +82,21 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		public void TwoQueries_Anded_ReturnsNumberOfFieldsOfQueryResultWithGreaterNumberOfFields()
+		public void JoinInner_TwoQueriesWithDifferentNumberOfResults_ReturnsNumberOfResultsOfQueryResultWithGreaterNumberOfFields()
 		{
 			CreateItemInRepo(1, 4, 1, 3, 6);
 			CreateItemInRepo(3, 2, 4, 2, 5);
-			IQuery<SimpleObject> field1Query = new Field1Query() & new Field2Query();
+			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
 			Assert.AreEqual(12, results.Count);
 		}
 
 		[Test]
-		public void TwoQueries_Anded_RecordTokensAreSortedByFirstQueryPrimarilyAndSecondQuerySecondarily()
+		public void JoinInner_QueriesHaveDifferingSortOrders_RecordTokensAreSortedByFirstQueryPrimarilyAndSecondQuerySecondarily()
 		{
 			CreateItemInRepo(1, 4, 1, 3, 6);
 			CreateItemInRepo(3, 2, 4, 2, 5);
-			IQuery<SimpleObject> field1Query = new Field1Query() & new Field2Query();
+			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
 			Assert.AreEqual(1, results[0]["Field1"]);
 			Assert.AreEqual(6, results[0]["Field2"]);
@@ -115,6 +115,63 @@ namespace Palaso.Tests.Data
 
 			Assert.AreEqual(2, results[5]["Field1"]);
 			Assert.AreEqual(2, results[5]["Field2"]);
+		}
+
+		[Test]
+		public void Merge_QueriesReturnDifferentNumberOfResults_ReturnsSumOfFields()
+		{
+			CreateItemInRepo(1, 4, 1, 3, 6);
+			CreateItemInRepo(3, 2, 4, 2, 5);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+			Assert.AreEqual(10, results.Count);
+		}
+
+		[Test]
+		public void Merge_QueriesHaveDifferentSortOrders_SortOfFirstQueryWins()
+		{
+			CreateItemInRepo(1, 4, 1, 9, 6);
+			CreateItemInRepo(3, 7, 4, 2, 5);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field1", "Field2" } };
+			IQuery<SimpleObject> mergeQuery = new Field2Query().Merge(new Field1Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+			Assert.AreEqual(9, results[0]["Field2"]);
+			Assert.AreEqual(7, results[1]["Field2"]);
+
+			Assert.AreEqual(6, results[2]["Field2"]);
+			Assert.AreEqual(5, results[3]["Field2"]);
+
+			Assert.AreEqual(4, results[4]["Field2"]);
+			Assert.AreEqual(4, results[5]["Field2"]);
+
+			Assert.AreEqual(3, results[6]["Field2"]);
+			Assert.AreEqual(2, results[7]["Field2"]);
+
+			Assert.AreEqual(1, results[8]["Field2"]);
+			Assert.AreEqual(1, results[9]["Field2"]);
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Merge_KeyMapHasBogusKey_Throws()
+		{
+			CreateItemInRepo(1, 4, 1, 9, 6);
+			CreateItemInRepo(3, 7, 4, 2, 5);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "bogus", "Field1" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Merge_KeyMapHasBogusValue_Throws()
+		{
+			CreateItemInRepo(1, 4, 1, 9, 6);
+			CreateItemInRepo(3, 7, 4, 2, 5);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "bogus" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 		}
 
 		private SimpleObject CreateItemInRepo(int field1_0, int field1_1, int field2_0, int field2_1, int field2_2)
@@ -176,7 +233,6 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field1", item.Field1[i]);
-					tokenFieldLabelsAndValues.Add("Field1ListItem", i);
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -188,8 +244,7 @@ namespace Palaso.Tests.Data
 				{
 					return new List<SortDefinition>
 							   {
-								   new SortDefinition("Field1", new GreaterThan()),
-								   new SortDefinition("Field1ListItem", new GreaterThan())
+								   new SortDefinition("Field1", new GreaterThan())
 							   };
 				}
 			}
@@ -209,7 +264,6 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field2", item.Field2[i]);
-					tokenFieldLabelsAndValues.Add("Field2ListItem", i);
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -221,8 +275,7 @@ namespace Palaso.Tests.Data
 				{
 					return new List<SortDefinition>
 							   {
-								   new SortDefinition("Field2", new LessThan()),
-								   new SortDefinition("Field2ListItem", new GreaterThan())
+								   new SortDefinition("Field2", new LessThan())
 							   };
 				}
 			}
@@ -230,6 +283,40 @@ namespace Palaso.Tests.Data
 			public override string UniqueLabel
 			{
 				get { return "Field2Query"; }
+			}
+		}
+
+		private class TwoFieldsInRTQuery : IQuery<SimpleObject>
+		{
+
+			public override IEnumerable<IDictionary<string, object>> GetResults(SimpleObject item)
+			{
+				List<IDictionary<string, object>> results = new List<IDictionary<string, object>>();
+				Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
+				for (int i = 0; i < item.Field1.Count;i++)
+				{
+					tokenFieldLabelsAndValues.Add("Field1", item.Field1[i]);
+					tokenFieldLabelsAndValues.Add("Field1ListItem", i);
+				}
+				results.Add(tokenFieldLabelsAndValues);
+				return results;
+			}
+
+			public override IEnumerable<SortDefinition> SortDefinitions
+			{
+				get
+				{
+					return new List<SortDefinition>
+							   {
+								   new SortDefinition("Field1", new GreaterThan()),
+								   new SortDefinition("Field1ListItem", new GreaterThan())
+							   };
+				}
+			}
+
+			public override string UniqueLabel
+			{
+				get { return "Field1Query"; }
 			}
 		}
 	}
