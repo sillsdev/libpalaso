@@ -12,11 +12,15 @@ namespace Palaso.Tests.Data
 	public class IQueryTests
 	{
 		private MemoryDataMapper<SimpleObject> _repo;
+		private SimpleObject _item1;
+		private SimpleObject _item2;
 
 		[SetUp]
 		public void Setup()
 		{
 			_repo = new MemoryDataMapper<SimpleObject>();
+			_item1 = _repo.CreateItem();
+			_item2 = _repo.CreateItem();
 		}
 
 		[TearDown]
@@ -28,8 +32,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void Query1_ReturnsField1SortedAscending()
 		{
-			CreateItemInRepo(1, 2, 0, 0, 0);
-			CreateItemInRepo(3, 4, 0, 0, 0);
+			AddValuesToField(_item1.Field1, 1,2);
+			AddValuesToField(_item1.Field2, 0,0,0);
+			AddValuesToField(_item2.Field1, 3,4);
+			AddValuesToField(_item2.Field2, 0,0,0);
 			IQuery<SimpleObject> field1Query = new Field1Query();
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
 			Assert.AreEqual(1, results[0]["Field1"]);
@@ -41,8 +47,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void Query1_DuplicateValues_DoesNotThrow()
 		{
-			CreateItemInRepo(1, 2, 0, 0, 0);
-			CreateItemInRepo(3, 1, 0, 0, 0);
+			AddValuesToField(_item1.Field1, 1,2);
+			AddValuesToField(_item1.Field2, 0,0,0);
+			AddValuesToField(_item2.Field1, 3,1);
+			AddValuesToField(_item2.Field2, 0,0,0);
 			IQuery<SimpleObject> field1Query = new Field1Query();
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
 			Assert.AreEqual(1, results[0]["Field1"]);
@@ -54,8 +62,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void Query2_ReturnsField2SortedDescending()
 		{
-			CreateItemInRepo(0, 0, 1, 3, 6);
-			CreateItemInRepo(0, 0, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 0,0);
+			AddValuesToField(_item1.Field2, 1,3,6);
+			AddValuesToField(_item2.Field1, 0,0);
+			AddValuesToField(_item2.Field2, 4,2,5);
 			Field2Query field2Query = new Field2Query();
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field2Query);
 			Assert.AreEqual(6, results[0]["Field2"]);
@@ -69,8 +79,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void Query2_DuplicateValues_DoesNotThrow()
 		{
-			CreateItemInRepo(0, 0, 1, 3, 5);
-			CreateItemInRepo(0, 0, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 0,0);
+			AddValuesToField(_item1.Field2, 1,3,5);
+			AddValuesToField(_item2.Field1, 0,0);
+			AddValuesToField(_item2.Field2, 4,2,5);
 			Field2Query field2Query = new Field2Query();
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field2Query);
 			Assert.AreEqual(5, results[0]["Field2"]);
@@ -84,8 +96,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void JoinInner_TwoQueriesWithDifferentNumberOfResults_ReturnsNumberOfResultsOfQueryResultWithGreaterNumberOfFields()
 		{
-			CreateItemInRepo(1, 4, 1, 3, 6);
-			CreateItemInRepo(3, 2, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 1,4);
+			AddValuesToField(_item1.Field2, 1,3,6);
+			AddValuesToField(_item2.Field1, 3,2);
+			AddValuesToField(_item2.Field2, 4,2,5);
 			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
 			Assert.AreEqual(12, results.Count);
@@ -94,8 +108,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void JoinInner_QueriesHaveDifferingSortOrders_RecordTokensAreSortedByFirstQueryPrimarilyAndSecondQuerySecondarily()
 		{
-			CreateItemInRepo(1, 4, 1, 3, 6);
-			CreateItemInRepo(3, 2, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 1, 4);
+			AddValuesToField(_item1.Field2, 1, 3, 6);
+			AddValuesToField(_item2.Field1, 3, 2);
+			AddValuesToField(_item2.Field2, 4, 2, 5);
 			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
 			Assert.AreEqual(1, results[0]["Field1"]);
@@ -120,8 +136,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void Merge_QueriesReturnDifferentNumberOfResults_ReturnsSumOfFields()
 		{
-			CreateItemInRepo(1, 4, 1, 3, 6);
-			CreateItemInRepo(3, 2, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 1, 4);
+			AddValuesToField(_item1.Field2, 1, 3, 6);
+			AddValuesToField(_item2.Field1, 3, 2);
+			AddValuesToField(_item2.Field2, 4, 2, 5);
 			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
@@ -131,8 +149,10 @@ namespace Palaso.Tests.Data
 		[Test]
 		public void Merge_QueriesHaveDifferentSortOrders_SortOfFirstQueryWins()
 		{
-			CreateItemInRepo(1, 4, 1, 9, 6);
-			CreateItemInRepo(3, 7, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 1,4);
+			AddValuesToField(_item1.Field2, 1,9,6);
+			AddValuesToField(_item2.Field1, 3,7);
+			AddValuesToField(_item2.Field2, 4,2,5);
 			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field1", "Field2" } };
 			IQuery<SimpleObject> mergeQuery = new Field2Query().Merge(new Field1Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
@@ -156,8 +176,10 @@ namespace Palaso.Tests.Data
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void Merge_KeyMapHasBogusKey_Throws()
 		{
-			CreateItemInRepo(1, 4, 1, 9, 6);
-			CreateItemInRepo(3, 7, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 1, 4);
+			AddValuesToField(_item1.Field2, 1, 9, 6);
+			AddValuesToField(_item2.Field1, 3, 7);
+			AddValuesToField(_item2.Field2, 4, 2, 5);
 			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "bogus", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
@@ -167,26 +189,77 @@ namespace Palaso.Tests.Data
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void Merge_KeyMapHasBogusValue_Throws()
 		{
-			CreateItemInRepo(1, 4, 1, 9, 6);
-			CreateItemInRepo(3, 7, 4, 2, 5);
+			AddValuesToField(_item1.Field1, 1, 4);
+			AddValuesToField(_item1.Field2, 1, 9, 6);
+			AddValuesToField(_item2.Field1, 3, 7);
+			AddValuesToField(_item2.Field2, 4, 2, 5);
 			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "bogus" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 		}
 
-		private SimpleObject CreateItemInRepo(int field1_0, int field1_1, int field2_0, int field2_1, int field2_2)
+		[Test]
+		public void GetAlternative_NothingInField_ReturnsAlternateField()
 		{
-			SimpleObject item = _repo.CreateItem();
-			item.Field1 = new List<int>(){ field1_0, field1_1 };
-			item.Field2 = new List<int>(){field2_0, field2_1, field2_2};
-			_repo.SaveItem(item);
-			return item;
+			AddValuesToField(_item1.Field2, 1);
+			AddValuesToField(_item2.Field2, 4);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+			Assert.AreEqual(1, results[0]["Field1"]);
+			Assert.AreEqual(4, results[1]["Field1"]);
+		}
+
+		[Test]
+		public void GetAlternative_NothingInFieldButAlternateNotEmpty_SortsAccordingToFirstQuery()
+		{
+			AddValuesToField(_item1.Field1, 1,3);
+			AddValuesToField(_item2.Field2, 2);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+			Assert.AreEqual(1, results[0]["Field1"]);
+			Assert.AreEqual(2, results[1]["Field1"]);
+			Assert.AreEqual(3, results[2]["Field1"]);
+		}
+
+		[Test]
+		public void GetAlternative_FirstFieldNotEmpty_ReturnsValuesInField()
+		{
+			AddValuesToField(_item1.Field1, 1);
+			AddValuesToField(_item1.Field2, 9);
+			AddValuesToField(_item2.Field1, 3);
+			AddValuesToField(_item2.Field2, 4);
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+			Assert.AreEqual(1, results[0]["Field1"]);
+			Assert.AreEqual(3, results[1]["Field1"]);
+		}
+
+		[Test]
+		public void GetAlternative_BothFieldsEmptyEmpty_ReturnsUnpopulatedDictionary()
+		{
+			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
+			Assert.AreEqual(2, results.Count);
+			Assert.AreEqual("", results[0]["Field1"]);
+			Assert.AreEqual("", results[1]["Field1"]);
+		}
+
+		private void AddValuesToField(List<int> field, params int[] valuesToAdd)
+		{
+			foreach (int value in valuesToAdd)
+			{
+				field.Add(value);
+			}
 		}
 
 		private class SimpleObject
 		{
-			public List<int> Field1;
-			public List<int> Field2;
+			public List<int> Field1 = new List<int>();
+			public List<int> Field2 = new List<int>();
 		}
 
 		private class GreaterThan:Comparer<int>
@@ -253,6 +326,11 @@ namespace Palaso.Tests.Data
 			{
 				get { return "Field1Query"; }
 			}
+
+			public override bool WouldReturnUnpopulatedResult(SimpleObject t)
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 		private class Field2Query : IQuery<SimpleObject>
@@ -283,6 +361,11 @@ namespace Palaso.Tests.Data
 			public override string UniqueLabel
 			{
 				get { return "Field2Query"; }
+			}
+
+			public override bool WouldReturnUnpopulatedResult(SimpleObject t)
+			{
+				throw new NotImplementedException();
 			}
 		}
 
@@ -317,6 +400,11 @@ namespace Palaso.Tests.Data
 			public override string UniqueLabel
 			{
 				get { return "Field1Query"; }
+			}
+
+			public override bool WouldReturnUnpopulatedResult(SimpleObject t)
+			{
+				throw new NotImplementedException();
 			}
 		}
 	}
