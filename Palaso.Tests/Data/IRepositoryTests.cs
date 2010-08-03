@@ -24,6 +24,11 @@ namespace Palaso.Tests.Data
 		{
 			get { throw new NotImplementedException(); }
 		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> resultToCheck)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public abstract class IRepositoryStateUnitializedTests<T> where T : class, new()

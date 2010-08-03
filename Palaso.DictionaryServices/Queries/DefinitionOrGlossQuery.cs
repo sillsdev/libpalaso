@@ -102,5 +102,10 @@ namespace Palaso.DictionaryServices.Queries
 		{
 			get { return "DefinitionOrGlossQuery" + _writingSystemDefinition.Id; }
 		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

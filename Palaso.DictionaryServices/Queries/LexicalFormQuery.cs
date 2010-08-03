@@ -43,5 +43,10 @@ namespace Palaso.DictionaryServices.Queries
 		{
 			get { return "LexicalFormQuery"; }
 		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

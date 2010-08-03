@@ -52,5 +52,10 @@ namespace Palaso.DictionaryServices.Queries
 		{
 			get { return "HeadwordQuery" + _writingSystemDefinition.Id; }
 		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
