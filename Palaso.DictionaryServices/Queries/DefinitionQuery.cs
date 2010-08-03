@@ -11,6 +11,7 @@ namespace Palaso.DictionaryServices.Queries
 {
 	class DefinitionQuery:IQuery<LexEntry>
 	{
+		private string _fieldLabel = "Form";
 		private IComparer _comparer;
 		private WritingSystemDefinition _writingSystemDefinition;
 
@@ -30,23 +31,44 @@ namespace Palaso.DictionaryServices.Queries
 		{
 
 			var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
-
+			if(entryToQuery.Senses.Count == 0)
+			{
+				IDictionary<string, object> tokenFieldsAndValues =
+						PopulateResults(null, entryToQuery.Guid, null);
+				fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+			}
 			foreach (LexSense sense in entryToQuery.Senses)
 			{
 				var rawDefinition = sense.Definition[_writingSystemDefinition.Id];
-				var definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
-				foreach (string definition in definitions)
+				if (String.IsNullOrEmpty(rawDefinition) || rawDefinition.Trim() == ";")
 				{
-					IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-					tokenFieldsAndValues.Add("Form", definition);
+					IDictionary<string, object>  tokenFieldsAndValues =
+						PopulateResults(null, entryToQuery.Guid, sense.GetOrCreateId());
 					fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+				}
+				else
+				{
+					List<string> definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
+					foreach (string definition in definitions)
+					{
+						IDictionary<string, object> tokenFieldsAndValues =
+							PopulateResults(definition, entryToQuery.Guid, sense.GetOrCreateId());
+						fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+					}
 				}
 			}
 
 			return fieldsandValuesForRecordTokens;
 		}
 
-
+		private IDictionary<string, object> PopulateResults(string definition, Guid entryGuid, string senseGuid)
+		{
+			IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+			tokenFieldsAndValues.Add(_fieldLabel, definition);
+			tokenFieldsAndValues.Add("EntryGUID", entryGuid);
+			tokenFieldsAndValues.Add("SenseGUID", senseGuid);
+			return tokenFieldsAndValues;
+		}
 
 		private static List<string> GetTrimmedElementsSeperatedBySemiColon(string text)
 		{
@@ -63,8 +85,10 @@ namespace Palaso.DictionaryServices.Queries
 		{
 			get
 			{
-				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Form", _comparer);
+				var sortOrder = new SortDefinition[3];
+				sortOrder[0] = new SortDefinition(_fieldLabel, _comparer);
+				sortOrder[1] = new SortDefinition(KeyMap.EntryGuidFieldLabel, Comparer<Guid>.Default);
+				sortOrder[2] = new SortDefinition(KeyMap.SenseGuidFieldLabel, Comparer<String>.Default);
 				return sortOrder;
 			}
 		}
@@ -72,6 +96,11 @@ namespace Palaso.DictionaryServices.Queries
 		public override string UniqueLabel
 		{
 			get { return "DefinitionQuery"; }
+		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
+		{
+			return entryToCheckAgainst[_fieldLabel] == null;
 		}
 	}
 }
