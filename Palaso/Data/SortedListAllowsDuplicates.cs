@@ -19,32 +19,41 @@ namespace Palaso.Data
 			_comparer = Comparer<T>.Default;
 		}
 
-		public void Add(T i)
+		public void Add(T t)
 		{
 			bool listIsEmpty = (Count == 0);
 			if (listIsEmpty)
 			{
-				base.Add(i);
+				base.Add(t);
 				return;
 			}
 			bool itemToInsertIsGreaterThanLastitemInList =
-				(_comparer.Compare(i, base[Count - 1]) > 0);
+				(_comparer.Compare(t, base[Count - 1]) > 0);
 			if (itemToInsertIsGreaterThanLastitemInList)
 			{
-				base.Add(i);
+				base.Add(t);
 				return;
 			}
-			int index = BinarySearch(i, _comparer);
+			int index = BinarySearch(t, _comparer);
 			bool identicalItemAlreadyExistsInList = (index >= 0);
 			if (identicalItemAlreadyExistsInList)
 			{
-				Insert(index + 1 , i);
+				Insert(index + 1 , t);
 			}
 			else
 			{
 				int ind = ~index;
-				Insert(ind, i);
+				Insert(ind, t);
 			}
+		}
+
+		public bool Contains(T t)
+		{
+			if(BinarySearch(t, _comparer)>=0)
+			{
+				return true;
+			}
+			return false;
 		}
 	}
 }
