@@ -141,7 +141,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item2.Field1, 3, 2);
 			AddValuesToField(_item2.Field2, 4, 2, 5);
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
+			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(10, results.Count);
 		}
@@ -154,7 +154,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item2.Field1, 3,7);
 			AddValuesToField(_item2.Field2, 4,2,5);
 			KeyMap keyMap = new KeyMap { { "Field1", "Field2" } };
-			IQuery<SimpleObject> mergeQuery = new Field2Query().Merge(new Field1Query(), keyMap);
+			IQuery<SimpleObject> mergeQuery = new Field2Query().Merge(new Field1Query().RemapKeys(keyMap));
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(9, results[0]["Field2"]);
 			Assert.AreEqual(7, results[1]["Field2"]);
@@ -178,7 +178,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item1.Field2, 1);
 			AddValuesToField(_item2.Field2, 4);
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query().RemapKeys(keyMap));
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results[0]["Field1"]);
 			Assert.AreEqual(4, results[1]["Field1"]);
@@ -190,7 +190,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item1.Field1, 1,3);
 			AddValuesToField(_item2.Field2, 2);
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query().RemapKeys(keyMap));
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results[0]["Field1"]);
 			Assert.AreEqual(2, results[1]["Field1"]);
@@ -205,7 +205,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item2.Field1, 3);
 			AddValuesToField(_item2.Field2, 4);
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results[0]["Field1"]);
 			Assert.AreEqual(3, results[1]["Field1"]);
@@ -215,7 +215,7 @@ namespace Palaso.Tests.Data
 		public void GetAlternative_BothFieldsEmpty_ReturnsUnpopulatedResults()
 		{
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(2, results.Count);
 			Assert.AreEqual(null, results[0]["Field1"]);
@@ -236,7 +236,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item1.Field1, 1,1,2);
 			AddValuesToField(_item1.Field2, 1,3);
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> strippedQuery = (new Field1Query().Merge(new Field2Query(), keyMap)).StripAllUnpopulatedEntries().StripDuplicates();
+			IQuery<SimpleObject> strippedQuery = (new Field1Query().Merge(new Field2Query().RemapKeys(keyMap))).StripAllUnpopulatedEntries().StripDuplicates();
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(strippedQuery);
 			Assert.AreEqual(3, results.Count);
 			Assert.AreEqual(1, results[0]["Field1"]);

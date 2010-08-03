@@ -62,19 +62,14 @@ namespace Palaso.Data
 			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
 		}
 
-		public IQuery<T> Merge(IQuery<T> otherQuery, KeyMap keyMap)
+		public IQuery<T> Merge(IQuery<T> otherQuery)
 		{
 			DelegateQuery<T>.DelegateMethod newGetResults =
 				delegate(T t)
 				{
 					List<IDictionary<string, object>> combinedResults = new List<IDictionary<string, object>>();
 					combinedResults.AddRange(GetResults(t));
-
-					foreach (IDictionary<string, object> dictionary in otherQuery.GetResults(t))
-					{
-						Dictionary<string, object> dictionaryWithRenamedKeys = keyMap.Remap(dictionary);
-						combinedResults.Add(dictionaryWithRenamedKeys);
-					}
+					combinedResults.AddRange(otherQuery.GetResults(t));
 					return combinedResults;
 				};
 
@@ -88,35 +83,43 @@ namespace Palaso.Data
 			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
 		}
 
-		public IQuery<T> GetAlternative(IQuery<T> otherQuery, KeyMap keyMap)
+		public IQuery<T> RemapKeys(KeyMap keyMap)
+		{
+
+			DelegateQuery<T>.DelegateMethod newGetResults =
+				delegate(T t)
+				{
+					List<IDictionary<string, object>> remappedResults = new List<IDictionary<string, object>>();
+
+					foreach (IDictionary<string, object> dictionary in GetResults(t))
+					{
+						Dictionary<string, object> dictionaryWithRenamedKeys = keyMap.Remap(dictionary);
+						remappedResults.Add(dictionaryWithRenamedKeys);
+					}
+					return remappedResults;
+				};
+
+			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
+			newSortDefinitions.AddRange(this.SortDefinitions);
+
+			string newUniqueLabel = this.UniqueLabel + ".Remap";
+
+			Predicate<IDictionary<string, object>> newIsUnpopulated = IsUnpopulated;
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		public IQuery<T> GetAlternative(IQuery<T> otherQuery)
 		{
 			DelegateQuery<T>.DelegateMethod newGetResults =
 				delegate(T t)
 				{
-					bool noPopulatedResultsReturned = true;
-					foreach (IDictionary<string, object> result in GetResults(t))
+					if (NoPopulatedResultsReturnedByFirstQuery(t))
 					{
-						if (!IsUnpopulated(result))
-						{
-							noPopulatedResultsReturned = false;
-							break;
-						}
+
+						return otherQuery.GetResults(t);
 					}
-					IEnumerable<IDictionary<string, object>> resultsFromThisQuery = GetResults(t);
-
-					if (noPopulatedResultsReturned)
-					{
-						List<IDictionary<string, object>> relabeledResultsFromOtherQuery = new List<IDictionary<string, object>> ();
-
-						foreach (IDictionary<string, object> dictionary in otherQuery.GetResults(t))
-						{
-							Dictionary<string, object> dictionaryWithRenamedKeys = keyMap.Remap(dictionary);
-
-							relabeledResultsFromOtherQuery.Add(dictionaryWithRenamedKeys);
-						}
-						return relabeledResultsFromOtherQuery;
-					}
-					return resultsFromThisQuery;
+					return GetResults(t);
 				};
 
 			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
@@ -131,6 +134,20 @@ namespace Palaso.Data
 				};
 
 			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		private bool NoPopulatedResultsReturnedByFirstQuery(T t)
+		{
+			bool noPopulatedResultsReturned = true;
+			foreach (IDictionary<string, object> result in GetResults(t))
+			{
+				if (!IsUnpopulated(result))
+				{
+					noPopulatedResultsReturned = false;
+					break;
+				}
+			}
+			return noPopulatedResultsReturned;
 		}
 
 		public IQuery<T> StripAllUnpopulatedEntries()
