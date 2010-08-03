@@ -140,7 +140,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item1.Field2, 1, 3, 6);
 			AddValuesToField(_item2.Field1, 3, 2);
 			AddValuesToField(_item2.Field2, 4, 2, 5);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(10, results.Count);
@@ -153,7 +153,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item1.Field2, 1,9,6);
 			AddValuesToField(_item2.Field1, 3,7);
 			AddValuesToField(_item2.Field2, 4,2,5);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field1", "Field2" } };
+			KeyMap keyMap = new KeyMap { { "Field1", "Field2" } };
 			IQuery<SimpleObject> mergeQuery = new Field2Query().Merge(new Field1Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(9, results[0]["Field2"]);
@@ -173,37 +173,11 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void Merge_KeyMapHasBogusKey_Throws()
-		{
-			AddValuesToField(_item1.Field1, 1, 4);
-			AddValuesToField(_item1.Field2, 1, 9, 6);
-			AddValuesToField(_item2.Field1, 3, 7);
-			AddValuesToField(_item2.Field2, 4, 2, 5);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "bogus", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
-			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
-		}
-
-		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void Merge_KeyMapHasBogusValue_Throws()
-		{
-			AddValuesToField(_item1.Field1, 1, 4);
-			AddValuesToField(_item1.Field2, 1, 9, 6);
-			AddValuesToField(_item2.Field1, 3, 7);
-			AddValuesToField(_item2.Field2, 4, 2, 5);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "bogus" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().Merge(new Field2Query(), keyMap);
-			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
-		}
-
-		[Test]
 		public void GetAlternative_NothingInField_ReturnsAlternateField()
 		{
 			AddValuesToField(_item1.Field2, 1);
 			AddValuesToField(_item2.Field2, 4);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results[0]["Field1"]);
@@ -215,7 +189,7 @@ namespace Palaso.Tests.Data
 		{
 			AddValuesToField(_item1.Field1, 1,3);
 			AddValuesToField(_item2.Field2, 2);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results[0]["Field1"]);
@@ -230,7 +204,7 @@ namespace Palaso.Tests.Data
 			AddValuesToField(_item1.Field2, 9);
 			AddValuesToField(_item2.Field1, 3);
 			AddValuesToField(_item2.Field2, 4);
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results[0]["Field1"]);
@@ -238,14 +212,36 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		public void GetAlternative_BothFieldsEmptyEmpty_ReturnsUnpopulatedDictionary()
+		public void GetAlternative_BothFieldsEmpty_ReturnsUnpopulatedResults()
 		{
-			Dictionary<string, string> keyMap = new Dictionary<string, string> { { "Field2", "Field1" } };
+			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
 			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query(), keyMap);
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(2, results.Count);
-			Assert.AreEqual("", results[0]["Field1"]);
-			Assert.AreEqual("", results[1]["Field1"]);
+			Assert.AreEqual(null, results[0]["Field1"]);
+			Assert.AreEqual(null, results[1]["Field1"]);
+		}
+
+		[Test]
+		public void StripUnpopulated_ResultsContainOnlyNullValues_AreStripped()
+		{
+			IQuery<SimpleObject> strippedQuery = new Field1Query().StripAllUnpopulatedEntries();
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(strippedQuery);
+			Assert.AreEqual(0, results.Count);
+		}
+
+		[Test]
+		public void StripDuplicates_ResultContainDuplicates_AreStripped()
+		{
+			AddValuesToField(_item1.Field1, 1,1,2);
+			AddValuesToField(_item1.Field2, 1,3);
+			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
+			IQuery<SimpleObject> strippedQuery = (new Field1Query().Merge(new Field2Query(), keyMap)).StripAllUnpopulatedEntries().StripDuplicates();
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(strippedQuery);
+			Assert.AreEqual(3, results.Count);
+			Assert.AreEqual(1, results[0]["Field1"]);
+			Assert.AreEqual(2, results[1]["Field1"]);
+			Assert.AreEqual(3, results[2]["Field1"]);
 		}
 
 		private void AddValuesToField(List<int> field, params int[] valuesToAdd)
@@ -306,6 +302,14 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field1", item.Field1[i]);
+					tokenFieldLabelsAndValues.Add("object", item);
+					results.Add(tokenFieldLabelsAndValues);
+				}
+				if(results.Count == 0)
+				{
+					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
+					tokenFieldLabelsAndValues.Add("Field1", null);
+					tokenFieldLabelsAndValues.Add("object", item);
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -327,9 +331,9 @@ namespace Palaso.Tests.Data
 				get { return "Field1Query"; }
 			}
 
-			public override bool WouldReturnUnpopulatedResult(SimpleObject t)
+			public override bool IsUnpopulated(IDictionary<string, object> resultToCheck)
 			{
-				throw new NotImplementedException();
+				return resultToCheck["Field1"] == null;
 			}
 		}
 
@@ -342,6 +346,14 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field2", item.Field2[i]);
+					tokenFieldLabelsAndValues.Add("object", item);
+					results.Add(tokenFieldLabelsAndValues);
+				}
+				if (results.Count == 0)
+				{
+					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
+					tokenFieldLabelsAndValues.Add("Field2", null);
+					tokenFieldLabelsAndValues.Add("object", item);
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -363,48 +375,9 @@ namespace Palaso.Tests.Data
 				get { return "Field2Query"; }
 			}
 
-			public override bool WouldReturnUnpopulatedResult(SimpleObject t)
+			public override bool IsUnpopulated(IDictionary<string, object> resultToCheck)
 			{
-				throw new NotImplementedException();
-			}
-		}
-
-		private class TwoFieldsInRTQuery : IQuery<SimpleObject>
-		{
-
-			public override IEnumerable<IDictionary<string, object>> GetResults(SimpleObject item)
-			{
-				List<IDictionary<string, object>> results = new List<IDictionary<string, object>>();
-				Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
-				for (int i = 0; i < item.Field1.Count;i++)
-				{
-					tokenFieldLabelsAndValues.Add("Field1", item.Field1[i]);
-					tokenFieldLabelsAndValues.Add("Field1ListItem", i);
-				}
-				results.Add(tokenFieldLabelsAndValues);
-				return results;
-			}
-
-			public override IEnumerable<SortDefinition> SortDefinitions
-			{
-				get
-				{
-					return new List<SortDefinition>
-							   {
-								   new SortDefinition("Field1", new GreaterThan()),
-								   new SortDefinition("Field1ListItem", new GreaterThan())
-							   };
-				}
-			}
-
-			public override string UniqueLabel
-			{
-				get { return "Field1Query"; }
-			}
-
-			public override bool WouldReturnUnpopulatedResult(SimpleObject t)
-			{
-				throw new NotImplementedException();
+				return resultToCheck["Field2"] == null;
 			}
 		}
 	}

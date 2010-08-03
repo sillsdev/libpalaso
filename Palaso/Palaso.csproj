@@ -102,6 +102,7 @@
 	<Compile Include="Data\DictionaryEqualityComparer.cs" />
 	<Compile Include="Data\IDataMapper.cs" />
 	<Compile Include="Data\IQuery.cs" />
+	<Compile Include="Data\KeyMap.cs" />
 	<Compile Include="Data\MemoryDataMapper.cs" />
 	<Compile Include="Data\PreciseDateTime.cs" />
 	<Compile Include="Data\RecordToken.cs" />

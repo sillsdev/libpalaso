@@ -11,6 +11,7 @@ namespace Palaso.Data
 		abstract public IEnumerable<IDictionary<string, object>> GetResults(T item);
 		abstract public IEnumerable<SortDefinition> SortDefinitions { get; }
 		abstract public string UniqueLabel { get; }
+		public abstract bool IsUnpopulated(IDictionary<string, object> resultToCheck);
 
 		public IQuery<T> JoinInner(IQuery<T> otherQuery)
 		{
@@ -27,7 +28,18 @@ namespace Palaso.Data
 							Dictionary<string,object> newDictionary = new Dictionary<string, object>();
 							foreach (KeyValuePair<string, object> labelValuePair in thisQueryResult.Concat(thatQueryResult))
 							{
-								newDictionary.Add(labelValuePair.Key, labelValuePair.Value);
+								if (!newDictionary.ContainsKey(labelValuePair.Key))
+								{
+									newDictionary.Add(labelValuePair.Key, labelValuePair.Value);
+								}
+								else if(newDictionary[labelValuePair.Key] == labelValuePair.Value)
+								{
+									//do nothing
+								}
+								else
+								{
+									throw new InvalidOperationException(String.Format("The key '{0}' occurs in both results and the content is not identical.", labelValuePair.Key));
+								}
 							}
 							combinedResults.Add(newDictionary);
 						}
@@ -41,23 +53,26 @@ namespace Palaso.Data
 
 			string newUniqueLabel = this.UniqueLabel + ".JoinInner." + otherQuery.UniqueLabel;
 
-			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel);
+			Predicate<IDictionary<string, object>> newIsUnpopulated =
+				delegate(IDictionary<string, object> result)
+					{
+						return IsUnpopulated(result) & otherQuery.IsUnpopulated(result);
+					};
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
 		}
 
-		public IQuery<T> Merge(IQuery<T> otherQuery, Dictionary<string, string> keyMap)
+		public IQuery<T> Merge(IQuery<T> otherQuery, KeyMap keyMap)
 		{
 			DelegateQuery<T>.DelegateMethod newGetResults =
 				delegate(T t)
 				{
 					List<IDictionary<string, object>> combinedResults = new List<IDictionary<string, object>>();
-					combinedResults.AddRange(this.GetResults(t));
-					if (combinedResults.Count != 0)
-					{
-						CheckThatKeyMapValuesCorrespondToFieldLabelsOfFirstQuery(combinedResults[0], keyMap);
-					}
+					combinedResults.AddRange(GetResults(t));
+
 					foreach (IDictionary<string, object> dictionary in otherQuery.GetResults(t))
 					{
-						Dictionary<string, object> dictionaryWithRenamedKeys = RenameKeysInDictionary(keyMap, dictionary);
+						Dictionary<string, object> dictionaryWithRenamedKeys = keyMap.Remap(dictionary);
 						combinedResults.Add(dictionaryWithRenamedKeys);
 					}
 					return combinedResults;
@@ -65,38 +80,159 @@ namespace Palaso.Data
 
 			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
 			newSortDefinitions.AddRange(this.SortDefinitions);
-			newSortDefinitions.AddRange(otherQuery.SortDefinitions);
 
 			string newUniqueLabel = this.UniqueLabel + ".Merge." + otherQuery.UniqueLabel;
 
-			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel);
+			Predicate<IDictionary<string, object>> newIsUnpopulated = IsUnpopulated;
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
 		}
 
-		private Dictionary<string, object> RenameKeysInDictionary(Dictionary<string, string> keyMap, IDictionary<string, object> dictionary)
+		public IQuery<T> GetAlternative(IQuery<T> otherQuery, KeyMap keyMap)
 		{
-			Dictionary<string, object> dictionaryWithRenamedKeys = new Dictionary<string, object>();
-			foreach (KeyValuePair<string, object> pair in dictionary)
+			DelegateQuery<T>.DelegateMethod newGetResults =
+				delegate(T t)
+				{
+					bool noPopulatedResultsReturned = true;
+					foreach (IDictionary<string, object> result in GetResults(t))
+					{
+						if (!IsUnpopulated(result))
+						{
+							noPopulatedResultsReturned = false;
+							break;
+						}
+					}
+					IEnumerable<IDictionary<string, object>> resultsFromThisQuery = GetResults(t);
+
+					if (noPopulatedResultsReturned)
+					{
+						List<IDictionary<string, object>> relabeledResultsFromOtherQuery = new List<IDictionary<string, object>> ();
+
+						foreach (IDictionary<string, object> dictionary in otherQuery.GetResults(t))
+						{
+							Dictionary<string, object> dictionaryWithRenamedKeys = keyMap.Remap(dictionary);
+
+							relabeledResultsFromOtherQuery.Add(dictionaryWithRenamedKeys);
+						}
+						return relabeledResultsFromOtherQuery;
+					}
+					return resultsFromThisQuery;
+				};
+
+			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
+			newSortDefinitions.AddRange(this.SortDefinitions);
+
+			string newUniqueLabel = this.UniqueLabel + ".GetAlternative." + otherQuery.UniqueLabel;
+
+			Predicate<IDictionary<string, object>> newIsUnpopulated =
+				delegate(IDictionary<string, object> result)
+				{
+					return IsUnpopulated(result) & otherQuery.IsUnpopulated(result);
+				};
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		public IQuery<T> StripAllUnpopulatedEntries()
+		{
+			Predicate<IDictionary<string, object>> unpopulatedPredicate = IsUnpopulated;
+			return Strip(unpopulatedPredicate, "Unpopulated");
+		}
+
+		public IQuery<T> Strip(Predicate<IDictionary<string, object>> condition, string label)
+		{
+			DelegateQuery<T>.DelegateMethod newGetResults =
+				delegate(T t)
+				{
+					ResultsComparer resultsComparer = new ResultsComparer(this.SortDefinitions);
+					SortedListAllowsDuplicates<IDictionary<string, object>> strippedResults
+						= new SortedListAllowsDuplicates<IDictionary<string, object>>(resultsComparer);
+					foreach (IDictionary<string, object> result in GetResults(t))
+					{
+						if (!condition(result))
+						{
+							strippedResults.Add(result);
+						}
+					}
+
+					return strippedResults;
+				};
+
+			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
+			newSortDefinitions.AddRange(this.SortDefinitions);
+
+			string newUniqueLabel = this.UniqueLabel + ".Strip" + label;
+
+			Predicate<IDictionary<string, object>> newIsUnpopulated = IsUnpopulated;
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		public IQuery<T> StripDuplicates()
+		{
+			DelegateQuery<T>.DelegateMethod newGetResults =
+				delegate(T t)
+				{
+					ResultsComparer resultsComparer = new ResultsComparer(this.SortDefinitions);
+					SortedListAllowsDuplicates<IDictionary<string, object>> strippedResults
+						= new SortedListAllowsDuplicates<IDictionary<string, object>>(resultsComparer);
+					foreach (IDictionary<string, object> result in GetResults(t))
+					{
+						if(!strippedResults.Contains(result))
+						{
+							strippedResults.Add(result);
+						}
+					}
+
+					return strippedResults;
+				};
+
+			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
+			newSortDefinitions.AddRange(this.SortDefinitions);
+
+			string newUniqueLabel = this.UniqueLabel + ".StripDuplicates";
+
+			Predicate<IDictionary<string, object>> newIsUnpopulated = IsUnpopulated;
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		public IQuery<T> GetUnpopulatedRecordsOnly()
+		{
+			DelegateQuery<T>.DelegateMethod newGetResults =
+				delegate(T t)
+				{
+					throw new NotImplementedException();
+				};
+
+			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
+			newSortDefinitions.AddRange(this.SortDefinitions);
+
+			string newUniqueLabel = this.UniqueLabel + ".StripDuplicates";
+
+			Predicate<IDictionary<string, object>> newIsUnpopulated = IsUnpopulated;
+
+			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		private class ResultsComparer:IComparer<IDictionary<string, object>>
+		{
+			private IEnumerable<SortDefinition> _sortDefinitions;
+
+			public ResultsComparer(IEnumerable<SortDefinition> sortDefinitions)
 			{
-				try
-				{
-					dictionaryWithRenamedKeys.Add(keyMap[pair.Key], pair.Value);
-				}
-				catch(KeyNotFoundException)
-				{
-					throw new InvalidOperationException(String.Format("The results produced by the second query do not contain a field labeled {0}.", pair.Key));
-				}
+				_sortDefinitions = sortDefinitions;
 			}
-			return dictionaryWithRenamedKeys;
-		}
 
-		private void CheckThatKeyMapValuesCorrespondToFieldLabelsOfFirstQuery(IDictionary<string, object> sampleResult, Dictionary<string, string> keyMap)
-		{
-			foreach (string value in keyMap.Values)
+			public int Compare(IDictionary<string, object> x, IDictionary<string, object> y)
 			{
-				if (!sampleResult.Keys.Contains(value))
+				int relation = 0;
+				foreach (SortDefinition sortDefinition in _sortDefinitions)
 				{
-					throw new InvalidOperationException(String.Format("The results produced by the first query do not contain a field labeled {0}.", value));
+					relation = sortDefinition.Comparer.Compare(x[sortDefinition.Field], y[sortDefinition.Field]);
+					if(relation != 0) break;
 				}
+				return relation;
 			}
 		}
 	}

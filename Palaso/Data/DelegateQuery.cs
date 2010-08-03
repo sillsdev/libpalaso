@@ -8,22 +8,24 @@ namespace Palaso.Data
 	public class DelegateQuery<T> : IQuery<T> where T: class, new()
 	{
 		public delegate IEnumerable<IDictionary<string, object>> DelegateMethod(T item);
-		DelegateMethod _method;
+		DelegateMethod _columnFilter;
 		private IEnumerable<SortDefinition> _sortorder;
 		private string _uniqueLabel;
+		private Predicate<IDictionary<string, object>> _isUnpopulated;
 
-		public DelegateQuery(DelegateMethod method, IEnumerable<SortDefinition> sortorder, string uniqueLabel)
+		public DelegateQuery(DelegateMethod columnFilter, IEnumerable<SortDefinition> sortorder, string uniqueLabel, Predicate<IDictionary<string, object>> isUnpopulated)
 		{
-			_method = method;
+			_columnFilter = columnFilter;
 			_sortorder = sortorder;
 			_uniqueLabel = uniqueLabel;
+			_isUnpopulated = isUnpopulated;
 		}
 
 		#region IQuery<T> Members
 
 		public override IEnumerable<IDictionary<string, object>> GetResults(T item)
 		{
-			return _method(item);
+			return _columnFilter(item);
 		}
 
 		public override IEnumerable<SortDefinition> SortDefinitions
@@ -34,6 +36,11 @@ namespace Palaso.Data
 		public override string UniqueLabel
 		{
 			get { return _uniqueLabel; }
+		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
+		{
+			return _isUnpopulated(entryToCheckAgainst);
 		}
 
 		#endregion

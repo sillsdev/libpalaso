@@ -386,10 +386,15 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
+			IQuery<LexEntry> definitionQuery = new DefinitionQuery(writingSystemDefinition);
+			IQuery<LexEntry> glossQuery = new GlossQuery(writingSystemDefinition);
+			KeyMap glossToFormMap = new KeyMap(){{"Gloss","Form"}};
+			IQuery<LexEntry> definitionOrGlossQuery = definitionQuery.GetAlternative(glossQuery, glossToFormMap);
 
-			DefinitionOrGlossQuery definitionOrGlossQuery = new DefinitionOrGlossQuery(writingSystemDefinition);
-
-			return GetResultsFromCache(definitionOrGlossQuery);
+			KeyMap formToGlossMap = new KeyMap() { {"Form", "Gloss"} };
+			IQuery<LexEntry> glossOrDefinitionQuery = glossQuery.GetAlternative(definitionQuery, formToGlossMap);
+			IQuery<LexEntry> finalQuery = (definitionOrGlossQuery.Merge(glossOrDefinitionQuery, glossToFormMap)).StripDuplicates();
+			return GetResultsFromCache(finalQuery);
 		}
 
 		/// <summary>

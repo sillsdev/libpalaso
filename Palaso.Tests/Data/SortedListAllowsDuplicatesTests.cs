@@ -66,6 +66,29 @@ namespace Palaso.Tests.Data
 			Assert.AreEqual("aaa", sortedList[3]);
 		}
 
+		[Test]
+		public void Contains_ListContainsElement_ReturnsTrue()
+		{
+			SortedListAllowsDuplicates<string> sortedList = new SortedListAllowsDuplicates<string>(new StringLengthComparer());
+			sortedList.Add("c");
+			Assert.IsTrue(sortedList.Contains("a")); //all about length :-)
+		}
+
+		[Test]
+		public void Contains_ListDoesNotContainElement_ReturnsFalse()
+		{
+			SortedListAllowsDuplicates<string> sortedList = new SortedListAllowsDuplicates<string>(new StringLengthComparer());
+			sortedList.Add("c");
+			Assert.IsFalse(sortedList.Contains("cc"));
+		}
+
+		[Test]
+		public void Contains_ListIsEmpty_ReturnsFalse()
+		{
+			SortedListAllowsDuplicates<string> sortedList = new SortedListAllowsDuplicates<string>(new StringLengthComparer());
+			Assert.IsFalse(sortedList.Contains("c"));
+		}
+
 		private class StringLengthComparer:IComparer<string>
 		{
 			public int Compare(string x, string y)
