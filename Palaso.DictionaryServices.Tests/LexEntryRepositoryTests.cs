@@ -307,8 +307,9 @@ namespace WeSay.LexicalModel.Tests
 			lexEntryWithBothDefinitionAndAGloss.Senses.Add(new LexSense());
 			var german = WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont);
 			ResultSet<LexEntry> listOfLexEntriesSortedByDefinition = _repository.GetAllEntriesSortedByDefinitionOrGloss(german);
-			Assert.AreEqual(1, listOfLexEntriesSortedByDefinition.Count);
+			Assert.AreEqual(2, listOfLexEntriesSortedByDefinition.Count);
 			Assert.AreEqual(null, listOfLexEntriesSortedByDefinition[0]["Form"]);
+			Assert.AreEqual(null, listOfLexEntriesSortedByDefinition[1]["Form"]);
 		}
 
 		[Test]
