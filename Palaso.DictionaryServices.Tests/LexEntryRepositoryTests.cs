@@ -241,6 +241,16 @@ namespace WeSay.LexicalModel.Tests
 		}
 
 		[Test]
+		public void GetAllEntriesSortedByDefinition_NoSensesInEntry_ReturnsUnpopulatedRecord()
+		{
+			_repository.CreateItem();
+			var german = WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont);
+			ResultSet<LexEntry> listOfLexEntriesSortedByDefinition = _repository.GetAllEntriesSortedByDefinitionOrGloss(german);
+			Assert.AreEqual(1, listOfLexEntriesSortedByDefinition.Count);
+			Assert.AreEqual(null, listOfLexEntriesSortedByDefinition[0]["Form"]);
+		}
+
+		[Test]
 		public void GetAllEntriesSortedByDefinition_DefinitionsDoesNotExistInWritingSystemButGlossDoesForAllEntries_ReturnsListSortedByGloss()
 		{
 			CreateThreeDifferentLexEntries(delegate(LexEntry e)
