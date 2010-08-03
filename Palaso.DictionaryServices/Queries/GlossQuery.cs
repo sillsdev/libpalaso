@@ -9,6 +9,7 @@ namespace Palaso.DictionaryServices.Queries
 {
 	class GlossQuery : IQuery<LexEntry>
 	{
+		private string _fieldLabel = "Gloss";
 		private IComparer _comparer;
 		private WritingSystemDefinition _writingSystemDefinition;
 
@@ -28,23 +29,53 @@ namespace Palaso.DictionaryServices.Queries
 		{
 
 			var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
-
+			if (entryToQuery.Senses.Count == 0)
+			{
+				IDictionary<string, object> tokenFieldsAndValues =
+						PopulateResults(null, entryToQuery.Guid, null);
+				fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+			}
 			foreach (LexSense sense in entryToQuery.Senses)
 			{
 				var rawGloss = sense.Gloss[_writingSystemDefinition.Id];
-				var glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
-				foreach (string gloss in glosses)
+				if (String.IsNullOrEmpty(rawGloss) || rawGloss.Trim() == ";")
 				{
-					IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-					tokenFieldsAndValues.Add("Gloss", gloss);
+					IDictionary<string, object> tokenFieldsAndValues =
+						PopulateResults(null, entryToQuery.Guid, sense.GetOrCreateId());
 					fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+				}
+				else
+				{
+					List<string> glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
+					foreach (string gloss in glosses)
+					{
+						IDictionary<string, object> tokenFieldsAndValues =
+							PopulateResults(gloss, entryToQuery.Guid, sense.GetOrCreateId());
+						fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+					}
 				}
 			}
 
 			return fieldsandValuesForRecordTokens;
 		}
 
+		private IDictionary<string, object> PopulateResults(string definition, Guid entryGuid, string senseGuid)
+		{
+			IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+			tokenFieldsAndValues.Add(_fieldLabel, definition);
+			tokenFieldsAndValues.Add("EntryGUID", entryGuid);
+			tokenFieldsAndValues.Add("SenseGUID", senseGuid);
+			return tokenFieldsAndValues;
+		}
 
+		private IDictionary<string, object> GetUnpopulatedResult(LexEntry entryToQuery, LexSense sense)
+		{
+			IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+			tokenFieldsAndValues.Add(_fieldLabel, null);
+			tokenFieldsAndValues.Add("EntryGUID", entryToQuery.Guid);
+			tokenFieldsAndValues.Add("SenseGUID", sense.GetOrCreateId());
+			return tokenFieldsAndValues;
+		}
 
 		private static List<string> GetTrimmedElementsSeperatedBySemiColon(string text)
 		{
@@ -61,15 +92,22 @@ namespace Palaso.DictionaryServices.Queries
 		{
 			get
 			{
-				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Gloss", _comparer);
+				var sortOrder = new SortDefinition[3];
+				sortOrder[0] = new SortDefinition(_fieldLabel, _comparer);
+				sortOrder[1] = new SortDefinition(KeyMap.EntryGuidFieldLabel, Comparer<Guid>.Default);
+				sortOrder[2] = new SortDefinition(KeyMap.SenseGuidFieldLabel, Comparer<String>.Default);
 				return sortOrder;
 			}
 		}
 
 		public override string UniqueLabel
 		{
-			get { return "GlossQuery"; }
+			get { return _fieldLabel + "Query"; }
+		}
+
+		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
+		{
+			return entryToCheckAgainst[_fieldLabel] == null;
 		}
 	}
 }
