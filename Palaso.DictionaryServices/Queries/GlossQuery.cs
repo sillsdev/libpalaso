@@ -13,9 +13,9 @@ namespace Palaso.DictionaryServices.Queries
 		private IComparer _comparer;
 		private WritingSystemDefinition _writingSystemDefinition;
 
-		public GlossQuery(Comparer<Guid> guidComparer, WritingSystemDefinition wsDef)
+		public GlossQuery(Comparer<string> glossComparer , WritingSystemDefinition wsDef)
 		{
-			_comparer = guidComparer;
+			_comparer = glossComparer;
 			_writingSystemDefinition = wsDef;
 		}
 

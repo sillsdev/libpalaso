@@ -94,15 +94,52 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		public void JoinInner_TwoQueriesWithDifferentNumberOfResults_ReturnsNumberOfResultsOfQueryResultWithGreaterNumberOfFields()
+		public void JoinInner_TwoQueriesWithDifferentNumberOfResults_ReturnsProductOfNumberOfResultsOfQueries()
 		{
-			AddValuesToField(_item1.Field1, 1,4);
-			AddValuesToField(_item1.Field2, 1,3,6);
-			AddValuesToField(_item2.Field1, 3,2);
-			AddValuesToField(_item2.Field2, 4,2,5);
+			AddValuesToField(_item1.Field1, 1,2);
+			AddValuesToField(_item1.Field2, 1, 4, 5);
+			AddValuesToField(_item2.Field1, 1, 2);
 			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query());
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
-			Assert.AreEqual(12, results.Count);
+			Assert.AreEqual(8, results.Count);
+		}
+
+		[Test]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void JoinInner_TwoQueriesHaveIdenticalFieldLabelsButDifferentConent_Throws()
+		{
+			AddValuesToField(_item1.Field1, 1, 2);
+			AddValuesToField(_item1.Field2, 1, 4, 5);
+			AddValuesToField(_item2.Field1, 1, 2);
+			IQuery<SimpleObject> field1Query = new Field2Query().JoinInner(new Field2Query());
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
+		}
+
+		[Test]
+		public void JoinInner_OneQueryHasNoResults_ZeroResults()
+		{
+			AddValuesToField(_item1.Field1, 1, 2);
+			AddValuesToField(_item2.Field1, 1, 2);
+			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query().StripAllUnpopulatedEntries());
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
+			Assert.AreEqual(0, results.Count);
+		}
+
+		[Test]
+		public void JoinInner_TwoQueriesTwoItems_OnlyResultsFromSameItemsAreJoined()
+		{
+			AddValuesToField(_item1.Field1, 1);
+			AddValuesToField(_item1.Field2, 2);
+			AddValuesToField(_item2.Field1, 3);
+			AddValuesToField(_item2.Field2, 4);
+			IQuery<SimpleObject> field1Query = new Field1Query().JoinInner(new Field2Query());
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(field1Query);
+			Assert.AreEqual(2, results.Count);
+			Assert.AreEqual(1, results[0]["Field1"]);
+			Assert.AreEqual(2, results[0]["Field2"]);
+
+			Assert.AreEqual(3, results[1]["Field1"]);
+			Assert.AreEqual(4, results[1]["Field2"]);
 		}
 
 		[Test]

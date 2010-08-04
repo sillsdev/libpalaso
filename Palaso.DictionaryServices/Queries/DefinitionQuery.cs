@@ -15,9 +15,9 @@ namespace Palaso.DictionaryServices.Queries
 		private IComparer _comparer;
 		private WritingSystemDefinition _writingSystemDefinition;
 
-		public DefinitionQuery(Comparer<Guid> guidComparer, WritingSystemDefinition wsDef)
+		public DefinitionQuery(Comparer<string> definitionComparer, WritingSystemDefinition wsDef)
 		{
-			_comparer = guidComparer;
+			_comparer = definitionComparer;
 			_writingSystemDefinition = wsDef;
 		}
 
