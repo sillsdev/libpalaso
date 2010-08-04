@@ -20,13 +20,14 @@ namespace Palaso.Data
 				{
 					List<IDictionary<string, object>> combinedResults = new List<IDictionary<string, object>>();
 					IEnumerable<IDictionary<string, object>> thisQueryResults = this.GetResults(t);
-					IEnumerable<IDictionary<string, object>> thatQueryResults = otherQuery.GetResults(t);
-					foreach (IDictionary<string, object> thatQueryResult in thatQueryResults)
+					IEnumerable<IDictionary<string, object>> otherQueryResults = otherQuery.GetResults(t);
+
+					foreach (IDictionary<string, object> otherQueryResult in otherQueryResults)
 					{
 						foreach (IDictionary<string, object> thisQueryResult in thisQueryResults)
 						{
 							Dictionary<string,object> newDictionary = new Dictionary<string, object>();
-							foreach (KeyValuePair<string, object> labelValuePair in thisQueryResult.Concat(thatQueryResult))
+							foreach (KeyValuePair<string, object> labelValuePair in thisQueryResult.Concat(otherQueryResult))
 							{
 								if (!newDictionary.ContainsKey(labelValuePair.Key))
 								{
