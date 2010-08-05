@@ -18,38 +18,23 @@ namespace Palaso.Data
 			DelegateQuery<T>.DelegateMethod newGetResults =
 				delegate(T t)
 				{
-					List<IDictionary<string, object>> combinedResults = new List<IDictionary<string, object>>();
-					IEnumerable<IDictionary<string, object>> thisQueryResults = this.GetResults(t);
-					IEnumerable<IDictionary<string, object>> otherQueryResults = otherQuery.GetResults(t);
+					List<IDictionary<string,object>> joinedResults = new List<IDictionary<string, object>>();
 
-					foreach (IDictionary<string, object> otherQueryResult in otherQueryResults)
+					foreach (IDictionary<string, object> thisResult in GetResults(t))
 					{
-						foreach (IDictionary<string, object> thisQueryResult in thisQueryResults)
+						foreach (IDictionary<string, object> otherResult in otherQuery.GetResults(t))
 						{
-							Dictionary<string,object> newDictionary = new Dictionary<string, object>();
-							foreach (KeyValuePair<string, object> labelValuePair in thisQueryResult.Concat(otherQueryResult))
+							if(ResultsCanBeJoined(thisResult, otherResult))
 							{
-								if (!newDictionary.ContainsKey(labelValuePair.Key))
-								{
-									newDictionary.Add(labelValuePair.Key, labelValuePair.Value);
-								}
-								else if(newDictionary[labelValuePair.Key] == labelValuePair.Value)
-								{
-									//do nothing
-								}
-								else
-								{
-									throw new InvalidOperationException(String.Format("The key '{0}' occurs in both results and the content is not identical.", labelValuePair.Key));
-								}
+								joinedResults.Add(JoinResults(thisResult, otherResult));
 							}
-							combinedResults.Add(newDictionary);
 						}
 					}
-					return combinedResults;
+					return joinedResults;
 				};
 
 			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
-			newSortDefinitions.AddRange(this.SortDefinitions);
+			newSortDefinitions.AddRange(SortDefinitions);
 			newSortDefinitions.AddRange(otherQuery.SortDefinitions);
 
 			string newUniqueLabel = this.UniqueLabel + ".JoinInner." + otherQuery.UniqueLabel;
@@ -61,6 +46,58 @@ namespace Palaso.Data
 					};
 
 			return new DelegateQuery<T>(newGetResults, newSortDefinitions, newUniqueLabel, newIsUnpopulated);
+		}
+
+		private IDictionary<string, object> JoinResults(IDictionary<string, object> thisResult, IDictionary<string, object> otherResult)
+		{
+			Dictionary<string,object> joinedResults = new Dictionary<string, object>();
+			foreach (KeyValuePair<string, object> fieldLabelAndValue in thisResult)
+			{
+				joinedResults.Add(fieldLabelAndValue.Key,fieldLabelAndValue.Value);
+			}
+			foreach (KeyValuePair<string, object> fieldLabelAndValue in otherResult)
+			{
+				if(!thisResult.ContainsKey(fieldLabelAndValue.Key))
+				{
+					joinedResults.Add(fieldLabelAndValue.Key, fieldLabelAndValue.Value);
+				}
+			}
+			return joinedResults;
+		}
+
+		private bool ResultsCanBeJoined(IDictionary<string, object> thisResult, IDictionary<string, object> otherResult)
+		{
+			bool joinable = true;
+			foreach (KeyValuePair<string, object> fieldLabelAndValue in thisResult)
+			{
+				bool bothResultsContainKey = otherResult.ContainsKey(fieldLabelAndValue.Key);
+				if(bothResultsContainKey)
+				{
+					IComparer comparerForField = null;
+					foreach (SortDefinition sortDefinition in SortDefinitions)
+					{
+						if(sortDefinition.Field == fieldLabelAndValue.Key)
+						{
+							comparerForField = sortDefinition.Comparer;
+						}
+					}
+					bool valuesAreNotIdentical = comparerForField.Compare(otherResult[fieldLabelAndValue.Key], fieldLabelAndValue.Value) != 0;
+					if (valuesAreNotIdentical)
+					joinable = false;
+					break;
+				}
+			}
+			return joinable;
+		}
+
+		public IQuery<T> JoinInner(IEnumerable<IQuery<T>> otherQueries)
+		{
+			IQuery<T> joinedQueries = this;
+			foreach (IQuery<T> query in otherQueries)
+			{
+				joinedQueries = joinedQueries.JoinInner(query);
+			}
+			return joinedQueries;
 		}
 
 		public IQuery<T> Merge(IQuery<T> otherQuery)
