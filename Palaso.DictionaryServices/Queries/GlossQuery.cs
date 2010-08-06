@@ -7,7 +7,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class GlossQuery : IQuery<LexEntry>
+	public class GlossQuery : IQuery<LexEntry>
 	{
 		private string _fieldLabel = "Gloss";
 		private IComparer _comparer;

@@ -9,7 +9,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class DefinitionQuery:IQuery<LexEntry>
+	public class DefinitionQuery:IQuery<LexEntry>
 	{
 		private string _fieldLabel = "Form";
 		private IComparer _comparer;

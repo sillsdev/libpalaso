@@ -9,7 +9,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class LexicalFormsWithGlossesQuery:IQuery<LexEntry>
+	public class LexicalFormsWithGlossesQuery:IQuery<LexEntry>
 	{
 		private WritingSystemDefinition _writingSystemDefinition;
 

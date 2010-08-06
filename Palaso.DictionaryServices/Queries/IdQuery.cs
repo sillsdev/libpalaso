@@ -7,7 +7,7 @@ using Palaso.DictionaryServices.Model;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class IdQuery:IQuery<LexEntry>
+	public class IdQuery:IQuery<LexEntry>
 	{
 		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
 		{

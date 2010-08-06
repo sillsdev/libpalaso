@@ -9,7 +9,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class HeadwordQuery:IQuery<LexEntry>
+	public class HeadwordQuery:IQuery<LexEntry>
 	{
 		private WritingSystemDefinition _writingSystemDefinition;
 		private IComparer _comparer;

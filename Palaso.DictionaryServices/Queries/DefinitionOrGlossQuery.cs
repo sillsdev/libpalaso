@@ -8,7 +8,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class DefinitionOrGlossQuery:IQuery<LexEntry>
+	public class DefinitionOrGlossQuery:IQuery<LexEntry>
 	{
 		private WritingSystemDefinition _writingSystemDefinition;
 

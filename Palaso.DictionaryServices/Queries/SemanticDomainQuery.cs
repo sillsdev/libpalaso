@@ -8,7 +8,7 @@ using Palaso.Lift.Options;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class SemanticDomainQuery:IQuery<LexEntry>
+	public class SemanticDomainQuery:IQuery<LexEntry>
 	{
 		public override IEnumerable<IDictionary<string, object>> GetResults(LexEntry entryToQuery)
 		{

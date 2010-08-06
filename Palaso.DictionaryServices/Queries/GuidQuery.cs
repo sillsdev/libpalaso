@@ -7,7 +7,7 @@ using Palaso.DictionaryServices.Model;
 
 namespace Palaso.DictionaryServices.Queries
 {
-	class GuidQuery:IQuery<LexEntry>
+	public class GuidQuery:IQuery<LexEntry>
 	{
 		private Comparer<Guid> _comparer;
 
