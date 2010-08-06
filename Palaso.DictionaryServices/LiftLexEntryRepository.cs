@@ -410,14 +410,15 @@ namespace Palaso.DictionaryServices
 			return GetResultsFromCache(semanticDomainQuery);
 		}
 
-
 		private ResultSet<LexEntry> GetAllEntriesWithGlossesSortedByLexicalForm(WritingSystemDefinition lexicalUnitWritingSystemDefinition)
 		{
 			if (lexicalUnitWritingSystemDefinition == null)
 			{
 				throw new ArgumentNullException("lexicalUnitWritingSystemDefinition");
 			}
-		   LexicalFormsWithGlossesQuery lexicalFormWithGlossesQuery = new LexicalFormsWithGlossesQuery(lexicalUnitWritingSystemDefinition);
+			IQuery<LexEntry> lexicalFormQuery = new LexicalFormQuery(lexicalUnitWritingSystemDefinition);
+			IQuery<LexEntry> allGlossesQuery = new AllGlossesQuery();
+			IQuery<LexEntry> lexicalFormWithGlossesQuery = lexicalFormQuery.JoinInner(allGlossesQuery);
 			return GetResultsFromCache(lexicalFormWithGlossesQuery);
 		}
 
