@@ -183,5 +183,15 @@ namespace Palaso.Data
 			return base.ToString() + " " + Id;
 		}
 
+		public IEnumerable<string> FieldLabels
+		{
+			get
+			{
+				foreach (string fieldLabel in _queryResults.Keys)
+				{
+					yield return fieldLabel;
+				}
+			}
+		}
 	}
 }
