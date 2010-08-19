@@ -64,9 +64,10 @@ namespace Palaso.Email
 //                MessageBox.Show("MAPISendMail failed! " + GetLastError(), "MAPISendMail");
 			//todo if(m_lastError==25)
 			//bad recipient
+			var success = m_lastError == 0; // m_lastError gets reset by Cleanup()
 
 			Cleanup(ref msg);
-			return m_lastError ==0;//NB: doesn't seem to cach user "denial" using outlook's warning dialog
+			return success;//NB: doesn't seem to cach user "denial" using outlook's warning dialog
 		}
 
 		bool AddRecipient(string email, HowTo howTo)
