@@ -611,6 +611,10 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
+				if(String.IsNullOrEmpty(_keyboard))
+				{
+					return "";
+				}
 				return _keyboard;
 			}
 			set
