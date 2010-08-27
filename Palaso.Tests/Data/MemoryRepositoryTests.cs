@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.Tests.Data;
@@ -119,6 +120,32 @@ namespace Palaso.Tests.Data
 		protected override void RepopulateRepositoryFromPersistedData()
 		{
 			//Do nothing.
+		}
+	}
+
+	[TestFixture]
+	public class MemoryRepositoryQueryingTests: IRepositoryQueryingTests<PalasoTestItem>
+	{
+		[SetUp]
+		public override void SetUp()
+		{
+			DataMapperUnderTest = new MemoryDataMapper<PalasoTestItem>();
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			DataMapperUnderTest.Dispose();
+		}
+
+		public override void GetItemsMatching_HonorsFilters()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void GetitemsMatching_HonorsSortOrder()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

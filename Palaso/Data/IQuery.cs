@@ -8,10 +8,22 @@ namespace Palaso.Data
 {
 	public abstract class IQuery<T> where T : class, new()
 	{
+		List<Predicate<string>> _filters = new List<Predicate<string>>();
 		abstract public IEnumerable<IDictionary<string, object>> GetResults(T item);
 		abstract public IEnumerable<SortDefinition> SortDefinitions { get; }
 		abstract public string UniqueLabel { get; }
-		public abstract bool IsUnpopulated(IDictionary<string, object> resultToCheck);
+		abstract public bool IsUnpopulated(IDictionary<string, object> resultToCheck);
+		//abstract public IEnumerable<string> FieldLabels{ get;}
+
+		public void AddFilter(Predicate<string> filter)
+		{
+			_filters.Add(filter);
+		}
+
+		public void ClearFilters()
+		{
+			_filters.Clear();
+		}
 
 		public IQuery<T> JoinInner(IQuery<T> otherQuery)
 		{
@@ -24,6 +36,7 @@ namespace Palaso.Data
 					{
 						foreach (IDictionary<string, object> otherResult in otherQuery.GetResults(t))
 						{
+							//it might be faster here to just try and join them and just swallow any throws. Profiling time! --TA
 							if(ResultsCanBeJoined(thisResult, otherResult))
 							{
 								joinedResults.Add(JoinResults(thisResult, otherResult));
@@ -83,7 +96,9 @@ namespace Palaso.Data
 					}
 					bool valuesAreNotIdentical = comparerForField.Compare(otherResult[fieldLabelAndValue.Key], fieldLabelAndValue.Value) != 0;
 					if (valuesAreNotIdentical)
-					joinable = false;
+					{
+						joinable = false;
+					}
 					break;
 				}
 			}

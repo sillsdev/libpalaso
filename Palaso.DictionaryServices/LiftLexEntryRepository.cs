@@ -355,7 +355,7 @@ namespace Palaso.DictionaryServices
 			return GetResultsFromCache(guidQuery);
 		}
 
-		private ResultSet<LexEntry> GetResultsFromCache(IQuery<LexEntry> query)
+		public ResultSet<LexEntry> GetResultsFromCache(IQuery<LexEntry> query)
 		{
 			if (_caches[query.UniqueLabel] == null)
 			{

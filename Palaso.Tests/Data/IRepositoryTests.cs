@@ -1080,4 +1080,39 @@ namespace Palaso.Tests.Data
 			DataMapperUnderTest.SaveItems(itemsToSave);
 		}
 	}
+
+	public abstract class IRepositoryQueryingTests<T> where T : class, new()
+	{
+		private IDataMapper<T> dataMapperUnderTest;
+
+		protected bool _hasPersistOnCreate;
+
+		protected IRepositoryQueryingTests()
+		{
+			_hasPersistOnCreate = true;
+		}
+
+		public IDataMapper<T> DataMapperUnderTest
+		{
+			get
+			{
+				if (dataMapperUnderTest == null)
+				{
+					throw new InvalidOperationException(
+						"DataMapperUnderTest must be set before the tests are run.");
+				}
+				return dataMapperUnderTest;
+			}
+			set { dataMapperUnderTest = value; }
+		}
+
+		[SetUp]
+		public abstract void SetUp();
+
+		[TearDown]
+		public abstract void TearDown();
+
+		public abstract void GetItemsMatching_HonorsFilters();
+		public abstract void GetitemsMatching_HonorsSortOrder();
+	}
 }
