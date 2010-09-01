@@ -124,7 +124,6 @@ namespace Palaso.Tests.Data
 		public void JoinInner_TwoQueriesHaveFieldsWithIdenticalFieldLabelsAndCorrespondingContent_AreJoined()
 		{
 			SimpleObject item1 = _repo.CreateItem();
-			SimpleObject item2 = _repo.CreateItem();
 			AddValuesToField(item1.Field1, 2);
 			AddValuesToField(item1.Field2, 2);
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
@@ -418,14 +417,14 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field1", item.Field1[i]);
-					tokenFieldLabelsAndValues.Add("object", item);
+					tokenFieldLabelsAndValues.Add("ObjectHash", item.GetHashCode());
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				if(results.Count == 0)
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field1", null);
-					tokenFieldLabelsAndValues.Add("object", item);
+					tokenFieldLabelsAndValues.Add("ObjectHash", item.GetHashCode());
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -437,7 +436,8 @@ namespace Palaso.Tests.Data
 				{
 					return new List<SortDefinition>
 							   {
-								   new SortDefinition("Field1", new GreaterThan())
+								   new SortDefinition("Field1", new GreaterThan()),
+								   new SortDefinition("ObjectHash", new GreaterThan())
 							   };
 				}
 			}
@@ -462,14 +462,14 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field2", item.Field2[i]);
-					tokenFieldLabelsAndValues.Add("object", item);
+					tokenFieldLabelsAndValues.Add("ObjectHash", item.GetHashCode());
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				if (results.Count == 0)
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field2", null);
-					tokenFieldLabelsAndValues.Add("object", item);
+					tokenFieldLabelsAndValues.Add("ObjectHash", item.GetHashCode());
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -481,7 +481,8 @@ namespace Palaso.Tests.Data
 				{
 					return new List<SortDefinition>
 							   {
-								   new SortDefinition("Field2", new LessThan())
+								   new SortDefinition("Field2", new LessThan()),
+								   new SortDefinition("ObjectHash", new LessThan())
 							   };
 				}
 			}
@@ -506,14 +507,14 @@ namespace Palaso.Tests.Data
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field3", item.Field3[i]);
-					tokenFieldLabelsAndValues.Add("object", item);
+					tokenFieldLabelsAndValues.Add("ObjectHash", item.GetHashCode());
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				if (results.Count == 0)
 				{
 					Dictionary<string, object> tokenFieldLabelsAndValues = new Dictionary<string, object>();
 					tokenFieldLabelsAndValues.Add("Field3", null);
-					tokenFieldLabelsAndValues.Add("object", item);
+					tokenFieldLabelsAndValues.Add("ObjectHash", item.GetHashCode());
 					results.Add(tokenFieldLabelsAndValues);
 				}
 				return results;
@@ -525,7 +526,8 @@ namespace Palaso.Tests.Data
 				{
 					return new List<SortDefinition>
 							   {
-								   new SortDefinition("Field3", new LessThan())
+								   new SortDefinition("Field3", new LessThan()),
+								   new SortDefinition("ObjectHash", new LessThan())
 							   };
 				}
 			}

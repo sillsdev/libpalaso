@@ -36,7 +36,6 @@ namespace Palaso.Data
 					{
 						foreach (IDictionary<string, object> otherResult in otherQuery.GetResults(t))
 						{
-							//it might be faster here to just try and join them and just swallow any throws. Profiling time! --TA
 							if(ResultsCanBeJoined(thisResult, otherResult))
 							{
 								joinedResults.Add(JoinResults(thisResult, otherResult));
