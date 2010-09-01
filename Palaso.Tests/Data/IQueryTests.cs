@@ -121,7 +121,7 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		public void JoinInner_TwoQueriesHaveFieldsWithIdenticalFieldLabelsAndCorrespondingContent_AreJoined()
+		public void JoinInner_TwoQueriesHaveFieldsWithIdenticalFieldLabelsAndIdenticalContent_AreJoined()
 		{
 			SimpleObject item1 = _repo.CreateItem();
 			AddValuesToField(item1.Field1, 2);
@@ -133,7 +133,7 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		public void JoinInner_TwoQueriesHaveSomeFieldsWithIdenticalFieldLabelsAndCorrespondingContentAndSomeWithDifferentContent_ThoseWithSameContentAreJoined()
+		public void JoinInner_TwoQueriesHaveSomeFieldsWithIdenticalFieldLabelsAndIdenticalContentAndSomeWithDifferentContent_ThoseWithIdenticalContentAreJoined()
 		{
 			SimpleObject item1 = _repo.CreateItem();
 			AddValuesToField(item1.Field1, 1,2);
@@ -526,8 +526,7 @@ namespace Palaso.Tests.Data
 				{
 					return new List<SortDefinition>
 							   {
-								   new SortDefinition("Field3", new LessThan()),
-								   new SortDefinition("ObjectHash", new LessThan())
+								   new SortDefinition("Field3", new LessThan())
 							   };
 				}
 			}
