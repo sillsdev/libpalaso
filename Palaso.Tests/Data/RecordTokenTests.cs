@@ -109,13 +109,15 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		public void GetIndexer_AnyFieldName_Null()
+		[ExpectedException(typeof(ArgumentException))]
+		public void GetIndexer_AnyFieldName_Throws()
 		{
 			Assert.IsNull(Token["anything"]);
 		}
 
 		[Test]
-		public void GetIndexer_EmptyName_Null()
+		[ExpectedException(typeof(ArgumentException))]
+		public void GetIndexer_EmptyName_Throws()
 		{
 			Assert.IsNull(Token[""]);
 		}

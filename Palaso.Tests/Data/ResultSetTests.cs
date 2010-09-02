@@ -131,7 +131,9 @@ namespace Palaso.Tests.Data
 			List<RecordToken<PalasoTestItem>> results = new List<RecordToken<PalasoTestItem>>();
 
 			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsEmpty, new TestRepositoryId(8)));
-			results.Add(new RecordToken<PalasoTestItem>(dataMapper, new TestRepositoryId(12)));
+			Dictionary<string, object> nonRemovableResults = new Dictionary<string, object>
+																 {{"string", "can't delete me!"}};
+			results.Add(new RecordToken<PalasoTestItem>(dataMapper, nonRemovableResults, new TestRepositoryId(12)));
 
 			ResultSet<PalasoTestItem> resultSet = new ResultSet<PalasoTestItem>(dataMapper, results);
 			resultSet.Coalesce("string", delegate(object o)
@@ -148,9 +150,7 @@ namespace Palaso.Tests.Data
 			List<RecordToken<PalasoTestItem>> results = new List<RecordToken<PalasoTestItem>>();
 
 			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsEmpty, new TestRepositoryId(8)));
-			results.Add(new RecordToken<PalasoTestItem>(dataMapper, new TestRepositoryId(12)));
 			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsA, new TestRepositoryId(8)));
-			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsB, new TestRepositoryId(12)));
 
 			ResultSet<PalasoTestItem> resultSet = new ResultSet<PalasoTestItem>(dataMapper, results);
 			resultSet.Coalesce("string", delegate(object o)
@@ -167,7 +167,7 @@ namespace Palaso.Tests.Data
 		{
 			List<RecordToken<PalasoTestItem>> results = new List<RecordToken<PalasoTestItem>>();
 
-			results.Add(new RecordToken<PalasoTestItem>(dataMapper, new TestRepositoryId(12)));
+			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsEmpty, new TestRepositoryId(12)));
 			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsEmpty, new TestRepositoryId(8)));
 			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsB, new TestRepositoryId(12)));
 			results.Add(new RecordToken<PalasoTestItem>(dataMapper, _queryResultsA, new TestRepositoryId(8)));

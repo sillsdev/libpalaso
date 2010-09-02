@@ -54,11 +54,16 @@ namespace Palaso.Data
 			value = null;
 			if (_queryResults == null)
 			{
-				return false;
+				throw new ArgumentException("There are no query results to access.");
 			}
 			if (!_queryResults.ContainsKey(fieldName))
 			{
-				return false;
+				string existingLabels = String.Empty;
+				foreach (string fieldLabel in FieldLabels)
+				{
+					existingLabels += existingLabels + " " + fieldLabel;
+				}
+				throw new ArgumentException(String.Format("Your query results do not have a field labeled {0}. Try one of these: {1}", fieldName, existingLabels));
 			}
 			value = _queryResults[fieldName];
 			return true;
