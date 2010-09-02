@@ -32,11 +32,14 @@ namespace Palaso.Data
 			int result = 0;
 			foreach (SortDefinition definition in _sortDefinitions)
 			{
-				result = definition.Comparer.Compare(GetFieldValue(x, definition),
-													 GetFieldValue(y, definition));
-				if (result != 0)
+				if (x.ContainsFieldLabel(definition.Field) && y.ContainsFieldLabel(definition.Field))
 				{
-					return result;
+					result = definition.Comparer.Compare(GetFieldValue(x, definition),
+														 GetFieldValue(y, definition));
+					if (result != 0)
+					{
+						return result;
+					}
 				}
 			}
 			result = x.Id.CompareTo(y.Id);

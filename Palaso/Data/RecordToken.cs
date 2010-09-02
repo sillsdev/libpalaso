@@ -188,6 +188,18 @@ namespace Palaso.Data
 			return base.ToString() + " " + Id;
 		}
 
+		public bool ContainsFieldLabel(string fieldLabel)
+		{
+			foreach (string containedLabel in _queryResults.Keys)
+			{
+				if(containedLabel == fieldLabel)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public IEnumerable<string> FieldLabels
 		{
 			get

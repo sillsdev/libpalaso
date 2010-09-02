@@ -406,7 +406,7 @@ namespace Palaso.DictionaryServices
 		/// <returns></returns>
 		public ResultSet<LexEntry> GetEntriesWithSemanticDomainSortedBySemanticDomain()
 		{
-			SemanticDomainQuery semanticDomainQuery = new SemanticDomainQuery();
+			IQuery<LexEntry> semanticDomainQuery = new CustomFieldQuery(LexSense.WellKnownProperties.SemanticDomainDdp4);
 			return GetResultsFromCache(semanticDomainQuery);
 		}
 
