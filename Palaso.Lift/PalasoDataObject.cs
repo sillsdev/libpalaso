@@ -37,14 +37,28 @@ namespace Palaso.Lift
 		private PalasoDataObject _parent;
 
 		private List<KeyValuePair<string, object>> _properties;
+		private Guid _guid;
 
 		protected PalasoDataObject(PalasoDataObject parent)
 		{
 			_properties = new List<KeyValuePair<string, object>>();
 			_parent = parent;
+			_guid = Guid.NewGuid();
 		}
 
 		public abstract bool IsEmpty { get; }
+
+		public Guid Guid
+		{
+			get
+			{
+				return _guid;
+			}
+			set
+			{
+				_guid = value;
+			}
+		}
 
 		/// <summary>
 		/// see comment on _parent field of MultiText for an explanation of this field

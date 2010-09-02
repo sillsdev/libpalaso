@@ -963,7 +963,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[Test]
 		public void GetHumanReadableId_IdIsSpace_NoForm()
 		{
-			var entry = new LexEntry(" ", Guid.NewGuid());
+			var entry = new LexEntry(" ");
 			Assert.IsTrue(
 				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(
 					entry, new Dictionary<string, int>()
@@ -974,7 +974,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[Test]
 		public void GetHumanReadableId_IdIsSpace_TreatedAsThoughNonExistentId()
 		{
-			var entry = new LexEntry(" ", Guid.NewGuid());
+			var entry = new LexEntry(" ");
 			entry.LexicalForm["green"] = "string";
 			Assert.IsTrue(
 				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()).StartsWith

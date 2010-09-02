@@ -61,29 +61,21 @@ namespace Palaso.DictionaryServices.Model
 			}
 		} ;
 
-		public LexEntry(): this(null, Guid.NewGuid()) {}
+		public LexEntry(): this(null) {}
 
-		public LexEntry(string id, Guid guid): base(null)
+		public LexEntry(string id): base(null)
 		{
 			DateTime now = PreciseDateTime.UtcNow;
 			_isDirty = true;
-			Init(id, guid, now, now);
+			Init(id, now, now);
 		}
 
-		private void Init(string id, Guid guid, DateTime creationTime, DateTime modifiedTime)
+		private void Init(string id, DateTime creationTime, DateTime modifiedTime)
 		{
 			ModificationTime = modifiedTime;
 			ModifiedTimeIsLocked = true;
 
 			Id = id;
-			if (guid == Guid.Empty)
-			{
-				_guid = Guid.NewGuid();
-			}
-			else
-			{
-				_guid = guid;
-			}
 			_lexicalForm = new MultiText(this);
 			_senses = new BindingList<LexSense>();
 			CreationTime = creationTime;
@@ -228,12 +220,12 @@ namespace Palaso.DictionaryServices.Model
 		/// </summary>
 		public Guid Guid
 		{
-			get { return _guid; }
+			get { return base.Guid; }
 			set
 			{
-				if (_guid != value)
+				if (base.Guid != value)
 				{
-					_guid = value;
+					base.Guid = value;
 					NotifyPropertyChanged("GUID");
 				}
 			}
