@@ -327,7 +327,7 @@ namespace Palaso.Tests.Data
 		{
 			SimpleObject item1 = _repo.CreateItem();
 			KeyMap keyMap = new KeyMap { { "Field2", "Field1" } };
-			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query());
+			IQuery<SimpleObject> mergeQuery = new Field1Query().GetAlternative(new Field2Query().RemapKeys(keyMap));
 			ResultSet<SimpleObject> results = _repo.GetItemsMatching(mergeQuery);
 			Assert.AreEqual(1, results.Count);
 			Assert.AreEqual(null, results[0]["Field1"]);
