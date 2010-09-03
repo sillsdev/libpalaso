@@ -6,6 +6,7 @@ using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Queries
 {
@@ -55,29 +56,46 @@ namespace Palaso.DictionaryServices.Queries
 		private List<IDictionary<string, object>> GetFieldsandValuesFromPropertiesOfPalasoDataObject(PalasoDataObject sense)
 		{
 			var fieldsandValuesFromProperties = new List<IDictionary<string, object>>();
-			foreach (KeyValuePair<string, object> pair in sense.Properties)
+			foreach (KeyValuePair<string, object> fieldLabelAndFieldPair in sense.Properties)
 			{
-				if (pair.Key == _fieldLabel)
+				if (fieldLabelAndFieldPair.Key == _fieldLabel)
 				{
-					if (pair.Value.GetType() == typeof(OptionRefCollection))
+					bool fieldIsAnOptionRefCollection = fieldLabelAndFieldPair.Value.GetType() == typeof(OptionRefCollection);
+					bool fieldIsAMultiText = fieldLabelAndFieldPair.Value.GetType() == typeof(MultiText);
+
+					if (fieldIsAnOptionRefCollection)
 					{
-						var semanticDomains = (OptionRefCollection) pair.Value;
-						foreach (string semanticDomain in semanticDomains.Keys)
+						OptionRefCollection optionRefs = (OptionRefCollection)fieldLabelAndFieldPair.Value;
+						foreach (string optionRef in optionRefs.Keys)
 						{
-							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string domain = semanticDomain;
-							if (String.IsNullOrEmpty(semanticDomain))
+							IDictionary<string, object> newFieldAndValue = new Dictionary<string, object>();
+							string domain = optionRef;
+							if (String.IsNullOrEmpty(optionRef))
 							{
 								domain = null;
 							}
-							if (CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(fieldsandValuesFromProperties,
-																						domain))
-							{
-								continue; //This is to avoid duplicates
-							}
-							tokenFieldsAndValues.Add(_fieldLabel, domain);
-							fieldsandValuesFromProperties.Add(tokenFieldsAndValues);
+							//if (CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(fieldsandValuesFromProperties, domain))
+							//{
+							//    continue; //This is to avoid duplicates
+							//}
+							newFieldAndValue.Add(_fieldLabel, domain);
+							fieldsandValuesFromProperties.Add(newFieldAndValue);
 						}
+					}
+					else if (fieldIsAMultiText)
+					{
+						MultiText multiText = (MultiText) fieldLabelAndFieldPair.Value;
+						foreach (LanguageForm text in multiText)
+						{
+							IDictionary<string, object> newFieldsAndValues = new Dictionary<string, object>();
+							newFieldsAndValues.Add(_fieldLabel, text.Form);
+							newFieldsAndValues.Add("WritingSystem", text.WritingSystemId);
+							fieldsandValuesFromProperties.Add(newFieldsAndValues);
+						}
+					}
+					else
+					{
+						throw new InvalidOperationException(String.Format("The field associated with field label '{0}' is of an unknown type '{1}' and can not be queried. Consider extending the query to support this type of field.", _fieldLabel, fieldLabelAndFieldPair.Value.GetType()));
 					}
 				}
 			}
