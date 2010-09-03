@@ -158,7 +158,7 @@ namespace Palaso.Tests.Data
 												 return string.IsNullOrEmpty((string)o);
 											 });
 
-			Assert.AreEqual(2, resultSet.Count);
+			Assert.AreEqual(1, resultSet.Count);
 
 		}
 
