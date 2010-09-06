@@ -91,6 +91,7 @@ namespace Palaso.DictionaryServices.Queries
 							newFieldsAndValues.Add(_fieldLabel, text.Form);
 							newFieldsAndValues.Add("WritingSystem", text.WritingSystemId);
 							fieldsandValuesFromProperties.Add(newFieldsAndValues);
+
 						}
 					}
 					else
@@ -137,12 +138,13 @@ namespace Palaso.DictionaryServices.Queries
 		{
 			get
 			{
-				var sortOrder = new SortDefinition[4];
-				sortOrder[0] = new SortDefinition(_fieldLabel, StringComparer.InvariantCulture);
-				sortOrder[1] = new SortDefinition("Sense", Comparer<Guid>.Default);
-				sortOrder[2] = new SortDefinition("Entry", Comparer<Guid>.Default);
-				sortOrder[3] = new SortDefinition("ExampleSentence", Comparer<Guid>.Default);
-				return sortOrder;
+				var sortorder = new SortDefinition[5];
+				sortorder[0] = new SortDefinition(_fieldLabel, Comparer<string>.Default);
+				sortorder[1] = new SortDefinition("WritingSystem", Comparer<string>.Default);
+				sortorder[2] = new SortDefinition("Entry", Comparer<Guid>.Default);
+				sortorder[3] = new SortDefinition("Sense", Comparer<Guid>.Default);
+				sortorder[4] = new SortDefinition("ExampleSentence", Comparer<Guid>.Default);
+				return sortorder;
 			}
 		}
 
@@ -153,7 +155,7 @@ namespace Palaso.DictionaryServices.Queries
 
 		public override bool IsUnpopulated(IDictionary<string, object> entryToCheckAgainst)
 		{
-			throw new NotImplementedException();
+			return entryToCheckAgainst[_fieldLabel] == null;
 		}
 	}
 }
