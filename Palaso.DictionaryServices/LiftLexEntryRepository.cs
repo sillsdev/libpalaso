@@ -386,14 +386,19 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			IQuery<LexEntry> definitionQuery = new DefinitionQuery(writingSystemDefinition);
-			IQuery<LexEntry> glossQuery = new GlossQuery(writingSystemDefinition);
-			KeyMap glossToFormMap = new KeyMap(){{"Gloss","Form"}};
-			IQuery<LexEntry> definitionOrGlossQuery = definitionQuery.GetAlternative(glossQuery.RemapKeys(glossToFormMap));
+			CustomFieldQuery definitionQuery = new CustomFieldQuery(LexSense.WellKnownProperties.Definition);
+			CustomFieldQuery glossQuery = new CustomFieldQuery(LexSense.WellKnownProperties.Gloss);
 
-			KeyMap formToGlossMap = new KeyMap() { {"Form", "Gloss"} };
-			IQuery<LexEntry> glossOrDefinitionQuery = glossQuery.GetAlternative(definitionQuery.RemapKeys(formToGlossMap));
-			IQuery<LexEntry> finalQuery = (definitionOrGlossQuery.Merge(glossOrDefinitionQuery.RemapKeys(glossToFormMap))).StripDuplicates();
+			//IQuery<LexEntry> definitionQuery = new DefinitionQuery(writingSystemDefinition);
+			//IQuery<LexEntry> glossQuery = new GlossQuery(writingSystemDefinition);
+			KeyMap glossToDefinitionMap = new KeyMap() { { LexSense.WellKnownProperties.Gloss, LexSense.WellKnownProperties.Definition } };
+			IQuery<LexEntry> definitionOrGlossQuery = definitionQuery.GetAlternative(glossQuery.RemapKeys(glossToDefinitionMap));
+
+			KeyMap definitionToGlossMap = new KeyMap() { { LexSense.WellKnownProperties.Definition, LexSense.WellKnownProperties.Gloss } };
+			IQuery<LexEntry> glossOrDefinitionQuery = glossQuery.GetAlternative(definitionQuery.RemapKeys(definitionToGlossMap));
+
+			KeyMap definitionToFormMap = new KeyMap() { { LexSense.WellKnownProperties.Definition, "Form" } };
+			IQuery<LexEntry> finalQuery = (definitionOrGlossQuery.Merge(glossOrDefinitionQuery.RemapKeys(glossToDefinitionMap)).RemapKeys(definitionToFormMap)).StripDuplicates();
 			return GetResultsFromCache(finalQuery);
 		}
 
