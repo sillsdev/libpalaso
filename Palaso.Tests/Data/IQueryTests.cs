@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using Palaso.Data;
 
@@ -356,6 +357,20 @@ namespace Palaso.Tests.Data
 			Assert.AreEqual(1, results[0]["Field1"]);
 			Assert.AreEqual(2, results[1]["Field1"]);
 			Assert.AreEqual(3, results[2]["Field1"]);
+		}
+
+		[Test]
+		public void Remap_SortOrderIsRemappedAsWell()
+		{
+			SimpleObject item1 = _repo.CreateItem();
+			AddValuesToField(item1.Field1, 2, 3, 1);
+			KeyMap keyMap = new KeyMap() { { "Field1", "NewLabel" } };
+			IQuery<SimpleObject> strippedQuery = new Field1Query().RemapKeys(keyMap);
+			ResultSet<SimpleObject> results = _repo.GetItemsMatching(strippedQuery);
+			Assert.AreEqual(3, results.Count);
+			Assert.AreEqual(1, results[0]["NewLabel"]);
+			Assert.AreEqual(2, results[1]["NewLabel"]);
+			Assert.AreEqual(3, results[2]["NewLabel"]);
 		}
 
 		private void AddValuesToField(List<int> field, params int[] valuesToAdd)

@@ -152,7 +152,18 @@ namespace Palaso.Data
 				};
 
 			List<SortDefinition> newSortDefinitions = new List<SortDefinition>();
-			newSortDefinitions.AddRange(this.SortDefinitions);
+
+			foreach (SortDefinition sortDefinition in SortDefinitions)
+			{
+				if (keyMap.ContainsKey(sortDefinition.Field))
+				{
+					newSortDefinitions.Add(new SortDefinition(keyMap[sortDefinition.Field], sortDefinition.Comparer));
+				}
+				else
+				{
+					newSortDefinitions.Add(sortDefinition);
+				}
+			}
 
 			string newUniqueLabel = this.UniqueLabel + ".Remap";
 
@@ -298,8 +309,11 @@ namespace Palaso.Data
 				int relation = 0;
 				foreach (SortDefinition sortDefinition in _sortDefinitions)
 				{
-					relation = sortDefinition.Comparer.Compare(x[sortDefinition.Field], y[sortDefinition.Field]);
-					if(relation != 0) break;
+					if (x.Keys.Contains(sortDefinition.Field) && y.Keys.Contains(sortDefinition.Field))
+					{
+						relation = sortDefinition.Comparer.Compare(x[sortDefinition.Field], y[sortDefinition.Field]);
+						if (relation != 0) break;
+					}
 				}
 				return relation;
 			}
