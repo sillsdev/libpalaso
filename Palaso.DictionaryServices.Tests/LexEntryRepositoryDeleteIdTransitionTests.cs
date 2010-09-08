@@ -30,7 +30,7 @@ namespace WeSay.LexicalModel.Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute")]
 		public override void SaveItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
