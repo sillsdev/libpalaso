@@ -1,9 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.IO;
 using NUnit.Framework;
+using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -84,6 +86,26 @@ namespace Palaso.Tests.WritingSystems
 			writer.Close();
 			string s = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"xxx\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special>hey</special></ldml>";
 			Assert.AreEqual(s, sw.ToString());
+		}
+
+		[Test]
+		public void RoundtripSimpleCustomSortRules_WS33715()
+		{
+			LdmlAdaptor ldmlAdaptor = new LdmlAdaptor();
+
+			string sortRules = "(A̍ a̍)";
+			WritingSystemDefinition wsWithSimpleCustomSortRules = new WritingSystemDefinition();
+			wsWithSimpleCustomSortRules.SortUsing = WritingSystemDefinition.SortRulesType.CustomSimple;
+			wsWithSimpleCustomSortRules.SortRules = sortRules;
+
+			WritingSystemDefinition wsFromLdml = new WritingSystemDefinition();
+			using (TempFile tempFile = new TempFile())
+			{
+				ldmlAdaptor.Write(tempFile.Path, wsWithSimpleCustomSortRules, null);
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+
+			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
 		}
 	}
 }
