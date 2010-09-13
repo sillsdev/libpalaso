@@ -107,7 +107,7 @@ namespace Palaso.Data
 			if (!objectToIdHashtable.ContainsKey(item))
 			{
 				throw new ArgumentOutOfRangeException("item",
-													  "The item must exist in the repository before it can be saved.");
+													  "The item must be created (with CreateItem) before it can be saved.");
 			}
 			DateTime timeOfSave = PreciseDateTime.UtcNow;
 			LastModified = timeOfSave;
