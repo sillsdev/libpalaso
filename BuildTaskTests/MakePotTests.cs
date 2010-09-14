@@ -127,6 +127,25 @@ somevar.MyLocalizableFunction(StringCatalog.Get('MyLocalizableString', 'MyTransl
 		}
 
 		[Test]
+		public void MatchesInCSharpString_UsingStringCatalogGetFormattedNoTilde_HasMatchAndNotes()
+		{
+			string contents = @"
+somevar.MyLocalizableFunction(StringCatalog.GetFormatted('MyLocalizableString {0}', 'MyTranslationNotes', someArg));
+".Replace("'", "\"");
+
+			var pot = new MakePot();
+			MatchCollection matches = pot.MatchesInCSharpString(contents);
+			Assert.AreEqual(1, matches.Count);
+			foreach (Match match in matches)
+			{
+				Assert.AreEqual(3, match.Groups.Count);
+				Assert.AreEqual("MyLocalizableString {0}", match.Groups["key"].Value);
+				Assert.AreEqual("MyTranslationNotes", match.Groups["note"].Value);
+
+			}
+		}
+
+		[Test]
 		public void MatchesInCSharpString_UsingTextEqual_HasMatchAndNotes()
 		{
 			string contents = @"
