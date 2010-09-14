@@ -30,10 +30,7 @@ namespace Palaso.BuildTasks.MakePot
 
 		public MakePot()
 		{
-			//            _pattern = new Regex(@"""~([^""]*)""\s*(,\s*""([^""]*)"")?", RegexOptions.Compiled);
-//            _pattern = new Regex(@"""~(?<key>[^""]*)""(\s*,\s*""(?<note>[^""]*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 			_pattern = new Regex(@"(Text\s*=\s*""|StringCatalog\.Get(Formatted)?\(""|""~)(?<key>[^""]*)""(\s*,\s*""(?<note>[^""]*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-			//_pattern = new Regex(@"(StringCatalog\.Get\(""|""~)(?([^""]*))""\s*(,\s*""([^""]*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		}
 
 		public override bool Execute()
