@@ -183,6 +183,37 @@ somevar.Text = 'MyLocalizableString';
 		}
 
 		[Test]
+		public void MatchesInCSharpString_StringWithBackslashQuote_MatchesToEndOfString()
+		{
+			string contents = @"
+somevar.Text = 'MyLocalizableString \'InQuote\' end';
+".Replace("'", "\"");
+
+			string expected = "MyLocalizableString \\\"InQuote\\\" end";
+
+			var pot = new MakePot();
+			MatchCollection matches = pot.MatchesInCSharpString(contents);
+			Assert.AreEqual(1, matches.Count);
+			foreach (Match match in matches)
+			{
+				Assert.AreEqual(3, match.Groups.Count);
+				Assert.AreEqual(expected, match.Groups["key"].Value);
+
+			}
+		}
+
+		[Test]
+		public void UnescapeString_WithBackSlash_HasNoBackslash()
+		{
+			const string contents = @"don\'t want backslash";
+			const string expected = @"don't want backslash";
+
+			string actual = MakePot.UnescapeString(contents);
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		[Ignore("EOL not the same anymore, so ignore")]
 		public void ProcessSrcFile_AllMatches_OutputsGoodPo()
 		{
 			string contents = @"

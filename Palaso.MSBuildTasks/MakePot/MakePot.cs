@@ -30,13 +30,14 @@ namespace Palaso.BuildTasks.MakePot
 
 		public MakePot()
 		{
-			_pattern = new Regex(@"(Text\s*=\s*""(~)?|StringCatalog\.Get(Formatted)?\(""(~)?|""~)(?<key>[^""]*)""(\s*,\s*""(?<note>[^""]*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+			_pattern = new Regex(@"(Text\s*=\s*""(~)?|StringCatalog\.Get(Formatted)?\(""(~)?|""~)(?<key>([^""\\]|\\.)*)""(\s*,\s*""(?<note>([^""\\]|\\.)*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		}
 
 		public override bool Execute()
 		{
 			using (StreamWriter writer = File.CreateText(OutputFile))
 			{
+				writer.NewLine = "\n";
 				if (XmlFiles != null)
 				{
 					foreach (ITaskItem file in XmlFiles)
@@ -71,16 +72,33 @@ namespace Palaso.BuildTasks.MakePot
 
 		private void WritePotHeader(TextWriter writer)
 		{
-			writer.WriteLine("Project-Id-Version: \"{0}\"", ProjectId);
-			writer.WriteLine("Report-Msgid-Bugs-To: \"{0}\"", MsdIdBugsTo);
+			/* Note:
+			 * The header output by POEdit on Windows looks like the following.  However, POEdit can't
+			 * read this in as a pot, though it could as a po.  Therefore we prefer to write out our
+			 * info as a comment which at least is preserved by POEdit.  This allows the pot file to
+			 * be merged in to any already existing po file.
+			 */
+			//writer.WriteLine(@"msgid """"");
+			//writer.WriteLine(@"msgstr """"");
+			//writer.WriteLine(@"""Project-Id-Version: " + ProjectId + @"\n""");
+			//writer.WriteLine(@"""POT-Creation-Date: " + DateTime.UtcNow.ToString("s") + @"\n""");
+			//writer.WriteLine(@"""PO-Revision-Date: \n""");
+			//writer.WriteLine(@"""MIME-Version: 1.0\n""");
+			//writer.WriteLine(@"""Content-Type: text/plain; charset=UTF-8\n""");
+			//writer.WriteLine(@"""Content-Transfer-Encoding: 8bit\n""");
 
-			writer.WriteLine("POT-Creation-Date: \"{0}\"", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("PO-Revision-Date: \"{0}\"", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("Last-Translator: \"\"");
-			writer.WriteLine("Language-Team: \"\"");
-			writer.WriteLine("MIME-Version: \"1.0\"");
-			writer.WriteLine("Content-Type: \"text/plain; charset=UTF-8\"");
-			writer.WriteLine("Content-Transfer-Encoding: \"8bit\"");
+			/* As noted above the commented version below isn't read by POEdit, however it is preserved */
+			writer.WriteLine("# Project-Id-Version: {0}", ProjectId);
+			writer.WriteLine("# Report-Msgid-Bugs-To: {0}", MsdIdBugsTo);
+			writer.WriteLine("# POT-Creation-Date: {0}", DateTime.UtcNow.ToString("s"));
+			writer.WriteLine("# Content-Type: text/plain; charset=UTF-8");
+			writer.WriteLine();
+
+			//writer.WriteLine("# PO-Revision-Date: ");
+			//writer.WriteLine("# Last-Translator: ");
+			//writer.WriteLine("# Language-Team: ");
+			//writer.WriteLine("# MIME-Version: 1.0");
+			//writer.WriteLine("# Content-Transfer-Encoding: 8bit");
 		}
 
 		private void ProcessXmlFile(ITaskItem  fileSpec)
@@ -145,13 +163,13 @@ namespace Palaso.BuildTasks.MakePot
 
 			foreach (Match match in MatchesInCSharpString(contents))
 			{
-				string str = match.Groups["key"].Value;
+				string str = UnescapeString(match.Groups["key"].Value);
 				if (!_entries.ContainsKey(str)) //first time we've encountered this string?
 				{
 					this.LogMessage(MessageImportance.Low, "Found '{0}'", str);
 					_entries.Add(str, new List<string>());
 				}
-				string comments = "#; " + filePath;
+				string comments = "#: " + filePath;
 
 				//catch the second parameter from calls like this:
 				//            StringCataGet("~Note", "The label for the field showing a note.");
@@ -178,9 +196,24 @@ namespace Palaso.BuildTasks.MakePot
 			{
 				writer.WriteLine(s);
 			}
-			key = key.Replace("\"", "\\\"");
+			key = EscapeString(key);
 			writer.WriteLine("msgid \"" + key + "\"");
 			writer.WriteLine("msgstr \"\"");
+		}
+
+		public static string EscapeString(string s)
+		{
+			string result = s.Replace("\\", "\\\\"); // This must be first
+			result = result.Replace("\"", "\\\"");
+			return result;
+		}
+
+		public static string UnescapeString(string s)
+		{
+			string result = s.Replace("\\'", "'");
+			result = result.Replace("\\\"", "\"");
+			result = result.Replace("\\\\", "\\");
+			return result;
 		}
 	}
 }
