@@ -108,6 +108,25 @@ somevar.MyLocalizableFunction('~MyLocalizableString', 'MyTranslationNotes');
 		}
 
 		[Test]
+		public void MatchesInCSharpString_StringWithTwoMatches_DoesntContainTildeInResult()
+		{
+			string contents = @"
+somevar.MyLocalizableFunction(StringCatalog.Get('~MyLocalizableString', 'MyTranslationNotes'));
+".Replace("'", "\"");
+
+			var pot = new MakePot();
+			MatchCollection matches = pot.MatchesInCSharpString(contents);
+			Assert.AreEqual(1, matches.Count);
+			foreach (Match match in matches)
+			{
+				Assert.AreEqual(3, match.Groups.Count);
+				Assert.AreEqual("MyLocalizableString", match.Groups["key"].Value);
+				Assert.AreEqual("MyTranslationNotes", match.Groups["note"].Value);
+
+			}
+		}
+
+		[Test]
 		public void MatchesInCSharpString_UsingStringCatalogNoTilde_HasMatchAndNotes()
 		{
 			string contents = @"

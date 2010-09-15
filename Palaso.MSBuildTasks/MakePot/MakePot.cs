@@ -26,11 +26,11 @@ namespace Palaso.BuildTasks.MakePot
 
 		public string XpathToStrings { get; set; }
 
-		private Regex _pattern;
+		private readonly Regex _pattern;
 
 		public MakePot()
 		{
-			_pattern = new Regex(@"(Text\s*=\s*""|StringCatalog\.Get(Formatted)?\(""|""~)(?<key>[^""]*)""(\s*,\s*""(?<note>[^""]*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+			_pattern = new Regex(@"(Text\s*=\s*""(~)?|StringCatalog\.Get(Formatted)?\(""(~)?|""~)(?<key>[^""]*)""(\s*,\s*""(?<note>[^""]*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		}
 
 		public override bool Execute()
