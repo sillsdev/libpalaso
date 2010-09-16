@@ -44,14 +44,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[NUnit.Framework.Category("IBus")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
 			RequiresWindow();
 
 			IBusAdaptor.Deactivate();
-			IBusAdaptor.GetActiveKeyboard();
+			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+				() => IBusAdaptor.GetActiveKeyboard()
+			);
 		}
 
 		[Test]
@@ -94,13 +95,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[NUnit.Framework.Category("IBus")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
 			RequiresWindow();
 
-			IBusAdaptor.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => IBusAdaptor.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 
 		[Test]

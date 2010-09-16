@@ -49,10 +49,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
-		[Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
+		[Test]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
-			KeyboardController.ActivateKeyboard("foobar");
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("foobar")
+			);
 		}
 
 		[Test]
@@ -130,10 +132,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[NUnit.Framework.Category("Scim")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
-			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 
 		private void ResetKeyboardToDefault()
@@ -182,14 +185,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[NUnit.Framework.Category("IBus")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
 			RequiresWindowForFocus();
 
 			KeyboardController.DeactivateKeyboard();
-			KeyboardController.GetActiveKeyboard();
+			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.GetActiveKeyboard()
+			);
 		}
 
 		[Test]
@@ -232,13 +236,13 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[NUnit.Framework.Category("IBus")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
 			RequiresWindowForFocus();
-
-			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 	}
 }

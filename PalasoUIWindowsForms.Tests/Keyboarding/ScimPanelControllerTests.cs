@@ -87,10 +87,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[NUnit.Framework.Category("Scim")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
-			ScimPanelController.Singleton.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => ScimPanelController.Singleton.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 
 		[Test]
