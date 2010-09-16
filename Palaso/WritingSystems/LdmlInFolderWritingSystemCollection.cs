@@ -166,8 +166,8 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemDefinition LoadDefinition(string identifier)
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
+			WritingSystemDefinition ws = CreateNew();
+			LdmlAdaptor adaptor = CreateLdmlAdaptor();
 			string filePath = GetFilePathFromIdentifier(identifier);
 			if (File.Exists(filePath))
 			{
@@ -215,7 +215,7 @@ namespace Palaso.WritingSystems
 					}
 				}
 			}
-			LdmlAdaptor adaptor = new LdmlAdaptor();
+			LdmlAdaptor adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;

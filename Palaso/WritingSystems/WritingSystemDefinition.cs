@@ -79,8 +79,7 @@ namespace Palaso.WritingSystems
 		{
 			_iso=_abbreviation = _script=_languageName = _variant = _region =_nativeName = string.Empty;
 			_sortUsing = SortRulesType.DefaultOrdering;
-			Modified = false;
-			IsLegacyEncoded = false;
+			_isLegacyEncoded = false;
 		   // _defaultFontSize = 10; //arbitrary
 		}
 
@@ -101,6 +100,26 @@ namespace Palaso.WritingSystems
 			_languageName = languageName;
 			_variant = variant;
 			_rightToLeftScript = rightToLeftScript;
+		}
+
+		/// <summary>
+		/// Copy constructor.
+		/// </summary>
+		/// <param name="ws">The ws.</param>
+		public WritingSystemDefinition(WritingSystemDefinition ws)
+			: this(ws._iso, ws._script, ws._region, ws._variant, ws._languageName, ws._abbreviation, ws._rightToLeftScript)
+		{
+			_defaultFontName = ws._defaultFontName;
+			_defaultFontSize = ws._defaultFontSize;
+			_keyboard = ws._keyboard;
+			_versionNumber = ws._versionNumber;
+			_versionDescription = ws._versionDescription;
+			_nativeName = ws._nativeName;
+			_sortUsing = ws._sortUsing;
+			_sortRules = ws._sortRules;
+			_spellCheckingId = ws._spellCheckingId;
+			_dateModified = ws._dateModified;
+			_isLegacyEncoded = ws._isLegacyEncoded;
 		}
 
 		/// <summary>
@@ -160,7 +179,7 @@ namespace Palaso.WritingSystems
 						continue;
 					string[] fields = tline.Split('\t');
 					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
-					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6]));
+					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
 				}
 				_languageCodes.Sort(LanguageCode.CompareByName);
 				return _languageCodes;
@@ -169,16 +188,19 @@ namespace Palaso.WritingSystems
 
 		public class LanguageCode
 		{
-			public LanguageCode(string code, string name)
+			public LanguageCode(string code, string name, string iso3Code)
 			{
 				Code = code;
 				Name = name;
+				ISO3Code = iso3Code;
 			}
 
 
 			public string Name { get; set; }
 
 			public string Code { get; set; }
+
+			public string ISO3Code { get; set; }
 
 			public static int CompareByName(LanguageCode x, LanguageCode y)
 			{
@@ -208,19 +230,19 @@ namespace Palaso.WritingSystems
 
 		}
 
-		public string VersionNumber
+		virtual public string VersionNumber
 		{
 			get { return _versionNumber; }
 			set { UpdateString(ref _versionNumber, value); }
 		}
 
-		public string VersionDescription
+		virtual public string VersionDescription
 		{
 			get { return _versionDescription; }
 			set { UpdateString(ref _versionDescription, value); }
 		}
 
-		public DateTime DateModified
+		virtual public DateTime DateModified
 		{
 			get { return _dateModified; }
 			set { _dateModified = value; }
@@ -232,7 +254,7 @@ namespace Palaso.WritingSystems
 		/// away with for now, but maybe not if this class grows to be extension aware.
 		/// Ideally, these should be suffixes rather than private use
 		/// </summary>
-		public IpaStatusChoices IpaStatus
+		virtual public IpaStatusChoices IpaStatus
 		{
 			get
 			{
@@ -280,7 +302,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool IsVoice
+		virtual public bool IsVoice
 		{
 			get { return _variant.Contains("Zxxx"); }
 			set
@@ -298,7 +320,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Todo: this could/should become an ordered list of variant tags
 		/// </summary>
-		public string Variant
+		virtual public string Variant
 		{
 			get
 			{
@@ -306,12 +328,13 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
+				if (value != null)
+					value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
 				UpdateString(ref _variant, value);
 			}
 		}
 
-		public string Region
+		virtual public string Region
 		{
 			get
 			{
@@ -323,7 +346,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string ISO
+		virtual public string ISO
 		{
 			get
 			{
@@ -335,7 +358,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Abbreviation
+		virtual public string Abbreviation
 		{
 			get
 			{
@@ -347,7 +370,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Script
+		virtual public string Script
 		{
 			get
 			{
@@ -359,7 +382,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string LanguageName
+		virtual public string LanguageName
 		{
 			get
 			{
@@ -372,7 +395,7 @@ namespace Palaso.WritingSystems
 		}
 
 
-		private void UpdateString(ref string field, string value)
+		protected void UpdateString(ref string field, string value)
 		{
 			if (field == value)
 				return;
@@ -390,9 +413,9 @@ namespace Palaso.WritingSystems
 		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		public string StoreID { get; set; }
+		virtual public string StoreID { get; set; }
 
-		public string DisplayLabel
+		virtual public string DisplayLabel
 		{
 			get
 			{
@@ -413,7 +436,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string ListLabel
+		virtual public string ListLabel
 		{
 			get
 			{
@@ -468,7 +491,7 @@ namespace Palaso.WritingSystems
 				return n+details;
 			}
 		}
-		public string RFC5646
+		virtual public string RFC5646
 		{
 			get
 			{
@@ -505,7 +528,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string VerboseDescription
+		virtual public string VerboseDescription
 		{
 			get
 			{
@@ -541,7 +564,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// If we don't have an option for the current script, returns null
 		/// </summary>
-		public ScriptOption ScriptOption
+		virtual public ScriptOption ScriptOption
 		{
 			get
 			{
@@ -570,11 +593,11 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool Modified { get; set; }
+		virtual public bool Modified { get; set; }
 
-		public bool MarkedForDeletion { get; set; }
+		virtual public bool MarkedForDeletion { get; set; }
 
-		public string DefaultFontName
+		virtual public string DefaultFontName
 		{
 			get
 			{
@@ -586,7 +609,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public float DefaultFontSize
+		virtual public float DefaultFontSize
 		{
 			get
 			{
@@ -607,7 +630,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Keyboard
+		virtual public string Keyboard
 		{
 			get
 			{
@@ -623,7 +646,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool RightToLeftScript
+		virtual public bool RightToLeftScript
 		{
 			get
 			{
@@ -642,7 +665,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// The windows "NativeName" from the Culture class
 		/// </summary>
-		public string NativeName
+		virtual public string NativeName
 		{
 			get
 			{
@@ -655,7 +678,7 @@ namespace Palaso.WritingSystems
 		}
 
 
-		public SortRulesType SortUsing
+		virtual public SortRulesType SortUsing
 		{
 			get { return _sortUsing; }
 			set
@@ -669,7 +692,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string SortRules
+		virtual public string SortRules
 		{
 			get { return _sortRules ?? string.Empty; }
 			set
@@ -679,7 +702,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string SpellCheckingId
+		virtual public string SpellCheckingId
 		{
 			get
 			{
@@ -696,7 +719,7 @@ namespace Palaso.WritingSystems
 		/// Returns an ICollator interface that can be used to sort strings based
 		/// on the custom collation rules.
 		/// </summary>
-		public ICollator Collator
+		virtual public ICollator Collator
 		{
 			get
 			{
@@ -722,7 +745,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool IsLegacyEncoded
+		virtual public bool IsLegacyEncoded
 		{
 			get
 			{
@@ -744,7 +767,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		/// <param name="message">Used for an error message if rules do not validate.</param>
 		/// <returns>True if rules are valid, false otherwise.</returns>
-		public bool ValidateCollationRules(out string message)
+		virtual public bool ValidateCollationRules(out string message)
 		{
 			message = null;
 			switch (SortUsing)
@@ -770,21 +793,9 @@ namespace Palaso.WritingSystems
 			return false;
 		}
 
-		public WritingSystemDefinition Clone()
+		virtual public WritingSystemDefinition Clone()
 		{
-			var ws = new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
-			ws._defaultFontName = _defaultFontName;
-			ws._defaultFontSize = _defaultFontSize;
-			ws._keyboard = _keyboard;
-			ws._versionNumber = _versionNumber;
-			ws._versionDescription = _versionDescription;
-			ws._nativeName = _nativeName;
-			ws._sortUsing = _sortUsing;
-			ws._sortRules = _sortRules;
-			ws._spellCheckingId = _spellCheckingId;
-			ws._dateModified = _dateModified;
-			ws._isLegacyEncoded = _isLegacyEncoded;
-			return ws;
+			return new WritingSystemDefinition(this);
 		}
 
 	}
