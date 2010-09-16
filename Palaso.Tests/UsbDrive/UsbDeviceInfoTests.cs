@@ -88,12 +88,15 @@ namespace Palaso.Tests.UsbDrive
 
 		[Test]
 		[NUnit.Framework.Category("RequiresUSB")]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void RootDirectory_2DrivesAreNotMounted_Throws()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.AreEqual(drive0.path.FullName, usbDrives[0].RootDirectory.FullName);
-			Console.WriteLine(usbDrives[0].RootDirectory.FullName);
+			var usbDrives = UsbDriveInfo.GetDrives();
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() =>
+					{
+						string s = usbDrives[0].RootDirectory.FullName;
+					}
+			);
 		}
 	}
 }
