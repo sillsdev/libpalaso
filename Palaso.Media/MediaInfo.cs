@@ -46,6 +46,10 @@ namespace Palaso.Media
 
 		static public MediaInfo GetInfo(string path)
 		{
+			if(!HaveNecessaryComponents)
+			{
+				return new MediaInfo("Could not locate FFMpeg");
+			}
 			var p = new Process();
 			p.StartInfo.FileName = FFmpegRunner.LocateAndRememberFFmpeg();
 			p.StartInfo.Arguments = ( "-i " + "\""+path+"\"");

@@ -141,6 +141,11 @@ namespace Palaso.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, IProgress progress)
 		{
+			if(string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult(){StandardError = "Could not locate FFMpeg"};
+			}
+
 			var arguments = "-i \"" + inputPath + "\" -vn -acodec libmp3lame \"" + outputPath + "\"";
 			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
 														arguments,
