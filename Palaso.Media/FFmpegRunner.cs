@@ -89,11 +89,21 @@ namespace Palaso.Media
 		}
 
 
-
 		///<summary>
 		/// Returns false if it can't find ffmpeg
 		///</summary>
 		static public bool HaveNecessaryComponents
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(LocateFFmpeg());
+			}
+		}
+
+		///<summary>
+		/// Returns false if it can't find ffmpeg
+		///</summary>
+		static private bool HaveValidFFMpegOnPath
 		{
 			get
 			{
