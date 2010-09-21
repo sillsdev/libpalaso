@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems.Collation
 {

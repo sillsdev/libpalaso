@@ -244,7 +244,9 @@
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
+	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
+	<Compile Include="Xml\XmlNodeExtensions.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
   </ItemGroup>
   <ItemGroup>
