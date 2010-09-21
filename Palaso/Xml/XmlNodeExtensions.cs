@@ -107,6 +107,8 @@ namespace Palaso.Xml
 											  (x.IndexOfAny(quoteChars) < 0 || x.IndexOfAny(quoteChars) > x.IndexOf(':'))))
 												? x
 												: prefix + ":" + x).ToArray());
+
+			result = result.Replace(prefix + ":text()", "text()");//remove the pfx from the text()
 			return result;
 		}
 
