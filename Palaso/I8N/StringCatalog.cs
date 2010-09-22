@@ -184,15 +184,17 @@ namespace Palaso.I8N
 		{
 			get
 			{
-				string s = _catalog[id.Replace("&&","&")];
-				if (s == null)
-				{
-					return id;
-				}
-				else
+				string s = _catalog[id];
+				if (s != null)
 				{
 					return s;
 				}
+				s = _catalog[id.Replace("&&", "&")];
+				if (s != null)
+				{
+					return s;
+				}
+				return id;
 			}
 		}
 
