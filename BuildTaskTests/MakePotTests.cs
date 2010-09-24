@@ -213,7 +213,6 @@ somevar.Text = 'MyLocalizableString \'InQuote\' end';
 		}
 
 		[Test]
-		[Ignore("EOL not the same anymore, so ignore")]
 		public void ProcessSrcFile_AllMatches_OutputsGoodPo()
 		{
 			string contents = @"
@@ -226,29 +225,26 @@ somevar.MyLocalizableFunction('~ThirdLocalizableString', 'ThirdNotes');
 ".Replace("'", "\"");
 
 			string expected =
-@"Project-Id-Version: ''
-Report-Msgid-Bugs-To: ''
-POT-Creation-Date: '.*'
-PO-Revision-Date: '.*'
-Last-Translator: ''
-Language-Team: ''
-MIME-Version: '1.0'
-Content-Type: 'text/plain; charset=UTF-8'
-Content-Transfer-Encoding: '8bit'
+@"# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
 
-#; C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+
+#: C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
 msgid 'FirstLocalizableString'
 msgstr ''
 
-#; C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
 #. SecondNotes
 msgid 'SecondLocalizableString'
 msgstr ''
 
-#; C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
 #. ThirdNotes
 msgid 'ThirdLocalizableString'
-msgstr ''".Replace('\'', '"').Replace("\\", "\\\\");
+msgstr ''
+".Replace('\'', '"');
 
 			using (var e = new EnvironmentForTest())
 			{
@@ -261,7 +257,7 @@ msgstr ''".Replace('\'', '"').Replace("\\", "\\\\");
 				pot.Execute();
 
 				string actual = File.ReadAllText(pot.OutputFile);
-				Assert.That(actual, Is.StringMatching(expected));
+				Assert.That(actual, ConstrainStringByLine.Matches(expected));
 			}
 
 
