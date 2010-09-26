@@ -231,20 +231,20 @@ somevar.MyLocalizableFunction('~ThirdLocalizableString', 'ThirdNotes');
 # Content-Type: text/plain; charset=UTF-8
 
 
-#: C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*\Palaso.BuildTaskTests.MakePotTests\csharp.cs
 msgid 'FirstLocalizableString'
 msgstr ''
 
-#: C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*\Palaso.BuildTaskTests.MakePotTests\csharp.cs
 #. SecondNotes
 msgid 'SecondLocalizableString'
 msgstr ''
 
-#: C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*\Palaso.BuildTaskTests.MakePotTests\csharp.cs
 #. ThirdNotes
 msgid 'ThirdLocalizableString'
 msgstr ''
-".Replace('\'', '"');
+".Replace("'", "\"");
 
 			using (var e = new EnvironmentForTest())
 			{
@@ -263,6 +263,78 @@ msgstr ''
 
 		}
 
+		[Test]
+		public void ProcessSrcFile_BackupStringWithDots_DoesNotHaveDuplicates()
+		{
+			string contents = @"
+somevar.Text = 'Backing Up...';
+".Replace("'", "\"");
+
+			string expected =
+@"# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+
+#: .*csharp.cs
+msgid 'Backing Up...'
+msgstr ''
+".Replace("'", "\"");
+
+			using (var e = new EnvironmentForTest())
+			{
+				string csharpFilePath = Path.Combine(e.Path, "csharp.cs");
+				File.WriteAllText(csharpFilePath, contents);
+
+				var pot = new MakePot();
+				pot.OutputFile = Path.Combine(e.Path, "output.pot");
+				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
+				pot.Execute();
+
+				string actual = File.ReadAllText(pot.OutputFile);
+				Assert.That(actual, ConstrainStringByLine.Matches(expected));
+			}
+		}
+
+		[Test]
+		public void ProcessSrcFile_BackupStringWithDuplicates_HasOnlyOneInOutput()
+		{
+			string contents = @"
+somevar.Text = 'Backing Up...';
+
+somevar.Text = 'Backing Up...';
+".Replace("'", "\"");
+
+			string expected =
+@"# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+
+#: .*csharp.cs
+#: .*csharp.cs
+msgid 'Backing Up...'
+msgstr ''
+".Replace("'", "\"");
+
+			using (var e = new EnvironmentForTest())
+			{
+				string csharpFilePath = Path.Combine(e.Path, "csharp.cs");
+				File.WriteAllText(csharpFilePath, contents);
+
+				var pot = new MakePot();
+				pot.OutputFile = Path.Combine(e.Path, "output.pot");
+				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
+				pot.Execute();
+
+				string actual = File.ReadAllText(pot.OutputFile);
+				Assert.That(actual, ConstrainStringByLine.Matches(expected));
+			}
+
+
+		}
 
 	}
 }

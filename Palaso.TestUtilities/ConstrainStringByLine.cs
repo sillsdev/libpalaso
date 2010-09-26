@@ -40,7 +40,7 @@ namespace Palaso.TestUtilities
 			{
 				using (var expectedReader = new StringReader(ExpectedString))
 				{
-					while ((_actualLine = actualReader.ReadLine()) != null && result)
+					while ((_actualLine = actualReader.ReadLine()) != null)
 					{
 						_expectedLine = expectedReader.ReadLine();
 						if (_expectedLine == null)
@@ -59,6 +59,11 @@ namespace Palaso.TestUtilities
 								result = false;
 							}
 						}
+						if (!result)
+						{
+							break;
+						}
+
 					}
 				}
 			}
