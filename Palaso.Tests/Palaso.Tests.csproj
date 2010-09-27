@@ -2,7 +2,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -77,7 +77,7 @@
 	<Compile Include="Data\PalasoTestItem.cs" />
 	<Compile Include="Data\TestRepositoryId.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
-	<Compile Include="I8N\StringCatalogTests.cs" />
+	<Compile Include="i18n\StringCatalogTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
 	<Compile Include="Misc\GuardAgainstReentry.cs" />

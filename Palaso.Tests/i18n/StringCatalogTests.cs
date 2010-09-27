@@ -1,8 +1,7 @@
 using System;
 using System.Drawing;
 using System.IO;
-using Palaso.I8N;
-
+using Palaso.i18n;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 

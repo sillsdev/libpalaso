@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace Palaso.I8N
+namespace Palaso.i18n
 {
 	public class StringCatalog
 	{

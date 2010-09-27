@@ -5,7 +5,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.I8N;
+using Palaso.i18n;
 
 
 namespace Palaso.UI.WindowsForms.i18n
