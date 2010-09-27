@@ -102,7 +102,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				listView1.SelectedIndices.Add(0);
 			}
 
-			_okButton.Enabled = listView1.Items.Count > 0 && listView1.SelectedItems.Count == 1;
+		}
 		}
 	}
 }
