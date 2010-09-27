@@ -8,7 +8,7 @@ using Palaso.I8N;
 using Palaso.Lift;
 using Palaso.Reporting;
 using Palaso.Text;
-//using Palaso.UI.WindowsForms.i8n;
+//using Palaso.UI.WindowsForms.i18n;
 
 namespace Palaso.DictionaryServices.Model
 {

@@ -9,7 +9,7 @@ using Palaso.I8N;
 using Palaso.Reporting;
 using Palaso.UI.WindowsForms.HotSpot;
 using Palaso.Spelling;
-using Palaso.UI.WindowsForms.i8n;
+using Palaso.UI.WindowsForms.i18n;
 
 namespace Palaso.UI.WindowsForms.Spelling
 {

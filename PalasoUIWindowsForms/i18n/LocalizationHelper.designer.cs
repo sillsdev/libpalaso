@@ -1,4 +1,4 @@
-namespace Palaso.UI.WindowsForms.i8n
+namespace Palaso.UI.WindowsForms.i18n
 {
 	partial class LocalizationHelper
 	{
