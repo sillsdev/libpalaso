@@ -43,7 +43,7 @@
 	<OutputType>WinExe</OutputType>
 	<RootNamespace>TestApp</RootNamespace>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-	<LangVersion>3</LangVersion>
+	<LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
