@@ -231,16 +231,16 @@ somevar.MyLocalizableFunction('~ThirdLocalizableString', 'ThirdNotes');
 # Content-Type: text/plain; charset=UTF-8
 
 
-#: .*\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*
 msgid 'FirstLocalizableString'
 msgstr ''
 
-#: .*\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*
 #. SecondNotes
 msgid 'SecondLocalizableString'
 msgstr ''
 
-#: .*\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*
 #. ThirdNotes
 msgid 'ThirdLocalizableString'
 msgstr ''
