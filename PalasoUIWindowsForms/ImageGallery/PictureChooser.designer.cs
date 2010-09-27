@@ -37,7 +37,7 @@ namespace WeSay.LexicalTools.AddPictures
 			this._okButton = new System.Windows.Forms.Button();
 			this._notFoundLabel = new System.Windows.Forms.Label();
 			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
-			this._localizationHelper = new Palaso.UI.WindowsForms.i8n.LocalizationHelper(this.components);
+			this._localizationHelper = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -150,7 +150,7 @@ namespace WeSay.LexicalTools.AddPictures
 		private System.Windows.Forms.Button _searchButton;
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Label _notFoundLabel;
-		private Palaso.UI.WindowsForms.i8n.LocalizationHelper _localizationHelper;
+		private Palaso.UI.WindowsForms.i18n.LocalizationHelper _localizationHelper;
 
 	}
 }

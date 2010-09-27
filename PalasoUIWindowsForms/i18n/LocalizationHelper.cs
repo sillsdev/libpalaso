@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using Palaso.I8N;
 
 
-namespace Palaso.UI.WindowsForms.i8n
+namespace Palaso.UI.WindowsForms.i18n
 {
 	[Designer(typeof (LocalizationHelperDesigner))]
 	[ToolboxItem(true)]
