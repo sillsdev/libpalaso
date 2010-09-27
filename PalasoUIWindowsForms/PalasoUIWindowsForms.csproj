@@ -173,6 +173,7 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
+	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>

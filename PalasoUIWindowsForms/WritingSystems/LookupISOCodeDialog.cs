@@ -8,13 +8,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class LookupISOCodeDialog : Form
 	{
 		private WritingSystemDefinition.LanguageCode _selectedWritingSystem;
-		private readonly IList<WritingSystemDefinition.LanguageCode> _languageCodes;
 		private string _lastSearchedForText;
-
+		private LookupIsoCodeModel _model;
 		public LookupISOCodeDialog()
 		{
-			_languageCodes = WritingSystemDefinition.LanguageCodes;
 			InitializeComponent();
+			_model = new LookupIsoCodeModel();
 		}
 
 		private void _okButton_Click(object sender, EventArgs e)
@@ -77,43 +76,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _searchTimer_Tick(object sender, EventArgs e)
 		{
-			var s = _searchText.Text.Trim().ToLowerInvariant();
-			if (s == _lastSearchedForText)
+			var typedText = _searchText.Text.Trim();
+			if (typedText == _lastSearchedForText)
 			{
 				return;
 			}
+			_lastSearchedForText = typedText;
 			listView1.SuspendLayout();
 
 			listView1.Items.Clear();
 			listView1.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
 
-			/* This works, but the results are satisfactory yet (they could be with some enancement to the matcher
-			   We would need it to favor exact prefix matches... currently an exact match could be several items down the list.
-
-			var d = new ApproximateMatcher.GetStringDelegate<WritingSystemDefinition.LanguageCode>(c => c.Name);
-			var languages = ApproximateMatcher.FindClosestForms(_languageCodes, d, s, ApproximateMatcherOptions.IncludePrefixedAndNextClosestForms);
-			foreach (var language in languages)
+			foreach(WritingSystemDefinition.LanguageCode lang in _model.GetMatchingWritingSystems(typedText))
 			{
-				ListViewItem item = new ListViewItem(language.Name);
-				item.SubItems.Add(language.Code);
-				item.Tag = language;
-				toShow.Add(item);
-			}
-			*/
-
-			foreach (WritingSystemDefinition.LanguageCode ws in _languageCodes)
-			{
-				if (string.IsNullOrEmpty(s) // in which case, show all of them
-					|| (ws.Code.ToLowerInvariant().StartsWith(_searchText.Text)
-					|| ws.Name.ToLowerInvariant().StartsWith(_searchText.Text)))
-				{
-					ListViewItem item = new ListViewItem(ws.Name);
-					item.SubItems.Add(ws.Code);
-					item.Tag = ws;
+					ListViewItem item = new ListViewItem(lang.Name);
+					item.SubItems.Add(lang.Code);
+					item.Tag = lang;
 					toShow.Add(item);
-				}
-
 			}
 			listView1.Items.AddRange(toShow.ToArray());
 			listView1.ResumeLayout();
@@ -121,9 +101,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				listView1.SelectedIndices.Add(0);
 			}
-			_lastSearchedForText = s;
+
 		}
-
-
 	}
 }
