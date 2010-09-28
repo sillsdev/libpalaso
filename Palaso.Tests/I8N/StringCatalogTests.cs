@@ -1,11 +1,11 @@
 using System;
 using System.Drawing;
 using System.IO;
-using Palaso.I8N;
+using Palaso.i18n;
 
 using NUnit.Framework;
 
-namespace Palaso.Tests.I8N
+namespace Palaso.Tests.i18n
 {
 	[TestFixture]
 	public class StringCatalogTests
