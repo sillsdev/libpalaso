@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this._scriptCombo = new System.Windows.Forms.ComboBox();
 			this._variant = new System.Windows.Forms.TextBox();
@@ -35,6 +36,7 @@
 			this.betterLabel3 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.SuspendLayout();
 			//
 			// linkLabel1
@@ -52,11 +54,14 @@
 			//
 			this._scriptCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
+			this._scriptCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this._scriptCombo.FormattingEnabled = true;
 			this._scriptCombo.Location = new System.Drawing.Point(68, 3);
 			this._scriptCombo.Name = "_scriptCombo";
 			this._scriptCombo.Size = new System.Drawing.Size(161, 21);
 			this._scriptCombo.TabIndex = 6;
+			this.toolTip1.SetToolTip(this._scriptCombo, "If your script isn\'t listed here, you can quit this application and modify the LD" +
+					"ML file directly.");
 			this._scriptCombo.SelectedIndexChanged += new System.EventHandler(this._scriptCombo_SelectedIndexChanged);
 			//
 			// _variant
@@ -81,6 +86,8 @@
 			//
 			// betterLabel3
 			//
+			this.betterLabel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel3.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel3.Location = new System.Drawing.Point(1, 32);
 			this.betterLabel3.Multiline = true;
@@ -93,6 +100,8 @@
 			//
 			// betterLabel2
 			//
+			this.betterLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel2.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel2.Location = new System.Drawing.Point(1, 57);
 			this.betterLabel2.Multiline = true;
@@ -105,6 +114,8 @@
 			//
 			// betterLabel1
 			//
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel1.Location = new System.Drawing.Point(1, 3);
 			this.betterLabel1.Multiline = true;
@@ -142,5 +153,6 @@
 		private System.Windows.Forms.ComboBox _scriptCombo;
 		private System.Windows.Forms.TextBox _variant;
 		private System.Windows.Forms.TextBox _region;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }
