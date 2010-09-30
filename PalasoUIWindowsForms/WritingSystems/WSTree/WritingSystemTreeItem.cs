@@ -69,6 +69,40 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 
 	}
+
+
+	/// <summary>
+	/// this is used when it would be confusing to make one of the WS's primary above the others.
+	/// related to http://projects.palaso.org/issues/show/482
+	/// </summary>
+	public class GroupTreeItem : WritingSystemTreeItem
+	{
+		protected static Font kFont = new Font(SystemFonts.MessageBoxFont.Name, 11);
+
+		public GroupTreeItem(string name)
+			: base(name, new Action<WritingSystemTreeItem>(x => { }))
+		{
+		}
+
+		protected override Font Font
+		{
+			get
+			{
+				return kFont;
+			}
+		}
+
+		protected override Color ForeColor
+		{
+			get
+			{
+				return Color.DarkGray;
+			}
+		}
+
+
+	}
+
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
 	{
 		public WritingSystemDefinition Definition { get; set; }

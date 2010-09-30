@@ -154,6 +154,20 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			AssertTreeNodeLabels("Edolo", "+Edolo (IPA)", "", "Add Language");
 		}
 
+
+		/// <summary>
+		/// related to http://projects.palaso.org/issues/show/482
+		/// </summary>
+		[Test]
+		public void GetTopLevelItems_ThreeVariantsAreSyblings_ListsAllUnderGroupHeading()
+		{
+			var thai = new WritingSystemDefinition("bii", "Thai", string.Empty, string.Empty, "Bisu", "bt", false);
+			var my = new WritingSystemDefinition("bii", "Mymr", string.Empty, string.Empty, "Bisu", "bm", false);
+			var latin = new WritingSystemDefinition("bii", "Latn", string.Empty, string.Empty, "Bisu", "bl", false);
+			SetDefinitionsInStore(new[] { thai, my, latin });
+			AssertTreeNodeLabels("Bisu", "+Bisu (Thai)", "+Bisu (Mymr)", "+Bisu (Latn)", "", "Add Language");
+		}
+
 		/// <summary>
 		/// Other details of this behavior are tested in the class used as the suggestor
 		/// </summary>
