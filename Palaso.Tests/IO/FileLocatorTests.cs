@@ -12,15 +12,13 @@ namespace Palaso.Tests.IO
 		[Test]
 		public void GetFileDistributedWithApplication_MultipleParts_FindsCorrectly()
 		{
-			var path = FileLocator.GetFileDistributedWithApplication("lib", "common", "nunit.framework.dll");
-			Assert.That(path.Contains("nunit"));
+			var path = FileLocator.GetFileDistributedWithApplication("DirectoryForTests", "SampleFileForTests.txt");
 			Assert.That(File.Exists(path));
 		}
 		[Test]
 		public void GetDirectoryDistributedWithApplication_MultipleParts_FindsCorrectly()
 		{
-			var path = FileLocator.GetDirectoryDistributedWithApplication("lib", "common");
-			Assert.That(path.Contains("common"));
+			var path = FileLocator.GetDirectoryDistributedWithApplication("DirectoryForTests");
 			Assert.That(Directory.Exists(path));
 		}
 
