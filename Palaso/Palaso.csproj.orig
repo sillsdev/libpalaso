@@ -132,13 +132,6 @@
 	<Compile Include="Code\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
 	<Compile Include="Code\GuardAgainstReentry.cs" />
-	<Compile Include="Migration\IMigrationStrategy.cs" />
-	<Compile Include="Migration\IFileVersion.cs" />
-	<Compile Include="Migration\MigrationStrategyBase.cs" />
-	<Compile Include="Migration\Migrator.cs" />
-	<Compile Include="Migration\XmlReaderWriterMigrator.cs" />
-	<Compile Include="Migration\XPathVersion.cs" />
-	<Compile Include="Migration\XslMigrator.cs" />
 	<Compile Include="Misc\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
