@@ -11,6 +11,7 @@ namespace Palaso.Reporting.Network
 		public ProxyCredentialsRequestDialog()
 		{
 			InitializeComponent();
+			Text = Application.ProductName + ": Proxy Credentials";
 		}
 
 

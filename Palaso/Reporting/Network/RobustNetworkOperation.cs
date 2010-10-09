@@ -13,7 +13,6 @@ namespace Palaso.Reporting.Network
 		/// Perform a web action, trying various things to use a proxy if needed, including requesting
 		/// (and remembering) user credentials from the user.
 		/// </summary>
-		/// <param name="action"></param>
 		public static void Do(Action<IWebProxy> action)
 		{
 			IWebProxy proxy = WebRequest.GetSystemWebProxy();
