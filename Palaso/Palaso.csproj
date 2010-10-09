@@ -100,9 +100,19 @@
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Management" />
+	<Reference Include="System.Security" />
 	<Reference Include="System.Web" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
+	<None Include="app.config" />
+	<None Include="Reporting\Network\ProxyCredentialSettings.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>ProxyCredentialSettings1.Designer.cs</LastGenOutput>
+	</None>
+	<None Include="Reporting\UsageMemory.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>UsageMemory.Designer.cs</LastGenOutput>
+	</None>
 	<None Include="Resources\scriptNames.txt" />
 	<None Include="Reporting\app.config" />
 	<None Include="Resources\languageCodes.txt" />
@@ -165,11 +175,19 @@
 	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="Reporting\Logger.cs" />
+	<Compile Include="Reporting\Network\RobustNetworkOperation.cs" />
 	<Compile Include="Reporting\ProblemNotificationDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
 	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Reporting\Network\ProxyCredentialSettings.Designer.cs" />
+	<Compile Include="Reporting\Network\ProxyCredentialsRequestDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\Network\ProxyCredentialsRequestDialog.designer.cs">
+	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Reporting\ReportingSettings.cs" />
 	<Compile Include="Reporting\ReportingStrings.Designer.cs">
@@ -177,6 +195,11 @@
 	</Compile>
 	<Compile Include="Reporting\UsageEmailDialog.cs">
 	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\UsageMemory.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>UsageMemory.settings</DependentUpon>
 	</Compile>
 	<Compile Include="Reporting\UsageReporter.cs" />
 	<Compile Include="Reporting\UserRegistrationDialog.cs">
@@ -273,6 +296,9 @@
 	<EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
 	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\Network\ProxyCredentialsRequestDialog.resx">
+	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ReportingStrings.resx">
 	  <SubType>Designer</SubType>

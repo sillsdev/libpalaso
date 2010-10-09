@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Windows.Forms;
 using Palaso.Code;
+using Palaso.Reporting.Network;
 
 namespace Palaso.Reporting
 {
@@ -255,41 +259,73 @@ namespace Palaso.Reporting
 			}
 		}
 
-		private static string HttpPost(string uri, Dictionary<string, string> parameters)
+
+		public static void ReportLaunchesAsync()
 		{
-			StringBuilder parameterBuilder = new StringBuilder();
-			foreach (KeyValuePair<string, string> pair in parameters)
+			var worker = new BackgroundWorker();
+			worker.DoWork += new DoWorkEventHandler(OnReportDoWork);
+			worker.RunWorkerAsync();
+		}
+
+		static void OnReportDoWork(object sender, DoWorkEventArgs e)
+		{
+			Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+			Dictionary<string, string> parameters = new Dictionary<string, string>();
+			parameters.Add("app", UsageReporter.AppNameToUseInReporting);
+			parameters.Add("version", ErrorReport.VersionNumberString);
+			UsageMemory.Default.Launches++;
+			parameters.Add("launches", UsageMemory.Default.Launches.ToString());
+			UsageMemory.Default.Save();
+
+			try
 			{
-				parameterBuilder.Append(HttpUtility.UrlEncode(pair.Key));
-				parameterBuilder.Append("=");
-				parameterBuilder.Append(HttpUtility.UrlEncode(pair.Value));
-				parameterBuilder.Append("&");
+				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
 			}
-			//trim off the last "&"
-			if (parameterBuilder.Length > 0)
+			catch (Exception)
 			{
-				parameterBuilder.Remove(parameterBuilder.Length - 1, 1);
+				//so many things can go wrong, but we can't do anything about any of them
 			}
+		}
 
-			System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
-		   // req.Proxy = new System.Net.WebProxy(ProxyString, true);
 
-			req.ContentType = "application/x-www-form-urlencoded";
-			req.Method = "POST";
-			req.Timeout = 1000;
+		public static string HttpPost(string uri, Dictionary<string, string> parameters)
+		{
+			try
+			{
+				StringBuilder parameterBuilder = new StringBuilder();
+				foreach (KeyValuePair<string, string> pair in parameters)
+				{
+					parameterBuilder.Append(HttpUtility.UrlEncode(pair.Key));
+					parameterBuilder.Append("=");
+					parameterBuilder.Append(HttpUtility.UrlEncode(pair.Value));
+					parameterBuilder.Append("&");
+				}
+				//trim off the last "&"
+				if (parameterBuilder.Length > 0)
+				{
+					parameterBuilder.Remove(parameterBuilder.Length - 1, 1);
+				}
 
-			byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
-			req.ContentLength = bytes.Length;
+				byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
 
-			System.IO.Stream os = req.GetRequestStream();
-			os.Write(bytes, 0, bytes.Length);
-			os.Close();
+				var client = new WebClient();
+				client.Credentials = CredentialCache.DefaultNetworkCredentials;
 
-			System.Net.WebResponse resp = req.GetResponse();
-			if (resp == null) return null;
+				var response = new byte[] { };
 
-			System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-			return sr.ReadToEnd().Trim();
+				RobustNetworkOperation.Do(proxy =>
+				{
+					client.Proxy = proxy;
+					response = client.UploadData(uri, bytes);
+				});
+
+
+				return System.Text.Encoding.ASCII.GetString(response);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
 		}
 	}
 }
