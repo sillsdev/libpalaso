@@ -170,6 +170,18 @@
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
 	<Compile Include="Progress\Commands\BasicCommand.cs" />
 	<Compile Include="Progress\ConsoleProgressState.cs" />
+	<Compile Include="Progress\LogBox\LogBox.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="Progress\LogBox\LogBox.designer.cs">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Progress\LogBox\Progress.cs" />
+	<Compile Include="Progress\LogBox\LogBoxResources.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>LogBoxResources.resx</DependentUpon>
+	</Compile>
 	<Compile Include="Progress\NullProgressState.cs" />
 	<Compile Include="Progress\ProgressState.cs" />
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
@@ -296,6 +308,13 @@
 	<Compile Include="Xml\XmlUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="Progress\LogBox\LogBox.resx">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Progress\LogBox\LogBoxResources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -328,6 +347,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
+	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
