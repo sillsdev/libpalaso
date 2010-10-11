@@ -15,6 +15,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			ScimPanelController.Singleton.ActivateKeyboard(name);
 		}
 
+		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
+		{
+			ScimPanelController.Singleton.ActivateKeyboard(keyboard.KeyboardName);
+		}
+
 		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
@@ -36,14 +41,32 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			ScimPanelController.Singleton.Deactivate();
 		}
 
+		public static bool HasKeyboard(KeyboardDescriptor keyboard)
+		{
+			return ScimPanelController.Singleton.HasKeyboardNamed(keyboard.KeyboardName);
+		}
+
 		public static bool HasKeyboardNamed(string name)
 		{
 			return ScimPanelController.Singleton.HasKeyboardNamed(name);
 		}
 
+		public static KeyboardDescriptor GetActiveKeyboardDescriptor()
+		{
+			KeyboardDescriptor activeKeyboard = null;
+
+			string activeKeyboardName = ScimPanelController.Singleton.GetActiveKeyboard();
+			if(!String.IsNullOrEmpty(activeKeyboardName))
+			{
+				activeKeyboard = new KeyboardDescriptor(activeKeyboardName, Engines.Scim, activeKeyboardName);
+			}
+
+			return activeKeyboard;
+		}
+
 		public static string GetActiveKeyboard()
 		{
-			return ScimPanelController.Singleton.GetActiveKeyboard();
+			return GetActiveKeyboardDescriptor().KeyboardName;
 		}
 	}
 }

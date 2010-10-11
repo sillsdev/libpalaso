@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.Reporting;
+using Palaso.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
@@ -104,9 +105,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
 			List<KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(Engines.Scim);
-			Assert.AreEqual("English/European", availableKeyboards[0].Name);
-			Assert.AreEqual("RAW CODE", availableKeyboards[1].Name);
-			Assert.AreEqual("English/Keyboard", availableKeyboards[2].Name);
+			Assert.AreEqual("English/European", availableKeyboards[0].KeyboardName);
+			Assert.AreEqual("RAW CODE", availableKeyboards[1].KeyboardName);
+			Assert.AreEqual("English/Keyboard", availableKeyboards[2].KeyboardName);
 		}
 
 		[Test]

@@ -43,6 +43,45 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return keyboards;
 		}
 
+		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
+		{
+#if MONO
+			if (IBusAdaptor.HasKeyboard(keyboard))
+			{
+				IBusAdaptor.ActivateKeyboard(keyboard);
+			}
+			else if (ScimAdaptor.HasKeyboard(keyboard))
+			{
+				ScimAdaptor.ActivateKeyboard(keyboard);
+			}
+#else
+			if (WindowsIMEAdaptor.HasKeyboard(keyboard))
+			{
+				WindowsIMEAdaptor.ActivateKeyboard(keyboard);
+			}
+			else if (Keyman6Adaptor.HasKeyboard(keyboard))
+			{
+				Keyman6Adaptor.ActivateKeyboard(keyboard);
+			}
+			else if (Keyman7Adaptor.HasKeyboard(keyboard))
+			{
+				Keyman7Adaptor.ActivateKeyboard(keyboard);
+			}
+#endif
+			else
+			{
+				if (!(s_languagesAlreadyShownKeyBoardNotFoundMessages.Contains(keyboard)))
+				{
+					s_languagesAlreadyShownKeyBoardNotFoundMessages.Add(keyboard, null);
+					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+						"Could not find a keyboard named '{0}' in the {1} engine.", keyboard.KeyboardName, keyboard.KeyboardingEngine);
+
+				}
+			}
+
+		}
+
+		[Obsolete("Using keyboard descriptors rather than keyboard names will result in more accurate error messages and avoid a improve keyboard control across localized versions of windows.")]
 		public static void ActivateKeyboard(string name)
 		{
 #if MONO
@@ -81,6 +120,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		}
 
+		[Obsolete("Using keyboard descriptors rather than keyboard names will result in more accurate error messages and avoid a improve keyboard control across localized versions of windows. Please use GetActiveKeyboardDescriptor() instead.")]
 		public static string GetActiveKeyboard()
 		{
 #if MONO
@@ -100,9 +140,35 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			if (!string.IsNullOrEmpty(name))
 				return name;
 
-			name = WindowsIMEAdaptor.GetActiveKeyboard();
+			name = WindowsIMEAdaptor.GetActiveKeyboardDescriptor().KeyboardName;
 			if (!string.IsNullOrEmpty(name))
 				return name;
+#endif
+			return null;
+		}
+
+		public static KeyboardDescriptor GetActiveKeyboardDescriptor()
+		{
+#if MONO
+			KeyboardDescriptor keyboard = IBusAdaptor.GetActiveKeyboardDescriptor();
+			if (keyboard != null)
+				return keyboard;
+
+			keyboard = ScimAdaptor.GetActiveKeyboardDescriptor();
+			if (keyboard != null)
+				return keyboard;
+#else
+			KeyboardDescriptor keyboard = Keyman6Adaptor.GetActiveKeyboardDescriptor();
+			if (keyboard != null)
+				return keyboard;
+
+			keyboard = Keyman7Adaptor.GetActiveKeyboardDescriptor();
+			if (keyboard != null)
+				return keyboard;
+
+			keyboard = WindowsIMEAdaptor.GetActiveKeyboardDescriptor();
+			if (keyboard != null)
+				return keyboard;
 #endif
 			return null;
 		}

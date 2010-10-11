@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Palaso.Reporting;
+using Palaso.Keyboarding;
 
 using NDesk.DBus;
 using org.freedesktop.DBus;
@@ -215,6 +216,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			inputContextBus.InputContext.SetEngine (name);
 		}
 
+		public static void ActivateKeyboard (KeyboardDescriptor keyboard)
+		{
+			ActivateKeyboard(keyboard.KeyboardName);
+		}
+
 		/// <summary>
 		/// Helper function the builds a list of Active Keyboards
 		/// </summary>
@@ -234,10 +240,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			for (int i = 0; i < (engines).Length; ++i)
 			{
 				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engines[i], typeof(IBusEngineDesc));
-				var v = new KeyboardDescriptor ();
-				v.Id = engineDesc.name;
-				v.Name = engineDesc.longname;
-				v.engine = Engines.IBus;
+				var v = new KeyboardDescriptor (engineDesc.longname, Engines.IBus,  engineDesc.name);
 
 				yield return v;
 			}
@@ -282,11 +285,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			inputContextBus.InputContext.Reset ();
 		}
 
-		public static bool HasKeyboardNamed (string name)
+		public static bool HasKeyboard(KeyboardDescriptor keyboard)
+		{
+			return HasKeyboardNamed(keyboard.KeyboardName);
+		}
+
+		public static bool HasKeyboardNamed(string name)
 		{
 			foreach (KeyboardDescriptor d in GetKeyboardDescriptors ())
 			{
-				if (d.Name.Equals (name))
+				if (d.KeyboardName.Equals (name))
 					return true;
 			}
 
@@ -295,13 +303,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static string GetActiveKeyboard ()
 		{
+			return GetActiveKeyboardDescriptor().KeyboardName;
+		}
+
+		public static KeyboardDescriptor GetActiveKeyboardDescriptor ()
+		{
 			try
 			{
 				EnsureConnection ();
 			}
 			catch
 			{
-				return String.Empty;
+				return null;
 			}
 
 			IBus ibus = new IBus (_connection);
@@ -316,13 +329,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					throw new ApplicationException ("Focused Input Context doesn't have an active Keyboard/Engine");
 
 				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engine, typeof(IBusEngineDesc));
-				return engineDesc.longname;
+				return new KeyboardDescriptor(engineDesc.longname, Engines.IBus, engineDesc.name);
 			}
 			catch (Exception e)
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
 																 "Could not get ActiveKeyboard");
-				return String.Empty;
+				return null;
 			}
 		}
 	}

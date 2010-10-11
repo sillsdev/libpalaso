@@ -2,6 +2,7 @@
 using System;
 using NUnit.Framework;
 using Palaso.Reporting;
+using Palaso.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding;
 using System.Windows.Forms;
 using System.Collections.Generic;

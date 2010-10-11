@@ -34,6 +34,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
+		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
+		{
+			ActivateKeyboard(keyboard.KeyboardName);
+		}
+
 		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
@@ -116,6 +121,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return false;
 		}
 
+		public static bool HasKeyboard(KeyboardDescriptor keyboard)
+		{
+			return HasKeyboardNamed(keyboard.KeyboardName);
+		}
+
 		public static string GetActiveKeyboard()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -133,6 +143,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					"There was a problem retrieving the active keyboard in keyman 6.");
 			}
 			return null;
+		}
+
+		public static KeyboardDescriptor GetActiveKeyboardDescriptor()
+		{
+			KeyboardDescriptor activeKeyboard = null;
+			string activeKeyboardName = GetActiveKeyboard();
+			if(!String.IsNullOrEmpty(activeKeyboardName))
+			{
+				return new KeyboardDescriptor(activeKeyboardName, Engines.Keyman6, activeKeyboardName);
+			}
+			return activeKeyboard;
 		}
 	}
 	internal class InnerKeyman6Wrapper

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Palaso.UI.WindowsForms.Keyboarding;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Palaso.Keyboarding;
 
 #if MONO
 
@@ -45,9 +46,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[NUnit.Framework.Category("Scim")]
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
-			Assert.AreEqual("English/European", ScimPanelController.Singleton.KeyboardDescriptors[0].Name);
-			Assert.AreEqual("RAW CODE", ScimPanelController.Singleton.KeyboardDescriptors[1].Name);
-			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.KeyboardDescriptors[2].Name);
+			Assert.AreEqual("English/European", ScimPanelController.Singleton.KeyboardDescriptors[0].KeyboardName);
+			Assert.AreEqual("RAW CODE", ScimPanelController.Singleton.KeyboardDescriptors[1].KeyboardName);
+			Assert.AreEqual("English/Keyboard", ScimPanelController.Singleton.KeyboardDescriptors[2].KeyboardName);
 		}
 
 		[Test]

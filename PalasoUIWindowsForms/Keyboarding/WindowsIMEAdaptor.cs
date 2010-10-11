@@ -9,9 +9,34 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 {
 	internal class WindowsIMEAdaptor
 	{
+		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
+		{
+			if (keyboard == null)
+			{
+				return;
+			}
+
+			try
+			{
+				InputLanguage inputLanguage = FindInputLanguage(keyboard);
+				if (inputLanguage != null)
+				{
+					InputLanguage.CurrentInputLanguage = inputLanguage;
+				}
+				else
+				{
+					Palaso.Reporting.ProblemNotificationDialog.Show("The keyboard '" + keyboard.KeyboardName + "' could not be activated using windows ime.");
+				}
+			}
+			catch (Exception )
+			{
+				Palaso.Reporting.ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
+			}
+		}
+
 		public static void ActivateKeyboard(string name)
 		{
-			if (string.IsNullOrEmpty(name))
+			if (String.IsNullOrEmpty(name))
 			{
 				return;
 			}
@@ -28,12 +53,34 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					Palaso.Reporting.ProblemNotificationDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
 				}
 			}
-			catch (Exception )
+			catch (Exception)
 			{
 				Palaso.Reporting.ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
 			}
 		}
 
+		public static bool HasKeyboard(KeyboardDescriptor keyboard)
+		{
+			return (null != FindInputLanguage(keyboard));
+		}
+
+		static private InputLanguage FindInputLanguage(KeyboardDescriptor keyboard)
+		{
+			IntPtr inputLanguageHandle = new IntPtr(Convert.ToInt64(keyboard.Id));
+			if (InputLanguage.InstalledInputLanguages != null) // as is the case on Linux
+			{
+				foreach (InputLanguage l in InputLanguage.InstalledInputLanguages)
+				{
+					if (l.Handle == inputLanguageHandle)
+					{
+						return l;
+					}
+				}
+			}
+			return null;
+		}
+
+		[Obsolete("Using keyboard descriptors rather than keyboard names improve keyboard control across localized versions of windows.")]
 		public static bool HasKeyboardNamed(string name)
 		{
 			return (null != FindInputLanguage(name));
@@ -63,7 +110,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 					{
-						KeyboardDescriptor d = new KeyboardDescriptor(lang.LayoutName, Engines.Windows, lang.Handle.ToString());
+						KeyboardDescriptor d = new KeyboardDescriptor(lang.LayoutName, Engines.Windows, lang.Handle.ToInt64().ToString());
 						descriptors.Add(d);
 					}
 				}
@@ -95,7 +142,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		public static string GetActiveKeyboard()
+		public static KeyboardDescriptor GetActiveKeyboardDescriptor()
 		{
 			try
 			{
@@ -103,9 +150,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (null == lang)
 					return null;
 				else
-					return lang.LayoutName;
+					return new KeyboardDescriptor(lang.LayoutName, Engines.Windows, lang.Handle.ToInt64().ToString());
 			}
-			catch (Exception )
+			catch (Exception)
 			{
 				Palaso.Reporting.ProblemNotificationDialog.Show(
 					"There was a problem retrieving the active keyboard in from windows ime.");
