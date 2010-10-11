@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Palaso.Keyboarding;
 using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -11,23 +12,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 	{
 		static readonly Hashtable s_languagesAlreadyShownKeyBoardNotFoundMessages = new Hashtable();
 
-		public enum Engines
-		{
-			None = 0,
-			Windows = 1,
-			Keyman6 = 2,
-			Keyman7 = 4,
-			Scim = 8,
-			IBus = 16,
-			All = 255
-		} ;
-
-		public class KeyboardDescriptor
-		{
-			public string Name;
-			public Engines engine;
-			public string Id;
-		}
 		public static List<KeyboardDescriptor> GetAvailableKeyboards(Engines engineKinds)
 		{
 			List<KeyboardDescriptor> keyboards = new List<KeyboardDescriptor>();
@@ -167,10 +151,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		//returns the first keyboard that looks like it handles ipa, or string.empty
 		public static string GetIpaKeyboardIfAvailable()
 		{
-			var keyboard = GetAvailableKeyboards(Engines.All).FirstOrDefault(k => k.Name.ToLower().Contains("ipa"));
+			var keyboard = GetAvailableKeyboards(Engines.All).FirstOrDefault(k => k.KeyboardName.ToLower().Contains("ipa"));
 			if (keyboard == null)
 				return string.Empty;
-			return keyboard.Name;
+			return keyboard.KeyboardName;
 		}
 	}
 }

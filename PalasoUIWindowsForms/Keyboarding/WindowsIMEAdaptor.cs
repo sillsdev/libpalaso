@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Palaso.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -53,18 +54,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return null;
 		}
 
-		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{
-				List<KeyboardController.KeyboardDescriptor> descriptors = new List<KeyboardController.KeyboardDescriptor>();
+				List<KeyboardDescriptor> descriptors = new List<KeyboardDescriptor>();
 				try
 				{
 					foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 					{
-						KeyboardController.KeyboardDescriptor d = new KeyboardController.KeyboardDescriptor();
-						d.Name = lang.LayoutName;
-						d.engine = KeyboardController.Engines.Windows;
+						KeyboardDescriptor d = new KeyboardDescriptor(lang.LayoutName, Engines.Windows, lang.Handle.ToString());
 						descriptors.Add(d);
 					}
 				}

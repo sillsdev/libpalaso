@@ -132,7 +132,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[NUnit.Framework.Category("Scim not Running")]
 		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = ScimPanelController.Singleton.KeyboardDescriptors;
+			List<KeyboardDescriptor> availableKeyboards = ScimPanelController.Singleton.KeyboardDescriptors;
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 

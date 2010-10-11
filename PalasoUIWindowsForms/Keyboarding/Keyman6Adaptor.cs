@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Palaso.Keyboarding;
 using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -33,7 +34,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
-		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{
@@ -48,7 +49,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 						 Debug.Fail(err.Message);
 					}
 				}
-				return new List<KeyboardController.KeyboardDescriptor>();
+				return new List<KeyboardDescriptor>();
 			}
 		}
 
@@ -136,12 +137,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 	}
 	internal class InnerKeyman6Wrapper
 	{
-		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{
-				List<KeyboardController.KeyboardDescriptor> keyboards =
-					new List<KeyboardController.KeyboardDescriptor>();
+				List<KeyboardDescriptor> keyboards =
+					new List<KeyboardDescriptor>();
 
 #if !MONO
 				KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
@@ -150,9 +151,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					foreach (KeymanLink.KeymanLink.KeymanKeyboard keyboard in
 						keymanLink.Keyboards)
 					{
-						KeyboardController.KeyboardDescriptor d = new KeyboardController.KeyboardDescriptor();
-						d.Name = keyboard.KbdName;
-						d.engine = KeyboardController.Engines.Keyman6;
+						KeyboardDescriptor d = new KeyboardDescriptor(keyboard.KbdName, Engines.Keyman6, keyboard.KbdName);
 						keyboards.Add(d);
 					}
 				}

@@ -218,7 +218,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <summary>
 		/// Helper function the builds a list of Active Keyboards
 		/// </summary>
-		protected static IEnumerable<KeyboardController.KeyboardDescriptor> GetKeyboardDescriptors ()
+		protected static IEnumerable<KeyboardDescriptor> GetKeyboardDescriptors ()
 		{
 			try
 			{
@@ -234,19 +234,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			for (int i = 0; i < (engines).Length; ++i)
 			{
 				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engines[i], typeof(IBusEngineDesc));
-				var v = new KeyboardController.KeyboardDescriptor ();
+				var v = new KeyboardDescriptor ();
 				v.Id = engineDesc.name;
 				v.Name = engineDesc.longname;
-				v.engine = KeyboardController.Engines.IBus;
+				v.engine = Engines.IBus;
 
 				yield return v;
 			}
 
 		}
 
-		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
-			get { return new List<KeyboardController.KeyboardDescriptor>(GetKeyboardDescriptors () ); }
+			get { return new List<KeyboardDescriptor>(GetKeyboardDescriptors () ); }
 		}
 
 		public static bool EngineAvailable
@@ -284,7 +284,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboardNamed (string name)
 		{
-			foreach (KeyboardController.KeyboardDescriptor d in GetKeyboardDescriptors ())
+			foreach (KeyboardDescriptor d in GetKeyboardDescriptors ())
 			{
 				if (d.Name.Equals (name))
 					return true;

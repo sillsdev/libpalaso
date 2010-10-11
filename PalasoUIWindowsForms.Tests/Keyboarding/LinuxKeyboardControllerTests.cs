@@ -45,7 +45,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[NUnit.Framework.Category("Windows IME")]
 		public void GetAllKeyboards_GivesSeveral()
 		{
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
+			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.All);
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
@@ -80,14 +80,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Test]
 		public void NoKeyman7_GetKeyboards_DoesNotCrash()
 		{
-		   KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7);
+		   KeyboardController.GetAvailableKeyboards(Engines.Keyman7);
 		}
 
 		[Test]
 		[NUnit.Framework.Category("Scim")]
 		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
+			Assert.IsTrue(KeyboardController.EngineAvailable(Engines.Scim));
 		}
 
 		[Test]
@@ -103,7 +103,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[NUnit.Framework.Category("Scim")]
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
+			List<KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(Engines.Scim);
 			Assert.AreEqual("English/European", availableKeyboards[0].Name);
 			Assert.AreEqual("RAW CODE", availableKeyboards[1].Name);
 			Assert.AreEqual("English/Keyboard", availableKeyboards[2].Name);
@@ -155,7 +155,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[NUnit.Framework.Category("No IM Running")]
 		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
+			List<KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(Engines.Scim);
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 
@@ -163,14 +163,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[NUnit.Framework.Category("Scim not Running")]
 		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
 		{
-			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
+			Assert.IsFalse(KeyboardController.EngineAvailable(Engines.Scim));
 		}
 
 		[Test]
 		[NUnit.Framework.Category("IBus not Running")]
 		public void EngineAvailable_IBusIsnotRunning_returnsFalse()
 		{
-			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
+			Assert.IsFalse(KeyboardController.EngineAvailable(Engines.IBus));
 		}
 
 		[Test]
@@ -180,7 +180,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindowForFocus();
 
-			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
+			Assert.IsTrue(KeyboardController.EngineAvailable(Engines.IBus));
 		}
 
 		[Test]
@@ -203,7 +203,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindowForFocus();
 
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
+			List<KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(Engines.IBus);
 
 			// Assuming default ibus install doesn't have any active keyboards
 			Assert.AreEqual(0, availableKeyboards.Count);

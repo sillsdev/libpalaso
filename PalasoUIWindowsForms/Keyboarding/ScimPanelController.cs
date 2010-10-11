@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
+using Palaso.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -74,11 +75,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		}
 
-		public List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{
-				List<KeyboardController.KeyboardDescriptor> availableKeyboardsAsDescriptors = new List<KeyboardController.KeyboardDescriptor>();
+				List<KeyboardDescriptor> availableKeyboardsAsDescriptors = new List<KeyboardDescriptor>();
 				List<ScimPanelControllerWrapper.KeyboardProperties> availableKeyboards = new List<ScimPanelControllerWrapper.KeyboardProperties>();
 
 				try {OpenConnectionIfNecassary();}
@@ -145,14 +146,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return currentContext;
 		}
 
-		private List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
+		private List<KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
 		{
-			List<KeyboardController.KeyboardDescriptor> keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
+			List<KeyboardDescriptor> keyboardDescriptors = new List<KeyboardDescriptor>();
 			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in keyboardProperties)
 			{
-				KeyboardController.KeyboardDescriptor keyboardDescriptor = new KeyboardController.KeyboardDescriptor();
-				keyboardDescriptor.Name= keyboard.name;
-				keyboardDescriptor.engine = KeyboardController.Engines.Scim;
+				KeyboardDescriptor keyboardDescriptor = new KeyboardDescriptor(keyboard.name, Engines.Scim, keyboard.name);
 				keyboardDescriptors.Add(keyboardDescriptor);
 			}
 			return keyboardDescriptors;

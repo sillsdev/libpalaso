@@ -3,6 +3,7 @@ using System.Collections.Generic;
 #if !MONO
 using Keyman7Interop;
 #endif
+using Palaso.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -16,7 +17,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
     internal class Keyman7Adaptor 
     {
-        public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
         {
             get
             {
@@ -28,7 +29,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					}
 					catch (Exception) {}
                 }
-                return new List<KeyboardController.KeyboardDescriptor>();
+				return new List<KeyboardDescriptor>();
             }
         }
 
@@ -121,20 +122,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
     internal class InnerKeyman7Wrapper
     {
-        public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
         {
             get
             {
-                List<KeyboardController.KeyboardDescriptor> keyboards =
-                    new List<KeyboardController.KeyboardDescriptor>();
+				List<KeyboardDescriptor> keyboards =
+					new List<KeyboardDescriptor>();
 
 #if !MONO
                 Keyman7Interop.TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
                 foreach (Keyman7Interop.IKeymanKeyboard keyboard in keyman.Keyboards)
                 {
-                    KeyboardController.KeyboardDescriptor descriptor = new KeyboardController.KeyboardDescriptor();
-                    descriptor.Name = keyboard.Name;
-                    descriptor.engine = KeyboardController.Engines.Keyman7;
+					KeyboardDescriptor descriptor = new KeyboardDescriptor(keyboard.Name, Engines.Keyman7, keyboard.Name);
                     keyboards.Add(descriptor);
                 }
 #endif

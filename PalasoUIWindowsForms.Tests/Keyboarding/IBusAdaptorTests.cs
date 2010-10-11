@@ -62,7 +62,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindow();
 
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = IBusAdaptor.KeyboardDescriptors;
+			List<KeyboardDescriptor> availableKeyboards = IBusAdaptor.KeyboardDescriptors;
 
 			// Assuming default ibus install doesn't have any active keyboards
 			Assert.AreEqual(0, availableKeyboards.Count);
@@ -132,7 +132,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindow();
 
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = IBusAdaptor.KeyboardDescriptors;
+			List<KeyboardDescriptor> availableKeyboards = IBusAdaptor.KeyboardDescriptors;
 
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}

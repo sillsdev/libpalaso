@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
+using Palaso.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -14,7 +15,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			ScimPanelController.Singleton.ActivateKeyboard(name);
 		}
 
-		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
+		public static List<KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{

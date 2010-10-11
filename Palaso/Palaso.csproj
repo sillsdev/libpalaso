@@ -153,6 +153,7 @@
 	<Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
+	<Compile Include="Keyboarding\KeyboardDescriptor.cs" />
 	<Compile Include="Linq\MiscOperators.cs" />
 	<Compile Include="Code\Detect.cs" />
 	<Compile Include="Code\Guard.cs" />

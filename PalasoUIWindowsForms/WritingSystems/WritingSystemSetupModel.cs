@@ -9,6 +9,7 @@ using System.Text;
 
 using System.Windows.Forms;
 using Palaso.Code;
+using Palaso.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
@@ -98,10 +99,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				List<String> keyboards = new List<string>();
 				keyboards.Add("(default)");
-				foreach (KeyboardController.KeyboardDescriptor keyboard in
-					KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
+				foreach (KeyboardDescriptor keyboard in
+					KeyboardController.GetAvailableKeyboards(Engines.All))
 				{
-					keyboards.Add(keyboard.Name);
+					keyboards.Add(keyboard.KeyboardName);
 				}
 				return keyboards;
 			}
