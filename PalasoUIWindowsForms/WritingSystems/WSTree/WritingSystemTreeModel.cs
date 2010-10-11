@@ -152,7 +152,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (definitions.Count() == 1)
 				return true;
-			var x = definitions.OrderBy(GetSpecificityScore).ToArray();
+			var x = definitions.OrderBy(ws => GetSpecificityScore(ws)).ToArray();
 			return GetSpecificityScore(x[0]) != GetSpecificityScore(x[1]);
 		}
 
