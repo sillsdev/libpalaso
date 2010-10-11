@@ -404,7 +404,7 @@ namespace Palaso.DictionaryServices.Lift
 						extensible.GetOrCreateProperty<OptionRefCollection>(trait.Name);
 				if(trait.Name == LexSense.WellKnownProperties.SemanticDomainDdp4)
 				{
-					if(_semanticDomainsList.GetOptionFromKey(key) == null)
+					if (_semanticDomainsList!=null && _semanticDomainsList.GetOptionFromKey(key) == null)
 					{
 						var match =_semanticDomainsList.Options.FirstOrDefault(option => option.Key.StartsWith(key));
 						if(match !=null)
