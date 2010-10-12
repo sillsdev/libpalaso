@@ -35,7 +35,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 					</ranges>
 				</header>");
 			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("lift/header/ranges/range", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("lift/header/metadata", 2);
+
 		}
 
 		[Test, Ignore("Waiting for LIFT version which supports metada")]
@@ -67,18 +67,18 @@ namespace Palaso.DictionaryServices.Tests.Tools
 		public void Run_NoHomographs_OK()
 		{
 			var contents = @"
-				<entry id='foo'>
+				<entry id='foo' GUID1>
 					<lexical-unit>
 						  <form lang='en'><text>hello</text></form>
 					</lexical-unit>
 				</entry>
-				<entry>
+				<entry GUID2>
 					<lexical-unit>
 						  <form lang='en'><text>bye</text></form>
 					</lexical-unit>
 				</entry>";
 			Run(contents);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit", 2);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 2);
 		}
 
 
@@ -86,34 +86,34 @@ namespace Palaso.DictionaryServices.Tests.Tools
 		public void Run_DiffModifiedDates_NewerModifiedDateUsed()
 		{
 			var contents = @"
-				<entry id='foo' dateModified='2006-10-02T01:42:57Z'>
+				<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
 				</entry>
-				<entry dateModified='2009-10-02T01:42:57Z'>
+				<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
 				</entry>";
 			Run(contents);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
 			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[@dateModified='2009-10-02T01:42:57Z']", 1);
 
 			//now reverse them and it should not matter
 			contents = @"
-				<entry id='foo' dateModified='2009-10-02T01:42:57Z'>
+				<entry id='foo' GUID1 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
 				</entry>
-				<entry dateModified='2006-10-02T01:42:57Z'>
+				<entry GUID2 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
 				</entry>";
 			Run(contents);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
 			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[@dateModified='2009-10-02T01:42:57Z']", 1);
 		}
 
@@ -122,7 +122,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 		public void Run_ComplicatedSense_FullSensesPreserved()
 		{
 			var contents = @"
-				<entry id='foo1'>
+				<entry id='foo1' guid='57009cdb-cd11-451f-8340-05dce62cc000'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
@@ -135,12 +135,12 @@ namespace Palaso.DictionaryServices.Tests.Tools
 						<gloss lang='pt'><text>portugues1</text></gloss>
 					</sense>
 				</entry>
-				<entry id='blah'>
+				<entry id='blah' guid='57009cdb-cd11-451f-8340-05dce62cc001'>
 					<lexical-unit>
 						  <form lang='en'><text>blah</text></form>
 					</lexical-unit>
 				</entry>
-				<entry id='foo2'>
+				<entry id='foo2' guid='57009cdb-cd11-451f-8340-05dce62cc002'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
@@ -155,21 +155,30 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>";
 			Run(contents);
 			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit/text[text()=blah]", 1);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit/text[text()=blah]/sense", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit/text[text()=blah]/sense[@id=senseId2]/grammatical-info/trait", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit/text[text()=blah]/sense[@id=senseId2]/gloss", 2);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit/form/text[text()='foo']", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[lexical-unit/form/text[text()='foo']]/sense", 2);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/grammatical-info/trait", 2);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/gloss", 2);
 		}
 
 		private void Run(string contents)
 		{
 			var m = new MergeHomographs();
-			using (var input = new TempLiftFile(contents))
+			contents = contents.Replace("GUID1", "guid='"+Guid.NewGuid().ToString()+"'");
+			contents = contents.Replace("GUID2", "guid='" + Guid.NewGuid().ToString() + "'");
+			using (var input = new TempLiftFile(contents,"0.13"))
 			{
+				File.Delete(_outputLift.Path);
 				m.Run(input.Path, _outputLift.Path, _progress);
 			}
 
 			_resultDom.Load(_outputLift.Path);
+
+			//removing these tombstones simplifies our assertions, later
+			foreach (XmlNode deletedEntry in _resultDom.SelectNodes("//entry[@dateDeleted]"))
+			{
+				deletedEntry.ParentNode.RemoveChild(deletedEntry);
+			}
 		}
 	}
 }
