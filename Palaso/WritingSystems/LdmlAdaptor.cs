@@ -550,7 +550,7 @@ namespace Palaso.WritingSystems
 			{
 				return KeyboardDescriptor.DefaultKeyboard;
 			}
-			string keyboardName = reader.GetAttribute("name") ?? string.Empty;
+			string keyboardName = reader.GetAttribute("value") ?? string.Empty;
 			string keyboardingEngineAsString = reader.GetAttribute("provider") ?? string.Empty;
 			Engines keyboardingEngine = (Engines) Enum.Parse(typeof (Engines), keyboardingEngineAsString);
 			string id = reader.GetAttribute("id") ?? string.Empty;
@@ -602,7 +602,7 @@ namespace Palaso.WritingSystems
 				return;
 			}
 			writer.WriteStartElement("defaultKeyboard", _nameSpaceManager.LookupNamespace("palaso"));
-			writer.WriteAttributeString("name", keyboard.KeyboardName);
+			writer.WriteAttributeString("value", keyboard.KeyboardName);
 			writer.WriteAttributeString("provider", keyboard.KeyboardingEngine.ToString());
 			writer.WriteAttributeString("id", keyboard.Id);
 			writer.WriteEndElement();
