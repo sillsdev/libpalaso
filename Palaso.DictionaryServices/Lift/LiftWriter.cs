@@ -280,6 +280,10 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteStartElement("grammatical-info");
 			Writer.WriteAttributeString("value", pos.Value);
 			WriteFlags(pos);
+			foreach (string rawXml in pos.EmbeddedXmlElements)
+			{
+				Writer.WriteRaw(rawXml);
+			}
 			Writer.WriteEndElement();
 		}
 
@@ -476,6 +480,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteStartElement("trait");
 				Writer.WriteAttributeString("name", key);
 				Writer.WriteAttributeString("value", optionRef.Value);
+
+				foreach (string rawXml in optionRef.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}

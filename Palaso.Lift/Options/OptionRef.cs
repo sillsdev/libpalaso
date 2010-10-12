@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Palaso.Annotations;
 using Palaso.UiBindings;
@@ -25,6 +26,9 @@ namespace Palaso.Lift.Options
 		/// IParentable gives access to this during explicit construction.
 		/// </summary>
 		private IReceivePropertyChangeNotifications _parent;
+
+		public List<string> EmbeddedXmlElements = new List<string>();
+
 
 		private bool _suspendNotification;
 

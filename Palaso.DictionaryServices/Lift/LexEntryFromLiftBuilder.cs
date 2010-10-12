@@ -319,7 +319,7 @@ namespace Palaso.DictionaryServices.Lift
 					}
 					else
 					{
-						//log skipping
+						o.EmbeddedXmlElements.Add(string.Format(@"<trait name='{0}' value='{1}'/>", trait.Name, trait.Value));
 					}
 				}
 			}
