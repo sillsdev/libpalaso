@@ -214,6 +214,7 @@ namespace Palaso.DictionaryServices.Model
 													 value.Minute,
 													 value.Second,
 													 value.Kind);
+					_isDirty = true;
 				}
 			}
 		}
