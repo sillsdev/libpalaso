@@ -702,6 +702,8 @@ namespace Palaso.DictionaryServices.Lift
 				if (disposing)
 				{
 					// dispose-only, i.e. non-finalizable logic
+					if(_writer !=null)
+						_writer.Close();
 				}
 
 				// shared (dispose and finalizable) cleanup logic
