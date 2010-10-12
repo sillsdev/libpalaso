@@ -45,8 +45,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
 		{
+			if(keyboard == KeyboardDescriptor.DefaultKeyboard)
+			{
+				DeactivateKeyboard();
+			}
 #if MONO
-			if (IBusAdaptor.HasKeyboard(keyboard))
+			else if (IBusAdaptor.HasKeyboard(keyboard))
 			{
 				IBusAdaptor.ActivateKeyboard(keyboard);
 			}
@@ -55,7 +59,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				ScimAdaptor.ActivateKeyboard(keyboard);
 			}
 #else
-			if (WindowsIMEAdaptor.HasKeyboard(keyboard))
+			else if (WindowsIMEAdaptor.HasKeyboard(keyboard))
 			{
 				WindowsIMEAdaptor.ActivateKeyboard(keyboard);
 			}

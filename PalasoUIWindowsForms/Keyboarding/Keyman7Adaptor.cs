@@ -71,6 +71,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
 		{
+			if (keyboard.KeyboardingEngine != Engines.Keyman7) return;
 			ActivateKeyboard(keyboard.KeyboardName);
 		}
 
@@ -109,6 +110,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboard(KeyboardDescriptor keyboard)
 		{
+			if (keyboard.KeyboardingEngine != Engines.Keyman7) return false;
 			return HasKeyboardNamed(keyboard.KeyboardName);
 		}
 

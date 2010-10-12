@@ -11,7 +11,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 	{
 		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
 		{
-			if (keyboard == null)
+			if (keyboard == null || (keyboard.KeyboardingEngine != Engines.Windows))
 			{
 				return;
 			}
@@ -61,6 +61,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboard(KeyboardDescriptor keyboard)
 		{
+			if (keyboard.KeyboardingEngine != Engines.Windows) return false;
 			return (null != FindInputLanguage(keyboard));
 		}
 
