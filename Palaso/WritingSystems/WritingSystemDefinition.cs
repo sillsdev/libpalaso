@@ -323,6 +323,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The ISO-639 code which is also the Ethnologue code.
+		/// </summary>
 		public string ISO
 		{
 			get

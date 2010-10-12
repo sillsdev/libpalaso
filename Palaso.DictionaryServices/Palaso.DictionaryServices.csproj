@@ -53,6 +53,9 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+	<Reference Include="Commons.Xml.Relaxng">
+	  <HintPath>..\lib\common\Commons.Xml.Relaxng.dll</HintPath>
+	</Reference>
 	<Reference Include="LiftIO, Version=1.1.32.0, Culture=neutral, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\net2.0\LiftIO.dll</HintPath>
@@ -82,6 +85,9 @@
 	<Compile Include="Model\LexRelation.cs" />
 	<Compile Include="Model\LexSense.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="Tools\MergeHomographs.cs" />
+	<Compile Include="Tools\Tool.cs" />
+	<Compile Include="Tools\Validator.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Lift\Palaso.Lift.csproj">

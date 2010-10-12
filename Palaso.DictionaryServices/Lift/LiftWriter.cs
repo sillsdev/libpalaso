@@ -98,6 +98,13 @@ namespace Palaso.DictionaryServices.Lift
 			// _writer.WriteAttributeString("xmlns", "flex", null, "http://fieldworks.sil.org");
 		}
 
+		public void WriteHeader(string headerConentsNotIncludingHeaderElement)
+		{
+			Writer.WriteStartElement("header");
+			Writer.WriteRaw(headerConentsNotIncludingHeaderElement);
+			Writer.WriteEndElement();
+		}
+
 		public static string ProducerString
 		{
 			get { return "Palaso.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }

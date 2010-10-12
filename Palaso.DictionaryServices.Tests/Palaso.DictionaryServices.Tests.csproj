@@ -79,6 +79,7 @@
 	<Compile Include="Model\LexEntryTests.cs" />
 	<Compile Include="Model\LexRelationTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="Tools\MergeHomographsTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.DictionaryServices\Palaso.DictionaryServices.csproj">
