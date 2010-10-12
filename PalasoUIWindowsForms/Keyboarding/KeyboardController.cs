@@ -215,12 +215,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		}
 
 		//returns the first keyboard that looks like it handles ipa, or string.empty
-		public static string GetIpaKeyboardIfAvailable()
+		public static KeyboardDescriptor GetIpaKeyboardIfAvailable()
 		{
 			var keyboard = GetAvailableKeyboards(Engines.All).FirstOrDefault(k => k.KeyboardName.ToLower().Contains("ipa"));
 			if (keyboard == null)
-				return string.Empty;
-			return keyboard.KeyboardName;
+				return KeyboardDescriptor.DefaultKeyboard;
+			return keyboard;
 		}
 	}
 }

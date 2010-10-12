@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Text;
 
 using NUnit.Framework;
-
+using Palaso.Keyboarding;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
 
@@ -36,12 +36,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void KeyboardNames_HasAtLeastOneKeyboard()
 		{
-			IEnumerable<string> keyboard = WritingSystemSetupModel.KeyboardNames;
-			IEnumerator<string> it = keyboard.GetEnumerator();
+			IEnumerable<KeyboardDescriptor> keyboard = WritingSystemSetupModel.Keyboards;
+			IEnumerator<KeyboardDescriptor> it = keyboard.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current keyboard {0}", it.Current));
 			Assert.IsNotNull(it.Current);
-			Assert.AreEqual("(default)", it.Current);
+			Assert.AreEqual(KeyboardDescriptor.DefaultKeyboard, it.Current);
 		}
 
 		[Test]

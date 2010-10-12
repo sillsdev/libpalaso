@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
+using Palaso.Keyboarding;
 using Palaso.WritingSystems;
 using System.Linq;
 
@@ -71,7 +72,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 												name, language.Culture.ThreeLetterISOLanguageName,
 												language.Culture.TextInfo.IsRightToLeft);
 				def.NativeName = language.Culture.NativeName;
-				def.Keyboard = language.LayoutName;
+				def.Keyboard = new KeyboardDescriptor(language.LayoutName, Engines.Windows, language.Handle.ToInt64().ToString());
 				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
 				def.SortRules = language.Culture.IetfLanguageTag;
 				def.DefaultFontSize = 12;

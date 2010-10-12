@@ -93,16 +93,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <summary>
 		/// Provides a list of all possible installed keyboards.
 		/// </summary>
-		public static IEnumerable<String> KeyboardNames
+		public static IEnumerable<KeyboardDescriptor> Keyboards
 		{
 			get
 			{
-				List<String> keyboards = new List<string>();
-				keyboards.Add("(default)");
+				List<KeyboardDescriptor> keyboards = new List<KeyboardDescriptor>();
+				keyboards.Add(KeyboardDescriptor.DefaultKeyboard);
 				foreach (KeyboardDescriptor keyboard in
 					KeyboardController.GetAvailableKeyboards(Engines.All))
 				{
-					keyboards.Add(keyboard.KeyboardName);
+					keyboards.Add(keyboard);
 				}
 				return keyboards;
 			}
@@ -514,20 +514,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public string CurrentKeyboard
+		public KeyboardDescriptor CurrentKeyboard
 		{
 			get
 			{
 				if(CurrentDefinition==null)
-					return string.Empty;
-				return string.IsNullOrEmpty(CurrentDefinition.Keyboard) ? "(default)" : CurrentDefinition.Keyboard;
+					return KeyboardDescriptor.DefaultKeyboard;
+				return CurrentDefinition.Keyboard;
 			}
 			set
 			{
-				if (value == "(default)")
-				{
-					value = string.Empty;
-				}
 				if (CurrentDefinition.Keyboard != value)
 				{
 					CurrentDefinition.Keyboard = value;
@@ -1040,7 +1036,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (CurrentDefinition == null)
 				return;
-			if (!string.IsNullOrEmpty(CurrentDefinition.Keyboard))
+			if (CurrentDefinition.Keyboard != null)
 			{
 				KeyboardController.ActivateKeyboard(CurrentDefinition.Keyboard);
 			}

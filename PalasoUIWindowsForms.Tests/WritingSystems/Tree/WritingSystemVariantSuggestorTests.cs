@@ -31,7 +31,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			//Assert.AreEqual("arial unicode ms", ipa.DefaultFontName); this depends on what fonts are installed on the test system
 			Assert.AreEqual(33, ipa.DefaultFontSize);
 
-			Assert.IsTrue(ipa.Keyboard.ToLower().Contains("ipa"));
+			Assert.IsTrue(ipa.Keyboard.KeyboardName.ToLower().Contains("ipa"));
 		}
 
 		[Test]

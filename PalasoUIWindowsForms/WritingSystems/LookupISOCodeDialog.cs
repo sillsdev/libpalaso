@@ -104,6 +104,5 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			_okButton.Enabled = listView1.Items.Count > 0 && listView1.SelectedItems.Count == 1;
 		}
-		}
 	}
 }

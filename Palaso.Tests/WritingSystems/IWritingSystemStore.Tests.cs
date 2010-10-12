@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
+using Palaso.Keyboarding;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -264,7 +265,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition("iso", "script", "region", "variant", "language",
 																	  "abbrev", false);
-			ws1.Keyboard = "keyboard";
+			ws1.Keyboard = new KeyboardDescriptor("keyboard", Engines.Windows, "id");
 			ws1.NativeName = "native name";
 			ws1.DefaultFontName = "font";
 			ws1.VersionDescription = "description of this version";

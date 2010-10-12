@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
+using Palaso.Keyboarding;
 using Palaso.WritingSystems;
 using Palaso.TestUtilities;
 
@@ -263,15 +264,17 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void CanSaveAndReadKeyboardName()
+		public void CanSaveAndReadKeyboard()
 		{
 			_writingSystem.ISO = "en";
-			_writingSystem.Keyboard = "Thai";
+			_writingSystem.Keyboard = new KeyboardDescriptor("Thai", Engines.None, "ThaiId");
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
 			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
-			Assert.AreEqual("Thai", ws2.Keyboard);
+			Assert.AreEqual("Thai", ws2.Keyboard.KeyboardName);
+			Assert.AreEqual(Engines.None, ws2.Keyboard.KeyboardingEngine);
+			Assert.AreEqual("ThaiId", ws2.Keyboard.Id);
 		}
 
 		[Test]

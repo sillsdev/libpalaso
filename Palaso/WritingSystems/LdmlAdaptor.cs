@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
+using Palaso.Keyboarding;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
 using Palaso.Xml;
@@ -140,7 +141,7 @@ namespace Palaso.WritingSystems
 				{
 					ws.DefaultFontSize = fontSize;
 				}
-				ws.Keyboard = GetSpecialValue(reader, "defaultKeyboard");
+				ws.Keyboard = GetKeyboardDescriptor(reader);
 				string isLegacyEncoded = GetSpecialValue(reader, "isLegacyEncoded");
 				if (!String.IsNullOrEmpty(isLegacyEncoded))
 				{
@@ -542,6 +543,28 @@ namespace Palaso.WritingSystems
 			return reader.GetAttribute("value") ?? string.Empty;
 		}
 
+		private KeyboardDescriptor GetKeyboardDescriptor(XmlReader reader)
+		{
+			KeyboardDescriptor keyboard;
+			if (!XmlHelpers.FindElement(reader, "palaso:defaultKeyboard", _nameSpaceManager.LookupNamespace("palaso"), string.Compare))
+			{
+				return KeyboardDescriptor.DefaultKeyboard;
+			}
+			string keyboardName = reader.GetAttribute("name") ?? string.Empty;
+			string keyboardingEngineAsString = reader.GetAttribute("provider") ?? string.Empty;
+			Engines keyboardingEngine = (Engines) Enum.Parse(typeof (Engines), keyboardingEngineAsString);
+			string id = reader.GetAttribute("id") ?? string.Empty;
+			if(String.IsNullOrEmpty(keyboardName))
+			{
+				keyboard = KeyboardDescriptor.DefaultKeyboard;
+			}
+			else
+			{
+				keyboard = new KeyboardDescriptor(keyboardName, keyboardingEngine, id);
+			}
+			return keyboard;
+		}
+
 		private string GetSubNodeAttributeValue(XmlReader reader, string elementName, string attributeName)
 		{
 			return FindElement(reader, elementName) ? (reader.GetAttribute(attributeName) ?? string.Empty) : string.Empty;
@@ -569,6 +592,19 @@ namespace Palaso.WritingSystems
 			}
 			writer.WriteStartElement(field, _nameSpaceManager.LookupNamespace("palaso"));
 			writer.WriteAttributeString("value", value);
+			writer.WriteEndElement();
+		}
+
+		private void WriteKeyboard(XmlWriter writer, KeyboardDescriptor keyboard)
+		{
+			if (keyboard == KeyboardDescriptor.DefaultKeyboard)
+			{
+				return;
+			}
+			writer.WriteStartElement("defaultKeyboard", _nameSpaceManager.LookupNamespace("palaso"));
+			writer.WriteAttributeString("name", keyboard.KeyboardName);
+			writer.WriteAttributeString("provider", keyboard.KeyboardingEngine.ToString());
+			writer.WriteAttributeString("id", keyboard.Id);
 			writer.WriteEndElement();
 		}
 
@@ -674,7 +710,7 @@ namespace Palaso.WritingSystems
 			{
 				WriteSpecialValue(writer, "defaultFontSize", ws.DefaultFontSize.ToString());
 			}
-			WriteSpecialValue(writer, "defaultKeyboard", ws.Keyboard);
+			WriteKeyboard(writer, ws.Keyboard);
 			if (ws.IsLegacyEncoded)
 			{
 				WriteSpecialValue(writer, "isLegacyEncoded", ws.IsLegacyEncoded.ToString());

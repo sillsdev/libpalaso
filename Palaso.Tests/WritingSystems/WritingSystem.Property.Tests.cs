@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using Palaso.Keyboarding;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -155,6 +156,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
+			firstValueToSet.Add(typeof(KeyboardDescriptor), new KeyboardDescriptor("Deutsch", Engines.Windows, "de123"));
+			secondValueToSet.Add(typeof(KeyboardDescriptor), new KeyboardDescriptor("Thai", Engines.Keyman6, "th456"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -209,7 +212,8 @@ namespace Palaso.Tests.WritingSystems
 				{typeof (bool), true},
 				{typeof (string), "Foo"},
 				{typeof (DateTime), DateTime.Now},
-				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU}
+				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
+				{typeof(KeyboardDescriptor), new KeyboardDescriptor("Deutsch", Engines.Windows, "de123")}
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{

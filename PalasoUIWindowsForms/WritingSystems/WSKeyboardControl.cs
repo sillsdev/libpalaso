@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -56,9 +57,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			Rectangle originalBounds = _keyboardComboBox.Bounds;
 			_keyboardComboBox.Items.Clear();
-			foreach (string keyboardName in WritingSystemSetupModel.KeyboardNames)
+			foreach (KeyboardDescriptor keyboard in WritingSystemSetupModel.Keyboards)
 			{
-				_keyboardComboBox.Items.Add(keyboardName);
+				_keyboardComboBox.Items.Add(keyboard);
 			}
 			_keyboardComboBox.Bounds = originalBounds;
 		}
@@ -81,9 +82,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			}
 			Enabled = true;
-			if (_model.CurrentKeyboard != _keyboardComboBox.Text)
+			if (_model.CurrentKeyboard != _keyboardComboBox.SelectedItem)
 			{
-				_keyboardComboBox.Text = _model.CurrentKeyboard;
+				_keyboardComboBox.SelectedItem = _model.CurrentKeyboard;
 			}
 			SetTestAreaFont();
 		}
@@ -104,15 +105,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_testArea.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
 		}
 
-		private void _keyboardComboBox_TextChanged(object sender, EventArgs e)
+		private void _keyboardComboBox_SelectionChangedAndCommitted(object sender, EventArgs e)
 		{
 			if (_model == null)
 			{
 				return;
 			}
-			if (_model.CurrentKeyboard != _keyboardComboBox.Text)
+			if (_model.CurrentKeyboard != _keyboardComboBox.SelectedItem)
 			{
-				_model.CurrentKeyboard = _keyboardComboBox.Text;
+				_model.CurrentKeyboard = (KeyboardDescriptor) _keyboardComboBox.SelectedItem;
 			}
 		}
 

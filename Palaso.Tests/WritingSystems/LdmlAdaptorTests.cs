@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using NUnit.Framework;
+using Palaso.Keyboarding;
 using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 
@@ -122,6 +123,43 @@ namespace Palaso.Tests.WritingSystems
 			}
 
 			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
+		}
+
+		[Test]
+		public void WritingSystemHasKeyboard_Write_KeyboardIsWrittenToLdmlCorrectly()
+		{
+			string ldmlFileContent;
+			LdmlAdaptor ldmlAdaptor = new LdmlAdaptor();
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.Keyboard = new KeyboardDescriptor("International Phonetic Alphabet", Engines.Windows, "IPA123WinIME");
+			using (TempFile tempFile = new TempFile())
+			{
+				ldmlAdaptor.Write(tempFile.Path, ws, null);
+				using (StreamReader sr = new StreamReader(tempFile.Path))
+				{
+					ldmlFileContent = sr.ReadToEnd();
+				}
+			}
+			Assert.IsTrue(ldmlFileContent.Contains(
+				"<palaso:defaultKeyboard name=\"International Phonetic Alphabet\" provider=\"Windows\" id=\"IPA123WinIME\" />"));
+		}
+
+		[Test]
+		public void WritingSystemHasKeyboard_Write_KeyboardRoundTripsThroughLdml()
+		{
+			string ldmlFileContent;
+			LdmlAdaptor ldmlAdaptor = new LdmlAdaptor();
+			WritingSystemDefinition wsToWrite = new WritingSystemDefinition();
+			WritingSystemDefinition wsToRead = new WritingSystemDefinition();
+			wsToWrite.Keyboard = new KeyboardDescriptor("International Phonetic Alphabet", Engines.Windows, "IPA123WinIME");
+			using (TempFile tempFile = new TempFile())
+			{
+				ldmlAdaptor.Write(tempFile.Path, wsToWrite, null);
+				ldmlAdaptor.Read(tempFile.Path, wsToRead);
+			}
+			Assert.AreEqual("International Phonetic Alphabet", wsToRead.Keyboard.KeyboardName);
+			Assert.AreEqual(Engines.Windows, wsToRead.Keyboard.KeyboardingEngine);
+			Assert.AreEqual("IPA123WinIME", wsToRead.Keyboard.Id);
 		}
 	}
 }

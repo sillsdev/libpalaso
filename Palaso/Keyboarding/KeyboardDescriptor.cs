@@ -18,6 +18,7 @@ namespace Palaso.Keyboarding
 
 		public class KeyboardDescriptor
 		{
+			private static KeyboardDescriptor _defaultKeyboard;
 			private string _keyboardName;
 			private Engines _keyboardingEngine;
 			private string _id;
@@ -42,6 +43,18 @@ namespace Palaso.Keyboarding
 			public string Id
 			{
 				get { return _id; }
+			}
+
+			public static KeyboardDescriptor DefaultKeyboard
+			{
+				get
+				{
+					if (_defaultKeyboard == null)
+					{
+						_defaultKeyboard = new KeyboardDescriptor("default", Engines.None, "default");
+					}
+					return _defaultKeyboard;
+				}
 			}
 		}
 }

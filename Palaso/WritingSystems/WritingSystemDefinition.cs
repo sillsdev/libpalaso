@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using Palaso.Keyboarding;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -50,7 +51,7 @@ namespace Palaso.WritingSystems
 
 		private string _defaultFontName;
 		private float _defaultFontSize;
-		private string _keyboard;
+		private KeyboardDescriptor _keyboard;
 
 		private SortRulesType _sortUsing;
 		private string _sortRules;
@@ -81,6 +82,7 @@ namespace Palaso.WritingSystems
 			_sortUsing = SortRulesType.DefaultOrdering;
 			Modified = false;
 			IsLegacyEncoded = false;
+			_keyboard = KeyboardDescriptor.DefaultKeyboard;
 		   // _defaultFontSize = 10; //arbitrary
 		}
 
@@ -289,7 +291,7 @@ namespace Palaso.WritingSystems
 				if (value)
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
-					Keyboard=string.Empty;
+					Keyboard = KeyboardDescriptor.DefaultKeyboard;
 					Variant = _variant + "-Zxxx";
 				}
 			}
@@ -607,19 +609,20 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Keyboard
+		public KeyboardDescriptor Keyboard
 		{
 			get
 			{
-				if(String.IsNullOrEmpty(_keyboard))
-				{
-					return "";
-				}
 				return _keyboard;
 			}
 			set
 			{
-				UpdateString(ref _keyboard, value);
+				if(value == null)
+				{
+					_keyboard = KeyboardDescriptor.DefaultKeyboard;
+				}
+				_keyboard = value;
+				Modified = true;
 			}
 		}
 
