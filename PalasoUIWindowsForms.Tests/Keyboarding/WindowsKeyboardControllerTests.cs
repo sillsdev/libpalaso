@@ -99,6 +99,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.DeactivateKeyboard();
 			Assert.AreNotEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
 		}
+
 		[Test]
 		[NUnit.Framework.Category("Windows IME")]
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
@@ -110,6 +111,39 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			{
 				Assert.AreEqual(Engines.Windows, keyboard.KeyboardingEngine);
 			}
+		}
+
+		[Test]
+		[NUnit.Framework.Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboard_KeyboardDescriptorHasNoId_SetsKeyboardByName()
+		{
+			RequiresWindowsIME();
+			KeyboardDescriptor availableKeyboard = KeyboardController.GetAvailableKeyboards(Engines.Windows)[0];
+			KeyboardDescriptor keyboardWithNoId = new KeyboardDescriptor(availableKeyboard.KeyboardName, Engines.Windows, "");
+			KeyboardController.ActivateKeyboard(keyboardWithNoId);
+			Assert.AreEqual(availableKeyboard.KeyboardName, KeyboardController.GetActiveKeyboardDescriptor().KeyboardName);
+		}
+
+		[Test]
+		[NUnit.Framework.Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboard_KeyboardDescriptorHasMalformedId_SetsKeyboardByName()
+		{
+			RequiresWindowsIME();
+			KeyboardDescriptor availableKeyboard = KeyboardController.GetAvailableKeyboards(Engines.Windows)[0];
+			KeyboardDescriptor keyboardWithGarbledId = new KeyboardDescriptor(availableKeyboard.KeyboardName, Engines.Windows, "Garb123led");
+			KeyboardController.ActivateKeyboard(keyboardWithGarbledId);
+			Assert.AreEqual(availableKeyboard.KeyboardName, KeyboardController.GetActiveKeyboardDescriptor().KeyboardName);
+		}
+
+		[Test]
+		[NUnit.Framework.Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboard_KeyboardIsFromUnknownEngine_SetsByName()
+		{
+			RequiresWindowsIME();
+			KeyboardDescriptor availableKeyboard = KeyboardController.GetAvailableKeyboards(Engines.Windows)[0];
+			KeyboardDescriptor keyboardFromUnknownEngine = new KeyboardDescriptor(availableKeyboard.KeyboardName, Engines.Unknown, "");
+			KeyboardController.ActivateKeyboard(keyboardFromUnknownEngine);
+			Assert.AreEqual(availableKeyboard.KeyboardName, KeyboardController.GetActiveKeyboardDescriptor().KeyboardName);
 		}
 
 

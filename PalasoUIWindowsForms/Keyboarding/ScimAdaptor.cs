@@ -17,7 +17,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
 		{
-			if (keyboard.KeyboardingEngine != Engines.Scim) return;
+			if ((keyboard.KeyboardingEngine != Engines.Scim) && (keyboard.KeyboardingEngine != Engines.Unknown)) return;
 			ScimPanelController.Singleton.ActivateKeyboard(keyboard.KeyboardName);
 		}
 
@@ -44,7 +44,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboard(KeyboardDescriptor keyboard)
 		{
-			if (keyboard.KeyboardingEngine != Engines.Scim) return false;
+			if ((keyboard.KeyboardingEngine != Engines.Scim) && (keyboard.KeyboardingEngine != Engines.Unknown)) return false;
 			return ScimPanelController.Singleton.HasKeyboardNamed(keyboard.KeyboardName);
 		}
 

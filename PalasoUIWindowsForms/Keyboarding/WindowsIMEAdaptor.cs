@@ -11,7 +11,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 	{
 		public static void ActivateKeyboard(KeyboardDescriptor keyboard)
 		{
-			if (keyboard == null || (keyboard.KeyboardingEngine != Engines.Windows))
+			if (keyboard == null || ((keyboard.KeyboardingEngine != Engines.Windows) && (keyboard.KeyboardingEngine != Engines.Unknown)))
 			{
 				return;
 			}
@@ -43,7 +43,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			try
 			{
-				InputLanguage inputLanguage = FindInputLanguage(name);
+				InputLanguage inputLanguage = FindInputLanguageByName(name);
 				if (inputLanguage != null)
 				{
 					InputLanguage.CurrentInputLanguage = inputLanguage;
@@ -61,13 +61,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboard(KeyboardDescriptor keyboard)
 		{
-			if (keyboard.KeyboardingEngine != Engines.Windows) return false;
-			return (null != FindInputLanguage(keyboard));
+			if ((keyboard.KeyboardingEngine != Engines.Windows) && (keyboard.KeyboardingEngine != Engines.Unknown)) return false;
+			return (FindInputLanguage(keyboard) != null);
 		}
 
 		static private InputLanguage FindInputLanguage(KeyboardDescriptor keyboard)
 		{
-			IntPtr inputLanguageHandle = new IntPtr(Convert.ToInt64(keyboard.Id));
+			bool idHasRightFormat = true;
+			try
+			{
+				IntPtr inputLanguageHandle = new IntPtr(Convert.ToInt64(keyboard.Id));
+				return FindInputLanguageByHandle(inputLanguageHandle);
+			}
+			catch(FormatException)
+			{
+				return FindInputLanguageByName(keyboard.KeyboardName);
+			}
+		}
+
+		private static InputLanguage FindInputLanguageByHandle(IntPtr inputLanguageHandle)
+		{
 			if (InputLanguage.InstalledInputLanguages != null) // as is the case on Linux
 			{
 				foreach (InputLanguage l in InputLanguage.InstalledInputLanguages)
@@ -84,10 +97,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		[Obsolete("Using keyboard descriptors rather than keyboard names improve keyboard control across localized versions of windows.")]
 		public static bool HasKeyboardNamed(string name)
 		{
-			return (null != FindInputLanguage(name));
+			return (null != FindInputLanguageByName(name));
 		}
 
-		static private InputLanguage FindInputLanguage(string name)
+		static private InputLanguage FindInputLanguageByName(string name)
 		{
 			if (InputLanguage.InstalledInputLanguages != null) // as is the case on Linux
 			{
