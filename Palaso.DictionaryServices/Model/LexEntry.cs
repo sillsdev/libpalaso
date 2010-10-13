@@ -448,6 +448,9 @@ namespace Palaso.DictionaryServices.Model
 		public bool IsDirty
 		{
 			get { return _isDirty; }
+			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
+			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this setable.
+			set { _isDirty = value; }
 		}
 
 		public LanguageForm GetHeadWord(string writingSystemId)

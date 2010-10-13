@@ -8,6 +8,7 @@ using Palaso.Code;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
+using Palaso.Lift;
 using Palaso.Progress.LogBox;
 using Palaso.WritingSystems;
 
@@ -15,8 +16,10 @@ namespace Palaso.DictionaryServices.Tools
 {
 	public class MergeHomographs : Tool
 	{
+		private IProgress _progress;
 		public override void Run(string inputLiftPath, string outputLiftPath, IProgress progress)
 		{
+			_progress = progress;
 			File.Copy(inputLiftPath,outputLiftPath,true);
 			RequireThat.File(outputLiftPath).Exists();
 
@@ -87,6 +90,8 @@ namespace Palaso.DictionaryServices.Tools
 					alreadyProcessed.Add(token.Id);
 					MergeEntries(entry,token.RealObject);
 					repo.DeleteItem(token.RealObject);
+
+					entry.IsDirty = true;
 					repo.SaveItem(entry);
 				}
 			}
@@ -98,14 +103,50 @@ namespace Palaso.DictionaryServices.Tools
 			{
 				entry1.ModificationTime = entry2.ModificationTime;
 			}
-			var toAdd = entry2.Senses.ToArray();
-			foreach (var sense in toAdd)
+
+			var senses = entry2.Senses.ToArray();
+			foreach (var sense in senses)
 			{
 				entry1.Senses.Add(sense);
 			}
 
+//            MergeMultiText(entry1, entry2, LexEntry.WellKnownProperties.Citation);
+//            MergeMultiText(entry1, entry2, LexEntry.WellKnownProperties.LiteralMeaning);
+//            MergeMultiText(entry1, entry2, PalasoDataObject.WellKnownProperties.Note);
+
+			foreach (var property in entry2.Properties)
+			{
+				//absorb it only if we don't have a matching one
+				if(entry1.Properties.Any(k=>k.Key == property.Key))
+				{
+					_progress.WriteWarning("{0}: Clashing values of {1}, merging anyways",entry1.GetSimpleFormForLogging(), property.Key);
+				}
+				else
+				{
+					entry1.Properties.Add(property);
+				}
+			}
 		}
 
+/*        private void MergeMultiText(PalasoDataObject first, PalasoDataObject second, string propertyName)
+		{
+			if (first.GetOrCreateProperty<MultiText>(propertyName).Empty && !second.GetOrCreateProperty<MultiText>(propertyName).Empty)
+				ChangeMultiText(first, second, propertyName);
+		}
+
+		private void ChangeMultiText(PalasoDataObject target, PalasoDataObject source , string propertyName)
+		{
+			KeyValuePair<string, object> prop = target.Properties.Find(p => p.Key == propertyName);
+			if (prop.Key != null)
+			{
+				target.Properties.Remove(prop);
+				MultiText newText = source.GetOrCreateProperty<MultiText>(propertyName);
+				var newGuy = new KeyValuePair<string, object>(propertyName, newText);
+				//source.Properties.Remove(prop);//detach else it gets deleted
+				target.Properties.Add(newGuy); ;
+			}
+		}
+		*/
 		public override string ToString()
 		{
 			return "Merge Homographs (Brutal)";

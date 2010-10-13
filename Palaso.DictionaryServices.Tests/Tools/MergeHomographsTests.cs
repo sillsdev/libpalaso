@@ -85,43 +85,108 @@ namespace Palaso.DictionaryServices.Tests.Tools
 		[Test]
 		public void Run_DiffModifiedDates_NewerModifiedDateUsed()
 		{
-			var contents = @"
-				<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
-				</entry>
-				<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
 					</lexical-unit>
-				</entry>";
-			Run(contents);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[@dateModified='2009-10-02T01:42:57Z']", 1);
-
-			//now reverse them and it should not matter
-			contents = @"
-				<entry id='foo' GUID1 dateModified='2009-10-02T01:42:57Z'>
-					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
-					</lexical-unit>
-				</entry>
-				<entry GUID2 dateModified='2006-10-02T01:42:57Z'>
-					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
-					</lexical-unit>
-				</entry>";
-			Run(contents);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[@dateModified='2009-10-02T01:42:57Z']", 1);
+				</entry>",
+				() =>
+					{
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry[@dateModified='2009-10-02T01:42:57Z']", 1);
+					});
 		}
 
+		[Test]
+		public void Run_OneHasCitationForm_Merged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<citation>
+						<form lang='seh'><text>suzumira</text></form>
+					</citation>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/citation", 1);
+				});
+		}
+
+		[Test]
+		public void Run_HasCompatibleTraitsAtEntryLevel_Merged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<trait name='t1' value='1'></trait>
+					<trait name='morph-type' value='root'></trait>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<trait name='t2' value='2'></trait>
+					<trait name='morph-type' value='root'></trait>
+				</entry>",
+				() =>
+					{
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry/trait[@name='t1']", 1);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry/trait[@name='t2']", 1);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry/trait[@name='morph-type']", 1);
+					});
+		}
+
+
+//        [Test]
+//        public void Run_ClashingMorphType_DoesNotMerge()
+//        {
+//            MergeTwoAndTest(
+//                @"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+//                    <lexical-unit>
+//                          <form lang='en'><text>foo</text></form>
+//                    </lexical-unit>
+//                     <trait name='morph-type' value='root'></trait>
+//                </entry>",
+//                @"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+//                    <lexical-unit>
+//                          <form lang='en'><text>foo</text></form>
+//                    </lexical-unit>
+//                    <trait name='morph-type' value='enclitic'></trait>
+//                </entry>",
+//                () =>
+//                {
+//                    AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 2);
+//                });
+		//}
 
 		[Test]
 		public void Run_ComplicatedSense_FullSensesPreserved()
 		{
-			var contents = @"
+			MergeTwoAndTest(
+				@"
 				<entry id='foo1' guid='57009cdb-cd11-451f-8340-05dce62cc000'>
 					<lexical-unit>
 						  <form lang='en'><text>foo</text></form>
@@ -134,8 +199,8 @@ namespace Palaso.DictionaryServices.Tests.Tools
 						<gloss lang='en'><text>english1</text></gloss>
 						<gloss lang='pt'><text>portugues1</text></gloss>
 					</sense>
-				</entry>
-				<entry id='blah' guid='57009cdb-cd11-451f-8340-05dce62cc001'>
+				</entry>",
+				@"<entry id='blah' guid='57009cdb-cd11-451f-8340-05dce62cc001'>
 					<lexical-unit>
 						  <form lang='en'><text>blah</text></form>
 					</lexical-unit>
@@ -152,13 +217,20 @@ namespace Palaso.DictionaryServices.Tests.Tools
 						<gloss lang='en'><text>english2</text></gloss>
 						<gloss lang='pt'><text>portugues2</text></gloss>
 					</sense>
-				</entry>";
-			Run(contents);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit/form/text[text()='foo']", 1);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[lexical-unit/form/text[text()='foo']]/sense", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/grammatical-info/trait", 2);
-			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/gloss", 2);
+				</entry>",
+				() =>
+					{
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//lexical-unit", 2);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//lexical-unit/form/text[text()='foo']", 1);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry[lexical-unit/form/text[text()='foo']]/sense", 2);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/grammatical-info/trait",
+							2);
+						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+							"//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/gloss", 2);
+					});
 		}
 
 		private void Run(string contents)
@@ -179,6 +251,15 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			{
 				deletedEntry.ParentNode.RemoveChild(deletedEntry);
 			}
+		}
+
+		private void MergeTwoAndTest(string entry1, string entry2, Action tests)
+		{
+			//run in both orders, so as to reduce the chance of missing some important distinction based on which is merged into which
+			Run(entry1 + entry2);
+			tests();
+			Run(entry2 + entry1);
+			tests();
 		}
 	}
 }
