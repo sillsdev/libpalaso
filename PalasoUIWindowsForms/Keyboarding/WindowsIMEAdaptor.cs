@@ -67,16 +67,20 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		static private InputLanguage FindInputLanguage(KeyboardDescriptor keyboard)
 		{
-			bool idHasRightFormat = true;
+			InputLanguage foundLanguage = null;
 			try
 			{
 				IntPtr inputLanguageHandle = new IntPtr(Convert.ToInt64(keyboard.Id));
-				return FindInputLanguageByHandle(inputLanguageHandle);
+				foundLanguage = FindInputLanguageByHandle(inputLanguageHandle);
 			}
 			catch(FormatException)
 			{
-				return FindInputLanguageByName(keyboard.KeyboardName);
 			}
+			if(foundLanguage == null)
+			{
+				foundLanguage = FindInputLanguageByName(keyboard.KeyboardName);
+			}
+			return foundLanguage;
 		}
 
 		private static InputLanguage FindInputLanguageByHandle(IntPtr inputLanguageHandle)
