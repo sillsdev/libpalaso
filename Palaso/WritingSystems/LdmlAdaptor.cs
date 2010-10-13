@@ -141,7 +141,7 @@ namespace Palaso.WritingSystems
 				{
 					ws.DefaultFontSize = fontSize;
 				}
-				ws.Keyboard = GetKeyboardDescriptor(reader);
+				ws.Keyboard = ReadKeyboardDescriptor(reader);
 				string isLegacyEncoded = GetSpecialValue(reader, "isLegacyEncoded");
 				if (!String.IsNullOrEmpty(isLegacyEncoded))
 				{
@@ -543,17 +543,17 @@ namespace Palaso.WritingSystems
 			return reader.GetAttribute("value") ?? string.Empty;
 		}
 
-		private KeyboardDescriptor GetKeyboardDescriptor(XmlReader reader)
+		private KeyboardDescriptor ReadKeyboardDescriptor(XmlReader reader)
 		{
 			KeyboardDescriptor keyboard;
 			if (!XmlHelpers.FindElement(reader, "palaso:defaultKeyboard", _nameSpaceManager.LookupNamespace("palaso"), string.Compare))
 			{
 				return KeyboardDescriptor.DefaultKeyboard;
 			}
-			string keyboardName = reader.GetAttribute("value") ?? string.Empty;
-			string keyboardingEngineAsString = reader.GetAttribute("provider") ?? string.Empty;
-			Engines keyboardingEngine = (Engines) Enum.Parse(typeof (Engines), keyboardingEngineAsString);
-			string id = reader.GetAttribute("id") ?? string.Empty;
+			string keyboardName = reader.GetAttribute("value");
+			string keyboardingEngineAsString = reader.GetAttribute("provider");
+			Engines keyboardingEngine = String.IsNullOrEmpty(keyboardingEngineAsString) ? Engines.Unknown : (Engines) Enum.Parse(typeof (Engines), keyboardingEngineAsString);
+			string id = reader.GetAttribute("id") ?? String.Empty;
 			if(String.IsNullOrEmpty(keyboardName))
 			{
 				keyboard = KeyboardDescriptor.DefaultKeyboard;

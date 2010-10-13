@@ -13,6 +13,7 @@ namespace Palaso.Keyboarding
 			Keyman7 = 4,
 			Scim = 8,
 			IBus = 16,
+			Unknown = 32,
 			All = 255
 		} ;
 

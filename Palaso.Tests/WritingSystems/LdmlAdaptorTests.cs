@@ -126,6 +126,21 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void ReadLdml_LdmlForKeyboardDoesNotContainEngineOrId_CreatesAppropriateKeyboardDescriptor()
+		{
+			LdmlAdaptor ldmlAdaptor = new LdmlAdaptor();
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			string s = "<ldml><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"xxx\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\"><palaso:defaultKeyboard value=\"Deutsch\" /></special></ldml>";
+			using(TempFile ldmlFile = new TempFile(s))
+			{
+				ldmlAdaptor.Read(ldmlFile.Path, ws);
+			}
+			Assert.AreEqual("Deutsch", ws.Keyboard.KeyboardName);
+			Assert.AreEqual(Engines.Unknown, ws.Keyboard.KeyboardingEngine);
+			Assert.AreEqual("", ws.Keyboard.Id);
+		}
+
+		[Test]
 		public void WritingSystemHasKeyboard_Write_KeyboardIsWrittenToLdmlCorrectly()
 		{
 			string ldmlFileContent;
@@ -141,7 +156,7 @@ namespace Palaso.Tests.WritingSystems
 				}
 			}
 			Assert.IsTrue(ldmlFileContent.Contains(
-				"<palaso:defaultKeyboard name=\"International Phonetic Alphabet\" provider=\"Windows\" id=\"IPA123WinIME\" />"));
+				"<palaso:defaultKeyboard value=\"International Phonetic Alphabet\" provider=\"Windows\" id=\"IPA123WinIME\" />"));
 		}
 
 		[Test]
