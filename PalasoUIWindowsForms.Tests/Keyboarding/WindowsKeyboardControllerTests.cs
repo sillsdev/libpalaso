@@ -140,9 +140,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			RequiresKeyman6();
 			RequiresWindow();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
-			Application.DoEvents();//required
+			Application.DoEvents(); //required
 			KeyboardController.ActivateKeyboard(d.Name);
-			Application.DoEvents();//required
+			Application.DoEvents(); //required
 			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 
