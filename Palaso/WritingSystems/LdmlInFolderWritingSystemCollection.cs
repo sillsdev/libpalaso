@@ -9,6 +9,11 @@ namespace Palaso.WritingSystems
 {
 	public class LdmlInFolderWritingSystemStore : WritingSystemStoreBase
 	{
+		// Note that language tags are supposed to be case-insensitive.  See section 2.1.1 of
+		// RFC 5646.  This is the reason for a number of ugly ToLowerInvariant() method calls
+		// in the code below.  (Although Windows handles case-insensitive filenames just fine,
+		// Linux does not.)
+
 		private const string _kExtension = ".ldml";
 		private string _path;
 
@@ -79,13 +84,13 @@ namespace Palaso.WritingSystems
 			{
 				return identifier;
 			}
-			return identifier + _kExtension;
+			return identifier.ToLowerInvariant() + _kExtension;
 		}
 
 		public void LoadAllDefinitions()
 		{
 			Clear();
-			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
+			foreach (string filePath in Directory.GetFiles(_path, "*" + _kExtension))
 			{
 				try
 				{
