@@ -108,9 +108,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.AreEqual(1, _dataMapper.CountAllItems());
 		}
 
-		[Test]
+		[Test, Ignore("TODO: move to wesay")]
 		public void NewEntry_NoDefYesGloss_GlossCopiedToDefintion()
 		{
+		   // _builder.AfterEntryRead += _builder.ApplyWeSayPolicyToParsedEntry;
+
 			Extensible extensibleInfo = new Extensible();
 			LexEntry e = _builder.GetOrMakeEntry(extensibleInfo, 0);
 			LexSense s = _builder.GetOrMakeSense(e, new Extensible(), string.Empty);
@@ -120,9 +122,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.AreEqual("x meaning",e.Senses[0].Definition.GetExactAlternative("x"));
 		}
 
-		[Test]
+		[Test, Ignore("TODO: move to wesay")]
 		public void NewEntry_OldLiteralMeaning_GetsMoved()
 		{
+		   // _builder.AfterEntryRead += _builder.ApplyWeSayPolicyToParsedEntry;
+
 			Extensible extensibleInfo = new Extensible();
 			LexEntry e = _builder.GetOrMakeEntry(extensibleInfo, 0);
 			LexSense s = _builder.GetOrMakeSense(e, new Extensible(), string.Empty);
@@ -134,9 +138,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.AreEqual("test", e.GetProperty<MultiText>(LexEntry.WellKnownProperties.LiteralMeaning).GetExactAlternative("en"));
 		}
 
-		[Test]
+		[Test, Ignore("TODO: move to wesay")]
 		public void NewEntry_HasDefGlossHasAnotherWSAlternative_CopiedToDefintion()
 		{
+		  //  _builder.AfterEntryRead += _builder.ApplyWeSayPolicyToParsedEntry;
+
 			Extensible extensibleInfo = new Extensible();
 			LexEntry e = _builder.GetOrMakeEntry(extensibleInfo, 0);
 			LexSense s = _builder.GetOrMakeSense(e, new Extensible(), string.Empty);

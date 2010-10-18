@@ -28,6 +28,13 @@ namespace Palaso.DictionaryServices.Lift
 			_idsOfSingleOptionFields = namesOfSingleOptionFields;
 		}
 
+
+		/// <summary>
+		/// Subscribe to this event in order to do something (or do something to an entry) as soon as it has been parsed in.
+		/// WeSay uses this to populate definitions from glosses.
+		/// </summary>
+		public event EventHandler AfterEntryRead;
+
 		public void Read(string filePath, MemoryDataMapper<LexEntry> dataMapper)
 		{
 			const string status = "Loading entries";
@@ -36,6 +43,7 @@ namespace Palaso.DictionaryServices.Lift
 
 			using (LexEntryFromLiftBuilder builder = new LexEntryFromLiftBuilder(dataMapper, _semanticDomainsList))
 			{
+				builder.AfterEntryRead += new EventHandler<LexEntryFromLiftBuilder.EntryEvent>(OnAfterEntryRead);
 				builder.ExpectedOptionTraits = _idsOfSingleOptionFields;
 
 				LiftParser<PalasoDataObject, LexEntry, LexSense, LexExampleSentence> parser =
@@ -68,6 +76,17 @@ namespace Palaso.DictionaryServices.Lift
 					//if it got past that, ok, send along the error the parser encountered.
 					throw;
 				}
+			}
+		}
+
+		/// <summary>
+		/// this just passes on the event to our client, who can't directly access the LexEntryFromLiftBuilder
+		/// </summary>
+		private void OnAfterEntryRead(object sender, LexEntryFromLiftBuilder.EntryEvent e)
+		{
+			if(AfterEntryRead !=null)
+			{
+				AfterEntryRead.Invoke(sender, e);
 			}
 		}
 

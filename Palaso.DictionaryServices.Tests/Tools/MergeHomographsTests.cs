@@ -129,6 +129,101 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				});
 		}
 
+
+		[Test]
+		public void Run_BothHaveSaveOneWritingSystemGloss_Merged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<sense>
+						<gloss lang='en'><text>blah</text></gloss>
+					</sense>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+				   <sense>
+						<gloss lang='en'><text>blah</text></gloss>
+					</sense>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense", 1);
+				});
+		}
+
+		[Test]
+		public void Run_MergableGlosses_MergesGlosses()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<sense>
+						<gloss lang='en'><text>blah</text></gloss>
+					   <gloss lang='fr'><text>bla</text></gloss>
+					</sense>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+				   <sense>
+						<gloss lang='en'><text>blah</text></gloss>
+					<gloss lang='ipa'><text>pla</text></gloss>
+					</sense>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense/gloss/text", 3);
+				});
+		}
+
+		[Test]
+		public void Run_BothHaveOneDefinitionWithSameWS_OnlyOneSenseRemains()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<sense>
+						<definition>
+							<form lang='en'><text>blah</text></form>
+						</definition>
+					</sense>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+				   <sense>
+					   <definition>
+							<form lang='en'><text>blah</text></form>
+						</definition>
+					</sense>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense", 1);
+				});
+		}
+
+
+
 		[Test]
 		public void Run_HasCompatibleTraitsAtEntryLevel_Merged()
 		{

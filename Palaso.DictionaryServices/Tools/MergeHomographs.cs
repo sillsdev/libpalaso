@@ -9,6 +9,7 @@ using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
+using Palaso.Lift.Options;
 using Palaso.Progress.LogBox;
 using Palaso.WritingSystems;
 
@@ -107,7 +108,7 @@ namespace Palaso.DictionaryServices.Tools
 			var senses = entry2.Senses.ToArray();
 			foreach (var sense in senses)
 			{
-				entry1.Senses.Add(sense);
+				MergeOrAddSense(entry1, sense);
 			}
 
 //            MergeMultiText(entry1, entry2, LexEntry.WellKnownProperties.Citation);
@@ -126,6 +127,113 @@ namespace Palaso.DictionaryServices.Tools
 					entry1.Properties.Add(property);
 				}
 			}
+		}
+
+		private void MergeOrAddSense(LexEntry targetEntry, LexSense incomingSense)
+		{
+			if(targetEntry.Senses.Count ==0)
+			{
+				targetEntry.Senses.Add(incomingSense);//no problem!
+			}
+			else if (SenseHasNoNewInformation(targetEntry, incomingSense))
+			{
+				//just drop it
+			}
+			else if(TryMergeSenseWithSomeExistingSense(targetEntry, incomingSense))
+			{
+				//it was merged in
+			}
+			else
+			{
+				//it needs to be added
+				targetEntry.Senses.Add(incomingSense);
+			}
+		}
+
+		private bool TryMergeSenseWithSomeExistingSense(LexEntry targetEntry, LexSense incomingSense)
+		{
+			if (targetEntry.Senses.Count > 1)
+				return false; //yes, we're pretty lazy!
+			var targetSense = targetEntry.Senses[0];
+
+			var targetPOS = targetSense.GetOrCreateProperty<OptionRef>(LexSense.WellKnownProperties.PartOfSpeech);
+			var incomingPOS = incomingSense.GetOrCreateProperty<OptionRef>(LexSense.WellKnownProperties.PartOfSpeech);
+
+			if(!targetPOS.IsEmpty)
+			{
+				if(!incomingPOS.IsEmpty)
+				{
+					if (targetPOS.Value != incomingPOS.Value)
+						return false; //clashing POS
+				}
+			}
+
+			if (!targetSense.Gloss.Empty)
+			{
+				if (incomingSense.Gloss.Empty)
+					return false;
+
+				if(!targetSense.Gloss.CanBeUnifiedWith(incomingSense.Gloss))
+					return false;
+			}
+
+			if (!targetSense.Definition.Empty)
+			{
+				if (incomingSense.Definition.Empty)
+					return false;
+
+				if (!targetSense.Definition.CanBeUnifiedWith(incomingSense.Definition))
+					return false;
+			}
+
+			if(targetPOS.IsEmpty)
+			{
+				targetPOS.Value = incomingPOS.Value;
+			}
+			targetSense.Gloss.MergeIn(incomingSense.Gloss);
+			targetSense.Definition.MergeIn(incomingSense.Definition);
+			return true;
+
+		}
+
+//        private bool TryMergeSenseWithSomeExistingSense(LexEntry targetEntry, LexSense incomingSense)
+//        {
+//
+//           foreach (var sense in targetEntry.Senses)
+//           {
+//               if (sense.Gloss.Empty && !sense.Definition.Empty && incomingSense.Gloss.Empty &&
+//                   !incomingSense.Definition.Empty)
+//               {
+//                   if (sense.Definition.TryMergeIn(incomingSense.Definition))
+//                       return true; //we were able to merge definitions
+//               }
+//           }
+//            return false;
+//        }
+
+		private bool SenseHasNoNewInformation(LexEntry targetEntry, LexSense incomingSense)
+		{
+			//can we find an existing sense which
+//            foreach (var sense in targetEntry.Senses)
+//            {
+//                if(sense.Gloss.Empty && !incomingSense.Gloss.Empty)
+//                    return false;
+//
+//                if(sense.Definition.Empty && !incomingSense.Definition.Empty)
+//                    return false;
+//
+				// incoming has some other ws for gloss
+//                if(incomingSense.Gloss.Forms.Any(f=>!sense.Gloss.ContainsAlternative(f.WritingSystemId)))
+//                    return false;
+//
+				// incoming has some other ws for def
+//                if(incomingSense.Definition.Forms.Any(f=>!sense.Definition.ContainsAlternative(f.WritingSystemId)))
+//                    return false;
+//
+//
+//            }
+//            return true;
+			return false;
 		}
 
 /*        private void MergeMultiText(PalasoDataObject first, PalasoDataObject second, string propertyName)
