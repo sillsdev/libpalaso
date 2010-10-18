@@ -1,4 +1,4 @@
-﻿Id	Part2B	Part2T	Part1	Scope	Type	Ref_Name
+﻿Id	Part2B	Part2T	Part1	Scope	Language_Type	Ref_Name	Comment [iso-639-3_20100707.tab]
 aaa				I	L	Ghotuo
 aab				I	L	Alumu-Tesu
 aac				I	L	Ari
@@ -6,6 +6,7 @@ aad				I	L	Amal
 aae				I	L	Arbëreshë Albanian
 aaf				I	L	Aranadan
 aag				I	L	Ambrak
+aah				I	L	Abu' Arapesh
 aai				I	L	Arifama-Miniafia
 aak				I	L	Ankave
 aal				I	L	Afade
@@ -20,24 +21,23 @@ aat				I	L	Arvanitika Albanian
 aau				I	L	Abau
 aaw				I	L	Solong
 aax				I	L	Mandobo Atas
-aay				I	L	Aariya
 aaz				I	L	Amarasi
 aba				I	L	Abé
 abb				I	L	Bankon
 abc				I	L	Ambala Ayta
-abd				I	L	Camarines Norte Agta
-abe				I	L	Western Abnaki
+abd				I	L	Manide
+abe				I	E	Western Abnaki
 abf				I	L	Abai Sungai
 abg				I	L	Abaga
 abh				I	L	Tajiki Arabic
 abi				I	L	Abidji
 abj				I	E	Aka-Bea
 abk	abk	abk	ab	I	L	Abkhazian
-abl				I	L	Abung
+abl				I	L	Lampung Nyo
 abm				I	L	Abanyom
 abn				I	L	Abua
 abo				I	L	Abon
-abp				I	L	Abenlen Ayta
+abp				I	L	Abellen Ayta
 abq				I	L	Abaza
 abr				I	L	Abron
 abs				I	L	Ambonese Malay
@@ -50,7 +50,6 @@ aby				I	L	Aneme Wake
 abz				I	L	Abui
 aca				I	L	Achagua
 acb				I	L	Áncá
-acc				I	L	Cubulco Achí
 acd				I	L	Gikyode
 ace	ace	ace		I	L	Achinese
 acf				I	L	Saint Lucian Creole French
@@ -62,7 +61,7 @@ acm				I	L	Mesopotamian Arabic
 acn				I	L	Achang
 acp				I	L	Eastern Acipa
 acq				I	L	Ta'izzi-Adeni Arabic
-acr				I	L	Rabinal Achí
+acr				I	L	Achi
 acs				I	E	Acroá
 act				I	L	Achterhoeks
 acu				I	L	Achuar-Shiwiar
@@ -80,7 +79,7 @@ adg				I	L	Andegerebinha
 adh				I	L	Adhola
 adi				I	L	Adi
 adj				I	L	Adioukrou
-adl				I	L	Galo Adi
+adl				I	L	Galo
 adn				I	L	Adang
 ado				I	L	Abu
 adp				I	L	Adap
@@ -92,7 +91,8 @@ adu				I	L	Aduge
 adw				I	L	Amundava
 adx				I	L	Amdo Tibetan
 ady	ady	ady		I	L	Adyghe
-aea				I	L	Areba
+adz				I	L	Adzera
+aea				I	E	Areba
 aeb				I	L	Tunisian Arabic
 aec				I	L	Saidi Arabic
 aed				I	L	Argentine Sign Language
@@ -104,16 +104,20 @@ aen				I	L	Armenian Sign Language
 aeq				I	L	Aer
 aer				I	L	Eastern Arrernte
 aes				I	E	Alsea
+aeu				I	L	Akeu
 aew				I	L	Ambakich
-aex				I	L	Amerax
 aey				I	L	Amele
+aez				I	L	Aeka
 afb				I	L	Gulf Arabic
+afd				I	L	Andai
 afe				I	L	Putukwam
 afg				I	L	Afghan Sign Language
 afh	afh	afh		I	C	Afrihili
 afi				I	L	Akrukay
+afk				I	L	Nanubae
 afn				I	L	Defaka
 afo				I	L	Eloyi
+afp				I	L	Tapei
 afr	afr	afr	af	I	L	Afrikaans
 afs				I	L	Afro-Seminole Creole
 aft				I	L	Afitti
@@ -131,23 +135,21 @@ agi				I	L	Agariya
 agj				I	L	Argobba
 agk				I	L	Isarog Agta
 agl				I	L	Fembe
-agm				I	L	Angaatiha
+agm				I	L	Angaataha
 agn				I	L	Agutaynen
 ago				I	L	Tainae
-agp				I	L	Paranan
 agq				I	L	Aghem
 agr				I	L	Aguaruna
 ags				I	L	Esimbi
 agt				I	L	Central Cagayan Agta
 agu				I	L	Aguacateco
-agv				I	L	Remontado Agta
+agv				I	L	Remontado Dumagat
 agw				I	L	Kahua
 agx				I	L	Aghul
 agy				I	L	Southern Alta
 agz				I	L	Mt. Iriga Agta
 aha				I	L	Ahanta
 ahb				I	L	Axamb
-ahe				I	L	Ahe
 ahg				I	L	Qimant
 ahh				I	L	Aghu
 ahi				I	L	Tiagbamrin Aizi
@@ -163,7 +165,7 @@ aht				I	L	Ahtena
 aia				I	L	Arosi
 aib				I	L	Ainu (China)
 aic				I	L	Ainbai
-aid				I	L	Alngith
+aid				I	E	Alngith
 aie				I	L	Amara
 aif				I	L	Agi
 aig				I	L	Antigua and Barbuda Creole English
@@ -180,9 +182,9 @@ aiq				I	L	Aimaq
 air				I	L	Airoran
 ais				I	L	Nataoran Amis
 ait				I	E	Arikem
-aix				I	L	Aigon
+aiw				I	L	Aari
+aix				I	L	Aighon
 aiy				I	L	Ali
-aiz				I	L	Aari
 aja				I	L	Aja (Sudan)
 ajg				I	L	Aja (Benin)
 aji				I	L	Ajië
@@ -204,7 +206,6 @@ akj				I	E	Aka-Jeru
 akk	akk	akk		I	A	Akkadian
 akl				I	L	Aklanon
 akm				I	E	Aka-Bo
-akn				I	L	Amikoana
 ako				I	L	Akurio
 akp				I	L	Siwu
 akq				I	L	Ak
@@ -236,7 +237,7 @@ alr				I	L	Alutor
 als				I	L	Tosk Albanian
 alt	alt	alt		I	L	Southern Altai
 alu				I	L	'Are'are
-alw				I	L	Alaba
+alw				I	L	Alaba-K’abeena
 alx				I	L	Amol
 aly				I	L	Alyawarr
 alz				I	L	Alur
@@ -264,7 +265,7 @@ amv				I	L	Ambelau
 amw				I	L	Western Neo-Aramaic
 amx				I	L	Anmatyerre
 amy				I	L	Ami
-amz				I	L	Atampaya
+amz				I	E	Atampaya
 ana				I	E	Andaqui
 anb				I	E	Andoa
 anc				I	L	Ngas
@@ -305,7 +306,7 @@ aok				I	L	Arhö
 aol				I	L	Alor
 aom				I	L	Ömie
 aon				I	L	Bumbita Arapesh
-aor				I	L	Aore
+aor				I	E	Aore
 aos				I	L	Taikat
 aot				I	L	A'tong
 aox				I	L	Atorada
@@ -314,6 +315,7 @@ apb				I	L	Sa'a
 apc				I	L	North Levantine Arabic
 apd				I	L	Sudanese Arabic
 ape				I	L	Bukiyip
+apf				I	L	Pahanan Agta
 apg				I	L	Ampanang
 aph				I	L	Athpariya
 api				I	L	Apiaká
@@ -325,10 +327,11 @@ apn				I	L	Apinayé
 apo				I	L	Apalik
 app				I	L	Apma
 apq				I	L	A-Pucikwar
-apr				I	L	Arop-Lukep
+apr				I	L	Arop-Lokep
 aps				I	L	Arop-Sissano
 apt				I	L	Apatani
 apu				I	L	Apurinã
+apv				I	E	Alapmunte
 apw				I	L	Western Apache
 apx				I	L	Aputai
 apy				I	L	Apalaí
@@ -339,12 +342,12 @@ aqm				I	L	Atohwaim
 aqn				I	L	Northern Alta
 aqp				I	E	Atakapa
 aqr				I	L	Arhâ
+aqz				I	L	Akuntsu
 ara	ara	ara	ar	M	L	Arabic
 arb				I	L	Standard Arabic
-arc	arc	arc		I	A	Official Aramaic (700 - 300 BCE)
-ard				I	L	Arabana
+arc	arc	arc		I	A	Official Aramaic (700-300 BCE)
+ard				I	E	Arabana
 are				I	L	Western Arrarnta
-arf				I	L	Arafundi
 arg	arg	arg	an	I	L	Aragonese
 arh				I	L	Arhuaco
 ari				I	L	Arikara
@@ -357,10 +360,10 @@ arp	arp	arp		I	L	Arapaho
 arq				I	L	Algerian Arabic
 arr				I	L	Karo (Brazil)
 ars				I	L	Najdi Arabic
-aru				I	E	Arua
+aru				I	E	Aruá (Amazonas State)
 arv				I	L	Arbore
 arw	arw	arw		I	L	Arawak
-arx				I	L	Aruá
+arx				I	L	Aruá (Rodonia State)
 ary				I	L	Moroccan Arabic
 arz				I	L	Egyptian Arabic
 asa				I	L	Asu (Tanzania)
@@ -394,7 +397,6 @@ atb				I	L	Zaiwa
 atc				I	E	Atsahuaca
 atd				I	L	Ata Manobo
 ate				I	L	Atemble
-atf				I	L	Atuence
 atg				I	L	Ivbie North-Okpela-Arhe
 ati				I	L	Attié
 atj				I	L	Atikamekw
@@ -415,6 +417,7 @@ atx				I	L	Arutani
 aty				I	L	Aneityum
 atz				I	L	Arta
 aua				I	L	Asumboa
+aub				I	L	Alugu
 auc				I	L	Waorani
 aud				I	L	Anuta
 aue				I	L	=/Kx'au//'ein
@@ -433,7 +436,7 @@ aur				I	L	Aruek
 aut				I	L	Austral
 auu				I	L	Auye
 auw				I	L	Awyi
-aux				I	L	Aurá
+aux				I	E	Aurá
 auy				I	L	Awiyaana
 auz				I	L	Uzbeki Arabic
 ava	ava	ava	av	I	L	Avaric
@@ -441,6 +444,7 @@ avb				I	L	Avau
 avd				I	L	Alviri-Vidari
 ave	ave	ave	ae	I	A	Avestan
 avi				I	L	Avikam
+avk				I	C	Kotava
 avl				I	L	Eastern Egyptian Bedawi Arabic
 avn				I	L	Avatime
 avo				I	E	Agavotaguerra
@@ -449,8 +453,8 @@ avt				I	L	Au
 avu				I	L	Avokaya
 avv				I	L	Avá-Canoeiro
 awa	awa	awa		I	L	Awadhi
-awb				I	L	Awa
-awc				I	L	Western Acipa
+awb				I	L	Awa (Papua New Guinea)
+awc				I	L	Cicipu
 awe				I	L	Awetí
 awh				I	L	Awbono
 awi				I	L	Aekyom
@@ -474,7 +478,7 @@ axx				I	L	Xaragure
 aya				I	L	Awar
 ayb				I	L	Ayizo Gbe
 ayc				I	L	Southern Aymara
-ayd				I	L	Ayabadhu
+ayd				I	E	Ayabadhu
 aye				I	L	Ayere
 ayg				I	L	Ginyanga
 ayh				I	L	Hadrami Arabic
@@ -488,18 +492,18 @@ ayp				I	L	North Mesopotamian Arabic
 ayq				I	L	Ayi (Papua New Guinea)
 ayr				I	L	Central Aymara
 ays				I	L	Sorsogon Ayta
-ayt				I	L	Bataan Ayta
+ayt				I	L	Magbukun Ayta
 ayu				I	L	Ayu
 ayx				I	L	Ayi (China)
 ayy				I	E	Tayabas Ayta
 ayz				I	L	Mai Brat
+aza				I	L	Azha
 azb				I	L	South Azerbaijani
 aze	aze	aze	az	M	L	Azerbaijani
 azg				I	L	San Pedro Amuzgos Amuzgo
 azj				I	L	North Azerbaijani
 azm				I	L	Ipalapa Amuzgo
 azo				I	L	Awing
-azr				I	L	Adzera
 azt				I	L	Faire Atta
 azz				I	L	Highland Puebla Nahuatl
 baa				I	L	Babatana
@@ -573,7 +577,6 @@ bct				I	L	Bendi
 bcu				I	L	Awad Bing
 bcv				I	L	Shoo-Minda-Nye
 bcw				I	L	Bana
-bcx				I	L	Pamona
 bcy				I	L	Bacama
 bcz				I	L	Bainouk-Gunyaamolo
 bda				I	L	Bayot
@@ -581,6 +584,7 @@ bdb				I	L	Basap
 bdc				I	L	Emberá-Baudó
 bdd				I	L	Bunama
 bde				I	L	Bade
+bdf				I	L	Biage
 bdg				I	L	Bonggi
 bdh				I	L	Baka (Sudan)
 bdi				I	L	Burun
@@ -589,7 +593,7 @@ bdk				I	L	Budukh
 bdl				I	L	Indonesian Bajau
 bdm				I	L	Buduma
 bdn				I	L	Baldemu
-bdo				I	L	Bernde
+bdo				I	L	Morom
 bdp				I	L	Bende
 bdq				I	L	Bahnar
 bdr				I	L	West Coast Bajau
@@ -648,6 +652,7 @@ bfs				I	L	Southern Bai
 bft				I	L	Balti
 bfu				I	L	Gahri
 bfw				I	L	Bondo
+bfx				I	L	Bantayanon
 bfy				I	L	Bagheli
 bfz				I	L	Mahasu Pahari
 bga				I	L	Gwamhi-Wuri
@@ -685,7 +690,6 @@ bhg				I	L	Binandere
 bhh				I	L	Bukharic
 bhi				I	L	Bhilali
 bhj				I	L	Bahing
-bhk				I	L	Albay Bicolano
 bhl				I	L	Bimin
 bhm				I	L	Bathari
 bhn				I	L	Bohtan Neo-Aramaic
@@ -708,7 +712,6 @@ bid				I	L	Bidiyo
 bie				I	L	Bepour
 bif				I	L	Biafada
 big				I	L	Biangai
-bii				I	L	Bisu
 bij				I	L	Vaghat-Ya-Bijim-Legeri
 bik	bik	bik		M	L	Bikol
 bil				I	L	Bile
@@ -752,10 +755,8 @@ bjx				I	L	Banao Itneg
 bjy				I	E	Bayali
 bjz				I	L	Baruga
 bka				I	L	Kyak
-bkb				I	L	Finallig
 bkc				I	L	Baka (Cameroon)
 bkd				I	L	Binukid
-bke				I	L	Bengkulu
 bkf				I	L	Beeke
 bkg				I	L	Buraka
 bkh				I	L	Bakoko
@@ -769,7 +770,7 @@ bko				I	L	Kwa'
 bkp				I	L	Boko (Democratic Republic of Congo)
 bkq				I	L	Bakairí
 bkr				I	L	Bakumpai
-bks				I	L	Masbate Sorsogon
+bks				I	L	Northern Sorsoganon
 bkt				I	L	Boloki
 bku				I	L	Buhid
 bkv				I	L	Bekwarra
@@ -797,7 +798,6 @@ blq				I	L	Baluan-Pam
 blr				I	L	Blang
 bls				I	L	Balaesang
 blt				I	L	Tai Dam
-blu				I	L	Hmong Njua
 blv				I	L	Bolo
 blw				I	L	Balangao
 blx				I	L	Mag-Indi Ayta
@@ -831,7 +831,7 @@ bmy				I	L	Bemba (Democratic Republic of Congo)
 bmz				I	L	Baramu
 bna				I	L	Bonerate
 bnb				I	L	Bookan
-bnc				I	L	Central Bontoc
+bnc				M	L	Bontok
 bnd				I	L	Banda (Indonesia)
 bne				I	L	Bintauna
 bnf				I	L	Masiwang
@@ -855,7 +855,6 @@ bny				I	L	Bintulu
 bnz				I	L	Beezen
 boa				I	L	Bora
 bob				I	L	Aweer
-boc				I	L	Bakung Kenyah
 bod	tib	bod	bo	I	L	Tibetan
 boe				I	L	Mundabli
 bof				I	L	Bolon
@@ -895,7 +894,7 @@ bpp				I	L	Kaure
 bpq				I	L	Banda Malay
 bpr				I	L	Koronadal Blaan
 bps				I	L	Sarangani Blaan
-bpt				I	L	Barrow Point
+bpt				I	E	Barrow Point
 bpu				I	L	Bongu
 bpv				I	L	Bian Marind
 bpw				I	L	Bo (Papua New Guinea)
@@ -906,7 +905,6 @@ bqa				I	L	Tchumbuli
 bqb				I	L	Bagusa
 bqc				I	L	Boko (Benin)
 bqd				I	L	Bung
-bqe				I	L	Navarro-Labourdin Basque
 bqf				I	E	Baga Kaloum
 bqg				I	L	Bago-Kusuntu
 bqh				I	L	Baima
@@ -926,11 +924,11 @@ bqu				I	L	Boguru
 bqv				I	L	Begbere-Ejar
 bqw				I	L	Buru (Nigeria)
 bqx				I	L	Baangi
-bqy				I	L	Bali Sign Language
+bqy				I	L	Bengkala Sign Language
 bqz				I	L	Bakaka
 bra	bra	bra		I	L	Braj
 brb				I	L	Lave
-brc				I	L	Berbice Creole Dutch
+brc				I	E	Berbice Creole Dutch
 brd				I	L	Baraamu
 bre	bre	bre	br	I	L	Breton
 brf				I	L	Bera
@@ -957,7 +955,6 @@ brz				I	L	Bilbil
 bsa				I	L	Abinomn
 bsb				I	L	Brunei Bisaya
 bsc				I	L	Bassari
-bsd				I	L	Sarawak Bisaya
 bse				I	L	Wushi
 bsf				I	L	Bauchi
 bsg				I	L	Bashkardi
@@ -979,21 +976,19 @@ bsv				I	E	Baga Sobané
 bsw				I	L	Baiso
 bsx				I	L	Yangkam
 bsy				I	L	Sabah Bisaya
-bsz				I	L	Souletin Basque
 bta				I	L	Bata
-btb				I	L	Beti (Cameroon)
 btc				I	L	Bati (Cameroon)
 btd				I	L	Batak Dairi
 bte				I	E	Gamo-Ningi
 btf				I	L	Birgit
 btg				I	L	Gagnoa Bété
-bth				I	L	Biatah
+bth				I	L	Biatah Bidayuh
 bti				I	L	Burate
 btj				I	L	Bacanese Malay
 btl				I	L	Bhatola
 btm				I	L	Batak Mandailing
 btn				I	L	Ratagnon
-bto				I	L	Iriga Bicolano
+bto				I	L	Rinconada Bikol
 btp				I	L	Budibud
 btq				I	L	Batek
 btr				I	L	Baetora
@@ -1052,6 +1047,7 @@ bvu				I	L	Bukit Malay
 bvv				I	E	Baniva
 bvw				I	L	Boga
 bvx				I	L	Dibole
+bvy				I	L	Baybayanon
 bvz				I	L	Bauzi
 bwa				I	L	Bwatoo
 bwb				I	L	Namosi-Naitasiri-Serua
@@ -1067,14 +1063,13 @@ bwk				I	L	Bauwaki
 bwl				I	L	Bwela
 bwm				I	L	Biwat
 bwn				I	L	Wunai Bunu
-bwo				I	L	Boro
+bwo				I	L	Boro (Ethiopia)
 bwp				I	L	Mandobo Bawah
 bwq				I	L	Southern Bobo Madaré
 bwr				I	L	Bura-Pabir
 bws				I	L	Bomboma
 bwt				I	L	Bafaw-Balong
 bwu				I	L	Buli (Ghana)
-bwv				I	L	Bahau River Kenyah
 bww				I	L	Bwa
 bwx				I	L	Bu-Nao Bunu
 bwy				I	L	Cwi Bwamu
@@ -1098,11 +1093,10 @@ bxp				I	L	Bebil
 bxq				I	L	Beele
 bxr				I	L	Russia Buriat
 bxs				I	L	Busam
-bxt				I	L	Buxinhua
 bxu				I	L	China Buriat
 bxv				I	L	Berakou
 bxw				I	L	Bankagooma
-bxx				I	L	Borna
+bxx				I	L	Borna (Democratic Republic of Congo)
 bxz				I	L	Binahari
 bya				I	L	Batak
 byb				I	L	Bikya
@@ -1111,7 +1105,7 @@ byd				I	L	Benyadu'
 bye				I	L	Pouye
 byf				I	L	Bete
 byg				I	E	Baygo
-byh				I	L	Bujhyal
+byh				I	L	Bhujel
 byi				I	L	Buyu
 byj				I	L	Bina (Nigeria)
 byk				I	L	Biao
@@ -1124,7 +1118,6 @@ byq				I	E	Basay
 byr				I	L	Baruya
 bys				I	L	Burak
 byt				I	E	Berti
-byu				I	L	Buyang
 byv				I	L	Medumba
 byw				I	L	Belhariya
 byx				I	L	Qaqet
@@ -1137,6 +1130,7 @@ bze				I	L	Jenaama Bozo
 bzf				I	L	Boikin
 bzg				I	L	Babuza
 bzh				I	L	Mapos Buang
+bzi				I	L	Bisu
 bzj				I	L	Belize Kriol English
 bzk				I	L	Nicaragua Creole English
 bzl				I	L	Boano (Sulawesi)
@@ -1156,14 +1150,14 @@ bzy				I	L	Obanliku
 bzz				I	L	Evant
 caa				I	L	Chortí
 cab				I	L	Garifuna
-cac				I	L	San Sebastián Coatán Chuj
+cac				I	L	Chuj
 cad	cad	cad		I	L	Caddo
 cae				I	L	Lehar
 caf				I	L	Southern Carrier
 cag				I	L	Nivaclé
 cah				I	L	Cahuarano
 caj				I	E	Chané
-cak				I	L	Central Cakchiquel
+cak				I	L	Kaqchikel
 cal				I	L	Carolinian
 cam				I	L	Cemuhî
 can				I	L	Chambri
@@ -1188,7 +1182,6 @@ cbi				I	L	Chachi
 cbj				I	L	Ede Cabe
 cbk				I	L	Chavacano
 cbl				I	L	Bualkhaw Chin
-cbm				I	L	Yepocapa Southwestern Cakchiquel
 cbn				I	L	Nyahkur
 cbo				I	L	Izora
 cbr				I	L	Cashibo-Cacataibo
@@ -1196,6 +1189,7 @@ cbs				I	L	Cashinahua
 cbt				I	L	Chayahuita
 cbu				I	L	Candoshi-Shapra
 cbv				I	L	Cacua
+cbw				I	L	Kinabalian
 cby				I	L	Carabayo
 cca				I	E	Cauca
 ccc				I	L	Chamicuro
@@ -1210,7 +1204,6 @@ cco				I	L	Comaltepec Chinantec
 ccp				I	L	Chakma
 ccq				I	L	Chaungtha
 ccr				I	E	Cacaopera
-ccx				I	L	Northern Zhuang
 cda				I	L	Choni
 cde				I	L	Chenchu
 cdf				I	L	Chiru
@@ -1223,6 +1216,7 @@ cdn				I	L	Chaudangsi
 cdo				I	L	Min Dong Chinese
 cdr				I	L	Cinda-Regi-Tiyal
 cds				I	L	Chadian Sign Language
+cdy				I	L	Chadong
 cdz				I	L	Koda
 cea				I	E	Lower Chehalis
 ceb	ceb	ceb		I	L	Cebuano
@@ -1255,7 +1249,6 @@ cho	cho	cho		I	L	Choctaw
 chp	chp	chp		I	L	Chipewyan
 chq				I	L	Quiotepec Chinantec
 chr	chr	chr		I	L	Cherokee
-chs				I	E	Chumash
 cht				I	E	Cholón
 chu	chu	chu	cu	I	A	Church Slavic
 chv	chv	chv	cv	I	L	Chuvash
@@ -1285,20 +1278,12 @@ cjm				I	L	Eastern Cham
 cjn				I	L	Chenapian
 cjo				I	L	Ashéninka Pajonal
 cjp				I	L	Cabécar
-cjr				I	E	Chorotega
 cjs				I	L	Shor
 cjv				I	L	Chuave
 cjy				I	L	Jinyu Chinese
 cka				I	L	Khumi Awa Chin
 ckb				I	L	Central Kurdish
-ckc				I	L	Northern Cakchiquel
-ckd				I	L	South Central Cakchiquel
-cke				I	L	Eastern Cakchiquel
-ckf				I	L	Southern Cakchiquel
 ckh				I	L	Chak
-cki				I	L	Santa María De Jesús Cakchiquel
-ckj				I	L	Santo Domingo Xenacoj Cakchiquel
-ckk				I	L	Acatenango Southwestern Cakchiquel
 ckl				I	L	Cibak
 cko				I	L	Anufo
 ckq				I	L	Kajakse
@@ -1307,7 +1292,6 @@ cks				I	L	Tayo
 ckt				I	L	Chukot
 cku				I	L	Koasati
 ckv				I	L	Kavalan
-ckw				I	L	Western Cakchiquel
 ckx				I	L	Caka
 cky				I	L	Cakfem-Mushere
 ckz				I	L	Cakchiquel-Quiché Mixed Language
@@ -1328,7 +1312,6 @@ cma				I	L	Maa
 cme				I	L	Cerma
 cmg				I	H	Classical Mongolian
 cmi				I	L	Emberá-Chamí
-cmk				I	E	Chimakum
 cml				I	L	Campalagian
 cmm				I	E	Michigamea
 cmn				I	L	Mandarin Chinese
@@ -1344,7 +1327,6 @@ cnh				I	L	Haka Chin
 cni				I	L	Asháninka
 cnk				I	L	Khumi Chin
 cnl				I	L	Lalana Chinantec
-cnm				I	L	Ixtatán Chuj
 cno				I	L	Con
 cns				I	L	Central Asmat
 cnt				I	L	Tepetotutla Chinantec
@@ -1358,7 +1340,7 @@ cod				I	L	Cocama-Cocamilla
 coe				I	L	Koreguaje
 cof				I	L	Colorado
 cog				I	L	Chong
-coh				I	L	Chonyi
+coh				I	L	Chonyi-Dzihana-Kauma
 coj				I	E	Cochimi
 cok				I	L	Santa Teresa Cora
 col				I	L	Columbia-Wenatchi
@@ -1386,6 +1368,7 @@ cps				I	L	Capiznon
 cpu				I	L	Pichis Ashéninka
 cpx				I	L	Pu-Xian Chinese
 cpy				I	L	South Ucayali Ashéninka
+cqd				I	L	Chuanqiandian Cluster Miao
 cqu				I	L	Chilean Quechua
 cra				I	L	Chara
 crb				I	E	Island Carib
@@ -1406,7 +1389,6 @@ crq				I	L	Iyo'wujwa Chorote
 crr				I	E	Carolina Algonquian
 crs				I	L	Seselwa Creole French
 crt				I	L	Iyojwa'ja Chorote
-cru				I	E	Carútana
 crv				I	L	Chaura
 crw				I	L	Chrau
 crx				I	L	Carrier
@@ -1429,7 +1411,7 @@ cso				I	L	Sochiapam Chinantec
 csq				I	L	Croatia Sign Language
 csr				I	L	Costa Rican Sign Language
 css				I	E	Southern Ohlone
-cst				I	E	Northern Ohlone
+cst				I	L	Northern Ohlone
 csw				I	L	Swampy Cree
 csy				I	L	Siyin Chin
 csz				I	L	Coos
@@ -1438,7 +1420,6 @@ ctc				I	L	Chetco
 ctd				I	L	Tedim Chin
 cte				I	L	Tepinapa Chinantec
 ctg				I	L	Chittagonian
-cti				I	L	Tila Chol
 ctl				I	L	Tlacoatzintepec Chinantec
 ctm				I	E	Chitimacha
 ctn				I	L	Chhintange
@@ -1446,7 +1427,7 @@ cto				I	L	Emberá-Catío
 ctp				I	L	Western Highland Chatino
 cts				I	L	Northern Catanduanes Bicolano
 ctt				I	L	Wayanad Chetti
-ctu				I	L	Tumbalá Chol
+ctu				I	L	Chol
 ctz				I	L	Zacatepec Chatino
 cua				I	L	Cua
 cub				I	L	Cubeo
@@ -1458,7 +1439,6 @@ cuj				I	L	Mashco Piro
 cuk				I	L	San Blas Kuna
 cul				I	L	Culina
 cum				I	E	Cumeral
-cun				I	L	Cunén Quiché
 cuo				I	E	Cumanagoto
 cup				I	E	Cupeño
 cuq				I	L	Cun
@@ -1496,13 +1476,13 @@ dai				I	L	Day
 daj				I	L	Dar Fur Daju
 dak	dak	dak		I	L	Dakota
 dal				I	L	Dahalo
+dam				I	L	Damakawa
 dan	dan	dan	da	I	L	Danish
 dao				I	L	Daai Chin
-dap				I	L	Nisi
+dap				I	L	Nisi (India)
 daq				I	L	Dandami Maria
 dar	dar	dar		I	L	Dargwa
 das				I	L	Daho-Doo
-dat				I	L	Darang Deng
 dau				I	L	Dar Sila Daju
 dav				I	L	Taita
 daw				I	L	Davawenyo
@@ -1531,7 +1511,7 @@ dcr				I	E	Negerhollands
 ddd				I	L	Dongotono
 dde				I	L	Doondo
 ddg				I	L	Fataluku
-ddi				I	L	Diodio
+ddi				I	L	West Goodenough
 ddj				I	L	Jaru
 ddn				I	L	Dendi (Benin)
 ddo				I	L	Dido
@@ -1599,10 +1579,10 @@ dim				I	L	Dime
 din	din	din		M	L	Dinka
 dio				I	L	Dibo
 dip				I	L	Northeastern Dinka
-diq				I	L	Dimli
+diq				I	L	Dimli (individual language)
 dir				I	L	Dirim
 dis				I	L	Dimasa
-dit				I	L	Dirari
+dit				I	E	Dirari
 diu				I	L	Diriku
 div	div	div	dv	I	L	Dhivehi
 diw				I	L	Northwestern Dinka
@@ -1613,17 +1593,17 @@ djb				I	L	Djinba
 djc				I	L	Dar Daju Daju
 djd				I	L	Djamindjung
 dje				I	L	Zarma
-djf				I	L	Djangun
+djf				I	E	Djangun
 dji				I	L	Djinang
 djj				I	L	Djeebbana
-djk				I	L	Aukan
-djl				I	L	Djiwarli
+djk				I	L	Eastern Maroon Creole
+djl				I	E	Djiwarli
 djm				I	L	Jamsay Dogon
 djn				I	L	Djauan
-djo				I	L	Djongkang
+djo				I	L	Jangkang
 djr				I	L	Djambarrpuyngu
 dju				I	L	Kapriman
-djw				I	L	Djawi
+djw				I	E	Djawi
 dka				I	L	Dakpakha
 dkk				I	L	Dakka
 dkl				I	L	Kolum So Dogon
@@ -1685,17 +1665,15 @@ drb				I	L	Dair
 drd				I	L	Darmiya
 dre				I	L	Dolpo
 drg				I	L	Rungus
-drh				I	L	Darkhat
 dri				I	L	C'lela
 drl				I	L	Darling
 drn				I	L	West Damar
-dro				I	L	Daro-Matu
+dro				I	L	Daro-Matu Melanau
 drq				I	E	Dura
 drr				I	E	Dororo
 drs				I	L	Gedeo
 drt				I	L	Drents
 dru				I	L	Rukai
-drw				I	L	Darwazi
 dry				I	L	Darai
 dsb	dsb	dsb		I	L	Lower Sorbian
 dse				I	L	Dutch Sign Language
@@ -1743,15 +1721,15 @@ duz				I	E	Duli
 dva				I	L	Duau
 dwa				I	L	Diri
 dwl				I	L	Walo Kumbe Dogon
+dwr				I	L	Dawro
 dws				I	C	Dutton World Speedwords
 dww				I	L	Dawawa
 dya				I	L	Dyan
-dyb				I	L	Dyaberdyaber
-dyd				I	L	Dyugun
+dyb				I	E	Dyaberdyaber
+dyd				I	E	Dyugun
 dyg				I	E	Villa Viciosa Agta
 dyi				I	L	Djimini Senoufo
-dyk				I	L	Land Dayak
-dym				I	L	Yanda Dom
+dym				I	L	Yanda Dom Dogon
 dyn				I	L	Dyangadi
 dyo				I	L	Jola-Fonyi
 dyu	dyu	dyu		I	L	Dyula
@@ -1763,6 +1741,7 @@ dzl				I	L	Dzalakha
 dzn				I	L	Dzando
 dzo	dzo	dzo	dz	I	L	Dzongkha
 ebg				I	L	Ebughu
+ebk				I	L	Eastern Bontok
 ebo				I	L	Teke-Ebo
 ebr				I	L	Ebrié
 ebu				I	L	Embu
@@ -1774,6 +1753,7 @@ efa				I	L	Efai
 efe				I	L	Efe
 efi	efi	efi		I	L	Efik
 ega				I	L	Ega
+egl				I	L	Emilian
 ego				I	L	Eggon
 egy	egy	egy		I	A	Egyptian (Ancient)
 ehu				I	L	Ehueun
@@ -1785,6 +1765,8 @@ eka	eka	eka		I	L	Ekajuk
 eke				I	L	Ekit
 ekg				I	L	Ekari
 eki				I	L	Eki
+ekk				I	L	Standard Estonian
+ekl				I	L	Kol
 ekm				I	L	Elip
 eko				I	L	Koti
 ekp				I	L	Ekpeye
@@ -1792,7 +1774,7 @@ ekr				I	L	Yace
 eky				I	L	Eastern Kayah
 ele				I	L	Elepi
 elh				I	L	El Hugeirat
-eli				I	L	Nding
+eli				I	E	Nding
 elk				I	L	Elkei
 ell	gre	ell	el	I	L	Modern Greek (1453-)
 elm				I	L	Eleme
@@ -1806,7 +1788,6 @@ eme				I	L	Emerillon
 emg				I	L	Eastern Meohang
 emi				I	L	Mussau-Emira
 emk				I	L	Eastern Maninkakan
-eml				I	L	Emiliano-Romagnolo
 emm				I	E	Mamulique
 emn				I	L	Eman
 emo				I	E	Emok
@@ -1814,15 +1795,15 @@ emp				I	L	Northern Emberá
 ems				I	L	Pacific Gulf Yupik
 emu				I	L	Eastern Muria
 emw				I	L	Emplawas
+emx				I	L	Erromintxela
 emy				I	E	Epigraphic Mayan
 ena				I	L	Apali
-enb				I	L	Northern Marakwet
+enb				I	L	Markweeta
 enc				I	L	En
 end				I	L	Ende
 enf				I	L	Forest Enets
 eng	eng	eng	en	I	L	English
 enh				I	L	Tundra Enets
-eni				I	L	Enim
 enm	enm	enm		I	H	Middle English (1100-1500)
 enn				I	L	Engenni
 eno				I	L	Enggano
@@ -1840,7 +1821,7 @@ erh				I	L	Eruwa
 eri				I	L	Ogea
 erk				I	L	South Efate
 ero				I	L	Horpa
-err				I	L	Erre
+err				I	E	Erre
 ers				I	L	Ersu
 ert				I	L	Eritai
 erw				I	L	Erokwanas
@@ -1854,7 +1835,7 @@ esn				I	L	Salvadoran Sign Language
 eso				I	L	Estonian Sign Language
 esq				I	E	Esselen
 ess				I	L	Central Siberian Yupik
-est	est	est	et	I	L	Estonian
+est	est	est	et	M	L	Estonian
 esu				I	L	Central Yupik
 etb				I	L	Etebi
 etc				I	E	Etchemin
@@ -1867,7 +1848,6 @@ ett				I	A	Etruscan
 etu				I	L	Ejagham
 etx				I	L	Eten
 etz				I	L	Semimi
-eur				I	L	Europanto
 eus	baq	eus	eu	I	L	Basque
 eve				I	L	Even
 evh				I	L	Uvbie
@@ -1875,7 +1855,8 @@ evn				I	L	Evenki
 ewe	ewe	ewe	ee	I	L	Ewe
 ewo	ewo	ewo		I	L	Ewondo
 ext				I	L	Extremaduran
-eya				I	L	Eyak
+eya				I	E	Eyak
+eyo				I	L	Keiyo
 eze				I	L	Uzekwe
 faa				I	L	Fasu
 fab				I	L	Fa D'ambu
@@ -1898,6 +1879,7 @@ fau				I	L	Fayu
 fax				I	L	Fala
 fay				I	L	Southwestern Fars
 faz				I	L	Northwestern Fars
+fbl				I	L	West Albay Bikol
 fcs				I	L	Quebec Sign Language
 fer				I	L	Feroge
 ffi				I	L	Foia Foia
@@ -1912,13 +1894,12 @@ fip				I	L	Fipa
 fir				I	L	Firan
 fit				I	L	Tornedalen Finnish
 fiw				I	L	Fiwaga
-fiz				I	L	Izere
 fkv				I	L	Kven Finnish
 fla				I	L	Kalispel-Pend d'Oreille
 flh				I	L	Foau
 fli				I	L	Fali
 fll				I	L	North Fali
-fln				I	L	Flinders Island
+fln				I	E	Flinders Island
 flr				I	L	Fuliiru
 fly				I	L	Tsotsitaal
 fmp				I	L	Fe'fe'
@@ -1939,7 +1920,7 @@ frd				I	L	Fordata
 frk				I	E	Frankish
 frm	frm	frm		I	H	Middle French (ca. 1400-1600)
 fro	fro	fro		I	H	Old French (842-ca. 1400)
-frp				I	L	Franco-Provençal
+frp				I	L	Arpitan
 frq				I	L	Forak
 frr	frr	frr		I	L	Northern Frisian
 frs	frs	frs		I	L	Eastern Frisian
@@ -1947,7 +1928,7 @@ frt				I	L	Fortsenal
 fry	fry	fry	fy	I	L	Western Frisian
 fse				I	L	Finnish Sign Language
 fsl				I	L	French Sign Language
-fss				I	L	Finnish-Swedish Sign Language
+fss				I	L	Finland-Swedish Sign Language
 fub				I	L	Adamawa Fulfulde
 fuc				I	L	Pulaar
 fud				I	L	East Futuna
@@ -1970,6 +1951,7 @@ fwa				I	L	Fwâi
 fwe				I	L	Fwe
 gaa	gaa	gaa		I	L	Ga
 gab				I	L	Gabri
+gac				I	L	Mixed Great Andamanese
 gad				I	L	Gaddang
 gae				I	L	Guarequena
 gaf				I	L	Gende
@@ -1988,7 +1970,6 @@ gar				I	L	Galeya
 gas				I	L	Adiwasi Garasia
 gat				I	L	Kenati
 gau				I	L	Mudhili Gadaba
-gav				I	L	Gabutamon
 gaw				I	L	Nobonob
 gax				I	L	Borana-Arsi-Guji Oromo
 gay	gay	gay		I	L	Gayo
@@ -2018,7 +1999,7 @@ gbx				I	L	Eastern Xwla Gbe
 gby				I	L	Gbari
 gbz				I	L	Zoroastrian Dari
 gcc				I	L	Mali
-gcd				I	L	Ganggalida
+gcd				I	E	Ganggalida
 gce				I	E	Galice
 gcf				I	L	Guadeloupean Creole French
 gcl				I	L	Grenadian Creole English
@@ -2027,7 +2008,7 @@ gcr				I	L	Guianese Creole French
 gct				I	L	Colonia Tovar German
 gda				I	L	Gade Lohar
 gdb				I	L	Pottangi Ollar Gadaba
-gdc				I	L	Gugu Badhun
+gdc				I	E	Gugu Badhun
 gdd				I	L	Gedaged
 gde				I	L	Gude
 gdf				I	L	Guduf-Gava
@@ -2054,7 +2035,6 @@ gei				I	L	Gebe
 gej				I	L	Gen
 gek				I	L	Yiwom
 gel				I	L	Kag-Fer-Jiir-Koor-Ror-Us-Zuksun
-gen				I	L	Geman Deng
 geq				I	L	Geme
 ges				I	L	Geser-Gorom
 gew				I	L	Gera
@@ -2065,10 +2045,9 @@ gfk				I	L	Patpatar
 gft				I	E	Gafat
 gga				I	L	Gao
 ggb				I	L	Gbii
-ggd				I	L	Gugadj
+ggd				I	E	Gugadj
 gge				I	L	Guragone
 ggg				I	L	Gurgula
-ggh				I	L	Garreh-Ajuran
 ggk				I	E	Kungarakany
 ggl				I	L	Ganglau
 ggn				I	L	Eastern Gurung
@@ -2126,23 +2105,25 @@ glk				I	L	Gilaki
 glo				I	L	Galambu
 glr				I	L	Glaro-Twabo
 glu				I	L	Gula (Chad)
-glv	glv	glv	gv	I	E	Manx
+glv	glv	glv	gv	I	L	Manx
 glw				I	L	Glavda
 gly				I	E	Gule
-gma				I	L	Gambera
+gma				I	E	Gambera
 gmb				I	L	Gula'alaa
 gmd				I	L	Mághdì
 gmh	gmh	gmh		I	H	Middle High German (ca. 1050-1500)
 gml				I	H	Middle Low German
+gmm				I	L	Gbaya-Mbodomo
 gmn				I	L	Gimnime
-gmo				I	L	Gamo-Gofa-Dawro
 gmu				I	L	Gumalu
+gmv				I	L	Gamo
 gmx				I	L	Magoma
 gmy				I	A	Mycenaean Greek
 gna				I	L	Kaansa
 gnb				I	L	Gangte
 gnc				I	E	Guanche
 gnd				I	L	Zulgo-Gemzek
+gne				I	L	Ganang
 gng				I	L	Ngangam
 gnh				I	L	Lere
 gni				I	L	Gooniyandi
@@ -2162,6 +2143,7 @@ gob				I	L	Playero
 goc				I	L	Gorakor
 god				I	L	Godié
 goe				I	L	Gongduk
+gof				I	L	Gofa
 gog				I	L	Gogo
 goh	goh	goh		I	H	Old High German (ca. 750-1050)
 goi				I	L	Gobasi
@@ -2213,6 +2195,7 @@ gsg				I	L	German Sign Language
 gsl				I	L	Gusilay
 gsm				I	L	Guatemalan Sign Language
 gsn				I	L	Gusan
+gso				I	L	Southwest Gbaya
 gsp				I	L	Wasembo
 gss				I	L	Greek Sign Language
 gsw	gsw	gsw		I	L	Swiss German
@@ -2268,7 +2251,7 @@ gwj				I	L	/Gwi
 gwn				I	L	Gwandara
 gwr				I	L	Gwere
 gwt				I	L	Gawar-Bati
-gwu				I	L	Guwamu
+gwu				I	E	Guwamu
 gww				I	L	Kwini
 gwx				I	L	Gua
 gxx				I	L	Wè Southern
@@ -2276,13 +2259,14 @@ gya				I	L	Northwest Gbaya
 gyb				I	L	Garus
 gyd				I	L	Kayardild
 gye				I	L	Gyem
-gyf				I	L	Gungabula
+gyf				I	E	Gungabula
 gyg				I	L	Gbayi
 gyi				I	L	Gyele
+gyl				I	L	Gayil
 gym				I	L	Ngäbere
 gyn				I	L	Guyanese Creole English
 gyr				I	L	Guarayu
-gyy				I	L	Gunya
+gyy				I	E	Gunya
 gza				I	L	Ganza
 gzi				I	L	Gazi
 gzn				I	L	Gane
@@ -2316,14 +2300,14 @@ hba				I	L	Hamba
 hbb				I	L	Huba
 hbn				I	L	Heiban
 hbo				I	H	Ancient Hebrew
-hbs			sh	M	L	Serbo-Croatian
+hbs			sh	M	L	Serbo-Croatian	Code element for 639-1 has been deprecated
 hbu				I	L	Habu
 hca				I	L	Andaman Creole Hindi
 hch				I	L	Huichol
 hdn				I	L	Northern Haida
 hds				I	L	Honduras Sign Language
 hdy				I	L	Hadiyya
-hea				I	L	Northern Qiandong Hmong
+hea				I	L	Northern Qiandong Miao
 heb	heb	heb	he	I	L	Hebrew
 hed				I	L	Herdé
 heg				I	L	Helong
@@ -2339,7 +2323,7 @@ hhy				I	L	Hoyahoya
 hia				I	L	Lamang
 hib				I	E	Hibito
 hid				I	L	Hidatsa
-hif				I	L	Fijian Hindustani
+hif				I	L	Fiji Hindi
 hig				I	L	Kamwe
 hih				I	L	Pamosu
 hii				I	L	Hinduri
@@ -2352,32 +2336,36 @@ hir				I	L	Himarimã
 hit	hit	hit		I	A	Hittite
 hiw				I	L	Hiw
 hix				I	L	Hixkaryána
+hji				I	L	Haji
 hka				I	L	Kahe
 hke				I	L	Hunde
+hkk				I	L	Hunjara-Kaina Ke
+hks				I	L	Hong Kong Sign Language
 hla				I	L	Halia
 hlb				I	L	Halbi
 hld				I	L	Halang Doan
+hle				I	L	Hlersu
 hlt				I	L	Nga La
 hlu				I	A	Hieroglyphic Luwian
 hma				I	L	Southern Mashan Hmong
 hmb				I	L	Humburi Senni Songhay
 hmc				I	L	Central Huishui Hmong
-hmd				I	L	Northeastern Dian Hmong
+hmd				I	L	Large Flowery Miao
 hme				I	L	Eastern Huishui Hmong
 hmf				I	L	Hmong Don
 hmg				I	L	Southwestern Guiyang Hmong
 hmh				I	L	Southwestern Huishui Hmong
 hmi				I	L	Northern Huishui Hmong
-hmj				I	L	Chonganjiang Hmong
+hmj				I	L	Ge
 hmk				I	E	Maek
 hml				I	L	Luopohe Hmong
 hmm				I	L	Central Mashan Hmong
 hmn	hmn	hmn		M	L	Hmong
 hmo	hmo	hmo	ho	I	L	Hiri Motu
 hmp				I	L	Northern Mashan Hmong
-hmq				I	L	Eastern Qiandong Hmong
+hmq				I	L	Eastern Qiandong Miao
 hmr				I	L	Hmar
-hms				I	L	Southern Qiandong Hmong
+hms				I	L	Southern Qiandong Miao
 hmt				I	L	Hamtai
 hmu				I	L	Hamap
 hmv				I	L	Hmong Dô
@@ -2389,6 +2377,7 @@ hnd				I	L	Southern Hindko
 hne				I	L	Chhattisgarhi
 hnh				I	L	//Ani
 hni				I	L	Hani
+hnj				I	L	Hmong Njua
 hnn				I	L	Hanunoo
 hno				I	L	Northern Hindko
 hns				I	L	Caribbean Hindustani
@@ -2400,7 +2389,7 @@ hod				I	E	Holma
 hoe				I	L	Horom
 hoh				I	L	Hobyót
 hoi				I	L	Holikachuk
-hoj				I	L	Harauti
+hoj				I	L	Hadothi
 hol				I	L	Holu
 hom				I	E	Homa
 hoo				I	L	Holoholo
@@ -2417,15 +2406,15 @@ hps				I	L	Hawai'i Pidgin Sign Language
 hra				I	L	Hrangkhol
 hre				I	L	Hre
 hrk				I	L	Haruku
+hrm				I	L	Horned Miao
 hro				I	L	Haroi
 hrr				I	L	Horuru
 hrt				I	L	Hértevin
 hru				I	L	Hruso
-hrv	scr	hrv	hr	I	L	Croatian
+hrv	hrv	hrv	hr	I	L	Croatian
 hrx				I	L	Hunsrik
 hrz				I	L	Harzani
 hsb	hsb	hsb		I	L	Upper Sorbian
-hsf				I	L	Southeastern Huastec
 hsh				I	L	Hungarian Sign Language
 hsl				I	L	Hausa Sign Language
 hsn				I	L	Xiang Chinese
@@ -2452,15 +2441,14 @@ huo				I	L	Hu
 hup	hup	hup		I	L	Hupa
 huq				I	L	Tsat
 hur				I	L	Halkomelem
-hus				I	L	Veracruz Huastec
+hus				I	L	Huastec
 hut				I	L	Humla
 huu				I	L	Murui Huitoto
 huv				I	L	San Mateo Del Mar Huave
-huw				I	L	Hukumina
+huw				I	E	Hukumina
 hux				I	L	Nüpode Huitoto
 huy				I	L	Hulaulá
 huz				I	L	Hunzib
-hva				I	L	San Luís Potosí Huastec
 hvc				I	L	Haitian Vodoun Culture Language
 hve				I	L	San Dionisio Del Mar Huave
 hvk				I	L	Haveke
@@ -2544,11 +2532,12 @@ ikz				I	L	Ikizu
 ila				I	L	Ile Ape
 ilb				I	L	Ila
 ile	ile	ile	ie	I	C	Interlingue
-ilg				I	L	Garig-Ilgar
+ilg				I	E	Garig-Ilgar
 ili				I	L	Ili Turki
 ilk				I	L	Ilongot
 ill				I	L	Iranun
 ilo	ilo	ilo		I	L	Iloko
+ils				I	L	International Sign
 ilu				I	L	Ili'uun
 ilv				I	L	Ilue
 ilw				I	L	Talur
@@ -2598,6 +2587,7 @@ ise				I	L	Italian Sign Language
 isg				I	L	Irish Sign Language
 ish				I	L	Esan
 isi				I	L	Nkem-Nkum
+isk				I	L	Ishkashimi
 isl	ice	isl	is	I	L	Icelandic
 ism				I	L	Masimasi
 isn				I	L	Isanzu
@@ -2616,7 +2606,6 @@ ito				I	L	Itonama
 itr				I	L	Iteri
 its				I	L	Isekiri
 itt				I	L	Maeng Itneg
-itu				I	L	Itutang
 itv				I	L	Itawit
 itw				I	L	Ito
 itx				I	L	Itik
@@ -2630,22 +2619,20 @@ iwm				I	L	Iwam
 iwo				I	L	Iwur
 iws				I	L	Sepik Iwam
 ixc				I	L	Ixcatec
-ixi				I	L	Nebaj Ixil
-ixj				I	L	Chajul Ixil
-ixl				I	L	San Juan Cotzal Ixil
+ixl				I	L	Ixil
 iya				I	L	Iyayu
 iyo				I	L	Mesaka
 iyx				I	L	Yaka (Congo)
 izh				I	L	Ingrian
 izi				I	L	Izi-Ezaa-Ikwo-Mgbo
+izr				I	L	Izere
 jaa				I	L	Jamamadí
 jab				I	L	Hyam
-jac				I	L	Eastern Jacalteco
+jac				I	L	Popti'
 jad				I	L	Jahanka
 jae				I	L	Yabem
 jaf				I	L	Jara
 jah				I	L	Jah Hut
-jai				I	L	Western Jacalteco
 jaj				I	L	Zazao
 jak				I	L	Jakun
 jal				I	L	Yalahatan
@@ -2658,12 +2645,13 @@ jat				I	L	Jakati
 jau				I	L	Yaur
 jav	jav	jav	jv	I	L	Javanese
 jax				I	L	Jambi Malay
-jay				I	L	Jarnango
+jay				I	L	Yan-nhangu
 jaz				I	L	Jawe
 jbe				I	L	Judeo-Berber
 jbj				I	L	Arandai
 jbn				I	L	Nafusi
 jbo	jbo	jbo		I	C	Lojban
+jbr				I	L	Jofotek-Bromnya
 jbt				I	L	Jabutí
 jbu				I	L	Jukun Takum
 jcs				I	L	Jamaican Country Sign Language
@@ -2686,6 +2674,7 @@ jgb				I	E	Ngbee
 jge				I	L	Judeo-Georgian
 jgo				I	L	Ngomba
 jhi				I	L	Jehai
+jhs				I	L	Jhankot Sign Language
 jia				I	L	Jina
 jib				I	L	Jibu
 jic				I	L	Tol
@@ -2705,12 +2694,14 @@ jiy				I	L	Buyuan Jinuo
 jko				I	L	Kubo
 jku				I	L	Labir
 jle				I	L	Ngile
+jls				I	L	Jamaican Sign Language
 jma				I	L	Dima
 jmb				I	L	Zumbun
 jmc				I	L	Machame
 jmd				I	L	Yamdena
 jmi				I	L	Jimi (Nigeria)
 jml				I	L	Jumli
+jmn				I	L	Makuri Naga
 jmr				I	L	Kamara
 jms				I	L	Mashi (Nigeria)
 jmx				I	L	Western Juxtlahuaca Mixtec
@@ -2748,6 +2739,7 @@ jun				I	L	Juang
 juo				I	L	Jiba
 jup				I	L	Hupdë
 jur				I	L	Jurúna
+jus				I	L	Jumla Sign Language
 jut				I	L	Jutish
 juu				I	L	Ju
 juw				I	L	Wãpha
@@ -2791,13 +2783,14 @@ kbe				I	L	Kanju
 kbf				I	E	Kakauhua
 kbg				I	L	Khamba
 kbh				I	L	Camsá
+kbi				I	L	Kaptiau
 kbj				I	L	Kari
 kbk				I	L	Grass Koiari
 kbl				I	L	Kanembu
 kbm				I	L	Iwal
 kbn				I	L	Kare (Central African Republic)
 kbo				I	L	Keliko
-kbp				I	L	Kabiyé
+kbp				I	L	Kabiyè
 kbq				I	L	Kamano
 kbr				I	L	Kafa
 kbs				I	L	Kande
@@ -2850,7 +2843,6 @@ kdn				I	L	Kunda
 kdp				I	L	Kaningdon-Nindem
 kdq				I	L	Koch
 kdr				I	L	Karaim
-kds				I	L	Lahu Shi
 kdt				I	L	Kuy
 kdu				I	L	Kadaru
 kdv				I	L	Kado
@@ -2865,6 +2857,7 @@ ked				I	L	Kerewe
 kee				I	L	Eastern Keres
 kef				I	L	Kpessi
 keg				I	L	Tese
+keh				I	L	Keak
 kei				I	L	Kei
 kej				I	L	Kadar
 kek				I	L	Kekchí
@@ -2915,12 +2908,12 @@ kgc				I	L	Kasseng
 kgd				I	L	Kataang
 kge				I	L	Komering
 kgf				I	L	Kube
-kgg				I	E	Kusunda
+kgg				I	L	Kusunda
 kgh				I	L	Upper Tanudan Kalinga
 kgi				I	L	Selangor Sign Language
 kgj				I	L	Gamale Kham
 kgk				I	L	Kaiwá
-kgl				I	L	Kunggari
+kgl				I	E	Kunggari
 kgm				I	E	Karipúna
 kgn				I	L	Karingani
 kgo				I	L	Krongo
@@ -2979,13 +2972,14 @@ kiq				I	L	Kosadle
 kir	kir	kir	ky	I	L	Kirghiz
 kis				I	L	Kis
 kit				I	L	Agob
-kiu				I	L	Kirmanjki
+kiu				I	L	Kirmanjki (individual language)
 kiv				I	L	Kimbu
 kiw				I	L	Northeast Kiwai
+kix				I	L	Khiamniungan Naga
 kiy				I	L	Kirikiri
 kiz				I	L	Kisi
 kja				I	L	Mlap
-kjb				I	L	Eastern Kanjobal
+kjb				I	L	Q'anjob'al
 kjc				I	L	Coastal Konjo
 kjd				I	L	Southern Kiwai
 kje				I	L	Kisar
@@ -3034,20 +3028,20 @@ kkw				I	L	Teke-Kukuya
 kkx				I	L	Kohin
 kky				I	L	Guguyimidjir
 kkz				I	L	Kaska
-kla				I	L	Klamath-Modoc
+kla				I	E	Klamath-Modoc
 klb				I	L	Kiliwa
 klc				I	L	Kolbila
 kld				I	L	Gamilaraay
 kle				I	L	Kulung (Nepal)
 klf				I	L	Kendeje
-klg				I	L	Tagakaulu Kalagan
+klg				I	L	Tagakaulo
 klh				I	L	Weliki
 kli				I	L	Kalumpang
 klj				I	L	Turkic Khalaj
 klk				I	L	Kono (Nigeria)
 kll				I	L	Kagan Kalagan
-klm				I	L	Kolom
-kln				I	L	Kalenjin
+klm				I	L	Migum
+kln				M	L	Kalenjin
 klo				I	L	Kapya
 klp				I	L	Kamasa
 klq				I	L	Rumu
@@ -3063,7 +3057,7 @@ klz				I	L	Kabola
 kma				I	L	Konni
 kmb	kmb	kmb		I	L	Kimbundu
 kmc				I	L	Southern Dong
-kmd				I	L	Madukayang Kalinga
+kmd				I	L	Majukayang Kalinga
 kme				I	L	Bakole
 kmf				I	L	Kare (Papua New Guinea)
 kmg				I	L	Kâte
@@ -3093,7 +3087,6 @@ knd				I	L	Konda
 kne				I	L	Kankanaey
 knf				I	L	Mankanya
 kng				I	L	Koongo
-knh				I	L	Kayan River Kenyah
 kni				I	L	Kanufi
 knj				I	L	Western Kanjobal
 knk				I	L	Kuranko
@@ -3154,7 +3147,7 @@ kpn				I	E	Kepkiriwát
 kpo				I	L	Ikposo
 kpp				I	L	Paku Karen
 kpq				I	L	Korupun-Sela
-kpr				I	L	Korafe
+kpr				I	L	Korafe-Yegha
 kps				I	L	Tehit
 kpt				I	L	Karata
 kpu				I	L	Kafoa
@@ -3165,7 +3158,7 @@ kpy				I	L	Koryak
 kpz				I	L	Kupsabiny
 kqa				I	L	Mum
 kqb				I	L	Kovai
-kqc				I	L	Doromu
+kqc				I	L	Doromu-Koki
 kqd				I	L	Koy Sanjaq Surat
 kqe				I	L	Kalagan
 kqf				I	L	Kakabai
@@ -3195,16 +3188,14 @@ krc	krc	krc		I	L	Karachay-Balkar
 krd				I	L	Kairui-Midiki
 kre				I	L	Panará
 krf				I	L	Koro (Vanuatu)
-krg				I	L	North Korowai
 krh				I	L	Kurama
 kri				I	L	Krio
 krj				I	L	Kinaray-A
-krk				I	L	Kerek
+krk				I	E	Kerek
 krl	krl	krl		I	L	Karelian
 krm				I	L	Krim
 krn				I	L	Sapo
 krp				I	L	Korop
-krq				I	L	Krui
 krr				I	L	Kru'ng 2
 krs				I	L	Gbaya (Sudan)
 krt				I	L	Tumari Kanuri
@@ -3239,7 +3230,7 @@ ksv				I	L	Kusu
 ksw				I	L	S'gaw Karen
 ksx				I	L	Kedang
 ksy				I	L	Kharia Thar
-ksz				I	L	Koraku
+ksz				I	L	Kodaku
 kta				I	L	Katua
 ktb				I	L	Kambaata
 ktc				I	L	Kholok
@@ -3268,6 +3259,7 @@ kty				I	L	Kango (Bas-Uélé District)
 ktz				I	L	Ju/'hoan
 kua	kua	kua	kj	I	L	Kuanyama
 kub				I	L	Kutep
+kuc				I	L	Kwinsu
 kud				I	L	'Auhelawa
 kue				I	L	Kuman
 kuf				I	L	Western Katu
@@ -3323,7 +3315,7 @@ kwc				I	L	Likwala
 kwd				I	L	Kwaio
 kwe				I	L	Kwerba
 kwf				I	L	Kwara'ae
-kwg				I	L	Kaba Deme
+kwg				I	L	Sara Kaba Deme
 kwh				I	L	Kowiai
 kwi				I	L	Awa-Cuaiquer
 kwj				I	L	Kwanga
@@ -3338,25 +3330,24 @@ kwr				I	L	Kwer
 kws				I	L	Kwese
 kwt				I	L	Kwesten
 kwu				I	L	Kwakum
-kwv				I	L	Kaba Na
+kwv				I	L	Sara Kaba Náà
 kww				I	L	Kwinti
 kwx				I	L	Khirwar
 kwy				I	L	San Salvador Kongo
 kwz				I	E	Kwadi
 kxa				I	L	Kairiru
 kxb				I	L	Krobu
-kxc				I	L	Komso
+kxc				I	L	Konso
 kxd				I	L	Brunei
 kxe				I	L	Kakihum
 kxf				I	L	Manumanaw Karen
-kxg				I	L	Katingan
 kxh				I	L	Karo (Ethiopia)
 kxi				I	L	Keningau Murut
 kxj				I	L	Kulfa
 kxk				I	L	Zayein Karen
 kxl				I	L	Nepali Kurux
 kxm				I	L	Northern Khmer
-kxn				I	L	Kanowit
+kxn				I	L	Kanowit-Tanjong Melanau
 kxo				I	E	Kanoé
 kxp				I	L	Wadiyara Koli
 kxq				I	L	Smärky Kanum
@@ -3382,7 +3373,7 @@ kyj				I	L	Karao
 kyk				I	L	Kamayo
 kyl				I	L	Kalapuya
 kym				I	L	Kpatili
-kyn				I	L	Karolanos
+kyn				I	L	Northern Binukidnon
 kyo				I	L	Kelon
 kyp				I	L	Kang
 kyq				I	L	Kenga
@@ -3421,7 +3412,7 @@ kzw				I	E	Karirí-Xocó
 kzx				I	L	Kamarian
 kzy				I	L	Kango (Tshopo District)
 kzz				I	L	Kalabra
-laa				I	L	Lapuyan Subanun
+laa				I	L	Southern Subanen
 lab				I	A	Linear A
 lac				I	L	Lacandon
 lad	lad	lad		I	L	Ladino
@@ -3442,7 +3433,7 @@ lar				I	L	Larteh
 las				I	L	Lama (Togo)
 lat	lat	lat	la	I	A	Latin
 lau				I	L	Laba
-lav	lav	lav	lv	I	L	Latvian
+lav	lav	lav	lv	M	L	Latvian
 law				I	L	Lauje
 lax				I	L	Tiwa
 lay				I	L	Lama (Myanmar)
@@ -3455,6 +3446,8 @@ lbf				I	L	Tinani
 lbg				I	L	Laopang
 lbi				I	L	La'bi
 lbj				I	L	Ladakhi
+lbk				I	L	Central Bontok
+lbl				I	L	Libon Bikol
 lbm				I	L	Lodhi
 lbn				I	L	Lamet
 lbo				I	L	Laven
@@ -3466,7 +3459,7 @@ lbu				I	L	Labu
 lbv				I	L	Lavatbura-Lamusong
 lbw				I	L	Tolaki
 lbx				I	L	Lawangan
-lby				I	L	Lamu-Lamu
+lby				I	E	Lamu-Lamu
 lbz				I	L	Lardil
 lcc				I	L	Legenyem
 lcd				I	L	Lola
@@ -3504,7 +3497,7 @@ lej				I	L	Lengola
 lek				I	L	Leipon
 lel				I	L	Lele (Democratic Republic of Congo)
 lem				I	L	Nomaande
-len				I	L	Lenca
+len				I	E	Lenca
 leo				I	L	Leti (Cameroon)
 lep				I	L	Lepcha
 leq				I	L	Lembena
@@ -3518,6 +3511,7 @@ lex				I	L	Luang
 ley				I	L	Lemolang
 lez	lez	lez		I	L	Lezghian
 lfa				I	L	Lefa
+lfn				I	C	Lingua Franca Nova
 lga				I	L	Lungga
 lgb				I	L	Laghu
 lgg				I	L	Lugbara
@@ -3534,12 +3528,13 @@ lgu				I	L	Longgu
 lgz				I	L	Ligenza
 lha				I	L	Laha (Viet Nam)
 lhh				I	L	Laha (Indonesia)
+lhi				I	L	Lahu Shi
 lhl				I	L	Lahul Lohar
 lhm				I	L	Lhomi
 lhn				I	L	Lahanan
 lhp				I	L	Lhokpu
 lhs				I	E	Mlahsö
-lht				I	L	Toga
+lht				I	L	Lo-Toga
 lhu				I	L	Lahu
 lia				I	L	West-Central Limba
 lib				I	L	Likum
@@ -3563,22 +3558,27 @@ lis				I	L	Lisu
 lit	lit	lit	lt	I	L	Lithuanian
 liu				I	L	Logorik
 liv				I	L	Liv
-liw				I	L	Lembak
+liw				I	L	Col
 lix				I	L	Liabuku
 liy				I	L	Banda-Bambari
 liz				I	L	Libinza
 lje				I	L	Rampi
 lji				I	L	Laiyolo
 ljl				I	L	Li'o
-ljp				I	L	Lampung
+ljp				I	L	Lampung Api
 lka				I	L	Lakalei
+lkb				I	L	Kabras
+lkc				I	L	Kucong
+lkd				I	L	Lakondê
 lke				I	L	Kenyi
 lkh				I	L	Lakha
 lki				I	L	Laki
 lkj				I	L	Remun
 lkl				I	L	Laeko-Libuat
-lkn				I	L	Lakona
+lkn				I	L	Lakon
+lko				I	L	Khayo
 lkr				I	L	Päri
+lks				I	L	Kisa
 lkt				I	L	Lakota
 lky				I	L	Lokoya
 lla				I	L	Lala-Roba
@@ -3588,8 +3588,9 @@ lld				I	L	Ladin
 lle				I	L	Lele (Papua New Guinea)
 llf				I	E	Hermit
 llg				I	L	Lole
+llh				I	L	Lamu
 lli				I	L	Teke-Laali
-llk				I	L	Lelak
+llk				I	E	Lelak
 lll				I	L	Lilau
 llm				I	L	Lasalimu
 lln				I	L	Lele (Chad)
@@ -3601,7 +3602,7 @@ llu				I	L	Lau
 llx				I	L	Lauan
 lma				I	L	East Limba
 lmb				I	L	Merei
-lmc				I	L	Limilngan
+lmc				I	E	Limilngan
 lmd				I	L	Lumun
 lme				I	L	Pévé
 lmf				I	L	South Lembata
@@ -3617,7 +3618,6 @@ lmo				I	L	Lombard
 lmp				I	L	Limbum
 lmq				I	L	Lamatuka
 lmr				I	L	Lamalera
-lmt				I	L	Lematang
 lmu				I	L	Lamenu
 lmv				I	L	Lomaiviti
 lmw				I	L	Lake Miwok
@@ -3629,21 +3629,19 @@ lnb				I	L	Mbalanhu
 lnd				I	L	Lundayeh
 lng				I	A	Langobardic
 lnh				I	L	Lanoh
-lni				I	L	Lantanai
+lni				I	L	Daantanai'
 lnj				I	E	Leningitij
 lnl				I	L	South Central Banda
 lnm				I	L	Langam
 lnn				I	L	Lorediakarkar
 lno				I	L	Lango (Sudan)
 lns				I	L	Lamnso'
-lnt				I	L	Lintang
 lnu				I	L	Longuda
 lnz				I	L	Lonzo
 loa				I	L	Loloda
 lob				I	L	Lobi
 loc				I	L	Inonhan
-lod				I	L	Berawan
-loe				I	L	Coastal Saluan
+loe				I	L	Saluan
 lof				I	L	Logol
 log				I	L	Logo
 loh				I	L	Narim
@@ -3667,18 +3665,23 @@ loy				I	L	Lowa
 loz	loz	loz		I	L	Lozi
 lpa				I	L	Lelepa
 lpe				I	L	Lepki
+lpn				I	L	Long Phuri Naga
 lpo				I	L	Lipo
 lpx				I	L	Lopit
-lra				I	L	Lara'
+lra				I	L	Rara Bakati'
 lrc				I	L	Northern Luri
 lre				I	E	Laurentian
-lrg				I	L	Laragia
+lrg				I	E	Laragia
+lri				I	L	Marachi
 lrk				I	L	Loarki
 lrl				I	L	Lari
+lrm				I	L	Marama
 lrn				I	L	Lorang
 lro				I	L	Laro
 lrr				I	L	Southern Lorung
+lrt				I	L	Larantuka Malay
 lrv				I	L	Larevat
+lrz				I	L	Lemerig
 lsa				I	L	Lasgerdi
 lsd				I	L	Lishana Deni
 lse				I	L	Lusengo
@@ -3686,11 +3689,19 @@ lsg				I	L	Lyons Sign Language
 lsh				I	L	Lish
 lsi				I	L	Lashi
 lsl				I	L	Latvian Sign Language
+lsm				I	L	Saamia
 lso				I	L	Laos Sign Language
+lsp				I	L	Panamanian Sign Language
 lsr				I	L	Aruop
 lss				I	L	Lasi
+lst				I	L	Trinidad and Tobago Sign Language
+lsy				I	L	Mauritian Sign Language
 ltc				I	H	Late Middle Chinese
+ltg				I	L	Latgalian
 lti				I	L	Leti (Indonesia)
+ltn				I	L	Latundê
+lto				I	L	Tsotso
+lts				I	L	Tachoni
 ltu				I	L	Latu
 ltz	ltz	ltz	lb	I	L	Luxembourgish
 lua	lua	lua		I	L	Luba-Lulua
@@ -3714,22 +3725,28 @@ lus	lus	lus		I	L	Lushai
 lut				I	L	Lushootseed
 luu				I	L	Lumba-Yakkha
 luv				I	L	Luwati
-luw				I	L	Luo
-luy				I	L	Luyia
+luw				I	L	Luo (Cameroon)
+luy				M	L	Luyia
 luz				I	L	Southern Luri
 lva				I	L	Maku'a
 lvk				I	L	Lavukaleve
+lvs				I	L	Standard Latvian
 lvu				I	L	Levuka
 lwa				I	L	Lwalu
 lwe				I	L	Lewo Eleng
+lwg				I	L	Wanga
 lwh				I	L	White Lachi
 lwl				I	L	Eastern Lawa
+lwm				I	L	Laomian
 lwo				I	L	Luwo
 lwt				I	L	Lewotobi
 lww				I	L	Lewo
 lya				I	L	Layakha
+lyg				I	L	Lyngngam
 lyn				I	L	Luyana
+lzh				I	H	Literary Chinese
 lzl				I	L	Litzlitz
+lzn				I	L	Leinong Naga
 lzz				I	L	Laz
 maa				I	L	San Jerónimo Tecóatl Mazatec
 mab				I	L	Yutanduchi Mixtec
@@ -3742,7 +3759,7 @@ mai	mai	mai		I	L	Maithili
 maj				I	L	Jalapa De Díaz Mazatec
 mak	mak	mak		I	L	Makasar
 mal	mal	mal	ml	I	L	Malayalam
-mam				I	L	Northern Mam
+mam				I	L	Mam
 man	man	man		M	L	Mandingo
 maq				I	L	Chiquihuitlán Mazatec
 mar	mar	mar	mr	I	L	Marathi
@@ -3759,7 +3776,6 @@ mbc				I	L	Macushi
 mbd				I	L	Dibabawon Manobo
 mbe				I	E	Molale
 mbf				I	L	Baba Malay
-mbg				I	L	Northern Nambikuára
 mbh				I	L	Mangseng
 mbi				I	L	Ilianen Manobo
 mbj				I	L	Nadëb
@@ -3812,14 +3828,13 @@ mdd				I	L	Mbum
 mde				I	L	Maba (Chad)
 mdf	mdf	mdf		I	L	Moksha
 mdg				I	L	Massalat
-mdh				I	L	Maguindanao
+mdh				I	L	Maguindanaon
 mdi				I	L	Mamvu
 mdj				I	L	Mangbetu
 mdk				I	L	Mangbutu
 mdl				I	L	Maltese Sign Language
 mdm				I	L	Mayogo
 mdn				I	L	Mbati
-mdo				I	L	Southwest Gbaya
 mdp				I	L	Mbala
 mdq				I	L	Mbole
 mdr	mdr	mdr		I	L	Mandar
@@ -3828,7 +3843,7 @@ mdt				I	L	Mbere
 mdu				I	L	Mboko
 mdv				I	L	Santa Lucía Monteverde Mixtec
 mdw				I	L	Mbosi
-mdx				I	L	Dizi
+mdx				I	L	Dizin
 mdy				I	L	Male (Ethiopia)
 mdz				I	L	Suruí Do Pará
 mea				I	L	Menka
@@ -3842,7 +3857,7 @@ meh				I	L	Southwestern Tlaxiaco Mixtec
 mei				I	L	Midob
 mej				I	L	Meyah
 mek				I	L	Mekeo
-mel				I	L	Melanau
+mel				I	L	Central Melanau
 mem				I	E	Mangala
 men	men	men		I	L	Mende (Sierra Leone)
 meo				I	L	Kedah Malay
@@ -3857,7 +3872,7 @@ mew				I	L	Maaka
 mey				I	L	Hassaniyya
 mez				I	L	Menominee
 mfa				I	L	Pattani Malay
-mfb				I	L	Lom
+mfb				I	L	Bangka
 mfc				I	L	Mba
 mfd				I	L	Mendankwe-Nkwen
 mfe				I	L	Morisyen
@@ -3929,12 +3944,11 @@ mhr				I	L	Eastern Mari
 mhs				I	L	Buru (Indonesia)
 mht				I	L	Mandahuaca
 mhu				I	L	Digaro-Mishmi
-mhv				I	L	Arakanese
 mhw				I	L	Mbukushu
 mhx				I	L	Maru
 mhy				I	L	Ma'anyan
 mhz				I	L	Mor (Mor Islands)
-mia				I	E	Miami
+mia				I	L	Miami
 mib				I	L	Atatláhuca Mixtec
 mic	mic	mic		I	L	Mi'kmaq
 mid				I	L	Mandaic
@@ -3952,10 +3966,9 @@ mio				I	L	Pinotepa Nacional Mixtec
 mip				I	L	Apasco-Apoala Mixtec
 miq				I	L	Mískito
 mir				I	L	Isthmus Mixe
-mis	mis	mis		S		Uncoded languages
+mis	mis	mis		S	S	Uncoded languages
 mit				I	L	Southern Puebla Mixtec
 miu				I	L	Cacaloxtepec Mixtec
-miv				I	L	Mimi
 miw				I	L	Akoye
 mix				I	L	Mixtepec Mixtec
 miy				I	L	Ayutla Mixtec
@@ -3974,7 +3987,7 @@ mjm				I	L	Medebur
 mjn				I	L	Ma (Papua New Guinea)
 mjo				I	L	Malankuravan
 mjp				I	L	Malapandaram
-mjq				I	L	Malaryan
+mjq				I	E	Malaryan
 mjr				I	L	Malavedan
 mjs				I	L	Miship
 mjt				I	L	Sauria Paharia
@@ -4006,7 +4019,7 @@ mkt				I	L	Vamale
 mku				I	L	Konyanka Maninka
 mkv				I	L	Mafea
 mkw				I	L	Kituba (Congo)
-mkx				I	L	Cinamiguin Manobo
+mkx				I	L	Kinamiging Manobo
 mky				I	L	East Makian
 mkz				I	L	Makasae
 mla				I	L	Malo
@@ -4033,7 +4046,6 @@ mlu				I	L	To'abaita
 mlv				I	L	Motlav
 mlw				I	L	Moloko
 mlx				I	L	Malfaxal
-mly				I	L	Malay (individual language)
 mlz				I	L	Malaynon
 mma				I	L	Mama
 mmb				I	L	Momina
@@ -4050,10 +4062,9 @@ mml				I	L	Man Met
 mmm				I	L	Maii
 mmn				I	L	Mamanwa
 mmo				I	L	Mangga Buang
-mmp				I	L	Musan
+mmp				I	L	Siawi
 mmq				I	L	Musak
-mmr				I	L	Western Xiangxi Hmong
-mms				I	L	Southern Mam
+mmr				I	L	Western Xiangxi Miao
 mmt				I	L	Malalamai
 mmu				I	L	Mmaala
 mmv				I	E	Miriti
@@ -4081,7 +4092,7 @@ mnr				I	L	Mono (USA)
 mns				I	L	Mansi
 mnt				I	E	Maykulan
 mnu				I	L	Mer
-mnv				I	L	Rennell-Belona
+mnv				I	L	Rennell-Bellona
 mnw				I	L	Mon
 mnx				I	L	Manikion
 mny				I	L	Manyawa
@@ -4090,14 +4101,12 @@ moa				I	L	Mwan
 moc				I	L	Mocoví
 mod				I	E	Mobilian
 moe				I	L	Montagnais
-mof				I	E	Mohegan-Montauk-Narragansett
 mog				I	L	Mongondow
 moh	moh	moh		I	L	Mohawk
 moi				I	L	Mboi
 moj				I	L	Monzombo
 mok				I	L	Morori
-mol	mol	mol	mo	I	L	Moldavian
-mom				I	E	Monimbo
+mom				I	E	Mangue
 mon	mon	mon	mn	M	L	Mongolian
 moo				I	L	Monom
 mop				I	L	Mopán Maya
@@ -4116,7 +4125,6 @@ mpb				I	L	Mullukmulluk
 mpc				I	L	Mangarayi
 mpd				I	L	Machinere
 mpe				I	L	Majang
-mpf				I	L	Tajumulco Mam
 mpg				I	L	Marba
 mph				I	L	Maung
 mpi				I	L	Mpade
@@ -4140,7 +4148,6 @@ mpz				I	L	Mpi
 mqa				I	L	Maba (Indonesia)
 mqb				I	L	Mbuko
 mqc				I	L	Mangole
-mqd				I	L	Madang
 mqe				I	L	Matepi
 mqf				I	L	Momuna
 mqg				I	L	Kota Bangun Kutai Malay
@@ -4187,7 +4194,7 @@ mru				I	L	Mono (Cameroon)
 mrv				I	L	Mangareva
 mrw				I	L	Maranao
 mrx				I	L	Maremgi
-mry				I	L	Karaga Mandaya
+mry				I	L	Mandaya
 mrz				I	L	Marind
 msa	may	msa	ms	M	L	Malay (macrolanguage)
 msb				I	L	Masbatenyo
@@ -4202,13 +4209,12 @@ msj				I	L	Ma (Democratic Republic of Congo)
 msk				I	L	Mansaka
 msl				I	L	Molof
 msm				I	L	Agusan Manobo
-msn				I	L	Mosina
+msn				I	L	Vurës
 mso				I	L	Mombum
 msp				I	E	Maritsauá
 msq				I	L	Caac
 msr				I	L	Mongolian Sign Language
 mss				I	L	West Masela
-mst				I	L	Cataelano Mandaya
 msu				I	L	Musom
 msv				I	L	Maslam
 msw				I	L	Mansoanka
@@ -4220,7 +4226,7 @@ mtb				I	L	Anyin Morofo
 mtc				I	L	Munit
 mtd				I	L	Mualang
 mte				I	L	Mono (Solomon Islands)
-mtf				I	L	Murik
+mtf				I	L	Murik (Papua New Guinea)
 mtg				I	L	Una
 mth				I	L	Munggui
 mti				I	L	Maiwa (Papua New Guinea)
@@ -4237,10 +4243,9 @@ mts				I	L	Yora
 mtt				I	L	Mota
 mtu				I	L	Tututepec Mixtec
 mtv				I	L	Asaro'o
-mtw				I	L	Magahat
+mtw				I	L	Southern Binukidnon
 mtx				I	L	Tidaá Mixtec
 mty				I	L	Nabi
-mtz				I	L	Tacanec
 mua				I	L	Mundang
 mub				I	L	Mubi
 muc				I	L	Mbu'
@@ -4255,26 +4260,23 @@ mul	mul	mul		S	S	Multiple languages
 mum				I	L	Maiwala
 muo				I	L	Nyong
 mup				I	L	Malvi
-muq				I	L	Eastern Xiangxi Hmong
+muq				I	L	Eastern Xiangxi Miao
 mur				I	L	Murle
 mus	mus	mus		I	L	Creek
 mut				I	L	Western Muria
 muu				I	L	Yaaku
 muv				I	L	Muthuvan
-muw				I	L	Mundari
 mux				I	L	Bo-Ung
 muy				I	L	Muyang
 muz				I	L	Mursi
 mva				I	L	Manam
 mvb				I	E	Mattole
-mvc				I	L	Central Mam
 mvd				I	L	Mamboru
 mve				I	L	Marwari (Pakistan)
 mvf				I	L	Peripheral Mongolian
 mvg				I	L	Yucuañe Mixtec
 mvh				I	L	Mire
 mvi				I	L	Miyako
-mvj				I	L	Todos Santos Cuchumatán Mam
 mvk				I	L	Mekmek
 mvl				I	E	Mbara (Australia)
 mvm				I	L	Muya
@@ -4334,7 +4336,7 @@ mxn				I	L	Moi (Indonesia)
 mxo				I	L	Mbowe
 mxp				I	L	Tlahuitoltepec Mixe
 mxq				I	L	Juquila Mixe
-mxr				I	L	Murik Kayan
+mxr				I	L	Murik (Malaysia)
 mxs				I	L	Huitepec Mixtec
 mxt				I	L	Jamiltepec Mixtec
 mxu				I	L	Mada (Cameroon)
@@ -4350,7 +4352,7 @@ myd				I	L	Maramba
 mye				I	L	Myene
 myf				I	L	Bambassi
 myg				I	L	Manta
-myh				I	E	Makah
+myh				I	L	Makah
 myi				I	L	Mina (India)
 myj				I	L	Mangayat
 myk				I	L	Mamara Senoufo
@@ -4361,11 +4363,10 @@ myp				I	L	Pirahã
 myq				I	L	Forest Maninka
 myr				I	L	Muniche
 mys				I	E	Mesmes
-myt				I	L	Sangab Mandaya
 myu				I	L	Mundurukú
 myv	myv	myv		I	L	Erzya
 myw				I	L	Muyuw
-myx				I	L	Masaba
+myx				I	L	Masaaba
 myy				I	L	Macuna
 myz				I	H	Classical Mandaic
 mza				I	L	Santa María Zacatepec Mixtec
@@ -4440,7 +4441,7 @@ nbt				I	L	Na
 nbu				I	L	Rongmei Naga
 nbv				I	L	Ngamambo
 nbw				I	L	Southern Ngbandi
-nbx				I	L	Ngura
+nbx				I	E	Ngura
 nby				I	L	Ningera
 nca				I	L	Iyo
 ncb				I	L	Central Nicobarese
@@ -4515,9 +4516,7 @@ nex				I	L	Neme
 ney				I	L	Neyo
 nez				I	L	Nez Perce
 nfa				I	L	Dhao
-nfd				I	L	Ndun
-nfg				I	L	Nyeng
-nfk				I	L	Shakara
+nfd				I	L	Ahwai
 nfl				I	L	Ayiwo
 nfr				I	L	Nafaanra
 nfu				I	L	Mfumte
@@ -4574,8 +4573,8 @@ nib				I	L	Nakama
 nid				I	E	Ngandi
 nie				I	L	Niellim
 nif				I	L	Nek
-nig				I	L	Ngalakan
-nih				I	L	Nyiha
+nig				I	E	Ngalakan
+nih				I	L	Nyiha (Tanzania)
 nii				I	L	Nii
 nij				I	L	Ngaju
 nik				I	L	Southern Nicobarese
@@ -4583,6 +4582,7 @@ nil				I	L	Nila
 nim				I	L	Nilamba
 nin				I	L	Ninzo
 nio				I	L	Nganasan
+niq				I	L	Nandi
 nir				I	L	Nimboran
 nis				I	L	Nimi
 nit				I	L	Southeastern Kolami
@@ -4623,12 +4623,14 @@ nkm				I	L	Namat
 nkn				I	L	Nkangala
 nko				I	L	Nkonya
 nkp				I	E	Niuatoputapu
+nkq				I	L	Nkami
 nkr				I	L	Nukuoro
 nks				I	L	North Asmat
+nkt				I	L	Nyika (Tanzania)
 nku				I	L	Bouna Kulango
+nkv				I	L	Nyika (Malawi and Zambia)
 nkw				I	L	Nkutu
 nkx				I	L	Nkoroo
-nky				I	L	Khiamniungan Naga
 nkz				I	L	Nkari
 nla				I	L	Ngombale
 nlc				I	L	Nalca
@@ -4646,13 +4648,14 @@ nlu				I	L	Nchumbulu
 nlv				I	L	Orizaba Nahuatl
 nlx				I	L	Nahali
 nly				I	L	Nyamal
+nlz				I	L	Nalögo
 nma				I	L	Maram Naga
 nmb				I	L	Big Nambas
 nmc				I	L	Ngam
 nmd				I	L	Ndumu
 nme				I	L	Mzieme Naga
 nmf				I	L	Tangkhul Naga
-nmg				I	L	Ngumba
+nmg				I	L	Kwasio
 nmh				I	L	Monsang Naga
 nmi				I	L	Nyam
 nmj				I	L	Ngombe (Central African Republic)
@@ -4661,13 +4664,13 @@ nml				I	L	Ndemli
 nmm				I	L	Manangba
 nmn				I	L	!Xóõ
 nmo				I	L	Moyon Naga
-nmp				I	L	Nimanbur
+nmp				I	E	Nimanbur
 nmq				I	L	Nambya
-nmr				I	L	Nimbari
+nmr				I	E	Nimbari
 nms				I	L	Letemboi
 nmt				I	L	Namonuito
 nmu				I	L	Northeast Maidu
-nmv				I	L	Ngamini
+nmv				I	E	Ngamini
 nmw				I	L	Nimoa
 nmx				I	L	Nama (Papua New Guinea)
 nmy				I	L	Namuyi
@@ -4696,7 +4699,7 @@ nnu				I	L	Dwang
 nnv				I	E	Nugunu (Australia)
 nnw				I	L	Southern Nuni
 nnx				I	L	Ngong
-nny				I	L	Nyangga
+nny				I	E	Nyangga
 nnz				I	L	Nda'nda'
 noa				I	L	Woun Meu
 nob	nob	nob	nb	I	L	Norwegian Bokmål
@@ -4707,6 +4710,7 @@ nof				I	L	Nomane
 nog	nog	nog		I	L	Nogai
 noh				I	L	Nomu
 noi				I	L	Noiri
+noj				I	L	Nonuya
 nok				I	E	Nooksack
 nom				I	E	Nocamán
 non	non	non		I	H	Old Norse
@@ -4714,7 +4718,7 @@ noo				I	L	Nootka
 nop				I	L	Numanggang
 noq				I	L	Ngongo
 nor	nor	nor	no	M	L	Norwegian
-nos				I	L	Southern Yi
+nos				I	L	Eastern Nisu
 not				I	L	Nomatsiguenga
 nou				I	L	Ewage-Notu
 nov				I	C	Novial
@@ -4730,7 +4734,7 @@ npo				I	L	Pochuri Naga
 nps				I	L	Nipsan
 npu				I	L	Puimei Naga
 npy				I	L	Napu
-nqg				I	L	Ede Nago
+nqg				I	L	Southern Nago
 nqk				I	L	Kura Ede Nago
 nqm				I	L	Ndom
 nqn				I	L	Nen
@@ -4747,10 +4751,11 @@ nrn				I	E	Norn
 nrp				I	A	North Picene
 nrr				I	L	Norra
 nrt				I	E	Northern Kalapuya
-nrx				I	L	Ngurmbur
+nrx				I	E	Ngurmbur
 nrz				I	L	Lala
 nsa				I	L	Sangtam Naga
 nsc				I	L	Nshi
+nsd				I	L	Southern Nisu
 nse				I	L	Nsenga
 nsg				I	L	Ngasa
 nsh				I	L	Ngoshie
@@ -4766,18 +4771,21 @@ nsr				I	L	Maritime Sign Language
 nss				I	L	Nali
 nst				I	L	Tase Naga
 nsu				I	L	Sierra Negra Nahuatl
+nsv				I	L	Southwestern Nisu
 nsw				I	L	Navut
 nsx				I	L	Nsongo
+nsy				I	L	Nasal
 nsz				I	L	Nisenan
 nte				I	L	Nathembo
 nti				I	L	Natioro
 ntj				I	L	Ngaanyatjarra
-ntk				I	L	Ikoma
+ntk				I	L	Ikoma-Nata-Isenye
 ntm				I	L	Nateni
 nto				I	L	Ntomba
 ntp				I	L	Northern Tepehuan
 ntr				I	L	Delo
 nts				I	E	Natagaimas
+ntu				I	L	Natügu
 ntw				I	E	Nottoway
 nty				I	L	Mantsi
 ntz				I	L	Natanzi
@@ -4786,7 +4794,7 @@ nuc				I	E	Nukuini
 nud				I	L	Ngala
 nue				I	L	Ngundu
 nuf				I	L	Nusu
-nug				I	L	Nungali
+nug				I	E	Nungali
 nuh				I	L	Ndunda
 nui				I	L	Ngumbi
 nuj				I	L	Nyole
@@ -4821,10 +4829,9 @@ nxd				I	L	Ngando (Democratic Republic of Congo)
 nxe				I	L	Nage
 nxg				I	L	Ngad'a
 nxi				I	L	Nindi
-nxj				I	L	Nyadu
 nxl				I	L	South Nuaulu
 nxm				I	A	Numidian
-nxn				I	L	Ngawun
+nxn				I	E	Ngawun
 nxr				I	L	Ninggerum
 nxu				I	L	Narau
 nxx				I	L	Nafri
@@ -4845,10 +4852,11 @@ nyn	nyn	nyn		I	L	Nyankole
 nyo	nyo	nyo		I	L	Nyoro
 nyp				I	E	Nyang'i
 nyq				I	L	Nayini
-nys				I	E	Nyunga
-nyt				I	L	Nyawaygi
+nyr				I	L	Nyiha (Malawi)
+nys				I	L	Nyunga
+nyt				I	E	Nyawaygi
 nyu				I	L	Nyungwe
-nyv				I	L	Nyulnyul
+nyv				I	E	Nyulnyul
 nyw				I	L	Nyaw
 nyx				I	E	Nganyaywana
 nyy				I	L	Nyakyusa-Ngonde
@@ -4860,11 +4868,13 @@ nzm				I	L	Zeme Naga
 nzs				I	L	New Zealand Sign Language
 nzu				I	L	Teke-Nzikou
 nzy				I	L	Nzakambay
+nzz				I	L	Nanga Dama Dogon
 oaa				I	L	Orok
 oac				I	L	Oroch
 oar				I	A	Old Aramaic (up to 700 BCE)
 oav				I	H	Old Avar
 obi				I	E	Obispeño
+obk				I	L	Southern Bontok
 obl				I	L	Oblo
 obm				I	A	Moabite
 obo				I	L	Obo Manobo
@@ -4887,7 +4897,6 @@ ogb				I	L	Ogbia
 ogc				I	L	Ogbah
 oge				I	H	Old Georgian
 ogg				I	L	Ogbogolo
-ogn				I	L	Ogan
 ogo				I	L	Khana
 ogu				I	L	Ogbronuagum
 oht				I	A	Old Hittite
@@ -4911,18 +4920,20 @@ oki				I	L	Okiek
 okj				I	E	Oko-Juwoi
 okk				I	L	Kwamtim One
 okl				I	E	Old Kentish Sign Language
-okm				I	H	Middle Korean (10th - 16th cent.)
+okm				I	H	Middle Korean (10th-16th cent.)
 okn				I	L	Oki-No-Erabu
-oko				I	H	Old Korean (3rd - 9th cent.)
+oko				I	H	Old Korean (3rd-9th cent.)
 okr				I	L	Kirike
 oks				I	L	Oko-Eni-Osayen
 oku				I	L	Oku
+okv				I	L	Orokaiva
 okx				I	L	Okpe (Northwestern Edo)
 ola				I	L	Walungge
 old				I	L	Mochi
 ole				I	L	Olekha
 olm				I	L	Oloma
 olo				I	L	Livvi
+olr				I	L	Olrat
 oma				I	L	Omaha-Ponca
 omb				I	L	East Ambae
 omc				I	E	Mochica
@@ -4961,11 +4972,10 @@ oon				I	L	Önge
 oor				I	L	Oorlams
 oos				I	A	Old Ossetic
 opa				I	L	Okpamheri
-ope				I	A	Old Persian
 opk				I	L	Kopkaka
 opm				I	L	Oksapmin
 opo				I	L	Opao
-opt				I	L	Opata
+opt				I	E	Opata
 opy				I	L	Ofayé
 ora				I	L	Oroha
 orc				I	L	Orma
@@ -4973,7 +4983,6 @@ ore				I	L	Orejón
 org				I	L	Oring
 orh				I	L	Oroqen
 ori	ori	ori	or	I	L	Oriya
-ork				I	L	Orokaiva
 orm	orm	orm	om	M	L	Oromo
 orn				I	L	Orang Kanaq
 oro				I	L	Orokolo
@@ -4996,7 +5005,7 @@ osu				I	L	Southern One
 osx				I	H	Old Saxon
 ota	ota	ota		I	H	Ottoman Turkish (1500-1928)
 otb				I	H	Old Tibetan
-otd				I	L	Dohoi
+otd				I	L	Ot Danum
 ote				I	L	Mezquital Otomi
 oti				I	E	Oti
 otk				I	H	Old Turkish
@@ -5014,7 +5023,7 @@ oty				I	A	Old Tamil
 otz				I	L	Ixtenco Otomi
 oua				I	L	Tagargrent
 oub				I	L	Glio-Oubi
-oue				I	L	Oune
+oue				I	L	Ounge
 oui				I	H	Old Uighur
 oum				I	E	Ouma
 oun				I	L	!O!ung
@@ -5033,7 +5042,6 @@ paf				I	E	Paranawát
 pag	pag	pag		I	L	Pangasinan
 pah				I	L	Tenharim
 pai				I	L	Pe
-paj				I	L	Ipeka-Tapuia
 pak				I	L	Parakanã
 pal	pal	pal		I	A	Pahlavi
 pam	pam	pam		I	L	Pampanga
@@ -5072,7 +5080,7 @@ pca				I	L	Santa Inés Ahuatempan Popoloca
 pcb				I	L	Pear
 pcc				I	L	Bouyei
 pcd				I	L	Picard
-pce				I	L	Pale Palaung
+pce				I	L	Ruching Palaung
 pcf				I	L	Paliyan
 pcg				I	L	Paniya
 pch				I	L	Pardhan
@@ -5094,7 +5102,6 @@ pdt				I	L	Plautdietsch
 pdu				I	L	Kayan
 pea				I	L	Peranakan Indonesian
 peb				I	E	Eastern Pomo
-pec				I	L	Southern Pesisir
 ped				I	L	Mala (Papua New Guinea)
 pee				I	L	Taje
 pef				I	E	Northeastern Pomo
@@ -5105,11 +5112,10 @@ pej				I	E	Northern Pomo
 pek				I	L	Penchal
 pel				I	L	Pekal
 pem				I	L	Phende
-pen				I	L	Penesak
 peo	peo	peo		I	H	Old Persian (ca. 600-400 B.C.)
 pep				I	L	Kunja
 peq				I	L	Southern Pomo
-pes				I	L	Western Farsi
+pes				I	L	Iranian Persian
 pev				I	L	Pémono
 pex				I	L	Petats
 pey				I	L	Petjo
@@ -5128,7 +5134,7 @@ pgy				I	L	Pongyong
 pha				I	L	Pa-Hng
 phd				I	L	Phudagi
 phg				I	L	Phuong
-phh				I	L	Phula
+phh				I	L	Phukha
 phk				I	L	Phake
 phl				I	L	Phalura
 phm				I	L	Phimbi
@@ -5157,7 +5163,7 @@ pio				I	L	Piapoco
 pip				I	L	Pero
 pir				I	L	Piratapuyo
 pis				I	L	Pijin
-pit				I	L	Pitta Pitta
+pit				I	E	Pitta Pitta
 piu				I	L	Pintupi-Luritja
 piv				I	L	Pileni
 piw				I	L	Pimbwe
@@ -5166,7 +5172,7 @@ piy				I	L	Piya-Kwonci
 piz				I	L	Pije
 pjt				I	L	Pitjantjatjara
 pka				I	H	Ardhamāgadhī Prākrit
-pkb				I	L	Upper Pokomo
+pkb				I	L	Pokomo
 pkc				I	E	Paekche
 pkg				I	L	Pak-Tong
 pkh				I	L	Pankhu
@@ -5188,7 +5194,6 @@ pli	pli	pli	pi	I	A	Pali
 plj				I	L	Polci
 plk				I	L	Kohistani Shina
 pll				I	L	Shwe Palaung
-plm				I	L	Palembang
 pln				I	L	Palenquero
 plo				I	L	Oluta Popoluca
 plp				I	L	Palpa
@@ -5205,6 +5210,7 @@ pma				I	L	Paama
 pmb				I	L	Pambia
 pmc				I	E	Palumata
 pme				I	L	Pwaamei
+pmf				I	L	Pamona
 pmh				I	H	Māhārāṣṭri Prākrit
 pmi				I	L	Northern Pumi
 pmj				I	L	Southern Pumi
@@ -5220,6 +5226,7 @@ pmt				I	L	Tuamotuan
 pmu				I	L	Mirpur Panjabi
 pmw				I	L	Plains Miwok
 pmx				I	L	Poumei Naga
+pmy				I	L	Papuan Malay
 pmz				I	E	Southern Pame
 pna				I	L	Punan Bah-Biau
 pnb				I	L	Western Panjabi
@@ -5242,16 +5249,13 @@ pnw				I	L	Panytyima
 pnx				I	L	Phong-Kniang
 pny				I	L	Pinyin
 pnz				I	L	Pana (Central African Republic)
-poa				I	L	Eastern Pokomam
-pob				I	L	Western Pokomchí
-poc				I	L	Central Pokomam
+poc				I	L	Poqomam
 pod				I	E	Ponares
 poe				I	L	San Juan Atzingo Popoloca
 pof				I	L	Poke
 pog				I	E	Potiguára
-poh				I	L	Eastern Pokomchí
+poh				I	L	Poqomchi'
 poi				I	L	Highland Popoluca
-poj				I	L	Lower Pokomo
 pok				I	L	Pokangá
 pol	pol	pol	pl	I	L	Polish
 pom				I	L	Southeastern Pomo
@@ -5262,7 +5266,6 @@ poq				I	L	Texistepec Popoluca
 por	por	por	pt	I	L	Portuguese
 pos				I	L	Sayula Popoluca
 pot				I	L	Potawatomi
-pou				I	L	Southern Pokomam
 pov				I	L	Upper Guinea Crioulo
 pow				I	L	San Felipe Otlaltepec Popoloca
 pox				I	E	Polabian
@@ -5281,14 +5284,14 @@ ppr				I	L	Piru
 pps				I	L	San Luís Temalacayuca Popoloca
 ppt				I	L	Pare
 ppu				I	E	Papora
-ppv				I	L	Papavô
 pqa				I	L	Pa'a
 pqm				I	L	Malecite-Passamaquoddy
 prb				I	L	Lua'
 prc				I	L	Parachi
 prd				I	L	Parsi-Dari
 pre				I	L	Principense
-prg				I	E	Prussian
+prf				I	L	Paranan
+prg				I	L	Prussian
 prh				I	L	Porohanon
 pri				I	L	Paicî
 prk				I	L	Parauk
@@ -5309,7 +5312,7 @@ prz				I	L	Providencia Sign Language
 psa				I	L	Asue Awyu
 psc				I	L	Persian Sign Language
 psd				I	L	Plains Indian Sign Language
-pse				I	L	Pasemah
+pse				I	L	Central Malay
 psg				I	L	Penang Sign Language
 psh				I	L	Southwest Pashayi
 psi				I	L	Southeast Pashayi
@@ -5348,7 +5351,6 @@ pui				I	L	Puinave
 puj				I	L	Punan Tubu
 puk				I	L	Pu Ko
 pum				I	L	Puma
-pun				I	L	Pubian
 puo				I	L	Puoc
 pup				I	L	Pulabu
 puq				I	E	Puquina
@@ -5357,7 +5359,7 @@ pus	pus	pus	ps	M	L	Pushto
 put				I	L	Putoh
 puu				I	L	Punu
 puw				I	L	Puluwatese
-pux				I	L	Puari
+pux				I	L	Puare
 puy				I	E	Purisimeño
 puz				I	L	Purum Naga
 pwa				I	L	Pawaia
@@ -5372,19 +5374,20 @@ pxm				I	L	Quetzaltepec Mixe
 pye				I	L	Pye Krumen
 pym				I	L	Fyam
 pyn				I	L	Poyanáwa
+pys				I	L	Paraguayan Sign Language
 pyu				I	L	Puyuma
 pyx				I	A	Pyu (Myanmar)
 pyy				I	L	Pyen
+pzn				I	L	Para Naga
 qua				I	L	Quapaw
 qub				I	L	Huallaga Huánuco Quechua
-quc				I	L	Central Quiché
+quc				I	L	K'iche'
 qud				I	L	Calderón Highland Quichua
 que	que	que	qu	M	L	Quechua
 quf				I	L	Lambayeque Quechua
 qug				I	L	Chimborazo Highland Quichua
 quh				I	L	South Bolivian Quechua
 qui				I	L	Quileute
-quj				I	L	Joyabaj Quiché
 quk				I	L	Chachapoyas Quechua
 qul				I	L	North Bolivian Quechua
 qum				I	L	Sipacapense
@@ -5393,8 +5396,6 @@ qup				I	L	Southern Pastaza Quechua
 quq				I	L	Quinqui
 qur				I	L	Yanahuanca Pasco Quechua
 qus				I	L	Santiago del Estero Quichua
-qut				I	L	West Central Quiché
-quu				I	L	Eastern Quiché
 quv				I	L	Sacapulteco
 quw				I	L	Tena Lowland Quichua
 qux				I	L	Yauyos Quechua
@@ -5424,7 +5425,6 @@ qwt				I	E	Kwalhioqua-Tlatskanai
 qxa				I	L	Chiquián Ancash Quechua
 qxc				I	L	Chincha Quechua
 qxh				I	L	Panao Huánuco Quechua
-qxi				I	L	San Andrés Quiché
 qxl				I	L	Salasaca Highland Quichua
 qxn				I	L	Northern Conchucos Ancash Quechua
 qxo				I	L	Southern Conchucos Ancash Quechua
@@ -5436,11 +5436,11 @@ qxt				I	L	Santa Ana de Tusi Pasco Quechua
 qxu				I	L	Arequipa-La Unión Quechua
 qxw				I	L	Jauja Wanca Quechua
 qya				I	C	Quenya
+qyp				I	E	Quiripi
 raa				I	L	Dungmali
 rab				I	L	Camling
 rac				I	L	Rasawa
 rad				I	L	Rade
-rae				I	L	Ranau
 raf				I	L	Western Meohang
 rag				I	L	Logooli
 rah				I	L	Rabha
@@ -5463,6 +5463,8 @@ rax				I	L	Rang
 ray				I	L	Rapa
 raz				I	L	Rahambuu
 rbb				I	L	Rumai Palaung
+rbk				I	L	Northern Bontok
+rbl				I	L	Miraya Bikol
 rcf				I	L	Réunion Creole French
 rdb				I	L	Rudbari
 rea				I	L	Rerau
@@ -5481,6 +5483,7 @@ rey				I	L	Reyesano
 rga				I	L	Roria
 rge				I	L	Romano-Greek
 rgk				I	E	Rangkas
+rgn				I	L	Romagnol
 rgr				I	L	Resígaro
 rgs				I	L	Southern Roglai
 rgu				I	L	Ringgou
@@ -5495,17 +5498,19 @@ rin				I	L	Nungu
 rir				I	L	Ribun
 rit				I	L	Ritarungo
 riu				I	L	Riung
-rjb				I	L	Rajbanshi
 rjg				I	L	Rajong
 rji				I	L	Raji
+rjs				I	L	Rajbanshi
 rka				I	L	Kraol
 rkb				I	L	Rikbaktsa
 rkh				I	L	Rakahanga-Manihiki
+rki				I	L	Rakhine
 rkm				I	L	Marka
+rkt				I	L	Rangpuri
 rma				I	L	Rama
 rmb				I	L	Rembarunga
 rmc				I	L	Carpathian Romani
-rmd				I	L	Traveller Danish
+rmd				I	E	Traveller Danish
 rme				I	L	Angloromani
 rmf				I	L	Kalo Finnish Romani
 rmg				I	L	Traveller Norwegian
@@ -5517,7 +5522,7 @@ rmm				I	L	Roma
 rmn				I	L	Balkan Romani
 rmo				I	L	Sinte Romani
 rmp				I	L	Rempi
-rmr				I	L	Caló
+rmq				I	L	Caló
 rms				I	L	Romanian Sign Language
 rmt				I	L	Domari
 rmu				I	L	Tavringer Romani
@@ -5525,6 +5530,7 @@ rmv				I	C	Romanova
 rmw				I	L	Welsh Romani
 rmx				I	L	Romam
 rmy				I	L	Vlax Romani
+rmz				I	L	Marma
 rna				I	E	Runa
 rnd				I	L	Ruund
 rng				I	L	Ronga
@@ -5567,7 +5573,7 @@ rui				I	L	Rufiji
 ruk				I	L	Che
 run	run	run	rn	I	L	Rundi
 ruo				I	L	Istro Romanian
-rup	rup	rup		I	L	Macedo Romanian
+rup	rup	rup		I	L	Macedo-Romanian
 ruq				I	L	Megleno Romanian
 rus	rus	rus	ru	I	L	Russian
 rut				I	L	Rutul
@@ -5579,15 +5585,14 @@ rwk				I	L	Rwa
 rwm				I	L	Amba (Uganda)
 rwo				I	L	Rawa
 rwr				I	L	Marwari (India)
-rws				I	L	Rawas
 ryn				I	L	Northern Amami-Oshima
 rys				I	L	Yaeyama
 ryu				I	L	Central Okinawan
 saa				I	L	Saba
 sab				I	L	Buglere
-sac				I	L	Mesquakie
+sac				I	L	Meskwaki
 sad	sad	sad		I	L	Sandawe
-sae				I	L	Sabanês
+sae				I	L	Sabanê
 saf				I	L	Safaliba
 sag	sag	sag	sg	I	L	Sango
 sah	sah	sah		I	L	Yakut
@@ -5654,23 +5659,22 @@ scx				I	A	Sicel
 sda				I	L	Toraja-Sa'dan
 sdb				I	L	Shabak
 sdc				I	L	Sassarese Sardinian
-sdd				I	L	Semendo
 sde				I	L	Surubu
 sdf				I	L	Sarli
 sdg				I	L	Savi
 sdh				I	L	Southern Kurdish
-sdi				I	L	Sindang Kelingi
 sdj				I	L	Suundi
+sdk				I	L	Sos Kundi
 sdl				I	L	Saudi Arabian Sign Language
 sdm				I	L	Semandang
 sdn				I	L	Gallurese Sardinian
-sdo				I	L	Bukar Sadong
+sdo				I	L	Bukar-Sadung Bidayuh
 sdp				I	L	Sherdukpen
 sdr				I	L	Oraon Sadri
 sds				I	E	Sened
 sdt				I	E	Shuadit
 sdu				I	L	Sarudu
-sdx				I	L	Sibu
+sdx				I	L	Sibu Melanau
 sdz				I	L	Sallands
 sea				I	L	Semai
 seb				I	L	Shempire Senoufo
@@ -5697,28 +5701,33 @@ sew				I	L	Sewa Bay
 sey				I	L	Secoya
 sez				I	L	Senthang Chin
 sfb				I	L	Langue des signes de Belgique Francophone
+sfm				I	L	Small Flowery Miao
 sfs				I	L	South African Sign Language
 sfw				I	L	Sehwi
 sga	sga	sga		I	H	Old Irish (to 900)
-sgb				I	L	Mag-Anchi Ayta
+sgb				I	L	Mag-antsi Ayta
+sgc				I	L	Kipsigis
+sgd				I	L	Surigaonon
 sge				I	L	Segai
 sgg				I	L	Swiss-German Sign Language
 sgh				I	L	Shughni
 sgi				I	L	Suga
 sgk				I	L	Sangkong
-sgl				I	L	Sanglechi-Ishkashimi
 sgm				I	E	Singa
 sgo				I	L	Songa
 sgp				I	L	Singpho
 sgr				I	L	Sangisari
+sgs				I	L	Samogitian
 sgt				I	L	Brokpake
 sgu				I	L	Salas
 sgw				I	L	Sebat Bet Gurage
 sgx				I	L	Sierra Leone Sign Language
+sgy				I	L	Sanglechi
 sgz				I	L	Sursurunga
 sha				I	L	Shall-Zwall
 shb				I	L	Ninam
 shc				I	L	Sonde
+shd				I	L	Kundal Shahi
 she				I	L	Sheko
 shg				I	L	Shua
 shh				I	L	Shoshoni
@@ -5740,9 +5749,8 @@ shw				I	L	Shwai
 shx				I	L	She
 shy				I	L	Tachawit
 shz				I	L	Syenara Senoufo
-sia				I	L	Akkala Sami
-sib				I	L	Sebob Kenyah
-sic				I	L	Malinguat
+sia				I	E	Akkala Sami
+sib				I	L	Sebop
 sid	sid	sid		I	L	Sidamo
 sie				I	L	Simaa
 sif				I	L	Siamou
@@ -5774,7 +5782,7 @@ sjl				I	L	Sajalong
 sjm				I	L	Mapun
 sjn				I	C	Sindarin
 sjo				I	L	Xibe
-sjp				I	L	Surajpuri
+sjp				I	L	Surjapuri
 sjr				I	L	Siar-Lak
 sjs				I	E	Senhaja De Srair
 sjt				I	L	Ter Sami
@@ -5791,7 +5799,6 @@ skh				I	L	Sikule
 ski				I	L	Sika
 skj				I	L	Seke (Nepal)
 skk				I	L	Sok
-skl				I	L	Selako
 skm				I	L	Sakam
 skn				I	L	Kolibugan Subanon
 sko				I	L	Seko Tengah
@@ -5806,7 +5813,6 @@ skw				I	E	Skepi Creole Dutch
 skx				I	L	Seko Padang
 sky				I	L	Sikaiana
 skz				I	L	Sekar
-slb				I	L	Kahumamahon Saluan
 slc				I	L	Sáliba
 sld				I	L	Sissala
 sle				I	L	Sholaga
@@ -5849,7 +5855,7 @@ smq				I	L	Samo
 smr				I	L	Simeulue
 sms	sms	sms		I	L	Skolt Sami
 smt				I	L	Simte
-smu				I	L	Somray
+smu				I	E	Somray
 smv				I	L	Samvedi
 smw				I	L	Sumbawa
 smx				I	L	Samba
@@ -5859,7 +5865,7 @@ sna	sna	sna	sn	I	L	Shona
 snb				I	L	Sebuyau
 snc				I	L	Sinaugoro
 snd	snd	snd	sd	I	L	Sindhi
-sne				I	L	Jagoi
+sne				I	L	Bau Bidayuh
 snf				I	L	Noon
 sng				I	L	Sanga (Democratic Republic of Congo)
 snh				I	E	Shinabo
@@ -5930,6 +5936,7 @@ sqm				I	L	Suma
 sqn				I	E	Susquehannock
 sqo				I	L	Sorkhei
 sqq				I	L	Sou
+sqr				I	H	Siculo Arabic
 sqs				I	L	Sri Lankan Sign Language
 sqt				I	L	Soqotri
 squ				I	L	Squamish
@@ -5942,24 +5949,24 @@ srf				I	L	Nafi
 srg				I	L	Sulod
 srh				I	L	Sarikoli
 sri				I	L	Siriano
-srj				I	L	Serawai
 srk				I	L	Serudung Murut
 srl				I	L	Isirawa
 srm				I	L	Saramaccan
 srn	srn	srn		I	L	Sranan Tongo
 sro				I	L	Campidanese Sardinian
-srp	scc	srp	sr	I	L	Serbian
+srp	srp	srp	sr	I	L	Serbian
 srq				I	L	Sirionó
 srr	srr	srr		I	L	Serer
 srs				I	L	Sarsi
 srt				I	L	Sauri
 sru				I	L	Suruí
-srv				I	L	Waray Sorsogon
+srv				I	L	Southern Sorsoganon
 srw				I	L	Serua
 srx				I	L	Sirmauri
 sry				I	L	Sera
 srz				I	L	Shahmirzadi
 ssb				I	L	Southern Sama
+ssc				I	L	Suba-Simbiti
 ssd				I	L	Siroi
 sse				I	L	Balangingi
 ssf				I	L	Thao
@@ -5970,7 +5977,7 @@ ssj				I	L	Sausi
 ssk				I	L	Sunam
 ssl				I	L	Western Sisaala
 ssm				I	L	Semnam
-ssn				I	L	Sanye
+ssn				I	L	Waata
 sso				I	L	Sissano
 ssp				I	L	Spanish Sign Language
 ssq				I	L	So'a
@@ -5985,7 +5992,6 @@ ssy				I	L	Saho
 ssz				I	L	Sengseng
 sta				I	L	Settla
 stb				I	L	Northern Subanen
-stc				I	L	Santa Cruz
 std				I	L	Sentinel
 ste				I	L	Liana-Seti
 stf				I	L	Seta
@@ -6004,25 +6010,21 @@ str				I	L	Straits Salish
 sts				I	L	Shumashti
 stt				I	L	Budeh Stieng
 stu				I	L	Samtao
+stv				I	L	Silt'e
 stw				I	L	Satawalese
 sua				I	L	Sulka
 sub				I	L	Suku
 suc				I	L	Western Subanon
 sue				I	L	Suena
-suf				I	L	Tarpia
 sug				I	L	Suganga
-suh				I	L	Suba
 sui				I	L	Suki
 suj				I	L	Shubi
 suk	suk	suk		I	L	Sukuma
-sul				I	L	Surigaonon
-sum				I	L	Sumo-Mayangna
 sun	sun	sun	su	I	L	Sundanese
 suq				I	L	Suri
 sur				I	L	Mwaghavul
 sus	sus	sus		I	L	Susu
 sut				I	E	Subtiaba
-suu				I	L	Sungkai
 suv				I	L	Sulung
 suw				I	L	Sumbwa
 sux	sux	sux		I	A	Sumerian
@@ -6037,7 +6039,7 @@ svr				I	L	Savara
 svs				I	L	Savosavo
 svx				I	E	Skalvian
 swa	swa	swa	sw	M	L	Swahili (macrolanguage)
-swb				I	L	Comorian
+swb				I	L	Maore Comorian
 swc				I	L	Congo Swahili
 swe	swe	swe	sv	I	L	Swedish
 swf				I	L	Sere
@@ -6049,6 +6051,7 @@ swk				I	L	Malawi Sena
 swl				I	L	Swedish Sign Language
 swm				I	L	Samosa
 swn				I	L	Sawknah
+swo				I	L	Shanenawa
 swp				I	L	Suau
 swq				I	L	Sharwa
 swr				I	L	Saweru
@@ -6056,9 +6059,10 @@ sws				I	L	Seluwasan
 swt				I	L	Sawila
 swu				I	L	Suwawa
 swv				I	L	Shekhawati
-sww				I	L	Sowa
+sww				I	E	Sowa
 swx				I	L	Suruahá
 swy				I	L	Sarua
+sxb				I	L	Suba
 sxc				I	A	Sicanian
 sxe				I	L	Sighu
 sxg				I	L	Shixing
@@ -6083,13 +6087,13 @@ syo				I	L	Suoy
 syr	syr	syr		M	L	Syriac
 sys				I	L	Sinyar
 syw				I	L	Kagate
+syy				I	L	Al-Sayyid Bedouin Sign Language
 sza				I	L	Semelai
 szb				I	L	Ngalum
 szc				I	L	Semaq Beri
 szd				I	E	Seru
 sze				I	L	Seze
 szg				I	L	Sengele
-szk				I	L	Sizaki
 szl				I	L	Silesian
 szn				I	L	Sula
 szp				I	L	Suabo
@@ -6099,7 +6103,7 @@ taa				I	L	Lower Tanana
 tab				I	L	Tabassaran
 tac				I	L	Lowland Tarahumara
 tad				I	L	Tause
-tae				I	L	Tariano
+tae				I	L	Tariana
 taf				I	L	Tapirapé
 tag				I	L	Tagoi
 tah	tah	tah	ty	I	L	Tahitian
@@ -6150,12 +6154,12 @@ tcb				I	L	Tanacross
 tcc				I	L	Datooga
 tcd				I	L	Tafi
 tce				I	L	Southern Tutchone
-tcf				I	L	Malinaltepec Tlapanec
+tcf				I	L	Malinaltepec Me'phaa
 tcg				I	L	Tamagario
 tch				I	L	Turks And Caicos Creole English
 tci				I	L	Wára
 tck				I	L	Tchitchege
-tcl				I	L	Taman (Myanmar)
+tcl				I	E	Taman (Myanmar)
 tcm				I	L	Tanahmerah
 tcn				I	L	Tichurong
 tco				I	L	Taungyo
@@ -6172,6 +6176,7 @@ tda				I	L	Tagdal
 tdb				I	L	Panchpargania
 tdc				I	L	Emberá-Tadó
 tdd				I	L	Tai Nüa
+tde				I	L	Tiranige Diga Dogon
 tdf				I	L	Talieng
 tdg				I	L	Western Tamang
 tdh				I	L	Thulung
@@ -6191,6 +6196,7 @@ tdx				I	L	Tandroy-Mahafaly Malagasy
 tdy				I	L	Tadyawan
 tea				I	L	Temiar
 teb				I	E	Tetete
+tec				I	L	Terik
 ted				I	L	Tepo Krumen
 tee				I	L	Huehuetla Tepehua
 tef				I	L	Teressa
@@ -6218,7 +6224,7 @@ tfo				I	L	Tefaro
 tfr				I	L	Teribe
 tft				I	L	Ternate
 tga				I	L	Sagalla
-tgb				I	L	Tebilung
+tgb				I	L	Tobilung
 tgc				I	L	Tigak
 tgd				I	L	Ciwogai
 tge				I	L	Eastern Gorkha Tamang
@@ -6228,6 +6234,7 @@ tgh				I	L	Tobagonian Creole English
 tgi				I	L	Lawunuia
 tgk	tgk	tgk	tg	I	L	Tajik
 tgl	tgl	tgl	tl	I	L	Tagalog
+tgn				I	L	Tandaganon
 tgo				I	L	Sudest
 tgp				I	L	Tangoa
 tgq				I	L	Tring
@@ -6280,7 +6287,7 @@ tiq				I	L	Tiéfo
 tir	tir	tir	ti	I	L	Tigrinya
 tis				I	L	Masadiit Itneg
 tit				I	L	Tinigua
-tiu				I	L	Adaseng
+tiu				I	L	Adasen
 tiv	tiv	tiv		I	L	Tiv
 tiw				I	L	Tiwi
 tix				I	L	Southern Tiwa
@@ -6316,7 +6323,6 @@ tla				I	L	Southwestern Tepehuan
 tlb				I	L	Tobelo
 tlc				I	L	Yecuatla Totonac
 tld				I	L	Talaud
-tle				I	L	Southern Marakwet
 tlf				I	L	Telefol
 tlg				I	L	Tofanma
 tlh	tlh	tlh		I	C	Klingon
@@ -6337,12 +6343,11 @@ tlv				I	L	Taliabu
 tlw				I	L	South Wemale
 tlx				I	L	Khehek
 tly				I	L	Talysh
-tlz				I	L	Toala'
 tma				I	L	Tama (Chad)
 tmb				I	L	Katbol
 tmc				I	L	Tumak
 tmd				I	L	Haruai
-tme				I	L	Tremembé
+tme				I	E	Tremembé
 tmf				I	L	Toba-Maskoy
 tmg				I	E	Ternateño
 tmh	tmh	tmh		M	L	Tamashek
@@ -6368,11 +6373,9 @@ tnb				I	L	Western Tunebo
 tnc				I	L	Tanimuca-Retuarã
 tnd				I	L	Angosturas Tunebo
 tne				I	L	Tinoc Kallahan
-tnf				I	L	Tangshewi
 tng				I	L	Tobanga
 tnh				I	L	Maiani
 tni				I	L	Tandia
-tnj				I	L	Tanjong
 tnk				I	L	Kwamera
 tnl				I	L	Lenakel
 tnm				I	L	Tabla
@@ -6413,13 +6416,14 @@ tox				I	L	Tobian
 toy				I	L	Topoiyo
 toz				I	L	To
 tpa				I	L	Taupota
-tpc				I	L	Azoyú Tlapanec
+tpc				I	L	Azoyú Me'phaa
 tpe				I	L	Tippera
+tpf				I	L	Tarpia
 tpg				I	L	Kula
 tpi	tpi	tpi		I	L	Tok Pisin
 tpj				I	L	Tapieté
 tpk				I	E	Tupinikin
-tpl				I	L	Tlacoapa Tlapanec
+tpl				I	L	Tlacoapa Me'phaa
 tpm				I	L	Tampulma
 tpn				I	E	Tupinambá
 tpo				I	L	Tai Pao
@@ -6430,8 +6434,8 @@ tpt				I	L	Tlachichilco Tepehua
 tpu				I	L	Tampuan
 tpv				I	L	Tanapag
 tpw				I	E	Tupí
-tpx				I	L	Acatepec Tlapanec
-tpy				I	L	Trumaí
+tpx				I	L	Acatepec Me'phaa
+tpy				I	L	Trumai
 tpz				I	L	Tinputz
 tqb				I	L	Tembé
 tql				I	L	Lehali
@@ -6466,9 +6470,9 @@ trt				I	L	Tunggare
 tru				I	L	Turoyo
 trv				I	L	Taroko
 trw				I	L	Torwali
-trx				I	L	Tringgus
+trx				I	L	Tringgus-Sembaan Bidayuh
 try				I	E	Turung
-trz				I	L	Torá
+trz				I	E	Torá
 tsa				I	L	Tsaangi
 tsb				I	L	Tsamai
 tsc				I	L	Tswa
@@ -6500,7 +6504,7 @@ ttc				I	L	Tektiteko
 ttd				I	L	Tauade
 tte				I	L	Bwanabwana
 ttf				I	L	Tuotomb
-ttg				I	L	Tutong 2
+ttg				I	L	Tutong
 tth				I	L	Upper Ta'oih
 tti				I	L	Tobati
 ttj				I	L	Tooro
@@ -6516,8 +6520,7 @@ tts				I	L	Northeastern Thai
 ttt				I	L	Muslim Tat
 ttu				I	L	Torau
 ttv				I	L	Titan
-ttw				I	L	Tutoh Kenyah
-ttx				I	L	Tutong 1
+ttw				I	L	Long Wat
 tty				I	L	Sikaritai
 ttz				I	L	Tsum
 tua				I	L	Wiarumus
@@ -6541,7 +6544,7 @@ tus				I	L	Tuscarora
 tuu				I	L	Tututni
 tuv				I	L	Turkana
 tux				I	E	Tuxináwa
-tuy				I	L	North Tugen
+tuy				I	L	Tugen
 tuz				I	L	Turka
 tva				I	L	Vaghua
 tvd				I	L	Tsuvadi
@@ -6576,7 +6579,7 @@ twu				I	L	Termanu
 tww				I	L	Tuwari
 twx				I	L	Tewe
 twy				I	L	Tawoyan
-txa				I	L	Tombonuwo
+txa				I	L	Tombonuo
 txb				I	A	Tokharian B
 txc				I	E	Tsetsaut
 txe				I	L	Totoli
@@ -6600,7 +6603,7 @@ tyi				I	L	Teke-Tsaayi
 tyj				I	L	Tai Do
 tyl				I	L	Thu Lao
 tyn				I	L	Kombai
-typ				I	L	Thaypan
+typ				I	E	Thaypan
 tyr				I	L	Tai Daeng
 tys				I	L	Tày Sa Pa
 tyt				I	L	Tày Tac
@@ -6609,25 +6612,18 @@ tyv	tyv	tyv		I	L	Tuvinian
 tyx				I	L	Teke-Tyee
 tyz				I	L	Tày
 tza				I	L	Tanzanian Sign Language
-tzb				I	L	Bachajón Tzeltal
-tzc				I	L	Chamula Tzotzil
-tze				I	L	Chenalhó Tzotzil
-tzh				I	L	Oxchuc Tzeltal
-tzj				I	L	Eastern Tzutujil
+tzh				I	L	Tzeltal
+tzj				I	L	Tz'utujil
 tzm				I	L	Central Atlas Tamazight
 tzn				I	L	Tugun
-tzo				I	L	Venustiano Carranza Tzotzil
-tzs				I	L	San Andrés Larrainzar Tzotzil
-tzt				I	L	Western Tzutujil
-tzu				I	L	Huixtán Tzotzil
+tzo				I	L	Tzotzil
 tzx				I	L	Tabriak
-tzz				I	L	Zinacantán Tzotzil
 uam				I	E	Uamué
 uan				I	L	Kuan
 uar				I	L	Tairuma
 uba				I	L	Ubang
 ubi				I	L	Ubi
-ubm				I	L	Upper Baram Kenyah
+ubl				I	L	Buhi'non Bikol
 ubr				I	L	Ubir
 ubu				I	L	Umbu-Ungu
 uby				I	E	Ubykh
@@ -6642,7 +6638,7 @@ udu				I	L	Uduk
 ues				I	L	Kioko
 ufi				I	L	Ufim
 uga	uga	uga		I	A	Ugaritic
-ugb				I	L	Kuku-Ugbanh
+ugb				I	E	Kuku-Ugbanh
 uge				I	L	Ughele
 ugn				I	L	Ugandan Sign Language
 ugo				I	L	Ugong
@@ -6672,16 +6668,19 @@ ulk				I	L	Meriam
 ull				I	L	Ullatan
 ulm				I	L	Ulumanda'
 uln				I	L	Unserdeutsch
+ulu				I	L	Uma' Lung
+ulw				I	L	Ulwa
 uma				I	L	Umatilla
 umb	umb	umb		I	L	Umbundu
 umc				I	A	Marrucinian
-umd				I	L	Umbindhamu
-umg				I	L	Umbuygamu
+umd				I	E	Umbindhamu
+umg				I	E	Umbuygamu
 umi				I	L	Ukit
 umm				I	L	Umon
+umn				I	L	Makyan Naga
 umo				I	E	Umotína
 ump				I	L	Umpila
-umr				I	L	Umbugarla
+umr				I	E	Umbugarla
 ums				I	L	Pendau
 umu				I	L	Munsee
 una				I	L	North Watut
@@ -6691,16 +6690,18 @@ ung				I	L	Ngarinyin
 unk				I	L	Enawené-Nawé
 unm				I	E	Unami
 unp				I	L	Worora
+unr				I	L	Mundari
+unx				I	L	Munda
 unz				I	L	Unde Kaili
 uok				I	L	Uokha
 upi				I	L	Umeda
 upv				I	L	Uripiv-Wala-Rano-Atchin
 ura				I	L	Urarina
 urb				I	L	Urubú-Kaapor
-urc				I	L	Urningangg
+urc				I	E	Urningangg
 urd	urd	urd	ur	I	L	Urdu
 ure				I	L	Uru
-urf				I	L	Uradhi
+urf				I	E	Uradhi
 urg				I	L	Urigina
 urh				I	L	Urhobo
 uri				I	L	Urim
@@ -6730,7 +6731,7 @@ utp				I	L	Amba (Solomon Islands)
 utr				I	L	Etulo
 utu				I	L	Utu
 uum				I	L	Urum
-uun				I	E	Kulon-Pazeh
+uun				I	L	Kulon-Pazeh
 uur				I	L	Ura (Vanuatu)
 uuu				I	L	U
 uve				I	L	West Uvean
@@ -6759,6 +6760,7 @@ vau				I	L	Vanuma
 vav				I	L	Varli
 vay				I	L	Wayu
 vbb				I	L	Southeast Babar
+vbk				I	L	Southwestern Bontok
 vec				I	L	Venetian
 ved				I	L	Veddah
 vel				I	L	Veluws
@@ -6789,48 +6791,49 @@ vko				I	L	Kodeoha
 vkp				I	L	Korlai Creole Portuguese
 vkt				I	L	Tenggarong Kutai Malay
 vku				I	L	Kurrama
-vky				I	L	Kayu Agung
 vlp				I	L	Valpei
-vlr				I	L	Vatrata
 vls				I	L	Vlaams
 vma				I	L	Martuyhunira
-vmb				I	L	Mbabaram
+vmb				I	E	Mbabaram
 vmc				I	L	Juxtlahuaca Mixtec
 vmd				I	L	Mudu Koraga
 vme				I	L	East Masela
 vmf				I	L	Mainfränkisch
 vmg				I	L	Minigir
 vmh				I	L	Maraghei
-vmi				I	L	Miwa
+vmi				I	E	Miwa
 vmj				I	L	Ixtayutla Mixtec
 vmk				I	L	Makhuwa-Shirima
 vml				I	E	Malgana
 vmm				I	L	Mitlatongo Mixtec
-vmo				I	L	Muko-Muko
 vmp				I	L	Soyaltepec Mazatec
 vmq				I	L	Soyaltepec Mixtec
 vmr				I	L	Marenje
 vms				I	E	Moksela
-vmu				I	L	Muluridyi
+vmu				I	E	Muluridyi
 vmv				I	E	Valley Maidu
 vmw				I	L	Makhuwa
 vmx				I	L	Tamazola Mixtec
 vmy				I	L	Ayautla Mazatec
 vmz				I	L	Mazatlán Mazatec
-vnk				I	E	Vano
+vnk				I	L	Vano
 vnm				I	L	Vinmavis
 vnp				I	L	Vunapu
 vol	vol	vol	vo	I	C	Volapük
 vor				I	L	Voro
 vot	vot	vot		I	L	Votic
+vra				I	L	Vera'a
+vro				I	L	Võro
 vrs				I	L	Varisi
 vrt				I	L	Burmbar
 vsi				I	L	Moldova Sign Language
 vsl				I	L	Venezuelan Sign Language
 vsv				I	L	Valencian Sign Language
+vto				I	L	Vitou
 vum				I	L	Vumbu
 vun				I	L	Vunjo
 vut				I	L	Vute
+vwa				I	L	Awa (China)
 waa				I	L	Walla Walla
 wab				I	L	Wab
 wac				I	L	Wasco-Wishram
@@ -6841,7 +6844,7 @@ wag				I	L	Wa'ema
 wah				I	L	Watubela
 wai				I	L	Wares
 waj				I	L	Waffa
-wal	wal	wal		I	L	Walamo
+wal	wal	wal		I	L	Wolaytta
 wam				I	E	Wampanoag
 wan				I	L	Wan
 wao				I	E	Wappo
@@ -6861,7 +6864,7 @@ wbb				I	L	Wabo
 wbe				I	L	Waritai
 wbf				I	L	Wara
 wbh				I	L	Wanda
-wbi				I	L	Wanji
+wbi				I	L	Vwanji
 wbj				I	L	Alagwa
 wbk				I	L	Waigali
 wbl				I	L	Wakhi
@@ -6877,7 +6880,7 @@ wci				I	L	Waci Gbe
 wdd				I	L	Wandji
 wdg				I	L	Wadaginam
 wdj				I	L	Wadjiginy
-wdu				I	L	Wadjigu
+wdu				I	E	Wadjigu
 wea				I	L	Wewaw
 wec				I	L	Wè Western
 wed				I	L	Wedau
@@ -6892,11 +6895,11 @@ wet				I	L	Perai
 weu				I	L	Welaung
 wew				I	L	Wejewa
 wfg				I	L	Yafi
-wga				I	L	Wagaya
-wgg				I	L	Wangganguru
+wga				I	E	Wagaya
+wgb				I	L	Wagawaga
+wgg				I	E	Wangganguru
 wgi				I	L	Wahgi
 wgo				I	L	Waigeo
-wgw				I	L	Wagawaga
 wgy				I	L	Warrgamay
 wha				I	L	Manusela
 whg				I	L	North Wahgi
@@ -6904,14 +6907,14 @@ whk				I	L	Wahau Kenyah
 whu				I	L	Wahau Kayan
 wib				I	L	Southern Toussian
 wic				I	L	Wichita
-wie				I	L	Wik-Epa
-wif				I	L	Wik-Keyangan
+wie				I	E	Wik-Epa
+wif				I	E	Wik-Keyangan
 wig				I	L	Wik-Ngathana
 wih				I	L	Wik-Me'anha
 wii				I	L	Minidien
 wij				I	L	Wik-Iiyanh
 wik				I	L	Wikalkan
-wil				I	L	Wilawila
+wil				I	E	Wilawila
 wim				I	L	Wik-Mungkan
 win				I	L	Ho-Chunk
 wir				I	E	Wiraféd
@@ -6927,9 +6930,10 @@ wkb				I	L	Kumbaran
 wkd				I	L	Wakde
 wkl				I	L	Kalanadi
 wku				I	L	Kunduvadi
-wkw				I	L	Wakawaka
+wkw				I	E	Wakawaka
 wla				I	L	Walio
 wlc				I	L	Mwali Comorian
+wle				I	L	Wolane
 wlg				I	L	Kunbarlang
 wli				I	L	Waioli
 wlk				I	E	Wailaki
@@ -6947,15 +6951,17 @@ wly				I	E	Waling
 wma				I	E	Mawa (Nigeria)
 wmb				I	L	Wambaya
 wmc				I	L	Wamas
+wmd				I	L	Mamaindé
 wme				I	L	Wambule
 wmh				I	L	Waima'a
-wmi				I	L	Wamin
+wmi				I	E	Wamin
 wmm				I	L	Maiwa (Indonesia)
 wmn				I	E	Waamwang
 wmo				I	L	Wom (Papua New Guinea)
 wms				I	L	Wambon
 wmt				I	L	Walmajarri
 wmw				I	L	Mwani
+wmx				I	L	Womo
 wnb				I	L	Wanambre
 wnc				I	L	Wantoat
 wnd				I	E	Wandarang
@@ -6963,7 +6969,7 @@ wne				I	L	Waneci
 wng				I	L	Wanggom
 wni				I	L	Ndzwani Comorian
 wnk				I	L	Wanukaka
-wnm				I	L	Wanggamala
+wnm				I	E	Wanggamala
 wno				I	L	Wano
 wnp				I	L	Wanap
 wnu				I	L	Usan
@@ -6986,11 +6992,10 @@ wow				I	L	Wawonii
 woy				I	E	Weyto
 wpc				I	L	Maco
 wra				I	L	Warapu
-wrb				I	L	Warluwara
+wrb				I	E	Warluwara
 wrd				I	L	Warduji
-wre				I	L	Ware
-wrg				I	L	Warungu
-wrh				I	L	Wiradhuri
+wrg				I	E	Warungu
+wrh				I	E	Wiradhuri
 wri				I	E	Wariyangga
 wrl				I	L	Warlmanpa
 wrm				I	L	Warumungu
@@ -7003,14 +7008,14 @@ wrv				I	L	Waruna
 wrw				I	E	Gugu Warra
 wrx				I	L	Wae Rana
 wry				I	L	Merwari
-wrz				I	L	Waray (Australia)
+wrz				I	E	Waray (Australia)
 wsa				I	L	Warembori
 wsi				I	L	Wusi
 wsk				I	L	Waskia
 wsr				I	L	Owenia
 wss				I	L	Wasa
 wsu				I	E	Wasu
-wsv				I	L	Wotapuri-Katarqalai
+wsv				I	E	Wotapuri-Katarqalai
 wtf				I	L	Dumpu
 wti				I	L	Berta
 wtk				I	L	Watakataui
@@ -7031,10 +7036,10 @@ wux				I	L	Wulna
 wuy				I	L	Wauyai
 wwa				I	L	Waama
 wwo				I	L	Wetamut
-wwr				I	L	Warrwa
+wwr				I	E	Warrwa
 www				I	L	Wawa
 wxa				I	L	Waxianghua
-wya				I	E	Wyandot
+wya				I	L	Wyandot
 wyb				I	L	Wangaaybuwan-Ngiyambaa
 wym				I	L	Wymysorys
 wyr				I	L	Wayoró
@@ -7045,7 +7050,6 @@ xac				I	L	Kachari
 xad				I	E	Adai
 xae				I	A	Aequian
 xag				I	E	Aghwan
-xah				I	L	Kahayan
 xai				I	E	Kaimbé
 xal	xal	xal		I	L	Kalmyk
 xam				I	E	/Xam
@@ -7061,13 +7065,15 @@ xav				I	L	Xavánte
 xaw				I	L	Kawaiisu
 xay				I	L	Kayan Mahakam
 xba				I	E	Kamba (Brazil)
+xbb				I	E	Lower Burdekin
 xbc				I	A	Bactrian
 xbi				I	L	Kombio
 xbm				I	H	Middle Breton
+xbn				I	E	Kenaboi
 xbo				I	E	Bolgarian
 xbr				I	L	Kambera
 xbw				I	E	Kambiwá
-xbx				I	L	Kabixí
+xbx				I	E	Kabixí
 xcb				I	E	Cumbric
 xcc				I	A	Camunic
 xce				I	A	Celtiberian
@@ -7120,7 +7126,7 @@ xir				I	E	Xiriâna
 xiv				I	A	Indus Valley Language
 xiy				I	L	Xipaya
 xka				I	L	Kalkoti
-xkb				I	L	Manigri-Kambolé Ede Nago
+xkb				I	L	Northern Nago
 xkc				I	L	Kho'ini
 xkd				I	L	Mendalam Kayan
 xke				I	L	Kereho
@@ -7130,8 +7136,7 @@ xkh				I	L	Karahawyana
 xki				I	L	Kenyan Sign Language
 xkj				I	L	Kajali
 xkk				I	L	Kaco'
-xkl				I	L	Kelinyau Kenyah
-xkm				I	L	Mahakam Kenyah
+xkl				I	L	Mainstream Kenyah
 xkn				I	L	Kayan River Kayan
 xko				I	L	Kiorr
 xkp				I	L	Kabatei
@@ -7143,7 +7148,7 @@ xku				I	L	Kaamba
 xkv				I	L	Kgalagadi
 xkw				I	L	Kembra
 xkx				I	L	Karore
-xky				I	L	Western Kenyah
+xky				I	L	Uma' Lasan
 xkz				I	L	Kurtokha
 xla				I	L	Kamula
 xlb				I	E	Loup B
@@ -7172,12 +7177,12 @@ xml				I	L	Malaysian Sign Language
 xmm				I	L	Manado Malay
 xmn				I	H	Manichaean Middle Persian
 xmo				I	L	Morerebi
-xmp				I	L	Kuku-Mu'inh
-xmq				I	L	Kuku-Mangk
+xmp				I	E	Kuku-Mu'inh
+xmq				I	E	Kuku-Mangk
 xmr				I	A	Meroitic
 xms				I	L	Moroccan Sign Language
 xmt				I	L	Matbat
-xmu				I	L	Kamu
+xmu				I	E	Kamu
 xmv				I	L	Antankarana Malagasy
 xmw				I	L	Tsimihety Malagasy
 xmx				I	L	Maden
@@ -7191,7 +7196,8 @@ xnn				I	L	Northern Kankanay
 xno				I	H	Anglo-Norman
 xnr				I	L	Kangri
 xns				I	L	Kanashi
-xoc				I	L	O'chi'chi'
+xnt				I	E	Narragansett
+xoc				I	E	O'chi'chi'
 xod				I	L	Kokoda
 xog				I	L	Soga
 xoi				I	L	Kominimung
@@ -7211,6 +7217,7 @@ xpm				I	E	Pumpokol
 xpn				I	E	Kapinawá
 xpo				I	E	Pochutec
 xpp				I	E	Puyo-Paekche
+xpq				I	E	Mohegan-Pequot
 xpr				I	A	Parthian
 xps				I	E	Pisidian
 xpu				I	A	Punic
@@ -7235,7 +7242,6 @@ xse				I	L	Sempan
 xsh				I	L	Shamang
 xsi				I	L	Sio
 xsj				I	L	Subi
-xsk				I	A	Sakan
 xsl				I	L	South Slavey
 xsm				I	L	Kasem
 xsn				I	L	Sanga (Nigeria)
@@ -7244,7 +7250,6 @@ xsp				I	L	Silopi
 xsq				I	L	Makhuwa-Saka
 xsr				I	L	Sherpa
 xss				I	E	Assan
-xst				I	L	Silt'e
 xsu				I	L	Sanumá
 xsv				I	E	Sudovian
 xsy				I	L	Saisiyat
@@ -7266,18 +7271,18 @@ xtr				I	A	Early Tripuri
 xts				I	L	Sindihui Mixtec
 xtt				I	L	Tacahua Mixtec
 xtu				I	L	Cuyamecalco Mixtec
+xtw				I	L	Tawandê
 xty				I	L	Yoloxochitl Mixtec
 xtz				I	E	Tasmanian
 xua				I	L	Alu Kurumba
 xub				I	L	Betta Kurumba
-xuf				I	L	Kunfal
 xug				I	L	Kunigami
 xuj				I	L	Jennu Kurumba
 xum				I	A	Umbrian
 xuo				I	L	Kuo
 xup				I	E	Upper Umpqua
 xur				I	A	Urartian
-xut				I	L	Kuthant
+xut				I	E	Kuthant
 xuu				I	L	Kxoe
 xve				I	A	Venetic
 xvi				I	L	Kamviri
@@ -7291,7 +7296,11 @@ xwg				I	L	Kwegu
 xwl				I	L	Western Xwla Gbe
 xwo				I	E	Written Oirat
 xwr				I	L	Kwerba Mamberamo
+xxb				I	E	Boro (Ghana)
 xxk				I	L	Ke'o
+xxr				I	E	Koropó
+xxt				I	E	Tambora
+xyl				I	E	Yalakalore
 xzh				I	A	Zhang-Zhung
 xzm				I	E	Zemgalian
 xzp				I	H	Ancient Zapotec
@@ -7305,9 +7314,10 @@ yag				I	L	Yámana
 yah				I	L	Yazgulyam
 yai				I	L	Yagnobi
 yaj				I	L	Banda-Yangere
-yak				I	L	Yakima
+yak				I	L	Yakama
 yal				I	L	Yalunka
 yam				I	L	Yamba
+yan				I	L	Mayangna
 yao	yao	yao		I	L	Yao
 yap	yap	yap		I	L	Yapese
 yaq				I	L	Yaqui
@@ -7316,7 +7326,7 @@ yas				I	L	Nugunu (Cameroon)
 yat				I	L	Yambeta
 yau				I	L	Yuwana
 yav				I	L	Yangben
-yaw				I	E	Yawalapití
+yaw				I	L	Yawalapití
 yax				I	L	Yauma
 yay				I	L	Agwagwune
 yaz				I	L	Lokaa
@@ -7327,14 +7337,17 @@ ybe				I	L	West Yugur
 ybh				I	L	Yakha
 ybi				I	L	Yamphu
 ybj				I	L	Hasha
+ybk				I	L	Bokha
 ybl				I	L	Yukuben
 ybm				I	L	Yaben
 ybn				I	E	Yabaâna
 ybo				I	L	Yabong
 ybx				I	L	Yawiyo
 yby				I	L	Yaweyuha
-ycl				I	L	Central Yi
+ych				I	L	Chesu
+ycl				I	L	Lolopo
 ycn				I	L	Yucuna
+ycp				I	L	Chepya
 ydd				I	L	Eastern Yiddish
 yde				I	L	Yangum Dey
 ydg				I	L	Yidgha
@@ -7355,65 +7368,78 @@ yev				I	L	Yapunda
 yey				I	L	Yeyi
 ygl				I	L	Yangum Gel
 ygm				I	L	Yagomi
+ygp				I	L	Gepo
 ygr				I	L	Yagaria
 ygw				I	L	Yagwoia
+yha				I	L	Baha Buyang
 yhd				I	L	Judeo-Iraqi Arabic
+yhl				I	L	Hlepho Phowa
 yia				I	L	Yinggarda
 yid	yid	yid	yi	M	L	Yiddish
-yif				I	L	Ache Yi
-yig				I	L	Guizhou Yi
+yif				I	L	Ache
+yig				I	L	Wusa Nasu
 yih				I	L	Western Yiddish
 yii				I	L	Yidiny
 yij				I	L	Yindjibarndi
-yik				I	L	Xishan Lalu Yi
-yil				I	L	Yindjilandji
+yik				I	L	Dongshanba Lalo
+yil				I	E	Yindjilandji
 yim				I	L	Yimchungru Naga
 yin				I	L	Yinchia
-yio				I	L	Dayao Yi
-yip				I	L	Poluo Yi
-yiq				I	L	Miqie Yi
+yip				I	L	Pholo
+yiq				I	L	Miqie
 yir				I	L	North Awyu
 yis				I	L	Yis
-yit				I	L	Eastern Lalu Yi
-yiu				I	L	Awu Yi
-yiv				I	L	Eshan-Xinping Yi
+yit				I	L	Eastern Lalu
+yiu				I	L	Awu
+yiv				I	L	Northern Nisu
 yix				I	L	Axi Yi
 yiy				I	L	Yir Yoront
-yiz				I	L	Azhe Yi
+yiz				I	L	Azhe
 yka				I	L	Yakan
 ykg				I	L	Northern Yukaghir
 yki				I	L	Yoke
 ykk				I	L	Yakaikeke
-ykm				I	L	Yakamul
+ykl				I	L	Khlula
+ykm				I	L	Kap
 yko				I	L	Yasa
 ykr				I	L	Yekora
+ykt				I	L	Kathu
 yky				I	L	Yakoma
 yla				I	L	Yaul
+ylb				I	L	Yaleba
 yle				I	L	Yele
 ylg				I	L	Yelogu
 yli				I	L	Angguruk Yali
 yll				I	L	Yil
-ylm				I	L	Limi Yi
+ylm				I	L	Limi
+yln				I	L	Langnian Buyang
 ylo				I	L	Naluo Yi
 ylr				I	E	Yalarnnga
 ylu				I	L	Aribwaung
 yly				I	L	Nyâlayu
 yma				I	L	Yamphe
 ymb				I	L	Yambes
+ymc				I	L	Southern Muji
+ymd				I	L	Muda
 yme				I	E	Yameo
 ymg				I	L	Yamongeri
-ymh				I	L	Mili Yi
-ymj				I	L	Muji Yi
+ymh				I	L	Mili
+ymi				I	L	Moji
 ymk				I	L	Makwe
 yml				I	L	Iamalele
 ymm				I	L	Maay
 ymn				I	L	Yamna
 ymo				I	L	Yangum Mon
 ymp				I	L	Yamap
+ymq				I	L	Qila Muji
 ymr				I	L	Malasar
 yms				I	A	Mysian
 ymt				I	E	Mator-Taygi-Karagas
-ynd				I	L	Yandruwandha
+ymx				I	L	Northern Muji
+ymz				I	L	Muzi
+yna				I	L	Aluo
+ynd				I	E	Yandruwandha
+yne				I	L	Lang'e
 yng				I	L	Yango
 ynh				I	L	Yangho
 ynk				I	L	Naukan Yupik
@@ -7426,14 +7452,22 @@ yob				I	E	Yoba
 yog				I	L	Yogad
 yoi				I	L	Yonaguni
 yok				I	L	Yokuts
+yol				I	E	Yola
 yom				I	L	Yombe
 yon				I	L	Yonggom
 yor	yor	yor	yo	I	L	Yoruba
 yos				I	L	Yos
 yox				I	L	Yoron
 yoy				I	L	Yoy
-ypl				I	L	Pula Yi
-ypw				I	L	Puwa Yi
+ypa				I	L	Phala
+ypb				I	L	Labo Phowa
+ypg				I	L	Phola
+yph				I	L	Phupha
+ypm				I	L	Phuma
+ypn				I	L	Ani Phowa
+ypo				I	L	Alo Phola
+ypp				I	L	Phupa
+ypz				I	L	Phuza
 yra				I	L	Yerakai
 yrb				I	L	Yareba
 yre				I	L	Yaouré
@@ -7444,13 +7478,19 @@ yrn				I	L	Yerong
 yrs				I	L	Yarsun
 yrw				I	L	Yarawata
 ysc				I	E	Yassic
+ysd				I	L	Samatao
 ysl				I	L	Yugoslavian Sign Language
-ysn				I	L	Sani Yi
-yso				I	L	Southeastern Lolo Yi
-ysp				I	L	Southern Lolopho Yi
+ysn				I	L	Sani
+yso				I	L	Nisi (China)
+ysp				I	L	Southern Lolopo
 ysr				I	E	Sirenik Yupik
 yss				I	L	Yessan-Mayo
-yua				I	L	Yucatán Maya
+ysy				I	L	Sanie
+yta				I	L	Talu
+ytl				I	L	Tanglang
+ytp				I	L	Thopho
+ytw				I	L	Yout Wam
+yua				I	L	Yucateco
 yub				I	E	Yugambal
 yuc				I	L	Yuchi
 yud				I	L	Judeo-Tripolitanian Arabic
@@ -7466,7 +7506,6 @@ yun				I	L	Bena (Nigeria)
 yup				I	L	Yukpa
 yuq				I	L	Yuqui
 yur				I	L	Yurok
-yus				I	L	Chan Santa Cruz Maya
 yut				I	L	Yopno
 yuu				I	L	Yugh
 yuw				I	L	Yau (Morobe Province)
@@ -7476,16 +7515,17 @@ yuz				I	L	Yuracare
 yva				I	L	Yawa
 yvt				I	E	Yavitero
 ywa				I	L	Kalou
-ywl				I	L	Western Lalu Yi
-ywm				I	L	Wumeng Yi
+ywl				I	L	Western Lalu
 ywn				I	L	Yawanawa
 ywq				I	L	Wuding-Luquan Yi
 ywr				I	L	Yawuru
-ywt				I	L	Western Yi
-ywu				I	L	Wusa Yi
-yww				I	L	Yawarawarga
-yym				I	L	Yuanjiang-Mojiang Yi
+ywt				I	L	Xishanba Lalo
+ywu				I	L	Wumeng Nasu
+yww				I	E	Yawarawarga
 yyu				I	L	Yau (Sandaun Province)
+yyz				I	L	Ayizi
+yzg				I	L	E'ma Buyang
+yzk				I	L	Zokhuo
 zaa				I	L	Sierra de Juárez Zapotec
 zab				I	L	San Juan Guelavía Zapotec
 zac				I	L	Ocotlán Zapotec
@@ -7511,12 +7551,22 @@ zaw				I	L	Mitla Zapotec
 zax				I	L	Xadani Zapotec
 zay				I	L	Zayse-Zergulla
 zaz				I	L	Zari
+zbc				I	L	Central Berawan
+zbe				I	L	East Berawan
+zbl	zbl	zbl		I	C	Blissymbols
+zbt				I	L	Batui
+zbw				I	L	West Berawan
 zca				I	L	Coatecas Altas Zapotec
+zch				I	L	Central Hongshuihe Zhuang
 zdj				I	L	Ngazidja Comorian
 zea				I	L	Zeeuws
 zeg				I	L	Zenag
+zeh				I	L	Eastern Hongshuihe Zhuang
 zen	zen	zen		I	L	Zenaga
 zga				I	L	Kinga
+zgb				I	L	Guibei Zhuang
+zgm				I	L	Minz Zhuang
+zgn				I	L	Guibian Zhuang
 zgr				I	L	Magori
 zha	zha	zha	za	M	L	Zhuang
 zhb				I	L	Zhaba
@@ -7530,7 +7580,7 @@ zib				I	L	Zimbabwe Sign Language
 zik				I	L	Zimakani
 zim				I	L	Mesme
 zin				I	L	Zinza
-zir				I	L	Ziriya
+zir				I	E	Ziriya
 ziw				I	L	Zigula
 ziz				I	L	Zizilivakan
 zka				I	L	Kaimbulawa
@@ -7545,17 +7595,21 @@ zkt				I	E	Kitan
 zku				I	E	Kaurna
 zkv				I	E	Krevinian
 zkz				I	E	Khazar
+zlj				I	L	Liujiang Zhuang
+zlm				I	L	Malay (individual language)
+zln				I	L	Lianshan Zhuang
+zlq				I	L	Liuqian Zhuang
 zma				I	L	Manda (Australia)
 zmb				I	L	Zimba
-zmc				I	L	Margany
+zmc				I	E	Margany
 zmd				I	L	Maridan
-zme				I	L	Mangerr
+zme				I	E	Mangerr
 zmf				I	L	Mfinu
 zmg				I	L	Marti Ke
-zmh				I	L	Makolkol
+zmh				I	E	Makolkol
 zmi				I	L	Negeri Sembilan Malay
 zmj				I	L	Maridjabin
-zmk				I	L	Mandandanyi
+zmk				I	E	Mandandanyi
 zml				I	L	Madngele
 zmm				I	L	Marimanindji
 zmn				I	L	Mbangwe
@@ -7565,8 +7619,8 @@ zmq				I	L	Mituku
 zmr				I	L	Maranunggu
 zms				I	L	Mbesa
 zmt				I	L	Maringarr
-zmu				I	L	Muruwari
-zmv				I	L	Mbariman-Gudhinma
+zmu				I	E	Muruwari
+zmv				I	E	Mbariman-Gudhinma
 zmw				I	L	Mbo (Democratic Republic of Congo)
 zmx				I	L	Bomitaba
 zmy				I	L	Mariyedi
@@ -7609,15 +7663,19 @@ zpw				I	L	Zaniza Zapotec
 zpx				I	L	San Baltazar Loxicha Zapotec
 zpy				I	L	Mazaltepec Zapotec
 zpz				I	L	Texmelucan Zapotec
+zqe				I	L	Qiubei Zhuang
 zra				I	E	Kara (Korea)
 zrg				I	L	Mirgan
-zrn				I	L	Zirenkel
+zrn				I	L	Zerenkel
 zro				I	L	Záparo
 zrp				I	E	Zarphatic
 zrs				I	L	Mairasi
+zsa				I	L	Sarasira
 zsk				I	A	Kaskean
 zsl				I	L	Zambian Sign Language
+zsm				I	L	Standard Malay
 zsr				I	L	Southern Rincon Zapotec
+zsu				I	L	Sukurum
 zte				I	L	Elotepec Zapotec
 ztg				I	L	Xanaguía Zapotec
 ztl				I	L	Lapaguía-Guivini Zapotec
@@ -7638,7 +7696,9 @@ zun	zun	zun		I	L	Zuni
 zuy				I	L	Zumaya
 zwa				I	L	Zay
 zxx	zxx	zxx		S	S	No linguistic content
+zyb				I	L	Yongbei Zhuang
 zyg				I	L	Yang Zhuang
+zyj				I	L	Youjiang Zhuang
 zyn				I	L	Yongnan Zhuang
 zyp				I	L	Zyphe
 zza	zza	zza		M	L	Zaza
