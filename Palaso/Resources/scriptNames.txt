@@ -1,4 +1,4 @@
-# [iso15924-utf8-20100723-corr.txt]
+# [iso15294-utf8-20100723-corr.txt]
 # ISO 15924 - Codes for the representation of names of scripts
 #             Codes pour la représentation des noms d’écritures
 # Format:
