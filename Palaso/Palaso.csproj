@@ -88,10 +88,6 @@
 	<None Include="..\lib\net2.0\icuuc40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
-	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Configuration" />
 	<Reference Include="System.Core">
