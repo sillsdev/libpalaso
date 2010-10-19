@@ -10,33 +10,22 @@ namespace Palaso.DictionaryServices.Processors
 		{
 
 			if (!entry1.LexicalForm.CanBeUnifiedWith(entry2.LexicalForm))
+			{
+				progress.WriteMessageWithColor("gray","Attempting to merge entries, but could not because their Lexical Forms clash in some writing system.");
 				return false;
+			}
 
-			if (!SenseMerger.TryMergeProperties(entry1, entry2))
+			if (!SenseMerger.TryMergeProperties(entry1, entry2, "entries", progress))
 				return false;
 
 			// at this point, we're committed to doing the merge
 
 			entry1.LexicalForm.MergeIn(entry2.LexicalForm);
 
-			foreach (var property in entry2.Properties)
-			{
-				//absorb it only if we don't have a matching one
-				if (entry1.Properties.Any(k => k.Key == property.Key))
-				{
-					progress.WriteWarning("{0}: Clashing values of {1}, merging anyways", entry1.GetSimpleFormForLogging(), property.Key);
-				}
-				else
-				{
-					entry1.Properties.Add(property);
-				}
-			}
-
-
 			var senses = entry2.Senses.ToArray();
 			foreach (var sense in senses)
 			{
-				MergeOrAddSense(entry1, sense);
+				MergeOrAddSense(entry1, sense,progress);
 			}
 
 			if (entry2.ModificationTime > entry1.ModificationTime)
@@ -47,7 +36,7 @@ namespace Palaso.DictionaryServices.Processors
 			return true;
 		}
 
-		private static void MergeOrAddSense(LexEntry targetEntry, LexSense incomingSense)
+		private static void MergeOrAddSense(LexEntry targetEntry, LexSense incomingSense, IProgress progress)
 		{
 			if (targetEntry.Senses.Count == 0)
 			{
@@ -58,7 +47,7 @@ namespace Palaso.DictionaryServices.Processors
 				if (targetEntry.Senses.Count == 1)
 				{
 					var targetSense = targetEntry.Senses[0];
-					if (SenseMerger.TryMergeSenseWithSomeExistingSense(targetSense, incomingSense))
+					if (SenseMerger.TryMergeSenseWithSomeExistingSense(targetSense, incomingSense,progress))
 					{
 						//it was merged in
 						return;

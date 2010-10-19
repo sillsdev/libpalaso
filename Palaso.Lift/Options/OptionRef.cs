@@ -186,5 +186,10 @@ namespace Palaso.Lift.Options
 			int order = Key.CompareTo(other.Key);
 			return order;
 		}
+
+		public override string ToString()
+		{
+			return Value;
+		}
 	}
 }

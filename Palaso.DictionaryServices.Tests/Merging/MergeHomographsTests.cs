@@ -182,6 +182,35 @@ namespace Palaso.DictionaryServices.Tests.Merging
 		}
 
 		[Test]
+		public void Run_SensesWithSamePartOfSpeech_Merged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='etr'><text>foo</text></form>
+					</lexical-unit>
+					<sense>
+						<gloss lang='en'><text>blah</text></gloss>
+						  <grammatical-info value='Nome'></grammatical-info>
+					</sense>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='etr'><text>foo</text></form>
+					</lexical-unit>
+				   <sense>
+						<gloss lang='en'><text>blah</text></gloss>
+						  <grammatical-info value='Nome'></grammatical-info>
+					</sense>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense", 1);
+				});
+		}
+		[Test]
 		public void Run_MergableGlosses_MergesGlosses()
 		{
 			MergeTwoAndTest(

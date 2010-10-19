@@ -37,6 +37,7 @@
 			this._runDiagnostics = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._reportProblemLink = new System.Windows.Forms.LinkLabel();
+			this._chooseFontMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			//
@@ -77,7 +78,7 @@
 			this.menuStrip1.Location = new System.Drawing.Point(-2, 155);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
-			this.menuStrip1.Size = new System.Drawing.Size(30, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(122, 24);
 			this.menuStrip1.TabIndex = 4;
 			this.menuStrip1.Text = "menuStrip1";
 			this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
@@ -87,8 +88,9 @@
 			this._menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this._showDetailsMenu,
 			this.copyToClipboardToolStripMenuItem,
-			this._runDiagnostics});
-			this._menu.Image = LogBoxResources.menuButton;
+			this._runDiagnostics,
+			this._chooseFontMenuItem});
+			this._menu.Image = global::Palaso.Progress.LogBox.LogBoxResources.menuButton;
 			this._menu.Name = "_menu";
 			this._menu.Size = new System.Drawing.Size(28, 20);
 			//
@@ -113,7 +115,7 @@
 			this._runDiagnostics.Size = new System.Drawing.Size(171, 22);
 			this._runDiagnostics.Text = "Run diagnostics";
 			this._runDiagnostics.Click += new System.EventHandler(this.OnRunDiagnosticsClick);
-			//
+			  //
 			// panel1
 			//
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -140,6 +142,13 @@
 			this._reportProblemLink.Text = "Report this problem to the developers";
 			this._reportProblemLink.Visible = false;
 			this._reportProblemLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._reportProblemLink_LinkClicked);
+			//
+			// _fontMenu
+			//
+			this._chooseFontMenuItem.Name = "_chooseFontMenuItem";
+			this._chooseFontMenuItem.Size = new System.Drawing.Size(171, 22);
+			this._chooseFontMenuItem.Text = "Choose Font...";
+			this._chooseFontMenuItem.Click += new System.EventHandler(this.OnChooseFontClick);
 			//
 			// LogBox
 			//
@@ -172,5 +181,6 @@
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.LinkLabel _reportProblemLink;
 		private System.Windows.Forms.ToolStripMenuItem _runDiagnostics;
+		private System.Windows.Forms.ToolStripMenuItem _chooseFontMenuItem;
 	}
 }

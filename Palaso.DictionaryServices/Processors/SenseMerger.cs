@@ -3,43 +3,33 @@ using System.Linq;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Progress.LogBox;
 
 namespace Palaso.DictionaryServices.Processors
 {
 	public class SenseMerger
 	{
-		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense)
+		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, IProgress progress)
 		{
-			if (!targetSense.Gloss.Empty)
-			{
-				if (!incomingSense.Gloss.Empty && !targetSense.Gloss.CanBeUnifiedWith(incomingSense.Gloss))
-					return false;
-			}
-
-			if (!targetSense.Definition.Empty)
-			{
-				if (!incomingSense.Definition.Empty && !targetSense.Definition.CanBeUnifiedWith(incomingSense.Definition))
-					return false;
-			}
-
 			//can we unify the properites?
-			if (!TryMergeProperties(targetSense, incomingSense))
+			if (!TryMergeProperties(targetSense, incomingSense, "senses", progress))
 			{
 				return false;
 			}
 
-			//at this point, we're committed
+			progress.WriteMessageWithColor("blue", "Merged 2 senses together.");
+
+			//at this point, we're committed);
 
 			foreach (var lexExampleSentence in incomingSense.ExampleSentences)
 			{
 				targetSense.ExampleSentences.Add(lexExampleSentence);
 			}
-			targetSense.Gloss.MergeIn(incomingSense.Gloss);
-			targetSense.Definition.MergeIn(incomingSense.Definition);
+
 			return true;
 		}
 
-		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem)
+		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem, string itemDescriptionForMessage, IProgress progress)
 		{
 			foreach (var incomingProperty in incomingItem.Properties)
 			{
@@ -64,12 +54,21 @@ namespace Palaso.DictionaryServices.Processors
 						continue;
 					}
 
+					if (incomingProperty.Value is OptionRef && targetProperty.Value is OptionRef &&
+						(((OptionRef)incomingProperty.Value).Value == ((OptionRef)targetProperty.Value).Value))
+					{
+						continue;
+					}
+
 					if (targetProperty.Value != incomingProperty.Value)
 					{
+						progress.WriteMessageWithColor("gray","Attempting to merge "+itemDescriptionForMessage+", but could not because of the property '{0}' ('{1}' vs. '{2}')", targetProperty.Key, targetProperty.Value, incomingProperty.Value);
 						return false; //clashing properties
 					}
 				}
 			}
+
+			//at this point, we're committed
 
 			foreach (var pair in incomingItem.Properties)
 			{

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
@@ -10,6 +11,7 @@ namespace Palaso.Progress.LogBox
 	{
 		void WriteStatus(string message, params object[] args);
 		void WriteMessage(string message, params object[] args);
+		void WriteMessageWithColor(string colorName, string message, params object[] args);
 		void WriteWarning(string message, params object[] args);
 		void WriteException(Exception error);
 		void WriteError(string message, params object[] args);
@@ -28,6 +30,11 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteMessage(string message, params object[] args)
 		{
+		}
+
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+
 		}
 
 		public void WriteWarning(string message, params object[] args)
@@ -107,6 +114,14 @@ namespace Palaso.Progress.LogBox
 			foreach (var handler in _progressHandlers)
 			{
 				handler.WriteMessage(message, args);
+			}
+		}
+
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+			 foreach (var handler in _progressHandlers)
+			{
+				handler.WriteMessage(colorName, message, args);
 			}
 		}
 
@@ -202,6 +217,11 @@ namespace Palaso.Progress.LogBox
 		{
 			WriteStatus(message, args);
 
+		}
+
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+			WriteStatus(message, args);
 		}
 
 
@@ -307,6 +327,11 @@ namespace Palaso.Progress.LogBox
 
 		}
 
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+
+		}
+
 		public void WriteWarning(string message, params object[] args)
 		{
 		}
@@ -363,6 +388,11 @@ namespace Palaso.Progress.LogBox
 //            }), _box, indent);
 		}
 
+		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+			WriteMessage(message,args);
+		}
+
 
 		public override void WriteException(Exception error)
 		{
@@ -389,6 +419,11 @@ namespace Palaso.Progress.LogBox
 		{
 			_builder.Append("                          ".Substring(0, indent * 2));
 			_builder.AppendFormat(message+Environment.NewLine, args);
+		}
+
+		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+			WriteMessage(message,args);
 		}
 
 		public string Text
@@ -419,6 +454,12 @@ namespace Palaso.Progress.LogBox
 		{
 			LastStatus = string.Format(message, args);
 		}
+
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+
+		}
+
 		public void WriteWarning(string message, params object[] args)
 		{
 			LastWarning = string.Format(message, args);
@@ -483,6 +524,8 @@ namespace Palaso.Progress.LogBox
 		}
 		public bool CancelRequested { get; set; }
 		public abstract void WriteMessage(string message, params object[] args);
+		public abstract void WriteMessageWithColor(string colorName, string message, params object[] args);
+
 		public bool ErrorEncountered { get; set; }
 
 		public void WriteStatus(string message, params object[] args)

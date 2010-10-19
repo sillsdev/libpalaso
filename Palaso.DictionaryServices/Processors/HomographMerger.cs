@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
@@ -20,6 +21,10 @@ namespace Palaso.DictionaryServices.Processors
 			var ids = new List<RepositoryId>(repo.GetAllItems());
 			for (int i = 0; i < ids.Count; i++)
 			{
+				if(progress.CancelRequested)
+				{
+					throw new OperationCanceledException("User cancelled");
+				}
 				if (alreadyProcessed.Contains(ids[i]))
 					continue;
 				alreadyProcessed.Add(ids[i]);
@@ -29,6 +34,12 @@ namespace Palaso.DictionaryServices.Processors
 
 				//at this point we have entries which match along a single ws axis. We may or may not be able to merge them...
 
+				 var lexicalForm = entry.LexicalForm.GetExactAlternative(writingSystemForMatching.Id);
+				if(matches.Count > 1) //>1 becuase each will match itself
+				{
+					progress.WriteMessageWithColor("gray", "Found {0} homograph(s) for {1}", matches.Count, lexicalForm);
+				}
+				var mergeCount = 0;
 				foreach (RecordToken<LexEntry> incomingMatch in matches)
 				{
 					if (alreadyProcessed.Contains(incomingMatch.Id))
@@ -37,20 +48,26 @@ namespace Palaso.DictionaryServices.Processors
 					alreadyProcessed.Add(incomingMatch.Id);
 					if (EntryMerger.TryMergeEntries(entry, incomingMatch.RealObject, progress))
 					{
-						progress.WriteMessage("Merged two instances of {0}.", entry.GetSimpleFormForLogging());
+						mergeCount++;
 						repo.DeleteItem(incomingMatch.RealObject);
 						repo.SaveItem(entry);
 					}
+				}
+				if (matches.Count > 1)
+				{
+					if (mergeCount == 0)
+					{
+						//progress.WriteMessageWithColor("gray", "Not merged.");
+					}
 					else
 					{
-						progress.WriteMessage("Not merging two instances of {0}.", entry.GetSimpleFormForLogging());
+						progress.WriteMessageWithColor("black", "Merged {0} homographs of {1}.", 1+mergeCount, lexicalForm);
 					}
+					progress.WriteMessage("");//blank line
 				}
+
 			}
-
-
-
-		}
+		 }
 
 		private class Counter
 		{
@@ -65,6 +82,7 @@ namespace Palaso.DictionaryServices.Processors
 
 		public static string GuessPrimarLexicalFormWritingSystem(LiftLexEntryRepository repo, IProgress progress)
 		{
+			progress.WriteMessage("Looking at 1st 50 entries to determine which Writing System to use for matching...");
 			var choices = new Dictionary<string, Counter>();
 
 			var ids = repo.GetAllItems();
@@ -90,6 +108,7 @@ namespace Palaso.DictionaryServices.Processors
 				return null;
 			}
 			var z = choices.OrderByDescending(p => p.Value.count).FirstOrDefault();
+			progress.WriteMessage("Will use '{0}' for matching.", z.Value.Id);
 
 			return z.Value.Id;
 		}

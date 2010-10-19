@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using Palaso.Lift.Options;
 using Palaso.Reporting;
 using Palaso.Text;
@@ -483,6 +484,16 @@ namespace Palaso.Lift
 		{
 			get { return _values; }
 			set { _values = value; }
+		}
+
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+			foreach (var part in Values)
+			{
+				builder.Append(part.ToString() + " ");
+			}
+			return builder.ToString().Trim();
 		}
 	}
 }

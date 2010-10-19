@@ -11,11 +11,25 @@ namespace Palaso.Progress.LogBox
 		public LogBox()
 		{
 			InitializeComponent();
+			SetFont();
+		}
+
+		private void SetFont()
+		{
+			var name = LogBoxSettings.Default.FontName;
+			if(String.IsNullOrEmpty(name))
+				name = SystemFonts.DialogFont.Name;
+			_verboseBox.Font =  _box.Font = new Font(name,LogBoxSettings.Default.FontSize);
 		}
 
 		public void WriteStatus(string message, params object[] args)
 		{
 			WriteMessage(message, args);
+		}
+
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+			Write(Color.FromName(colorName), message, args);
 		}
 
 		public void WriteMessage(string message, params object[] args)
@@ -194,6 +208,27 @@ namespace Palaso.Progress.LogBox
 			{
 				ShowVerbose = true;
 				GetDiagnosticsMethod(this);
+			}
+		}
+
+		//this is important because we may be showing characters which aren't in the standard font
+		private void OnChooseFontClick(object sender, EventArgs e)
+		{
+			using(var dlg = new FontDialog())
+			{
+				dlg.ShowColor = false;
+				dlg.ShowEffects = false;
+				dlg.ShowApply = false;
+				dlg.ShowHelp = false;
+				dlg.Font = _box.Font;
+
+				if(DialogResult.OK == dlg.ShowDialog())
+				{
+					LogBoxSettings.Default.FontName = dlg.Font.Name;
+					LogBoxSettings.Default.FontSize = dlg.Font.Size;
+					LogBoxSettings.Default.Save();
+					SetFont();
+				}
 			}
 		}
 	}
