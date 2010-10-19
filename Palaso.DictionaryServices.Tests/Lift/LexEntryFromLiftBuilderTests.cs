@@ -322,6 +322,22 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.AreEqual("foo", relation.Key);
 		}
 
+
+		[Test]
+		public void MergeInRelation_RelationHasEmbeddedTraits_RelationGetsEmbeddedXmlForLaterRoundTrip()
+		{
+			LexEntry e = MakeSimpleEntry();
+			var xml = @"<relation type='component-lexeme' ref='bodzi_d333f64f-d388-431f-bb2b-7dd9b7f3fe3c'>
+							<trait name='complex-form-type' value='Composto'></trait>
+							<trait name='is-primary' value='true'/>
+						</relation>";
+			_builder.MergeInRelation(e, "component-lexeme", "someId", xml);
+
+			LexRelationCollection collection =
+				   e.GetOrCreateProperty<LexRelationCollection>("component-lexeme");
+			Assert.AreEqual(2, collection.Relations[0].EmbeddedXmlElements.Count);
+		}
+
 		[Test]
 		public void ExampleSourcePreserved()
 		{

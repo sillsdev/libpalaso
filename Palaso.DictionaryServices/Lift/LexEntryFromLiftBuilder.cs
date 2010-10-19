@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using LiftIO.Parsing;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
@@ -445,6 +446,13 @@ namespace Palaso.DictionaryServices.Lift
 			LexRelationCollection collection =
 					extensible.GetOrCreateProperty<LexRelationCollection>(relationFieldId);
 			LexRelation relation = new LexRelation(relationFieldId, targetId, extensible);
+
+			var dom = new XmlDocument();
+			dom.LoadXml(rawXml);
+			foreach (XmlNode child in dom.FirstChild.ChildNodes)
+			{
+				relation.EmbeddedXmlElements.Add(child.OuterXml);
+			}
 			collection.Relations.Add(relation);
 		}
 

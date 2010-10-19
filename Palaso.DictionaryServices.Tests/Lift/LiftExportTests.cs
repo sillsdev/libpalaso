@@ -1374,6 +1374,35 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
+		public void SenseWithRelationWithEmbeddedXml()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+
+				var synonymRelationType = new LexRelationType(
+					"synonym",
+					LexRelationType.Multiplicities.Many,
+					LexRelationType.TargetTypes.Sense
+				);
+
+				var relations = new LexRelationCollection();
+				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+
+				var lexRelation = new LexRelation(synonymRelationType.ID, "one", sense);
+				lexRelation.EmbeddedXmlElements.Add("<trait name='x' value='X'/>");
+				lexRelation.EmbeddedXmlElements.Add("<field id='z'><text>hello</text></field>");
+				relations.Relations.Add(lexRelation);
+
+
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertThatXmlIn.String(session.StringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//sense/relation/trait",1);
+				AssertThatXmlIn.String(session.StringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//sense/relation/field", 1);
+			}
+		}
+
+		[Test]
 		public void WriteToFile()
 		{
 			using (var session = new LiftExportAsFileTestSession())

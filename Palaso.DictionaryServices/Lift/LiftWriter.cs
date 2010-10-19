@@ -426,6 +426,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteAttributeString("type", GetOutputRelationName(relation));
 				Writer.WriteAttributeString("ref", relation.Key);
 				WriteRelationTarget(relation);
+
+				foreach (string rawXml in relation.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}
