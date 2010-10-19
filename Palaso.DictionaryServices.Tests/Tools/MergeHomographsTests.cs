@@ -190,6 +190,72 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				});
 		}
 
+		//<field type='myInfo'><form lang='seh'><text>malambe</text></form></field>
+
+		[Test]
+		public void Run_OneSenseHasTraitConflicts_SenseNotMerged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<sense>
+						<gloss lang='en'><text>blah</text></gloss>
+						<trait name='t1' value='1'></trait>
+					</sense>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+				   <sense>
+						<gloss lang='en'><text>blah</text></gloss>
+						 <trait name='t1' value='2'></trait>
+					</sense>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense", 2);
+				});
+		}
+
+		[Test]
+		public void Run_OneSenseHasTraitsWhichDontConflict_SenseMerged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<sense>
+						<gloss lang='en'><text>blah</text></gloss>
+						<trait name='t1' value='1'></trait>
+						<trait name='t3' value='3'></trait>
+					</sense>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+				   <sense>
+						<gloss lang='en'><text>blah</text></gloss>
+					   <trait name='t1' value='1'></trait>
+						 <trait name='t2' value='2'></trait>
+					</sense>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/sense/trait", 3);
+				});
+		}
+
 		[Test]
 		public void Run_BothHaveOneDefinitionWithSameWS_OnlyOneSenseRemains()
 		{
@@ -254,7 +320,150 @@ namespace Palaso.DictionaryServices.Tests.Tools
 					});
 		}
 
+		[Test]
+		public void Run_HasIncompatibleFieldsAtEntryLevel_NotMerged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
 
+					<field type='Plural'><form lang='seh'><text>xxxx</text></form></field>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					 <field type='Plural'><form lang='seh'><text>yyy</text></form></field>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 2);
+				});
+		}
+
+		[Test]
+		public void Run_HasIncompatibleCitationForms_NotMerged()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<citation>
+						<form lang='seh'><text>xxx</text></form>
+					</citation>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='en'><text>foo</text></form>
+					</lexical-unit>
+					<citation>
+						<form lang='seh'><text>yyy</text></form>
+					</citation>
+					<field type='Plural'><form lang='seh'><text>yyy</text></form></field>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 2);
+				});
+		}
+		[Test]
+		public void Run_ComplexEntryFromSena_NothingLost()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+						<lexical-unit>
+						  <form lang='en'>
+							<text>bandazi</text>
+						  </form>
+						</lexical-unit>
+				</entry>",
+				@"<entry dateCreated='2005-06-23T01:30:30Z' dateModified='2006-09-06T01:12:06Z' GUID2>
+						<lexical-unit>
+						  <form lang='en'>
+							<text>bandazi</text>
+						  </form>
+						</lexical-unit>
+						<trait name='morph-type' value='root'></trait>
+						<field type='Plural'>
+						  <form lang='seh'>
+							<text>abandazi</text>
+						  </form>
+						</field>
+						<relation type='_component-lexeme' ref='bodzi_d333f64f-d388-431f-bb2b-7dd9b7f3fe3c'>
+							<trait name='complex-form-type' value='Composto'></trait>
+							<trait name='is-primary' value='true'/>
+						</relation>
+					  </entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/relation", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/relation/trait[@name='complex-form-type']",1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/relation/trait[@name='is-primary']", 1);
+				});
+		}
+
+		[Test]
+		public void Run_ComplexSenseFromSena_NothingLost()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+						<lexical-unit>
+						  <form lang='en'>
+							<text>bandazi</text>
+						  </form>
+						</lexical-unit>
+						<sense>
+							<gloss lang='en'>
+							<text>servant</text>
+						  </gloss>
+						</sense>
+				</entry>",
+				@"<entry dateCreated='2005-06-23T01:30:30Z' dateModified='2006-09-06T01:12:06Z' GUID2>
+						<lexical-unit>
+						  <form lang='en'>
+							<text>bandazi</text>
+						  </form>
+						</lexical-unit>
+						<sense>
+						  <grammatical-info value='Nome'></grammatical-info>
+						  <gloss lang='en'>
+							<text>servant</text>
+						  </gloss>
+						  <gloss lang='pt'>
+							<text>empregado</text>
+						  </gloss>
+						  <definition>
+							<form lang='en'>
+							  <text>servant</text>
+							</form>
+							<form lang='pt'>
+							  <text>empregado de casa</text>
+							</form>
+						  </definition>
+						  <example source='Moreira:14,26 (mbandazi - sic)'>
+							<note type='reference'>
+							  <form lang='en'>
+								<text>Moreira:14,26 (mbandazi - sic)</text>
+							  </form>
+							</note>
+						  </example>
+						  <trait name='usage-type' value='archaic'></trait>
+						</sense>
+					  </entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/trait[@name='usage-type']", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/example", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/definition", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/grammatical-info", 1);
+				});
+		}
 //        [Test]
 //        public void Run_ClashingMorphType_DoesNotMerge()
 //        {

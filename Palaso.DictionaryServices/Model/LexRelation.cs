@@ -51,6 +51,9 @@ namespace Palaso.DictionaryServices.Model
 							  IReferenceContainer,
 							  IReportEmptiness
 	{
+
+		public List<string> EmbeddedXmlElements = new List<string>();
+
 		//private LexRelationType _type;
 		private string _fieldId;
 		//private PalasoDataObject _target;

@@ -85,7 +85,9 @@
 	<Compile Include="Model\LexRelation.cs" />
 	<Compile Include="Model\LexSense.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="Tools\EntryMerger.cs" />
 	<Compile Include="Tools\MergeHomographs.cs" />
+	<Compile Include="Tools\SenseMerger.cs" />
 	<Compile Include="Tools\Tool.cs" />
 	<Compile Include="Tools\Validator.cs" />
   </ItemGroup>
