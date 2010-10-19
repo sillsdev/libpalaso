@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 
-namespace Palaso.DictionaryServices.Tools
+namespace Palaso.DictionaryServices.Processors
 {
 	public class SenseMerger
 	{

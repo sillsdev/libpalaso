@@ -1,21 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Palaso.DictionaryServices.Model;
 using Palaso.Progress.LogBox;
 
-namespace Palaso.DictionaryServices.Tools
+namespace Palaso.DictionaryServices.Processors
 {
 	public class EntryMerger
 	{
 		public static bool TryMergeEntries(LexEntry entry1, LexEntry entry2, IProgress progress)
 		{
 
+			if (!entry1.LexicalForm.CanBeUnifiedWith(entry2.LexicalForm))
+				return false;
+
 			if (!SenseMerger.TryMergeProperties(entry1, entry2))
 				return false;
 
 			// at this point, we're committed to doing the merge
+
+			entry1.LexicalForm.MergeIn(entry2.LexicalForm);
 
 			foreach (var property in entry2.Properties)
 			{

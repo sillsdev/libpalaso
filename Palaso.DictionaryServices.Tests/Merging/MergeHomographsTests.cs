@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.DictionaryServices.Tools;
+using Palaso.DictionaryServices.Processors;
 using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 
-namespace Palaso.DictionaryServices.Tests.Tools
+namespace Palaso.DictionaryServices.Tests.Merging
 {
 	public class MergeHomographsTests
 	{
@@ -24,6 +21,8 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			_progress = new StringBuilderProgress();
 			_resultDom = new XmlDocument();
 		}
+
+
 
 		[Test]
 		public void Run_NoEntries_HeaderPreserved()
@@ -69,12 +68,12 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			var contents = @"
 				<entry id='foo' GUID1>
 					<lexical-unit>
-						  <form lang='en'><text>hello</text></form>
+						  <form lang='etr'><text>hello</text></form>
 					</lexical-unit>
 				</entry>
 				<entry GUID2>
 					<lexical-unit>
-						  <form lang='en'><text>bye</text></form>
+						  <form lang='etr'><text>bye</text></form>
 					</lexical-unit>
 				</entry>";
 			Run(contents);
@@ -88,12 +87,12 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				</entry>",
 				() =>
@@ -105,12 +104,36 @@ namespace Palaso.DictionaryServices.Tests.Tools
 		}
 
 		[Test]
+		public void Run_MultipleWritingSystemsInLexicalUnit_PicksMoreFrequentOne()
+		{
+			MergeTwoAndTest(
+				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+					<lexical-unit>
+						  <form lang='less'><text>fooLess</text></form>
+						   <form lang='more'><text>fooMore</text></form>
+					</lexical-unit>
+				</entry>",
+				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
+					<lexical-unit>
+						   <form lang='more'><text>fooMore</text></form>
+					</lexical-unit>
+				</entry>",
+				() =>
+				{
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+					AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
+						"//entry/lexical-unit/form", 2);
+				});
+		}
+
+
+		[Test]
 		public void Run_OneHasCitationForm_Merged()
 		{
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<citation>
 						<form lang='seh'><text>suzumira</text></form>
@@ -118,7 +141,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				</entry>",
 				() =>
@@ -136,7 +159,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -144,7 +167,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				   <sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -164,7 +187,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -173,7 +196,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				   <sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -198,7 +221,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -207,7 +230,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				   <sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -228,7 +251,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -238,7 +261,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				   <sense>
 						<gloss lang='en'><text>blah</text></gloss>
@@ -262,7 +285,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<sense>
 						<definition>
@@ -272,7 +295,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				   <sense>
 					   <definition>
@@ -296,14 +319,14 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<trait name='t1' value='1'></trait>
 					<trait name='morph-type' value='root'></trait>
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<trait name='t2' value='2'></trait>
 					<trait name='morph-type' value='root'></trait>
@@ -326,14 +349,14 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 
 					<field type='Plural'><form lang='seh'><text>xxxx</text></form></field>
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					 <field type='Plural'><form lang='seh'><text>yyy</text></form></field>
 				</entry>",
@@ -349,7 +372,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<citation>
 						<form lang='seh'><text>xxx</text></form>
@@ -357,7 +380,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<citation>
 						<form lang='seh'><text>yyy</text></form>
@@ -375,14 +398,14 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 						<lexical-unit>
-						  <form lang='en'>
+						  <form lang='etr'>
 							<text>bandazi</text>
 						  </form>
 						</lexical-unit>
 				</entry>",
 				@"<entry dateCreated='2005-06-23T01:30:30Z' dateModified='2006-09-06T01:12:06Z' GUID2>
 						<lexical-unit>
-						  <form lang='en'>
+						  <form lang='etr'>
 							<text>bandazi</text>
 						  </form>
 						</lexical-unit>
@@ -412,7 +435,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 						<lexical-unit>
-						  <form lang='en'>
+						  <form lang='etr'>
 							<text>bandazi</text>
 						  </form>
 						</lexical-unit>
@@ -424,7 +447,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry dateCreated='2005-06-23T01:30:30Z' dateModified='2006-09-06T01:12:06Z' GUID2>
 						<lexical-unit>
-						  <form lang='en'>
+						  <form lang='etr'>
 							<text>bandazi</text>
 						  </form>
 						</lexical-unit>
@@ -493,7 +516,7 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				@"
 				<entry id='foo1' guid='57009cdb-cd11-451f-8340-05dce62cc000'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 					<sense id='senseId1' order='4'>
 						<grammatical-info value='Associativo'>
@@ -506,12 +529,12 @@ namespace Palaso.DictionaryServices.Tests.Tools
 				</entry>",
 				@"<entry id='blah' guid='57009cdb-cd11-451f-8340-05dce62cc001'>
 					<lexical-unit>
-						  <form lang='en'><text>blah</text></form>
+						  <form lang='etr'><text>blah</text></form>
 					</lexical-unit>
 				</entry>
 				<entry id='foo2' guid='57009cdb-cd11-451f-8340-05dce62cc002'>
 					<lexical-unit>
-						  <form lang='en'><text>foo</text></form>
+						  <form lang='etr'><text>foo</text></form>
 					</lexical-unit>
 				   <sense id='senseId2' order='4'>
 						<grammatical-info value='Nombre'>
@@ -539,21 +562,24 @@ namespace Palaso.DictionaryServices.Tests.Tools
 
 		private void Run(string contents)
 		{
-			var m = new MergeHomographs();
+			var m = new HomographMerger();
 			contents = contents.Replace("GUID1", "guid='"+Guid.NewGuid().ToString()+"'");
 			contents = contents.Replace("GUID2", "guid='" + Guid.NewGuid().ToString() + "'");
-			using (var input = new TempLiftFile(contents,"0.13"))
+			using (var input = new TempLiftFile(contents, "0.13"))
 			{
-				File.Delete(_outputLift.Path);
-				m.Run(input.Path, _outputLift.Path, _progress);
-			}
+				using (var repo = new LiftLexEntryRepository(input.Path))
+				{
+					var ws = HomographMerger.GuessPrimarLexicalFormWritingSystem(repo, _progress);
+					HomographMerger.Merge(repo, ws, _progress);
+				}
 
-			_resultDom.Load(_outputLift.Path);
+				_resultDom.Load(input.Path);
 
-			//removing these tombstones simplifies our assertions, later
-			foreach (XmlNode deletedEntry in _resultDom.SelectNodes("//entry[@dateDeleted]"))
-			{
-				deletedEntry.ParentNode.RemoveChild(deletedEntry);
+				//removing these tombstones simplifies our assertions, later
+				foreach (XmlNode deletedEntry in _resultDom.SelectNodes("//entry[@dateDeleted]"))
+				{
+					deletedEntry.ParentNode.RemoveChild(deletedEntry);
+				}
 			}
 		}
 
