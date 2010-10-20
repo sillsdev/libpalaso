@@ -235,7 +235,7 @@ namespace Palaso.Reporting
 			}
 		}
 
-		private static string HttpPost(string uri, Dictionary<string, string> parameters)
+		internal static string HttpPost(string uri, Dictionary<string, string> parameters)
 		{
 			StringBuilder parameterBuilder = new StringBuilder();
 			foreach (KeyValuePair<string, string> pair in parameters)
@@ -256,7 +256,7 @@ namespace Palaso.Reporting
 
 			req.ContentType = "application/x-www-form-urlencoded";
 			req.Method = "POST";
-			req.Timeout = 1000;
+			req.Timeout = 5000;
 
 			byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
 			req.ContentLength = bytes.Length;
