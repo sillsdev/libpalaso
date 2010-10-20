@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems.Collation
 {
@@ -168,7 +169,10 @@ namespace Palaso.WritingSystems.Collation
 				return;
 			}
 			inGroup = true;
-			rules = rules.Insert(rules.Length - 1, "(");
+			int lastIndexOfNewLine = rules.LastIndexOf(NewLine) + NewLine.Length;
+			int lastIndexOfSpace = rules.LastIndexOf(" ") + " ".Length;
+			int mostRecentPossiblepositionForABracket = Math.Max(lastIndexOfNewLine, lastIndexOfSpace);
+			rules = rules.Insert(mostRecentPossiblepositionForABracket, "(");
 			return;
 		}
 

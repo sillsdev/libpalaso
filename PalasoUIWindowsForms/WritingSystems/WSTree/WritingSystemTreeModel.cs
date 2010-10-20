@@ -97,22 +97,36 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{
-				var primaryDefinition = ChooseMainDefinitionOfLanguage(defsOfSameLanguage);
-				var item = MakeExistingDefinitionItem(primaryDefinition);
-				item.Children = new List<WritingSystemTreeItem>(from def in defsOfSameLanguage
-								where def != primaryDefinition
-								select MakeExistingDefinitionItem(def));
+				WritingSystemTreeItem parent;
+				WritingSystemDefinition itemToUseForSuggestions;
+				if (OneWritingSystemIsASuitableParent(defsOfSameLanguage))
+				{
+					var primaryDefinition = ChooseMainDefinitionOfLanguage(defsOfSameLanguage);
+					parent = MakeExistingDefinitionItem(primaryDefinition);
+					parent.Children = new List<WritingSystemTreeItem>(from def in defsOfSameLanguage
+									where def != primaryDefinition
+									select MakeExistingDefinitionItem(def));
+					itemToUseForSuggestions = primaryDefinition;
+				}
+				else
+				{
+					parent = new GroupTreeItem(defsOfSameLanguage.First().LanguageName);
+					parent.Children = new List<WritingSystemTreeItem>(from def in defsOfSameLanguage
+									select MakeExistingDefinitionItem(def));
+					itemToUseForSuggestions = defsOfSameLanguage.First();//unprincipled
+				}
+
 				if (Suggestor != null)
 				{
 					foreach (
 						IWritingSystemDefinitionSuggestion suggestion in
-							Suggestor.GetSuggestions(primaryDefinition, defsOfSameLanguage))
+							Suggestor.GetSuggestions(itemToUseForSuggestions, defsOfSameLanguage))
 					{
 						var treeItem = new WritingSystemCreationTreeItem(suggestion, OnClickAddCertainDefinition);
-						item.Children.Add(treeItem);
+						parent.Children.Add(treeItem);
 					}
 				}
-				items.Add(item);
+				items.Add(parent);
 			}
 		}
 
@@ -132,6 +146,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var x = definitions.OrderBy(def => GetSpecificityScore(def));
 			return x.First();
+		}
+
+		private bool OneWritingSystemIsASuitableParent(IEnumerable<WritingSystemDefinition> definitions)
+		{
+			if (definitions.Count() == 1)
+				return true;
+			var x = definitions.OrderBy<WritingSystemDefinition, int>(GetSpecificityScore).ToArray();
+			return GetSpecificityScore(x[0]) != GetSpecificityScore(x[1]);
 		}
 
 		private int GetSpecificityScore(WritingSystemDefinition definition)

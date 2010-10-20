@@ -323,6 +323,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The ISO-639 code which is also the Ethnologue code.
+		/// </summary>
 		public string ISO
 		{
 			get
@@ -611,6 +614,10 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
+				if(String.IsNullOrEmpty(_keyboard))
+				{
+					return "";
+				}
 				return _keyboard;
 			}
 			set

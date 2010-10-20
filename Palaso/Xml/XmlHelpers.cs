@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-namespace Palaso
+namespace Palaso.Xml
 {
 	public class XmlHelpers
 	{

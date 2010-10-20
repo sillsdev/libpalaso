@@ -31,12 +31,12 @@ namespace WeSay.LexicalModel.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public override void SaveItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
 			Item.Senses.Add(new LexSense());    //make Lexentry dirty
-			DataMapperUnderTest.SaveItem(Item);
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
+				DataMapperUnderTest.SaveItem(Item));
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()

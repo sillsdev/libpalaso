@@ -1,12 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace Palaso.I8N
+namespace Palaso.i18n
 {
 	public class StringCatalog
 	{
-		private System.Collections.Specialized.StringDictionary _catalog;
+		private Dictionary<string, string> _catalog;
 		private static StringCatalog _singleton;
 		private static Font _font;
 		private static bool _inInternationalizationTestMode;
@@ -31,8 +32,7 @@ namespace Palaso.I8N
 			_inInternationalizationTestMode = pathToPoFile == "test";
 			if (!_inInternationalizationTestMode)
 			{
-				TextReader reader = (TextReader) File.OpenText(pathToPoFile);
-				try
+				using (var reader = File.OpenText(pathToPoFile))
 				{
 					string id = null;
 					string line = reader.ReadLine();
@@ -70,10 +70,6 @@ namespace Palaso.I8N
 						}
 						line = reader.ReadLine();
 					}
-				}
-				finally
-				{
-					reader.Close();
 				}
 			}
 
@@ -170,7 +166,7 @@ namespace Palaso.I8N
 		private void Init()
 		{
 			_singleton = this;
-			_catalog = new System.Collections.Specialized.StringDictionary();
+			_catalog = new Dictionary<string, string>();
 		}
 
 		private static string GetStringBetweenQuotes(string line)
@@ -184,15 +180,17 @@ namespace Palaso.I8N
 		{
 			get
 			{
-				string s = _catalog[id.Replace("&&","&")];
-				if (s == null)
+				string translated = null;
+				if (_catalog.ContainsKey(id))
 				{
-					return id;
+					return _catalog[id];
 				}
-				else
+				id = id.Replace("&&", "&");
+				if (_catalog.ContainsKey(id))
 				{
-					return s;
+					return _catalog[id];
 				}
+				return id;
 			}
 		}
 

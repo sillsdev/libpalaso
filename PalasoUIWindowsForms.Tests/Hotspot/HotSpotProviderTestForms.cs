@@ -8,7 +8,7 @@ using Palaso.UI.WindowsForms.HotSpot;
 namespace PalasoUIWindowsForms.Tests.Hotspot
 {
 	[TestFixture]
-	[Category("MouseSensitive")] // do not move your mouse with these tests
+	[NUnit.Framework.Category("MouseSensitive")] // do not move your mouse with these tests
 	public class HotSpotProviderTestForms
 	{
 		private class ClickableTextBox : TextBox

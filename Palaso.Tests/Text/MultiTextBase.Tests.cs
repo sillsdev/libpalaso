@@ -46,7 +46,7 @@ namespace Palaso.Tests.Text
 			Assert.AreSame(string.Empty, text["foo"]);
 		}
 
-		//        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		//        [Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
 		//        public void GetIndexerThrowsWhenAltIsMissing()
 		//        {
 		//            MultiTextBase text = new MultiTextBase();
@@ -54,7 +54,7 @@ namespace Palaso.Tests.Text
 		//            string s = text["gee"];
 		//        }
 		//
-		//        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		//        [Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
 		//        public void GetExactThrowsWhenAltIsMissing()
 		//        {
 		//            MultiTextBase text = new MultiTextBase();

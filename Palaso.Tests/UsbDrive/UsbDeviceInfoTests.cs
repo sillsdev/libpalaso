@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using NUnit.Framework;
+using Palaso.UsbDrive;
 
-namespace Palaso.UsbDrive
+namespace Palaso.Tests.UsbDrive
 {
 	[TestFixture]
 	public class UsbDeviceInfoTests
@@ -35,7 +35,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void GetDrives_1DrivesArePluggedIn_DrivesAreReturned()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -43,7 +43,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void GetDrives_2DrivesArePluggedIn_DrivesAreReturned()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -51,7 +51,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -60,7 +60,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -69,7 +69,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void IsReady_2DrivesAreMounted_ReturnsTrue()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -78,7 +78,7 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void IsReady_2DrivesAreNotMounted_ReturnsFalse()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -87,13 +87,16 @@ namespace Palaso.UsbDrive
 		}
 
 		[Test]
-		[Category("RequiresUSB")]
-		[ExpectedException(typeof(ArgumentException))]
+		[NUnit.Framework.Category("RequiresUSB")]
 		public void RootDirectory_2DrivesAreNotMounted_Throws()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.AreEqual(drive0.path.FullName, usbDrives[0].RootDirectory.FullName);
-			Console.WriteLine(usbDrives[0].RootDirectory.FullName);
+			var usbDrives = UsbDriveInfo.GetDrives();
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() =>
+					{
+						string s = usbDrives[0].RootDirectory.FullName;
+					}
+			);
 		}
 	}
 }

@@ -16,12 +16,12 @@ namespace Palaso.Email
 
 		public bool AddRecipientCc(string email)
 		{
-			return AddRecipient(email, HowTo.MAPI_TO);
+			return AddRecipient(email, HowTo.MAPI_CC);
 		}
 
 		public bool AddRecipientBcc(string email)
 		{
-			return AddRecipient(email, HowTo.MAPI_TO);
+			return AddRecipient(email, HowTo.MAPI_BCC);
 		}
 
 		public void AddAttachment(string strAttachmentFileName)
@@ -64,9 +64,10 @@ namespace Palaso.Email
 //                MessageBox.Show("MAPISendMail failed! " + GetLastError(), "MAPISendMail");
 			//todo if(m_lastError==25)
 			//bad recipient
+			var success = m_lastError == 0; // m_lastError gets reset by Cleanup()
 
 			Cleanup(ref msg);
-			return m_lastError ==0;//NB: doesn't seem to cach user "denial" using outlook's warning dialog
+			return success;//NB: doesn't seem to cach user "denial" using outlook's warning dialog
 		}
 
 		bool AddRecipient(string email, HowTo howTo)
@@ -75,6 +76,9 @@ namespace Palaso.Email
 
 			recipient.recipClass = (int)howTo;
 			recipient.name = email;
+			// Note: For Outlook Express it would be better to also set recipient.address so that it
+			// shows the email address in the confirmation dialog, but this messes up things in
+			// Outlook and Windows Mail.
 			m_recipients.Add(recipient);
 
 			return true;
@@ -131,7 +135,7 @@ namespace Palaso.Email
 		void Cleanup(ref MapiMessage msg)
 		{
 			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
-			int ptr = 0;
+			int ptr;
 
 			if (msg.recips != IntPtr.Zero)
 			{
@@ -164,12 +168,12 @@ namespace Palaso.Email
 
 		public string GetLastError()
 		{
-			if (m_lastError <= 26)
-				return errors[ m_lastError ];
-			return "MAPI error [" + m_lastError.ToString() + "]";
+			if (m_lastError >= 0 &&  m_lastError <= 26)
+				return Errors[ m_lastError ];
+			return "MAPI error [" + m_lastError + "]";
 		}
 
-		readonly string[] errors = new[]
+		readonly string[] Errors = new[]
 		{
 			"OK [0]", "User abort [1]", "General MAPI failure [2]", "MAPI login failure [3]",
 			"Disk full [4]", "Insufficient memory [5]", "Access denied [6]", "-unknown- [7]",
@@ -180,15 +184,21 @@ namespace Palaso.Email
 			"Invalid edit fields [24]", "Invalid recipients [25]", "Not supported [26]"
 		};
 
-		List<MapiRecipDesc> m_recipients	= new List<MapiRecipDesc>();
-		List<string> m_attachments	= new List<string>();
-		int m_lastError = 0;
+		readonly List<MapiRecipDesc> m_recipients	= new List<MapiRecipDesc>();
+		readonly List<string> m_attachments	= new List<string>();
+		int m_lastError;
 
 		const int MAPI_LOGON_UI = 0x00000001;
 		const int MAPI_DIALOG = 0x00000008;
 		const int maxAttachments = 20;
 
-		enum HowTo{MAPI_ORIG=0, MAPI_TO, MAPI_CC, MAPI_BCC};
+		enum HowTo
+		{
+			MAPI_ORIG,
+			MAPI_TO,
+			MAPI_CC,
+			MAPI_BCC
+		};
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]

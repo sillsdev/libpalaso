@@ -98,6 +98,13 @@ namespace Palaso.DictionaryServices.Lift
 			// _writer.WriteAttributeString("xmlns", "flex", null, "http://fieldworks.sil.org");
 		}
 
+		public void WriteHeader(string headerConentsNotIncludingHeaderElement)
+		{
+			Writer.WriteStartElement("header");
+			Writer.WriteRaw(headerConentsNotIncludingHeaderElement);
+			Writer.WriteEndElement();
+		}
+
 		public static string ProducerString
 		{
 			get { return "Palaso.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }
@@ -273,6 +280,10 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteStartElement("grammatical-info");
 			Writer.WriteAttributeString("value", pos.Value);
 			WriteFlags(pos);
+			foreach (string rawXml in pos.EmbeddedXmlElements)
+			{
+				Writer.WriteRaw(rawXml);
+			}
 			Writer.WriteEndElement();
 		}
 
@@ -469,6 +480,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteStartElement("trait");
 				Writer.WriteAttributeString("name", key);
 				Writer.WriteAttributeString("value", optionRef.Value);
+
+				foreach (string rawXml in optionRef.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}
@@ -702,6 +719,8 @@ namespace Palaso.DictionaryServices.Lift
 				if (disposing)
 				{
 					// dispose-only, i.e. non-finalizable logic
+					if(_writer !=null)
+						_writer.Close();
 				}
 
 				// shared (dispose and finalizable) cleanup logic

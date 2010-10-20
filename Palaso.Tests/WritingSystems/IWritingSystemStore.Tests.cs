@@ -112,7 +112,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanEmpty_ReturnsNoneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
+			var ws1 = new WritingSystemDefinition();
 			ws1.ISO = "en";
 			StoreUnderTest.Set(ws1);
 
@@ -128,7 +128,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanOlder_ReturnsOneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
+			var ws1 = new WritingSystemDefinition();
 			ws1.ISO = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
@@ -149,7 +149,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanNewer_ReturnsNoneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
+			var ws1 = new WritingSystemDefinition();
 			ws1.ISO = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
@@ -170,7 +170,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanCheckedAlready_ReturnsNoneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
+			var ws1 = new WritingSystemDefinition();
 			ws1.ISO = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
@@ -182,7 +182,7 @@ namespace Palaso.Tests.WritingSystems
 			store.LastChecked("en", new DateTime(2008, 1, 16));
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
+			foreach (var ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
 			{
 				count++;
 			}
@@ -192,7 +192,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanStoreVariants_CountTwo()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
+			var ws1 = new WritingSystemDefinition();
 			ws1.ISO = "en";
 			Assert.AreEqual("en", ws1.RFC5646);
 			WritingSystemDefinition ws2 = ws1.Clone();
@@ -205,13 +205,15 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(2, StoreUnderTest.Count);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void StoreTwoOfSame_Throws()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition("foo");
-			WritingSystemDefinition ws2 = new WritingSystemDefinition("foo");
+			var ws1 = new WritingSystemDefinition("foo");
+			var ws2 = new WritingSystemDefinition("foo");
 			StoreUnderTest.Set(ws1);
-			StoreUnderTest.Set(ws2);
+			Assert.Throws<ArgumentException>(
+				() => StoreUnderTest.Set(ws2)
+			);
 		}
 
 		[Test]
@@ -283,59 +285,77 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(ws1.VersionNumber, ws2.VersionNumber);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void GetNull_Throws()
 		{
-			StoreUnderTest.Get(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.Get(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test]
 		public void Get_NotInStore_Throws()
 		{
-			StoreUnderTest.Get("I sure hope this isn't in the store.");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => StoreUnderTest.Get("I sure hope this isn't in the store.")
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void NewerInNull_Throws()
 		{
-			StoreUnderTest.WritingSystemsNewerIn(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.WritingSystemsNewerIn(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void NewerInNullDefinition_Throws()
 		{
-			WritingSystemDefinition[] list = new WritingSystemDefinition[] {null};
-			StoreUnderTest.WritingSystemsNewerIn(list);
+			var list = new WritingSystemDefinition[] {null};
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.WritingSystemsNewerIn(list)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void SetNull_Throws()
 		{
-			StoreUnderTest.Set(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.Set(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void MakeDuplicateNull_Throws()
 		{
-			StoreUnderTest.MakeDuplicate(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.MakeDuplicate(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void RemoveNull_Throws()
 		{
-			StoreUnderTest.Remove(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.Remove(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test]
 		public void Remove_NotInStore_Throws()
 		{
-			StoreUnderTest.Remove("This isn't in the store!");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => StoreUnderTest.Remove("This isn't in the store!")
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void GetNewStoreIDWhenSet_Null_Throws()
 		{
-			StoreUnderTest.GetNewStoreIDWhenSet(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.GetNewStoreIDWhenSet(null)
+			);
 		}
 
 		[Test]

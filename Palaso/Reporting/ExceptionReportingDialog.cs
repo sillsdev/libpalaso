@@ -270,7 +270,7 @@ namespace Palaso.Reporting
 
 			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
 			{
-				dlg.Report(message, error.Message, new StackTrace(error), null);
+				dlg.Report(message, null, error,null);
 			}
 		}
 		/// ------------------------------------------------------------------------------------
@@ -285,42 +285,60 @@ namespace Palaso.Reporting
 
 		 public void Report(Exception error, Form owningForm)
 		{
-			PrepareDialog();
-
-			Exception innerMostException = null;
-			_details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
-
-			//if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
-			//we want the developer to read.
-			if (innerMostException != null)
-			{
-				_details.Text = "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
-								 "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
-			}
-
-			AddErrorReportingPropertiesToDetails();
-
-
-			Debug.WriteLine(_details.Text);
-			if (innerMostException != null)
-			{
-				error = innerMostException;
-			}
-
-
-			try
-			{
-				Logger.WriteEvent("Got exception " + error.GetType().Name);
-			}
-			catch (Exception err)
-			{
-				//We have more than one report of dieing while logging an exception.
-				_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-				_details.Text += "Was try to log the exception: " + error.Message + Environment.NewLine;
-			}
-
-			ShowReportDialogIfAppropriate(owningForm);
+			Report(null,null, error, owningForm);
 		}
+
+
+		 public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
+		 {
+			 PrepareDialog();
+			 _notificationText.Text = message;
+
+			 if (!string.IsNullOrEmpty(message))
+			 {
+				_details.Text += "Message (not an exception): " + message + Environment.NewLine;
+				_details.Text += Environment.NewLine;
+			 }
+			if (!string.IsNullOrEmpty(messageBeforeStack))
+			 {
+				 _details.Text += messageBeforeStack;
+				 _details.Text += Environment.NewLine;
+			 }
+
+			 Exception innerMostException = null;
+			 _details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+
+			 //if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
+			 //we want the developer to read.
+			 if (innerMostException != null)
+			 {
+				 _details.Text += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
+								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
+			 }
+
+			 AddErrorReportingPropertiesToDetails();
+
+
+			 Debug.WriteLine(_details.Text);
+			 if (innerMostException != null)
+			 {
+				 error = innerMostException;
+			 }
+
+
+			 try
+			 {
+				 Logger.WriteEvent("Got exception " + error.GetType().Name);
+			 }
+			 catch (Exception err)
+			 {
+				 //We have more than one report of dieing while logging an exception.
+				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				 _details.Text += "Was try to log the exception: " + error.Message + Environment.NewLine;
+			 }
+
+			 ShowReportDialogIfAppropriate(owningForm);
+		 }
 
 		 public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
 		 {

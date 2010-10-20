@@ -1,12 +1,14 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace Palaso.TestUtilities
 {
 	public class TempLiftFile : TempFile
 	{
+
 		public TempLiftFile(string xmlOfEntries)
 			: this(xmlOfEntries, /*LiftIO.Validation.Validator.LiftVersion*/ "0.12")
 		{
@@ -25,7 +27,8 @@ namespace Palaso.TestUtilities
 			}
 			else
 			{
-				_path = System.IO.Path.GetRandomFileName() + ".lift";
+				_path = System.IO.Path.GetTempFileName() + ".lift";
+				//_path = System.IO.Path.GetRandomFileName() + ".lift";
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
@@ -148,6 +151,55 @@ namespace Palaso.TestUtilities
 				x.WriteRaw(xmlBody);
 			}
 			return new TempFile(path, true);
+		}
+
+		/// <summary>
+		/// Use this one when it's important to have a certain file extension
+		/// </summary>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public static TempFile WithExtension(string extension)
+		{
+			extension = extension.TrimStart('.');
+			var path = System.IO.Path.GetRandomFileName() + "."+extension;
+			File.Create(path).Close();
+			return TempFile.TrackExisting(path);
+		}
+
+		/// <summary>
+		/// Used to make a real file out of a resource for the purpose of testing
+		/// </summary>
+		/// <param name="resource">e.g., an audio resource</param>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public static TempFile FromResource(Stream resource, string extension)
+		{
+			var f = TempFile.WithExtension(extension);
+			byte[] buffer = new byte[resource.Length + 1];
+			resource.Read(buffer, 0, (int)resource.Length);
+			File.WriteAllBytes(f.Path, buffer);
+			return f;
+		}
+
+		/// <summary>
+		/// Used to make a real file out of a resource for the purpose of testing
+		/// </summary>
+		/// <param name="resource">e.g., a video resource</param>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public static TempFile FromResource(byte[] resource, string extension)
+		{
+			var f = TempFile.WithExtension(extension);
+			File.WriteAllBytes(f.Path, resource);
+			return f;
+		}
+
+		/// <summary>
+		/// Used to move a file to a new path
+		/// </summary>
+		/// <param name="resource">e.g., a video resource</param>
+		/// <param name="extension">with or with out '.', will work the same</param>
+		public void MoveTo(string path)
+		{
+			File.Move(Path, path);
+			_path = path;
 		}
 	}
 

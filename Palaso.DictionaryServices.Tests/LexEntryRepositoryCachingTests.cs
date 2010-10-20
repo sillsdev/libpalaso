@@ -252,18 +252,18 @@ namespace Palaso.DictionaryServices.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void NotifyThatLexEntryHasBeenUpdated_Null_Throws()
 		{
-			_repository.NotifyThatLexEntryHasBeenUpdated(null);
+			Assert.Throws<ArgumentNullException>(() =>
+				_repository.NotifyThatLexEntryHasBeenUpdated(null));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void NotifyThatLexEntryHasBeenUpdated_LexEntryDoesNotExistInRepository_Throws()
 		{
 			var entryToUpdate = new LexEntry();
-			_repository.NotifyThatLexEntryHasBeenUpdated(entryToUpdate);
+			Assert.Throws<ArgumentOutOfRangeException>(() =>
+				_repository.NotifyThatLexEntryHasBeenUpdated(entryToUpdate));
 		}
 
 		private LexEntry CreateEntryWithDefinitionBeforeFirstQuery(string writingSystem, string lexicalForm)

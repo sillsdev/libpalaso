@@ -46,6 +46,7 @@
 				<include name="nunit.framework.dll" />
 				<include name="System.dll" />
 				<include name="System.Xml.dll" />
+				<include name="Palaso.dll" />
 			</references>
 			<!--
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">

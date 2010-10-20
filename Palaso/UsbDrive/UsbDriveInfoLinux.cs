@@ -1,4 +1,4 @@
-﻿//#if MONO
+﻿#if MONO
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,6 +33,11 @@ namespace Palaso.UsbDrive
 		public override ulong TotalSize
 		{
 			get { return TryGetDevicePropertyInteger(_volumeDevice, "volume.size"); }
+		}
+
+		public override ulong AvailableFreeSpace
+		{
+			get { throw new NotImplementedException("TotalFreeSpace not implemented in Mono yet."); }
 		}
 
 		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
@@ -130,4 +135,4 @@ namespace Palaso.UsbDrive
 	}
 }
 
-//#endif
+#endif

@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems
 {

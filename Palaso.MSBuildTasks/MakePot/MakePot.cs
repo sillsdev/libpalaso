@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -25,10 +26,18 @@ namespace Palaso.BuildTasks.MakePot
 
 		public string XpathToStrings { get; set; }
 
+		private readonly Regex _pattern;
+
+		public MakePot()
+		{
+			_pattern = new Regex(@"(Text\s*=\s*""(~)?|StringCatalog\.Get(Formatted)?\(""(~)?|""~)(?<key>([^""\\]|\\.)*)""(\s*,\s*""(?<note>([^""\\]|\\.)*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		}
+
 		public override bool Execute()
 		{
 			using (StreamWriter writer = File.CreateText(OutputFile))
 			{
+				writer.NewLine = "\n";
 				if (XmlFiles != null)
 				{
 					foreach (ITaskItem file in XmlFiles)
@@ -44,43 +53,63 @@ namespace Palaso.BuildTasks.MakePot
 					}
 				}
 
-				WritePotHeader(writer);
+				WritePotFile(writer);
 
-				foreach (KeyValuePair<string, List<string>> pair in _entries)
-				{
-					WriteEntry(pair.Key, pair.Value, writer);
-				}
-
-				this.Log.LogMessage(MessageImportance.High, "MakePot wrote " + _entries.Count + " strings to " + OutputFile);
+				LogMessage(MessageImportance.High, "MakePot wrote " + _entries.Count + " strings to " + OutputFile);
 			}
 			return true;
 		}
 
-		private void WritePotHeader(StreamWriter writer)
+		internal void WritePotFile(TextWriter writer)
 		{
-			writer.WriteLine("msgid \"\"");
-			writer.WriteLine("msgstr \"\"");
-			writer.WriteLine("\"Project-Id-Version: {0}\"", ProjectId);
-			writer.WriteLine("\"Report-Msgid-Bugs-To: {0}\"", MsdIdBugsTo);
+			WritePotHeader(writer);
 
-			writer.WriteLine("\"POT-Creation-Date: {0}\"", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("\"PO-Revision-Date: {0}\"", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("\"Last-Translator: \"");
-			writer.WriteLine("\"Language-Team: \"");
-			writer.WriteLine("\"MIME-Version: 1.0\"");
-			writer.WriteLine("\"Content-Type: text/plain; charset=UTF-8\"");
-			writer.WriteLine("\"Content-Transfer-Encoding: 8bit\"");
+			foreach (KeyValuePair<string, List<string>> pair in _entries)
+			{
+				WriteEntry(pair.Key, pair.Value, writer);
+			}
+		}
+
+		private void WritePotHeader(TextWriter writer)
+		{
+			/* Note:
+			 * The header output by POEdit on Windows looks like the following.  However, POEdit can't
+			 * read this in as a pot, though it could as a po.  Therefore we prefer to write out our
+			 * info as a comment which at least is preserved by POEdit.  This allows the pot file to
+			 * be merged in to any already existing po file.
+			 */
+			//writer.WriteLine(@"msgid """"");
+			//writer.WriteLine(@"msgstr """"");
+			//writer.WriteLine(@"""Project-Id-Version: " + ProjectId + @"\n""");
+			//writer.WriteLine(@"""POT-Creation-Date: " + DateTime.UtcNow.ToString("s") + @"\n""");
+			//writer.WriteLine(@"""PO-Revision-Date: \n""");
+			//writer.WriteLine(@"""MIME-Version: 1.0\n""");
+			//writer.WriteLine(@"""Content-Type: text/plain; charset=UTF-8\n""");
+			//writer.WriteLine(@"""Content-Transfer-Encoding: 8bit\n""");
+
+			/* As noted above the commented version below isn't read by POEdit, however it is preserved */
+			writer.WriteLine("# Project-Id-Version: {0}", ProjectId);
+			writer.WriteLine("# Report-Msgid-Bugs-To: {0}", MsdIdBugsTo);
+			writer.WriteLine("# POT-Creation-Date: {0}", DateTime.UtcNow.ToString("s"));
+			writer.WriteLine("# Content-Type: text/plain; charset=UTF-8");
+			writer.WriteLine();
+
+			//writer.WriteLine("# PO-Revision-Date: ");
+			//writer.WriteLine("# Last-Translator: ");
+			//writer.WriteLine("# Language-Team: ");
+			//writer.WriteLine("# MIME-Version: 1.0");
+			//writer.WriteLine("# Content-Transfer-Encoding: 8bit");
 		}
 
 		private void ProcessXmlFile(ITaskItem  fileSpec)
 		{
 			if (string.IsNullOrEmpty(XpathToStrings))
 			{
-				this.Log.LogError("You must define XPathToStrings if you include anything in XPathFiles");
+				LogError("You must define XPathToStrings if you include anything in XPathFiles");
 				return;
 			}
-			this.Log.LogMessage("Processing {0}", fileSpec.ItemSpec);
-			XmlDocument doc = new XmlDocument();
+			LogMessage("Processing {0}", fileSpec.ItemSpec);
+			var doc = new XmlDocument();
 			doc.Load(fileSpec.ItemSpec);
 			foreach (XmlNode node in doc.SelectNodes(XpathToStrings))
 			{
@@ -88,56 +117,103 @@ namespace Palaso.BuildTasks.MakePot
 			}
 		}
 
+		private void LogMessage(string message, params object[] args)
+		{
+			LogMessage(MessageImportance.Normal, message, args);
+		}
+
+		private void LogMessage(MessageImportance importance, string message, params object[] args)
+		{
+			try
+			{
+				Log.LogMessage(importance, message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+		private void LogError(string message, params object[] args)
+		{
+			try
+			{
+				Log.LogError(message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
 		private void AddStringInstance(string stringToTranslate, string commentsForTranslator)
 		{
 			if (!_entries.ContainsKey(stringToTranslate)) //first time we've encountered this string?
 			{
-				this.Log.LogMessage(MessageImportance.Low, "Found '{0}'", stringToTranslate);
+				LogMessage(MessageImportance.Low, "Found '{0}'", stringToTranslate);
 				_entries.Add(stringToTranslate, new List<string>());
 			}
 			_entries[stringToTranslate].Add(commentsForTranslator);//add this reference
 		}
 
-		private void ProcessSrcFile(string filePath)
+		internal void ProcessSrcFile(string filePath)
 		{
-			this.Log.LogMessage("Processing {0}", filePath);
+			LogMessage("Processing {0}", filePath);
 			string contents = File.ReadAllText(filePath);
-			System.Text.RegularExpressions.Regex pattern =
-				new System.Text.RegularExpressions.Regex(@"""~([^""]*)""\s*(,\s*""(.*)"")?", System.Text.RegularExpressions.RegexOptions.Compiled);
 
-			foreach (System.Text.RegularExpressions.Match match in pattern.Matches(contents))
+			foreach (Match match in MatchesInCSharpString(contents))
 			{
-				string str = match.Groups[1].Value;
+				string str = UnescapeString(match.Groups["key"].Value);
 				if (!_entries.ContainsKey(str)) //first time we've encountered this string?
 				{
-					this.Log.LogMessage(MessageImportance.Low, "Found '{0}'", str);
+					this.LogMessage(MessageImportance.Low, "Found '{0}'", str);
 					_entries.Add(str, new List<string>());
 				}
-				string comments = "#; " + filePath;
+				string comments = "#: " + filePath;
 
 				//catch the second parameter from calls like this:
-				//            StringCatalog.Get("~Note", "The label for the field showing a note.");
+				//            StringCataGet("~Note", "The label for the field showing a note.");
 
-				if (match.Groups.Count >= 3 && match.Groups[3].Length > 0)
+				if (!String.IsNullOrEmpty(match.Groups["note"].Value))
 				{
-					string comment = match.Groups[3].Value;
-					this.Log.LogMessage(MessageImportance.Low, "  with comment '{0}'", comment);
+					string comment = match.Groups["note"].Value;
+					this.LogMessage(MessageImportance.Low, "  with comment '{0}'", comment);
 					comments += System.Environment.NewLine + "#. " + comment;
 				}
 				_entries[str].Add(comments);//add this reference
 			}
 		}
 
-		private static void WriteEntry(string key, List<string> comments, StreamWriter writer)
+		internal MatchCollection MatchesInCSharpString(string contents)
+		{
+			return _pattern.Matches(contents);
+		}
+
+		private static void WriteEntry(string key, IEnumerable<string> comments, TextWriter writer)
 		{
 			writer.WriteLine("");
-			foreach (string s in comments)
+			foreach (var s in comments)
 			{
 				writer.WriteLine(s);
 			}
-			key = key.Replace("\"", "\\\"");
+			key = EscapeString(key);
 			writer.WriteLine("msgid \"" + key + "\"");
 			writer.WriteLine("msgstr \"\"");
+		}
+
+		public static string EscapeString(string s)
+		{
+			string result = s.Replace("\\", "\\\\"); // This must be first
+			result = result.Replace("\"", "\\\"");
+			return result;
+		}
+
+		public static string UnescapeString(string s)
+		{
+			string result = s.Replace("\\'", "'");
+			result = result.Replace("\\\"", "\"");
+			result = result.Replace("\\\\", "\\");
+			return result;
 		}
 	}
 }

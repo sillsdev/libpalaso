@@ -101,6 +101,7 @@
 			<exclude name="Keyman6"/>
 			<exclude name="Keyman7"/>
 			<exclude name="RequiresUSB"/>
+			<exclude name="UsesObsoleteExpectedExceptionAttribute"/>
 		  </categories>
 			</test>
 		</nunit2>

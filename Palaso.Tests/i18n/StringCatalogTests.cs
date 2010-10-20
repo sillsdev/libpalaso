@@ -1,12 +1,13 @@
 using System;
 using System.Drawing;
 using System.IO;
-using Palaso.I8N;
-
 using NUnit.Framework;
+using Palaso.i18n;
+using Palaso.TestUtilities;
 
-namespace Palaso.Tests.I8N
+namespace Palaso.Tests.i18n
 {
+
 	[TestFixture]
 	public class StringCatalogTests
 	{
@@ -183,6 +184,29 @@ msgstr 'first'
 			Font normal = new Font(FontFamily.GenericSerif, Single.MaxValue);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
 			Assert.IsNotNull(localized);
+		}
+
+		[Test]
+		public void Constructor_MsgIdDiffersOnlyInCase_DoesntThrow()
+		{
+			string poText = @"
+#: C:\src\sil\wesay-wip\bld\..\src\Addin.Backup\BackupDialog.cs
+msgid 'Backing Up...'
+msgstr 'aa'
+
+#: C:\src\sil\wesay-wip\bld\..\src\Addin.Transform\LameProgressDialog.Designer.cs
+msgid 'Backing up...'
+msgstr 'aa'
+
+
+".Replace("'", "\"");
+
+			using (var file = new TempFile(poText))
+			{
+				StringCatalog catalog = new StringCatalog(file.Path, FontFamily.GenericSansSerif.Name, 12);
+			}
+
+
 		}
 	}
 }

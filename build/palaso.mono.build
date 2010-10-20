@@ -30,8 +30,8 @@
 
 	<!-- List of buildfiles for the individual projects. Order is relevant!-->
 	<fileset id="project.buildfiles.src" basedir="${project.src.dir}">
-		<include name="Palaso.TestUtilities/Palaso.TestUtilities.proj.build" />
 		<include name="Palaso/Palaso.proj.build" />
+		<include name="Palaso.TestUtilities/Palaso.TestUtilities.proj.build" />
 		<include name="Palaso.Tests/Palaso.Tests.proj.build" />
 		<include name="Palaso.Lift/Palaso.Lift.proj.build" />
 		<include name="Palaso.Lift.Tests/Palaso.Lift.Tests.proj.build" />
@@ -208,6 +208,7 @@
 					<exclude name="Keyman7"/>
 					<exclude name="Scim"/>
 					<exclude name="Mono Known Issue"/>
+					<exclude name="UsesObsoleteExpectedExceptionAttribute" />
 				</categories>
 				</test>
 			</nunit2>
@@ -228,10 +229,11 @@
 			<categories>
 				<exclude name="MouseSensitive"/>
 				<exclude name="Windows IME"/>
-						<exclude name="Keyman6"/>
-						<exclude name="Keyman7"/>
+				<exclude name="Keyman6"/>
+				<exclude name="Keyman7"/>
 				<exclude name="Scim"/>
 				<exclude name="Mono Known Issue"/>
+				<exclude name="UsesObsoleteExpectedExceptionAttribute" />
 			</categories>
 			</test>
 		</nunit2>
@@ -260,6 +262,7 @@
 				<exclude name="KnownMonoIssue"/>
 				<exclude name="RequiresUSB"/>
 				<exclude name="IBus"/>
+				<exclude name="UsesObsoleteExpectedExceptionAttribute" />
 			</categories>
 			</test>
 		</nunit2>

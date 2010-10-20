@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Palaso.Code;
 using Palaso.Reporting;
 using Palaso.Extensions;
 
@@ -91,5 +92,62 @@ namespace Palaso.IO
 			}
 		}
 
+
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+		/// [applicationFolder]/[subPath]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetFileDistributedWithApplication(params string[] partsOfTheSubPath)
+		{
+			var path = FileLocator.DirectoryOfApplicationOrSolution;
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
+			if (File.Exists(path))
+				return path;
+
+			//try distfiles
+			path = FileLocator.DirectoryOfApplicationOrSolution;
+			path = Path.Combine(path, "DistFiles");
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
+			RequireThat.File(path).Exists();
+			return path;
+		}
+
+
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/DistFiles/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[subPath1]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetDirectoryDistributedWithApplication(params string[] partsOfTheSubPath)
+		{
+			var path = FileLocator.DirectoryOfApplicationOrSolution;
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
+			if (Directory.Exists(path))
+				return path;
+
+			//try distfiles
+			path = FileLocator.DirectoryOfApplicationOrSolution;
+			path = Path.Combine(path,"DistFiles");
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
+
+			RequireThat.Directory(path).Exists();
+			return path;
+		}
 	}
 }

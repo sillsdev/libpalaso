@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -12,6 +12,10 @@
 	<AssemblyName>Palaso.BuildTaskTests</AssemblyName>
 	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
+	<FileUpgradeFlags>
+	</FileUpgradeFlags>
+	<OldToolsVersion>3.5</OldToolsVersion>
+	<UpgradeBackupLocation />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -34,7 +38,7 @@
   <ItemGroup>
 	<Reference Include="Microsoft.Build.Framework" />
 	<Reference Include="Microsoft.Build.Utilities" />
-	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+	<Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
@@ -52,6 +56,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="MakePotTests.cs" />
 	<Compile Include="StampAssemblyTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,6 +64,10 @@
 	<ProjectReference Include="..\Palaso.MSBuildTasks\Palaso.BuildTasks.csproj">
 	  <Project>{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}</Project>
 	  <Name>Palaso.BuildTasks</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
+	  <Name>Palaso.TestUtilities</Name>
 	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

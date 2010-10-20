@@ -18,7 +18,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			InitializeComponent();
 		}
-
+		public WritingSystemSetupView(WritingSystemSetupModel model)
+			: this()
+		{
+			BindToModel(model);
+		}
 		public void BindToModel(WritingSystemSetupModel model)
 		{
 			_model = model;

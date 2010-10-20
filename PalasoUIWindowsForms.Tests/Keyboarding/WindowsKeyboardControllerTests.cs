@@ -49,10 +49,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
-		[Test, ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
+		[Test]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
-			KeyboardController.ActivateKeyboard("foobar");
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("foobar")
+			);
 		}
 
 		[Test]
@@ -73,7 +75,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Windows IME")]
+		[NUnit.Framework.Category("Windows IME")]
 		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
 		{
 			RequiresWindowsIME();
@@ -85,7 +87,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Windows IME")]
+		[NUnit.Framework.Category("Windows IME")]
 		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
 		{
 			RequiresWindowsIME();
@@ -97,7 +99,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 		[Test]
-		[Category("Windows IME")]
+		[NUnit.Framework.Category("Windows IME")]
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
 			RequiresWindowsIME();
@@ -111,7 +113,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 
 		[Test]
-		[Category("Keyman6")]
+		[NUnit.Framework.Category("Keyman6")]
 		public void Keyman6_GetKeyboards_GivesAtLeastOneAndOnlyKeyman6Ones()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -128,7 +130,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Keyman6")]
+		[NUnit.Framework.Category("Keyman6")]
 		public void Keyman6_ActivateKeyboard_ReportsItWasActivated()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -138,14 +140,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			RequiresKeyman6();
 			RequiresWindow();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
-			Application.DoEvents();//required
+			Application.DoEvents(); //required
 			KeyboardController.ActivateKeyboard(d.Name);
-			Application.DoEvents();//required
+			Application.DoEvents(); //required
 			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
-		[Category("Keyman6")]
+		[NUnit.Framework.Category("Keyman6")]
 		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
 		{
 			if(Environment.OSVersion.Platform == PlatformID.Unix)
@@ -163,7 +165,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Keyman7")]
+		[NUnit.Framework.Category("Keyman7")]
 		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -179,7 +181,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 
 		[Test]
-		[Category("Keyman7")]
+		[NUnit.Framework.Category("Keyman7")]
 		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -196,7 +198,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Keyman7")]
+		[NUnit.Framework.Category("Keyman7")]
 		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)

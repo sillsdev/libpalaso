@@ -3,9 +3,26 @@ using System.Text;
 using NUnit.Framework;
 using Palaso.Data;
 
-namespace WeSay.Data.Tests
+namespace Palaso.Tests.Data
 {
-	public class DictionaryContentAsserter<K, V>: IAsserter
+	/// <summary>
+	/// Nunit 2.5 removed DoAssert and made the IAssert stuff obsolete, sigh.  This simulates it
+	/// for the sake of our existing tests.
+	/// </summary>
+	public class Asserter
+	{
+		public static void Assert(DictionaryContentAsserter<string, object> asserter)
+		{
+			NUnit.Framework.Assert.IsTrue(asserter.Test(), asserter.Message);
+		}
+
+		public static void Assert<V>(DictionaryContentAsserter<string, V> asserter)
+		{
+			NUnit.Framework.Assert.IsTrue(asserter.Test(), asserter.Message);
+		}
+	}
+
+	public class DictionaryContentAsserter<K, V>
 	{
 		private readonly IDictionary<K, V>[] _expectedResult;
 		private readonly IDictionary<K, V>[] _actualResult;

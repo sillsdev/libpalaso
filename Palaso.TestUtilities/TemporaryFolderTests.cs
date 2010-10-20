@@ -103,5 +103,22 @@ namespace Palaso.TestUtilities {
 			temporaryFolder.Delete();
 			Assert.IsFalse(Directory.Exists(temporaryFolder.FolderPath));
 		}
+
+		[Test]
+		public void MoveTo_Path_PathPropertyIsSet()
+		{
+			using (TempFile temp = new TempFile())
+			{
+				string newPath = Path.Combine(Path.GetTempPath(), "TempFile.tmp");
+				string oldPath = temp.Path;
+
+				Assert.IsTrue(File.Exists(oldPath));
+				Assert.IsFalse(File.Exists(newPath));
+				temp.MoveTo(newPath);
+				Assert.IsFalse(File.Exists(oldPath));
+				Assert.IsTrue(File.Exists(newPath));
+				Assert.AreEqual(newPath, temp.Path);
+			}
+		}
 	}
 }

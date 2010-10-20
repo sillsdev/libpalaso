@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using Palaso.Data;
-using Palaso.I8N;
+using Palaso.i18n;
 using Palaso.Lift;
 using Palaso.Reporting;
 using Palaso.Text;
-//using Palaso.UI.WindowsForms.i8n;
+//using Palaso.UI.WindowsForms.i18n;
 
 namespace Palaso.DictionaryServices.Model
 {
@@ -214,6 +214,7 @@ namespace Palaso.DictionaryServices.Model
 													 value.Minute,
 													 value.Second,
 													 value.Kind);
+					_isDirty = true;
 				}
 			}
 		}
@@ -447,6 +448,9 @@ namespace Palaso.DictionaryServices.Model
 		public bool IsDirty
 		{
 			get { return _isDirty; }
+			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
+			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this setable.
+			set { _isDirty = value; }
 		}
 
 		public LanguageForm GetHeadWord(string writingSystemId)

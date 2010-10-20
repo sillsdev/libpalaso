@@ -41,10 +41,10 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Encode_null_throws()
 		{
-			Base32Convert.ToBase32String(null, Base32FormattingOptions.InsertTrailingPadding);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.ToBase32String(null, Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
@@ -66,10 +66,10 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void EncodeOmitPadding_null_throws()
 		{
-			Base32Convert.ToBase32String(null, Base32FormattingOptions.None);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.ToBase32String(null, Base32FormattingOptions.None));
 		}
 
 		[Test]
@@ -91,10 +91,10 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Decode_null_throws()
 		{
-			Base32Convert.FromBase32String(null, Base32FormattingOptions.InsertTrailingPadding);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.FromBase32String(null, Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
@@ -132,27 +132,24 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
-	   public void Decode_CharacterNotInAlphabet_throws()
+		public void Decode_CharacterNotInAlphabet_throws()
 		{
-			Base32Convert.FromBase32String("#y======", Base32FormattingOptions.InsertTrailingPadding);
-
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("#y======", Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void Decode_MisplacedPaddingCharacter_throws()
 		{
-			Base32Convert.FromBase32String("m=y======", Base32FormattingOptions.InsertTrailingPadding);
-
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("m=y======", Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void Decode_WrongNumberOfPaddingCharacters_throws()
 		{
-			Base32Convert.FromBase32String("my=====", Base32FormattingOptions.InsertTrailingPadding);
-
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("my=====", Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 
@@ -163,10 +160,10 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void DecodeOmitPadding_null_throws()
 		{
-			Base32Convert.FromBase32String(null, Base32FormattingOptions.None);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.FromBase32String(null, Base32FormattingOptions.None));
 		}
 
 		[Test]
@@ -192,46 +189,43 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void DecodeOmitPadding_CharacterNotInAlphabet_throws()
 		{
-			Base32Convert.FromBase32String("#y", Base32FormattingOptions.None);
-
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("#y", Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void DecodeOmitPadding_PaddingCharacter_throws()
 		{
-			Base32Convert.FromBase32String("my======", Base32FormattingOptions.None);
-
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("my======", Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_1_throws()
 		{
-			Base32Convert.FromBase32String("1", Base32FormattingOptions.None);
-
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("1", Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_3_throws()
 		{
-			Base32Convert.FromBase32String("123", Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("123", Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_6_throws()
 		{
-			Base32Convert.FromBase32String("123456", Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32String("123456", Base32FormattingOptions.None));
 		}
 
 
 		[Test]
-		[Category("Long Running")] // ~7 seconds
+		[NUnit.Framework.Category("Long Running")] // ~7 seconds
 		public void EncodeThenDecode_Roundtrip()
 		{
 
@@ -247,7 +241,7 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[Category("Long Running")] // ~7 seconds
+		[NUnit.Framework.Category("Long Running")] // ~7 seconds
 		public void EncodeThenDecodeNoPadding_Roundtrip()
 		{
 
