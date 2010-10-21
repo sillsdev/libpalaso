@@ -447,11 +447,14 @@ namespace Palaso.DictionaryServices.Lift
 					extensible.GetOrCreateProperty<LexRelationCollection>(relationFieldId);
 			LexRelation relation = new LexRelation(relationFieldId, targetId, extensible);
 
-			var dom = new XmlDocument();
-			dom.LoadXml(rawXml);
-			foreach (XmlNode child in dom.FirstChild.ChildNodes)
+			if (!string.IsNullOrEmpty(rawXml))
 			{
-				relation.EmbeddedXmlElements.Add(child.OuterXml);
+				var dom = new XmlDocument();
+				dom.LoadXml(rawXml);
+				foreach (XmlNode child in dom.FirstChild.ChildNodes)
+				{
+					relation.EmbeddedXmlElements.Add(child.OuterXml);
+				}
 			}
 			collection.Relations.Add(relation);
 		}
