@@ -1,4 +1,4 @@
-﻿//#if MONO
+﻿#if MONO
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -135,4 +135,4 @@ namespace Palaso.UsbDrive
 	}
 }
 
-//#endif
+#endif

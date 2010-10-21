@@ -310,6 +310,7 @@ namespace Palaso.Reporting
 
 				var client = new WebClient();
 				client.Credentials = CredentialCache.DefaultNetworkCredentials;
+				client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
 				var response = new byte[] { };
 
