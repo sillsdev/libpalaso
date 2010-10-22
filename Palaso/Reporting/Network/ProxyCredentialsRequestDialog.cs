@@ -30,8 +30,8 @@ namespace Palaso.Reporting.Network
 			{
 				try
 				{
-					dlg._userName.Text = GetClearText(settings.UserName);
-					dlg._password.Text = GetClearText(settings.Password);
+					dlg._userName.Text = RobustNetworkOperation.GetClearText(settings.UserName);
+					dlg._password.Text = RobustNetworkOperation.GetClearText(settings.Password);
 				}
 				catch (Exception)
 				{
@@ -69,15 +69,7 @@ namespace Palaso.Reporting.Network
 		   return Convert.ToBase64String(encryptedNameBytes);
 		}
 
-		private static string GetClearText(string encryptedString)
-		{
-		   if (string.IsNullOrEmpty(encryptedString))
-			   return string.Empty;
-			byte[] encryptedBytes = Convert.FromBase64String(encryptedString);
-			byte[] clearBytes = ProtectedData.Unprotect(encryptedBytes, null,
-										   DataProtectionScope.CurrentUser);
-			return Encoding.Unicode.GetString(clearBytes);
-		}
+
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
