@@ -52,6 +52,14 @@ namespace Palaso.Network
 			return proxy;
 		}
 
+		/// <summary>
+		/// for testing
+		/// </summary>
+		public static void ClearCredentialSettings()
+		{
+			ProxyCredentialSettings.Default.Reset();
+		}
+
 		public static string GetClearText(string encryptedString)
 		{
 			if (string.IsNullOrEmpty(encryptedString))
@@ -78,6 +86,7 @@ namespace Palaso.Network
 			var proxyInfo = RobustNetworkOperation.Do(proxy =>
 														  {
 															  client.Proxy = proxy;
+
 															  client.DownloadData(url);
 																  //we don't actually care what comes back
 														  });
