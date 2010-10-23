@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.Reporting.Network {
+namespace Palaso.Network {
 
 
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

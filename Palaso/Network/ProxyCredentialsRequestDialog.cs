@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Palaso.Reporting.Network
+namespace Palaso.Network
 {
 	public partial class ProxyCredentialsRequestDialog : Form
 	{

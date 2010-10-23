@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Palaso.CommandLineProcessing;
 
-namespace Palaso.Reporting.Network
+namespace Palaso.Network
 {
 
 	public class RobustNetworkOperation
@@ -15,7 +13,7 @@ namespace Palaso.Reporting.Network
 		/// Perform a web action, trying various things to use a proxy if needed, including requesting
 		/// (and remembering) user credentials from the user.
 		/// </summary>
-		/// <returns>the proxy information which was needed to complete the task, or null if it failed.</returns>
+		/// <returns>the proxy information which was needed to complete the task, will THROW if it failed.</returns>
 		public static IWebProxy Do(Action<IWebProxy> action)
 		{
 			IWebProxy proxy = WebRequest.GetSystemWebProxy();
@@ -65,25 +63,35 @@ namespace Palaso.Reporting.Network
 		}
 
 		/// <summary>
-		/// Used by Chorus to get proxy name, user name, and password of the remote repository
+		/// Used by Chorus to get proxy name, user name, and password of the remote repository.
 		/// </summary>
-		/// <returns>the proxy information which was needed to download the page, or null if it failed.</returns>
-		public static IWebProxy DoHttpGetAndGetProxyInfo(string url)
+		/// <returns>true if a proxy is needed. THROWS if it just can't get through</returns>
+		public static bool DoHttpGetAndGetProxyInfo(string url, out string hostAndPort, out string userName, out string password)
 		{
-			try
-			{
-				var client = new WebClient();
-				//client.Credentials = CredentialCache.DefaultNetworkCredentials;
-				return RobustNetworkOperation.Do(proxy =>
-				{
-					client.Proxy = proxy;
-					client.DownloadData(url);//we don't actually care what comes back
-				});
-			}
-			catch (Exception)
-			{
-				return null;
-			}
+			hostAndPort = string.Empty;
+			userName = string.Empty;
+			password = string.Empty;
+
+			var client = new WebClient();
+
+			//note: this can throw
+			var proxyInfo = RobustNetworkOperation.Do(proxy =>
+														  {
+															  client.Proxy = proxy;
+															  client.DownloadData(url);
+																  //we don't actually care what comes back
+														  });
+
+			var destination = new Uri(url);
+			var proxyUrl = proxyInfo.GetProxy(destination);
+			hostAndPort = proxyUrl.OriginalString;
+			if (string.IsNullOrEmpty(hostAndPort))
+				return false;
+
+			var networkCredential = proxyInfo.Credentials.GetCredential(destination, "");
+			userName = networkCredential.UserName;
+			password = networkCredential.Password;
+			return true;
 		}
 	}
 }

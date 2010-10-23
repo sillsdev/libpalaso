@@ -9,7 +9,7 @@ using System.Threading;
 using System.Web;
 using System.Windows.Forms;
 using Palaso.Code;
-using Palaso.Reporting.Network;
+using Palaso.Network;
 
 namespace Palaso.Reporting
 {

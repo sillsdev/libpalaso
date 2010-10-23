@@ -1,4 +1,4 @@
-﻿namespace Palaso.Reporting.Network
+﻿namespace Palaso.Network
 {
 	partial class ProxyCredentialsRequestDialog
 	{
