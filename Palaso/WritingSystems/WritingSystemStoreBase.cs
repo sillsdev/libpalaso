@@ -19,8 +19,8 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		public WritingSystemStoreBase()
 		{
-			_writingSystems = new Dictionary<string, WritingSystemDefinition>();
-			_writingSystemsToIgnore = new Dictionary<string, DateTime>();
+			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
+			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			//_sharedStore = LdmlSharedWritingSystemCollection.Singleton;
 		}
 

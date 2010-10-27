@@ -90,6 +90,29 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("one font", ws2.DefaultFontName);
 		}
 
+
+		/// <summary>
+		/// Language tags should be case insensitive, as required by RFC 5646
+		/// </summary>
+		[Test]
+		public void Get_StoredWithUpperCaseButRequestedUsingLowerCase_Finds()
+		{
+			_writingSystem.ISO = "One-Zxxx-x-AUDIO";
+			StoreUnderTest.Set(_writingSystem);
+			Assert.IsNotNull(StoreUnderTest.Get("one-zxxx-x-audio"));
+		}
+
+		/// <summary>
+		/// Language tags should be case insensitive, as required by RFC 5646
+		/// </summary>
+		[Test]
+		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
+		{
+			_writingSystem.ISO = "ne-zxxx-x-audio";
+			StoreUnderTest.Set(_writingSystem);
+			Assert.IsNotNull(StoreUnderTest.Get("ONE-Zxxx-x-AUDIO"));
+		}
+
 		[Test]
 		public void Exists_FalseThenTrue()
 		{
