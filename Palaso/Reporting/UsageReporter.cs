@@ -24,6 +24,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void RecordLaunch()
 		{
+
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
 
 		   GetUserIdentifierIfNeeded();
@@ -32,6 +33,7 @@ namespace Palaso.Reporting
 			{
 				s_settings.LastLaunchDate = DateTime.UtcNow.Date;
 				s_settings.Launches++;
+
 				AttemptHttpReport();
 			}
 		}
@@ -247,7 +249,12 @@ namespace Palaso.Reporting
 				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
 				parameters.Add("version", ErrorReport.VersionNumberString);
 				parameters.Add("launches", s_settings.Launches.ToString());
+
+				#if DEBUG // we don't need a million developer launch reports
+				parameters.Add("user", "Debug "+s_settings.UserIdentifier);
+				#else
 				parameters.Add("user", s_settings.UserIdentifier);
+				#endif
 
 				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
 				return result == "OK";
@@ -276,6 +283,12 @@ namespace Palaso.Reporting
 			UsageMemory.Default.Launches++;
 			parameters.Add("launches", UsageMemory.Default.Launches.ToString());
 			UsageMemory.Default.Save();
+
+			#if DEBUG // we don't need a million developer launch reports
+				   parameters.Add("user", "Debug");
+			#endif
+
+			//todo: notice, we don't have a way to add the user name in this one?
 
 			try
 			{
