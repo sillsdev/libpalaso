@@ -399,6 +399,12 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
+				//jh (OCt 2010) made it start with RFC5646 because all ws's in a lang start with the
+				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
+				if (!String.IsNullOrEmpty(RFC5646))
+				{
+					return RFC5646;
+				}
 				if (!String.IsNullOrEmpty(_abbreviation))
 				{
 					return _abbreviation;
@@ -479,7 +485,7 @@ namespace Palaso.WritingSystems
 //                {
 //                    return _customLanguageTag;
 //                }
-				string id = String.IsNullOrEmpty(ISO) ? "unknown" : ISO;
+				string id = String.IsNullOrEmpty(ISO) ? string.Empty : ISO;
 				if (!String.IsNullOrEmpty(Script))
 				{
 					id += "-" + Script;

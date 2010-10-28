@@ -77,7 +77,7 @@ namespace Palaso.WritingSystems
 		{
 			if (string.IsNullOrEmpty(identifier))
 			{
-				return identifier;
+				return "unknown"+_kExtension;
 			}
 			return identifier + _kExtension;
 		}

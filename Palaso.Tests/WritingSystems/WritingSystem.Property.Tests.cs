@@ -19,28 +19,36 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void DisplayLabelWhenJustISO()
+		public void DisplayLabel_NoAbbreviation_UsesRFC5646()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "abc";
-			Assert.AreEqual("abc", ws.DisplayLabel);
+			ws.Variant = "xyz";
+			Assert.AreEqual("abc-xyz", ws.DisplayLabel);
 		}
 
-		[Test]
-		public void DisplayLabelWhenHasAbbreviation()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "abc";
-			ws.Abbreviation = "xyz";
-			Assert.AreEqual("xyz", ws.DisplayLabel);
-		}
+//        [Test]
+//        public void DisplayLabel_HasAbbreviation_ShowsAbbreviation()
+//        {
+//            WritingSystemDefinition ws = new WritingSystemDefinition();
+//            ws.ISO = "abc";
+//            ws.Abbreviation = "xyz";
+//            Assert.AreEqual("xyz", ws.DisplayLabel);
+//        }
 
 		[Test]
-		public void DisplayLabelWhenJustLanguage()
+		public void DisplayLabel_OnlyHasLanguageName_UsesFirstPartOfLanguageName()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.LanguageName = "abcdefghijk";
 			Assert.AreEqual("abcd", ws.DisplayLabel);
+		}
+
+		[Test]
+		public void Rfc5646_HasOnlyAbbreviation_EmptyString()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition(){Abbreviation = "hello"};
+			Assert.AreEqual(string.Empty, ws.RFC5646);
 		}
 
 		[Test]
