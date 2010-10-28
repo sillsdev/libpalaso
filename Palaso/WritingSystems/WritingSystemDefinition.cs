@@ -282,7 +282,7 @@ namespace Palaso.WritingSystems
 
 		public bool IsVoice
 		{
-			get { return _variant.Contains("Zxxx"); }
+			get { return ((_script == "Zxxx") && (_variant == ("x-audio"))); }
 			set
 			{
 				Variant = _variant.Replace("Zxxx", "");
@@ -290,7 +290,17 @@ namespace Palaso.WritingSystems
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard=string.Empty;
-					Variant = _variant + "-Zxxx";
+					ISO = ISO.Split('-')[0];
+					UpdateString(ref _script, "Zxxx");
+					UpdateString(ref _region, "");
+					UpdateString(ref _variant, "x-audio");
+				}
+				else
+				{
+
+					UpdateString(ref _script, "");
+					UpdateString(ref _region, "");
+					UpdateString(ref _variant, "");
 				}
 			}
 		}
@@ -306,6 +316,9 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				if (value == Variant) { return; }
+				if (IsVoice == true && value != "x-audio"){return;}
+				if (value == "x-audio") {IsVoice = true; }
 				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
 				UpdateString(ref _variant, value);
 			}
@@ -334,6 +347,10 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				if(IsVoice && value.Contains("-"))
+				{
+					value = value.Split('-')[0];
+				}
 				UpdateString(ref _iso, value);
 			}
 		}
@@ -358,6 +375,8 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				if(value == Script){return;}
+				if(IsVoice == true && value != "Zxxx"){return;}
 				UpdateString(ref _script, value);
 			}
 		}
