@@ -169,7 +169,16 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				Add(sense);
 			}
+			foreach (var variant in entry.Variants)
+			{
+				AddVariant(variant);
+			}
 			Writer.WriteEndElement();
+		}
+
+		public void AddVariant(LexVariant variant)
+		{
+			WriteMultiWithWrapperIfNonEmpty(string.Empty, "variant", variant);
 		}
 
 		/// <summary>
@@ -552,7 +561,39 @@ namespace Palaso.DictionaryServices.Lift
 			Add(GetOrderedAndFilteredForms(text, propertyName), false);
 			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
 			WriteEmbeddedXmlCollection(text);
+			if(text is IExtensible)
+			{
+				WriteExtensible((IExtensible) text);
+			}
 		}
+
+		private void WriteExtensible(IExtensible extensible)
+		{
+			foreach (var trait in extensible.Traits)
+			{
+				WriteTrait(trait);
+			}
+			foreach (var field in extensible.Fields)
+			{
+				Writer.WriteStartElement("field");
+				Writer.WriteAttributeString("type", field.Type);
+				WriteMultiTextNoWrapper(string.Empty /*what's this for*/ , field);
+				foreach (var trait in field.Traits)
+				{
+					WriteTrait(trait);
+				}
+				Writer.WriteEndElement();
+			}
+		}
+
+		private void WriteTrait(LexTrait trait)
+		{
+			Writer.WriteStartElement("trait");
+			Writer.WriteAttributeString("name", trait.Name);
+			Writer.WriteAttributeString("value", trait.Value.Trim());
+			Writer.WriteEndElement();
+		}
+
 		private void WriteEmbeddedXmlCollection(MultiText text)
 		{
 			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to Palaso.Lift / Palaso.Data also then can use MultiTextBase here (or a better interface).

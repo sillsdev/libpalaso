@@ -113,6 +113,12 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			GC.Collect();
 		}
 
+		private static void AssertHasOneMatch(string xpath, LiftExportTestSessionBase session)
+		{
+			AssertThatXmlIn.String(session.StringBuilder.ToString()).
+				HasSpecifiedNumberOfMatchesForXpath(xpath,1);
+		}
+
 		private static void AssertHasAtLeastOneMatch(string xpath, LiftExportTestSessionBase session)
 		{
 			AssertThatXmlIn.String(session.StringBuilder.ToString()).
@@ -277,6 +283,77 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
+		[Test]
+		public void EntryWith2SimpleVariants()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var e = session.CreateItem();
+				LexVariant variant = new LexVariant();
+				variant.SetAlternative("etr","one");
+				e.Variants.Add(variant);
+				variant = new LexVariant();
+				variant.SetAlternative("etr", "two");
+				e.Variants.Add(variant);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasOneMatch("entry/variant/form[@lang='etr' and text='one']", session);
+				AssertHasOneMatch("entry/variant/form[@lang='etr' and text='two']", session);
+			}
+		}
+
+		[Test]
+		public void VariantWith2Traits()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexVariant variant = new LexVariant();
+				variant.SetAlternative("etr", "one");
+				variant.Traits.Add(new LexTrait("a", "A"));
+				variant.Traits.Add(new LexTrait("b", "B"));
+				session.LiftWriter.AddVariant(variant);
+				session.LiftWriter.End();
+				AssertHasOneMatch("variant/trait[@name='a' and @value='A']", session);
+				AssertHasOneMatch("variant/trait[@name='b' and @value='B']", session);
+			}
+		}
+
+		[Test]
+		public void VariantWith2SimpleFields()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexVariant variant = new LexVariant();
+				variant.SetAlternative("etr", "one");
+				var fieldA = new LexField("a");
+				fieldA.SetAlternative("en", "aaa");
+				variant.Fields.Add(fieldA);
+				var fieldB = new LexField("b");
+				fieldB.SetAlternative("en", "bbb");
+				variant.Fields.Add(fieldB);
+				session.LiftWriter.AddVariant(variant);
+				session.LiftWriter.End();
+				AssertHasOneMatch("variant/field[@type='a']/form[@lang='en' and text = 'aaa']", session);
+				AssertHasOneMatch("variant/field[@type='b']/form[@lang='en' and text = 'bbb']", session);
+			}
+		}
+
+		[Test]
+		public void FieldWithTraits()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexVariant variant = new LexVariant();
+				variant.SetAlternative("etr", "one");
+				var fieldA = new LexField("a");
+				fieldA.SetAlternative("en", "aaa");
+				fieldA.Traits.Add(new LexTrait("one", "1"));
+				variant.Fields.Add(fieldA);
+				session.LiftWriter.AddVariant(variant);
+				session.LiftWriter.End();
+				AssertHasOneMatch("variant/field[@type='a']/trait[@name='one' and @value='1']", session);
+			}
+		}
 		[Test]
 		public void CustomMultiTextOnEntry()
 		{

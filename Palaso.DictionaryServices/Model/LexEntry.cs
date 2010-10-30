@@ -33,6 +33,7 @@ namespace Palaso.DictionaryServices.Model
 		private int _orderInFile;
 
 		private BindingList<LexSense> _senses;
+		private BindingList<LexVariant> _variants;
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
 		private bool _isBeingDeleted;
@@ -86,6 +87,7 @@ namespace Palaso.DictionaryServices.Model
 			}
 			_lexicalForm = new MultiText(this);
 			_senses = new BindingList<LexSense>();
+			_variants = new BindingList<LexVariant>();
 			CreationTime = creationTime;
 
 			WireUpEvents();
@@ -113,6 +115,7 @@ namespace Palaso.DictionaryServices.Model
 			base.WireUpEvents();
 			WireUpChild(_lexicalForm);
 			WireUpList(_senses, "senses");
+			WireUpList(_variants, "variants");
 		}
 
 		public override void SomethingWasModified(string propertyModified)
@@ -223,6 +226,10 @@ namespace Palaso.DictionaryServices.Model
 		{
 			get { return _senses; }
 		}
+		public IList<LexVariant> Variants
+		{
+			get { return _variants; }
+		}
 
 		/// <summary>
 		/// Used to track this entry across programs, for the purpose of merging and such.
@@ -280,6 +287,7 @@ namespace Palaso.DictionaryServices.Model
 			{
 				sense.CleanUpAfterEditting();
 			}
+			//enhance if ever WeSay does variants, we may need to add this kind of cleanup
 			CleanUpEmptyObjects();
 		}
 
