@@ -33,7 +33,8 @@ namespace Palaso.DictionaryServices.Model
 		private int _orderInFile;
 
 		private BindingList<LexSense> _senses;
-		private BindingList<LexVariant> _variants;
+		private  BindingList<LexVariant> _variants;
+		private  BindingList<LexNote> _notes;
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
 		private bool _isBeingDeleted;
@@ -88,6 +89,8 @@ namespace Palaso.DictionaryServices.Model
 			_lexicalForm = new MultiText(this);
 			_senses = new BindingList<LexSense>();
 			_variants = new BindingList<LexVariant>();
+			_notes = new BindingList<LexNote>();
+
 			CreationTime = creationTime;
 
 			WireUpEvents();
@@ -229,6 +232,13 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexVariant> Variants
 		{
 			get { return _variants; }
+		}
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
+		/// </summary>
+		public IList<LexNote> Notes
+		{
+			get { return _notes; }
 		}
 
 		/// <summary>

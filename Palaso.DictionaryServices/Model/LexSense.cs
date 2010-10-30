@@ -10,6 +10,7 @@ namespace Palaso.DictionaryServices.Model
 	{
 		//private readonly SenseGlossMultiText _gloss;
 		private readonly BindingList<LexExampleSentence> _exampleSentences;
+		private readonly BindingList<LexNote> _notes;
 		private string _id;
 
 		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
@@ -40,6 +41,7 @@ namespace Palaso.DictionaryServices.Model
 		{
 			//   _gloss = new SenseGlossMultiText(this);
 			_exampleSentences = new BindingList<LexExampleSentence>();
+			_notes = new BindingList<LexNote>();
 			WireUpEvents();
 		}
 
@@ -80,6 +82,14 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexExampleSentence> ExampleSentences
 		{
 			get { return _exampleSentences; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
+		/// </summary>
+		public IList<LexNote> Notes
+		{
+			get { return _notes; }
 		}
 
 		public override bool IsEmpty

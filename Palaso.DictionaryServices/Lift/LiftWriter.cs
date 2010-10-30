@@ -173,12 +173,30 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				AddVariant(variant);
 			}
+			foreach (var note in entry.Notes)
+			{
+				AddNote(note);
+			}
 			Writer.WriteEndElement();
 		}
 
 		public void AddVariant(LexVariant variant)
 		{
 			WriteMultiWithWrapperIfNonEmpty(string.Empty, "variant", variant);
+		}
+
+		public void AddNote(LexNote note)
+		{
+			if (!MultiTextBase.IsEmpty(note))
+			{
+				Writer.WriteStartElement("note");
+				if(!string.IsNullOrEmpty(note.Type))
+				{
+					Writer.WriteAttributeString("type", note.Type.Trim());
+				}
+				AddMultitextForms(string.Empty, note);
+				Writer.WriteEndElement();
+			}
 		}
 
 		/// <summary>
@@ -260,6 +278,10 @@ namespace Palaso.DictionaryServices.Lift
 			foreach (LexExampleSentence example in sense.ExampleSentences)
 			{
 				Add(example);
+			}
+			foreach (var note in sense.Notes)
+			{
+				AddNote(note);
 			}
 			WriteWellKnownCustomMultiText(sense,
 										  PalasoDataObject.WellKnownProperties.Note,
@@ -436,6 +458,8 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteAttributeString("ref", relation.Key);
 				WriteRelationTarget(relation);
 
+				WriteExtensible(relation);
+
 				foreach (string rawXml in relation.EmbeddedXmlElements)
 				{
 					Writer.WriteRaw(rawXml);
@@ -541,7 +565,7 @@ namespace Palaso.DictionaryServices.Lift
 					propertiesAlreadyOutput.Add("type");
 				}
 
-				Add(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
+				AddMultitextForms(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
 				Writer.WriteEndElement();
 			}
 
@@ -556,15 +580,11 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteEndElement();
 		}
 
-		public void Add(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
+		public void AddMultitextForms(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
 		{
 			Add(GetOrderedAndFilteredForms(text, propertyName), false);
 			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
 			WriteEmbeddedXmlCollection(text);
-			if(text is IExtensible)
-			{
-				WriteExtensible((IExtensible) text);
-			}
 		}
 
 		private void WriteExtensible(IExtensible extensible)
@@ -668,7 +688,7 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
-				Add(propertyName, text);
+				AddMultitextForms(propertyName, text);
 			}
 		}
 
@@ -706,7 +726,12 @@ namespace Palaso.DictionaryServices.Lift
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement(wrapperName);
-				Add(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+				AddMultitextForms(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+
+				if (text is IExtensible)
+				{
+					WriteExtensible((IExtensible)text);
+				}
 				Writer.WriteEndElement();
 				return true;
 			}

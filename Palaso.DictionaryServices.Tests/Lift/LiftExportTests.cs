@@ -224,7 +224,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				session.LiftWriter.Add(null, new MultiText());
+				session.LiftWriter.AddMultitextForms(null, new MultiText());
 				CheckAnswer("", session);
 			}
 		}
@@ -299,6 +299,43 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				AssertHasOneMatch("entry/variant/form[@lang='etr' and text='one']", session);
 				AssertHasOneMatch("entry/variant/form[@lang='etr' and text='two']", session);
+			}
+		}
+
+		[Test]
+		public void SenseWith2Notes()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				var note = new LexNote("grammar");
+				note.SetAlternative("etr", "one");
+				sense.Notes.Add(note);
+				var note2 = new LexNote("comment");
+				note2.SetAlternative("etr", "blah");
+				sense.Notes.Add(note2);
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasOneMatch("sense/note/form[@lang='etr' and text='one']", session);
+				AssertHasOneMatch("sense/note[@type='grammar']", session);
+				AssertHasOneMatch("sense/note[@type='comment']", session);
+			}
+		}
+
+
+		[Test]
+		public void EntryWithTypedNote()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				var note = new LexNote("comic");
+				note.SetAlternative("etr", "one");
+				sense.Notes.Add(note);
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasOneMatch("sense/note/form[@lang='etr' and text='one']", session);
+				AssertHasOneMatch("sense/note[@type='comic']", session);
 			}
 		}
 
@@ -1242,7 +1279,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				MultiText text = new MultiText();
 				text["blue"] = "ocean";
 				text["red"] = "sunset";
-				session.LiftWriter.Add(null, text);
+				session.LiftWriter.AddMultitextForms(null, text);
 				CheckAnswer(
 					"<form lang=\"blue\"><text>ocean</text></form><form lang=\"red\"><text>sunset</text></form>",
 					session
@@ -1498,7 +1535,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is well formed</span> XML!");
-				session.LiftWriter.Add(null, multiText);
+				session.LiftWriter.AddMultitextForms(null, multiText);
 				CheckAnswer(
 					"<form lang=\"de\"><text>This <span href=\"reference\">is well formed</span> XML!</text></form>",
 					session
@@ -1513,7 +1550,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is well \u001F formed</span> XML!");
-				session.LiftWriter.Add(null, multiText);
+				session.LiftWriter.AddMultitextForms(null, multiText);
 				CheckAnswer(
 					"<form lang=\"de\"><text>This <span href=\"reference\">is well &#x1F; formed</span> XML!</text></form>",
 					session
@@ -1528,7 +1565,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This has a segment separator character at the end\u001F");
-				session.LiftWriter.Add(null, multiText);
+				session.LiftWriter.AddMultitextForms(null, multiText);
 				CheckAnswer(
 					"<form lang=\"de\"><text>This has a segment separator character at the end&#x1F;</text></form>",
 					session
@@ -1544,7 +1581,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is not well \u001F formed<span> XML!");
-				session.LiftWriter.Add(null, multiText);
+				session.LiftWriter.AddMultitextForms(null, multiText);
 				CheckAnswer(
 					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well &#x1F; formed&lt;span&gt; XML!</text></form>",
 					session
@@ -1559,7 +1596,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is not well formed<span> XML!");
-				session.LiftWriter.Add(null, multiText);
+				session.LiftWriter.AddMultitextForms(null, multiText);
 				CheckAnswer(
 					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well formed&lt;span&gt; XML!</text></form>",
 					session
