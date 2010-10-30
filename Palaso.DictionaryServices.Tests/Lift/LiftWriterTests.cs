@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace Palaso.DictionaryServices.Tests.Lift
 {
 	[TestFixture]
-	public class LiftExportTests
+	public class LiftWriterTests
 	{
 
 		class LiftExportTestSessionBase : IDisposable
@@ -322,6 +322,27 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
+		[Test]
+		public void SenseWith2Reversals()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				var reversal = new LexReversal();
+				reversal.Type = "revType";
+				reversal.SetAlternative("en", "one");
+				sense.Reversals.Add(reversal);
+				var reversal2 = new LexReversal();
+				reversal2.SetAlternative("en", "two");
+				sense.Reversals.Add(reversal2);
+				session.LiftWriter.Add(sense);
+				session.LiftWriter.End();
+				AssertHasOneMatch("sense/reversal/form[@lang='en' and text='one']", session);
+				AssertHasOneMatch("sense/reversal/form[@lang='en' and text='two']", session);
+				AssertHasOneMatch("sense/reversal[@type='revType']", session);
+				AssertHasOneMatch("sense/reversal/@type", session); //only one had a type
+			}
+		}
 
 		[Test]
 		public void EntryWithTypedNote()
@@ -1487,6 +1508,23 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
+		[Test]
+		public void AddRelationTarget_SenseWithSynonymRelations()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var sense = new LexSense();
+				sense.AddRelationTarget("synonym", "one");
+				sense.AddRelationTarget("synonym", "two");
+				sense.AddRelationTarget("antonym", "bee");
+
+				session.LiftWriter.Add(sense);
+				CheckAnswer(GetSenseElement(sense) +
+							"<relation type=\"synonym\" ref=\"one\" /><relation type=\"synonym\" ref=\"two\" /><relation type=\"antonym\" ref=\"bee\" /></sense>",
+							session
+				);
+			}
+		}
 		[Test]
 		public void SenseWithRelationWithEmbeddedXml()
 		{

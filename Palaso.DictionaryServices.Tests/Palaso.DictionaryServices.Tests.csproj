@@ -72,7 +72,7 @@
 	<Compile Include="Lift\HtmlArticalMakerTests.cs">
 	</Compile>
 	<Compile Include="Lift\LexEntryFromLiftBuilderTests.cs" />
-	<Compile Include="Lift\LiftExportTests.cs" />
+	<Compile Include="Lift\LiftWriterTests.cs" />
 	<Compile Include="Lift\LiftPreparer.Tests.cs" />
 	<Compile Include="Lift\LiftRepositoryTests.cs" />
 	<Compile Include="Lift\LiftRoundTripTests.cs" />

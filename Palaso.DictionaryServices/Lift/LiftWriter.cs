@@ -199,6 +199,20 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
+		public void AddReversal(LexReversal reversal)
+		{
+			if (!MultiTextBase.IsEmpty(reversal))
+			{
+				Writer.WriteStartElement("reversal");
+				if (!string.IsNullOrEmpty(reversal.Type))
+				{
+					Writer.WriteAttributeString("type", reversal.Type.Trim());
+				}
+				AddMultitextForms(string.Empty, reversal);
+				Writer.WriteEndElement();
+			}
+		}
+
 		/// <summary>
 		/// in the plift subclass, we add a pronounciation if we have an audio writing system alternative on the lexical unit
 		/// </summary>
@@ -278,6 +292,10 @@ namespace Palaso.DictionaryServices.Lift
 			foreach (LexExampleSentence example in sense.ExampleSentences)
 			{
 				Add(example);
+			}
+			foreach (var reversal in sense.Reversals)
+			{
+				AddReversal(reversal);
 			}
 			foreach (var note in sense.Notes)
 			{

@@ -71,6 +71,9 @@ namespace Palaso.DictionaryServices.Model
 			_fieldId = fieldId;
 			_targetId = targetId ?? string.Empty;
 			_parent = parent;
+
+			Traits = new List<LexTrait>();
+			Fields = new List<LexField>();
 		}
 
 		/// <summary>

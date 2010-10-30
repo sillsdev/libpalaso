@@ -11,6 +11,7 @@ namespace Palaso.DictionaryServices.Model
 		//private readonly SenseGlossMultiText _gloss;
 		private readonly BindingList<LexExampleSentence> _exampleSentences;
 		private readonly BindingList<LexNote> _notes;
+		private readonly BindingList<LexReversal> _reversals;
 		private string _id;
 
 		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
@@ -42,6 +43,7 @@ namespace Palaso.DictionaryServices.Model
 			//   _gloss = new SenseGlossMultiText(this);
 			_exampleSentences = new BindingList<LexExampleSentence>();
 			_notes = new BindingList<LexNote>();
+			_reversals = new BindingList<LexReversal>();
 			WireUpEvents();
 		}
 
@@ -69,6 +71,13 @@ namespace Palaso.DictionaryServices.Model
 			return _id;
 		}
 
+
+		public void AddRelationTarget(string relationName, string targetId)
+		{
+			LexRelationCollection relations =
+				GetOrCreateProperty<LexRelationCollection>(relationName);
+			relations.Relations.Add(new LexRelation(relationName, targetId, this));
+		}
 		public MultiText Gloss
 		{
 			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Gloss); }
@@ -90,6 +99,10 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexNote> Notes
 		{
 			get { return _notes; }
+		}
+		public IList<LexReversal> Reversals
+		{
+			get { return _reversals; }
 		}
 
 		public override bool IsEmpty

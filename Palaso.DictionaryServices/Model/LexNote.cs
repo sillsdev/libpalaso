@@ -16,6 +16,8 @@ namespace Palaso.DictionaryServices.Model
 		public LexNote()
 		{
 			Type = string.Empty;
+			Traits = new List<LexTrait>();
+			Fields = new List<LexField>();
 		}
 
 		public LexNote(string type)
