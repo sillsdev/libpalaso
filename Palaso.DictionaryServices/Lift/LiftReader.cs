@@ -69,6 +69,8 @@ namespace Palaso.DictionaryServices.Lift
 				//                        }
 				catch (Exception)
 				{
+					_progressState.StatusLabel = "Looking for error in file...";
+
 					//our parser failed.  Hopefully, because of bad lift. Validate it now  to
 					//see if that's the problem.
 					Validator.CheckLiftWithPossibleThrow(filePath);
