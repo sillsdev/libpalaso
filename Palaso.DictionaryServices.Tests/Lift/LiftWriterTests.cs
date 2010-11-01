@@ -320,6 +320,20 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
+		public void EntryWithBorrowedWord()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var e = session.CreateItem();
+				//notice, no form given
+				e.Etymologies.Add(new LexEtymology("theType", "theSource"));
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasOneMatch("entry/etymology[@type='theType' and @source='theSource']", session);
+			}
+		}
+
+		[Test]
 		public void EntryWithSimplePronunciation()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())

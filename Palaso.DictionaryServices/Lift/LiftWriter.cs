@@ -190,8 +190,8 @@ namespace Palaso.DictionaryServices.Lift
 
 		private void AddEtymology(LexEtymology etymology)
 		{
-			if (!MultiTextBase.IsEmpty(etymology))
-			{
+//  ok if no form is given          if (!MultiTextBase.IsEmpty(etymology))
+//            {
 				Writer.WriteStartElement("etymology");
 				//type is required, so add the attribute even if it's emtpy
 				Writer.WriteAttributeString("type", etymology.Type.Trim());
@@ -201,9 +201,8 @@ namespace Palaso.DictionaryServices.Lift
 
 				AddMultitextForms(string.Empty, etymology);
 				Writer.WriteEndElement();
-			}
+//           }
 		}
-
 		private void AddPronunciation(LexPhonetic phonetic)
 		{
 			WriteMultiWithWrapperIfNonEmpty(string.Empty, "pronunciation", phonetic);
