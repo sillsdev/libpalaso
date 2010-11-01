@@ -8,8 +8,9 @@ using Palaso.Reporting;
 namespace Palaso.DictionaryServices.Model
 {
 	/// <summary>
-	/// Components:
-	/// Ref, pronunciation, relation: not implemented
+	/// not implemented: ref
+	/// not implemented: pronunciation
+	/// not implemented: relation
 	///
 	/// </summary>
 	public sealed class LexVariant:  MultiText, IExtensible
@@ -20,8 +21,9 @@ namespace Palaso.DictionaryServices.Model
 			Fields = new List<LexField>();
 		}
 
-		public List<LexTrait> Traits{get;private set;}
+		#region IExtensible
+		public List<LexTrait> Traits { get; private set; }
 		public List<LexField> Fields { get; private set; }
-
+		#endregion
 	}
 }

@@ -5,6 +5,7 @@ namespace Palaso.DictionaryServices.Model
 	/// <summary>
 	/// Not implemented: main (waiting on liftwriter support)
 	/// Not implemented: grammatical-info
+	/// Not implemented: extensible.date
 	/// </summary>
 	public sealed class LexReversal:  MultiText
 	{

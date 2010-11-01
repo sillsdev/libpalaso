@@ -9,9 +9,9 @@ namespace Palaso.DictionaryServices.Model
 	public sealed class LexNote:  MultiText, IExtensible
 	{
 		/// <summary>
-		/// optional
+		/// Not implemented: extensible.date
 		/// </summary>
-		public string Type;
+		public string Type { get; set; }
 
 		public LexNote()
 		{
@@ -25,8 +25,10 @@ namespace Palaso.DictionaryServices.Model
 			Type = type;
 		}
 
-		public List<LexTrait> Traits{get;private set;}
+		#region IExtensible
+		public List<LexTrait> Traits { get; private set; }
 		public List<LexField> Fields { get; private set; }
+		#endregion
 
 	}
 }

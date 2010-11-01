@@ -33,8 +33,12 @@ namespace Palaso.DictionaryServices.Model
 		private int _orderInFile;
 
 		private BindingList<LexSense> _senses;
+		//NB: to help with possible confusion: as of wesay 0.9 (oct 2010), wesay doesn't use these lists (it just shoves them in embedded xml), but SOLID does
 		private  BindingList<LexVariant> _variants;
 		private  BindingList<LexNote> _notes;
+		private BindingList<LexPhonetic> _pronunciations;
+		private BindingList<LexEtymology> _etymologies;
+
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
 		private bool _isBeingDeleted;
@@ -90,6 +94,8 @@ namespace Palaso.DictionaryServices.Model
 			_senses = new BindingList<LexSense>();
 			_variants = new BindingList<LexVariant>();
 			_notes = new BindingList<LexNote>();
+			_pronunciations = new BindingList<LexPhonetic>();
+			_etymologies = new BindingList<LexEtymology>();
 
 			CreationTime = creationTime;
 
@@ -229,6 +235,10 @@ namespace Palaso.DictionaryServices.Model
 		{
 			get { return _senses; }
 		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
 		public IList<LexVariant> Variants
 		{
 			get { return _variants; }
@@ -239,6 +249,22 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexNote> Notes
 		{
 			get { return _notes; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexPhonetic> Pronunciations
+		{
+			get { return _pronunciations; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexEtymology> Etymologies
+		{
+			get { return _etymologies; }
 		}
 
 		/// <summary>

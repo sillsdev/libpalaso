@@ -173,11 +173,40 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				AddVariant(variant);
 			}
+			foreach (var phonetic in entry.Pronunciations)
+			{
+				AddPronunciation(phonetic);
+			}
+			foreach (var etymology in entry.Etymologies)
+			{
+				AddEtymology(etymology);
+			}
 			foreach (var note in entry.Notes)
 			{
 				AddNote(note);
 			}
 			Writer.WriteEndElement();
+		}
+
+		private void AddEtymology(LexEtymology etymology)
+		{
+			if (!MultiTextBase.IsEmpty(etymology))
+			{
+				Writer.WriteStartElement("etymology");
+				//type is required, so add the attribute even if it's emtpy
+				Writer.WriteAttributeString("type", etymology.Type.Trim());
+
+				//source is required, so add the attribute even if it's emtpy
+				Writer.WriteAttributeString("source", etymology.Source.Trim());
+
+				AddMultitextForms(string.Empty, etymology);
+				Writer.WriteEndElement();
+			}
+		}
+
+		private void AddPronunciation(LexPhonetic phonetic)
+		{
+			WriteMultiWithWrapperIfNonEmpty(string.Empty, "pronunciation", phonetic);
 		}
 
 		public void AddVariant(LexVariant variant)

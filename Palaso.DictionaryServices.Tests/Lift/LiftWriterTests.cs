@@ -302,6 +302,38 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
+
+		[Test]
+		public void EntryWithSimpleEtymology()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var e = session.CreateItem();
+				LexEtymology etymology = new LexEtymology("theType", "theSource");
+				etymology.SetAlternative("etr", "one");
+				e.Etymologies.Add(etymology);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasOneMatch("entry/etymology/form[@lang='etr' and text='one']", session);
+				AssertHasOneMatch("entry/etymology[@type='theType' and @source='theSource']", session);
+			}
+		}
+
+		[Test]
+		public void EntryWithSimplePronunciation()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var e = session.CreateItem();
+				LexPhonetic phonetic = new LexPhonetic();
+				phonetic.SetAlternative("ipa", "one");
+				e.Pronunciations.Add(phonetic);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasOneMatch("entry/pronunciation/form[@lang='ipa' and text='one']", session);
+			}
+		}
+
 		[Test]
 		public void SenseWith2Notes()
 		{

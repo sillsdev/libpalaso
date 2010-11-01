@@ -80,6 +80,8 @@
 	<Compile Include="Lift\LiftDataMapper.cs" />
 	<Compile Include="Lift\LiftReader.cs" />
 	<Compile Include="Lift\LiftWriter.cs" />
+	<Compile Include="Model\LexEtymology.cs" />
+	<Compile Include="Model\LexPhonetic.cs" />
 	<Compile Include="Model\LexReversal.cs" />
 	<Compile Include="Model\LexNote.cs" />
 	<Compile Include="Model\IExtensible.cs" />
