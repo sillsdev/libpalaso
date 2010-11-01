@@ -11,6 +11,7 @@ using Palaso.Lift.Options;
 using Palaso.DictionaryServices.Lift;
 
 using NUnit.Framework;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {
@@ -319,6 +320,24 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
+		[Test]
+		public void EntryWithFullEtymology()
+		{
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var e = session.CreateItem();
+				LexEtymology etymology = new LexEtymology("theType", "theSource");
+				etymology.SetAlternative("etr", "one");
+				etymology.Gloss.SetAlternative("en", "engloss");
+				etymology.Gloss.SetAlternative("fr", "frgloss");
+				etymology.Form = new LanguageForm("x", "xproto", null);
+				e.Etymologies.Add(etymology);
+				session.LiftWriter.Add(e);
+				session.LiftWriter.End();
+				AssertHasOneMatch("entry/etymology/form[@lang='etr' and text='one']", session);
+				AssertHasOneMatch("entry/etymology[@type='theType' and @source='theSource']", session);
+			}
+		}
 		[Test]
 		public void EntryWithBorrowedWord()
 		{

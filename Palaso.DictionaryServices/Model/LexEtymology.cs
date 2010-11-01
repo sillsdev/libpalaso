@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using Palaso.Lift;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Model
 {
 	/// <summary>
-	/// Not implemented:
-	/// Not implemented:
-	/// Not implemented:
-	/// Not implemented:
+	/// Not implemented: media
 	/// Not implemented: extensible.date
 	/// </summary>
 	public sealed class LexEtymology: MultiText, IExtensible
@@ -21,7 +19,14 @@ namespace Palaso.DictionaryServices.Model
 			Source = source;
 			Traits = new List<LexTrait>();
 			Fields = new List<LexField>();
+			Gloss = new MultiText();
 		}
+		public MultiText Gloss { get; set; }
+
+		/// <summary>
+		/// the proto form
+		/// </summary>
+		public LanguageForm Form { get; set; }
 
 		#region IExtensible
 		public List<LexTrait> Traits{get;private set;}

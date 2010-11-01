@@ -199,6 +199,7 @@ namespace Palaso.DictionaryServices.Lift
 				//source is required, so add the attribute even if it's emtpy
 				Writer.WriteAttributeString("source", etymology.Source.Trim());
 
+				WriteMultiWithWrapperIfNonEmpty(string.Empty, "gloss",etymology.Gloss);
 				AddMultitextForms(string.Empty, etymology);
 				Writer.WriteEndElement();
 //           }

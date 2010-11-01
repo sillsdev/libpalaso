@@ -29,10 +29,6 @@ namespace Palaso.Text
 
 		public LanguageForm(string writingSystemId, string form, MultiTextBase parent)
 		{
-			if (parent == null)
-			{
-				throw new ArgumentException("Parent cannot be null unless using for non-db4o purposes (e.g. netreflector an options)", "parent");
-			}
 			_parent = parent;
 			_writingSystemId = writingSystemId;
 			_form =  form;
