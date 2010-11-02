@@ -327,15 +327,18 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var e = session.CreateItem();
 				LexEtymology etymology = new LexEtymology("theType", "theSource");
-				etymology.SetAlternative("etr", "one");
+				etymology.SetAlternative("etr", "theProtoform");
 				etymology.Gloss.SetAlternative("en", "engloss");
 				etymology.Gloss.SetAlternative("fr", "frgloss");
-				etymology.Form = new LanguageForm("x", "xproto", null);
+				etymology.Comment.SetAlternative("en", "metathesis?");
 				e.Etymologies.Add(etymology);
 				session.LiftWriter.Add(e);
 				session.LiftWriter.End();
-				AssertHasOneMatch("entry/etymology/form[@lang='etr' and text='one']", session);
+				AssertHasOneMatch("entry/etymology/form[@lang='etr' and text='theProtoform']", session);
 				AssertHasOneMatch("entry/etymology[@type='theType' and @source='theSource']", session);
+
+				//handling of comments may change, the issue has been raised on the LIFT google group
+				AssertHasOneMatch("entry/etymology/field[@type='comment']/form[@lang='en' and text='metathesis?']", session);
 			}
 		}
 		[Test]

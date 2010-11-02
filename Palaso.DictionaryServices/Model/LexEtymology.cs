@@ -20,13 +20,15 @@ namespace Palaso.DictionaryServices.Model
 			Traits = new List<LexTrait>();
 			Fields = new List<LexField>();
 			Gloss = new MultiText();
+			Comment = new MultiText();
 		}
 		public MultiText Gloss { get; set; }
 
+
 		/// <summary>
-		/// the proto form
+		/// as of lift 0.13, this doesn't exist, so the writer will have to make a <field/> or something
 		/// </summary>
-		public LanguageForm Form { get; set; }
+		public MultiText Comment { get; set; }
 
 		#region IExtensible
 		public List<LexTrait> Traits{get;private set;}

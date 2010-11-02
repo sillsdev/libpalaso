@@ -200,6 +200,7 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteAttributeString("source", etymology.Source.Trim());
 
 				WriteMultiWithWrapperIfNonEmpty(string.Empty, "gloss",etymology.Gloss);
+				WriteCustomMultiTextField("comment", etymology.Comment);
 				AddMultitextForms(string.Empty, etymology);
 				Writer.WriteEndElement();
 //           }
@@ -547,14 +548,14 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void WriteCustomMultiTextField(string tag, MultiText text)  // review cp see WriteEmbeddedXmlCollection
+		private void WriteCustomMultiTextField(string type, MultiText text)  // review cp see WriteEmbeddedXmlCollection
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement("field");
 
-				Writer.WriteAttributeString("type", tag);
-				WriteMultiTextNoWrapper(tag, text);
+				Writer.WriteAttributeString("type", type);
+				WriteMultiTextNoWrapper(type, text);
 				Writer.WriteEndElement();
 			}
 		}
