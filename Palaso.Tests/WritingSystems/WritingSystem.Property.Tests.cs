@@ -291,13 +291,11 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsVoice_SetToFalse_ClearsScriptRegionAndVariant()
+		public void IsVoice_SetToFalseFromTrue_ClearsScriptRegionAndVariant()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
-				Script = "Script",
-				Region = "Region",
-				Variant = "Variant"
+				IsVoice = true
 			};
 			ws.IsVoice = false;
 			Assert.AreEqual("", ws.Script);
@@ -317,14 +315,27 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IgnoresChange()
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IsVoiceIsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
 												 IsVoice = true
 											 };
 			ws.Script = "change!";
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual("change!", ws.Script);
+			Assert.IsFalse(ws.IsVoice);
+		}
+
+		[Test]
+		public void Region_ChangedToSomethingOtherEmptyWhileIsVoiceIsTrue_IsVoiceIsFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = true
+			};
+			ws.Region = "change!";
+			Assert.AreEqual("change!", ws.Region);
+			Assert.IsFalse(ws.IsVoice);
 		}
 
 		[Test]
@@ -342,25 +353,60 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IgnoresChange()
+		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
 				IsVoice = true
 			};
 			ws.Variant = "change!";
-			Assert.AreEqual("x-audio", ws.Variant);
+			Assert.AreEqual("change!", ws.Variant);
+			Assert.IsFalse(ws.IsVoice);
 		}
 
 		[Test]
-		public void Iso_SetToSmthWithDashesWhileIsVoiceIsTrue_ShortensInputToEveryThingPriorToDash()
+		public void Iso_SetToSmthWithDashesWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
 												 IsVoice = true,
 											 };
 			ws.ISO = "iso-script-region-variant";
-			Assert.AreEqual(ws.ISO, "iso");
+			Assert.AreEqual("iso-script-region-variant", ws.ISO);
+			Assert.IsFalse(ws.IsVoice);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseAfterVariantHasBeenSet_DoesNotRemoveVariant()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				Variant = "variant"
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("variant", ws.Variant);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseAfterRegionHasBeenSet_DoesNotRemoveRegion()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				Region = "Region"
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("Region", ws.Region);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseAfterScriptHasBeenSet_DoesNotRemoveScript()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				Script = "Zxxx"
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("Zxxx", ws.Script);
 		}
 	}
 }

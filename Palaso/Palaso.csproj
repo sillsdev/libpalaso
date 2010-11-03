@@ -155,6 +155,7 @@
 	<Compile Include="Code\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
 	<Compile Include="Code\GuardAgainstReentry.cs" />
+	<Compile Include="Migration\DelegateMigrationStrategy.cs" />
 	<Compile Include="Migration\IMigrationStrategy.cs" />
 	<Compile Include="Migration\IFileVersion.cs" />
 	<Compile Include="Migration\MigrationStrategyBase.cs" />
