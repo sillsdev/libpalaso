@@ -14,7 +14,7 @@ namespace Palaso.Tests.Migration
 	public class XslMigratorTests
 	{
 
-		private class XslStringMigrator : XslMigrator
+		private class XslStringMigrator : XslMigrationStrategy
 		{
 			private string _xsl;
 

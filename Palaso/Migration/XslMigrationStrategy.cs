@@ -6,7 +6,7 @@ namespace Palaso.Migration
 {
 	///<summary>
 	///</summary>
-	public class XslMigrator : MigrationStrategyBase
+	public class XslMigrationStrategy : MigrationStrategyBase
 	{
 		protected string XslSource { get; private set; }
 
@@ -15,7 +15,7 @@ namespace Palaso.Migration
 		///<param name="fromVersion"></param>
 		///<param name="toVersion"></param>
 		///<param name="xslSource">A string reference to the source of the xslt</param>
-		public XslMigrator(int fromVersion, int toVersion, string xslSource) :
+		public XslMigrationStrategy(int fromVersion, int toVersion, string xslSource) :
 			base(fromVersion, toVersion)
 		{
 			XslSource = xslSource;

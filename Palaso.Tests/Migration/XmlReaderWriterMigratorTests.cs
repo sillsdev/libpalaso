@@ -15,7 +15,7 @@ namespace Palaso.Tests.Migration
 	public class XmlReaderWriterMigratorTests
 	{
 
-		class MigratorForTest : XmlReaderWriterMigrator
+		class MigratorForTest : XmlReaderWriterMigrationStrategy
 		{
 			public MigratorForTest(int fromVersion, int toVersion) : base(fromVersion, toVersion)
 			{

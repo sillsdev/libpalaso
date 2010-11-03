@@ -113,7 +113,7 @@ namespace Palaso.Tests.Migration
 			}
 		}
 
-		private class XslStringMigrator : XslMigrator
+		private class XslStringMigrator : XslMigrationStrategy
 		{
 			private string _xsl;
 

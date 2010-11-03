@@ -6,9 +6,9 @@ namespace Palaso.Migration
 	///<summary>
 	/// Copies an xml file, giving an opportunity to inspect each node in the CopyNode method.
 	///</summary>
-	public abstract class XmlReaderWriterMigrator : MigrationStrategyBase
+	public abstract class XmlReaderWriterMigrationStrategy : MigrationStrategyBase
 	{
-		protected XmlReaderWriterMigrator(int fromVersion, int toVersion) :
+		protected XmlReaderWriterMigrationStrategy(int fromVersion, int toVersion) :
 			base(fromVersion, toVersion)
 		{
 		}
