@@ -353,11 +353,15 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if(IsVoice && value.Contains("-"))
+				UpdateString(ref _iso, value);
+				if (value.Contains("Zxxx-x-audio"))
+				{
+					IsVoice = true;
+				}
+				else if(IsVoice && value.Contains("-"))
 				{
 					IsVoice = false;
 				}
-				UpdateString(ref _iso, value);
 			}
 		}
 

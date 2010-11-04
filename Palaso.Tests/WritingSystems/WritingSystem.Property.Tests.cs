@@ -385,6 +385,20 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Iso_SetToSmthContainingZxxxDashxDashaudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = true,
+			};
+			ws.ISO = "iso-Zxxx-x-audio";
+			Assert.AreEqual("iso", ws.ISO);
+			Assert.AreEqual("x-audio", ws.Variant);
+			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
 		public void IsVoice_SetToFalseAfterVariantHasBeenSet_DoesNotRemoveVariant()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
