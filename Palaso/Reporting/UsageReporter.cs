@@ -289,14 +289,14 @@ namespace Palaso.Reporting
 
 					//Make a single guid which connects all reports from this user, so that we can make sense of them even
 					//if/when their IP address changes
-					File.WriteAllText(path, @"guid, " + Guid.NewGuid().ToString());
+					File.WriteAllText(path, @"guid==" + Guid.NewGuid().ToString());
 				}
 				foreach (var line in File.ReadAllLines(path))
 				{
 					var parts = line.Split(new string[] {"=="}, 2, StringSplitOptions.RemoveEmptyEntries);
 					if (parts.Length == 2)
 					{
-						values.Add(new KeyValuePair<string, string>(parts[0], parts[1]));
+						values.Add(new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim()));
 					}
 				}
 			}
