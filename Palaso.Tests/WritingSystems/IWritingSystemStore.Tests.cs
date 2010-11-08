@@ -97,9 +97,9 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithUpperCaseButRequestedUsingLowerCase_Finds()
 		{
-			_writingSystem.ISO = "One-Zxxx-x-AUDIO";
+			_writingSystem.ISO = "sr-Latn-RS";
 			StoreUnderTest.Set(_writingSystem);
-			Assert.IsNotNull(StoreUnderTest.Get("one-zxxx-x-audio"));
+			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-rs"));
 		}
 
 		/// <summary>
@@ -108,9 +108,9 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
 		{
-			_writingSystem.ISO = "one-zxxx-x-audio";
+			_writingSystem.ISO = "sr-Latn-rs";
 			StoreUnderTest.Set(_writingSystem);
-			Assert.IsNotNull(StoreUnderTest.Get("ONE-Zxxx-x-AUDIO"));
+			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-RS"));
 		}
 
 		[Test]

@@ -303,6 +303,7 @@
 	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
+	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />

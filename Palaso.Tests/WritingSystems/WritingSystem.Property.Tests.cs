@@ -209,7 +209,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesAllNeededMembers()
 		{
 			// Put any fields to ignore in this string surrounded by "|"
-			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|";
+			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|_rfcTag|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{
@@ -335,15 +335,15 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Region_ChangedToSomethingOtherEmptyWhileIsVoiceIsTrue_IsVoiceIsFalse()
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_VariantIsChangedToEmpty()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
 				IsVoice = true
 			};
-			ws.Region = "change!";
-			Assert.AreEqual("change!", ws.Region);
-			Assert.IsFalse(ws.IsVoice);
+			ws.Script = "change!";
+			Assert.AreEqual("change!", ws.Script);
+			Assert.AreEqual(String.Empty, ws.Variant);
 		}
 
 		[Test]

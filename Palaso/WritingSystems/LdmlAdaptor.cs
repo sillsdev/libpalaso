@@ -178,10 +178,19 @@ namespace Palaso.WritingSystems
 												   DateTimeStyles.AssumeUniversal);
 				}
 				ws.DateModified = modified;
-				ws.ISO = GetSubNodeAttributeValue(identityReader, "language", "type");
-				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
-				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
-				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
+				RFC5646Tag rfcTag = new RFC5646Tag(GetSubNodeAttributeValue(identityReader, "language", "type"),
+													GetSubNodeAttributeValue(identityReader, "script", "type"),
+													GetSubNodeAttributeValue(identityReader, "territory", "type"),
+													GetSubNodeAttributeValue(identityReader, "variant", "type"));
+				if(!RFC5646Tag.IsValid(rfcTag))
+				{
+					rfcTag = RFC5646Tag.GetValidTag(rfcTag);
+				}
+				ws.ISO = rfcTag.Language;
+				ws.Script = rfcTag.Script;
+				ws.Region = rfcTag.Region;
+				ws.Variant = rfcTag.Variant;
+
 				// move to end of identity node
 				while (identityReader.Read()) ;
 			}
