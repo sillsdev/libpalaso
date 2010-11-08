@@ -104,6 +104,24 @@ namespace BuildTaskTests
 
 
 		/// <summary>
+		/// This is actually what our build scripts do as of Sept 2010... they don't care what is in the assembly.cs.
+		/// The buid.proj file specifies something like 0.3.$(BuildCounter)
+		/// </summary>
+		[Test]
+		public void GetModifiedContents_ExistingHasNumbersButCallSpecifiesWholeVersion_UsesTheIncomingVersion()
+		{
+			var stamper = new StampAssemblies();
+			var content =
+				@"// You can specify all the values or you can default the Revision and Build Numbers
+// by using the '*' as shown below:
+[assembly: AssemblyVersion(""0.0.9.789"")]
+[assembly: AssemblyFileVersion(""0.0.9.789"")]";
+
+			var s = stamper.GetModifiedContents(content, "0.3.14");
+			Assert.IsTrue(s.Contains("0.3.14"), s);
+		}
+
+		/// <summary>
 		/// this is a mystery because the same data fails on Team city. There, it logs
 		/// StampAssemblies: Merging existing 0.1.9999.9999 with incoming *.*.121.93bc7076063f to produce 0.0.121.0.
 		/// here, it logs
