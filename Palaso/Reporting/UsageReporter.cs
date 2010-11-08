@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -266,6 +267,45 @@ namespace Palaso.Reporting
 			}
 		}
 
+		/// <summary>
+		/// store and retrieve values which are the same for all apps using this usage libary
+		/// </summary>
+		/// <returns></returns>
+		public static List<KeyValuePair<string, string>> GetAllApplicationValuesForThisUser()
+		{
+			var values = new List<KeyValuePair<string, string>>();
+			try
+			{
+				var path = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+				path = Path.Combine(path, "Palaso");
+				if (!Directory.Exists(path))
+				{
+					Directory.CreateDirectory(path);
+				}
+				path = Path.Combine(path, "usage.txt");
+				if (!File.Exists(path))
+				{
+					//enhance: guid is our only value at this time, and we don't have a way to add more values or write them out
+
+					//Make a single guid which connects all reports from this user, so that we can make sense of them even
+					//if/when their IP address changes
+					File.WriteAllText(path, @"guid==" + Guid.NewGuid().ToString());
+				}
+				foreach (var line in File.ReadAllLines(path))
+				{
+					var parts = line.Split(new string[] {"=="}, 2, StringSplitOptions.RemoveEmptyEntries);
+					if (parts.Length == 2)
+					{
+						values.Add(new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim()));
+					}
+				}
+			}
+			catch (Exception error)
+			{
+				Debug.Fail(error.Message);// don't do anything to a non-debug user, though.
+			}
+			return values;
+		}
 
 		public static void ReportLaunchesAsync()
 		{
@@ -284,6 +324,10 @@ namespace Palaso.Reporting
 			parameters.Add("launches", UsageMemory.Default.Launches.ToString());
 			UsageMemory.Default.Save();
 
+			foreach (var pair in GetAllApplicationValuesForThisUser())
+			{
+				parameters.Add(pair.Key,pair.Value);
+			}
 			#if DEBUG // we don't need a million developer launch reports
 				   parameters.Add("user", "Debug");
 			#endif
