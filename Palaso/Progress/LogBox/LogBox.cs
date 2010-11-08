@@ -11,6 +11,12 @@ namespace Palaso.Progress.LogBox
 		public LogBox()
 		{
 			InitializeComponent();
+			//On some machines (winXP?) we get in trouble if we don't make sure these boxes are visible before
+			//they get invoked() to.
+			_box.CreateControl();
+			_verboseBox.Visible = true;
+			_verboseBox.CreateControl();
+
 			SetFont();
 		}
 
