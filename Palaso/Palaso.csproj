@@ -314,13 +314,16 @@
   <ItemGroup>
 	<EmbeddedResource Include="Network\ProxyCredentialsRequestDialog.resx">
 	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBox\LogBox.resx">
 	  <DependentUpon>LogBox.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBox\LogBoxResources.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>

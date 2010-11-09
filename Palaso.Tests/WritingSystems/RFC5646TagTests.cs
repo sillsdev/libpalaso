@@ -58,5 +58,20 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(String.Empty, validTag.Region);
 			Assert.AreEqual("x-audio", validTag.Variant);
 		}
+
+		[Test]
+		public void IsValid_IsoContainsDashesAndVariantIsxDashaudio_ReturnsFalse()
+		{
+			RFC5646Tag tag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
+			Assert.IsFalse(RFC5646Tag.IsValid(tag));
+		}
+
+		[Test]
+		public void GetValidTag_IsoContainsDashesAndVariantIsxDashaudio_IsoIsShortened()
+		{
+			RFC5646Tag invalidTag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
+			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
+			Assert.AreEqual("de", validTag.Language);
+		}
 	}
 }

@@ -299,6 +299,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Todo: this could/should become an ordered list of variant tags
 		/// </summary>
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		public string Variant
 		{
 			get
@@ -309,11 +310,7 @@ namespace Palaso.WritingSystems
 			{
 				if (value == Variant) { return; }
 				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
-				_rfcTag.Variant = value;
-				if(value == "x-audio" && Script != "Zxxx")
-				{
-					_rfcTag.Script = "Zxxx";
-				}
+				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, _rfcTag.Region, value);
 				if (!RFC5646Tag.IsValid(_rfcTag))
 				{
 					throw new InvalidOperationException(String.Format("Changing the variant subtag to {0} results in an invalid RFC5646 tag.", value));
@@ -322,6 +319,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		public string Region
 		{
 			get
@@ -330,8 +328,8 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if(value == Region){return;}
-				_rfcTag.Region = value;
+				if (value == Region) { return; }
+				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, value, _rfcTag.Variant);
 				if (!RFC5646Tag.IsValid(_rfcTag))
 				{
 					throw new InvalidOperationException(String.Format("Changing the region subtag to {0} results in an invalid RFC5646 tag.", value));
@@ -340,9 +338,27 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
+		//This method is preferable to setting the individual components independantly, as the order
+		//in which they are set can lead to invalid interim Rfc5646 tags
+		public RFC5646Tag Rfc5646Tag
+		{
+			get{ return _rfcTag;}
+			set
+			{
+				if(!RFC5646Tag.IsValid(value))
+				{
+					value = RFC5646Tag.GetValidTag(value);
+				}
+				_rfcTag = value;
+				Modified = true;
+			}
+		}
+
 		/// <summary>
 		/// The ISO-639 code which is also the Ethnologue code.
 		/// </summary>
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		public string ISO
 		{
 			get
@@ -351,17 +367,8 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if(value == ISO){return;}
-				if(IsVoice && value.Contains("-"))
-				{
-					_rfcTag.Script = String.Empty;
-					_rfcTag.Variant = String.Empty;
-				}
-				_rfcTag.Language = value;
-				if(_rfcTag.Language.Contains("Zxxx-x-audio"))
-				{
-					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(value.Split('-')[0]);
-				}
+				if (value == ISO) { return; }
+				Rfc5646Tag = new RFC5646Tag(value, _rfcTag.Script, _rfcTag.Region, _rfcTag.Variant);
 				if (!RFC5646Tag.IsValid(_rfcTag))
 				{
 					throw new InvalidOperationException(String.Format("Changing the language subtag to {0} results in an invalid RFC5646 tag.", value));
@@ -382,6 +389,8 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		public string Script
 		{
 			get
@@ -390,12 +399,8 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if(value == Script){return;}
-				_rfcTag.Script = value;
-				if(value != "Zxxx" && Variant.Contains("x-audio"))
-				{
-					Variant = String.Empty;
-				}
+				if (value == Script) { return; }
+				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, value, _rfcTag.Region, _rfcTag.Variant);
 				if (!RFC5646Tag.IsValid(_rfcTag))
 				{
 					throw new InvalidOperationException(String.Format("Changing the script subtag to {0} results in an invalid RFC5646 tag.", value));
@@ -527,20 +532,7 @@ namespace Palaso.WritingSystems
 //                {
 //                    return _customLanguageTag;
 //                }
-				string id = String.IsNullOrEmpty(ISO) ? string.Empty : ISO;
-				if (!String.IsNullOrEmpty(Script))
-				{
-					id += "-" + Script;
-				}
-				if (!String.IsNullOrEmpty(Region))
-				{
-					id += "-" + Region;
-				}
-				if (!String.IsNullOrEmpty(Variant))
-				{
-					id += "-" + Variant;
-				}
-				return id;
+				return _rfcTag.CompleteTag;
 			}
 //            set
 //            {

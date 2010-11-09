@@ -163,6 +163,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
+			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Ltn", "", "1901"));
+			secondValueToSet.Add(typeof(RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("en"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -323,27 +325,25 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IsVoiceIsFalse()
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IsVoiceIsStillTrue()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
 												 IsVoice = true
 											 };
 			ws.Script = "change!";
-			Assert.AreEqual("change!", ws.Script);
-			Assert.IsFalse(ws.IsVoice);
+			Assert.IsTrue(ws.IsVoice);
 		}
 
 		[Test]
-		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_VariantIsChangedToEmpty()
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_ScriptIsZxxx()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
 				IsVoice = true
 			};
 			ws.Script = "change!";
-			Assert.AreEqual("change!", ws.Script);
-			Assert.AreEqual(String.Empty, ws.Variant);
+			Assert.AreEqual("Zxxx", ws.Script);
 		}
 
 		[Test]
@@ -373,15 +373,15 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Iso_SetToSmthWithDashesWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		public void Iso_SetToSmthWithDashesWhileIsVoiceIsTrue_IsoIsTruncatedToSubTagBeforeFirstDash()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
 												 IsVoice = true,
 											 };
 			ws.ISO = "iso-script-region-variant";
-			Assert.AreEqual("iso-script-region-variant", ws.ISO);
-			Assert.IsFalse(ws.IsVoice);
+			Assert.AreEqual("iso", ws.ISO);
+			Assert.IsTrue(ws.IsVoice);
 		}
 
 		[Test]

@@ -20,6 +20,27 @@ namespace Palaso.WritingSystems
 			_variant = variant;
 		}
 
+		public string CompleteTag
+		{
+			get
+			{
+				string id = String.IsNullOrEmpty(Language) ? string.Empty : Language;
+				if (!String.IsNullOrEmpty(Script))
+				{
+					id += "-" + Script;
+				}
+				if (!String.IsNullOrEmpty(Region))
+				{
+					id += "-" + Region;
+				}
+				if (!String.IsNullOrEmpty(Variant))
+				{
+					id += "-" + Variant;
+				}
+				return id;
+			}
+		}
+
 		public string Language
 		{
 			get { return _language; }
@@ -48,8 +69,7 @@ namespace Palaso.WritingSystems
 		//At the moment this is almost anything.
 		public static bool IsValid(RFC5646Tag tagToCheck)
 		{
-			if (tagToCheck.Language.Contains("x-audio")) { return false; }
-			if (tagToCheck.Variant == "x-audio" && tagToCheck.Script != "Zxxx") { return false; }
+			if (IsBadAudioTag(tagToCheck)) { return false; }
 			return true;
 		}
 
@@ -59,12 +79,7 @@ namespace Palaso.WritingSystems
 
 			RFC5646Tag validRfc5646Tag = null;
 
-			if (tagToConvert.Language.Contains("x-audio"))
-			{
-				string newLanguageTag = tagToConvert.Language.Split('-')[0];
-				validRfc5646Tag = RFC5646TagForVoiceWritingSystem(newLanguageTag);
-			}
-			if (tagToConvert.Variant == "x-audio" && tagToConvert.Script != "Zxxx")
+			if (IsBadAudioTag(tagToConvert))
 			{
 				string newLanguageTag = tagToConvert.Language.Split('-')[0];
 				validRfc5646Tag = RFC5646TagForVoiceWritingSystem(newLanguageTag);
@@ -74,6 +89,13 @@ namespace Palaso.WritingSystems
 				throw new InvalidOperationException("The palaso library is not able to covert this tag to a valid form.");
 			}
 			return validRfc5646Tag;
+		}
+
+		private static bool IsBadAudioTag(RFC5646Tag tagToConvert)
+		{
+			return (tagToConvert.Language.Contains("x-audio")) ||
+				   (tagToConvert.Variant == "x-audio" && tagToConvert.Script != "Zxxx") ||
+				   (tagToConvert.Variant == "x-audio" && tagToConvert.Language.Contains("-"));
 		}
 
 		public static RFC5646Tag RFC5646TagForVoiceWritingSystem(string language)

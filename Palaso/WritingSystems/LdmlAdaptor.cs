@@ -182,14 +182,7 @@ namespace Palaso.WritingSystems
 													GetSubNodeAttributeValue(identityReader, "script", "type"),
 													GetSubNodeAttributeValue(identityReader, "territory", "type"),
 													GetSubNodeAttributeValue(identityReader, "variant", "type"));
-				if(!RFC5646Tag.IsValid(rfcTag))
-				{
-					rfcTag = RFC5646Tag.GetValidTag(rfcTag);
-				}
-				ws.ISO = rfcTag.Language;
-				ws.Script = rfcTag.Script;
-				ws.Region = rfcTag.Region;
-				ws.Variant = rfcTag.Variant;
+				ws.Rfc5646Tag = rfcTag;
 
 				// move to end of identity node
 				while (identityReader.Read()) ;
