@@ -150,7 +150,6 @@ namespace Palaso.WritingSystems
 				ws.SpellCheckingId = GetSpecialValue(reader, "spellCheckingId");
 			}
 			ws.StoreID = "";
-			ws.Modified = false;
 		}
 
 		private void ReadIdentityElement(XmlReader reader, WritingSystemDefinition ws)

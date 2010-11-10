@@ -154,7 +154,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_writingSystem.ISO = "blah";
 			_collection.SaveDefinition(_writingSystem);
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("blah");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("blah");
 			_collection.SaveDefinition(ws2);
 			AssertWritingSystemFileExists(_writingSystem);
 		}
@@ -181,7 +182,8 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO = "1";
 			_collection.SaveDefinition(_writingSystem);
 
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("1");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("1");
 			Assert.AreEqual("1", ws2.StoreID);
 		}
 
@@ -192,7 +194,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 			string path = Path.Combine(_collection.PathToWritingSystems, "1.ldml");
 			Assert.IsTrue(File.Exists(path));
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("1");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("1");
 			ws2.ISO = "2";
 			Assert.AreEqual("1", ws2.StoreID);
 			_collection.SaveDefinition(ws2);
@@ -230,7 +233,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("blah");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("blah");
 			ws2.Variant = "piglatin";
 			_collection.SaveDefinition(ws2);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(ws2));
@@ -246,7 +250,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 =_collection.LoadDefinition("en-piglatin");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("en-piglatin");
 			Assert.AreEqual("piglatin", ws2.Variant);
 		}
 
@@ -258,7 +263,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("en");
 			Assert.AreEqual("Courier", ws2.DefaultFontName);
 		}
 
@@ -270,7 +276,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("en");
 			Assert.AreEqual("Thai", ws2.Keyboard);
 		}
 
@@ -284,7 +291,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("en");
 			Assert.IsTrue(ws2.RightToLeftScript);
 		}
 
@@ -298,7 +306,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("en");
 			Assert.IsTrue(ws2.IsLegacyEncoded);
 		}
 
@@ -309,7 +318,8 @@ namespace Palaso.Tests.WritingSystems
 			_collection.SaveDefinition(_writingSystem);
 
 			//here, the task is not to overwrite what was in ther already
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("en");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("en");
 			Assert.IsFalse(ws2.IsLegacyEncoded);
 		}
 
@@ -413,7 +423,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_writingSystem.ISO = "blah";
 			_collection.SaveDefinition(_writingSystem);
-			WritingSystemDefinition ws2 = _collection.LoadDefinition("blah");
+			_collection.LoadAllDefinitions();
+			WritingSystemDefinition ws2 = _collection.Get("blah");
 			Assert.IsFalse(ws2.Modified);
 		}
 
@@ -426,13 +437,6 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsFalse(_writingSystem.Modified);
 			_writingSystem.ISO = "foo";
 			Assert.IsTrue(_writingSystem.Modified);
-		}
-
-		[Test]
-		public void LoadDefinitionCanFabricateEnglish()
-		{
-			//_collection.DontAddDefaultDefinitions = false;
-			Assert.AreEqual("English",_collection.LoadDefinition("en-Latn").LanguageName);
 		}
 
 		[Test]
@@ -462,6 +466,109 @@ namespace Palaso.Tests.WritingSystems
 			repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 			Assert.IsFalse(ContainsLanguageWithName(repository.WritingSystemDefinitions, "test"));
 
+		}
+
+		[Test]
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_WritingSystemsAreMadeUnique()
+		{
+			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
+			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-audio.ldml");
+			string ldmlFile3 = Path.Combine(_testPath, "inconsistent-filename.ldml");
+
+			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
+			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-audio"));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+
+			_collection.LoadAllDefinitions();
+
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
+		}
+
+		[Test]
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_FilesAreRenamedToMatchTransformedRFC5646Tag()
+		{
+			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
+			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-audio.ldml");
+			string ldmlFile3 = Path.Combine(_testPath, "inconsistent-filename.ldml");
+
+			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
+			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-audio"));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+
+			_collection.LoadAllDefinitions();
+
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
+
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")));
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")));
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")));
+		}
+
+		[Test]
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatDescribeWritingSystemsWithIdenticalRFC5646Tags_FilesContainLdmlMatchingTransformedRFC5646Tags()
+		{
+			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
+			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-audio.ldml"), GetLdmlFileContent("de", "Script", "", "x-audio"));
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+
+			_collection.LoadAllDefinitions();
+
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
+
+			Assert.AreEqual("de-Zxxx-x-audio", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-audio-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-audio-x-dupl-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")).CompleteTag);
+		}
+
+		private RFC5646Tag ConstructRfc5646TagDirectFromLdml(string ldmlFile1)
+		{
+			XmlDocument ldmlFile = new XmlDocument();
+			ldmlFile.Load(ldmlFile1);
+			string language = GetValueofNode(ldmlFile, "//language/@type");
+			string script = GetValueofNode(ldmlFile, "//script/@type");
+			string region = GetValueofNode(ldmlFile, "//region/@type");
+			string variant = GetValueofNode(ldmlFile, "//variant/@type");
+			return new RFC5646Tag(language, script, region, variant);
+		}
+
+		private string GetValueofNode(XmlDocument ldmlFile, string xpath)
+		{
+			XmlNode node = ldmlFile.SelectSingleNode(xpath);
+			return node == null ? String.Empty : node.Value;
+		}
+
+		[Test]
+		public void LoadAllDefinitions_LdmlFolderStoreContainsInconsistentlyNamedFile_FileIsRenamedToMatchDescribedWritingSystemsRFC5646TagOnLoad()
+		{
+			File.WriteAllText(Path.Combine(_testPath, "tpi-Zxxx-x-audio.ldml"), GetLdmlFileContent("de", "Ltn", "ch", "1901"));
+			_collection.LoadAllDefinitions();
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Ltn-ch-1901.ldml")));
+		}
+
+		private string GetLdmlFileContent(string language, string script, string region, string variant)
+		{
+			string ldml = "<ldml><!--Comment--><identity><version number='' /><generation date='0001-01-01T00:00:00' />".Replace("'","\"");
+			ldml += String.Format("<language type='{0}' />",language).Replace("'","\"");
+			if(script!=String.Empty)
+			{
+			   ldml += String.Format("<script type='{0}' />", script).Replace("'","\"");
+			}
+			if(region!=String.Empty)
+			{
+				ldml += String.Format("<territory type='{0}' />",region).Replace("'", "\"");
+			}
+			if(variant!=String.Empty)
+			{
+				ldml += String.Format("<variant type='{0}' />", variant).Replace("'", "\"");
+			}
+			ldml += "</identity><dates /><collations /><special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1' /><special></special></ldml>".Replace("'","\"");
+			return ldml;
 		}
 
 		private bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)

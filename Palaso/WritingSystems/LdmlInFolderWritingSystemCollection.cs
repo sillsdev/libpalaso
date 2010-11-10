@@ -85,12 +85,30 @@ namespace Palaso.WritingSystems
 		public void LoadAllDefinitions()
 		{
 			Clear();
+
+			Dictionary<string, WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
+			SafelyRenameFilesToMatchWritingSystems(loadedWritingSystems);
+
+			foreach (WritingSystemDefinition ws in loadedWritingSystems.Values)
+			{
+				SaveDefinition(ws);
+				ws.Modified = false;
+			}
+
+			AddActiveOSLanguages();
+		}
+
+		private Dictionary<string, WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
+		{
+			Dictionary<string, WritingSystemDefinition> loadedWritingSystems = new Dictionary<string, WritingSystemDefinition>();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
 				try
 				{
-					string identifier = Path.GetFileNameWithoutExtension(filePath);
-					Set(LoadDefinition(identifier));
+					WritingSystemDefinition wsFromFile = GetWritingSystemFromLdml(filePath);
+					wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
+					MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
+					loadedWritingSystems.Add(wsFromFile.RFC5646, wsFromFile);
 				}
 				catch (Exception
 #if DEBUG
@@ -103,21 +121,90 @@ namespace Palaso.WritingSystems
 #endif
 				}
 			}
+			return loadedWritingSystems;
+		}
 
+		private void SafelyRenameFilesToMatchWritingSystems(Dictionary<string, WritingSystemDefinition> loadedWritingSystems)
+		{
+			string pathToFolderForSafeFileRenaming = CreateFolderForSafeFileRenaming();
+			MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(loadedWritingSystems, pathToFolderForSafeFileRenaming);
+			MoveFilesToFinalDestination(loadedWritingSystems, pathToFolderForSafeFileRenaming);
+			Directory.Delete(pathToFolderForSafeFileRenaming);
+		}
 
-		   //  if (!DontAddDefaultDefinitions )
-		   //  {
-				 AddActiveOSLanguages();
-		   //  }
+		private void MoveFilesToFinalDestination(Dictionary<string, WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
+		{
+			foreach (WritingSystemDefinition ws in loadedWritingSystems.Values)
+			{
+				if(ws.Modified)
+				{
+					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+																		  GetFileName(ws));
+					File.Move(pathInFolderForSafeFileRenaming, GetFilePathFromIdentifier(ws.RFC5646));
+					ws.StoreID = ws.RFC5646;
+				}
+			}
+		}
 
-//
-//            if (!_dontAddDefaultDefinitions && FindAlreadyLoadedWritingSystem("en") == null)
-//            {
-//                WritingSystemDefinition def = new WritingSystemDefinition();
-//                LdmlAdaptor adaptor = new LdmlAdaptor();
-//                adaptor.FillWithDefaults("en", def);
-//                this.WritingSystemDefinitions.Add(def);
-//            }
+		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(Dictionary<string, WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
+		{
+			foreach (WritingSystemDefinition ws in loadedWritingSystems.Values)
+			{
+				if (ws.Modified)
+				{
+					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+																		  GetFileName(ws));
+					File.Move(GetFilePathFromIdentifier(ws.StoreID), pathInFolderForSafeFileRenaming);
+				}
+			}
+		}
+
+		private string CreateFolderForSafeFileRenaming()
+		{
+			string pathToFolderForSafeFileRenaming = Path.Combine(_path, "TemporaryFolderForSafeLoad");
+			if(Directory.Exists(pathToFolderForSafeFileRenaming))
+			{
+				Directory.Delete(pathToFolderForSafeFileRenaming, true);
+			}
+			Directory.CreateDirectory(pathToFolderForSafeFileRenaming);
+			return pathToFolderForSafeFileRenaming;
+		}
+
+		private void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, Dictionary<string, WritingSystemDefinition> rfcTagToWritingSystemMapOfAlreadyLoadedWritingSystems)
+		{
+			while (rfcTagToWritingSystemMapOfAlreadyLoadedWritingSystems.ContainsKey(wsFromFile.RFC5646))
+			{
+				WritingSystemDefinition alreadyLoadedWritingSystem =
+					rfcTagToWritingSystemMapOfAlreadyLoadedWritingSystems[wsFromFile.RFC5646];
+				if (wsFromFile.Modified)
+				{
+					AppendExtensionToDuplicateWritingSystem(wsFromFile);
+				}
+				else
+				{
+					AppendExtensionToDuplicateWritingSystem(alreadyLoadedWritingSystem);
+				}
+			}
+		}
+
+		private void AppendExtensionToDuplicateWritingSystem(WritingSystemDefinition wsFromFile)
+		{
+			string extension = "x-dupl";
+			string variantWithExtension = wsFromFile.Variant + "-" + extension;
+			wsFromFile.Rfc5646Tag = new RFC5646Tag(wsFromFile.ISO, wsFromFile.Script, wsFromFile.Region,
+												   variantWithExtension);
+		}
+
+		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			LdmlAdaptor adaptor = new LdmlAdaptor();
+			if (File.Exists(filePath))
+			{
+				adaptor.Read(filePath, ws);
+				ws.StoreID = Path.GetFileNameWithoutExtension(filePath);
+			}
+			return ws;
 		}
 
 		private bool HaveMatchingDefinitionInTrash(string identifier)
@@ -162,28 +249,6 @@ namespace Palaso.WritingSystems
 					return ws;
 			}
 			return null;
-		}
-
-		public WritingSystemDefinition LoadDefinition(string identifier)
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
-			string filePath = GetFilePathFromIdentifier(identifier);
-			if (File.Exists(filePath))
-			{
-				adaptor.Read(filePath, ws);
-				ws.StoreID = identifier;
-				ws.Modified = false;
-			}
-			else
-			{
-				if (identifier.ToLower() == "en-latn")
-				{
-					//??? Why is the default necessary here? I think a good default for en would already be present.
-					adaptor.FillWithDefaults("en-Latn", ws);
-				}
-			}
-			return ws;
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)
