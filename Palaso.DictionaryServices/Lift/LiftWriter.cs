@@ -198,8 +198,7 @@ namespace Palaso.DictionaryServices.Lift
 
 				//source is required, so add the attribute even if it's emtpy
 				Writer.WriteAttributeString("source", etymology.Source.Trim());
-
-				WriteMultiWithWrapperIfNonEmpty(string.Empty, "gloss",etymology.Gloss);
+				AddMultitextGlosses(string.Empty, etymology.Gloss);
 				WriteCustomMultiTextField("comment", etymology.Comment);
 				AddMultitextForms(string.Empty, etymology);
 				Writer.WriteEndElement();
@@ -308,6 +307,7 @@ namespace Palaso.DictionaryServices.Lift
 			}
 			if (ShouldOutputProperty(LexSense.WellKnownProperties.Gloss))
 			{
+				// review: I (cp) don't think this has the same checking for round tripping that AddMultiText... methods have.
 				WriteOneElementPerFormIfNonEmpty(LexSense.WellKnownProperties.Gloss,
 												 "gloss",
 												 sense.Gloss,
@@ -628,9 +628,16 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteEndElement();
 		}
 
+		public void AddMultitextGlosses(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
+		{
+			WriteLanguageFormsInWrapper(GetOrderedAndFilteredForms(text, propertyName), "gloss", false);
+			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
+			WriteEmbeddedXmlCollection(text);
+		}
+
 		public void AddMultitextForms(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
 		{
-			Add(GetOrderedAndFilteredForms(text, propertyName), false);
+			WriteLanguageFormsInWrapper(GetOrderedAndFilteredForms(text, propertyName), "form", false);
 			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
 			WriteEmbeddedXmlCollection(text);
 		}
@@ -674,11 +681,11 @@ namespace Palaso.DictionaryServices.Lift
 		{
 		}
 
-		protected void Add(IEnumerable<LanguageForm> forms, bool doMarkTheFirst)
+		protected void WriteLanguageFormsInWrapper(IEnumerable<LanguageForm> forms, string wrapper, bool doMarkTheFirst)
 		{
 			foreach (LanguageForm form in forms)
 			{
-				Writer.WriteStartElement("form");
+				Writer.WriteStartElement(wrapper);
 				Writer.WriteAttributeString("lang", form.WritingSystemId);
 				if (doMarkTheFirst)
 				{
