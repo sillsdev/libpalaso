@@ -469,7 +469,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_WritingSystemsAreMadeUnique()
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_WritingSystemsAreMadeUnique()
 		{
 			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
 			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-audio.ldml");
@@ -477,7 +477,7 @@ namespace Palaso.Tests.WritingSystems
 
 			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
 			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-audio"));
-			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio"));
 
 			_collection.LoadAllDefinitions();
 
@@ -487,7 +487,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_FilesAreRenamedToMatchTransformedRFC5646Tag()
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_FilesAreRenamedToMatchTransformedRFC5646Tag()
 		{
 			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
 			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-audio.ldml");
@@ -495,7 +495,7 @@ namespace Palaso.Tests.WritingSystems
 
 			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
 			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-audio"));
-			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio"));
 
 			_collection.LoadAllDefinitions();
 
@@ -509,11 +509,11 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatDescribeWritingSystemsWithIdenticalRFC5646Tags_FilesContainLdmlMatchingTransformedRFC5646Tags()
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_FilesContainLdmlMatchingTransformedRFC5646Tags()
 		{
 			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
 			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-audio.ldml"), GetLdmlFileContent("de", "Script", "", "x-audio"));
-			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio"));
 
 			_collection.LoadAllDefinitions();
 
@@ -524,6 +524,15 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("de-Zxxx-x-audio", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")).CompleteTag);
 			Assert.AreEqual("de-Zxxx-x-audio-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")).CompleteTag);
 			Assert.AreEqual("de-Zxxx-x-audio-x-dupl-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")).CompleteTag);
+		}
+
+		[Test]
+		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatbeforeLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_Throws()
+		{
+			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de", "Zxxx", "", "x-audio"));
+
+			Assert.Throws<ArgumentException>(() => _collection.LoadAllDefinitions());
 		}
 
 		private RFC5646Tag ConstructRfc5646TagDirectFromLdml(string ldmlFile1)

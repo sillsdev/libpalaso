@@ -840,6 +840,7 @@ namespace Palaso.WritingSystems
 			ws._spellCheckingId = _spellCheckingId;
 			ws._dateModified = _dateModified;
 			ws._isLegacyEncoded = _isLegacyEncoded;
+			ws._rfcTag = _rfcTag;
 			ws._rfcTagOnLoad = _rfcTagOnLoad;
 			return ws;
 		}

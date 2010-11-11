@@ -103,12 +103,10 @@ namespace Palaso.WritingSystems
 			List<WritingSystemDefinition> loadedWritingSystems = new List<WritingSystemDefinition>();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
+				WritingSystemDefinition wsFromFile;
 				try
 				{
-					WritingSystemDefinition wsFromFile = GetWritingSystemFromLdml(filePath);
-					wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
-					MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
-					loadedWritingSystems.Add(wsFromFile);
+					wsFromFile = GetWritingSystemFromLdml(filePath);
 				}
 				catch (Exception
 #if DEBUG
@@ -120,6 +118,20 @@ namespace Palaso.WritingSystems
 					throw new ApplicationException("problem loading " + filePath, error);
 #endif
 				}
+				WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
+					loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
+
+				if (writingSystemWithIdenticalRfc5646Tag != null)
+				{
+					throw new ArgumentException
+						(
+						String.Format("Ldml files {0} and {1} conatin writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
+						GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
+						);
+				}
+				wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
+				MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
+				loadedWritingSystems.Add(wsFromFile);
 			}
 			return loadedWritingSystems;
 		}
