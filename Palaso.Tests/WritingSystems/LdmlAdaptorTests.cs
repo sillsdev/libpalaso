@@ -138,5 +138,22 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("Zxxx", ws.Script);
 			Assert.AreEqual("x-audio", ws.Variant);
 		}
+
+		[Test]
+		public void Read_LdmlContainsWellDefinedFaultyIsoThatDescribesAudioWritingSystem_OldRefcTagFieldIsSetCorrectly()
+		{
+			string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"lwl-east\" /><script type=\"Script\" /><territory type=\"overtherainbow\" /><variant type=\"x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
+			string pathToLdmlFile = Path.GetTempFileName();
+			File.WriteAllText(pathToLdmlFile, ldml);
+
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			LdmlAdaptor adaptor = new LdmlAdaptor();
+			adaptor.Read(pathToLdmlFile, ws);
+			Assert.AreEqual("lwl-Zxxx-x-audio", ws.RFC5646);
+			Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
+			Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
+			Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
+			Assert.AreEqual("x-audio", ws.Rfc5646TagOnLoad.Variant);
+		}
 	}
 }

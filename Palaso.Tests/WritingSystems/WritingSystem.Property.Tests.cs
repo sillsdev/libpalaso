@@ -144,7 +144,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ModifyingDefinitionSetsModifiedFlag()
 		{
 			// Put any properties to ignore in this string surrounded by "|"
-			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|";
+			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|";
 			// special test values to use for properties that are particular
 			//Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
 			//Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
@@ -211,7 +211,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesAllNeededMembers()
 		{
 			// Put any fields to ignore in this string surrounded by "|"
-			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|_rfcTag|";
+			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{
@@ -219,7 +219,8 @@ namespace Palaso.Tests.WritingSystems
 				{typeof (bool), true},
 				{typeof (string), "Foo"},
 				{typeof (DateTime), DateTime.Now},
-				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU}
+				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
+				{typeof (RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("de")}
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{

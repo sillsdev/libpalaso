@@ -181,6 +181,7 @@ namespace Palaso.WritingSystems
 													GetSubNodeAttributeValue(identityReader, "script", "type"),
 													GetSubNodeAttributeValue(identityReader, "territory", "type"),
 													GetSubNodeAttributeValue(identityReader, "variant", "type"));
+				ws.Rfc5646TagOnLoad = rfcTag;
 				ws.Rfc5646Tag = rfcTag;
 
 				// move to end of identity node
