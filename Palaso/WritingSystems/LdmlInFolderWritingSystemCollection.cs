@@ -86,10 +86,10 @@ namespace Palaso.WritingSystems
 		{
 			Clear();
 
-			Dictionary<string, WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
-			SafelyRenameFilesToMatchWritingSystems(loadedWritingSystems);
+			List<WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
+			SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(loadedWritingSystems);
 
-			foreach (WritingSystemDefinition ws in loadedWritingSystems.Values)
+			foreach (WritingSystemDefinition ws in loadedWritingSystems)
 			{
 				SaveDefinition(ws);
 				ws.Modified = false;
@@ -98,9 +98,9 @@ namespace Palaso.WritingSystems
 			AddActiveOSLanguages();
 		}
 
-		private Dictionary<string, WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
+		private List<WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
 		{
-			Dictionary<string, WritingSystemDefinition> loadedWritingSystems = new Dictionary<string, WritingSystemDefinition>();
+			List<WritingSystemDefinition> loadedWritingSystems = new List<WritingSystemDefinition>();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
 				try
@@ -108,7 +108,7 @@ namespace Palaso.WritingSystems
 					WritingSystemDefinition wsFromFile = GetWritingSystemFromLdml(filePath);
 					wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
 					MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
-					loadedWritingSystems.Add(wsFromFile.RFC5646, wsFromFile);
+					loadedWritingSystems.Add(wsFromFile);
 				}
 				catch (Exception
 #if DEBUG
@@ -124,7 +124,7 @@ namespace Palaso.WritingSystems
 			return loadedWritingSystems;
 		}
 
-		private void SafelyRenameFilesToMatchWritingSystems(Dictionary<string, WritingSystemDefinition> loadedWritingSystems)
+		private void SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(List<WritingSystemDefinition> loadedWritingSystems)
 		{
 			string pathToFolderForSafeFileRenaming = CreateFolderForSafeFileRenaming();
 			MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(loadedWritingSystems, pathToFolderForSafeFileRenaming);
@@ -132,9 +132,9 @@ namespace Palaso.WritingSystems
 			Directory.Delete(pathToFolderForSafeFileRenaming);
 		}
 
-		private void MoveFilesToFinalDestination(Dictionary<string, WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
+		private void MoveFilesToFinalDestination(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
 		{
-			foreach (WritingSystemDefinition ws in loadedWritingSystems.Values)
+			foreach (WritingSystemDefinition ws in loadedWritingSystems)
 			{
 				if(ws.Modified)
 				{
@@ -146,9 +146,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(Dictionary<string, WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
+		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
 		{
-			foreach (WritingSystemDefinition ws in loadedWritingSystems.Values)
+			foreach (WritingSystemDefinition ws in loadedWritingSystems)
 			{
 				if (ws.Modified)
 				{
@@ -170,12 +170,11 @@ namespace Palaso.WritingSystems
 			return pathToFolderForSafeFileRenaming;
 		}
 
-		private void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, Dictionary<string, WritingSystemDefinition> rfcTagToWritingSystemMapOfAlreadyLoadedWritingSystems)
+		private void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
 		{
-			while (rfcTagToWritingSystemMapOfAlreadyLoadedWritingSystems.ContainsKey(wsFromFile.RFC5646))
+			WritingSystemDefinition alreadyLoadedWritingSystem = new WritingSystemDefinition();
+			while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646) != null)//.ContainsKey(wsFromFile.RFC5646))
 			{
-				WritingSystemDefinition alreadyLoadedWritingSystem =
-					rfcTagToWritingSystemMapOfAlreadyLoadedWritingSystems[wsFromFile.RFC5646];
 				if (wsFromFile.Modified)
 				{
 					AppendExtensionToDuplicateWritingSystem(wsFromFile);
