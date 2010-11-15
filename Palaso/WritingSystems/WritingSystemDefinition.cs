@@ -362,10 +362,7 @@ namespace Palaso.WritingSystems
 		public RFC5646Tag Rfc5646TagOnLoad
 		{
 			get { return _rfcTagOnLoad; }
-			internal set
-			{
-				_rfcTagOnLoad = value;
-			}
+			set{_rfcTagOnLoad = value;}
 		}
 
 		/// <summary>
