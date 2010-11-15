@@ -287,7 +287,7 @@ namespace Palaso.WritingSystems
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
 					ISO = ISO.Split('-')[0];
-					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO);
+					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO, Region);
 				}
 				else if (IsVoice == true)
 				{

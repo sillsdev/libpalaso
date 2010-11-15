@@ -164,7 +164,7 @@ namespace Palaso.Tests.WritingSystems
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
 			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Ltn", "", "1901"));
-			secondValueToSet.Add(typeof(RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("en"));
+			secondValueToSet.Add(typeof(RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("en", String.Empty));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -220,7 +220,7 @@ namespace Palaso.Tests.WritingSystems
 				{typeof (string), "Foo"},
 				{typeof (DateTime), DateTime.Now},
 				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
-				{typeof (RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("de")}
+				{typeof (RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("de", String.Empty)}
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{
@@ -275,7 +275,7 @@ namespace Palaso.Tests.WritingSystems
 											 };
 			ws.IsVoice = true;
 			Assert.AreEqual(ws.Script, "Zxxx");
-			Assert.AreEqual(ws.Region, "");
+			Assert.AreEqual(ws.Region, "Region");
 			Assert.AreEqual(ws.Variant, "x-audio");
 		}
 

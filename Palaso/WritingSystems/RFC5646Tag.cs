@@ -82,7 +82,7 @@ namespace Palaso.WritingSystems
 			if (IsBadAudioTag(tagToConvert))
 			{
 				string newLanguageTag = tagToConvert.Language.Split('-')[0];
-				validRfc5646Tag = RFC5646TagForVoiceWritingSystem(newLanguageTag);
+				validRfc5646Tag = RFC5646TagForVoiceWritingSystem(newLanguageTag, tagToConvert.Region);
 			}
 			if (!IsValid(validRfc5646Tag))
 			{
@@ -98,9 +98,9 @@ namespace Palaso.WritingSystems
 				   (tagToConvert.Variant == "x-audio" && tagToConvert.Language.Contains("-"));
 		}
 
-		public static RFC5646Tag RFC5646TagForVoiceWritingSystem(string language)
+		public static RFC5646Tag RFC5646TagForVoiceWritingSystem(string language, string region)
 		{
-			return new RFC5646Tag(language, "Zxxx", "", "x-audio");
+			return new RFC5646Tag(language, "Zxxx", region, "x-audio");
 		}
 
 		public static bool IsRFC5646TagForVoiceWritingSystem(RFC5646Tag rfcTag)
