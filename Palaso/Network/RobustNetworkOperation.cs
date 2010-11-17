@@ -97,6 +97,10 @@ namespace Palaso.Network
 			if (string.IsNullOrEmpty(hostAndPort))
 				return false;
 
+			if(proxyInfo.Credentials ==null) //this happened to Randy, may be the normal course of things without a proxy
+			{
+				return false;
+			}
 			var networkCredential = proxyInfo.Credentials.GetCredential(destination, "");
 			userName = networkCredential.UserName;
 			password = networkCredential.Password;
