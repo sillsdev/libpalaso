@@ -104,20 +104,7 @@ namespace Palaso.WritingSystems
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
 				WritingSystemDefinition wsFromFile;
-				try
-				{
-					wsFromFile = GetWritingSystemFromLdml(filePath);
-				}
-				catch (Exception
-#if DEBUG
-					error
-#endif
-					)
-				{
-#if DEBUG
-					throw new ApplicationException("problem loading " + filePath, error);
-#endif
-				}
+				wsFromFile = GetWritingSystemFromLdml(filePath);
 				WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
 					loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
 
