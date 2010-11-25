@@ -47,7 +47,7 @@ namespace Palaso.Media
 #if !MONO
 			string withApplicationDirectory = GetPathToBundledFFmpeg();
 
-			if (File.Exists(withApplicationDirectory))
+			if (!string.IsNullOrEmpty(withApplicationDirectory) && File.Exists(withApplicationDirectory))
 				return withApplicationDirectory;
 
 			//nb: this is sensitive to whether we are compiled against win32 or not,
@@ -85,7 +85,14 @@ namespace Palaso.Media
 
 		private static string GetPathToBundledFFmpeg()
 		{
-			return FileLocator.DirectoryOfApplicationOrSolution.CombineForPath("ffmpeg", "ffmpeg.exe");
+			try
+			{
+				 return FileLocator.GetFileDistributedWithApplication("ffmpeg", "ffmpeg.exe");
+			}
+			catch (Exception)
+			{
+				return string.Empty;
+			}
 		}
 
 
@@ -154,6 +161,8 @@ namespace Palaso.Media
 														progress
 				);
 
+			progress.WriteVerbose(result.StandardOutput);
+
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
 				&& File.Exists(outputPath))
@@ -166,6 +175,140 @@ namespace Palaso.Media
 										};
 				return doctoredResult;
 			}
+			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts to low-quality, mono mp3
+		/// </summary>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult MakeLowQualityCompressedAudio(string inputPath, string outputPath, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			var arguments = "-i \"" + inputPath + "\" -acodec libmp3lame -ac 1 -ar 8000 \"" + outputPath + "\"";
+
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			 progress.WriteVerbose(result.StandardOutput);
+
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				result = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+			}
+			if (result.StandardError.ToLower().Contains("error")
+				|| result.StandardError.ToLower().Contains("unable to")
+				|| result.StandardError.ToLower().Contains("invalid")
+				|| result.StandardError.ToLower().Contains("could not")
+				) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts to low-quality, small video
+		/// </summary>
+		/// <param name="maxSeconds">0 if you don't want to truncate at all</param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult MakeLowQualitySmallVideo(string inputPath, string outputPath, int maxSeconds, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			// isn't working: var arguments = "-i \"" + inputPath + "\" -vcodec mpeg4 -s 160x120 -b 800  -acodec libmp3lame -ar 22050 -ab 32k -ac 1 \"" + outputPath + "\"";
+			var arguments = "-i \"" + inputPath +
+							"\" -vcodec mpeg4 -s 160x120 -b 800 -acodec libmp3lame -ar 22050 -ab 32k -ac 1 ";
+			if (maxSeconds > 0)
+				arguments += " -t " + maxSeconds + " ";
+			arguments += "\""+ outputPath + "\"";
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				result = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+
+			}
+			if (result.StandardError.ToLower().Contains("error") //ffmpeg always outputs config info to standarderror
+				|| result.StandardError.ToLower().Contains("unable to")
+				|| result.StandardError.ToLower().Contains("invalid")
+				|| result.StandardError.ToLower().Contains("could not"))
+				progress.WriteWarning(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts to low-quality, small picture
+		/// </summary>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult MakeLowQualitySmallPicture(string inputPath, string outputPath, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			//enhance: how to lower the quality?
+
+			var arguments = "-i \"" + inputPath + "\" -f image2  -s 176x144 \"" + outputPath + "\"";
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+		 if(result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
 			return result;
 		}
 	}

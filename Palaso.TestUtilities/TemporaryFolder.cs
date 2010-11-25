@@ -160,7 +160,7 @@ namespace Palaso.TestUtilities
 		public static TempFile WithExtension(string extension)
 		{
 			extension = extension.TrimStart('.');
-			var path = System.IO.Path.GetRandomFileName() + "."+extension;
+			var path =System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + "."+extension);
 			File.Create(path).Close();
 			return TempFile.TrackExisting(path);
 		}
