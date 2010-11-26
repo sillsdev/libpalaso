@@ -23,6 +23,7 @@ namespace Palaso.WritingSystems
 			p = Path.Combine(p, "WritingSystemRepository");
 			Directory.CreateDirectory(p);
 			PathToWritingSystems = p;
+			LoadAllDefinitions();
 		}
 
 		/// <summary>
@@ -32,6 +33,7 @@ namespace Palaso.WritingSystems
 		public LdmlInFolderWritingSystemStore(string path)
 		{
 			PathToWritingSystems = path;
+			LoadAllDefinitions();
 		}
 
 		public string PathToWritingSystems
@@ -82,6 +84,7 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
+		// TODO This can be made private, but breaks 19 test which need an upgrade anyway CP 2010-11.
 		public void LoadAllDefinitions()
 		{
 			Clear();
