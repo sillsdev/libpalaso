@@ -1,6 +1,4 @@
-﻿using Palaso.UI.WindowsForms.ImageGallery;
-
-namespace WeSay.LexicalTools.AddPictures
+﻿namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	partial class PictureChooser
 	{

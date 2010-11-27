@@ -5,7 +5,7 @@ using Palaso.Progress;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
-namespace Palaso.UI.WindowsForms.Progress
+namespace Palaso.UI.WindowsForms.Progress.Commands
 {
 	public class ProgressDialogHandler
 	{

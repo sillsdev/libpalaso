@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 using System.Linq;
 
-namespace Palaso.UI.WindowsForms.WritingSystems
+namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 {
 	/// <summary>
 	/// This is the Presentation Model (e.g., logic, no UI) for the list
