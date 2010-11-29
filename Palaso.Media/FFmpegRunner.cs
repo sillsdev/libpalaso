@@ -183,6 +183,54 @@ namespace Palaso.Media
 		}
 
 		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ExtractBestQualityWavAudio(string inputPath, string outputPath, int channels, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			//TODO: this will output whatever mp3 or wav or whatever is in the video... might not be wav at all!
+			var channelsArg = "";
+			if(channels>0)
+				channelsArg=string.Format(" -ac {0}", channels);
+
+			var arguments = string.Format("-i \"{0}\" -vn -acodec copy  {1} \"{2}\"", inputPath, channelsArg, outputPath);
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				var doctoredResult = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+				return doctoredResult;
+			}
+			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+		/// <summary>
 		/// Converts to low-quality, mono mp3
 		/// </summary>
 		/// <returns>log of the run</returns>
