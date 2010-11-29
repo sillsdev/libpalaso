@@ -1,18 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
-using System.Xml.XPath;
-
-using Palaso.WritingSystems;
+using Palaso.Code;
 
 namespace Palaso.WritingSystems
 {
 	public class WritingSystemStoreBase : IWritingSystemStore
 	{
-		private Dictionary<string, WritingSystemDefinition> _writingSystems;
-		private Dictionary<string, DateTime> _writingSystemsToIgnore;
+		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
+		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
 		/// <summary>
 		/// Use the default repository
@@ -34,7 +29,7 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemDefinition CreateNew()
 		{
-			WritingSystemDefinition retval = new WritingSystemDefinition();
+			var retval = new WritingSystemDefinition();
 
 			//!!! TODO: Add to shared
 
@@ -99,7 +94,7 @@ namespace Palaso.WritingSystems
 			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
 			if (_writingSystems.ContainsKey(newID) && newID != ws.StoreID)
 			{
-				throw new ArgumentException(String.Format("Unable to store writing system '{0:s}' because this id already exists.  Please change this writing system before storing.", newID));
+				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", newID));
 			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
@@ -139,7 +134,7 @@ namespace Palaso.WritingSystems
 			}
 			if (!_writingSystems.ContainsKey(identifier))
 			{
-				throw new ArgumentOutOfRangeException("identifier");
+				throw new ArgumentOutOfRangeException("identifier", String.Format("Writing system id '{0}' does not exist.", identifier));
 			}
 			return _writingSystems[identifier];
 		}
@@ -170,13 +165,10 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("rhs");
 			}
-			List<WritingSystemDefinition> newerWritingSystems = new List<WritingSystemDefinition>();
-			foreach (WritingSystemDefinition ws in rhs)
+			var newerWritingSystems = new List<WritingSystemDefinition>();
+			foreach (var ws in rhs)
 			{
-				if (ws == null)
-				{
-					throw new ArgumentNullException("rhs", "rhs contains a null WritingSystemDefinition");
-				}
+				Guard.AgainstNull(rhs, "rhs");
 				if (_writingSystems.ContainsKey(ws.RFC5646))
 				{
 					if (!_writingSystemsToIgnore.ContainsKey(ws.RFC5646) && (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
