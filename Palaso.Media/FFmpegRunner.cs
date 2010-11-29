@@ -144,16 +144,17 @@ namespace Palaso.Media
 		/// </summary>
 		/// <param name="inputPath"></param>
 		/// <param name="outputPath"></param>
+		/// <param name="channels">1 for mono, 2 for stereo</param>
 		/// <param name="progress"></param>
 		/// <returns>log of the run</returns>
-		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, IProgress progress)
+		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
 			if(string.IsNullOrEmpty(LocateFFmpeg()))
 			{
 				return new ExecutionResult(){StandardError = "Could not locate FFMpeg"};
 			}
 
-			var arguments = "-i \"" + inputPath + "\" -vn -acodec libmp3lame \"" + outputPath + "\"";
+			var arguments = string.Format("-i \"{0}\" -vn -acodec libmp3lame -ac {1} \"{2}\"", inputPath, channels, outputPath);
 			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
 														arguments,
 														Environment.CurrentDirectory,
