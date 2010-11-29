@@ -6,6 +6,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
 {
+
 	public abstract class IWritingSystemStoreTests
 	{
 		private IWritingSystemStore _storeUnderTest;
@@ -327,6 +328,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerInNull_Throws()
 		{
+			if (StoreUnderTest == null) return;
 			Assert.Throws<ArgumentNullException>(
 				() => StoreUnderTest.WritingSystemsNewerIn(null)
 			);
@@ -335,6 +337,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerInNullDefinition_Throws()
 		{
+			if (StoreUnderTest == null) return;
 			var list = new WritingSystemDefinition[] {null};
 			Assert.Throws<ArgumentNullException>(
 				() => StoreUnderTest.WritingSystemsNewerIn(list)
@@ -344,6 +347,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetNull_Throws()
 		{
+			if (StoreUnderTest == null) return;
 			Assert.Throws<ArgumentNullException>(
 				() => StoreUnderTest.Set(null)
 			);
@@ -352,6 +356,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void MakeDuplicateNull_Throws()
 		{
+			if (StoreUnderTest == null) return;
 			Assert.Throws<ArgumentNullException>(
 				() => StoreUnderTest.MakeDuplicate(null)
 			);
