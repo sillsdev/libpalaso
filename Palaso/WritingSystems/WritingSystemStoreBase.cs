@@ -168,7 +168,7 @@ namespace Palaso.WritingSystems
 			var newerWritingSystems = new List<WritingSystemDefinition>();
 			foreach (var ws in rhs)
 			{
-				Guard.AgainstNull(rhs, "rhs");
+				Guard.AgainstNull(ws, "ws in rhs");
 				if (_writingSystems.ContainsKey(ws.RFC5646))
 				{
 					if (!_writingSystemsToIgnore.ContainsKey(ws.RFC5646) && (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
