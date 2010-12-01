@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NUnit.Framework.Constraints;
 
 namespace Palaso.TestUtilities
@@ -72,6 +73,20 @@ namespace Palaso.TestUtilities
 
 		public override void WriteDescriptionTo(MessageWriter writer)
 		{
+		}
+
+		public override void WriteMessageTo(MessageWriter writer)
+		{
+			if (_expectedLine == null)
+			{
+				writer.WriteMessageLine("Expected end of string (null), actual was '{0}'", _actualLine);
+				return;
+			}
+			if (_actualLine == null)
+			{
+				writer.WriteMessageLine("Expected string '{0}', actual was at end (null)", _expectedLine);
+				return;
+			}
 			writer.DisplayStringDifferences(_expectedLine, _actualLine, 0, false, true);
 		}
 	}
