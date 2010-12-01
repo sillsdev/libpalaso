@@ -40,6 +40,7 @@ namespace Palaso.Network
 				{
 					if (!e2.Message.Contains("407"))
 						throw e2;
+					//I think something like this would tell us the name of the proxy: e.Response.Headers.GetValues("Proxy-Authenticate")
 
 					proxy.Credentials = ProxyCredentialsRequestDialog.GetCredentials(false);
 					if (proxy.Credentials == null)

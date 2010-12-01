@@ -101,7 +101,6 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<None Include="app.config" />
-	<None Include="Network\ProxyCredentialSettings.settings" />
 	<None Include="Progress\LogBox\LogBoxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
