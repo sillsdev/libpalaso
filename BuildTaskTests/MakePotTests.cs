@@ -69,6 +69,18 @@ namespace BuildTaskTests
 				return items;
 			}
 
+			public string MakePotFile(string input)
+			{
+				string csharpFilePath = System.IO.Path.Combine(Path, "csharp.cs");
+				File.WriteAllText(csharpFilePath, input);
+
+				var pot = new MakePot();
+				pot.OutputFile = System.IO.Path.Combine(Path, "output.pot");
+				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
+				pot.Execute();
+
+				return File.ReadAllText(pot.OutputFile);
+			}
 		}
 
 		[Test]
@@ -225,7 +237,19 @@ somevar.MyLocalizableFunction('~ThirdLocalizableString', 'ThirdNotes');
 ".Replace("'", "\"");
 
 			string expected =
-@"# Project-Id-Version:
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
 # Report-Msgid-Bugs-To:
 # POT-Creation-Date: .*
 # Content-Type: text/plain; charset=UTF-8
@@ -248,16 +272,7 @@ msgstr ''
 
 			using (var e = new EnvironmentForTest())
 			{
-				string csharpFilePath = Path.Combine(e.Path, "csharp.cs");
-				File.WriteAllText(csharpFilePath, contents);
-
-				var pot = new MakePot();
-				pot.OutputFile = Path.Combine(e.Path, "output.pot");
-				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
-				pot.Execute();
-
-				string actual = File.ReadAllText(pot.OutputFile);
-				Assert.That(actual, ConstrainStringByLine.Matches(expected));
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
 			}
 
 
@@ -271,7 +286,19 @@ somevar.Text = 'Backing Up...';
 ".Replace("'", "\"");
 
 			string expected =
-@"# Project-Id-Version:
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
 # Report-Msgid-Bugs-To:
 # POT-Creation-Date: .*
 # Content-Type: text/plain; charset=UTF-8
@@ -284,16 +311,7 @@ msgstr ''
 
 			using (var e = new EnvironmentForTest())
 			{
-				string csharpFilePath = Path.Combine(e.Path, "csharp.cs");
-				File.WriteAllText(csharpFilePath, contents);
-
-				var pot = new MakePot();
-				pot.OutputFile = Path.Combine(e.Path, "output.pot");
-				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
-				pot.Execute();
-
-				string actual = File.ReadAllText(pot.OutputFile);
-				Assert.That(actual, ConstrainStringByLine.Matches(expected));
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
 			}
 		}
 
@@ -307,7 +325,19 @@ somevar.Text = 'Backing Up...';
 ".Replace("'", "\"");
 
 			string expected =
-@"# Project-Id-Version:
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
 # Report-Msgid-Bugs-To:
 # POT-Creation-Date: .*
 # Content-Type: text/plain; charset=UTF-8
@@ -321,19 +351,41 @@ msgstr ''
 
 			using (var e = new EnvironmentForTest())
 			{
-				string csharpFilePath = Path.Combine(e.Path, "csharp.cs");
-				File.WriteAllText(csharpFilePath, contents);
-
-				var pot = new MakePot();
-				pot.OutputFile = Path.Combine(e.Path, "output.pot");
-				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
-				pot.Execute();
-
-				string actual = File.ReadAllText(pot.OutputFile);
-				Assert.That(actual, ConstrainStringByLine.Matches(expected));
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
 			}
+		}
 
+		[Test]
+		public void ProcessSrcFile_EmptyString_NotPresentInOutput()
+		{
+			string contents = @"
+somevar.Text = '';
+".Replace("'", "\"");
 
+			string expected =
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+".Replace("'", "\"");
+
+			using (var e = new EnvironmentForTest())
+			{
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
+			}
 		}
 
 	}

@@ -73,32 +73,33 @@ namespace Palaso.BuildTasks.MakePot
 		private void WritePotHeader(TextWriter writer)
 		{
 			/* Note:
-			 * The header output by POEdit on Windows looks like the following.  However, POEdit can't
-			 * read this in as a pot, though it could as a po.  Therefore we prefer to write out our
-			 * info as a comment which at least is preserved by POEdit.  This allows the pot file to
-			 * be merged in to any already existing po file.
+			 * Since the Transifex upgrade to 1.0 circa 2010-12 the pot file is now required to have
+			 * a po header that passes 'msgfmt -c'.
+			 * POEdit does not expect a header in the pot file and doesn't read one if present.  The
+			 * user is invited to enter the data afresh for the po file which replaces any data we have
+			 * provided.  To preserve the original data from the pot we also include the header info
+			 * as a comment.
 			 */
-			//writer.WriteLine(@"msgid """"");
-			//writer.WriteLine(@"msgstr """"");
-			//writer.WriteLine(@"""Project-Id-Version: " + ProjectId + @"\n""");
-			//writer.WriteLine(@"""POT-Creation-Date: " + DateTime.UtcNow.ToString("s") + @"\n""");
-			//writer.WriteLine(@"""PO-Revision-Date: \n""");
-			//writer.WriteLine(@"""MIME-Version: 1.0\n""");
-			//writer.WriteLine(@"""Content-Type: text/plain; charset=UTF-8\n""");
-			//writer.WriteLine(@"""Content-Transfer-Encoding: 8bit\n""");
+			writer.WriteLine(@"msgid """"");
+			writer.WriteLine(@"msgstr """"");
+			writer.WriteLine(@"""Project-Id-Version: " + ProjectId + @"\n""");
+			writer.WriteLine(@"""POT-Creation-Date: " + DateTime.UtcNow.ToString("s") + @"\n""");
+			writer.WriteLine(@"""PO-Revision-Date: \n""");
+			writer.WriteLine(@"""Last-Translator: \n""");
+			writer.WriteLine(@"""Language-Team: \n""");
+			writer.WriteLine(@"""Plural-Forms: \n""");
+			writer.WriteLine(@"""MIME-Version: 1.0\n""");
+			writer.WriteLine(@"""Content-Type: text/plain; charset=UTF-8\n""");
+			writer.WriteLine(@"""Content-Transfer-Encoding: 8bit\n""");
+			writer.WriteLine();
 
-			/* As noted above the commented version below isn't read by POEdit, however it is preserved */
+			/* As noted above the commented version below isn't read by POEdit, however it is preserved in the comments */
 			writer.WriteLine("# Project-Id-Version: {0}", ProjectId);
 			writer.WriteLine("# Report-Msgid-Bugs-To: {0}", MsdIdBugsTo);
 			writer.WriteLine("# POT-Creation-Date: {0}", DateTime.UtcNow.ToString("s"));
 			writer.WriteLine("# Content-Type: text/plain; charset=UTF-8");
 			writer.WriteLine();
 
-			//writer.WriteLine("# PO-Revision-Date: ");
-			//writer.WriteLine("# Last-Translator: ");
-			//writer.WriteLine("# Language-Team: ");
-			//writer.WriteLine("# MIME-Version: 1.0");
-			//writer.WriteLine("# Content-Transfer-Encoding: 8bit");
 		}
 
 		private void ProcessXmlFile(ITaskItem  fileSpec)
@@ -164,6 +165,10 @@ namespace Palaso.BuildTasks.MakePot
 			foreach (Match match in MatchesInCSharpString(contents))
 			{
 				string str = UnescapeString(match.Groups["key"].Value);
+				if (String.IsNullOrEmpty(str))
+				{
+					continue;
+				}
 				if (!_entries.ContainsKey(str)) //first time we've encountered this string?
 				{
 					this.LogMessage(MessageImportance.Low, "Found '{0}'", str);
