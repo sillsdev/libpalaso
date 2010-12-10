@@ -127,7 +127,7 @@ namespace Palaso.BuildTasks.MakePot
 		{
 			try
 			{
-				Log.LogMessage(importance, message, args);
+				Log.LogMessage(importance.ToString(), message, args);
 			}
 			catch (InvalidOperationException)
 			{
