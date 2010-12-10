@@ -83,8 +83,8 @@
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
-		<SpecificVersion>False</SpecificVersion>
-		<HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +108,7 @@
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
 	<Compile Include="i18n\ILocalizableControl.cs" />
 	<Compile Include="i18n\LocalizationHelper.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="i18n\LocalizationHelper.designer.cs">
 	  <DependentUpon>LocalizationHelper.cs</DependentUpon>
@@ -116,11 +117,13 @@
 	<Compile Include="ImageGallery\IImageCollection.cs" />
 	<Compile Include="ImageGallery\ImageUtilities.cs" />
 	<Compile Include="ImageGallery\PictureChooser.cs">
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="ImageGallery\PictureChooser.designer.cs">
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageGallery\ThumbnailViewer.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
 	  <DependentUpon>ThumbnailViewer.cs</DependentUpon>
@@ -131,6 +134,7 @@
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
 	<Compile Include="Progress\ProgressDialog.cs">
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="Progress\Commands\ProgressDialogHandler.cs" />
 	<Compile Include="Progress\ProgressDialogProgressState.cs" />
@@ -144,11 +148,13 @@
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
 	<Compile Include="Spelling\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.designer.cs">
 	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTip.designer.cs">
 	  <DependentUpon>SuperToolTip.cs</DependentUpon>
@@ -156,16 +162,19 @@
 	<Compile Include="SuperToolTip\SuperToolTipInfo.cs" />
 	<Compile Include="SuperToolTip\SuperToolTipInfoWrapper.cs" />
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\BetterLabel.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Widgets\BetterLabel.designer.cs">
 	  <DependentUpon>BetterLabel.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\ControlListBox.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
@@ -173,41 +182,49 @@
 	<Compile Include="Widgets\Prompt.cs" />
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.Designer.cs">
 	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeDialog.cs">
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.Designer.cs">
 	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.Designer.cs">
 	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.Designer.cs">
 	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.Designer.cs">
 	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.Designer.cs">
 	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.Designer.cs">
 	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
@@ -216,6 +233,7 @@
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSPickerUsingComboBox.Designer.cs">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
@@ -223,46 +241,55 @@
 	<Compile Include="WritingSystems\WritingSystemSetupModel.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProvider.cs" />
 	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.Designer.cs">
 	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSFontControl.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSFontControl.Designer.cs">
 	  <DependentUpon>WSFontControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSKeyboardControl.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSKeyboardControl.Designer.cs">
 	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSPickerUsingListView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSPickerUsingListView.Designer.cs">
 	  <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WritingSystemSetupDialog.cs">
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WritingSystemSetupDialog.Designer.cs">
 	  <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WritingSystemSetupView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WritingSystemSetupView.Designer.cs">
 	  <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSPropertiesTabControl.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSPropertiesTabControl.Designer.cs">
 	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSSortControl.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSSortControl.Designer.cs">
 	  <DependentUpon>WSSortControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSSpellingControl.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
@@ -272,6 +299,7 @@
 	<Compile Include="Keyboarding\IBusAdaptor.cs" />
 	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.Designer.cs">
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
