@@ -41,10 +41,14 @@
 	  <StampAssemblies Version="$(BUILD_NUMBER)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
 	</Target>
 
+	<ItemGroup>
+		<ExistingObjectFiles
+			Include="$(teamcity_build_checkoutDir)/**/obj/**/*;$(teamcity_build_checkoutDir)/output/$(Configuration)/**/*"
+			Exclude="$(teamcity_build_checkoutDir)/.hg/**/*"
+		/>
+	</ItemGroup>
 	<Target Name="Clean">
-		<MSBuild Projects="$(teamcity_build_checkoutDir)\$(Solution)"
-			Targets="Clean"
-			Properties="Configuration=$(Configuration)" />
+		<Delete Files="@(ExistingObjectFiles)" />
 	</Target>
 
 	<Target Name="Compile" DependsOnTargets="SetAssemblyVersion">
