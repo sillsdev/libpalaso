@@ -48,7 +48,7 @@
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
 			ExcludeCategory="SkipOnTeamCity"
-			NUnitVersion="NUnit-2.4.7" />
+			NUnitVersion="NUnit-2.5.5" />
 	</Target>
 
 </Project>
