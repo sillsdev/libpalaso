@@ -224,11 +224,6 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			}
 		}
 
-		public void LogMessage(MessageImportance messageImportance, string s)
-		{
-			LogMessage(messageImportance, s);
-		}
-
 		public bool HasLoggedErrors
 		{
 			get { return _hasLoggedErrors; }
@@ -267,8 +262,6 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		{
 			Log.LogWarning(s);
 		}
-
-
 
 		private void ProcessDir(XmlElement parent, string dirPath, string outerDirectoryId)
 		{
@@ -435,6 +428,18 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		private void LogMessage(string message, params object[] args)
 		{
 			LogMessage(MessageImportance.Normal, message, args);
+		}
+
+		public void LogMessage(MessageImportance importance, string message)
+		{
+			try
+			{
+				Log.LogMessage(importance.ToString(), message);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
 		}
 
 		private void LogMessage(MessageImportance importance, string message, params object[] args)
