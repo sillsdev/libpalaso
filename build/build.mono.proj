@@ -19,7 +19,7 @@
 
 	<Target Name="Build">
 		<CallTarget Targets="Clean"/>
-		<CallTarget Targets="SetAssemblyversion"/>
+		<CallTarget Targets="SetAssemblyVersion"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
 	</Target>
@@ -34,7 +34,7 @@
 		<Delete Files="@(ExistingObjectFiles)" />
 	</Target>
 
-	<Target Name="Compile" DependsOnTargets="SetAssemblyVersion">
+	<Target Name="Compile">
 		<MSBuild
 			Projects="$(RootDir)\$(Solution)"
 			Targets="Build"
@@ -48,7 +48,7 @@
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
 			ExcludeCategory="SkipOnTeamCity"
-			NUnitVersion="NUnit-2.5.5" />
+			NUnitVersion="NUnit-2.4.7" />
 	</Target>
 
 </Project>
