@@ -12,37 +12,16 @@
 	<PropertyGroup>
 		<Solution>Palaso.sln</Solution>
 		<ApplicationName>PalasoLibrary</ApplicationName>
-		<Configuration>Release</Configuration>
+		<Configuration>ReleaseMono</Configuration>
 	</PropertyGroup>
 
-	<Target Name="VersionNumbers">
-		<Message Text="BUILD_NUMBER: $(BUILD_NUMBER)" Importance="high"/>
-
-		<Split Input="$(BUILD_NUMBER)" Delimiter="." OutputSubString="2">
-			<Output TaskParameter="ReturnValue" PropertyName="BuildCounter" />
-		</Split>
-
-		<Message Text="BuildCounter: $(BuildCounter)" Importance="high"/>
-
-		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies).     -->
-		<CreateProperty Value="1.5.$(BuildCounter)">
-			<Output PropertyName="Version" TaskParameter="Value"/>
-		</CreateProperty>
-
-		<Message Text="Version: $(Version)" Importance="high"/>
-	</Target>
+	<Import Project="$(RootDir)/build/build.common.proj" />
 
 	<Target Name="Build">
 		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="SetAssemblyversion"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
-	</Target>
-
-	<ItemGroup>
-		<AssemblyInfoFiles Include="$(RootDir)/**/AssemblyInfo.cs"/>
-	</ItemGroup>
-	<Target Name="SetAssemblyVersion" DependsOnTargets="VersionNumbers">
-	  <StampAssemblies Version="$(Version)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
 	</Target>
 
 	<ItemGroup>
@@ -69,10 +48,7 @@
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
 			ExcludeCategory="SkipOnTeamCity"
-			Platform="x86"
-			RuntimeVersion="v4.0"
-			NUnitVersion="NUnit-2.5.5"
-			RunProcessPerAssembly="False"/>
+			NUnitVersion="NUnit-2.5.5" />
 	</Target>
 
 </Project>
