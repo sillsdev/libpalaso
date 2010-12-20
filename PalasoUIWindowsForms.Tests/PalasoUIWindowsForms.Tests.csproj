@@ -137,9 +137,6 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="PalasoUIWindowsForms.Tests.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
 	<None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
