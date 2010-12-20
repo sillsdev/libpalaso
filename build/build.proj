@@ -41,7 +41,7 @@
 	<ItemGroup>
 		<AssemblyInfoFiles Include="$(RootDir)/**/AssemblyInfo.cs"/>
 	</ItemGroup>
-	<Target Name="SetAssemblyVersion">
+	<Target Name="SetAssemblyVersion" DependsOnTargets="VersionNumbers">
 	  <StampAssemblies Version="$(Version)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
 	</Target>
 
