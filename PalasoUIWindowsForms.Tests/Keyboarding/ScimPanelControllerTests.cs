@@ -9,6 +9,7 @@ using System.Windows.Forms;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class ScimPanelControllerTests
 	{
 		private Form _window;
@@ -16,7 +17,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindowForFocus()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -26,14 +27,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
 			Assert.IsTrue(ScimPanelController.Singleton.EngineAvailable);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -42,7 +43,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
 			Assert.AreEqual("English/European", ScimPanelController.Singleton.KeyboardDescriptors[0].Name);
@@ -51,21 +52,21 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void HasKeyboardNamed_ScimHasKeyboard_ReturnsTrue()
 		{
 			Assert.IsTrue(ScimPanelController.Singleton.HasKeyboardNamed("English/Keyboard"));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void HasKeyboardNamed_ScimDoesNotHaveKeyboard_ReturnsFalse()
 		{
 			Assert.IsFalse(ScimPanelController.Singleton.HasKeyboardNamed("Nonexistant Keyboard"));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -75,7 +76,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -86,7 +87,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(
@@ -95,7 +96,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void GetCurrentInputContext_ScimIsRunning_ReturnsContext()
 		{
 			const int unrealisticClientId = -2;
@@ -109,27 +110,27 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(unrealisticContextClientId, currentContext.context);
 		}
 
-		private void ResetKeyboardToDefault()
+		private static void ResetKeyboardToDefault()
 		{
 			ScimPanelController.Singleton.Deactivate();
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void Deactivate_ScimIsNotRunning_DoesNotThrow()
 		{
 			ScimPanelController.Singleton.Deactivate();
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void ActivateKeyBoard_ScimIsNotRunning_DoesNotThrow()
 		{
 			ScimPanelController.Singleton.ActivateKeyboard("English/Keyboard");
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = ScimPanelController.Singleton.KeyboardDescriptors;
@@ -137,7 +138,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void GetActiveKeyboard_ScimIsNotRunning_ReturnsEmptyString()
 		{
 			string activeKeyboard = ScimPanelController.Singleton.GetActiveKeyboard();
@@ -145,14 +146,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
 		{
 			Assert.IsFalse(ScimPanelController.Singleton.EngineAvailable);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void HasKeyboardNamed_ScimIsNotRunning_ReturnsFalse()
 		{
 			Assert.IsFalse(ScimPanelController.Singleton.HasKeyboardNamed("English/Keyboard"));
