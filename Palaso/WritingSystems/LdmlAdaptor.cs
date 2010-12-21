@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems
 {
@@ -134,7 +135,7 @@ namespace Palaso.WritingSystems
 				ReadTopLevelSpecialElement(reader, ws);
 			}
 			ws.StoreID = "";
-			ws.Modified = false;
+			// ws.Modified = false; // Note: This unfortunately is no longer true. The RFC5646 tag may have been auto modified above. CP 2010-12
 		}
 
 		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinition ws)
@@ -191,10 +192,13 @@ namespace Palaso.WritingSystems
 												   DateTimeStyles.AssumeUniversal);
 				}
 				ws.DateModified = modified;
-				ws.ISO = GetSubNodeAttributeValue(identityReader, "language", "type");
-				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
-				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
-				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
+				RFC5646Tag rfcTag = new RFC5646Tag(GetSubNodeAttributeValue(identityReader, "language", "type"),
+													GetSubNodeAttributeValue(identityReader, "script", "type"),
+													GetSubNodeAttributeValue(identityReader, "territory", "type"),
+													GetSubNodeAttributeValue(identityReader, "variant", "type"));
+				ws.Rfc5646TagOnLoad = rfcTag;
+				ws.Rfc5646Tag = new RFC5646Tag(rfcTag);
+
 				// move to end of identity node
 				while (identityReader.Read()) ;
 			}

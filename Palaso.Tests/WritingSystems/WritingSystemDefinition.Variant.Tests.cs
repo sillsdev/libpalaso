@@ -125,7 +125,7 @@ namespace Palaso.Tests.WritingSystems
 			ws.Variant = "a-b";
 			ws.IsVoice=true;
 			ws.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.AreEqual("a-b-fonipa", ws.Variant);
+			Assert.IsFalse(ws.IsVoice);
 		}
 	}
 }

@@ -134,13 +134,13 @@ namespace Palaso.Tests.Spart.Scanners
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void Read_AtEnd_Throws()
 		{
 			StringScanner scanner = new StringScanner(Text);
 			scanner.Seek(Text.Length);
 			Assert.IsTrue(scanner.AtEnd);
-			scanner.Read();
+			Assert.Throws<InvalidOperationException>(
+				() => scanner.Read());
 		}
 
 		[Test]

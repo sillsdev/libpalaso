@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	[ToolboxItem(false)]
 	public partial class SuperToolTipWindowData : UserControl

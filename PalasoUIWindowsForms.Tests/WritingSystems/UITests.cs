@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.WritingSystems;
+using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
@@ -21,7 +22,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var folder = new TemporaryFolder("WS-Test"))
 			{
-				new WritingSystemSetupDialog(folder.Path).ShowDialog();
+				var dlg = new WritingSystemSetupDialog(folder.Path);
+				dlg.WritingSystemSuggestor.SuggestVoice = true;
+				dlg.ShowDialog();
 			}
 		}
 

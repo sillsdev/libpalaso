@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.ImageGallery;
 using System.Linq;
 
-namespace WeSay.LexicalTools.AddPictures
+namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	public partial class PictureChooser : Form
 	{

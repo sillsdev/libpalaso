@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using Palaso.Lift.Options;
 using Palaso.Reporting;
 using Palaso.Text;
@@ -322,6 +323,34 @@ namespace Palaso.Lift
 			return null;
 		}
 
+
+		/// <summary>
+		/// Copy a property from some other object, e.g., when merging senses
+		/// </summary>
+		public void CopyProperty(KeyValuePair<string, object> incoming)
+		{
+			KeyValuePair<string, object> existing =
+				Properties.Find(
+					delegate(KeyValuePair<string, object> p) { return p.Key == incoming.Key; });
+
+			if (existing.Key == incoming.Key)
+			{
+				Properties.Remove(existing);
+			}
+
+			Properties.Add(new KeyValuePair<string, object>(incoming.Key, incoming.Value));
+
+			if(incoming.Value is IParentable)
+				((IParentable)incoming.Value).Parent = this;
+
+			//temp hack until mt's use parents for notification
+			if (incoming.Value is MultiText)
+			{
+				WireUpChild((INotifyPropertyChanged)incoming.Value);
+			}
+		}
+
+
 		public bool GetHasFlag(string propertyName)
 		{
 			FlagState flag = GetProperty<FlagState>(propertyName);
@@ -455,6 +484,16 @@ namespace Palaso.Lift
 		{
 			get { return _values; }
 			set { _values = value; }
+		}
+
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+			foreach (var part in Values)
+			{
+				builder.Append(part.ToString() + " ");
+			}
+			return builder.ToString().Trim();
 		}
 	}
 }

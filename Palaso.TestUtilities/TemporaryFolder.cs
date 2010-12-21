@@ -1,12 +1,14 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace Palaso.TestUtilities
 {
 	public class TempLiftFile : TempFile
 	{
+
 		public TempLiftFile(string xmlOfEntries)
 			: this(xmlOfEntries, /*LiftIO.Validation.Validator.LiftVersion*/ "0.12")
 		{
@@ -25,7 +27,8 @@ namespace Palaso.TestUtilities
 			}
 			else
 			{
-				_path = System.IO.Path.GetRandomFileName() + ".lift";
+				_path = System.IO.Path.GetTempFileName() + ".lift";
+				//_path = System.IO.Path.GetRandomFileName() + ".lift";
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
@@ -157,7 +160,7 @@ namespace Palaso.TestUtilities
 		public static TempFile WithExtension(string extension)
 		{
 			extension = extension.TrimStart('.');
-			var path = System.IO.Path.GetRandomFileName() + "."+extension;
+			var path =System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + "."+extension);
 			File.Create(path).Close();
 			return TempFile.TrackExisting(path);
 		}

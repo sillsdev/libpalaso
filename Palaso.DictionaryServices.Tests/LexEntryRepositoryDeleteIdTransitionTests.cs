@@ -30,13 +30,13 @@ namespace WeSay.LexicalModel.Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute")]
 		public override void SaveItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
 			Item.Senses.Add(new LexSense());
-			Assert.Throws<ArgumentOutOfRangeException>(() =>
-				DataMapperUnderTest.SaveItem(Item));
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => DataMapperUnderTest.SaveItem(Item)
+			);
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()

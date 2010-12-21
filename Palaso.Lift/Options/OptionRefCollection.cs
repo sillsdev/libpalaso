@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text;
 
 namespace Palaso.Lift.Options
 {
@@ -339,6 +340,16 @@ namespace Palaso.Lift.Options
 				}
 			}
 			return 0;
+		}
+
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+			foreach (var optionRef in _members)
+			{
+				builder.Append(optionRef.ToString()+", ");
+			}
+			return builder.ToString().TrimEnd(new char[] {',', ' '});
 		}
 	}
 }

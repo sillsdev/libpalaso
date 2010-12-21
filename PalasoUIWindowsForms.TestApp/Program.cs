@@ -4,7 +4,6 @@ using System.IO;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.WritingSystems;
-using WeSay.LexicalTools.AddPictures;
 
 
 namespace PalasoUIWindowsForms.TestApp

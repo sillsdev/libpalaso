@@ -169,12 +169,23 @@ namespace Palaso.Lift
 			get { return true; }
 		}
 
+
 		private void LoadAllLexEntries()
 		{
 			using (ILiftReader<T> reader = _ioProvider.CreateReader())
 			{
+				CustomizeReader(reader);
 				reader.Read(_liftFilePath, _backend);
 			}
+		}
+
+		/// <summary>
+		/// for subclasses
+		/// </summary>
+		/// <param name="reader"></param>
+		protected virtual void CustomizeReader(ILiftReader<T> reader)
+		{
+
 		}
 
 		private string LiftDirectory

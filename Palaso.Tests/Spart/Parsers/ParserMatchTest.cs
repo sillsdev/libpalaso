@@ -58,17 +58,19 @@ namespace Palaso.Tests.Spart.Parsers
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void NoMatchEmpty()
 		{
-			bool b=CreateFailureMatch.Empty;
+			bool b;
+			Assert.Throws<InvalidOperationException>(
+				() => b = CreateFailureMatch.Empty);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(InvalidOperationException))]
 		public void NoMatchValue()
 		{
-			String o = CreateFailureMatch.Value;
+			String o;
+			Assert.Throws<InvalidOperationException>(
+				() => o = CreateFailureMatch.Value);
 		}
 
 		[Test]

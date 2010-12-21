@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Windows.Forms;
 using Palaso.Code;
+using Palaso.Network;
 
 namespace Palaso.Reporting
 {
@@ -20,6 +25,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void RecordLaunch()
 		{
+
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
 
 		   GetUserIdentifierIfNeeded();
@@ -28,6 +34,7 @@ namespace Palaso.Reporting
 			{
 				s_settings.LastLaunchDate = DateTime.UtcNow.Date;
 				s_settings.Launches++;
+
 				AttemptHttpReport();
 			}
 		}
@@ -243,7 +250,12 @@ namespace Palaso.Reporting
 				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
 				parameters.Add("version", ErrorReport.VersionNumberString);
 				parameters.Add("launches", s_settings.Launches.ToString());
+
+				#if DEBUG // we don't need a million developer launch reports
+				parameters.Add("user", "Debug "+s_settings.UserIdentifier);
+				#else
 				parameters.Add("user", s_settings.UserIdentifier);
+				#endif
 
 				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
 				return result == "OK";
@@ -255,41 +267,123 @@ namespace Palaso.Reporting
 			}
 		}
 
-		private static string HttpPost(string uri, Dictionary<string, string> parameters)
+		/// <summary>
+		/// store and retrieve values which are the same for all apps using this usage libary
+		/// </summary>
+		/// <returns></returns>
+		public static List<KeyValuePair<string, string>> GetAllApplicationValuesForThisUser()
 		{
-			StringBuilder parameterBuilder = new StringBuilder();
-			foreach (KeyValuePair<string, string> pair in parameters)
+			var values = new List<KeyValuePair<string, string>>();
+			try
 			{
-				parameterBuilder.Append(HttpUtility.UrlEncode(pair.Key));
-				parameterBuilder.Append("=");
-				parameterBuilder.Append(HttpUtility.UrlEncode(pair.Value));
-				parameterBuilder.Append("&");
+				var path = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+				path = Path.Combine(path, "Palaso");
+				if (!Directory.Exists(path))
+				{
+					Directory.CreateDirectory(path);
+				}
+				path = Path.Combine(path, "usage.txt");
+				if (!File.Exists(path))
+				{
+					//enhance: guid is our only value at this time, and we don't have a way to add more values or write them out
+
+					//Make a single guid which connects all reports from this user, so that we can make sense of them even
+					//if/when their IP address changes
+					File.WriteAllText(path, @"guid==" + Guid.NewGuid().ToString());
+				}
+				foreach (var line in File.ReadAllLines(path))
+				{
+					var parts = line.Split(new string[] {"=="}, 2, StringSplitOptions.RemoveEmptyEntries);
+					if (parts.Length == 2)
+					{
+						values.Add(new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim()));
+					}
+				}
 			}
-			//trim off the last "&"
-			if (parameterBuilder.Length > 0)
+			catch (Exception error)
 			{
-				parameterBuilder.Remove(parameterBuilder.Length - 1, 1);
+				Debug.Fail(error.Message);// don't do anything to a non-debug user, though.
 			}
+			return values;
+		}
 
-			System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
-		   // req.Proxy = new System.Net.WebProxy(ProxyString, true);
+		public static void ReportLaunchesAsync()
+		{
+			var worker = new BackgroundWorker();
+			worker.DoWork += new DoWorkEventHandler(OnReportDoWork);
+			worker.RunWorkerAsync();
+		}
 
-			req.ContentType = "application/x-www-form-urlencoded";
-			req.Method = "POST";
-			req.Timeout = 1000;
+		static void OnReportDoWork(object sender, DoWorkEventArgs e)
+		{
+			Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+			Dictionary<string, string> parameters = new Dictionary<string, string>();
+			parameters.Add("app", UsageReporter.AppNameToUseInReporting);
+			parameters.Add("version", ErrorReport.VersionNumberString);
+			UsageMemory.Default.Launches++;
+			parameters.Add("launches", UsageMemory.Default.Launches.ToString());
+			UsageMemory.Default.Save();
 
-			byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
-			req.ContentLength = bytes.Length;
+			foreach (var pair in GetAllApplicationValuesForThisUser())
+			{
+				parameters.Add(pair.Key,pair.Value);
+			}
+			#if DEBUG // we don't need a million developer launch reports
+				   parameters.Add("user", "Debug");
+			#endif
 
-			System.IO.Stream os = req.GetRequestStream();
-			os.Write(bytes, 0, bytes.Length);
-			os.Close();
+			//todo: notice, we don't have a way to add the user name in this one?
 
-			System.Net.WebResponse resp = req.GetResponse();
-			if (resp == null) return null;
+			try
+			{
+				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
+			}
+			catch (Exception)
+			{
+				//so many things can go wrong, but we can't do anything about any of them
+			}
+		}
 
-			System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-			return sr.ReadToEnd().Trim();
+
+		public static string HttpPost(string uri, Dictionary<string, string> parameters)
+		{
+			try
+			{
+				StringBuilder parameterBuilder = new StringBuilder();
+				foreach (KeyValuePair<string, string> pair in parameters)
+				{
+					parameterBuilder.Append(HttpUtility.UrlEncode(pair.Key));
+					parameterBuilder.Append("=");
+					parameterBuilder.Append(HttpUtility.UrlEncode(pair.Value));
+					parameterBuilder.Append("&");
+				}
+				//trim off the last "&"
+				if (parameterBuilder.Length > 0)
+				{
+					parameterBuilder.Remove(parameterBuilder.Length - 1, 1);
+				}
+
+				byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
+
+				var client = new WebClient();
+				client.Credentials = CredentialCache.DefaultNetworkCredentials;
+				client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+
+				var response = new byte[] { };
+
+				RobustNetworkOperation.Do(proxy =>
+				{
+					client.Proxy = proxy;
+					response = client.UploadData(uri, bytes);
+				});
+
+
+				return System.Text.Encoding.ASCII.GetString(response);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
 		}
 	}
 }

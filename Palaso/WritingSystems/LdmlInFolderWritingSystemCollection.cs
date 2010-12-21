@@ -23,6 +23,7 @@ namespace Palaso.WritingSystems
 			p = Path.Combine(p, "WritingSystemRepository");
 			Directory.CreateDirectory(p);
 			PathToWritingSystems = p;
+			LoadAllDefinitions();
 		}
 
 		/// <summary>
@@ -32,6 +33,7 @@ namespace Palaso.WritingSystems
 		public LdmlInFolderWritingSystemStore(string path)
 		{
 			PathToWritingSystems = path;
+			LoadAllDefinitions();
 		}
 
 		public string PathToWritingSystems
@@ -77,47 +79,125 @@ namespace Palaso.WritingSystems
 		{
 			if (string.IsNullOrEmpty(identifier))
 			{
-				return identifier;
+				return "unknown"+_kExtension;
 			}
 			return identifier + _kExtension;
 		}
 
+		// TODO This can be made private, but breaks 19 test which need an upgrade anyway CP 2010-11.
 		public void LoadAllDefinitions()
 		{
 			Clear();
-			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
+
+			List<WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
+			SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(loadedWritingSystems);
+
+			foreach (WritingSystemDefinition ws in loadedWritingSystems)
 			{
-				try
-				{
-					string identifier = Path.GetFileNameWithoutExtension(filePath);
-					Set(LoadDefinition(identifier));
-				}
-				catch (Exception
-#if DEBUG
-					error
-#endif
-					)
-				{
-#if DEBUG
-					throw new ApplicationException("problem loading " + filePath, error);
-#endif
-				}
+				SaveDefinition(ws);
+				ws.Modified = false;
 			}
 
+			AddActiveOSLanguages();
+		}
 
-		   //  if (!DontAddDefaultDefinitions )
-		   //  {
-				 AddActiveOSLanguages();
-		   //  }
+		private List<WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
+		{
+			List<WritingSystemDefinition> loadedWritingSystems = new List<WritingSystemDefinition>();
+			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
+			{
+				WritingSystemDefinition wsFromFile;
+				wsFromFile = GetWritingSystemFromLdml(filePath);
+				WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
+					loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
 
-//
-//            if (!_dontAddDefaultDefinitions && FindAlreadyLoadedWritingSystem("en") == null)
-//            {
-//                WritingSystemDefinition def = new WritingSystemDefinition();
-//                LdmlAdaptor adaptor = new LdmlAdaptor();
-//                adaptor.FillWithDefaults("en", def);
-//                this.WritingSystemDefinitions.Add(def);
-//            }
+				if (writingSystemWithIdenticalRfc5646Tag != null)
+				{
+					throw new ArgumentException
+						(
+						String.Format("Ldml files {0} and {1} conatin writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
+						GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
+						);
+				}
+				wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
+				MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
+				loadedWritingSystems.Add(wsFromFile);
+			}
+			return loadedWritingSystems;
+		}
+
+		private void SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(List<WritingSystemDefinition> loadedWritingSystems)
+		{
+			string pathToFolderForSafeFileRenaming = CreateFolderForSafeFileRenaming();
+			MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(loadedWritingSystems, pathToFolderForSafeFileRenaming);
+			MoveFilesToFinalDestination(loadedWritingSystems, pathToFolderForSafeFileRenaming);
+			Directory.Delete(pathToFolderForSafeFileRenaming);
+		}
+
+		private void MoveFilesToFinalDestination(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
+		{
+			foreach (WritingSystemDefinition ws in loadedWritingSystems)
+			{
+				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
+				{
+					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+																		  GetFileName(ws));
+					File.Move(pathInFolderForSafeFileRenaming, GetFilePathFromIdentifier(ws.RFC5646));
+					ws.StoreID = ws.RFC5646;
+				}
+			}
+		}
+
+		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
+		{
+			foreach (WritingSystemDefinition ws in loadedWritingSystems)
+			{
+				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
+				{
+					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+																		  GetFileName(ws));
+					File.Move(GetFilePathFromIdentifier(ws.StoreID), pathInFolderForSafeFileRenaming);
+				}
+			}
+		}
+
+		private string CreateFolderForSafeFileRenaming()
+		{
+			string pathToFolderForSafeFileRenaming = Path.Combine(_path, "TemporaryFolderForSafeLoad");
+			if(Directory.Exists(pathToFolderForSafeFileRenaming))
+			{
+				Directory.Delete(pathToFolderForSafeFileRenaming, true);
+			}
+			Directory.CreateDirectory(pathToFolderForSafeFileRenaming);
+			return pathToFolderForSafeFileRenaming;
+		}
+
+		private static void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
+		{
+			var existingWritingSystem = listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646); //.ContainsKey(wsFromFile.RFC5646))
+			if (existingWritingSystem == null)
+			{
+				return;
+			}
+			var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid()) ? wsFromFile : existingWritingSystem;
+			var newTag = new RFC5646Tag(wsToMakeUnique.Rfc5646Tag);
+			do
+			{
+				newTag.Variant += "-x-dupl";
+			} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
+			wsToMakeUnique.Rfc5646Tag = newTag;
+		}
+
+		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			LdmlAdaptor adaptor = new LdmlAdaptor();
+			if (File.Exists(filePath))
+			{
+				adaptor.Read(filePath, ws);
+				ws.StoreID = Path.GetFileNameWithoutExtension(filePath);
+			}
+			return ws;
 		}
 
 		private bool HaveMatchingDefinitionInTrash(string identifier)
@@ -162,28 +242,6 @@ namespace Palaso.WritingSystems
 					return ws;
 			}
 			return null;
-		}
-
-		public WritingSystemDefinition LoadDefinition(string identifier)
-		{
-			WritingSystemDefinition ws = CreateNew();
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
-			string filePath = GetFilePathFromIdentifier(identifier);
-			if (File.Exists(filePath))
-			{
-				adaptor.Read(filePath, ws);
-				ws.StoreID = identifier;
-				ws.Modified = false;
-			}
-			else
-			{
-				if (identifier.ToLower() == "en-latn")
-				{
-					//??? Why is the default necessary here? I think a good default for en would already be present.
-					adaptor.FillWithDefaults("en-Latn", ws);
-				}
-			}
-			return ws;
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)

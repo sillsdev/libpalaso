@@ -30,17 +30,17 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepository_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepositoryId_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null)));
 		}
 
 		[Test]
@@ -52,28 +52,24 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepository_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null,
-													   new Dictionary<string, object>(),
-													   new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new Dictionary<string, object>(), new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullResults_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepositoryId_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper,
-													   new Dictionary<string, object>(),
-													   null));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, new Dictionary<string, object>(), null)));
 		}
 	}
 
@@ -96,10 +92,10 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void GetIndexer_NullFieldName_Throws()
 		{
-			Token[null] = null;
+			Assert.Throws<ArgumentNullException>(
+				() => Token[null] = null);
 		}
 
 		[Test]

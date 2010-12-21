@@ -69,6 +69,18 @@ namespace BuildTaskTests
 				return items;
 			}
 
+			public string MakePotFile(string input)
+			{
+				string csharpFilePath = System.IO.Path.Combine(Path, "csharp.cs");
+				File.WriteAllText(csharpFilePath, input);
+
+				var pot = new MakePot();
+				pot.OutputFile = System.IO.Path.Combine(Path, "output.pot");
+				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
+				pot.Execute();
+
+				return File.ReadAllText(pot.OutputFile);
+			}
 		}
 
 		[Test]
@@ -213,7 +225,6 @@ somevar.Text = 'MyLocalizableString \'InQuote\' end';
 		}
 
 		[Test]
-		[Ignore("EOL not the same anymore, so ignore")]
 		public void ProcessSrcFile_AllMatches_OutputsGoodPo()
 		{
 			string contents = @"
@@ -226,47 +237,156 @@ somevar.MyLocalizableFunction('~ThirdLocalizableString', 'ThirdNotes');
 ".Replace("'", "\"");
 
 			string expected =
-@"Project-Id-Version: ''
-Report-Msgid-Bugs-To: ''
-POT-Creation-Date: '.*'
-PO-Revision-Date: '.*'
-Last-Translator: ''
-Language-Team: ''
-MIME-Version: '1.0'
-Content-Type: 'text/plain; charset=UTF-8'
-Content-Transfer-Encoding: '8bit'
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
 
-#; C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+
+#: .*
 msgid 'FirstLocalizableString'
 msgstr ''
 
-#; C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*
 #. SecondNotes
 msgid 'SecondLocalizableString'
 msgstr ''
 
-#; C:\Users\C\AppData\Local\Temp\Palaso.BuildTaskTests.MakePotTests\csharp.cs
+#: .*
 #. ThirdNotes
 msgid 'ThirdLocalizableString'
-msgstr ''".Replace('\'', '"').Replace("\\", "\\\\");
+msgstr ''
+".Replace("'", "\"");
 
 			using (var e = new EnvironmentForTest())
 			{
-				string csharpFilePath = Path.Combine(e.Path, "csharp.cs");
-				File.WriteAllText(csharpFilePath, contents);
-
-				var pot = new MakePot();
-				pot.OutputFile = Path.Combine(e.Path, "output.pot");
-				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
-				pot.Execute();
-
-				string actual = File.ReadAllText(pot.OutputFile);
-				Assert.That(actual, Is.StringMatching(expected));
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
 			}
 
 
 		}
 
+		[Test]
+		public void ProcessSrcFile_BackupStringWithDots_DoesNotHaveDuplicates()
+		{
+			string contents = @"
+somevar.Text = 'Backing Up...';
+".Replace("'", "\"");
+
+			string expected =
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+
+#: .*csharp.cs
+msgid 'Backing Up...'
+msgstr ''
+".Replace("'", "\"");
+
+			using (var e = new EnvironmentForTest())
+			{
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
+			}
+		}
+
+		[Test]
+		public void ProcessSrcFile_BackupStringWithDuplicates_HasOnlyOneInOutput()
+		{
+			string contents = @"
+somevar.Text = 'Backing Up...';
+
+somevar.Text = 'Backing Up...';
+".Replace("'", "\"");
+
+			string expected =
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+
+#: .*csharp.cs
+#: .*csharp.cs
+msgid 'Backing Up...'
+msgstr ''
+".Replace("'", "\"");
+
+			using (var e = new EnvironmentForTest())
+			{
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
+			}
+		}
+
+		[Test]
+		public void ProcessSrcFile_EmptyString_NotPresentInOutput()
+		{
+			string contents = @"
+somevar.Text = '';
+".Replace("'", "\"");
+
+			string expected =
+@"msgid ''
+msgstr ''
+'Project-Id-Version: \n'
+'POT-Creation-Date: .*
+'PO-Revision-Date: \n'
+'Last-Translator: \n'
+'Language-Team: \n'
+'Plural-Forms: \n'
+'MIME-Version: 1.0\n'
+'Content-Type: text/plain; charset=UTF-8\n'
+'Content-Transfer-Encoding: 8bit\n'
+
+# Project-Id-Version:
+# Report-Msgid-Bugs-To:
+# POT-Creation-Date: .*
+# Content-Type: text/plain; charset=UTF-8
+
+".Replace("'", "\"");
+
+			using (var e = new EnvironmentForTest())
+			{
+				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
+			}
+		}
 
 	}
 }

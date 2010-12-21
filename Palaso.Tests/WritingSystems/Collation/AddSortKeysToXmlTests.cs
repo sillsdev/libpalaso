@@ -71,153 +71,149 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_DocumentNull_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(null,
+			Assert.Throws<ArgumentNullException>(
+				() => AddSortKeysToXml.AddSortKeys(null,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
-						_attribute);
+						_attribute));
 
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_XPathSourceNull_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentNullException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						null,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
-						_attribute);
-
+						_attribute));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(XPathException))]
 		public void AddSortKeys_XPathSourceEmpty_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<XPathException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						string.Empty,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
-						_attribute);
+						_attribute));
 
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_XPathDestinationNull_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentNullException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						null,
-						_attribute);
-
+						_attribute));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(XPathException))]
 		public void AddSortKeys_XPathDestinationEmpty_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<XPathException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						string.Empty,
-						_attribute);
-
+						_attribute));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_AttributeNull_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentNullException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
-						null);
-
+						null));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_AttributeEmpty_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
-						string.Empty);
+						string.Empty));
 
 		}
 
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_PrefixNull_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentNullException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
 						null,
 						_attribute,
-						_uri);
+						_uri));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_PrefixEmpty_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
 						string.Empty,
 						_attribute,
-						_uri);
+						_uri));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_PrefixInvalidCharacter_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
 						"1",
 						_attribute,
-						_uri);
+						_uri));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentNullException))]
 		public void AddSortKeys_UriNull_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentNullException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
 						_prefix,
 						_attribute,
-						null);
+						null));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentException))]
 		public void AddSortKeys_UriEmpty_Throws()
 		{
-			AddSortKeysToXml.AddSortKeys(_document,
+			Assert.Throws<ArgumentException>(
+				() => AddSortKeysToXml.AddSortKeys(_document,
 						_xpathSortKeySource,
 						_sortKeyGenerator,
 						_xpathElementToPutSortKeyAttributeIn,
 						_prefix,
 						_attribute,
-						string.Empty);
+						string.Empty));
 		}
 
 		[Test]

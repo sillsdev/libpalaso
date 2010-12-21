@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	public class SuperToolTipInfo
 	{
