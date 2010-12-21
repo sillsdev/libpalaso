@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using System.Text;
 
 namespace Palaso.WritingSystems.Collation
 {
@@ -479,17 +480,17 @@ namespace Palaso.WritingSystems.Collation
 		private static string BuildRuleFromConcatenatedData(string op, XmlReader reader, ref string variableTop)
 		{
 			string data = GetTextData(reader);
-			string rule = string.Empty;
+			StringBuilder rule = new StringBuilder(20 * data.Length);
 			for (int i=0; i < data.Length; i++)
 			{
 				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i));
-				rule += String.Format(" {0} {1}{2}", op, icuData, GetVariableTopString(icuData, ref variableTop));
+				rule.AppendFormat(" {0} {1}{2}", op, icuData, GetVariableTopString(icuData, ref variableTop));
 				if (Char.IsSurrogate(data, i))
 				{
 					i++;
 				}
 			}
-			return rule;
+			return rule.ToString();
 		}
 
 		private static string GetVariableTopString(string icuData, ref string variableTop)
