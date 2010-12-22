@@ -165,6 +165,10 @@ namespace Palaso.WritingSystems
 				}
 				reader.ReadEndElement();
 			}
+			else
+			{
+				reader.Skip();
+			}
 		}
 
 		private void ReadIdentityElement(XmlReader reader, WritingSystemDefinition ws)
