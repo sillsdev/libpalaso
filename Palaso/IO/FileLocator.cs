@@ -128,7 +128,7 @@ namespace Palaso.IO
 		/// [applicationFolder]/[subPath1]/[subPathN]
 		/// </summary>
 		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
-		public static string GetDirectoryDistributedWithApplication(params string[] partsOfTheSubPath)
+		public static string GetDirectoryDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
 			var path = FileLocator.DirectoryOfApplicationOrSolution;
 			foreach (var part in partsOfTheSubPath)
@@ -146,8 +146,19 @@ namespace Palaso.IO
 				path = System.IO.Path.Combine(path, part);
 			}
 
-			RequireThat.Directory(path).Exists();
+			if(!optional)
+				RequireThat.Directory(path).Exists();
 			return path;
+		}
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/DistFiles/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[subPath1]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetDirectoryDistributedWithApplication(params string[] partsOfTheSubPath)
+		{
+			return GetDirectoryDistributedWithApplication(false, partsOfTheSubPath);
 		}
 	}
 }
