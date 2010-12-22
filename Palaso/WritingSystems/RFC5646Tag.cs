@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Palaso.WritingSystems
 {
-	public class RFC5646Tag
+	public class RFC5646Tag : Object
 	{
 		private string _language;
 		private string _script;
@@ -18,6 +15,18 @@ namespace Palaso.WritingSystems
 			_script = script;
 			_region = region;
 			_variant = variant;
+		}
+
+		///<summary>
+		/// Copy constructor
+		///</summary>
+		///<param name="rhs"></param>
+		public RFC5646Tag(RFC5646Tag rhs)
+		{
+			_language = rhs._language;
+			_script = rhs._script;
+			_region = rhs._region;
+			_variant = rhs._variant;
 		}
 
 		public string CompleteTag
@@ -65,17 +74,23 @@ namespace Palaso.WritingSystems
 			set { _variant = value; }
 		}
 
-		//This method defines what is currently considered a valid RFC 5646 language tag by palaso.
-		//At the moment this is almost anything.
-		public static bool IsValid(RFC5646Tag tagToCheck)
+		///<summary>
+		// This method defines what is currently considered a valid RFC 5646 language tag by palaso.
+		// At the moment this is almost anything.
+		///</summary>
+		///<returns></returns>
+		public bool IsValid()
 		{
-			if (IsBadAudioTag(tagToCheck)) { return false; }
+			if (IsBadAudioTag(this))
+			{
+				return false;
+			}
 			return true;
 		}
 
 		public static RFC5646Tag GetValidTag(RFC5646Tag tagToConvert)
 		{
-			if (IsValid(tagToConvert)) { return tagToConvert; }
+			if (tagToConvert.IsValid()) { return tagToConvert; }
 
 			RFC5646Tag validRfc5646Tag = null;
 
@@ -84,7 +99,7 @@ namespace Palaso.WritingSystems
 				string newLanguageTag = tagToConvert.Language.Split('-')[0];
 				validRfc5646Tag = RFC5646TagForVoiceWritingSystem(newLanguageTag, tagToConvert.Region);
 			}
-			if (!IsValid(validRfc5646Tag))
+			if (validRfc5646Tag == null || !validRfc5646Tag.IsValid())
 			{
 				throw new InvalidOperationException("The palaso library is not able to covert this tag to a valid form.");
 			}
@@ -110,6 +125,38 @@ namespace Palaso.WritingSystems
 				return true;
 			}
 			return false;
+		}
+
+		public string ToString()
+		{
+			return CompleteTag;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof (RFC5646Tag)) return false;
+			return Equals((RFC5646Tag) obj);
+		}
+
+		public bool Equals(RFC5646Tag other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			return Equals(other._language, _language) && Equals(other._script, _script) && Equals(other._region, _region) && Equals(other._variant, _variant);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int result = (_language != null ? _language.GetHashCode() : 0);
+				result = (result*397) ^ (_script != null ? _script.GetHashCode() : 0);
+				result = (result*397) ^ (_region != null ? _region.GetHashCode() : 0);
+				result = (result*397) ^ (_variant != null ? _variant.GetHashCode() : 0);
+				return result;
+			}
 		}
 	}
 }

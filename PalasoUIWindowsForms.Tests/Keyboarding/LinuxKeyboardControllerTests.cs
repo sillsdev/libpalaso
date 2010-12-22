@@ -1,5 +1,4 @@
 #if MONO
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -9,6 +8,7 @@ using Palaso.UI.WindowsForms.Keyboarding;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class LinuxKeyboardControllerTests
 	{
 		private Form _window;
@@ -22,7 +22,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindowForFocus()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -42,7 +42,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
+		[Category("Windows IME")]
 		public void GetAllKeyboards_GivesSeveral()
 		{
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
@@ -61,7 +61,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
 		{
 			// the keyboardName for this test and above need to be different
-			string keyboardName = "This should never be the same as the name of an installed keyboard";
+			const string keyboardName = "This should never be the same as the name of an installed keyboard";
 			try
 			{
 				KeyboardController.ActivateKeyboard(keyboardName);
@@ -84,14 +84,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -100,7 +100,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
@@ -110,7 +110,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -120,7 +120,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -131,28 +131,28 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim")]
+		[Category("Scim")]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
-			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
 			);
 		}
 
-		private void ResetKeyboardToDefault()
+		private static void ResetKeyboardToDefault()
 		{
 			KeyboardController.DeactivateKeyboard();
 		}
 
 		[Test]
-		[NUnit.Framework.Category("No IM Running")]
+		[Category("No IM Running")]
 		public void Deactivate_NoIMRunning_DoesNotThrow()
 		{
 			KeyboardController.DeactivateKeyboard();
 		}
 
 		[Test]
-		[NUnit.Framework.Category("No IM Running")]
+		[Category("No IM Running")]
 		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
@@ -160,21 +160,21 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Scim not Running")]
+		[Category("Scim not Running")]
 		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
 		{
 			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus not Running")]
+		[Category("IBus not Running")]
 		public void EngineAvailable_IBusIsnotRunning_returnsFalse()
 		{
 			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus")]
+		[Category("IBus")]
 		public void EngineAvailable_IBusIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
 			// needed for focus
@@ -184,20 +184,20 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus")]
+		[Category("IBus")]
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
 			RequiresWindowForFocus();
 
 			KeyboardController.DeactivateKeyboard();
-			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 				() => KeyboardController.GetActiveKeyboard()
 			);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus")]
+		[Category("IBus")]
 		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_0KeyboardsReturned()
 		{
 			// needed for focus
@@ -210,7 +210,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus")]
+		[Category("IBus")]
 		public void Deactivate_IBusIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			// needed for focus
@@ -222,7 +222,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus")]
+		[Category("IBus")]
 		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			// needed for focus
@@ -235,12 +235,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("IBus")]
+		[Category("IBus")]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
 			RequiresWindowForFocus();
-			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
 			);
 		}

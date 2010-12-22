@@ -14,7 +14,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValid_RFCTagIsValid_ReturnsTrue()
 		{
 			RFC5646Tag tag = new RFC5646Tag("az", "Ltn", "RS", String.Empty);
-			Assert.IsTrue(RFC5646Tag.IsValid(tag));
+			Assert.IsTrue(tag.IsValid());
 		}
 
 		[Test]
@@ -29,7 +29,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValid_IsoContainsxDashaudio_ReturnsFalse()
 		{
 			RFC5646Tag tag = new RFC5646Tag("tpi-Zxxx-x-audio", String.Empty, String.Empty, String.Empty);
-			Assert.IsFalse(RFC5646Tag.IsValid(tag));
+			Assert.IsFalse(tag.IsValid());
 		}
 
 		[Test]
@@ -63,7 +63,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValid_IsoContainsDashesAndVariantIsxDashaudio_ReturnsFalse()
 		{
 			RFC5646Tag tag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
-			Assert.IsFalse(RFC5646Tag.IsValid(tag));
+			Assert.IsFalse(tag.IsValid());
 		}
 
 		[Test]

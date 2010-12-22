@@ -1,0 +1,54 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<RootDir>$(teamcity_build_checkoutDir)</RootDir>
+	</PropertyGroup>
+
+	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<!-- <UsingTask TaskName="MakeWixForDirTree" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" /> -->
+	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="NUnitTeamCity" AssemblyFile="$(agent_home_dir)/plugins/dotnetPlugin/bin/JetBrains.BuildServer.MSBuildLoggers.dll" />
+
+	<PropertyGroup>
+		<Solution>Palaso.sln</Solution>
+		<ApplicationName>PalasoLibrary</ApplicationName>
+		<Configuration>ReleaseMono</Configuration>
+	</PropertyGroup>
+
+	<Import Project="$(RootDir)/build/build.common.proj" />
+
+	<Target Name="Build">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="SetAssemblyVersion"/>
+		<CallTarget Targets="Compile"/>
+		<Message Text="Build Complete"/>
+	</Target>
+
+	<ItemGroup>
+		<ExistingObjectFiles
+			Include="$(RootDir)/**/obj/**/*;$(RootDir)/output/$(Configuration)/**/*"
+			Exclude="$(RootDir)/.hg/**/*"
+		/>
+	</ItemGroup>
+	<Target Name="Clean">
+		<Delete Files="@(ExistingObjectFiles)" />
+	</Target>
+
+	<Target Name="Compile">
+		<MSBuild
+			Projects="$(RootDir)\$(Solution)"
+			Targets="Build"
+			Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<Target Name="Test" DependsOnTargets="Build">
+		<CreateItem Include="$(RootDir)/output/$(Configuration)/*.Tests.dll">
+			<Output ItemName="TestAssemblies" TaskParameter="Include" />
+		</CreateItem>
+		<NUnitTeamCity
+			Assemblies="@(TestAssemblies)"
+			ExcludeCategory="SkipOnTeamCity;KnownMonoIssue"
+			NUnitVersion="NUnit-2.5.5" />
+	</Target>
+
+</Project>
