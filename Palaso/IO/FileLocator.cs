@@ -102,27 +102,29 @@ namespace Palaso.IO
 		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
 		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
-			var path = FileLocator.DirectoryOfApplicationOrSolution;
-			foreach (var part in partsOfTheSubPath)
+			foreach (var directoryHoldingFiles in new []{null, "DistFiles", "common" /*for wesay*/})
 			{
-				path = System.IO.Path.Combine(path, part);
-			}
-			if (File.Exists(path))
-				return path;
+				var path = FileLocator.DirectoryOfApplicationOrSolution;
+				path = FileLocator.DirectoryOfApplicationOrSolution;
+				if(directoryHoldingFiles!=null)
+					path = Path.Combine(path, directoryHoldingFiles);
 
-			//try distfiles
-			path = FileLocator.DirectoryOfApplicationOrSolution;
-			path = Path.Combine(path, "DistFiles");
-			foreach (var part in partsOfTheSubPath)
-			{
-				path = System.IO.Path.Combine(path, part);
+				foreach (var part in partsOfTheSubPath)
+				{
+					path = System.IO.Path.Combine(path, part);
+				}
+				if (File.Exists(path))
+					return path;
 			}
 
-			if (optional && !File.Exists(path))
+			if (optional)
 				return null;
-
-			RequireThat.File(path).Exists();
-			return path;
+			string subpath="";
+			foreach (var part in partsOfTheSubPath)
+				{
+					subpath = System.IO.Path.Combine(subpath, part);
+				}
+			throw new ApplicationException("Could not locate the required file, "+ subpath);
 		}
 
 		/// <summary>
