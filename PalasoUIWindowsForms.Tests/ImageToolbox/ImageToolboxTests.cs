@@ -14,7 +14,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		public void ShowToolbox()
 		{
 			Application.EnableVisualStyles();
-			using(var dlg = new ImageToolboxDialog())
+			using (var dlg = new ImageToolboxDialog(new PalasoImage() { Image = ImageToolboxButtons.Licenses }))
 			{
 				dlg.ShowDialog();
 			}

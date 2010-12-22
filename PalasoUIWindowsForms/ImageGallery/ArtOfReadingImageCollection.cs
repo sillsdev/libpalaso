@@ -136,7 +136,12 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			return result.Trim();
 		}
 
-		private static string TryToGetRootImageCatalogPath()
+		public static bool IsAvailable()
+		{
+			return !string.IsNullOrEmpty(TryToGetRootImageCatalogPath()) && !string.IsNullOrEmpty(TryToGetPathToIndex());
+		}
+
+		public static string TryToGetRootImageCatalogPath()
 		{
 			//look for the cd/dvd
 			var cdPath = TryToGetPathToCollectionOnCd();
@@ -175,7 +180,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			return null;
 		}
 
-		public static string TryToGetPathToCollectionOnCd()
+		private static string TryToGetPathToCollectionOnCd()
 		{
 			//look for CD
 			foreach (var drive in DriveInfo.GetDrives())
@@ -198,13 +203,14 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			var c = new ArtOfReadingImageCollection();
 			c.RootImagePath = TryToGetRootImageCatalogPath();
 
-			string pathToIndexFile = FileLocator.GetFileDistributedWithApplication("ArtOfReadingIndexV3_en.txt");
-			if (String.IsNullOrEmpty(pathToIndexFile))
-			{
-				throw new FileNotFoundException("Could not find Art of reading index file.");
-			}
+			string pathToIndexFile = TryToGetPathToIndex();
 			c.LoadIndex(pathToIndexFile);
 			return c;
+		}
+
+		public static string TryToGetPathToIndex()
+		{
+			return FileLocator.GetFileDistributedWithApplication("ArtOfReadingIndexV3_en.txt");
 		}
 	}
 }

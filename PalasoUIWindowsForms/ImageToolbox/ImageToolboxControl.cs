@@ -10,15 +10,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		private readonly ImageList _toolImages;
 		private Control _currentControl;
-		private PalasoImage _currentImage;
 
 		public ImageToolboxControl()
 		{
 			InitializeComponent();
 			_panelForControls.Visible = false;
 
-			_currentImage = new PalasoImage();
-			_currentImage.Image = ImageToolboxButtons.Licenses;
+			ImageInfo = new PalasoImage();
 			_toolListView.Groups.Clear();
 			_toolListView.Items.Clear();
 
@@ -41,6 +39,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			AddControl("License", ImageToolboxButtons.Licenses, "license", otherGroup, (x) => new ImageLicenseControl());
 			_toolListView.Refresh();
 		}
+
+		/// <summary>
+		/// This is the main input/output of this dialog
+		/// </summary>
+		public PalasoImage ImageInfo { get; set; }
 
 		private ListViewGroup AddGroup(string header)
 		{
@@ -66,19 +69,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				return;
 			if(_currentControl !=null)
 			{
-				_currentImage = ((IImageToolboxControl) _currentControl).GetImage();
-				_currentImageBox.Image = _currentImage.Image;
+				ImageInfo = ((IImageToolboxControl) _currentControl).GetImage();
+				_currentImageBox.Image = ImageInfo.Image;
 
 				Controls.Remove(_currentControl);
 				_currentControl.Dispose();
 			}
 			System.Func<PalasoImage, Control> fun =
 				(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
-			_currentControl = fun(_currentImage);
+			_currentControl = fun(ImageInfo);
 			_currentControl.Bounds = _panelForControls.Bounds;
 			_currentControl.Anchor = _panelForControls.Anchor;
 			Controls.Add(_currentControl);
-			((IImageToolboxControl)_currentControl).SetImage(_currentImage);
+			((IImageToolboxControl)_currentControl).SetImage(ImageInfo);
 			Refresh();
 		}
 	}

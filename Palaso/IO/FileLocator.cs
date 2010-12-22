@@ -100,7 +100,7 @@ namespace Palaso.IO
 		/// [applicationFolder]/[subPath]/[subPathN]
 		/// </summary>
 		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
-		public static string GetFileDistributedWithApplication(params string[] partsOfTheSubPath)
+		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
 			var path = FileLocator.DirectoryOfApplicationOrSolution;
 			foreach (var part in partsOfTheSubPath)
@@ -117,9 +117,25 @@ namespace Palaso.IO
 			{
 				path = System.IO.Path.Combine(path, part);
 			}
+
+			if (optional && !File.Exists(path))
+				return null;
+
 			RequireThat.File(path).Exists();
 			return path;
 		}
+
+		/// <summary>
+		/// Find a file which MUST EXIST. On a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+		/// [applicationFolder]/[subPath]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetFileDistributedWithApplication(params string[] partsOfTheSubPath)
+			{
+				return GetFileDistributedWithApplication(false, partsOfTheSubPath);
+			}
 
 
 		/// <summary>
@@ -146,12 +162,15 @@ namespace Palaso.IO
 				path = System.IO.Path.Combine(path, part);
 			}
 
-			if(!optional)
-				RequireThat.Directory(path).Exists();
+
+			if (optional && !Directory.Exists(path))
+				return null;
+
+			RequireThat.Directory(path).Exists();
 			return path;
 		}
 		/// <summary>
-		/// Find a file which, on a development machine, lives in [solution]/DistFiles/[subPath],
+		/// Find a directory which MUST EXIST. On a development machine, lives in [solution]/DistFiles/[subPath],
 		/// and when installed, lives in
 		/// [applicationFolder]/[subPath1]/[subPathN]
 		/// </summary>

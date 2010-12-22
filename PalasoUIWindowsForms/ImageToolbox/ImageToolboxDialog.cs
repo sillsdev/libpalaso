@@ -11,14 +11,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public partial class ImageToolboxDialog : Form
 	{
-		public ImageToolboxDialog()
+		public ImageToolboxDialog(PalasoImage imageInfo)
 		{
 			InitializeComponent();
+			imageToolboxControl1.ImageInfo = imageInfo;
 		}
-
-		private void imageToolboxControl1_Load(object sender, EventArgs e)
-		{
-
-		}
+		public PalasoImage ImageInfo { get { return imageToolboxControl1.ImageInfo; } }
 	}
 }
