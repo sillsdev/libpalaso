@@ -210,7 +210,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static string TryToGetPathToIndex()
 		{
-			return FileLocator.GetFileDistributedWithApplication("ArtOfReadingIndexV3_en.txt");
+			return FileLocator.GetFileDistributedWithApplication(false, "ArtOfReadingIndexV3_en.txt");
 		}
 	}
 }

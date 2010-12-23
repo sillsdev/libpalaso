@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage2 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this.imageToolboxControl1 = new Palaso.UI.WindowsForms.ImageToolbox.ImageToolboxControl();
@@ -43,6 +44,7 @@
 			this._cancelButton.TabIndex = 1;
 			this._cancelButton.Text = "&Cancel";
 			this._cancelButton.UseVisualStyleBackColor = true;
+			this._cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
 			//
 			// _okButton
 			//
@@ -53,12 +55,14 @@
 			this._okButton.TabIndex = 2;
 			this._okButton.Text = "&OK";
 			this._okButton.UseVisualStyleBackColor = true;
+			this._okButton.Click += new System.EventHandler(this._okButton_Click);
 			//
 			// imageToolboxControl1
 			//
 			this.imageToolboxControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
+			this.imageToolboxControl1.ImageInfo = palasoImage2;
 			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
 			this.imageToolboxControl1.Name = "imageToolboxControl1";
 			this.imageToolboxControl1.Size = new System.Drawing.Size(757, 452);

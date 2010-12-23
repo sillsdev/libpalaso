@@ -10,6 +10,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		private readonly ImageList _toolImages;
 		private Control _currentControl;
+		private PalasoImage _imageInfo;
 
 		public ImageToolboxControl()
 		{
@@ -43,7 +44,23 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// <summary>
 		/// This is the main input/output of this dialog
 		/// </summary>
-		public PalasoImage ImageInfo { get; set; }
+		public PalasoImage ImageInfo
+		{
+			get{ return _imageInfo;}
+			set
+			{
+
+				if (value == null || value.Image == null)
+				{
+					_currentImageBox.Image = null;
+				}
+				else
+				{
+					_currentImageBox.Image = value.Image;
+				}
+				_imageInfo = value;
+			}
+		}
 
 		private ListViewGroup AddGroup(string header)
 		{
@@ -83,6 +100,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			Controls.Add(_currentControl);
 			((IImageToolboxControl)_currentControl).SetImage(ImageInfo);
 			Refresh();
+		}
+
+		public void Closing()
+		{
+			ImageInfo = ((IImageToolboxControl)_currentControl).GetImage();
+			Controls.Remove(_currentControl);
+			_currentControl.Dispose();
 		}
 	}
 
