@@ -243,7 +243,8 @@ namespace Palaso.Tests.WritingSystems
 				{
 					Assert.Fail("Unhandled field type - please update the test to handle type {0}", fieldInfo.FieldType.Name);
 				}
-				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(ws.Clone()), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldInfo.Name);
+				var theClone = ws.Clone();
+				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(theClone), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldInfo.Name);
 			}
 		}
 

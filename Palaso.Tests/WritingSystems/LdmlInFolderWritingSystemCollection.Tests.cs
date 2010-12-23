@@ -511,9 +511,9 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_FilesContainLdmlMatchingTransformedRFC5646Tags()
 		{
-			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
-			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-audio.ldml"), GetLdmlFileContent("de", "Script", "", "x-audio"));
-			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio"));
+			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));  // Bad
+			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-audio.ldml"), GetLdmlFileContent("de", "Script", "", "x-audio")); // Bad
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio")); // Bad
 
 			_collection.LoadAllDefinitions();
 

@@ -138,7 +138,7 @@ namespace Palaso.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in loadedWritingSystems)
 			{
-				if(ws.Modified)
+				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
 				{
 					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
 																		  GetFileName(ws));
@@ -152,7 +152,7 @@ namespace Palaso.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in loadedWritingSystems)
 			{
-				if (ws.Modified)
+				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
 				{
 					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
 																		  GetFileName(ws));
@@ -172,28 +172,20 @@ namespace Palaso.WritingSystems
 			return pathToFolderForSafeFileRenaming;
 		}
 
-		private void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
+		private static void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
 		{
-			WritingSystemDefinition alreadyLoadedWritingSystem = new WritingSystemDefinition();
-			while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646) != null)//.ContainsKey(wsFromFile.RFC5646))
+			var existingWritingSystem = listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646); //.ContainsKey(wsFromFile.RFC5646))
+			if (existingWritingSystem == null)
 			{
-				if (wsFromFile.Modified)
-				{
-					AppendExtensionToDuplicateWritingSystem(wsFromFile);
-				}
-				else
-				{
-					AppendExtensionToDuplicateWritingSystem(alreadyLoadedWritingSystem);
-				}
+				return;
 			}
-		}
-
-		private void AppendExtensionToDuplicateWritingSystem(WritingSystemDefinition wsFromFile)
-		{
-			string extension = "x-dupl";
-			string variantWithExtension = wsFromFile.Variant + "-" + extension;
-			wsFromFile.Rfc5646Tag = new RFC5646Tag(wsFromFile.ISO, wsFromFile.Script, wsFromFile.Region,
-												   variantWithExtension);
+			var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid()) ? wsFromFile : existingWritingSystem;
+			var newTag = new RFC5646Tag(wsToMakeUnique.Rfc5646Tag);
+			do
+			{
+				newTag.Variant += "-x-dupl";
+			} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
+			wsToMakeUnique.Rfc5646Tag = newTag;
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
@@ -281,7 +273,7 @@ namespace Palaso.WritingSystems
 					}
 				}
 			}
-			LdmlAdaptor adaptor = new LdmlAdaptor();
+			LdmlAdaptor adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;

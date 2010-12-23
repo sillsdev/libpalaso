@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Palaso.Extensions;
+using Palaso.IO;
 using Palaso.Linq;
 
 #if MONO
@@ -135,26 +136,81 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			return result.Trim();
 		}
 
-		public static string TryToGetCollectionPath()
+		public static bool IsAvailable()
 		{
-			string root;
-			try
+			return !string.IsNullOrEmpty(TryToGetRootImageCatalogPath()) && !string.IsNullOrEmpty(TryToGetPathToIndex());
+		}
+
+		public static string TryToGetRootImageCatalogPath()
+		{
+			//look for the cd/dvd
+			var cdPath = TryToGetPathToCollectionOnCd();
+			if (!string.IsNullOrEmpty(cdPath))
+				return cdPath;
+
+			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"ArtOfReading", "images");
+			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
+				return distributedWithApp;
+
+			//look for it in a hard-coded location
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
-				root = (from d in DriveInfo.GetDrives()
-							where d.VolumeLabel.Contains("Art Of Reading")
-							select d.RootDirectory.FullName).FirstOrDefault();
+				var unixPaths = new[]
+									{
+										@"c:\art of reading\images", @"/usr/share/wesay/ArtOfReading/images",
+										@"/var/share/ArtOfReading/images"
+									};
+
+				foreach (var path in unixPaths)
+				{
+					if (Directory.Exists(path))
+						return path;
+				}
 			}
-			catch
+			else
 			{
-				return null;
+				var winPaths = new[] {@"c:\art of reading\images", @"c:/ArtOfReading/images"};
+				foreach (var path in winPaths)
+				{
+					if (Directory.Exists(path))
+						return path;
+				}
 			}
-			if(!string.IsNullOrEmpty(root))
+
+			return null;
+		}
+
+		private static string TryToGetPathToCollectionOnCd()
+		{
+			//look for CD
+			foreach (var drive in DriveInfo.GetDrives())
 			{
-				var path = Path.Combine(root, "images");
-				if(Directory.Exists(path))
-					return path;
+				try
+				{
+					if (drive.VolumeLabel.Contains("Art Of Reading"))
+						return Path.Combine(drive.RootDirectory.FullName, "images");
+				}
+				catch (Exception)
+				{
+				}
 			}
-				return null;
+			return null;
+		}
+
+
+		public static IImageCollection FromStandardLocations()
+		{
+			var c = new ArtOfReadingImageCollection();
+			c.RootImagePath = TryToGetRootImageCatalogPath();
+
+			string pathToIndexFile = TryToGetPathToIndex();
+			c.LoadIndex(pathToIndexFile);
+			return c;
+		}
+
+		public static string TryToGetPathToIndex()
+		{
+			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}
 	}
 }

@@ -9,6 +9,7 @@ using Palaso.UI.WindowsForms.Keyboarding;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class WindowsKeyboardControllerTests
 	{
 		private Form _window;
@@ -22,7 +23,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindow()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -61,7 +62,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
 		{
 			// the keyboardName for this test and above need to be different
-			string keyboardName = "This should never be the same as the name of an installed keyboard";
+			const string keyboardName = "This should never be the same as the name of an installed keyboard";
 			try
 			{
 				KeyboardController.ActivateKeyboard(keyboardName);
@@ -75,7 +76,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
+		[Category("Windows IME")]
 		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
 		{
 			RequiresWindowsIME();
@@ -87,7 +88,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
+		[Category("Windows IME")]
 		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
 		{
 			RequiresWindowsIME();
@@ -99,7 +100,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
 		}
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
+		[Category("Windows IME")]
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
 			RequiresWindowsIME();
@@ -113,7 +114,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 
 		[Test]
-		[NUnit.Framework.Category("Keyman6")]
+		[Category("Keyman6")]
 		public void Keyman6_GetKeyboards_GivesAtLeastOneAndOnlyKeyman6Ones()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -130,7 +131,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman6")]
+		[Category("Keyman6")]
 		public void Keyman6_ActivateKeyboard_ReportsItWasActivated()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -147,7 +148,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman6")]
+		[Category("Keyman6")]
 		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
 		{
 			if(Environment.OSVersion.Platform == PlatformID.Unix)
@@ -165,7 +166,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman7")]
+		[Category("Keyman7")]
 		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -181,7 +182,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 
 		[Test]
-		[NUnit.Framework.Category("Keyman7")]
+		[Category("Keyman7")]
 		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -198,7 +199,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman7")]
+		[Category("Keyman7")]
 		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)

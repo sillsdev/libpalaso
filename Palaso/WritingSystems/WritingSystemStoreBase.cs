@@ -27,13 +27,26 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public WritingSystemDefinition CreateNew()
+		protected IDictionary<string, DateTime> WritingSystemsToIgnore
+		{
+			get
+			{
+				return _writingSystemsToIgnore;
+			}
+		}
+
+		virtual public WritingSystemDefinition CreateNew()
 		{
 			var retval = new WritingSystemDefinition();
 
 			//!!! TODO: Add to shared
 
 			return retval;
+		}
+
+		virtual protected LdmlAdaptor CreateLdmlAdaptor()
+		{
+			return new LdmlAdaptor();
 		}
 
 		virtual public void Remove(string identifier)
@@ -49,6 +62,7 @@ namespace Palaso.WritingSystems
 			// Delete from us
 			//??? Do we really delete or just mark for deletion?
 			_writingSystems.Remove(identifier);
+			_writingSystemsToIgnore.Remove(identifier);
 			//TODO: Could call the shared store to advise that one has been removed.
 			//TODO: This may be useful if writing systems were reference counted.
 		}
@@ -153,6 +167,9 @@ namespace Palaso.WritingSystems
 
 		virtual protected void OnChangeNotifySharedStore(WritingSystemDefinition ws)
 		{
+			DateTime lastDateModified;
+			if (_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) && ws.DateModified > lastDateModified)
+				_writingSystemsToIgnore.Remove(ws.Id);
 		}
 
 		virtual protected void OnRemoveNotifySharedStore()
@@ -171,7 +188,9 @@ namespace Palaso.WritingSystems
 				Guard.AgainstNull(ws, "ws in rhs");
 				if (_writingSystems.ContainsKey(ws.RFC5646))
 				{
-					if (!_writingSystemsToIgnore.ContainsKey(ws.RFC5646) && (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
+					DateTime lastDateModified;
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.RFC5646, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}
