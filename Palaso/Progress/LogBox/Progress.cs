@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -571,5 +572,30 @@ namespace Palaso.Progress.LogBox
 		{
 			set { _verbose = value; }
 		}
+	}
+
+	public class FileLogProgress : GenericProgress
+	{
+		private readonly string _path;
+
+		public FileLogProgress(string path)
+		{
+			ShowVerbose = true;
+			_path = path;
+			if (File.Exists(path))
+			{
+				File.Delete(path);
+			}
+		}
+
+		public override void WriteMessage(string message, params object[] args)
+		{
+			File.AppendAllText(_path, string.Format(message + Environment.NewLine, args));
+		}
+		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
+			WriteMessage(message, args);
+		}
+
 	}
 }
