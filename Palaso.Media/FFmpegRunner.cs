@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
+using Palaso.Progress.LogBox;
 
 namespace Palaso.Media
 {

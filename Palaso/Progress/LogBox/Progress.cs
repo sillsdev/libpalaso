@@ -19,6 +19,8 @@ namespace Palaso.Progress.LogBox
 		bool ShowVerbose {set; }
 		bool CancelRequested { get;  set; }
 		bool ErrorEncountered { get; set; }
+
+
 	}
 
 	public class NullProgress : IProgress
@@ -448,6 +450,7 @@ namespace Palaso.Progress.LogBox
 		public bool ErrorEncountered { get { return !string.IsNullOrEmpty(LastError); }
 			set { }
 		}
+
 
 
 	   public  void WriteStatus(string message, params object[] args)

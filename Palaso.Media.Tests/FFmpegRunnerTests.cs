@@ -3,6 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using Palaso.CommandLineProcessing;
 using Palaso.Media.Tests.Properties;
+using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 
 
