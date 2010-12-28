@@ -185,10 +185,11 @@ namespace Palaso.i18n
 				{
 					return _catalog[id];
 				}
-				id = id.Replace("&&", "&");
-				if (_catalog.ContainsKey(id))
+				//REVIEW: What's this about?  It was   id = id.Replace("&&", "&");  which was removing the && we need when it gets to the UI
+				var idWithSingleAmpersand  =id.Replace("&&", "&");
+				if (_catalog.ContainsKey(idWithSingleAmpersand))
 				{
-					return _catalog[id];
+					return _catalog[idWithSingleAmpersand];
 				}
 				return id;
 			}
