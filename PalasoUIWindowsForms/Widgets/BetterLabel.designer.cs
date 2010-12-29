@@ -39,6 +39,7 @@
 			this.ReadOnly = true;
 			this.Size = new System.Drawing.Size(100, 20);
 			this.TabStop = false;
+			this.TextChanged += new System.EventHandler(this.BetterLabel_TextChanged);
 			this.ParentChanged += new System.EventHandler(this.BetterLabel_ParentChanged);
 			this.ResumeLayout(false);
 
