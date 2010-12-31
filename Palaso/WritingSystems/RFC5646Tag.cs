@@ -108,19 +108,19 @@ namespace Palaso.WritingSystems
 
 		private static bool IsBadAudioTag(RFC5646Tag tagToConvert)
 		{
-			return (tagToConvert.Language.Contains("x-audio")) ||
-				   (tagToConvert.Variant == "x-audio" && tagToConvert.Script != "Zxxx") ||
-				   (tagToConvert.Variant == "x-audio" && tagToConvert.Language.Contains("-"));
+			return (tagToConvert.Language.ToLower().Contains("x-audio")) ||
+				   (tagToConvert.Variant.ToLower() == "x-audio" && tagToConvert.Script.ToLower() != "zxxx") ||
+				   (tagToConvert.Variant.ToLower() == "x-audio" && tagToConvert.Language.Contains("-"));
 		}
 
 		public static RFC5646Tag RFC5646TagForVoiceWritingSystem(string language, string region)
 		{
-			return new RFC5646Tag(language, "Zxxx", region, "x-audio");
+			return new RFC5646Tag(language, "Zxxx", region, "x-AUDIO");//uppercase to match FLEx
 		}
 
 		public static bool IsRFC5646TagForVoiceWritingSystem(RFC5646Tag rfcTag)
 		{
-			if(rfcTag.Script == "Zxxx" && rfcTag.Variant == "x-audio")
+			if(rfcTag.Script.ToLower() == "zxxx" && rfcTag.Variant.ToLower() == "x-audio")
 			{
 				return true;
 			}

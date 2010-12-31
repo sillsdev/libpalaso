@@ -136,7 +136,7 @@ namespace Palaso.Tests.WritingSystems
 			adaptor.Read(pathToLdmlFile,ws);
 			Assert.AreEqual("tpi", ws.ISO);
 			Assert.AreEqual("Zxxx", ws.Script);
-			Assert.AreEqual("x-audio", ws.Variant);
+			Assert.AreEqual("x-audio", ws.Variant.ToLower());
 		}
 
 		[Test]
@@ -149,11 +149,11 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			LdmlAdaptor adaptor = new LdmlAdaptor();
 			adaptor.Read(pathToLdmlFile, ws);
-			Assert.AreEqual("lwl-Zxxx-overtherainbow-x-audio", ws.RFC5646);
+			Assert.AreEqual("lwl-Zxxx-overtherainbow-x-AUDIO", ws.RFC5646);
 			Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
 			Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
 			Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
-			Assert.AreEqual("x-audio", ws.Rfc5646TagOnLoad.Variant);
+			Assert.AreEqual("x-audio", ws.Rfc5646TagOnLoad.Variant.ToLower());
 		}
 	}
 }
