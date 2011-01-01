@@ -277,7 +277,7 @@ namespace Palaso.Tests.WritingSystems
 			ws.IsVoice = true;
 			Assert.AreEqual(ws.Script, "Zxxx");
 			Assert.AreEqual(ws.Region, "Region");
-			Assert.AreEqual(ws.Variant, "x-audio");
+			Assert.AreEqual(ws.Variant, "x-AUDIO");
 		}
 
 		[Test]
@@ -387,7 +387,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Iso_SetToSmthContainingZxxxDashxDashaudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		public void Iso639_SetToSmthContainingZxxxDashxDashaudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
@@ -395,7 +395,7 @@ namespace Palaso.Tests.WritingSystems
 			};
 			ws.ISO639 = "iso-Zxxx-x-audio";
 			Assert.AreEqual("iso", ws.ISO639);
-			Assert.AreEqual("x-audio", ws.Variant);
+			Assert.AreEqual("x-AUDIO", ws.Variant);
 			Assert.AreEqual("Zxxx", ws.Script);
 			Assert.IsTrue(ws.IsVoice);
 		}

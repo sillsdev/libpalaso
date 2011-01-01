@@ -521,9 +521,9 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
 			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
 
-			Assert.AreEqual("de-Zxxx-x-audio", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")).CompleteTag);
-			Assert.AreEqual("de-Zxxx-x-audio-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")).CompleteTag);
-			Assert.AreEqual("de-Zxxx-x-audio-x-dupl-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-AUDIO", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")).CompleteTag);
 		}
 
 		[Test]

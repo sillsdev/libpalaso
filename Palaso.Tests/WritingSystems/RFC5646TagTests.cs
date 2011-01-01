@@ -48,6 +48,14 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(validTag, RFC5646Tag.GetValidTag(validTag));
 		}
 
+		//though handling must be case insensitive, we want to be the same as FLEx to avoid
+		//extra mercurial diffing, taking up more bandwith and clogging the history
+		[Test]
+		public void RFC5646TagForVoiceWritingSystem_GivesAUDIOInCaseMatchingFLEx()
+		{
+			Assert.IsTrue(RFC5646Tag.RFC5646TagForVoiceWritingSystem("tpi", string.Empty).Variant.Contains("AUDIO"));
+		}
+
 		[Test]
 		public void GetValidTag_LanguageCodeContainsxDashaudio_LanguageCodeIsShortenedToEveryThingBeforeFirstDash()
 		{
@@ -62,7 +70,7 @@ namespace Palaso.Tests.WritingSystems
 			RFC5646Tag invalidTag = new RFC5646Tag("x-audio", String.Empty, String.Empty, String.Empty);
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
 			Assert.AreEqual("x", validTag.Language);
-			Assert.AreEqual("x-audio", validTag.Variant);
+			Assert.AreEqual("x-AUDIO", validTag.Variant);
 		}
 
 		[Test]
@@ -72,7 +80,7 @@ namespace Palaso.Tests.WritingSystems
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
 			Assert.AreEqual("Zxxx", validTag.Script);
 			Assert.AreEqual(String.Empty, validTag.Region);
-			Assert.AreEqual("x-audio", validTag.Variant);
+			Assert.AreEqual("x-AUDIO", validTag.Variant);
 		}
 
 		[Test]
