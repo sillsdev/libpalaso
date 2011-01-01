@@ -134,7 +134,7 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			LdmlAdaptor adaptor = new LdmlAdaptor();
 			adaptor.Read(pathToLdmlFile,ws);
-			Assert.AreEqual("tpi", ws.ISO);
+			Assert.AreEqual("tpi", ws.ISO639);
 			Assert.AreEqual("Zxxx", ws.Script);
 			Assert.AreEqual("x-audio", ws.Variant.ToLower());
 		}

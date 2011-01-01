@@ -545,7 +545,7 @@ namespace Palaso.WritingSystems
 			switch (id)
 			{
 				case "en-latn":
-					ws.ISO = "en";
+					ws.ISO639 = "en";
 					ws.LanguageName = "English";
 					ws.Abbreviation = "eng";
 					ws.Script = "Latn";
@@ -612,7 +612,7 @@ namespace Palaso.WritingSystems
 			writer.WriteString(ws.VersionDescription);
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
-			WriteElementWithAttribute(writer, "language", "type", ws.ISO);
+			WriteElementWithAttribute(writer, "language", "type", ws.ISO639);
 			if (!String.IsNullOrEmpty(ws.Script))
 			{
 				WriteElementWithAttribute(writer, "script", "type", ws.Script);
@@ -708,7 +708,7 @@ namespace Palaso.WritingSystems
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
 			WriteSpecialValue(writer, "palaso", "languageName", ws.LanguageName);
-			if (ws.SpellCheckingId != ws.ISO)
+			if (ws.SpellCheckingId != ws.ISO639)
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}

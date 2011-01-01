@@ -25,15 +25,31 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(invalidTag, RFC5646Tag.GetValidTag(validTag));
 		}
 
+
 		[Test]
-		public void IsValid_IsoContainsxDashaudio_ReturnsFalse()
+		public void IsValid_LanguageCodeContainsxDashaudio_ReturnsFalse()
 		{
+			//NB: what's wrong here is not the format, but the way we pushed the whole tag into the language parameter.
 			RFC5646Tag tag = new RFC5646Tag("tpi-Zxxx-x-audio", String.Empty, String.Empty, String.Empty);
 			Assert.IsFalse(tag.IsValid());
 		}
 
 		[Test]
-		public void GetValidTag_IsoContainsxDashaudio_IsoIsShortenedToEveryThingBeforeFirstDash()
+		public void IsValid_AudioInCannoncialFormat_ReturnsTrue()
+		{
+			RFC5646Tag tag = RFC5646Tag.RFC5646TagForVoiceWritingSystem("tpi", string.Empty);
+			Assert.IsTrue(tag.IsValid());
+		}
+
+		[Test]
+		public void GetValidTag_AudioIsValid_ReturnsSameTag()
+		{
+			RFC5646Tag validTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem("tpi", string.Empty);
+			Assert.AreEqual(validTag, RFC5646Tag.GetValidTag(validTag));
+		}
+
+		[Test]
+		public void GetValidTag_LanguageCodeContainsxDashaudio_LanguageCodeIsShortenedToEveryThingBeforeFirstDash()
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("tpi-Zxxx-x-audio", String.Empty, String.Empty, String.Empty);
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
@@ -41,7 +57,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void GetValidTag_IsoContainsOnlyxDashaudio_IsoEmpty()
+		public void GetValidTag_LanguageCodeContainsOnlyxDashaudio_LanguageCodeEmpty()
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("x-audio", String.Empty, String.Empty, String.Empty);
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
@@ -50,7 +66,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void GetValidTag_IsoContainsxDashaudio_ScriptRegionVariantFieldsAreSetCorrectly()
+		public void GetValidTag_LanguageCodeContainsxDashaudio_ScriptRegionVariantFieldsAreSetCorrectly()
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("tpi-Zxxx-x-audio", String.Empty, String.Empty, String.Empty);
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
@@ -60,14 +76,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsValid_IsoContainsDashesAndVariantIsxDashaudio_ReturnsFalse()
+		public void IsValid_LanguageCodeContainsDashesAndVariantIsxDashaudio_ReturnsFalse()
 		{
 			RFC5646Tag tag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
 			Assert.IsFalse(tag.IsValid());
 		}
 
 		[Test]
-		public void GetValidTag_IsoContainsDashesAndVariantIsxDashaudio_IsoIsShortened()
+		public void GetValidTag_LanguageCodeContainsDashesAndVariantIsxDashaudio_LanguageCodeIsShortened()
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);

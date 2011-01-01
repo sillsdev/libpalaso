@@ -134,7 +134,7 @@ namespace Palaso.Text
 		{
 			foreach (LanguageForm f in Forms)
 			{
-				if (f.WritingSystemId == writingSystemId)
+				if (f.WritingSystemId.ToLowerInvariant() == writingSystemId.ToLowerInvariant())
 				{
 					return f;
 				}

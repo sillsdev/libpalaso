@@ -22,7 +22,7 @@ namespace Palaso.Tests.WritingSystems
 		public void DisplayLabel_NoAbbreviation_UsesRFC5646()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "abc";
+			ws.ISO639 = "abc";
 			ws.Variant = "xyz";
 			Assert.AreEqual("abc-xyz", ws.DisplayLabel);
 		}
@@ -285,10 +285,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
-												 ISO = "id-as-per-old-wesay"
+												 ISO639 = "id-as-per-old-wesay"
 											 };
 			ws.IsVoice = true;
-			Assert.AreEqual(ws.ISO, "id");
+			Assert.AreEqual(ws.ISO639, "id");
 		}
 
 		[Test]
@@ -296,10 +296,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
-				ISO = "iso"
+				ISO639 = "iso"
 			};
 			ws.IsVoice = true;
-			Assert.AreEqual(ws.ISO, "iso");
+			Assert.AreEqual(ws.ISO639, "iso");
 		}
 
 		[Test]
@@ -320,10 +320,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
-				ISO = "iso-script-region-variant"
+				ISO639 = "iso-script-region-variant"
 			};
 			ws.IsVoice = true;
-			Assert.AreEqual(ws.ISO, "iso");
+			Assert.AreEqual(ws.ISO639, "iso");
 		}
 
 		[Test]
@@ -381,8 +381,8 @@ namespace Palaso.Tests.WritingSystems
 											 {
 												 IsVoice = true,
 											 };
-			ws.ISO = "iso-script-region-variant";
-			Assert.AreEqual("iso", ws.ISO);
+			ws.ISO639 = "iso-script-region-variant";
+			Assert.AreEqual("iso", ws.ISO639);
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -393,8 +393,8 @@ namespace Palaso.Tests.WritingSystems
 			{
 				IsVoice = true,
 			};
-			ws.ISO = "iso-Zxxx-x-audio";
-			Assert.AreEqual("iso", ws.ISO);
+			ws.ISO639 = "iso-Zxxx-x-audio";
+			Assert.AreEqual("iso", ws.ISO639);
 			Assert.AreEqual("x-audio", ws.Variant);
 			Assert.AreEqual("Zxxx", ws.Script);
 			Assert.IsTrue(ws.IsVoice);

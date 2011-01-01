@@ -115,7 +115,7 @@ namespace Palaso.WritingSystems
 				{
 					throw new ArgumentException
 						(
-						String.Format("Ldml files {0} and {1} conatin writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
+						String.Format("Ldml files {0} and {1} contain writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
 						GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
 						);
 				}
@@ -140,9 +140,18 @@ namespace Palaso.WritingSystems
 			{
 				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
 				{
-					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+					string sourceFilePath = Path.Combine(pathToFolderForSafeFileRenaming,
 																		  GetFileName(ws));
-					File.Move(pathInFolderForSafeFileRenaming, GetFilePathFromIdentifier(ws.RFC5646));
+
+					string targetFilePath = GetFilePathFromIdentifier(ws.RFC5646);
+					if (File.Exists(targetFilePath))
+					{
+						File.Delete(sourceFilePath); //Had a case converting form the old audio style where the new file already existed, causing a crash
+					}
+					else
+					{
+						File.Move(sourceFilePath, targetFilePath);
+					}
 					ws.StoreID = ws.RFC5646;
 				}
 			}

@@ -308,12 +308,12 @@ namespace Palaso.WritingSystems
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					ISO = ISO.Split('-')[0];
-					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO, Region);
+					ISO639 = ISO639.Split('-')[0];
+					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO639, Region);
 				}
 				else if (IsVoice == true)
 				{
-					_rfcTag = new RFC5646Tag(ISO, "", "", "");
+					_rfcTag = new RFC5646Tag(ISO639, "", "", "");
 				}
 				Modified = true;
 			}
@@ -394,7 +394,7 @@ namespace Palaso.WritingSystems
 		/// The ISO-639 code which is also the Ethnologue code.
 		/// </summary>
 		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
-		virtual public string ISO
+		virtual public string ISO639
 		{
 			get
 			{
@@ -402,7 +402,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == ISO) { return; }
+				if (value == ISO639) { return; }
 				Rfc5646Tag = new RFC5646Tag(value, _rfcTag.Script, _rfcTag.Region, _rfcTag.Variant);
 				if (!_rfcTag.IsValid())
 				{

@@ -39,10 +39,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetTwoDefinitions_CountEquals2()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "two";
+			ws2.ISO639 = "two";
 			StoreUnderTest.Set(ws2);
 
 			Assert.AreEqual(2, StoreUnderTest.Count);
@@ -65,7 +65,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetDefinitionTwice_OnlySetOnce()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, StoreUnderTest.Count);
 			WritingSystemDefinition ws = new WritingSystemDefinition();
@@ -77,12 +77,12 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetDefinitionTwice_UpdatesStore()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, StoreUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "one";
+			ws1.ISO639 = "one";
 			ws1.DefaultFontName = "one font";
 			ws1.StoreID = _writingSystem.StoreID;
 			StoreUnderTest.Set(ws1);
@@ -97,7 +97,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithUpperCaseButRequestedUsingLowerCase_Finds()
 		{
-			_writingSystem.ISO = "sr-Latn-RS";
+			_writingSystem.ISO639 = "sr-Latn-RS";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-rs"));
 		}
@@ -108,7 +108,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
 		{
-			_writingSystem.ISO = "sr-Latn-rs";
+			_writingSystem.ISO639 = "sr-Latn-rs";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-RS"));
 		}
@@ -117,7 +117,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Exists_FalseThenTrue()
 		{
 			Assert.IsFalse(StoreUnderTest.Exists("one"));
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.IsTrue(StoreUnderTest.Exists("one"));
 		}
@@ -125,7 +125,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Remove_CountDecreases()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, StoreUnderTest.Count);
 			StoreUnderTest.Remove(_writingSystem.StoreID);
@@ -136,7 +136,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanEmpty_ReturnsNoneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			StoreUnderTest.Set(ws1);
 
 			IWritingSystemStore store = CreateNewStore();
@@ -152,7 +152,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanOlder_ReturnsOneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
 
@@ -173,7 +173,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanNewer_ReturnsNoneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
 
@@ -194,7 +194,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanCheckedAlready_ReturnsNoneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
 
@@ -216,7 +216,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CanStoreVariants_CountTwo()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			Assert.AreEqual("en", ws1.RFC5646);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variant = "latn";
@@ -263,7 +263,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSetUnchangedDuplicate_False()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.IsFalse(StoreUnderTest.CanSet(StoreUnderTest.MakeDuplicate(_writingSystem)));
 		}
@@ -294,7 +294,7 @@ namespace Palaso.Tests.WritingSystems
 			ws1.VersionNumber = "1.0";
 			StoreUnderTest.Set(ws1);
 			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(ws1);
-			Assert.AreEqual(ws1.ISO, ws2.ISO);
+			Assert.AreEqual(ws1.ISO639, ws2.ISO639);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
 			Assert.AreEqual(ws1.Variant, ws2.Variant);

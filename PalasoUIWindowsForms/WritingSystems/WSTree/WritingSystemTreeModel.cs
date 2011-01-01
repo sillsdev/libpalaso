@@ -89,7 +89,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		{
 			var x = new List<WritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
 
-			var systemsOfSameLanguage = x.GroupBy(def=>def.ISO);
+			var systemsOfSameLanguage = x.GroupBy(def=>def.ISO639);
 
 			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{

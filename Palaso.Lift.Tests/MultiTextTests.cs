@@ -42,6 +42,19 @@ namespace WeSay.LexicalModel.Tests.Foundation
 			Assert.AreSame(x, x.Find("b").Parent);
 		}
 
+
+		/// <summary>
+		/// RFC5646 calls for case insensitivity
+		/// </summary>
+		[Test]
+		public void Find_QueryHasDIfferentCase_StillFinds()
+		{
+			MultiText x = new MultiText();
+			x["aBc"] = "alpha";
+			Assert.AreSame("alpha", x.Find("AbC").Form);
+			Assert.AreSame(x.Find("aBc"), x.Find("AbC"));
+		}
+
 		[Test]
 		public void Create_LiftMultiTextWithSpansInForms_ReturnsMultiTextWithSpansInForms()
 		{
