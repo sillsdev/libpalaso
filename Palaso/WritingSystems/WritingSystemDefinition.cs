@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems
 		public enum SortRulesType
 		{
 			/// <summary>
-			/// Default Unicode ordering rules
+			/// Default Unicode ordering rules (actually CustomICU without any rules)
 			/// </summary>
 			[Description("Default Ordering")]
 			DefaultOrdering,
@@ -29,7 +29,7 @@ namespace Palaso.WritingSystems
 			[Description("Custom ICU rules")]
 			CustomICU,
 			/// <summary>
-			/// Use the sort rules from another language. When this is set, the SortRules are interpretted as a cultureId for the language to sort like.
+			/// Use the sort rules from another language. When this is set, the SortRules are interpreted as a cultureId for the language to sort like.
 			/// </summary>
 			[Description("Same as another language")]
 			OtherLanguage
@@ -70,7 +70,7 @@ namespace Palaso.WritingSystems
 		private static List<LanguageCode> _languageCodes;
 
 		/// <summary>
-		/// For overridding the other identifier fields, to specify a custom RFC5646
+		/// For overriding the other identifier fields, to specify a custom RFC5646
 		/// </summary>
 		//private string _customLanguageTag;
 
@@ -784,7 +784,7 @@ namespace Palaso.WritingSystems
 					switch (SortUsing)
 					{
 						case SortRulesType.DefaultOrdering:
-							_collator = new SystemCollator(null);
+							_collator = new IcuRulesCollator(String.Empty); // was SystemCollator(null);
 							break;
 						case SortRulesType.CustomSimple:
 							_collator = new SimpleRulesCollator(SortRules);
@@ -849,7 +849,7 @@ namespace Palaso.WritingSystems
 			return false;
 		}
 
-		public string ToString()
+		public override string ToString()
 		{
 			return _rfcTag.ToString();
 		}

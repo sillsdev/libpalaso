@@ -190,8 +190,8 @@ namespace Palaso.WritingSystems
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
+			WritingSystemDefinition ws = CreateNew();
+			LdmlAdaptor adaptor = CreateLdmlAdaptor();
 			if (File.Exists(filePath))
 			{
 				adaptor.Read(filePath, ws);
