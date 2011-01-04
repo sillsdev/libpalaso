@@ -74,17 +74,17 @@
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\Keyman7Interop.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
 	</Reference>
 	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\KeymanLink.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
