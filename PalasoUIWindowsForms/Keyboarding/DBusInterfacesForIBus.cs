@@ -8,7 +8,7 @@ using org.freedesktop.DBus;
 namespace org.freedesktop.IBus
 {
 	// element type returned in array by ListEngines/ListActiveEngines
-	// dbus type: (sa{sv}ssssssssu)
+	// dbus type: (sa{sv}ssssssss)
 	public struct IBusEngineDesc
 	{
 		public string a;
@@ -21,12 +21,11 @@ namespace org.freedesktop.IBus
 		public string author;
 		public string icon;
 		public string layout;
-		public UInt32 rank;
 
-		public override string ToString ()
+		public override string ToString()
 		{
-			return string.Format("[IBusEngineDesc] '{0}' '{1}' \nname:'{2}' \nlongname:'{3}' \ndescription:'{4}' \nlanguage:'{5}' \nlicense:'{6}' \nauthor:'{7}' \nicon:'{8}' \nlayout:'{9}' ",
-								 a,b, name, longname, description, language, license, author, icon, layout);
+			return string.Format("[IBusEngineDesc] '{0}' '{1}' \nname:'{2}' \nlongname:'{3}' \ndescription:'{4}' \nlanguage:'{5}' \nlicense:'{6}' \nauthor:'{7}' \nicon:'{8}' \nlayout:'{9}' ", a, b, name, longname, description, language, license, author, icon,
+			layout);
 		}
 	}
 

@@ -1,12 +1,12 @@
 #if MONO
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using Palaso.Reporting;
 
 using NDesk.DBus;
-using org.freedesktop.DBus;
 using org.freedesktop.IBus;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -43,7 +43,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			directory = Path.Combine (directory, "ibus");
 			directory = Path.Combine (directory, "bus");
 
-			DirectoryInfo di = new DirectoryInfo (directory);
+			var di = new DirectoryInfo (directory);
 
 			// default to 0 if we can't find from DISPLAY ENV var
 			int displayNumber = 0;
@@ -80,7 +80,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			// Set Enviroment 'DBUS_SESSION_BUS_ADDRESS' so DBus Library actually connects to IBus' DBus.
 			// IBUS_ADDRESS=unix:abstract=/tmp/dbus-DVpIKyfU9k,guid=f44265fa3b2781284d54c56a4b0d83f3
 
-			StreamReader s = new StreamReader (filename);
+			var s = new StreamReader (filename);
 			string line = String.Empty;
 			while (line != null)
 			{
@@ -118,7 +118,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 	internal class IBus
 	{
-		org.freedesktop.IBus.IIBus _inputBus;
+		readonly org.freedesktop.IBus.IIBus _inputBus;
 
 		public IBus (NDesk.DBus.Connection connection)
 		{
@@ -145,7 +145,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 	internal class IBusInputContext
 	{
-		org.freedesktop.IBus.InputContext _inputContext;
+		readonly org.freedesktop.IBus.InputContext _inputContext;
 
 		/// <summary>
 		/// Wraps a connection to a specfic instance of an IBus InputContext
@@ -168,15 +168,48 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 	internal class IBusAdaptor
 	{
-		static NDesk.DBus.Connection _connection = null;
+		static NDesk.DBus.Connection _connection;
+		private static KeyboardController.KeyboardDescriptor _defaultKeyboard;
+
+		enum IBusError
+		{
+			Unknown,
+			ConnectionRefused
+		}
 
 		/// <summary>
 		/// Opens a _connection if one isn't already Opened.
 		/// </summary>
 		public static void EnsureConnection ()
 		{
+			OpenConnection();
+			foreach (var keyboard in GetKeyboardDescriptors())
+			{
+				_defaultKeyboard = keyboard;
+				break;
+			}
+		}
+
+		public static void OpenConnection()
+		{
 			if (_connection == null)
-				_connection = IBusConnectionFactory.Create ();
+			{
+				try
+				{
+					_connection = IBusConnectionFactory.Create();
+				}
+				catch (Exception e)
+				{
+					if (e.Message.Contains("Connection refused"))
+					{
+						NotifyUserOfProblem(IBusError.ConnectionRefused, "IBus doesn't seem to be running");
+					}
+					else
+					{
+						throw;
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -191,26 +224,55 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
+		private static void NotifyUserOfProblem(IBusError error, string message)
+		{
+			switch (error)
+			{
+				default:
+					Console.WriteLine("About to notify '{0}'", message);
+					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), message);
+					break;
+			}
+		}
+
+		public static string DefaultKeyboardName
+		{
+			get { return _defaultKeyboard != null ? _defaultKeyboard.Name : String.Empty; }
+		}
+
+		private static IBusInputContext TryGetFocusedInputContext(IBus ibus)
+		{
+			for (int i = 1; ; ++i)
+			{
+				try
+				{
+					Console.WriteLine("TryGetFocusedInputContext {0}", i);
+					string inputContextPath = ibus.GetFocusedInputContextPath();
+					Console.WriteLine("TryGetFocusedInputContext: ICPath {0}", inputContextPath);
+					return new IBusInputContext(_connection, inputContextPath);
+				}
+				catch (Exception)
+				{
+					if (i > 10)
+					{
+						throw;
+					}
+					Application.DoEvents();
+				}
+			}
+		}
+
 		public static void ActivateKeyboard (string name)
 		{
-			try
-			{
-				EnsureConnection ();
-			}
-			catch
-			{
-				return;
-			}
-
-			IBus ibus = new IBus (_connection);
-			string inputContextPath = ibus.GetFocusedInputContextPath ();
-
-			IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
+			EnsureConnection ();
 
 			if(!HasKeyboardNamed(name))
 			{
-				throw new ArgumentOutOfRangeException("IBus does not have a Keyboard with that name!" + name);
+				throw new ArgumentOutOfRangeException("name", name, "IBus does not have a Keyboard of that name.");
 			}
+
+			var ibus = new IBus (_connection);
+			var inputContextBus = TryGetFocusedInputContext(ibus);
 
 			inputContextBus.InputContext.SetEngine (name);
 		}
@@ -220,24 +282,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		protected static IEnumerable<KeyboardController.KeyboardDescriptor> GetKeyboardDescriptors ()
 		{
-			try
-			{
-				EnsureConnection ();
-			}
-			catch
-			{
-				yield break;
-			}
-
-			IBus ibus = new IBus (_connection);
+			var ibus = new IBus (_connection);
 			object[] engines = ibus.InputBus.ListActiveEngines ();
 			for (int i = 0; i < (engines).Length; ++i)
 			{
-				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engines[i], typeof(IBusEngineDesc));
-				var v = new KeyboardController.KeyboardDescriptor ();
-				v.Id = engineDesc.name;
-				v.Name = engineDesc.longname;
-				v.engine = KeyboardController.Engines.IBus;
+				var engineDesc = (IBusEngineDesc)Convert.ChangeType (engines[i], typeof(IBusEngineDesc));
+				var v = new KeyboardController.KeyboardDescriptor
+							{
+								Id = engineDesc.name,
+								Name = engineDesc.longname,
+								engine = KeyboardController.Engines.IBus
+							};
 
 				yield return v;
 			}
@@ -246,7 +301,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
 		{
-			get { return new List<KeyboardController.KeyboardDescriptor>(GetKeyboardDescriptors () ); }
+			get
+			{
+				EnsureConnection();
+				return new List<KeyboardController.KeyboardDescriptor>(GetKeyboardDescriptors () );
+			}
 		}
 
 		public static bool EngineAvailable
@@ -266,61 +325,34 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void Deactivate ()
 		{
-			try
-			{
-				EnsureConnection ();
-			}
-			catch
-			{
-				return;
-			}
-
-			IBus ibus = new IBus (_connection);
-			string inputContextPath = ibus.GetFocusedInputContextPath ();
-
-			IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
-			inputContextBus.InputContext.Reset ();
+			ActivateKeyboard(DefaultKeyboardName);
 		}
 
 		public static bool HasKeyboardNamed (string name)
 		{
-			foreach (KeyboardController.KeyboardDescriptor d in GetKeyboardDescriptors ())
-			{
-				if (d.Name.Equals (name))
-					return true;
-			}
-
-			return false;
+			return GetKeyboardDescriptors().Any(d => d.Name.Equals(name));
 		}
 
 		public static string GetActiveKeyboard ()
 		{
+			EnsureConnection ();
+
+			var ibus = new IBus (_connection);
 			try
 			{
-				EnsureConnection ();
-			}
-			catch
-			{
-				return String.Empty;
-			}
-
-			IBus ibus = new IBus (_connection);
-
-			try
-			{
-				string inputContextPath = ibus.GetFocusedInputContextPath ();
-
-				IBusInputContext inputContextBus = new IBusInputContext (_connection, inputContextPath);
+				var inputContextBus = TryGetFocusedInputContext(ibus);
 				object engine = inputContextBus.InputContext.GetEngine ();
 				if (engine == null)
+				{
 					throw new ApplicationException ("Focused Input Context doesn't have an active Keyboard/Engine");
+				}
 
-				IBusEngineDesc engineDesc = (IBusEngineDesc)Convert.ChangeType (engine, typeof(IBusEngineDesc));
+				var engineDesc = (IBusEngineDesc)Convert.ChangeType (engine, typeof(IBusEngineDesc));
 				return engineDesc.longname;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
 																 "Could not get ActiveKeyboard");
 				return String.Empty;
 			}

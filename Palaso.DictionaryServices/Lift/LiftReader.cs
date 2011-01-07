@@ -92,10 +92,10 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void parser_ParsingWarning(object sender,
-										   LiftParser
-												   <PalasoDataObject, LexEntry, LexSense,
-												   LexExampleSentence>.ErrorArgs e)
+		private void parser_ParsingWarning(
+			object sender,
+			LiftParser<PalasoDataObject, LexEntry, LexSense, LexExampleSentence>.ErrorArgs e
+		)
 		{
 			_progressState.ExceptionThatWasEncountered = e.Exception;
 		}

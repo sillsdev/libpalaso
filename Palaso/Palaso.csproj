@@ -204,7 +204,6 @@
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
-	<Compile Include="Reporting\ErrorReportTests.cs" />
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
 	<Compile Include="Reporting\ExceptionReportingDialog.cs">
