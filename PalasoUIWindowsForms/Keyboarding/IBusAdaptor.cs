@@ -205,7 +205,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				catch (DirectoryNotFoundException e)
 				{
-					NotifyUserOfProblem(IBusError.NotConfigured, String.Format("IBus doesn't seem to installed or configured because {0}", e.Message));
+					NotifyUserOfProblem(IBusError.NotConfigured, String.Format("Your keyboard cannot be changed automatically because IBus doesn't seem to installed (or configured).\n{0}", e.Message));
 				}
 				catch (Exception e)
 				{
