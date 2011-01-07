@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Palaso.Code;
 using Palaso.Reporting;
 
 using NDesk.DBus;
@@ -184,10 +185,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static void EnsureConnection ()
 		{
 			OpenConnection();
-			foreach (var keyboard in GetKeyboardDescriptors())
+			if (_connection != null)
 			{
-				_defaultKeyboard = keyboard;
-				break;
+				foreach (var keyboard in GetKeyboardDescriptors())
+				{
+					_defaultKeyboard = keyboard;
+					break;
+				}
 			}
 		}
 
@@ -287,6 +291,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		protected static IEnumerable<KeyboardController.KeyboardDescriptor> GetKeyboardDescriptors ()
 		{
+			Guard.AgainstNull(_connection, "_connection");
 			var ibus = new IBus (_connection);
 			object[] engines = ibus.InputBus.ListActiveEngines ();
 			for (int i = 0; i < (engines).Length; ++i)
