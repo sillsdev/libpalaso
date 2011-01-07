@@ -201,7 +201,10 @@ namespace Palaso.WritingSystems
 													GetSubNodeAttributeValue(identityReader, "territory", "type"),
 													GetSubNodeAttributeValue(identityReader, "variant", "type"));
 				ws.Rfc5646TagOnLoad = rfcTag;
-				ws.Rfc5646Tag = new RFC5646Tag(rfcTag);
+				ws.ISO = rfcTag.Language;
+				ws.Script = rfcTag.Script;
+				ws.Region = rfcTag.Region;
+				ws.Variant = rfcTag.Variant;
 
 				// move to end of identity node
 				while (identityReader.Read()) ;

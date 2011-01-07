@@ -180,12 +180,15 @@ namespace Palaso.WritingSystems
 				return;
 			}
 			var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid()) ? wsFromFile : existingWritingSystem;
-			var newTag = new RFC5646Tag(wsToMakeUnique.Rfc5646Tag);
+			var newTag = new RFC5646Tag(wsToMakeUnique.ISO, wsToMakeUnique.Script, wsToMakeUnique.Region, wsToMakeUnique.Variant);
 			do
 			{
 				newTag.Variant += "-x-dupl";
 			} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
-			wsToMakeUnique.Rfc5646Tag = newTag;
+			wsToMakeUnique.ISO = newTag.Language;
+			wsToMakeUnique.Script = newTag.Script;
+			wsToMakeUnique.Region = newTag.Region;
+			wsToMakeUnique.Variant = newTag.Variant;
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
