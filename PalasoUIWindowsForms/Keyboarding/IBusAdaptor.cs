@@ -174,7 +174,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		enum IBusError
 		{
 			Unknown,
-			ConnectionRefused
+			ConnectionRefused,
+			NotConfigured
 		}
 
 		/// <summary>
@@ -197,6 +198,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				try
 				{
 					_connection = IBusConnectionFactory.Create();
+				}
+				catch (DirectoryNotFoundException e)
+				{
+					NotifyUserOfProblem(IBusError.NotConfigured, String.Format("IBus doesn't seem to installed or configured because {0}", e.Message));
 				}
 				catch (Exception e)
 				{
