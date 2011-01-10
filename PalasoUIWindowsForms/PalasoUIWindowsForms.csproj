@@ -354,8 +354,6 @@
 	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Keyboarding\ScimAdaptor.cs" />
-	<Compile Include="Keyboarding\ScimPanelController.cs" />
 	<Compile Include="Keyboarding\IBusAdaptor.cs" />
 	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
