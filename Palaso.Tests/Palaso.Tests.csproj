@@ -141,6 +141,7 @@
 	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.Tests.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionValidatorTests.cs" />
 	<Compile Include="XmlHelpers.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
