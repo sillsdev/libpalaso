@@ -304,16 +304,18 @@ namespace Palaso.WritingSystems
 			get { return RFC5646Tag.IsRFC5646TagForVoiceWritingSystem(_rfcTag); }
 			set
 			{
+				if(IsVoice == value) {return;}
 				if (value)
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					ISO = ISO.Split('-')[0];
-					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO, Region);
+					Script = "Zxxx";
+					_rfcTag.ConcatSubTag()
 				}
-				else if (IsVoice == true)
+				else
 				{
-					_rfcTag = new RFC5646Tag(ISO, "", "", "");
+					int positionOfAudioTagInVariant = Variant.IndexOf("-x-audio");
+
 				}
 				Modified = true;
 			}
@@ -330,16 +332,8 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == null || value == Variant)
-				{
-					return;
-				}
-				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
-				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, _rfcTag.Region, value);
-				if (!_rfcTag.IsValid())
-				{
-					throw new InvalidOperationException(String.Format("Changing the variant subtag to {0} results in an invalid RFC5646 tag.", value));
-				}
+				if (value == null || value == Variant) { return; }
+				_rfcTag.Variant = value;
 				Modified = true;
 			}
 		}
@@ -353,29 +347,22 @@ namespace Palaso.WritingSystems
 			set
 			{
 				if (value == Region) { return; }
-				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, value, _rfcTag.Variant);
-				if (!_rfcTag.IsValid())
-				{
-					throw new InvalidOperationException(String.Format("Changing the region subtag to {0} results in an invalid RFC5646 tag.", value));
-				}
+				_rfcTag.Region = value;
 				Modified = true;
 			}
 		}
 
 		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
-		private RFC5646Tag Rfc5646Tag
-		{
-			get{ return _rfcTag;}
-			set
-			{
-				if(!value.IsValid())
-				{
-					value = RFC5646Tag.GetValidTag(value);
-				}
-				_rfcTag = value;
-				Modified = true;
-			}
-		}
+		//private RFC5646Tag Rfc5646Tag
+		//{
+		//    get{ return _rfcTag;}
+		//    set
+		//    {
+		//        if (_rfcTag == value){ return; }
+		//        _rfcTag = value;
+		//        Modified = true;
+		//    }
+		//}
 
 		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
 		//This method is preferable to setting the individual components independantly, as the order
@@ -398,11 +385,7 @@ namespace Palaso.WritingSystems
 			set
 			{
 				if (value == ISO) { return; }
-				Rfc5646Tag = new RFC5646Tag(value, _rfcTag.Script, _rfcTag.Region, _rfcTag.Variant);
-				if (!_rfcTag.IsValid())
-				{
-					throw new InvalidOperationException(String.Format("Changing the language subtag to {0} results in an invalid RFC5646 tag.", value));
-				}
+				_rfcTag.Language = value;
 				Modified = true;
 			}
 		}
@@ -428,11 +411,7 @@ namespace Palaso.WritingSystems
 			set
 			{
 				if (value == Script) { return; }
-				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, value, _rfcTag.Region, _rfcTag.Variant);
-				if (!_rfcTag.IsValid())
-				{
-					throw new InvalidOperationException(String.Format("Changing the script subtag to {0} results in an invalid RFC5646 tag.", value));
-				}
+				_rfcTag.Script = value;
 				Modified = true;
 			}
 		}
