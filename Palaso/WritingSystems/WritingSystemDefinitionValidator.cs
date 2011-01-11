@@ -54,8 +54,7 @@ namespace Palaso.WritingSystems
 
 		private static bool StringContainsSubstringAccordingToLdmlSpec(string stringToSearch, string stringToFind)
 		{
-			int ind = stringToSearch.IndexOf(stringToFind, StringComparison.InvariantCultureIgnoreCase); //This comparer should be extended to be "-"/"_" insensitive as well.
-			return ind == -1 ? false : true;
+			return stringToSearch.Contains(stringToFind, StringComparison.InvariantCultureIgnoreCase); //This comparer should be extended to be "-"/"_" insensitive as well.
 		}
 	}
 }
