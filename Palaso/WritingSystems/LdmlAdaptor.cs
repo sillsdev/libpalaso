@@ -929,5 +929,13 @@ namespace Palaso.WritingSystems
 			}
 			parser.WriteIcuRules(writer, icu);
 		}
+
+		//This class is used to load writing systems from ldml. It will allow the ldml adaptor to load
+		//writing systems that are otherwise invalid and give the consumer a chance to fix them up before
+		//loading them into a "real" writing system.
+		private class WritingSystemDefinitionForValidationChecking:WritingSystemDefinition
+		{
+
+		}
 	}
 }

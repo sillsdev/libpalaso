@@ -84,9 +84,18 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
+		static bool ContainsWritingSystemsThatNeedMigrating
+		{
+			get{throw new NotImplementedException();}
+		}
+
 		// TODO This can be made private, but breaks 19 test which need an upgrade anyway CP 2010-11.
 		public void LoadAllDefinitions()
 		{
+			if (ContainsWritingSystemsThatNeedMigrating)
+			{
+				throw new ApplicationException("The writing systems store contains writing systems that need to be migrated. Please use GetWritingSystemsThatNeedMigrating() to migrate these writing systems in a manner that isfriendly to your app.");
+			}
 			Clear();
 
 			List<WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
