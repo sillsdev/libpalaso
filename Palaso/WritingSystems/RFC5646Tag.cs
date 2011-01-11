@@ -4,6 +4,19 @@ namespace Palaso.WritingSystems
 {
 	public class RFC5646Tag : Object
 	{
+		public enum SubTag
+		{
+			Language,
+			Script,
+			Region,
+			Variant
+		}
+
+		public static string AudioMarker
+		{
+			get { return "x-audio"; }
+		}
+
 		private string _language;
 		private string _script;
 		private string _region;
@@ -74,6 +87,35 @@ namespace Palaso.WritingSystems
 			set { _variant = value; }
 		}
 
+		public void AddToSubtag(SubTag subTag, string stringToAppend)
+		{
+			switch (subTag)
+			{
+				case SubTag.Language:
+					_language = ConcatSubTag(_language, stringToAppend);
+					break;
+				case SubTag.Script:
+					_script = ConcatSubTag(_script, stringToAppend);
+					break;
+				case SubTag.Region:
+					_region = ConcatSubTag(_region, stringToAppend);
+					break;
+				case SubTag.Variant:
+					_variant = ConcatSubTag(_variant, stringToAppend);
+					break;
+
+			}
+		}
+
+		private string ConcatSubTag(string currentSubTag, string stringToAppend)
+		{
+			if(String.IsNullOrEmpty(currentSubTag))
+			{
+				return stringToAppend;
+			}
+			return currentSubTag + "-" + stringToAppend;
+		}
+
 		///<summary>
 		// This method defines what is currently considered a valid RFC 5646 language tag by palaso.
 		// At the moment this is almost anything.
@@ -81,10 +123,10 @@ namespace Palaso.WritingSystems
 		///<returns></returns>
 		public bool IsValid()
 		{
-			if (IsBadAudioTag(this))
-			{
-				return false;
-			}
+			//if (IsBadAudioTag(this))
+			//{
+			//    return false;
+			//}
 			return true;
 		}
 
