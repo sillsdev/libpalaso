@@ -37,7 +37,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsValidWritingSystem_VariantContainsUnderscoreInsteadOfHyphen_WsIsTreatedAsAudioWsAndReturnsFalseDueToBadScriptSubTag()
+		public void IsValidWritingSystem_VariantContainsUnderscoreInsteadOfDash_WsIsTreatedAsAudioWsAndReturnsFalseDueToBadScriptSubTag()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "de";
