@@ -316,6 +316,7 @@
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\LdmlStyleStringComparer.cs" />
+	<Compile Include="WritingSystems\Rfc5646SubtagParser.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />

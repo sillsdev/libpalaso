@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Palaso.WritingSystems
 {
@@ -12,19 +14,17 @@ namespace Palaso.WritingSystems
 			Variant
 		}
 
-		private string _language;
-		private string _script;
-		private string _region;
-		private string _variant;
-
-		char[] seperators = new char[]{'-', '_'};
+		private List<string> _language;
+		private List<string> _script;
+		private List<string> _region;
+		private List<string> _variant;
 
 		public RFC5646Tag(string language, string script, string region, string variant)
 		{
-			_language = language;
-			_script = script;
-			_region = region;
-			_variant = variant;
+			Language = language;
+			Script = script;
+			Region = region;
+			Variant = variant;
 		}
 
 		///<summary>
@@ -62,46 +62,55 @@ namespace Palaso.WritingSystems
 
 		public string Language
 		{
-			get { return _language; }
-			set { _language = value; }
+			get { return AssembleLanguageSubtag(_language); }
+			set { _language = ParseSubtagForParts(value); }
 		}
 
 		public string Script
 		{
-			get { return _script; }
-			set { _script = value; }
+			get { return AssembleLanguageSubtag(_script); }
+			set { _script = ParseSubtagForParts(value); }
 		}
 
 		public string Region
 		{
-			get { return _region; }
-			set { _region = value; }
+			get { return AssembleLanguageSubtag(_region); }
+			set { _region = ParseSubtagForParts(value); }
 		}
 
 		public string Variant
 		{
-			get { return _variant; }
-			set { _variant = value; }
+			get { return AssembleLanguageSubtag(_variant); }
+			set { _variant = ParseSubtagForParts(value); }
 		}
 
 		public void AddToSubtag(SubTag subTag, string stringToAppend)
 		{
+			List<string> SubtagToAddTo = GetSubtagList(subTag);
+			SubtagToAddTo.Add("-");
+			SubtagToAddTo.Add(stringToAppend);//= AddToSubtag(_language, stringToAppend);
+		}
+
+		private List<string> GetSubtagList(SubTag subTag)
+		{
+			List<string> SubtagToAddTo = new List<string>();
 			switch (subTag)
 			{
 				case SubTag.Language:
-					_language = AddToSubtag(_language, stringToAppend);
+					SubtagToAddTo = _language;
 					break;
 				case SubTag.Script:
-					_script = AddToSubtag(_script, stringToAppend);
+					SubtagToAddTo = _language;
 					break;
 				case SubTag.Region:
-					_region = AddToSubtag(_region, stringToAppend);
+					SubtagToAddTo = _language;
 					break;
 				case SubTag.Variant:
-					_variant = AddToSubtag(_variant, stringToAppend);
+					SubtagToAddTo = _language;
 					break;
-
+				default: throw new ApplicationException();
 			}
+			return SubtagToAddTo;
 		}
 
 		private string AddToSubtag(string currentSubTagValue, string stringToAppend)
@@ -196,27 +205,21 @@ namespace Palaso.WritingSystems
 
 		public void RemoveFromSubtag(SubTag subTag, string stringToRemove)
 		{
-			switch (subTag)
+			List<string> SubtagToRemovePartFrom = GetSubtagList(subTag);
+			int indexOfpartToRemove = SubtagToRemovePartFrom.FindIndex(part => part == stringToRemove);
+			bool stringToRemoveIsOnlyPartOfSubtag = (SubtagToRemovePartFrom.Count == 1) &&
+													(SubtagToRemovePartFrom[0].Equals(stringToRemove,StringComparison.OrdinalIgnoreCase));
+			bool stringToRemoveIsFirstPartOfMultiPartSubtag =
+			if(stringToRemoveIsOnlyPartOfSubtag)
 			{
-				case SubTag.Language:
-					_language = RemoveFromSubtag(_language, stringToRemove);
-					break;
-				case SubTag.Script:
-					_script = RemoveFromSubtag(_script, stringToRemove);
-					break;
-				case SubTag.Region:
-					_region = RemoveFromSubtag(_region, stringToRemove);
-					break;
-				case SubTag.Variant:
-					_variant = RemoveFromSubtag(_variant, stringToRemove);
-					break;
-
+				SubtagToRemovePartFrom.RemoveAt(indexOfpartToRemove);
+				SubtagToRemovePartFrom.RemoveAt(indexOfpartToRemove);
 			}
 		}
 
 		private string RemoveFromSubtag(string currentSubtagValue, string stringToRemove)
 		{
-			string stringToReturn;
+			string stringToReturn = String.Empty;
 
 			bool subTagContainsOnlyStringtoRemove = currentSubtagValue.Equals(stringToRemove, StringComparison.OrdinalIgnoreCase);
 
@@ -233,7 +236,6 @@ namespace Palaso.WritingSystems
 				if (stringToRemoveIsFirstInSubtag)
 				{
 					currentSubtagValue.Remove(positionInSubtagOfStringToRemove, stringToRemove.Length);
-					if(currentSubtagValue.S)
 					currentSubtagValue.TrimEnd(seperators);
 				}
 				else
@@ -242,12 +244,21 @@ namespace Palaso.WritingSystems
 					currentSubtagValue.TrimStart(seperators);
 				}
 			}
-
+			return stringToReturn;
 		}
 
-		private string[] ParseSubtagForParts(string subtagToParse)
+		public List<string> ParseSubtagForParts(string subtagToParse)
 		{
+			for (int i = 0; i++;i<subtagToParse.Length )
+			{
 
+			}
+				throw new NotImplementedException();
+		}
+
+		private string AssembleLanguageSubtag(List<string> region)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

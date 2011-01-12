@@ -78,6 +78,7 @@
 	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +135,7 @@
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
 	<Compile Include="WritingSystems\LdmlStyleStringComparerTests.cs" />
+	<Compile Include="WritingSystems\Rfc5646SubtagParserTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />
 	<Compile Include="WritingSystems\IWritingSystemStore.Tests.cs" />
