@@ -74,6 +74,15 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		//private string _customLanguageTag;
 
+		private static string AudioVariantMarker
+		{
+			get { return "x-audio"; }
+		}
+
+		private static string AudioScriptMarker
+		{
+			get { return "Zxxx"; }
+		}
 
 		public WritingSystemDefinition()
 		{
@@ -301,7 +310,13 @@ namespace Palaso.WritingSystems
 
 		virtual public bool IsVoice
 		{
-			get { return RFC5646Tag.IsRFC5646TagForVoiceWritingSystem(_rfcTag); }
+			get
+			{
+				bool scriptSubTagIsAudioConform = Script.Equals(AudioScriptMarker, StringComparison.OrdinalIgnoreCase);
+				bool variantSubTagIsAudioConform = Variant.Contains(AudioVariantMarker, StringComparison.OrdinalIgnoreCase);
+				if(scriptSubTagIsAudioConform && variantSubTagIsAudioConform){ return true; }
+				return false;
+			}
 			set
 			{
 				if(IsVoice == value) {return;}
@@ -309,13 +324,12 @@ namespace Palaso.WritingSystems
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					Script = "Zxxx";
-					_rfcTag.ConcatSubTag()
+					Script = AudioScriptMarker;
+					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, AudioVariantMarker);
 				}
 				else
 				{
-					int positionOfAudioTagInVariant = Variant.IndexOf("-x-audio");
-
+					_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, AudioVariantMarker);
 				}
 				Modified = true;
 			}

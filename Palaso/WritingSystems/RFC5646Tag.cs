@@ -12,15 +12,12 @@ namespace Palaso.WritingSystems
 			Variant
 		}
 
-		public static string AudioMarker
-		{
-			get { return "x-audio"; }
-		}
-
 		private string _language;
 		private string _script;
 		private string _region;
 		private string _variant;
+
+		char[] seperators = new char[]{'-', '_'};
 
 		public RFC5646Tag(string language, string script, string region, string variant)
 		{
@@ -92,28 +89,33 @@ namespace Palaso.WritingSystems
 			switch (subTag)
 			{
 				case SubTag.Language:
-					_language = ConcatSubTag(_language, stringToAppend);
+					_language = AddToSubtag(_language, stringToAppend);
 					break;
 				case SubTag.Script:
-					_script = ConcatSubTag(_script, stringToAppend);
+					_script = AddToSubtag(_script, stringToAppend);
 					break;
 				case SubTag.Region:
-					_region = ConcatSubTag(_region, stringToAppend);
+					_region = AddToSubtag(_region, stringToAppend);
 					break;
 				case SubTag.Variant:
-					_variant = ConcatSubTag(_variant, stringToAppend);
+					_variant = AddToSubtag(_variant, stringToAppend);
 					break;
 
 			}
 		}
 
-		private string ConcatSubTag(string currentSubTag, string stringToAppend)
+		private string AddToSubtag(string currentSubTagValue, string stringToAppend)
 		{
-			if(String.IsNullOrEmpty(currentSubTag))
+			bool subtagAlreadyContainsStringToAppend = currentSubTagValue.Contains(stringToAppend, StringComparison.OrdinalIgnoreCase);
+			if(subtagAlreadyContainsStringToAppend)
+			{
+				throw new ArgumentException(String.Format("The subtag already contains a string {0}", stringToAppend));
+			}
+			if(String.IsNullOrEmpty(currentSubTagValue))
 			{
 				return stringToAppend;
 			}
-			return currentSubTag + "-" + stringToAppend;
+			return currentSubTagValue + "-" + stringToAppend;
 		}
 
 		///<summary>
@@ -160,15 +162,6 @@ namespace Palaso.WritingSystems
 			return new RFC5646Tag(language, "Zxxx", region, "x-audio");
 		}
 
-		public static bool IsRFC5646TagForVoiceWritingSystem(RFC5646Tag rfcTag)
-		{
-			if(rfcTag.Script == "Zxxx" && rfcTag.Variant == "x-audio")
-			{
-				return true;
-			}
-			return false;
-		}
-
 		public string ToString()
 		{
 			return CompleteTag;
@@ -199,6 +192,62 @@ namespace Palaso.WritingSystems
 				result = (result*397) ^ (_variant != null ? _variant.GetHashCode() : 0);
 				return result;
 			}
+		}
+
+		public void RemoveFromSubtag(SubTag subTag, string stringToRemove)
+		{
+			switch (subTag)
+			{
+				case SubTag.Language:
+					_language = RemoveFromSubtag(_language, stringToRemove);
+					break;
+				case SubTag.Script:
+					_script = RemoveFromSubtag(_script, stringToRemove);
+					break;
+				case SubTag.Region:
+					_region = RemoveFromSubtag(_region, stringToRemove);
+					break;
+				case SubTag.Variant:
+					_variant = RemoveFromSubtag(_variant, stringToRemove);
+					break;
+
+			}
+		}
+
+		private string RemoveFromSubtag(string currentSubtagValue, string stringToRemove)
+		{
+			string stringToReturn;
+
+			bool subTagContainsOnlyStringtoRemove = currentSubtagValue.Equals(stringToRemove, StringComparison.OrdinalIgnoreCase);
+
+			if (subTagContainsOnlyStringtoRemove)
+			{
+				stringToReturn = String.Empty;
+			}
+			else
+			{
+
+				int positionInSubtagOfStringToRemove = currentSubtagValue.IndexOf(stringToRemove,StringComparison.OrdinalIgnoreCase);
+				bool stringToRemoveIsFirstInSubtag = (positionInSubtagOfStringToRemove == 0);
+
+				if (stringToRemoveIsFirstInSubtag)
+				{
+					currentSubtagValue.Remove(positionInSubtagOfStringToRemove, stringToRemove.Length);
+					if(currentSubtagValue.S)
+					currentSubtagValue.TrimEnd(seperators);
+				}
+				else
+				{
+					currentSubtagValue.Remove(positionInSubtagOfStringToRemove, stringToRemove.Length);
+					currentSubtagValue.TrimStart(seperators);
+				}
+			}
+
+		}
+
+		private string[] ParseSubtagForParts(string subtagToParse)
+		{
+
 		}
 	}
 }
