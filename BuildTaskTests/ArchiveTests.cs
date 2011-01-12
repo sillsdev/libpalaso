@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using NUnit.Framework;
 using Palaso.BuildTasks.Archive;
 
@@ -52,7 +48,7 @@ namespace BuildTaskTests
 		{
 			var task = new Archive();
 			task.Command = "Tar";
-			task.FileName = "MyOutputFile.tar.gz";
+			task.OutputFileName = "MyOutputFile.tar.gz";
 			Assert.AreEqual("-cvzf MyOutputFile.tar.gz", task.Arguments());
 		}
 
@@ -61,7 +57,7 @@ namespace BuildTaskTests
 		{
 			var task = new Archive();
 			task.Command = "Unknown";
-			task.FileName = "MyOutputFile.tar.gz";
+			task.OutputFileName = "MyOutputFile.tar.gz";
 			Assert.AreEqual(String.Empty, task.Arguments());
 		}
 

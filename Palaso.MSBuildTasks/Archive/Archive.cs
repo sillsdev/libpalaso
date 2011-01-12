@@ -16,13 +16,19 @@ namespace Palaso.BuildTasks.Archive
 		public string Command { get; set; }
 
 		[Required]
-		public string FileName { get; set; }
+		public string OutputFileName { get; set; }
 
 		public string BasePath { get; set; }
+
+		public string WorkingDir { get; set; }
 
 		public override bool Execute()
 		{
 			string filePathString = FlattenFilePaths(InputFilePaths, ' ', false);
+
+			var startInfo = new ProcessStartInfo(ExecutableName());
+			startInfo.Arguments = Arguments() + " " + filePathString;
+			startInfo.WorkingDirectory = String.IsNullOrEmpty(WorkingDir) ? BasePath : WorkingDir;
 			Process.Start(ExecutableName(), Arguments() + " " + filePathString);
 			return true;
 		}
@@ -42,7 +48,7 @@ namespace Palaso.BuildTasks.Archive
 			switch (Command)
 			{
 				case "Tar":
-					return "-cvzf " + FileName;
+					return "-cvzf " + OutputFileName;
 			}
 			return String.Empty;
 		}
