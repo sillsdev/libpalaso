@@ -29,7 +29,7 @@ namespace Palaso.BuildTasks.Archive
 			var startInfo = new ProcessStartInfo(ExecutableName());
 			startInfo.Arguments = Arguments() + " " + filePathString;
 			startInfo.WorkingDirectory = String.IsNullOrEmpty(WorkingDir) ? BasePath : WorkingDir;
-			Process.Start(ExecutableName(), Arguments() + " " + filePathString);
+			Process.Start(startInfo);
 			return true;
 		}
 
