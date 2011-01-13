@@ -85,6 +85,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void AddToSubtag_StringToAddConsistsOfMultipleParts_StringToAddIsAppendedToSubtagWithDashDelimiter()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-x-audios");
+			rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "x-audio-variant2");
+			Assert.AreEqual(rfcTag.Variant, "variant-x-audios-x-audio-variant2");
+		}
+
+		[Test]
 		public void AddToSubtag_SubtagAlreadyContainsStringToAdd_Throws()
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-x-audio");

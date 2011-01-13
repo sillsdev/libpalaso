@@ -70,7 +70,7 @@ namespace Palaso.WritingSystems
 				_language = ParseSubtagForParts(value);
 				if (!LanguageTagIsValid)
 				{
-					throw new ArgumentException();
+					throw new ArgumentException("Language codes may not contain private use extensions.");
 				}
 			}
 		}
@@ -156,7 +156,11 @@ namespace Palaso.WritingSystems
 			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
 			foreach (string part in partsOfStringToAdd)
 			{
-				if(subtagToAddTo.Contains(part,StringComparison.OrdinalIgnoreCase)){throw new ArgumentException();}
+				 bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = !Rfc5646SubtagParser.StringIsSeperator(part) && SubtagContainsPart(subTag, part);
+				if (subTagAlreadyContainsAtLeastOnePartOfStringToAdd)
+				{
+						throw new ArgumentException();
+				}
 				subtagToAddTo.Add(part);
 			}
 		}
@@ -186,20 +190,6 @@ namespace Palaso.WritingSystems
 				default: throw new ApplicationException();
 			}
 			return SubtagToAddTo;
-		}
-
-		private string AddToSubtag(string currentSubTagValue, string stringToAppend)
-		{
-			bool subtagAlreadyContainsStringToAppend = currentSubTagValue.Contains(stringToAppend, StringComparison.OrdinalIgnoreCase);
-			if(subtagAlreadyContainsStringToAppend)
-			{
-				throw new ArgumentException(String.Format("The subtag already contains a string {0}", stringToAppend));
-			}
-			if(String.IsNullOrEmpty(currentSubTagValue))
-			{
-				return stringToAppend;
-			}
-			return currentSubTagValue + "-" + stringToAppend;
 		}
 
 		public static RFC5646Tag GetValidTag(RFC5646Tag tagToConvert)
@@ -265,7 +255,7 @@ namespace Palaso.WritingSystems
 			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
 			if(!SubtagContainsAllPartsOfStringToBeRemoved(partsOfSubtagToRemovePartFrom, partsOfStringToRemove))
 			{
-				throw new ArgumentException();
+				throw new ArgumentException("The subtag does not conatin all the parts of the string that is to be removed");
 			}
 
 			bool subtagHasMultipleParts = partsOfSubtagToRemovePartFrom.Count > 1;
@@ -327,6 +317,12 @@ namespace Palaso.WritingSystems
 				subtagAsString = String.Concat(String.Concat(subtagAsString, part));
 			}
 			return subtagAsString;
+		}
+
+		public bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
+		{
+			List<string> partsOfSubTag = GetSubtag(subtagToCheck);
+			return partsOfSubTag.Contains(partToFind, StringComparison.OrdinalIgnoreCase) ? true : false;
 		}
 	}
 }

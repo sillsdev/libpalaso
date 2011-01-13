@@ -37,13 +37,12 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsValidWritingSystem_VariantContainsUnderscoreInsteadOfDash_WsIsTreatedAsAudioWsAndReturnsFalseDueToBadScriptSubTag()
+		public void IsValidWritingSystem_VariantContainsUnderscoreInsteadOfDash_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "de";
 			ws.Script = "bogus";
-			ws.Variant = "x_audio";
-			Assert.IsTrue(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
+			Assert.Throws<ArgumentException>(() => ws.Variant = "x_audio");
 		}
 
 		[Test]
@@ -90,8 +89,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValidWritingSystem_LanguageSubtagContainsXDashAudio_ReturnsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "de-x-audio";
-			Assert.IsFalse(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
+			Assert.Throws<ArgumentException>(()=>ws.ISO = "de-x-audio");
 		}
 
 		[Test]
@@ -106,8 +104,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValidWritingSystem_LanguageSubtagContainsCapitalXDashAudio_ReturnsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "de-X-AuDiO";
-			Assert.IsFalse(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
+			Assert.Throws<ArgumentException>(()=>ws.ISO = "de-X-AuDiO");
 		}
 
 		[Test]
