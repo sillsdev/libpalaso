@@ -12,7 +12,8 @@ namespace Palaso.WritingSystems
 			StartParse,
 			StartGetNextParse,
 			Parsing,
-			EndGetNextPart
+			EndGetNextPart,
+			EndParse
 		}
 
 		private List<string> _parts = new List<string>();
@@ -30,9 +31,14 @@ namespace Palaso.WritingSystems
 		{
 			_stringToparse = stringToParse;
 			_state = State.StartParse;
-			while (!ReachedEndOfString)
+			if(String.IsNullOrEmpty(_stringToparse)){throw new ArgumentException();}
+			do
 			{
 				_parts.Add(GetNextPart());
+			} while (_state != State.EndParse);
+			foreach (char seperator in seperators)
+			{
+				if (_parts.Last() == new StringBuilder().Append(seperator).ToString()) { throw new ArgumentException(); }
 			}
 		}
 
@@ -41,7 +47,7 @@ namespace Palaso.WritingSystems
 			StringBuilder sb = new StringBuilder();
 			bool atBeginningOfString = _position == 0;
 			_state = State.StartGetNextParse;
-			while (_state != State.EndGetNextPart)
+			while (_state != State.EndGetNextPart && _state != State.EndParse)
 			{
 				switch (_state)
 				{
@@ -71,7 +77,7 @@ namespace Palaso.WritingSystems
 
 				if (ReachedEndOfString)
 				{
-					_state = State.EndGetNextPart;
+					_state = State.EndParse;
 				}
 				else {
 					_position++;
@@ -98,7 +104,6 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				bool characterIsSeperator = false;
 				foreach (char c in seperators)
 				{
 					if(c == _currentCharacter)

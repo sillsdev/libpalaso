@@ -11,6 +11,12 @@ namespace Palaso.Tests.WritingSystems
 	public class Rfc5646SubtagParserTests
 	{
 		[Test]
+		public void GetParts_RfcSubtagIsEmpty_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new Rfc5646SubtagParser(""));
+		}
+
+		[Test]
 		public void GetParts_RfcSubtagConsistsOfSimplePart_ReturnsThatPart()
 		{
 			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("variant");
