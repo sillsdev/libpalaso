@@ -86,12 +86,12 @@ namespace Palaso.WritingSystems
 
 		public void AddToSubtag(SubTag subTag, string stringToAppend)
 		{
-			List<string> SubtagToAddTo = GetSubtagList(subTag);
+			List<string> SubtagToAddTo = GetSubtag(subTag);
 			SubtagToAddTo.Add("-");
 			SubtagToAddTo.Add(stringToAppend);//= AddToSubtag(_language, stringToAppend);
 		}
 
-		private List<string> GetSubtagList(SubTag subTag)
+		private List<string> GetSubtag(SubTag subTag)
 		{
 			List<string> SubtagToAddTo = new List<string>();
 			switch (subTag)
@@ -205,54 +205,42 @@ namespace Palaso.WritingSystems
 
 		public void RemoveFromSubtag(SubTag subTag, string stringToRemove)
 		{
-			List<string> SubtagToRemovePartFrom = GetSubtagList(subTag);
-			int indexOfpartToRemove = SubtagToRemovePartFrom.FindIndex(part => part == stringToRemove);
-			bool stringToRemoveIsOnlyPartOfSubtag = (SubtagToRemovePartFrom.Count == 1) &&
-													(SubtagToRemovePartFrom[0].Equals(stringToRemove,StringComparison.OrdinalIgnoreCase));
-			bool stringToRemoveIsFirstPartOfMultiPartSubtag =
+			List<string> subtagToRemovePartFrom = GetSubtag(subTag);
+			bool subtagContainsStringToBeRemoved = subtagToRemovePartFrom.Contains(stringToRemove,
+																				   StringComparison.OrdinalIgnoreCase);
+			if(!subtagContainsStringToBeRemoved)
+			{
+				throw new ArgumentException();
+			}
+
+			bool subtagHasMultipleParts = subtagToRemovePartFrom.Count > 1;
+			bool subtagHasOnlyOnePart = subtagToRemovePartFrom.Count == 1;
+			bool stringToRemoveIsFirstItemInSubtag = subtagToRemovePartFrom[0].Equals(stringToRemove,
+																					  StringComparison.OrdinalIgnoreCase);
+			bool stringToRemoveIsOnlyPartOfSubtag = (subtagToRemovePartFrom.Count == 1) &&
+													(subtagToRemovePartFrom[0].Equals(stringToRemove, StringComparison.OrdinalIgnoreCase));
+			bool stringToRemoveIsFirstPartOfMultiPartSubtag = subtagHasMultipleParts &&
+															  stringToRemoveIsFirstItemInSubtag;
+
+			int indexOfPartToRemove = subtagToRemovePartFrom.FindIndex(part => part == stringToRemove);
 			if(stringToRemoveIsOnlyPartOfSubtag)
 			{
-				SubtagToRemovePartFrom.RemoveAt(indexOfpartToRemove);
-				SubtagToRemovePartFrom.RemoveAt(indexOfpartToRemove);
+				subtagToRemovePartFrom.RemoveAt(0);
 			}
-		}
-
-		private string RemoveFromSubtag(string currentSubtagValue, string stringToRemove)
-		{
-			string stringToReturn = String.Empty;
-
-			bool subTagContainsOnlyStringtoRemove = currentSubtagValue.Equals(stringToRemove, StringComparison.OrdinalIgnoreCase);
-
-			if (subTagContainsOnlyStringtoRemove)
+			else if(stringToRemoveIsFirstPartOfMultiPartSubtag)
 			{
-				stringToReturn = String.Empty;
+				subtagToRemovePartFrom.RemoveAt(1); //Removes following seperator
+				subtagToRemovePartFrom.RemoveAt(0);
 			}
 			else
 			{
-
-				int positionInSubtagOfStringToRemove = currentSubtagValue.IndexOf(stringToRemove,StringComparison.OrdinalIgnoreCase);
-				bool stringToRemoveIsFirstInSubtag = (positionInSubtagOfStringToRemove == 0);
-
-				if (stringToRemoveIsFirstInSubtag)
-				{
-					currentSubtagValue.Remove(positionInSubtagOfStringToRemove, stringToRemove.Length);
-					currentSubtagValue.TrimEnd(seperators);
-				}
-				else
-				{
-					currentSubtagValue.Remove(positionInSubtagOfStringToRemove, stringToRemove.Length);
-					currentSubtagValue.TrimStart(seperators);
-				}
+				subtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
+				subtagToRemovePartFrom.RemoveAt(indexOfPartToRemove - 1); //removes preceding seperator
 			}
-			return stringToReturn;
 		}
 
 		public List<string> ParseSubtagForParts(string subtagToParse)
 		{
-			for (int i = 0; i++;i<subtagToParse.Length )
-			{
-
-			}
 				throw new NotImplementedException();
 		}
 

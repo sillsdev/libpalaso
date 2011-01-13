@@ -9,12 +9,13 @@ namespace Palaso.WritingSystems
 	{
 		private enum State
 		{
-			Start,
-			End,
-			BuildingExtension,
-			FoundSeperator
+			StartParse,
+			StartGetNextParse,
+			Parsing,
+			EndGetNextPart
 		}
 
+		private List<string> _parts = new List<string>();
 		private string _stringToparse;
 		private State _state;
 		private int _position;
@@ -28,38 +29,69 @@ namespace Palaso.WritingSystems
 		public Rfc5646SubtagParser(string stringToParse)
 		{
 			_stringToparse = stringToParse;
-			_state = State.Start;
+			_state = State.StartParse;
+			while (!ReachedEndOfString)
+			{
+				_parts.Add(GetNextPart());
+			}
 		}
 
 		private string GetNextPart()
 		{
 			StringBuilder sb = new StringBuilder();
-			bool reachedEndOfString = (_position != _stringToparse.Length-1);
-			switch(_state)
+			bool atBeginningOfString = _position == 0;
+			_state = State.StartGetNextParse;
+			while (_state != State.EndGetNextPart)
 			{
-				case State.Start:
-					if(CurrentCharacterIsSeperator)
-					{
+				switch (_state)
+				{
+					case State.StartParse:
 						sb.Append(_currentCharacter);
-					}
-					_state = State.End;
-					break;
-				case State.End:
-					return sb.ToString();
+						_state = State.Parsing;
+						break;
+					case State.Parsing:
+						sb.Append(_currentCharacter);
+						break;
+					case State.StartGetNextParse:
+						if (CurrentCharacterIsSeperator)
+						{
+							if (atBeginningOfString) { throw new ArgumentException(); }
+							sb.Append(_currentCharacter);
+							_state = State.EndGetNextPart;
+						}
+						else
+						{
+							sb.Append(_currentCharacter);
+							_state = State.Parsing;
+						}
+						break;
+					default:
+						throw new ApplicationException();
+				}
 
-				default: throw new ApplicationException();
+				if (ReachedEndOfString)
+				{
+					_state = State.EndGetNextPart;
+				}
+				else {
+					_position++;
+					if (CurrentCharacterIsSeperator)
+					{
+						_state = State.EndGetNextPart;
+					}
+				}
 			}
-			throw new ApplicationException("The parser should leave this method through the State.End case.");
+			return sb.ToString();
 		}
 
-		public List<string> Getparts()
+		private bool ReachedEndOfString
 		{
-			List<String> parts = new List<string>();
-			while(_state != State.End)
-			{
-				parts.Add(GetNextPart());
-			}
-			return parts;
+			get { return _position == _stringToparse.Length - 1; }
+		}
+
+		public List<string> GetParts()
+		{
+			return _parts;
 		}
 
 		private bool CurrentCharacterIsSeperator
@@ -69,9 +101,12 @@ namespace Palaso.WritingSystems
 				bool characterIsSeperator = false;
 				foreach (char c in seperators)
 				{
-					characterIsSeperator = c == _currentCharacter ? false : true;
+					if(c == _currentCharacter)
+					{
+						return true;
+					}
 				}
-				return characterIsSeperator;
+				return false;
 			}
 		}
 	}
