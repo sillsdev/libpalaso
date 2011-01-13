@@ -14,14 +14,13 @@ namespace Palaso.WritingSystems
 			Parsing,
 			EndGetNextPart,
 			EndParse,
-			ExpectingSeperatorAsPartOfExtension
+			ExpectingPotentialDashAsPartOfExtension
 		}
 
-		private List<string> _parts = new List<string>();
 		private string _stringToparse;
 		private State _state;
 		private int _position;
-		char[] seperators = new char[] { '-', '_' };
+		static private string[] _seperators = new string[] { "-", "_" };
 
 		private char _currentCharacter
 		{
@@ -32,15 +31,6 @@ namespace Palaso.WritingSystems
 		{
 			_stringToparse = stringToParse;
 			_state = State.StartParse;
-			if(String.IsNullOrEmpty(_stringToparse)){throw new ArgumentException();}
-			do
-			{
-				_parts.Add(GetNextPart());
-			} while (_state != State.EndParse);
-			foreach (char seperator in seperators)
-			{
-				if (_parts.Last() == new StringBuilder().Append(seperator).ToString()) { throw new ArgumentException(); }
-			}
 		}
 
 		private string GetNextPart()
@@ -59,7 +49,8 @@ namespace Palaso.WritingSystems
 					case State.Parsing:
 						sb.Append(_currentCharacter);
 						break;
-					case State.ExpectingSeperatorAsPartOfExtension:
+					case State.ExpectingPotentialDashAsPartOfExtension:
+						if(_currentCharacter == '_'){throw new ArgumentException("Extensions may only have \"-\" as their separator.");}
 						sb.Append(_currentCharacter);
 						_state = State.Parsing;
 						break;
@@ -70,10 +61,10 @@ namespace Palaso.WritingSystems
 							sb.Append(_currentCharacter);
 							_state = State.EndGetNextPart;
 						}
-						else if(_currentCharacter == 'x')
+						else if(CurrentCharacterIsExtensionMarker())
 						{
 							sb.Append(_currentCharacter);
-							_state = State.ExpectingSeperatorAsPartOfExtension;
+							_state = State.ExpectingPotentialDashAsPartOfExtension;
 						}
 						else
 						{
@@ -91,7 +82,7 @@ namespace Palaso.WritingSystems
 				}
 				else {
 					_position++;
-					if (_state != State.ExpectingSeperatorAsPartOfExtension)
+					if (_state != State.ExpectingPotentialDashAsPartOfExtension)
 					{
 						if (CurrentCharacterIsSeperator)
 						{
@@ -103,6 +94,11 @@ namespace Palaso.WritingSystems
 			return sb.ToString();
 		}
 
+		private bool CurrentCharacterIsExtensionMarker()
+		{
+			return _currentCharacter == 'x' || _currentCharacter == 'X';
+		}
+
 		private bool ReachedEndOfString
 		{
 			get { return _position == _stringToparse.Length - 1; }
@@ -110,22 +106,37 @@ namespace Palaso.WritingSystems
 
 		public List<string> GetParts()
 		{
-			return _parts;
+			List<string> parts = new List<string>();
+			if (String.IsNullOrEmpty(_stringToparse)) {return parts; }
+			do
+			{
+				parts.Add(GetNextPart());
+			} while (_state != State.EndParse);
+			foreach (string seperator in _seperators)
+			{
+				if (parts.Last() == new StringBuilder().Append(seperator).ToString()) { throw new ArgumentException(); }
+			}
+			return parts;
 		}
 
 		private bool CurrentCharacterIsSeperator
 		{
 			get
 			{
-				foreach (char c in seperators)
-				{
-					if(c == _currentCharacter)
-					{
-						return true;
-					}
-				}
-				return false;
+				return StringIsSeperator(_currentCharacter.ToString());
 			}
+		}
+
+		static public bool StringIsSeperator(string stringToCheck)
+		{
+			foreach (string c in _seperators)
+			{
+				if (c == stringToCheck)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

@@ -19,6 +19,8 @@ namespace Palaso.WritingSystems
 		private List<string> _region;
 		private List<string> _variant;
 
+		private string[] seperators = new string[]{"-", "_"};
+
 		public RFC5646Tag(string language, string script, string region, string variant)
 		{
 			Language = language;
@@ -63,32 +65,105 @@ namespace Palaso.WritingSystems
 		public string Language
 		{
 			get { return AssembleLanguageSubtag(_language); }
-			set { _language = ParseSubtagForParts(value); }
+			set
+			{
+				_language = ParseSubtagForParts(value);
+				if (!LanguageTagIsValid)
+				{
+					throw new ArgumentException();
+				}
+			}
+		}
+
+		private bool LanguageTagIsValid
+		{
+			get
+			{
+				foreach (string part in _language)
+				{
+					if (PartIsExtension(part))
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+
+		private bool PartIsExtension(string part)
+		{
+			return part.StartsWith("x-",StringComparison.OrdinalIgnoreCase) ? true : false;
 		}
 
 		public string Script
 		{
 			get { return AssembleLanguageSubtag(_script); }
-			set { _script = ParseSubtagForParts(value); }
+			set
+			{
+				_script = ParseSubtagForParts(value);
+				if (!ScriptTagIsValid)
+				{
+					throw new ArgumentException();
+				}
+			}
+		}
+
+		private bool ScriptTagIsValid
+		{
+			get { return true; }
 		}
 
 		public string Region
 		{
 			get { return AssembleLanguageSubtag(_region); }
-			set { _region = ParseSubtagForParts(value); }
+			set
+			{
+				_region = ParseSubtagForParts(value);
+				if (!RegionTagIsValid)
+				{
+					throw new ArgumentException();
+				}
+			}
+		}
+
+		private bool RegionTagIsValid
+		{
+			get { return true; }
 		}
 
 		public string Variant
 		{
 			get { return AssembleLanguageSubtag(_variant); }
-			set { _variant = ParseSubtagForParts(value); }
+			set
+			{
+				_variant = ParseSubtagForParts(value);
+				if (!VariantTagIsValid)
+				{
+					throw new ArgumentException();
+				}
+			}
+		}
+
+		private bool VariantTagIsValid
+		{
+			get { return true; }
 		}
 
 		public void AddToSubtag(SubTag subTag, string stringToAppend)
 		{
-			List<string> SubtagToAddTo = GetSubtag(subTag);
-			SubtagToAddTo.Add("-");
-			SubtagToAddTo.Add(stringToAppend);//= AddToSubtag(_language, stringToAppend);
+			List<string> subtagToAddTo = GetSubtag(subTag);
+			if(subtagToAddTo.Count != 0) {AddSeparatorToSubtag(subtagToAddTo);}
+			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
+			foreach (string part in partsOfStringToAdd)
+			{
+				if(subtagToAddTo.Contains(part,StringComparison.OrdinalIgnoreCase)){throw new ArgumentException();}
+				subtagToAddTo.Add(part);
+			}
+		}
+
+		private void AddSeparatorToSubtag(List<string> subtagToAddTo)
+		{
+			subtagToAddTo.Add("-");
 		}
 
 		private List<string> GetSubtag(SubTag subTag)
@@ -100,13 +175,13 @@ namespace Palaso.WritingSystems
 					SubtagToAddTo = _language;
 					break;
 				case SubTag.Script:
-					SubtagToAddTo = _language;
+					SubtagToAddTo = _script;
 					break;
 				case SubTag.Region:
-					SubtagToAddTo = _language;
+					SubtagToAddTo = _region;
 					break;
 				case SubTag.Variant:
-					SubtagToAddTo = _language;
+					SubtagToAddTo = _variant;
 					break;
 				default: throw new ApplicationException();
 			}
@@ -127,23 +202,8 @@ namespace Palaso.WritingSystems
 			return currentSubTagValue + "-" + stringToAppend;
 		}
 
-		///<summary>
-		// This method defines what is currently considered a valid RFC 5646 language tag by palaso.
-		// At the moment this is almost anything.
-		///</summary>
-		///<returns></returns>
-		public bool IsValid()
-		{
-			//if (IsBadAudioTag(this))
-			//{
-			//    return false;
-			//}
-			return true;
-		}
-
 		public static RFC5646Tag GetValidTag(RFC5646Tag tagToConvert)
 		{
-			if (tagToConvert.IsValid()) { return tagToConvert; }
 
 			RFC5646Tag validRfc5646Tag = null;
 
@@ -151,10 +211,6 @@ namespace Palaso.WritingSystems
 			{
 				string newLanguageTag = tagToConvert.Language.Split('-')[0];
 				validRfc5646Tag = RFC5646TagForVoiceWritingSystem(newLanguageTag, tagToConvert.Region);
-			}
-			if (validRfc5646Tag == null || !validRfc5646Tag.IsValid())
-			{
-				throw new InvalidOperationException("The palaso library is not able to covert this tag to a valid form.");
 			}
 			return validRfc5646Tag;
 		}
@@ -205,38 +261,57 @@ namespace Palaso.WritingSystems
 
 		public void RemoveFromSubtag(SubTag subTag, string stringToRemove)
 		{
-			List<string> subtagToRemovePartFrom = GetSubtag(subTag);
-			bool subtagContainsStringToBeRemoved = subtagToRemovePartFrom.Contains(stringToRemove,
-																				   StringComparison.OrdinalIgnoreCase);
-			if(!subtagContainsStringToBeRemoved)
+			List<string> partsOfSubtagToRemovePartFrom = GetSubtag(subTag);
+			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
+			if(!SubtagContainsAllPartsOfStringToBeRemoved(partsOfSubtagToRemovePartFrom, partsOfStringToRemove))
 			{
 				throw new ArgumentException();
 			}
 
-			bool subtagHasMultipleParts = subtagToRemovePartFrom.Count > 1;
-			bool subtagHasOnlyOnePart = subtagToRemovePartFrom.Count == 1;
-			bool stringToRemoveIsFirstItemInSubtag = subtagToRemovePartFrom[0].Equals(stringToRemove,
-																					  StringComparison.OrdinalIgnoreCase);
-			bool stringToRemoveIsOnlyPartOfSubtag = (subtagToRemovePartFrom.Count == 1) &&
-													(subtagToRemovePartFrom[0].Equals(stringToRemove, StringComparison.OrdinalIgnoreCase));
-			bool stringToRemoveIsFirstPartOfMultiPartSubtag = subtagHasMultipleParts &&
-															  stringToRemoveIsFirstItemInSubtag;
+			bool subtagHasMultipleParts = partsOfSubtagToRemovePartFrom.Count > 1;
+			bool subtagHasOnlyOnePart = partsOfSubtagToRemovePartFrom.Count == 1;
+			foreach (string partToRemove in partsOfStringToRemove)
+			{
+				if (Rfc5646SubtagParser.StringIsSeperator(partToRemove)) {continue; }
+				bool stringToRemoveIsFirstItemInSubtag = partsOfSubtagToRemovePartFrom[0].Equals(partToRemove,
+																								 StringComparison.
+																									 OrdinalIgnoreCase);
+				bool stringToRemoveIsOnlyPartOfSubtag = (partsOfSubtagToRemovePartFrom.Count == 1) &&
+														(partsOfSubtagToRemovePartFrom[0].Equals(partToRemove,
+																								 StringComparison.
+																									 OrdinalIgnoreCase));
+				bool stringToRemoveIsFirstPartOfMultiPartSubtag = subtagHasMultipleParts &&
+																  stringToRemoveIsFirstItemInSubtag;
 
-			int indexOfPartToRemove = subtagToRemovePartFrom.FindIndex(part => part == stringToRemove);
-			if(stringToRemoveIsOnlyPartOfSubtag)
-			{
-				subtagToRemovePartFrom.RemoveAt(0);
+				int indexOfPartToRemove = partsOfSubtagToRemovePartFrom.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
+				if (stringToRemoveIsOnlyPartOfSubtag)
+				{
+					partsOfSubtagToRemovePartFrom.RemoveAt(0);
+				}
+				else if (stringToRemoveIsFirstPartOfMultiPartSubtag)
+				{
+					partsOfSubtagToRemovePartFrom.RemoveAt(1); //Removes following seperator
+					partsOfSubtagToRemovePartFrom.RemoveAt(0);
+				}
+				else
+				{
+					partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
+					partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove - 1); //removes preceding seperator
+				}
 			}
-			else if(stringToRemoveIsFirstPartOfMultiPartSubtag)
+		}
+
+		private bool SubtagContainsAllPartsOfStringToBeRemoved(List<string> partsOfSubtagToRemovePartFrom, List<string> partsOfStringToRemove)
+		{
+			foreach (string part in partsOfStringToRemove)
 			{
-				subtagToRemovePartFrom.RemoveAt(1); //Removes following seperator
-				subtagToRemovePartFrom.RemoveAt(0);
+				if (Rfc5646SubtagParser.StringIsSeperator(part)) {continue; }
+				if (!partsOfSubtagToRemovePartFrom.Contains(part, StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
 			}
-			else
-			{
-				subtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
-				subtagToRemovePartFrom.RemoveAt(indexOfPartToRemove - 1); //removes preceding seperator
-			}
+			return true;
 		}
 
 		public List<string> ParseSubtagForParts(string subtagToParse)
@@ -244,9 +319,14 @@ namespace Palaso.WritingSystems
 			return new Rfc5646SubtagParser(subtagToParse).GetParts();
 		}
 
-		private string AssembleLanguageSubtag(List<string> region)
+		private string AssembleLanguageSubtag(List<string> subtag)
 		{
-			throw new NotImplementedException();
+			string subtagAsString = "";
+			foreach (string part in subtag)
+			{
+				subtagAsString = String.Concat(String.Concat(subtagAsString, part));
+			}
+			return subtagAsString;
 		}
 	}
 }

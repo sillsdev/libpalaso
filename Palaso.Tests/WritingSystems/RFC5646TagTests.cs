@@ -11,25 +11,11 @@ namespace Palaso.Tests.WritingSystems
 	public class RFC5646TagTests
 	{
 		[Test]
-		public void IsValid_RFCTagIsValid_ReturnsTrue()
-		{
-			RFC5646Tag tag = new RFC5646Tag("az", "Ltn", "RS", String.Empty);
-			Assert.IsTrue(tag.IsValid());
-		}
-
-		[Test]
 		public void GetValidTag_RFCTagIsValid_ReturnsSameTag()
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("az", "Ltn", "RS", String.Empty);
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
 			Assert.AreEqual(invalidTag, RFC5646Tag.GetValidTag(validTag));
-		}
-
-		[Test]
-		public void IsValid_IsoContainsxDashaudio_ReturnsFalse()
-		{
-			RFC5646Tag tag = new RFC5646Tag("tpi-Zxxx-x-audio", String.Empty, String.Empty, String.Empty);
-			Assert.IsFalse(tag.IsValid());
 		}
 
 		[Test]
@@ -60,13 +46,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsValid_IsoContainsDashesAndVariantIsxDashaudio_ReturnsFalse()
-		{
-			RFC5646Tag tag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
-			Assert.IsFalse(tag.IsValid());
-		}
-
-		[Test]
 		public void GetValidTag_IsoContainsDashesAndVariantIsxDashaudio_IsoIsShortened()
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("de-Ltn-ch-1901", String.Empty, String.Empty, "x-audio");
@@ -80,6 +59,13 @@ namespace Palaso.Tests.WritingSystems
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
 			rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
 			Assert.AreEqual(rfcTag.Variant, "x-audio");
+		}
+
+		[Test]
+		public void AddToSubtag_SubtagContainsExtensionWithUnderScore_Throws()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
+			Assert.Throws<ArgumentException>(() => rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "x_audio"));
 		}
 
 		[Test]
@@ -106,6 +92,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void AddToSubtag_SubtagAlreadyContainsPartsOfStringToAdd_Throws()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-x-audio");
+			Assert.Throws<ArgumentException>(() => rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "variant2-x-audio"));
+		}
+
+		[Test]
 		public void AddToSubtag_SubtagAlreadyContainsStringToAddInDifferentCase_Throws()
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-X-AUDIO");
@@ -116,14 +109,29 @@ namespace Palaso.Tests.WritingSystems
 		public void RemoveFromSubtag_SubtagIsEmpty_Throws()
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentOutOfRangeException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio"));
+			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio"));
 		}
 
 		[Test]
 		public void RemoveFromSubtag_SubtagDoesNotContainStringToRemove_Throws()
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
-			Assert.Throws<ArgumentOutOfRangeException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio"));
+			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio"));
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagDoesNotContainPartsOfStringToRemove_Throws()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-variant2");
+			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "variant2-x-audio"));
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagContainsPartsOfStringToRemoveButNotConsecutively_RemovesPartsCorrectly()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-variant2-x-audio");
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "variant-x-audio");
+			Assert.AreEqual("variant2", rfcTag.Variant);
 		}
 
 		[Test]
@@ -169,7 +177,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void RemoveFromSubtag_SubtagEqualsStringToRemoveInDifferentCase_SubtagIsEmpty()
 		{
-			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "x-audio");
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "X-AudiO");
 			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
 			Assert.AreEqual(rfcTag.Variant, String.Empty);
 		}
