@@ -241,7 +241,7 @@ namespace Palaso.WritingSystems
 
 		public List<string> ParseSubtagForParts(string subtagToParse)
 		{
-				throw new NotImplementedException();
+			return new Rfc5646SubtagParser(subtagToParse).GetParts();
 		}
 
 		private string AssembleLanguageSubtag(List<string> region)

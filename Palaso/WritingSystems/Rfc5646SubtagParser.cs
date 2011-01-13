@@ -13,7 +13,8 @@ namespace Palaso.WritingSystems
 			StartGetNextParse,
 			Parsing,
 			EndGetNextPart,
-			EndParse
+			EndParse,
+			ExpectingSeperatorAsPartOfExtension
 		}
 
 		private List<string> _parts = new List<string>();
@@ -58,12 +59,21 @@ namespace Palaso.WritingSystems
 					case State.Parsing:
 						sb.Append(_currentCharacter);
 						break;
+					case State.ExpectingSeperatorAsPartOfExtension:
+						sb.Append(_currentCharacter);
+						_state = State.Parsing;
+						break;
 					case State.StartGetNextParse:
 						if (CurrentCharacterIsSeperator)
 						{
 							if (atBeginningOfString) { throw new ArgumentException(); }
 							sb.Append(_currentCharacter);
 							_state = State.EndGetNextPart;
+						}
+						else if(_currentCharacter == 'x')
+						{
+							sb.Append(_currentCharacter);
+							_state = State.ExpectingSeperatorAsPartOfExtension;
 						}
 						else
 						{
@@ -81,9 +91,12 @@ namespace Palaso.WritingSystems
 				}
 				else {
 					_position++;
-					if (CurrentCharacterIsSeperator)
+					if (_state != State.ExpectingSeperatorAsPartOfExtension)
 					{
-						_state = State.EndGetNextPart;
+						if (CurrentCharacterIsSeperator)
+						{
+							_state = State.EndGetNextPart;
+						}
 					}
 				}
 			}

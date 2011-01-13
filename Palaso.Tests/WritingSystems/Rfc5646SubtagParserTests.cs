@@ -26,6 +26,15 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void GetParts_RfcSubtagConsistsOfExtensionPart_ReturnsThatPart()
+		{
+			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("x-audio");
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(1, parts.Count);
+			Assert.AreEqual("x-audio", parts[0]);
+		}
+
+		[Test]
 		public void GetParts_RfcSubtagConsistsOfTwoSimplePartsSepearatedByDash_ReturnsThatPart()
 		{
 			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("variant-variant2");
