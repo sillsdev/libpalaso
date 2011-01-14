@@ -300,13 +300,13 @@ namespace Palaso.WritingSystems
 					default:
 						break;
 					case IpaStatusChoices.Ipa:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa);
+						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaUnspecified);
 						break;
 					case IpaStatusChoices.IpaPhonemic:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "fonipa-x-emic");
+						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonemic);
 						break;
 					case IpaStatusChoices.IpaPhonetic:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "fonipa-x-etic");
+						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
 						break;
 				}
 			}
