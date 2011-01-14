@@ -336,7 +336,7 @@ namespace Palaso.Tests.WritingSystems
 				Region = "Region",
 				Variant = "Variant"
 			};
-			ws.Variant = "x-audio";
+			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -373,7 +373,7 @@ namespace Palaso.Tests.WritingSystems
 			};
 			ws.ISO = "iso-Zxxx-x-audio";
 			Assert.AreEqual("iso", ws.ISO);
-			Assert.AreEqual("x-audio", ws.Variant);
+			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
 			Assert.AreEqual("Zxxx", ws.Script);
 			Assert.IsTrue(ws.IsVoice);
 		}
@@ -419,11 +419,11 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
-				Variant = "x-audio"
+				Variant = WellKnownSubTags.Audio.VariantMarker
 			};
 			ws.IsVoice = true;
 			Assert.AreEqual("Zxxx", ws.Script);
-			Assert.AreEqual("x-audio", ws.Variant);
+			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
 		}
 
 		[Test]

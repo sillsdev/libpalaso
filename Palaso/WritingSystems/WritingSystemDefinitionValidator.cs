@@ -15,7 +15,7 @@ namespace Palaso.WritingSystems
 
 		static private bool VariantTagIndicatesAudioWritingSystem(WritingSystemDefinition ws)
 		{
-			if(StringContainsSubstringAccordingToLdmlSpec(ws.Variant, "x-audio")) return true;
+			if(StringContainsSubstringAccordingToLdmlSpec(ws.Variant, WellKnownSubTags.Audio.VariantMarker)) return true;
 			return false;
 		}
 
@@ -49,7 +49,7 @@ namespace Palaso.WritingSystems
 
 		private static bool LanguageSubTagContainsXDashAudio(WritingSystemDefinition ws)
 		{
-			return StringContainsSubstringAccordingToLdmlSpec(ws.ISO,"x-audio");
+			return StringContainsSubstringAccordingToLdmlSpec(ws.ISO,WellKnownSubTags.Audio.VariantMarker);
 		}
 
 		private static bool StringContainsSubstringAccordingToLdmlSpec(string stringToSearch, string stringToFind)

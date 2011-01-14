@@ -32,7 +32,7 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "de";
 			ws.Script = "Zxxx";
-			ws.Variant = "x-audio";
+			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
 			Assert.IsTrue(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
 		}
 
@@ -61,7 +61,7 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "de";
 			ws.Script = "ZXXX";
-			ws.Variant = "x-audio";
+			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
 			Assert.IsTrue(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
 		}
 
@@ -71,7 +71,7 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "de";
 			ws.Script = "ltn";
-			ws.Variant = "x-audio";
+			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
 			Assert.IsFalse(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
 		}
 

@@ -286,7 +286,7 @@ namespace Palaso.WritingSystems
 
 			set
 			{
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
 				/* "There are some variant subtags that have no prefix field,
 				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 				 * should appear after any other variant subtags with prefix information."

@@ -207,9 +207,9 @@ namespace Palaso.WritingSystems
 
 		private static bool IsBadAudioTag(RFC5646Tag tagToConvert)
 		{
-			return (tagToConvert.Language.Contains("x-audio")) ||
-				   (tagToConvert.Variant == "x-audio" && tagToConvert.Script != "Zxxx") ||
-				   (tagToConvert.Variant == "x-audio" && tagToConvert.Language.Contains("-"));
+			return (tagToConvert.Language.Contains(WellKnownSubTags.Audio.VariantMarker)) ||
+				   (tagToConvert.Variant == WellKnownSubTags.Audio.VariantMarker && tagToConvert.Script != "Zxxx") ||
+				   (tagToConvert.Variant == WellKnownSubTags.Audio.VariantMarker && tagToConvert.Language.Contains("-"));
 		}
 
 		public static RFC5646Tag RFC5646TagForVoiceWritingSystem(string language, string region)
@@ -253,6 +253,8 @@ namespace Palaso.WritingSystems
 		{
 			List<string> partsOfSubtagToRemovePartFrom = GetSubtag(subTag);
 			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
+
+			if(!SubtagContainsAllPartsOfStringToBeRemoved(partsOfSubtagToRemovePartFrom, partsOfStringToRemove)){return;}
 
 			bool subtagHasMultipleParts = partsOfSubtagToRemovePartFrom.Count > 1;
 			bool subtagHasOnlyOnePart = partsOfSubtagToRemovePartFrom.Count == 1;

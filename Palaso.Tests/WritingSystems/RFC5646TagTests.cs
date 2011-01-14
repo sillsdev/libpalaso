@@ -166,7 +166,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-variant2");
 			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "variant2-x-audio");
-			Assert.AreEqual("variant", rfcTag.Variant);
+			Assert.AreEqual("variant-variant2", rfcTag.Variant);
 		}
 
 		[Test]
