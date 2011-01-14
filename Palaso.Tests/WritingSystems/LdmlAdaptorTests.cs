@@ -135,7 +135,7 @@ namespace Palaso.Tests.WritingSystems
 			LdmlAdaptor adaptor = new LdmlAdaptor();
 			adaptor.Read(pathToLdmlFile,ws);
 			Assert.AreEqual("tpi", ws.ISO);
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
 		}
 

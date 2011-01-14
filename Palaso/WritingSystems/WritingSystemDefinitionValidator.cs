@@ -9,7 +9,7 @@ namespace Palaso.WritingSystems
 	{
 		static private bool ScriptTagIsNonconformantToAudioWritingSystem(WritingSystemDefinition ws)
 		{
-			if (StringsAreEqualAccordingToLdmlSpec("Zxxx", ws.Script)) return false;
+			if (StringsAreEqualAccordingToLdmlSpec(WellKnownSubTags.Audio.Script, ws.Script)) return false;
 			return true;
 		}
 
@@ -44,7 +44,7 @@ namespace Palaso.WritingSystems
 
 		private static bool LanguageSubTagContainsZxxx(WritingSystemDefinition ws)
 		{
-			return StringContainsSubstringAccordingToLdmlSpec(ws.ISO, "Zxxx");
+			return StringContainsSubstringAccordingToLdmlSpec(ws.ISO, WellKnownSubTags.Audio.Script);
 		}
 
 		private static bool LanguageSubTagContainsXDashAudio(WritingSystemDefinition ws)

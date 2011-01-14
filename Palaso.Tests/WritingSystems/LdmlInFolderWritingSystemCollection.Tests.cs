@@ -477,7 +477,7 @@ namespace Palaso.Tests.WritingSystems
 
 			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
 			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", WellKnownSubTags.Audio.VariantMarker));
-			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", WellKnownSubTags.Audio.VariantMarker));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker));
 
 			_collection.LoadAllDefinitions();
 
@@ -495,7 +495,7 @@ namespace Palaso.Tests.WritingSystems
 
 			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
 			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", WellKnownSubTags.Audio.VariantMarker));
-			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", WellKnownSubTags.Audio.VariantMarker));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker));
 
 			_collection.LoadAllDefinitions();
 
@@ -513,7 +513,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));  // Bad
 			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-audio.ldml"), GetLdmlFileContent("de", "Script", "", WellKnownSubTags.Audio.VariantMarker)); // Bad
-			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", "Zxxx", "", WellKnownSubTags.Audio.VariantMarker)); // Bad
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker)); // Bad
 
 			_collection.LoadAllDefinitions();
 
@@ -530,7 +530,7 @@ namespace Palaso.Tests.WritingSystems
 		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatbeforeLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_Throws()
 		{
 			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
-			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de", "Zxxx", "", WellKnownSubTags.Audio.VariantMarker));
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker));
 
 			Assert.Throws<ArgumentException>(() => _collection.LoadAllDefinitions());
 		}

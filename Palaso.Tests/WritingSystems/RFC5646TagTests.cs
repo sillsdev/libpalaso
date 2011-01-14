@@ -40,7 +40,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			RFC5646Tag invalidTag = new RFC5646Tag("tpi-Zxxx-x-audio", String.Empty, String.Empty, String.Empty);
 			RFC5646Tag validTag = RFC5646Tag.GetValidTag(invalidTag);
-			Assert.AreEqual("Zxxx", validTag.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, validTag.Script);
 			Assert.AreEqual(String.Empty, validTag.Region);
 			Assert.AreEqual("x-audio", validTag.Variant);
 		}

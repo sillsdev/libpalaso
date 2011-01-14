@@ -31,7 +31,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.ISO = "de";
-			ws.Script = "Zxxx";
+			ws.Script = WellKnownSubTags.Audio.Script;
 			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
 			Assert.IsTrue(WritingSystemDefinitionValidator.IsValidWritingSystem(ws));
 		}

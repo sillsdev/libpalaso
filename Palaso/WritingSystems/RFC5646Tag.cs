@@ -208,13 +208,13 @@ namespace Palaso.WritingSystems
 		private static bool IsBadAudioTag(RFC5646Tag tagToConvert)
 		{
 			return (tagToConvert.Language.Contains(WellKnownSubTags.Audio.VariantMarker)) ||
-				   (tagToConvert.Variant == WellKnownSubTags.Audio.VariantMarker && tagToConvert.Script != "Zxxx") ||
+				   (tagToConvert.Variant == WellKnownSubTags.Audio.VariantMarker && tagToConvert.Script != WellKnownSubTags.Audio.Script) ||
 				   (tagToConvert.Variant == WellKnownSubTags.Audio.VariantMarker && tagToConvert.Language.Contains("-"));
 		}
 
 		public static RFC5646Tag RFC5646TagForVoiceWritingSystem(string language, string region)
 		{
-			return new RFC5646Tag(language, "Zxxx", region, "x-audio");
+			return new RFC5646Tag(language, WellKnownSubTags.Audio.Script, region, "x-audio");
 		}
 
 		public string ToString()

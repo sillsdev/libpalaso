@@ -275,7 +275,7 @@ namespace Palaso.Tests.WritingSystems
 												 Variant = "Variant"
 											 };
 			ws.IsVoice = true;
-			Assert.AreEqual(ws.Script, "Zxxx");
+			Assert.AreEqual(ws.Script, WellKnownSubTags.Audio.Script);
 			Assert.AreEqual(ws.Region, "Region");
 			Assert.AreEqual(ws.Variant, "Variant-x-audio");
 		}
@@ -299,7 +299,7 @@ namespace Palaso.Tests.WritingSystems
 				IsVoice = true
 			};
 			ws.IsVoice = false;
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual("", ws.Region);
 			Assert.AreEqual("", ws.Variant);
 		}
@@ -323,7 +323,7 @@ namespace Palaso.Tests.WritingSystems
 				IsVoice = true
 			};
 			ws.Script = "change!";
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 		}
 
 		[Test]
@@ -374,7 +374,7 @@ namespace Palaso.Tests.WritingSystems
 			ws.ISO = "iso-Zxxx-x-audio";
 			Assert.AreEqual("iso", ws.ISO);
 			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -411,7 +411,7 @@ namespace Palaso.Tests.WritingSystems
 			};
 			ws.IsVoice = true;
 			ws.IsVoice = false;
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 		}
 
 		[Test]
@@ -422,7 +422,7 @@ namespace Palaso.Tests.WritingSystems
 				Variant = WellKnownSubTags.Audio.VariantMarker
 			};
 			ws.IsVoice = true;
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
 		}
 
@@ -434,7 +434,7 @@ namespace Palaso.Tests.WritingSystems
 				Variant = "X-AUDIO"
 			};
 			ws.IsVoice = true;
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual("X-AUDIO", ws.Variant);
 		}
 
@@ -455,11 +455,11 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
-				Script = "Zxxx",
+				Script = WellKnownSubTags.Audio.Script,
 				Variant = "x_audio"
 			};
 			ws.IsVoice = false;
-			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual(String.Empty, ws.Variant);
 		}
 	}

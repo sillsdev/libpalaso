@@ -76,16 +76,6 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		//private string _customLanguageTag;
 
-		private static string AudioVariantMarker
-		{
-			get { return "x-audio"; }
-		}
-
-		private static string AudioScriptMarker
-		{
-			get { return "Zxxx"; }
-		}
-
 		public WritingSystemDefinition()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
@@ -316,8 +306,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				bool scriptSubTagIsAudioConform = Script.Equals(AudioScriptMarker, StringComparison.OrdinalIgnoreCase);
-				bool variantSubTagIsAudioConform = Variant.Contains(AudioVariantMarker, StringComparison.OrdinalIgnoreCase);
+				bool scriptSubTagIsAudioConform = Script.Equals(WellKnownSubTags.Audio.Script, StringComparison.OrdinalIgnoreCase);
+				bool variantSubTagIsAudioConform = Variant.Contains(WellKnownSubTags.Audio.VariantMarker, StringComparison.OrdinalIgnoreCase);
 				if(scriptSubTagIsAudioConform && variantSubTagIsAudioConform){ return true; }
 				return false;
 			}
@@ -328,12 +318,12 @@ namespace Palaso.WritingSystems
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					Script = AudioScriptMarker;
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, AudioVariantMarker);
+					Script = WellKnownSubTags.Audio.Script;
+					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
 				}
 				else
 				{
-					_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, AudioVariantMarker);
+					_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
 				}
 				Modified = true;
 			}
