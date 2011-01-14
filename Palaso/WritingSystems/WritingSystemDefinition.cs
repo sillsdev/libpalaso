@@ -35,6 +35,8 @@ namespace Palaso.WritingSystems
 			OtherLanguage
 		}
 
+
+
 		private RFC5646Tag _rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
 
 		private string _languageName;
@@ -298,7 +300,7 @@ namespace Palaso.WritingSystems
 					default:
 						break;
 					case IpaStatusChoices.Ipa:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "fonipa");
+						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa);
 						break;
 					case IpaStatusChoices.IpaPhonemic:
 						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "fonipa-x-emic");
@@ -899,4 +901,37 @@ namespace Palaso.WritingSystems
 			IpaPhonetic,
 			IpaPhonemic
 		}
+
+	public class WellKnownSubTags
+	{
+		public class Audio
+		{
+			static public string VariantMarker
+			{
+				get { return "x-audio"; }
+			}
+			static public string Script
+			{
+				get { return "Zxxx"; }
+			}
+		}
+
+		public class Ipa
+		{
+			static public string IpaUnspecified
+			{
+				get { return "fonipa"; }
+			}
+
+			static public string IpaPhonemic
+			{
+				get { return String.Concat(IpaUnspecified, "-x-emic"); }
+			}
+
+			static public string IpaPhonetic
+			{
+				get { return String.Concat(IpaUnspecified, "-x-etic"); }
+			}
+		}
+	}
 }
