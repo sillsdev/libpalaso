@@ -253,15 +253,12 @@ namespace Palaso.WritingSystems
 		{
 			List<string> partsOfSubtagToRemovePartFrom = GetSubtag(subTag);
 			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
-			if(!SubtagContainsAllPartsOfStringToBeRemoved(partsOfSubtagToRemovePartFrom, partsOfStringToRemove))
-			{
-				throw new ArgumentException("The subtag does not conatin all the parts of the string that is to be removed");
-			}
 
 			bool subtagHasMultipleParts = partsOfSubtagToRemovePartFrom.Count > 1;
 			bool subtagHasOnlyOnePart = partsOfSubtagToRemovePartFrom.Count == 1;
 			foreach (string partToRemove in partsOfStringToRemove)
 			{
+				if(!SubtagContainsPart(subTag, partToRemove)){continue;}
 				if (Rfc5646SubtagParser.StringIsSeperator(partToRemove)) {continue; }
 				bool stringToRemoveIsFirstItemInSubtag = partsOfSubtagToRemovePartFrom[0].Equals(partToRemove,
 																								 StringComparison.
@@ -304,7 +301,7 @@ namespace Palaso.WritingSystems
 			return true;
 		}
 
-		public List<string> ParseSubtagForParts(string subtagToParse)
+		private List<string> ParseSubtagForParts(string subtagToParse)
 		{
 			return new Rfc5646SubtagParser(subtagToParse).GetParts();
 		}
@@ -319,7 +316,7 @@ namespace Palaso.WritingSystems
 			return subtagAsString;
 		}
 
-		public bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
+		private bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
 		{
 			List<string> partsOfSubTag = GetSubtag(subtagToCheck);
 			return partsOfSubTag.Contains(partToFind, StringComparison.OrdinalIgnoreCase) ? true : false;

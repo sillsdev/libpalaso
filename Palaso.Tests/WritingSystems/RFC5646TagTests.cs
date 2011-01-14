@@ -114,24 +114,59 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagIsEmpty_Throws()
-		{
-			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio"));
-		}
-
-		[Test]
-		public void RemoveFromSubtag_SubtagDoesNotContainStringToRemove_Throws()
+		public void AddToSubtag_StringToAddBeginsWithDash_StringIsAdded()
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
-			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio"));
+			rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "-x-audio");
+			Assert.AreEqual("variant-x-audio", rfcTag.Variant);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagDoesNotContainPartsOfStringToRemove_Throws()
+		public void AddToSubtag_StringToAddBeginsWithUnderscore_StringIsAdded()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
+			rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "_x-audio");
+			Assert.AreEqual("variant-x-audio", rfcTag.Variant);
+		}
+
+		[Test]
+		public void AddToSubtag_StringToAddEndsWithDash_StringIsAdded()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
+			rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "x-audio-");
+			Assert.AreEqual("variant-x-audio", rfcTag.Variant);
+		}
+
+		[Test]
+		public void AddToSubtag_StringToAddEndsWithUnderscoreh_StringIsAdded()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
+			rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, "x-audio_");
+			Assert.AreEqual("variant-x-audio", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagIsEmpty_SubTagRemainsUntouched()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
+			Assert.AreEqual(String.Empty, rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagDoesNotContainStringToRemove_SubTagRemainsUntouched()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant");
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
+			Assert.AreEqual("variant", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagDoesNotContainPartsOfStringToRemove_SubTagRemainsUntouched()
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "variant-variant2");
-			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "variant2-x-audio"));
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "variant2-x-audio");
+			Assert.AreEqual("variant", rfcTag.Variant);
 		}
 
 		[Test]
@@ -187,6 +222,38 @@ namespace Palaso.Tests.WritingSystems
 		{
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "X-AudiO");
 			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveStartsWithDash_StringIsRemoved()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "X-AudiO");
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "-x-audio");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_StringIsRemoved()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "X-AudiO");
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "_x-audio");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveEndsWithDash_StringIsRemoved()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "X-AudiO-");
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio-");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveEndsWithUnderscore_StringIsRemoved()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "X-AudiO_");
+			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio_");
 			Assert.AreEqual(rfcTag.Variant, String.Empty);
 		}
 	}

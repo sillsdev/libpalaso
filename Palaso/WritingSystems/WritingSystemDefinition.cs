@@ -286,14 +286,14 @@ namespace Palaso.WritingSystems
 
 			set
 			{
-				RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
 				/* "There are some variant subtags that have no prefix field,
 				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 				 * should appear after any other variant subtags with prefix information."
 				 */
-				RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-etic");
-				RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-emic");
-				RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "fonipa");
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-etic");
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-emic");
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "fonipa");
 
 				switch (value)
 				{
@@ -309,14 +309,6 @@ namespace Palaso.WritingSystems
 						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
 						break;
 				}
-			}
-		}
-
-		private void RemoveFromSubtag(RFC5646Tag.SubTag subtag, string stringToRemove)
-		{
-			if (_rfcTag.SubtagContainsPart(subtag, stringToRemove))
-			{
-				_rfcTag.RemoveFromSubtag(subtag, stringToRemove);
 			}
 		}
 

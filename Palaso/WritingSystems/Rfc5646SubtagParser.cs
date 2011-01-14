@@ -57,7 +57,7 @@ namespace Palaso.WritingSystems
 					case State.StartGetNextParse:
 						if (CurrentCharacterIsSeperator)
 						{
-							if (atBeginningOfString) { throw new ArgumentException(); }
+							if (atBeginningOfString) {break; }
 							sb.Append(_currentCharacter);
 							_state = State.EndGetNextPart;
 						}
@@ -82,12 +82,9 @@ namespace Palaso.WritingSystems
 				}
 				else {
 					_position++;
-					if (_state != State.ExpectingPotentialDashAsPartOfExtension)
+					if (CurrentCharacterIsSeperator && _state != State.ExpectingPotentialDashAsPartOfExtension)
 					{
-						if (CurrentCharacterIsSeperator)
-						{
-							_state = State.EndGetNextPart;
-						}
+						_state = State.EndGetNextPart;
 					}
 				}
 			}
@@ -107,16 +104,25 @@ namespace Palaso.WritingSystems
 		public List<string> GetParts()
 		{
 			List<string> parts = new List<string>();
-			if (String.IsNullOrEmpty(_stringToparse)) {return parts; }
+			if (String.IsNullOrEmpty(_stringToparse)) { return parts; }
+			if (StringIsSeperator(_stringToparse)) { return parts; }
 			do
 			{
 				parts.Add(GetNextPart());
 			} while (_state != State.EndParse);
+			RemoveTrailingSeperators(parts);
+			return parts;
+		}
+
+		private void RemoveTrailingSeperators(List<string> parts)
+		{
 			foreach (string seperator in _seperators)
 			{
-				if (parts.Last() == new StringBuilder().Append(seperator).ToString()) { throw new ArgumentException(); }
+				if (parts.Last() == seperator)
+				{
+					parts.RemoveAt(parts.Count-1);
+				}
 			}
-			return parts;
 		}
 
 		private bool CurrentCharacterIsSeperator

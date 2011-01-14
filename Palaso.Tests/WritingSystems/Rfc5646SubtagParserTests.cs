@@ -74,45 +74,55 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void GetParts_RfcSubtagContainsOnlyDash_Throws()
+		public void GetParts_RfcSubtagContainsOnlyDash_ReturnsEmptyPartsList()
 		{
 			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("-");
-			Assert.Throws<ArgumentException>(() => parser.GetParts());
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(0, parts.Count);
 		}
 
 		[Test]
-		public void GetParts_RfcSubtagEndsWithDash_Throws()
+		public void GetParts_RfcSubtagEndsWithDash_DashIsStripped()
 		{
-			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("variant-variant2-");
-			Assert.Throws<ArgumentException>(() => parser.GetParts());
+			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("variant-");
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(1, parts.Count);
+			Assert.AreEqual("variant", parts[0]);
 		}
 
 		[Test]
-		public void GetParts_RfcSubtagBeginsWithDash_Throws()
+		public void GetParts_RfcSubtagBeginsWithDash_DashIsStripped()
 		{
-			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("-variant-variant2");
-			Assert.Throws<ArgumentException>(() => parser.GetParts());
+			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("-variant");
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(1, parts.Count);
+			Assert.AreEqual("variant", parts[0]);
 		}
 
 		[Test]
-		public void GetParts_RfcSubtagContainsOnlyUnderScore_Throws()
+		public void GetParts_RfcSubtagContainsOnlyUnderScore_ReturnsEmptyPartsList()
 		{
 			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("_");
-			Assert.Throws<ArgumentException>(() => parser.GetParts());
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(0, parts.Count);
 		}
 
 		[Test]
-		public void GetParts_RfcSubtagEndsWithUnderScore_Throws()
+		public void GetParts_RfcSubtagEndsWithUnderScore_UnderscoreIsStripped()
 		{
-			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("variant-variant2_");
-			Assert.Throws<ArgumentException>(() => parser.GetParts());
+			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("variant_");
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(1, parts.Count);
+			Assert.AreEqual("variant", parts[0]);
 		}
 
 		[Test]
-		public void GetParts_RfcSubtagBeginsWithUnderScore_Throws()
+		public void GetParts_RfcSubtagBeginsWithUnderScore_UnderscoreIsStripped()
 		{
-			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("_variant-variant2");
-			Assert.Throws<ArgumentException>(() => parser.GetParts());
+			Rfc5646SubtagParser parser = new Rfc5646SubtagParser("_variant");
+			List<string> parts = parser.GetParts();
+			Assert.AreEqual(1, parts.Count);
+			Assert.AreEqual("variant", parts[0]);
 		}
 	}
 }
