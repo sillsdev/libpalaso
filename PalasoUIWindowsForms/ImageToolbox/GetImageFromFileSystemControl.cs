@@ -14,6 +14,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 	   private PalasoImage _previousImage;
 	   static string _sLastPictureDirectory = string.Empty;
+	   public event EventHandler ImageChanged;
 
 		public GetImageFromFileSystemControl()
 		{
@@ -40,6 +41,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				{
 					_pictureBox.Image = Image.FromFile(dlg.FileName);
 					_sLastPictureDirectory = Path.GetDirectoryName(dlg.FileName);
+					if (ImageChanged != null)
+						ImageChanged.Invoke(this, null);
 				}
 			}
 		}

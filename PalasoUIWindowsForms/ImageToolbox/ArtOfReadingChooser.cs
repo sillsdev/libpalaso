@@ -18,6 +18,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_images =  ArtOfReadingImageCollection.FromStandardLocations();
 			InitializeComponent();
 			_searchTermsBox.Text = searchWords;
+			_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
+		}
+
+		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if(ImageChanged!=null && _thumbnailViewer.SelectedItems.Count>0)
+			{
+				ImageChanged.Invoke(this, null);
+			}
 		}
 
 		private void _searchButton_Click(object sender, EventArgs e)
@@ -69,6 +78,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public void SetImage(PalasoImage image)
 		{
 			_previousImage = image;
+			if(ImageChanged!=null)
+				ImageChanged.Invoke(this,null);
 		}
 
 		public PalasoImage GetImage()
@@ -88,6 +99,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 			return _previousImage;
+		}
+
+		public event EventHandler ImageChanged;
+
+		private void _searchTermsBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.KeyCode  ==Keys.Enter)
+			{
+				_searchButton_Click(sender, null);
+			}
 		}
 	}
 }

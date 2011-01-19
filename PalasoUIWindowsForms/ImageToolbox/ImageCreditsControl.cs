@@ -26,5 +26,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			return _previousImage;
 		}
+
+		public event EventHandler ImageChanged;
 	}
 }

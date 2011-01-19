@@ -91,6 +91,7 @@
 			this._searchTermsBox.Name = "_searchTermsBox";
 			this._searchTermsBox.Size = new System.Drawing.Size(157, 24);
 			this._searchTermsBox.TabIndex = 6;
+			this._searchTermsBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._searchTermsBox_KeyDown);
 			//
 			// ArtOfReadingChooser
 			//

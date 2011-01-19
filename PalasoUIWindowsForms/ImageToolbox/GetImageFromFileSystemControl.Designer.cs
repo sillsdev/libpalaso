@@ -1,4 +1,6 @@
-﻿namespace Palaso.UI.WindowsForms.ImageToolbox
+﻿using System;
+
+namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	partial class GetImageFromFileSystemControl
 	{
@@ -72,5 +74,6 @@
 
 		private System.Windows.Forms.PictureBox _pictureBox;
 		private System.Windows.Forms.Button button1;
+
 	}
 }

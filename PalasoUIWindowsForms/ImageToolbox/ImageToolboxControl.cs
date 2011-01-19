@@ -86,10 +86,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				return;
 			if(_currentControl !=null)
 			{
-				ImageInfo = ((IImageToolboxControl) _currentControl).GetImage();
-				_currentImageBox.Image = ImageInfo.Image;
+				GetImageFromCurrentControl();
 
 				Controls.Remove(_currentControl);
+				((IImageToolboxControl)_currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
 				_currentControl.Dispose();
 			}
 			System.Func<PalasoImage, Control> fun =
@@ -97,9 +97,23 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_currentControl = fun(ImageInfo);
 			_currentControl.Bounds = _panelForControls.Bounds;
 			_currentControl.Anchor = _panelForControls.Anchor;
+
 			Controls.Add(_currentControl);
-			((IImageToolboxControl)_currentControl).SetImage(ImageInfo);
+			IImageToolboxControl imageToolboxControl = ((IImageToolboxControl)_currentControl);
+			imageToolboxControl.SetImage(ImageInfo);
+			imageToolboxControl.ImageChanged += new EventHandler(imageToolboxControl_ImageChanged);
 			Refresh();
+		}
+
+		private void GetImageFromCurrentControl()
+		{
+			ImageInfo = ((IImageToolboxControl) _currentControl).GetImage();
+			_currentImageBox.Image = ImageInfo.Image;
+		}
+
+		void imageToolboxControl_ImageChanged(object sender, EventArgs e)
+		{
+			GetImageFromCurrentControl();
 		}
 
 		public void Closing()
@@ -114,5 +128,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		void SetImage(PalasoImage image);
 		PalasoImage GetImage();
+		event EventHandler ImageChanged;
 	}
 }

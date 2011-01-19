@@ -54,7 +54,7 @@
 			listViewItem2});
 			this._toolListView.Location = new System.Drawing.Point(0, 0);
 			this._toolListView.Name = "_toolListView";
-			this._toolListView.Size = new System.Drawing.Size(175, 371);
+			this._toolListView.Size = new System.Drawing.Size(175, 369);
 			this._toolListView.TabIndex = 0;
 			this._toolListView.UseCompatibleStateImageBehavior = false;
 			this._toolListView.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
@@ -67,13 +67,14 @@
 			this._panelForControls.BackColor = System.Drawing.Color.MistyRose;
 			this._panelForControls.Location = new System.Drawing.Point(181, 0);
 			this._panelForControls.Name = "_panelForControls";
-			this._panelForControls.Size = new System.Drawing.Size(376, 502);
+			this._panelForControls.Size = new System.Drawing.Size(358, 409);
 			this._panelForControls.TabIndex = 3;
 			//
 			// _currentImageBox
 			//
 			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._currentImageBox.Location = new System.Drawing.Point(3, 377);
+			this._currentImageBox.BackColor = System.Drawing.Color.BlanchedAlmond;
+			this._currentImageBox.Location = new System.Drawing.Point(3, 375);
 			this._currentImageBox.Name = "_currentImageBox";
 			this._currentImageBox.Size = new System.Drawing.Size(172, 125);
 			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -84,11 +85,12 @@
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.Controls.Add(this._currentImageBox);
 			this.Controls.Add(this._panelForControls);
 			this.Controls.Add(this._toolListView);
 			this.Name = "ImageToolboxControl";
-			this.Size = new System.Drawing.Size(560, 505);
+			this.Size = new System.Drawing.Size(558, 503);
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).EndInit();
 			this.ResumeLayout(false);
 

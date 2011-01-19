@@ -27,9 +27,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			return _previousImage;
 		}
 
+		public event EventHandler ImageChanged;
+
 		private void button1_Click(object sender, EventArgs e)
 		{
 			_pictureBox.Image = SampleImages.sampleScan;
+			if(ImageChanged!=null)
+				ImageChanged.Invoke(this,null);
 		}
 
 

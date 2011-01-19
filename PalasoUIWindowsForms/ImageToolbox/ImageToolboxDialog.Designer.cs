@@ -28,10 +28,13 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage2 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
+			this.components = new System.ComponentModel.Container();
+			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage1 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this.imageToolboxControl1 = new Palaso.UI.WindowsForms.ImageToolbox.ImageToolboxControl();
+			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
+			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).BeginInit();
 			this.SuspendLayout();
 			//
 			// _cancelButton
@@ -62,15 +65,18 @@
 			this.imageToolboxControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.imageToolboxControl1.ImageInfo = palasoImage2;
+			this.imageToolboxControl1.ImageInfo = palasoImage1;
 			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
 			this.imageToolboxControl1.Name = "imageToolboxControl1";
-			this.imageToolboxControl1.Size = new System.Drawing.Size(757, 452);
+			this.imageToolboxControl1.Size = new System.Drawing.Size(696, 452);
 			this.imageToolboxControl1.TabIndex = 3;
+			//
+			// localizationHelper1
+			//
+			this.localizationHelper1.Parent = this;
 			//
 			// ImageToolboxDialog
 			//
-			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
@@ -80,6 +86,7 @@
 			this.Controls.Add(this._cancelButton);
 			this.Name = "ImageToolboxDialog";
 			this.Text = "ImageToolboxDialog";
+			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -89,5 +96,6 @@
 		private System.Windows.Forms.Button _cancelButton;
 		private System.Windows.Forms.Button _okButton;
 		private ImageToolboxControl imageToolboxControl1;
+		private i18n.LocalizationHelper localizationHelper1;
 	}
 }

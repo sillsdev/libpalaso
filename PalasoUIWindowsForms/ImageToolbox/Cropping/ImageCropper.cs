@@ -269,6 +269,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			_gripperBeingDragged = null;
 
 			_startOfDrag = default(Point);
+			if(ImageChanged !=null)
+				ImageChanged.Invoke(this,null);
 		}
 
 //        public void CheckBug()
@@ -307,5 +309,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 		{
 			return new PalasoImage() {Image = GetCroppedImage()};
 		}
+
+		public event EventHandler ImageChanged;
 	}
 }
