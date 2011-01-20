@@ -471,59 +471,59 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_WritingSystemsAreMadeUnique()
 		{
-			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
-			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-audio.ldml");
+			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml");
+			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-AUDIO.ldml");
 			string ldmlFile3 = Path.Combine(_testPath, "inconsistent-filename.ldml");
 
-			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
-			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-audio"));
-			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio"));
+			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-AUDIO", "", "", ""));
+			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-AUDIO"));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", "x-AUDIO"));
 
 			_collection.LoadAllDefinitions();
 
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
 		}
 
 		[Test]
 		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsThatAreTransformedToIdenticalRFC5646Tags_FilesAreRenamedToMatchTransformedRFC5646Tag()
 		{
-			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
-			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-audio.ldml");
+			string ldmlFile1 = Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml");
+			string ldmlFile2 = Path.Combine(_testPath, "de-Script-x-AUDIO.ldml");
 			string ldmlFile3 = Path.Combine(_testPath, "inconsistent-filename.ldml");
 
-			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
-			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-audio"));
-			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio"));
+			File.WriteAllText(ldmlFile1, GetLdmlFileContent("de-Zxxx-x-AUDIO", "", "", ""));
+			File.WriteAllText(ldmlFile2, GetLdmlFileContent("de", "Script", "", "x-AUDIO"));
+			File.WriteAllText(ldmlFile3, GetLdmlFileContent("de-nrw", "Zxxx", "", "x-AUDIO"));
 
 			_collection.LoadAllDefinitions();
 
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
 
-			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")));
-			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")));
-			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")));
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml")));
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-AUDIO-x-dupl.ldml")));
+			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-AUDIO-x-dupl-x-dupl.ldml")));
 		}
 
 		[Test]
 		public void LoadAllDefinitions_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_FilesContainLdmlMatchingTransformedRFC5646Tags()
 		{
-			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));  // Bad
-			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-audio.ldml"), GetLdmlFileContent("de", "Script", "", "x-audio")); // Bad
-			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", "Zxxx", "", "x-audio")); // Bad
+			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml"), GetLdmlFileContent("de-Zxxx-x-AUDIO", "", "", ""));  // Bad
+			File.WriteAllText(Path.Combine(_testPath, "de-Script-x-AUDIO.ldml"), GetLdmlFileContent("de", "Script", "", "x-AUDIO")); // Bad
+			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de-nrw", "Zxxx", "", "x-AUDIO")); // Bad
 
 			_collection.LoadAllDefinitions();
 
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-audio-x-dupl-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl"));
+			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
 
-			Assert.AreEqual("de-Zxxx-x-AUDIO", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml")).CompleteTag);
-			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl.ldml")).CompleteTag);
-			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-audio-x-dupl-x-dupl.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-AUDIO", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-AUDIO-x-dupl.ldml")).CompleteTag);
+			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-AUDIO-x-dupl-x-dupl.ldml")).CompleteTag);
 		}
 
 		[Test]
@@ -555,7 +555,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LoadAllDefinitions_LdmlFolderStoreContainsInconsistentlyNamedFile_FileIsRenamedToMatchDescribedWritingSystemsRFC5646TagOnLoad()
 		{
-			File.WriteAllText(Path.Combine(_testPath, "tpi-Zxxx-x-audio.ldml"), GetLdmlFileContent("de", "Ltn", "ch", "1901"));
+			File.WriteAllText(Path.Combine(_testPath, "tpi-Zxxx-x-AUDIO.ldml"), GetLdmlFileContent("de", "Ltn", "ch", "1901"));
 			_collection.LoadAllDefinitions();
 			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Ltn-ch-1901.ldml")));
 		}
@@ -563,11 +563,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LoadAllDefinitions_WouldRenameFileButFileWithThatNameAlreadyExists_JustRemovesBadFile()
 		{
-			string badNamedFile = Path.Combine(_testPath, "de-Zxxx-audio.ldml");
-			File.WriteAllText(badNamedFile, GetLdmlFileContent("de-Zxxx-audio", "", "", ""));
+			string badNamedFile = Path.Combine(_testPath, "de-Zxxx-AUDIO.ldml");
+			File.WriteAllText(badNamedFile, GetLdmlFileContent("de-Zxxx-AUDIO", "", "", ""));
 
-			string goodNamedFile = Path.Combine(_testPath, "de-Zxxx-x-audio.ldml");
-			File.WriteAllText(goodNamedFile, GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
+			string goodNamedFile = Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml");
+			File.WriteAllText(goodNamedFile, GetLdmlFileContent("de-Zxxx-x-AUDIO", "", "", ""));
 
 			_collection.LoadAllDefinitions();
 			Assert.IsTrue(File.Exists(goodNamedFile));
