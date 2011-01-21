@@ -40,12 +40,14 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void IcuCollator_WithDashCBA_ABCDash()
 		{
+//            string rules = String.Empty; // This will fail
+			string rules = "&[last primary ignorable] <<< '-' <<< ' '";
 			var list = new List<string>();
 			list.Add("-c");
 			list.Add("c");
 			list.Add("b");
 			list.Add("a");
-			list.Sort(new IcuRulesCollator(String.Empty));
+			list.Sort(new IcuRulesCollator(rules));
 			Assert.That(list[0], Is.EqualTo("a"));
 			Assert.That(list[1], Is.EqualTo("b"));
 			Assert.That(list[2], Is.EqualTo("c"));
