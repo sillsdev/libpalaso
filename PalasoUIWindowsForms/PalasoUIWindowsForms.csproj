@@ -546,8 +546,8 @@
   <ItemGroup>
 	<None Include="artwork\sampleScan.png" />
   </ItemGroup>
-  <ItemGroup>
-	<COMReference Include="WIA">
+  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
+	<COMReference Include="WIA" >
 	  <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
 	  <VersionMajor>1</VersionMajor>
 	  <VersionMinor>0</VersionMinor>
