@@ -182,12 +182,13 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>SampleImages.resx</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\ScannerAcquire.cs">
+	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ImageToolbox\ScannerAcquire.Designer.cs">
-	  <DependentUpon>ScannerAcquire.cs</DependentUpon>
+	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.Designer.cs">
+	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\Scanner\ImageAcquisitionService.cs" />
 	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
 	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
@@ -400,8 +401,8 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ScannerAcquire.resx">
-	  <DependentUpon>ScannerAcquire.cs</DependentUpon>
+	<EmbeddedResource Include="ImageToolbox\Scanner\DeviceAcquire.resx">
+	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
@@ -545,6 +546,18 @@
   <ItemGroup>
 	<None Include="artwork\sampleScan.png" />
   </ItemGroup>
+  <ItemGroup>
+	<COMReference Include="WIA">
+	  <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
+	  <VersionMajor>1</VersionMajor>
+	  <VersionMinor>0</VersionMinor>
+	  <Lcid>0</Lcid>
+	  <WrapperTool>tlbimp</WrapperTool>
+	  <Isolated>False</Isolated>
+	  <EmbedInteropTypes>True</EmbedInteropTypes>
+	</COMReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
