@@ -87,6 +87,16 @@
 	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
 	</Reference>
   </ItemGroup>
+
+  <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
+  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
+	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+	  <SpecificVersion>False</SpecificVersion>
+	  <EmbedInteropTypes>True</EmbedInteropTypes>
+	  <HintPath>..\lib\net2.0\Interop.WIA.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+
   <ItemGroup>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
@@ -545,17 +555,6 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="artwork\sampleScan.png" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	<COMReference Include="WIA" >
-	  <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
-	  <VersionMajor>1</VersionMajor>
-	  <VersionMinor>0</VersionMinor>
-	  <Lcid>0</Lcid>
-	  <WrapperTool>tlbimp</WrapperTool>
-	  <Isolated>False</Isolated>
-	  <EmbedInteropTypes>True</EmbedInteropTypes>
-	</COMReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
