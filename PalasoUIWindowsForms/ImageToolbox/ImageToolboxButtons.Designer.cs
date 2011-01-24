@@ -67,6 +67,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox {
 			}
 		}
 
+		internal static System.Drawing.Bitmap camera {
+			get {
+				object obj = ResourceManager.GetObject("camera", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		internal static System.Drawing.Bitmap credits {
 			get {
 				object obj = ResourceManager.GetObject("credits", resourceCulture);

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
-using Palaso.UI.WindowsForms.ImageToolbox.Scanner;
+#if !MONO
+	using Palaso.UI.WindowsForms.ImageToolbox.Scanner;
+#endif
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -37,7 +38,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 #if !MONO
 
 			AddControl("From Scan", ImageToolboxButtons.scanner, "scanner", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Scanner));
-			AddControl("From Camera", ImageToolboxButtons.scanner, "camera", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Camera));
+			AddControl("From Camera", ImageToolboxButtons.camera, "camera", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Camera));
 #endif
 			AddControl("From Gallery", ImageToolboxButtons.searchFolder, "gallery", getImageGroup, (x) => new ArtOfReadingChooser(string.Empty));
 			AddControl("Crop",  ImageToolboxButtons.crop, "crop", editImageGroup, (x) => new ImageCropper());

@@ -87,7 +87,6 @@
 	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
 	</Reference>
   </ItemGroup>
-
   <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
@@ -96,7 +95,6 @@
 	  <HintPath>..\lib\net2.0\Interop.WIA.dll</HintPath>
 	</Reference>
   </ItemGroup>
-
   <ItemGroup>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
@@ -556,7 +554,9 @@
   <ItemGroup>
 	<None Include="artwork\sampleScan.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+	<None Include="Resources\camera.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
