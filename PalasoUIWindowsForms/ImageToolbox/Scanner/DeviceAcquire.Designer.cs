@@ -1,4 +1,5 @@
-﻿namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
+﻿#if !MONO
+namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 {
 	partial class DeviceAcquire
 	{
@@ -75,3 +76,4 @@
 
 	}
 }
+#endif

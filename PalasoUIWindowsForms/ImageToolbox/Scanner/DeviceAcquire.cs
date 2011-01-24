@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !MONO
+using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -61,3 +62,4 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 
 	}
 }
+#endif
