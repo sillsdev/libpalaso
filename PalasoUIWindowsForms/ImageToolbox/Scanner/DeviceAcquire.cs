@@ -15,6 +15,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 		{
 			_deviceKind = deviceKind;
 			InitializeComponent();
+			button1.Text = string.Empty;
+			switch (deviceKind)
+			{
+				case ImageAcquisitionService.DeviceKind.Camera:
+					button1.Image = ImageToolboxButtons.camera64x64;
+					break;
+				case ImageAcquisitionService.DeviceKind.Scanner:
+					button1.Image = ImageToolboxButtons.scanner64x64;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("deviceKind");
+			}
 		}
 
 		public void SetImage(PalasoImage image)

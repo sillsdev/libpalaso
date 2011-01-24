@@ -19,6 +19,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public GetImageFromFileSystemControl()
 		{
 			InitializeComponent();
+			button1.Image = ImageToolboxButtons.browse;
+			button1.Text = string.Empty;
 		}
 
 		private void button1_Click(object sender, EventArgs e)

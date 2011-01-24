@@ -41,7 +41,7 @@
 			//
 			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._cancelButton.Location = new System.Drawing.Point(667, 459);
+			this._cancelButton.Location = new System.Drawing.Point(799, 386);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 1;
@@ -52,7 +52,7 @@
 			// _okButton
 			//
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._okButton.Location = new System.Drawing.Point(586, 459);
+			this._okButton.Location = new System.Drawing.Point(718, 386);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 2;
@@ -65,10 +65,12 @@
 			this.imageToolboxControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
+			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.imageToolboxControl1.ImageInfo = palasoImage1;
 			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
 			this.imageToolboxControl1.Name = "imageToolboxControl1";
-			this.imageToolboxControl1.Size = new System.Drawing.Size(696, 452);
+			this.imageToolboxControl1.Size = new System.Drawing.Size(873, 379);
 			this.imageToolboxControl1.TabIndex = 3;
 			//
 			// localizationHelper1
@@ -77,13 +79,14 @@
 			//
 			// ImageToolboxDialog
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(754, 487);
+			this.ClientSize = new System.Drawing.Size(886, 414);
 			this.Controls.Add(this.imageToolboxControl1);
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this._cancelButton);
+			this.MinimumSize = new System.Drawing.Size(732, 432);
 			this.Name = "ImageToolboxDialog";
 			this.Text = "ImageToolboxDialog";
 			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();

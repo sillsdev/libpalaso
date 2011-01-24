@@ -167,6 +167,12 @@
 	<Compile Include="ImageToolbox\ImageLicenseControl.Designer.cs">
 	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\ImageMetadataControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageMetadataControl.Designer.cs">
+	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	</Compile>
 	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -178,6 +184,11 @@
 	</Compile>
 	<Compile Include="ImageToolbox\ImageToolboxDialog.Designer.cs">
 	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\LicenseLogos.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>LicenseLogos.resx</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
@@ -210,7 +221,9 @@
 	<Compile Include="Progress\ProgressNotificationProvider.cs" />
 	<Compile Include="Progress\TransformWithProgressDialog.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="Properties\Resources.Designer.cs">
+	<Compile Include="Properties\Resources1.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resources.resx</DependentUpon>
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
@@ -395,6 +408,9 @@
 	<EmbeddedResource Include="ImageToolbox\ImageLicenseControl.resx">
 	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
 	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
+	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>ImageToolboxButtons.Designer.cs</LastGenOutput>
@@ -404,6 +420,10 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxDialog.resx">
 	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\LicenseLogos.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -556,6 +576,21 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\camera.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\File_Cc.logo.circle.svg.html" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\cc-BY-88x311.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\cc-BY-88x31.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\scanner64x64.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\camera64x64.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -17,7 +17,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public ImageToolboxControl()
 		{
 			InitializeComponent();
-			_panelForControls.Visible = false;
+			//_panelForControls.Visible = false;
 
 			ImageInfo = new PalasoImage();
 			_toolListView.Groups.Clear();
@@ -42,8 +42,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 #endif
 			AddControl("From Gallery", ImageToolboxButtons.searchFolder, "gallery", getImageGroup, (x) => new ArtOfReadingChooser(string.Empty));
 			AddControl("Crop",  ImageToolboxButtons.crop, "crop", editImageGroup, (x) => new ImageCropper());
-			AddControl("Credits", ImageToolboxButtons.credits, "credits", otherGroup, (x) => new ImageCreditsControl());
-			AddControl("License", ImageToolboxButtons.Licenses, "license", otherGroup, (x) => new ImageLicenseControl());
+//            AddControl("Credits", ImageToolboxButtons.credits, "credits", otherGroup, (x) => new ImageCreditsControl());
+//            AddControl("License", ImageToolboxButtons.Licenses, "license", otherGroup, (x) => new ImageLicenseControl());
 			_toolListView.Refresh();
 		}
 
@@ -94,17 +94,20 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				GetImageFromCurrentControl();
 
-				Controls.Remove(_currentControl);
+				_panelForControls.Controls.Remove(_currentControl);
 				((IImageToolboxControl)_currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
 				_currentControl.Dispose();
 			}
 			System.Func<PalasoImage, Control> fun =
 				(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
 			_currentControl = fun(ImageInfo);
-			_currentControl.Bounds = _panelForControls.Bounds;
-			_currentControl.Anchor = _panelForControls.Anchor;
+//            _currentControl.Bounds = _panelForControls.Bounds;
+//            _currentControl.Anchor = _panelForControls.Anchor;
+//            Controls.Add(_currentControl);
 
-			Controls.Add(_currentControl);
+			_currentControl.Dock = DockStyle.Fill;
+			_panelForControls.Controls.Add(_currentControl);
+
 			IImageToolboxControl imageToolboxControl = ((IImageToolboxControl)_currentControl);
 			imageToolboxControl.SetImage(ImageInfo);
 			imageToolboxControl.ImageChanged += new EventHandler(imageToolboxControl_ImageChanged);
