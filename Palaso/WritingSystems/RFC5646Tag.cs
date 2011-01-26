@@ -318,7 +318,7 @@ namespace Palaso.WritingSystems
 			return subtagAsString;
 		}
 
-		private bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
+		public bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
 		{
 			List<string> partsOfSubTag = GetSubtag(subtagToCheck);
 			return partsOfSubTag.Contains(partToFind, StringComparison.OrdinalIgnoreCase) ? true : false;

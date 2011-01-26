@@ -306,9 +306,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				bool scriptSubTagIsAudioConform = Script.Equals(WellKnownSubTags.Audio.Script, StringComparison.OrdinalIgnoreCase);
-				bool variantSubTagIsAudioConform = Variant.Contains(WellKnownSubTags.Audio.VariantMarker, StringComparison.OrdinalIgnoreCase);
-				if(scriptSubTagIsAudioConform && variantSubTagIsAudioConform){ return true; }
+				bool rfcTagindicatesVoiceWritingSystem = ScriptSubTagIsAudioConform && VariantSubTagIsAudioConform;
+				if (rfcTagindicatesVoiceWritingSystem) { return true; }
 				return false;
 			}
 			set
@@ -329,6 +328,19 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private bool VariantSubTagIsAudioConform
+		{
+			get
+			{
+				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker); ;
+			}
+		}
+
+		private bool ScriptSubTagIsAudioConform
+		{
+			get { return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Script, WellKnownSubTags.Audio.Script); }
+		}
+
 		/// <summary>
 		/// Todo: this could/should become an ordered list of variant tags
 		/// </summary>
@@ -343,7 +355,39 @@ namespace Palaso.WritingSystems
 				if (value == null || value == Variant) { return; }
 				_rfcTag.Variant = value;
 				Modified = true;
+				CheckIfRfcTagIsValid();
 			}
+		}
+
+		private void CheckIfRfcTagIsValid()
+		{
+			bool variantIsAudioConformButScriptIsNot = VariantSubTagIsAudioConform && !ScriptSubTagIsAudioConform;
+			if(variantIsAudioConformButScriptIsNot)
+			{
+				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");
+			}
+		}
+
+		public void SetIsVoice()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetIsPhonetic()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetIsPhonemic()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
+		{
+			_rfcTag.Script = script;
+			_rfcTag.Variant = variant;
+			CheckIfRfcTagIsValid();
 		}
 
 		virtual public string Region
@@ -421,6 +465,7 @@ namespace Palaso.WritingSystems
 				if (value == Script) { return; }
 				_rfcTag.Script = value;
 				Modified = true;
+				CheckIfRfcTagIsValid();
 			}
 		}
 

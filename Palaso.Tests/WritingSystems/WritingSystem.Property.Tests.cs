@@ -305,38 +305,28 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IsVoiceIsStillTrue()
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
 												 IsVoice = true
 											 };
-			ws.Script = "change!";
+			Assert.Throws<ArgumentException>(() => ws.Script = "change!");
+		}
+
+		[Test]
+		public void SetAllRfc5646LanguageTagComponents_ScriptSetToZxxxAndVariantSetToXDashAudio_SetsIsVoiceToTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetAllRfc5646LanguageTagComponents("",WellKnownSubTags.Audio.Script,"",WellKnownSubTags.Audio.VariantMarker);
 			Assert.IsTrue(ws.IsVoice);
 		}
 
 		[Test]
-		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_ScriptIsZxxx()
+		public void SetAllRfc5646LanguageTagComponents_ScriptSetToZxXxAndVariantSetToXDashAuDiO_SetsIsVoiceToTrue()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition()
-			{
-				IsVoice = true
-			};
-			ws.Script = "change!";
-			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
-		}
-
-		[Test]
-		public void Variant_SetToXDashAudio_SetsIsVoiceToTrue()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition()
-			{
-				IsVoice = false,
-				Script = "Script",
-				Region = "Region",
-				Variant = "Variant"
-			};
-			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetAllRfc5646LanguageTagComponents("", "ZxXx", "", "X-AuDiO");
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -365,7 +355,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Iso_SetToSmthContainingZxxxDashxDashaudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		public void Iso_SetToSmthContainingZxxxDashxDashaudioWhileIsVoiceIsTrue_DontKnowWhatToDo()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 			{
@@ -376,6 +366,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
 			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.IsTrue(ws.IsVoice);
+			throw new NotImplementedException();
 		}
 
 		[Test]
@@ -415,52 +406,74 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsVoiceAndVariant_VariantContainsXDashAudioThenIsVoiceSetToTrue_VariantDoesNotContainTwoXDashAudiosAndScriptIsSetToZxxx()
+		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition()
-			{
-				Variant = WellKnownSubTags.Audio.VariantMarker
-			};
-			ws.IsVoice = true;
-			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
-			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
+			WritingSystemDefinition ws = new WritingSystemDefinition(){Variant = "duplicate-duplicate"};
+			throw new NotImplementedException();
 		}
 
 		[Test]
-		public void IsVoiceAndVariant_VariantContainsCapitalXDashAudioThenIsVoiceSetToTrue_VariantDoesNotContainTwoXDashAudiosAndScriptIsSetToZxxx()
+		public void Variant_SetToXDashAudioWhileScriptIsNotZxxx_Throws()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition()
-			{
-				Variant = "X-AUDIO"
-			};
-			ws.IsVoice = true;
-			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
-			Assert.AreEqual("X-AUDIO", ws.Variant);
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(() => ws.Variant = WellKnownSubTags.Audio.VariantMarker);
 		}
 
 		[Test]
-		public void IsVoiceAndVariant_VariantContainsCapitalXDashAUDIOThenIsVoiceSetToFalse_XDashAUDIOIsRemoved()
+		public void Script_SetToOtherThanZxxxWhileVariantIsXDashAudio_Throws()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition()
-			{
-				Variant = "X-AUDIO"
-			};
-			ws.IsVoice = true;
-			ws.IsVoice = false;
-			Assert.AreEqual(String.Empty, ws.Variant);
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker);
+			Assert.Throws<ArgumentException>(() => ws.Script = "Ltn");
 		}
 
 		[Test]
-		public void IsVoiceAndVariant_VariantContainsXUnderscoreAudioThenIsVoiceSetToFalse_XUnderscoreAudioIsRemoved()
+		public void Variant_SetToCapitalXDASHAUDIOWhileScriptIsNotZxxx_Throws()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition()
-			{
-				Script = WellKnownSubTags.Audio.Script,
-				Variant = "x_audio"
-			};
-			ws.IsVoice = false;
-			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
-			Assert.AreEqual(String.Empty, ws.Variant);
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(() => ws.Variant = WellKnownSubTags.Audio.VariantMarker.ToUpper());
 		}
+
+		[Test]
+		public void Script_SetToOtherThanZxxxWhileVariantIsCapitalXDASHAUDIO_Throws()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker.ToUpper());
+			Assert.Throws<ArgumentException>(() => ws.Script = "Ltn");
+		}
+
+		[Test]
+		public void IsVoice_VariantIsPrefixXDashAudioPostFix_ReturnsFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition ();
+			ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", "Prefixx-audioPostfix");
+			Assert.IsFalse(ws.IsVoice);
+		}
+
+		[Test]
+		public void SetIsVoice()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIsVoice();
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void SetIsPhonetic()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIsPhonetic();
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void SetIsPhonemic()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIsPhonemic();
+			throw new NotImplementedException();
+		}
+
+
 	}
 }
