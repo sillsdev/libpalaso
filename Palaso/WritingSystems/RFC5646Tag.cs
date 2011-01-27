@@ -321,7 +321,15 @@ namespace Palaso.WritingSystems
 		public bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
 		{
 			List<string> partsOfSubTag = GetSubtag(subtagToCheck);
-			return partsOfSubTag.Contains(partToFind, StringComparison.OrdinalIgnoreCase) ? true : false;
+			List<string> partsOfPart = ParseSubtagForParts(partToFind);
+			foreach (string subPart in partsOfPart)
+			{
+				if(!partsOfSubTag.Contains(subPart, StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

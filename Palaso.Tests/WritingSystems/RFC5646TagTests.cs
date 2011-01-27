@@ -256,5 +256,33 @@ namespace Palaso.Tests.WritingSystems
 			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio_");
 			Assert.AreEqual(rfcTag.Variant, String.Empty);
 		}
+
+		[Test]
+		public void SubtagContainsPart_PartIsNotContainedInSubtag_ReturnsFalse()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "");
+			Assert.IsFalse(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "x-audio"));
+		}
+
+		[Test]
+		public void SubtagContainsPart_PartIsContainedInSubtag_ReturnsTrue()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "x-audio");
+			Assert.IsTrue(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "x-audio"));
+		}
+
+		[Test]
+		public void SubtagContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInSubtag_ReturnsFalse()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "fonipa");
+			Assert.IsFalse(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "fonipa-x-etic"));
+		}
+
+		[Test]
+		public void SubtagContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInSubtag_ReturnsTrue()
+		{
+			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "fonipa-test-x-etic");
+			Assert.IsTrue(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "fonipa-x-etic"));
+		}
 	}
 }
