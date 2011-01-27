@@ -255,19 +255,20 @@ namespace Palaso.WritingSystems
 		/// away with for now, but maybe not if this class grows to be extension aware.
 		/// Ideally, these should be suffixes rather than private use
 		/// </summary>
+		[Obsolete("The setter on this property is being deprecated. Please use the new SetIpaStatus method instead.")]
 		virtual public IpaStatusChoices IpaStatus
 		{
 			get
 			{
-				if( _rfcTag.Variant.Contains("fonipa-x-emic"))
+				if (VariantSubTagIsPhonemicConform)
 				{
 					return IpaStatusChoices.IpaPhonemic;
 				}
-				if (_rfcTag.Variant.Contains("fonipa-x-etic"))
+				if (VariantSubTagIsPhoneticConform)
 				{
 					return IpaStatusChoices.IpaPhonetic;
 				}
-				if (_rfcTag.Variant.Contains("fonipa"))
+				if (VariantSubTagIsIpaConform)
 				{
 					return IpaStatusChoices.Ipa;
 				}
@@ -276,32 +277,11 @@ namespace Palaso.WritingSystems
 
 			set
 			{
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
-				/* "There are some variant subtags that have no prefix field,
-				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
-				 * should appear after any other variant subtags with prefix information."
-				 */
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-etic");
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-emic");
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "fonipa");
-
-				switch (value)
-				{
-					default:
-						break;
-					case IpaStatusChoices.Ipa:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaUnspecified);
-						break;
-					case IpaStatusChoices.IpaPhonemic:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonemic);
-						break;
-					case IpaStatusChoices.IpaPhonetic:
-						_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
-						break;
-				}
+				SetIpaStatus(value);
 			}
 		}
 
+		[Obsolete("The setter on this property is being deprecated. Please use the new SetIsVoice method instead.")]
 		virtual public bool IsVoice
 		{
 			get
@@ -312,19 +292,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if(IsVoice == value) {return;}
-				if (value)
-				{
-					IpaStatus = IpaStatusChoices.NotIpa;
-					Keyboard = string.Empty;
-					Script = WellKnownSubTags.Audio.Script;
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
-				}
-				else
-				{
-					_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
-				}
-				Modified = true;
+				SetIsVoice(value);
 			}
 		}
 
@@ -366,21 +334,92 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");
 			}
+			bool variantContainsVoiceMarkerAsWellAsSomeFormOfIpaMarker = VariantSubTagIsAudioConform &&
+															   VariantSubtagIndicatesSomeFormOfIpa;
+			if(variantContainsVoiceMarkerAsWellAsSomeFormOfIpaMarker)
+			{
+				throw new ArgumentException("A writing system may not be marked as audio and ipa at the same time.");
+			}
 		}
 
-		public void SetIsVoice()
+		private bool VariantSubtagIndicatesSomeFormOfIpa
 		{
-			throw new NotImplementedException();
+			get { return VariantSubTagIsIpaConform || VariantSubTagIsPhonemicConform || VariantSubTagIsPhoneticConform; }
 		}
 
-		public void SetIsPhonetic()
+		private bool VariantSubTagIsIpaConform
 		{
-			throw new NotImplementedException();
+			get
+			{
+				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
+												  WellKnownSubTags.Ipa.
+													  IpaUnspecified);
+			}
 		}
 
-		public void SetIsPhonemic()
+		private bool VariantSubTagIsPhoneticConform
 		{
-			throw new NotImplementedException();
+			get
+			{
+				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
+												  WellKnownSubTags.Ipa.
+													  IpaPhonetic);
+			}
+		}
+
+		private bool VariantSubTagIsPhonemicConform
+		{
+			get
+			{
+				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
+												  WellKnownSubTags.Ipa.
+													  IpaPhonemic);
+			}
+		}
+
+		public void SetIsVoice(bool isVoice)
+		{
+			if (IsVoice == isVoice) { return; }
+			if (isVoice)
+			{
+				IpaStatus = IpaStatusChoices.NotIpa;
+				Keyboard = string.Empty;
+				Script = WellKnownSubTags.Audio.Script;
+				_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+			}
+			else
+			{
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+			}
+			Modified = true;
+			CheckIfRfcTagIsValid();
+		}
+
+		public void SetIpaStatus(IpaStatusChoices ipaStatus)
+		{
+			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+			/* "There are some variant subtags that have no prefix field,
+			 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
+			 * should appear after any other variant subtags with prefix information."
+			 */
+			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-etic");
+			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-emic");
+			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "fonipa");
+
+			switch (ipaStatus)
+			{
+				default:
+					break;
+				case IpaStatusChoices.Ipa:
+					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaUnspecified);
+					break;
+				case IpaStatusChoices.IpaPhonemic:
+					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonemic);
+					break;
+				case IpaStatusChoices.IpaPhonetic:
+					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
+					break;
+			}
 		}
 
 		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)

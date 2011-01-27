@@ -451,29 +451,99 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SetIsVoice()
+		public void Variant_ContainsXDashAudioAndFonipa_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice();
-			throw new NotImplementedException();
+			Assert.Throws<ArgumentException>(
+				()=>ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker + "-" + WellKnownSubTags.Ipa.IpaUnspecified));
 		}
 
 		[Test]
-		public void SetIsPhonetic()
+		public void Variant_ContainsXDashAudioAndPhoneticMarker_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsPhonetic();
-			throw new NotImplementedException();
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker + "-" + WellKnownSubTags.Ipa.IpaPhonetic));
 		}
 
 		[Test]
-		public void SetIsPhonemic()
+		public void Variant_ContainsXDashAudioAndPhonemicMarker_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsPhonemic();
-			throw new NotImplementedException();
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.VariantMarker + "-" + WellKnownSubTags.Ipa.IpaPhonemic));
 		}
 
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IsVoiceIsTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.SetIsVoice(true);
+			Assert.IsTrue(ws.IsVoice);
+		}
 
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IpaStatusIsNotIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.SetIsVoice(true);
+			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseWhileIpaStatusIsIpa_IsVoiceIsFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.SetIsVoice(false);
+			Assert.IsFalse(ws.IsVoice);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseWhileIpaStatusIsIpa_IpaStatusIsIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.SetIsVoice(false);
+			Assert.AreEqual(IpaStatusChoices.Ipa, ws.IpaStatus);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsPhonetic_IsVoiceIsTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
+			ws.SetIsVoice(true);
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsPhonetic_IpaStatusIsNotIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
+			ws.SetIsVoice(true);
+			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsPhonemic_IsVoiceIsTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
+			ws.SetIsVoice(true);
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsPhonemic_IpaStatusIsNotIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
+			ws.SetIsVoice(true);
+			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
 	}
 }
