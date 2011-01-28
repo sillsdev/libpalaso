@@ -30,8 +30,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.button1 = new System.Windows.Forms.Button();
 			this._pictureBox = new System.Windows.Forms.PictureBox();
+			this._startupTimer = new System.Windows.Forms.Timer(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -57,6 +59,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._pictureBox.TabIndex = 5;
 			this._pictureBox.TabStop = false;
 			//
+			// _startupTimer
+			//
+			this._startupTimer.Enabled = true;
+			this._startupTimer.Tick += new System.EventHandler(this._startupTimer_Tick);
+			//
 			// GetImageFromFileSystemControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -65,6 +72,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.Controls.Add(this.button1);
 			this.Name = "GetImageFromFileSystemControl";
 			this.Size = new System.Drawing.Size(550, 445);
+			this.Load += new System.EventHandler(this.GetImageFromFileSystemControl_Load);
 			((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();
 			this.ResumeLayout(false);
 
@@ -74,6 +82,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private System.Windows.Forms.PictureBox _pictureBox;
 		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Timer _startupTimer;
 
 	}
 }
