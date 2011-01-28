@@ -52,22 +52,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		private void AssertHasAtLeastOneMatch(string xpath)
 		{
-			AssertThatXmlIn.String(_stringBuilder.ToString()).
-				HasAtLeastOneMatchForXpath(xpath);
-
-//            XmlDocument doc = new XmlDocument();
-//            doc.LoadXml(_stringBuilder.ToString());
-//            XmlNode node = doc.SelectSingleNode(xpath);
-//            if (node == null)
-//            {
-//                XmlWriterSettings settings = new XmlWriterSettings();
-//                settings.Indent = true;
-//                settings.ConformanceLevel = ConformanceLevel.Fragment;
-//                XmlWriter writer = XmlWriter.Create(Console.Out, settings);
-//                doc.WriteContentTo(writer);
-//                writer.Flush();
-//            }
-//            Assert.IsNotNull(node, "Not matched: " + xpath);
+			AssertThatXmlIn.String(_stringBuilder.ToString()).HasAtLeastOneMatchForXpath(xpath);
 		}
 
 		[Test]

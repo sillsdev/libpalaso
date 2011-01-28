@@ -12,6 +12,7 @@ using Palaso.Extensions;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.Text;
+using Palaso.Xml;
 
 namespace Palaso.DictionaryServices.Lift
 {
@@ -50,43 +51,22 @@ namespace Palaso.DictionaryServices.Lift
 			: this()
 		{
 			_disposed = true; // Just in case we throw in the constructor
-			_writer = XmlWriter.Create(path, PrepareSettings(false, byteOrderStyle));
+			var settings = CanonicalXmlSettings.CreateXmlWriterSettings();
+			settings.Encoding = new UTF8Encoding(byteOrderStyle == ByteOrderStyle.BOM);
+			_writer = XmlWriter.Create(path, settings);
 			Start();
 			_disposed = false;
 		}
 
 		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
 		{
-			_writer = XmlWriter.Create(builder, PrepareSettings(produceFragmentOnly, LiftWriter.ByteOrderStyle.BOM));
+			_writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings(
+				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document)
+			);
 			if (!produceFragmentOnly)
 			{
 				Start();
 			}
-		}
-
-		private static XmlWriterSettings PrepareSettings(bool produceFragmentOnly, ByteOrderStyle byteOrderStyle)
-		{
-			XmlWriterSettings settings = new XmlWriterSettings();
-			if (produceFragmentOnly)
-			{
-				settings.ConformanceLevel = ConformanceLevel.Fragment;
-				settings.Indent = false; //helps with tests that just do a string compare
-			}
-			else
-			{
-				settings.Indent = true;
-			}
-			if (byteOrderStyle == ByteOrderStyle.BOM)
-				settings.Encoding = Encoding.UTF8;
-			else
-			{
-				Encoding utf8NoBom = new UTF8Encoding(false);
-				settings.Encoding = utf8NoBom;
-			}
-
-			settings.NewLineOnAttributes = false;
-			settings.CloseOutput = true;
-			return settings;
 		}
 
 		private void Start()
@@ -553,13 +533,14 @@ namespace Palaso.DictionaryServices.Lift
 					doMarkTheFirst = false;
 					Writer.WriteAttributeString("first", "true"); //useful for headword
 				}
-				string wrappedTextToExport = "<text>" + form.Form + "</text>";
+//                string wrappedTextToExport = "<text>" + form.Form + "</text>";
+//                string wrappedTextToExport = form.Form;
 				XmlReaderSettings fragmentReaderSettings = new XmlReaderSettings();
 				fragmentReaderSettings.ConformanceLevel = ConformanceLevel.Fragment;
 
-				string scaryUnicodeEscaped = wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml();
+				string scaryUnicodeEscaped = form.Form.EscapeAnyUnicodeCharactersIllegalInXml();
 				string safeFromScaryUnicodeSoItStaysEscaped = scaryUnicodeEscaped.Replace("&#x", "");
-				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader(safeFromScaryUnicodeSoItStaysEscaped));
+				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader("<temp>" + safeFromScaryUnicodeSoItStaysEscaped + "</temp>"));
 
 				bool isTextWellFormedXml = true;
 				try
@@ -576,7 +557,10 @@ namespace Palaso.DictionaryServices.Lift
 
 				if(isTextWellFormedXml)
 				{
-					Writer.WriteRaw(wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml());// .WriteRaw(wrappedTextToExport);
+					Writer.WriteStartElement("text");
+					Writer.WriteRaw(form.Form.EscapeAnyUnicodeCharactersIllegalInXml());
+					Writer.WriteEndElement();
+//                    Writer.WriteRaw(wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml());// .WriteRaw(wrappedTextToExport);
 				}
 				else
 				{

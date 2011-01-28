@@ -187,11 +187,11 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 // write the XML out onlystringles have been modified
 			if (!m_checkOnly && m_filesChanged)
 			{
-				XmlWriterSettings settings = new XmlWriterSettings();
+				var settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = "    ";
 				settings.Encoding = Encoding.UTF8;
-				using (XmlWriter xmlWriter = XmlWriter.Create(_outputFilePath, settings))
+				using (var xmlWriter = XmlWriter.Create(_outputFilePath, settings))
 				{
 					doc.WriteTo(xmlWriter);
 				}

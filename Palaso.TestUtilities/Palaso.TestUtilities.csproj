@@ -3,7 +3,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -50,11 +50,18 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="CanonicalXml.cs" />
 	<Compile Include="FluentAssertXml.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="TemporaryFolder.cs" />
 	<Compile Include="TemporaryFolderTests.cs" />
 	<Compile Include="TestUtilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
+	</ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

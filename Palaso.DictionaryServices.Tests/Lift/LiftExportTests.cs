@@ -60,6 +60,12 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				return new LexEntry();
 			}
 
+			public string OutputString()
+			{
+				LiftWriter.End();
+				return StringBuilder.ToString();
+			}
+
 			public void AddTestLexEntry(string lexicalForm)
 			{
 				LexEntry entry = CreateItem();
@@ -115,23 +121,10 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		private static void AssertHasAtLeastOneMatch(string xpath, LiftExportTestSessionBase session)
 		{
-			AssertThatXmlIn.String(session.StringBuilder.ToString()).
-				HasAtLeastOneMatchForXpath(xpath);
-//            XmlDocument doc = new XmlDocument();
-//            doc.LoadXml(_stringBuilder.ToString());
-//            XmlNode node = doc.SelectSingleNode(xpath);
-//            if (node == null)
-//            {
-//                XmlWriterSettings settings = new XmlWriterSettings();
-//                settings.Indent = true;
-//                settings.ConformanceLevel = ConformanceLevel.Fragment;
-//                XmlWriter writer = XmlWriter.Create(Console.Out, settings);
-//                doc.WriteContentTo(writer);
-//                writer.Flush();
-//            }
-//            Assert.IsNotNull(node);
+			AssertThatXmlIn.String(session.StringBuilder.ToString()).HasAtLeastOneMatchForXpath(xpath);
 		}
 
+		[Obsolete("Use AssertThatXmlInXPath.String(...)")] // CP 2011-01
 		private static string GetSenseElement(LexSense sense)
 		{
 			return string.Format("<sense id=\"{0}\">", sense.GetOrCreateId());
@@ -144,19 +137,17 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			return doc.FirstChild.Attributes[attribute].ToString();
 		}
 
-		private static void ShouldContain(string s, LiftExportTestSessionBase session)
+		[Obsolete("Use AssertEqualsCanonicalString(string, string) instead")]
+		private static void AssertEqualsCanonicalString(string expected, LiftExportTestSessionBase session)
 		{
-			session.LiftWriter.End(); //review: todo this shouldn't be here, it should be in the test
-			Assert.IsTrue(session.StringBuilder.ToString().Contains(s),
-						  "\n'{0}' is not contained in\n'{1}'",
-						  s,
-						  session.StringBuilder.ToString());
+			string canonicalAnswer = CanonicalXml.ToCanonicalStringFragment(expected);
+			Assert.AreEqual(canonicalAnswer, session.StringBuilder.ToString());
 		}
 
-		private static void CheckAnswer(string answer, LiftExportTestSessionBase session)
+		private static void AssertEqualsCanonicalString(string expected, string actual)
 		{
-			session.LiftWriter.End(); //review: todo this shouldn't be here, it should be in the test
-			Assert.AreEqual(answer, session.StringBuilder.ToString());
+			string canonicalAnswer = CanonicalXml.ToCanonicalStringFragment(expected);
+			Assert.AreEqual(canonicalAnswer, actual);
 		}
 
 		[Test]
@@ -174,15 +165,15 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[Test]
 		public void AttributesWithProblematicCharacters()
 		{
+			const string expected = "lang=\"x&quot;y\">";
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var sense = new LexSense();
 				sense.Gloss["x\"y"] = "test";
 				session.LiftWriter.Add(sense);
-				CheckAnswer(
-					GetSenseElement(sense) + "<gloss lang=\"x&quot;y\"><text>test</text></gloss></sense>",
-					session
-				);
+				session.LiftWriter.End();
+				string result = session.OutputString();
+				Assert.IsTrue(result.Contains(expected));
 			}
 		}
 
@@ -192,7 +183,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				session.LiftWriter.Add(new LexExampleSentence());
-				CheckAnswer("<example />", session);
+				AssertEqualsCanonicalString("<example />", session.OutputString());
 			}
 		}
 
@@ -219,20 +210,20 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				session.LiftWriter.Add(null, new MultiText());
-				CheckAnswer("", session);
+				AssertEqualsCanonicalString("", session);
 			}
 		}
 
 		[Test]
 		public void BlankSense()
 		{
-			LexSense sense = new LexSense();
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
+				var sense = new LexSense();
 				session.LiftWriter.Add(sense);
-				CheckAnswer(
+				AssertEqualsCanonicalString(
 					String.Format("<sense id=\"{0}\" />", sense.GetOrCreateId()),
-					session
+					session.OutputString()
 				);
 			}
 		}
@@ -351,8 +342,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				o.AddRange(new[] {"orange", "blue"});
 				session.LiftWriter.Add(example);
 				session.LiftWriter.End();
+				string expected = CanonicalXml.ToCanonicalStringFragment(
+					"<example><trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></example>"
+				);
 				Assert.AreEqual(
-					"<example><trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></example>",
+					expected,
 					session.StringBuilder.ToString()
 				);
 			}
@@ -369,9 +363,12 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				o.AddRange(new[] {"orange", "blue"});
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				Assert.AreEqual(
+				string expected = CanonicalXml.ToCanonicalStringFragment(
 					GetSenseElement(sense) +
-					"<trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></sense>",
+					"<trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></sense>"
+				);
+				Assert.AreEqual(
+					expected,
 					session.StringBuilder.ToString());
 			}
 		}
@@ -407,8 +404,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				o.Value = "orange";
 				session.LiftWriter.Add(example);
 				session.LiftWriter.End();
+				string expected = CanonicalXml.ToCanonicalStringFragment(
+					"<example><trait name=\"flub\" value=\"orange\" /></example>"
+				);
 				Assert.AreEqual(
-					"<example><trait name=\"flub\" value=\"orange\" /></example>",
+					expected,
 					session.StringBuilder.ToString()
 				);
 			}
@@ -425,8 +425,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				o.Value = "orange";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
+				string expected = CanonicalXml.ToCanonicalStringFragment(
+					GetSenseElement(sense) + "<trait name=\"flub\" value=\"orange\" /></sense>"
+				);
 				Assert.AreEqual(
-					GetSenseElement(sense) + "<trait name=\"flub\" value=\"orange\" /></sense>",
+					expected,
 					session.StringBuilder.ToString()
 				);
 			}
@@ -582,15 +585,16 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[Test]
 		public void Entry_EntryHasIdWithInvalidXMLCharacters_CharactersEscaped()
 		{
+			const string expected = "id=\"&lt;&gt;&amp;&quot;'\"";
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexEntry entry = session.CreateItem();
+				var entry = session.CreateItem();
 				// technically the only invalid characters in an attribute are & < and " (when surrounded by ")
 				entry.Id = "<>&\"\'";
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
-				session.LiftWriter.End();
-				ShouldContain("id=\"&lt;&gt;&amp;&quot;'\"", session);
+				string result = session.OutputString();
+				Assert.IsTrue(result.Contains(expected));
 			}
 		}
 
@@ -620,7 +624,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
-				ShouldContain("id=\"my id\"", session);
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath("//entry[@id='my id']");
 			}
 		}
 
@@ -635,13 +640,12 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				// make dateModified different than dateCreated
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
-				ShouldContain(
-					string.Format(
-						"id=\"{0}\"",
-						LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>())
-					),
-					session
+
+				string expectedId = LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(
+					entry, new Dictionary<string, int>()
 				);
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(String.Format("//entry[@id=\"{0}\"]", expectedId));
 			}
 		}
 
@@ -652,7 +656,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				LexEntry entry = session.CreateItem();
 				session.LiftWriter.Add(entry);
-				ShouldContain(string.Format("guid=\"{0}\"", entry.Guid), session);
+				session.LiftWriter.End();
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(String.Format("//entry[@guid=\"{0}\"]", entry.Guid));
 			}
 		}
 
@@ -677,12 +683,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				LexEntry entry = session.CreateItem();
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
-				ShouldContain(
-					string.Format(
-						"dateCreated=\"{0}\"",
-						entry.CreationTime.ToString("yyyy-MM-ddThh:mm:ssZ")
-					),
-					session
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					String.Format("//entry[@dateCreated=\"{0}\"]", entry.CreationTime.ToString("yyyy-MM-ddThh:mm:ssZ"))
 				);
 			}
 		}
@@ -698,11 +701,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
-				ShouldContain(
-					string.Format(
-						"dateModified=\"{0}\"",
-						entry.ModificationTime.ToString("yyyy-MM-ddThh:mm:ssZ")
-					), session
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					String.Format("//entry[@dateModified=\"{0}\"]", entry.ModificationTime.ToString("yyyy-MM-ddThh:mm:ssZ"))
 				);
 			}
 		}
@@ -722,15 +723,10 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				entry.Senses.Add(sense2);
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
-
-				ShouldContain(
-					string.Format(
-						GetSenseElement(sense1) +
-						"<gloss lang=\"a\"><text>aaa</text></gloss></sense>" +
-						GetSenseElement(sense2) +
-						"<gloss lang=\"b\"><text>bbb</text></gloss></sense></entry>"
-					), session
-				);
+				session.LiftWriter.End();
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath("//entry/sense/gloss[@lang='a']/text[text()='aaa']");
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath("//entry/sense/gloss[@lang='b']/text[text()='bbb']");
 				AssertHasAtLeastOneMatch("entry[count(sense)=2]", session);
 			}
 		}
@@ -740,14 +736,13 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexExampleSentence example = new LexExampleSentence();
+				var example = new LexExampleSentence();
 				example.Sentence["blue"] = "ocean's eleven";
 				example.Sentence["red"] = "red sunset tonight";
 				session.LiftWriter.Add(example);
-				// review cp no end
-				CheckAnswer(
+				AssertEqualsCanonicalString(
 					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form></example>",
-					session
+					session.OutputString()
 				);
 			}
 		}
@@ -757,14 +752,14 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexExampleSentence example = new LexExampleSentence();
+				var example = new LexExampleSentence();
 				example.Sentence["blue"] = "ocean's eleven";
 				example.Sentence["red"] = "red sunset tonight";
 				example.Translation["green"] = "blah blah";
 				session.LiftWriter.Add(example);
-				CheckAnswer(
+				AssertEqualsCanonicalString(
 					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>",
-					session
+					session.OutputString()
 				);
 			}
 		}
@@ -1018,16 +1013,14 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[Test]
 		public void GlossWithProblematicCharacters()
 		{
+			const string expected = "<text>LessThan&lt;GreaterThan&gt;Ampersan&amp;</text>";
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexSense sense = new LexSense();
+				var sense = new LexSense();
 				sense.Gloss["blue"] = "LessThan<GreaterThan>Ampersan&";
 				session.LiftWriter.Add(sense);
-				CheckAnswer(
-					GetSenseElement(sense) +
-						"<gloss lang=\"blue\"><text>LessThan&lt;GreaterThan&gt;Ampersan&amp;</text></gloss></sense>"
-					, session
-				);
+				string result = session.OutputString();
+				Assert.IsTrue(result.Contains(expected));
 			}
 		}
 
@@ -1162,13 +1155,13 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				MultiText text = new MultiText();
+				var text = new MultiText();
 				text["blue"] = "ocean";
 				text["red"] = "sunset";
 				session.LiftWriter.Add(null, text);
-				CheckAnswer(
+				AssertEqualsCanonicalString(
 					"<form lang=\"blue\"><text>ocean</text></form><form lang=\"red\"><text>sunset</text></form>",
-					session
+					session.OutputString()
 				);
 			}
 		}
@@ -1233,7 +1226,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				p.Value = "bird.jpg";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				CheckAnswer(GetSenseElement(sense) + "<illustration href=\"bird.jpg\" /></sense>", session);
+				AssertEqualsCanonicalString(GetSenseElement(sense) + "<illustration href=\"bird.jpg\" /></sense>", session);
 			}
 		}
 
@@ -1249,7 +1242,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				p.Caption["aa"] = "aCaption";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				CheckAnswer(
+				AssertEqualsCanonicalString(
 					GetSenseElement(sense) +
 						"<illustration href=\"bird.jpg\"><label><form lang=\"aa\"><text>aCaption</text></form></label></illustration></sense>",
 					session
@@ -1266,7 +1259,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				s.Id = "my id";
 				session.LiftWriter.Add(s);
 				session.LiftWriter.End();
-				ShouldContain("id=\"my id\"", session);
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath("//sense[@id='my id']");
 			}
 		}
 
@@ -1278,12 +1272,15 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				LexSense sense = new LexSense();
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				ShouldContain(string.Format("id=\"{0}\"", sense.Id), session);
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					String.Format("//sense[@id='{0}']", sense.Id)
+				);
 			}
 		}
 
 		[Test]
-		public void SensesAreLastObjectsInEntry() // this helps conversions to sfm
+		public void SensesAreLastObjectsInEntry() // this helps conversions to sfm review: It would be great if this wasn't necessary CP 2011-01
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1311,14 +1308,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
-
-				ShouldContain(
-					string.Format(GetSenseElement(sense1) +
-								  "<gloss lang=\"a\"><text>aaa</text></gloss></sense>" +
-								  GetSenseElement(sense2) +
-								  "<gloss lang=\"b\"><text>bbb</text></gloss></sense></entry>"
-					), session
-				);
+				session.LiftWriter.End();
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath("//gloss[@lang='a']/text[text()='aaa']");
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath("//gloss[@lang='b']/text[text()='bbb']");
+				AssertThatXmlIn.String(result).HasNoMatchForXpath("/entry/sense[2]/following-sibling::*");
 			}
 		}
 
@@ -1327,14 +1321,14 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexSense sense = new LexSense();
-				LexExampleSentence example = new LexExampleSentence();
+				var sense = new LexSense();
+				var example = new LexExampleSentence();
 				example.Sentence["red"] = "red sunset tonight";
 				sense.ExampleSentences.Add(example);
 				session.LiftWriter.Add(sense);
-				CheckAnswer(GetSenseElement(sense) +
-							"<example><form lang=\"red\"><text>red sunset tonight</text></form></example></sense>",
-							session
+				string result = session.OutputString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					"/sense/example/form[@lang='red']/text[text()='red sunset tonight']"
 				);
 			}
 		}
@@ -1366,9 +1360,15 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				relations.Relations.Add(new LexRelation(antonymRelationType.ID, "bee", sense));
 
 				session.LiftWriter.Add(sense);
-				CheckAnswer(GetSenseElement(sense) +
-							"<relation type=\"synonym\" ref=\"one\" /><relation type=\"synonym\" ref=\"two\" /><relation type=\"antonym\" ref=\"bee\" /></sense>",
-							session
+				string result = session.OutputString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					"/sense/relation[@type='synonym' and @ref='one']"
+				);
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					"/sense/relation[@type='synonym' and @ref='two']"
+				);
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					"/sense/relation[@type='antonym' and @ref='bee']"
 				);
 			}
 		}
@@ -1388,76 +1388,75 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[Test]
 		public void Add_MultiTextWithWellFormedXML_IsExportedAsXML()
 		{
+			const string expected =
+				"<form\r\n\tlang=\"de\">\r\n\t<text>This <span href=\"reference\">is well formed</span> XML!</text>\r\n</form>";
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is well formed</span> XML!");
 				session.LiftWriter.Add(null, multiText);
-				CheckAnswer(
-					"<form lang=\"de\"><text>This <span href=\"reference\">is well formed</span> XML!</text></form>",
-					session
-				);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 
 		[Test]
 		public void Add_MultiTextWithWellFormedXMLAndScaryCharacter_IsExportedAsXML()
 		{
+			const string expected =
+			"<form\r\n\tlang=\"de\">\r\n\t<text>This <span href=\"reference\">is well &#x1F; formed</span> XML!</text>\r\n</form>";
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is well \u001F formed</span> XML!");
 				session.LiftWriter.Add(null, multiText);
-				CheckAnswer(
-					"<form lang=\"de\"><text>This <span href=\"reference\">is well &#x1F; formed</span> XML!</text></form>",
-					session
-				);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 		[Test]
 		public void Add_MultiTextWithScaryUnicodeChar_IsExported()
 		{
+			const string expected =
+				"<form\r\n\tlang=\"de\">\r\n\t<text>This has a segment separator character at the end&#x1F;</text>\r\n</form>";
 			//  1F is the character for "Segment Separator" and you can insert it by right-clicking in windows
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This has a segment separator character at the end\u001F");
 				session.LiftWriter.Add(null, multiText);
-				CheckAnswer(
-					"<form lang=\"de\"><text>This has a segment separator character at the end&#x1F;</text></form>",
-					session
-				);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 
 		[Test]
 		public void Add_MalformedXmlWithWithScaryUnicodeChar_IsExportedAsText()
 		{
+			const string expected = "<form\r\n\tlang=\"de\">\r\n\t<text>This &lt;span href=\"reference\"&gt;is not well &#x1F; formed&lt;span&gt; XML!</text>\r\n</form>";
 			//  1F is the character for "Segment Separator" and you can insert it by right-clicking in windows
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is not well \u001F formed<span> XML!");
 				session.LiftWriter.Add(null, multiText);
-				CheckAnswer(
-					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well &#x1F; formed&lt;span&gt; XML!</text></form>",
-					session
-				);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 
 		[Test]
 		public void Add_MultiTextWithMalFormedXML_IsExportedText()
 		{
+			const string expected =
+				"<form\r\n\tlang=\"de\">\r\n\t<text>This &lt;span href=\"reference\"&gt;is not well formed&lt;span&gt; XML!</text>\r\n</form>";
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is not well formed<span> XML!");
 				session.LiftWriter.Add(null, multiText);
-				CheckAnswer(
-					"<form lang=\"de\"><text>This &lt;span href=\"reference\"&gt;is not well formed&lt;span&gt; XML!</text></form>",
-					session
-				);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 	}

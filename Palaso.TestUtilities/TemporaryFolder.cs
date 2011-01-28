@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
+using Palaso.Xml;
 
 namespace Palaso.TestUtilities
 {
@@ -142,10 +143,13 @@ namespace Palaso.TestUtilities
 		public static TempFile CreateXmlFileWithContents(string fileName, TemporaryFolder folder, string xmlBody)
 		{
 			string path = folder.Combine(fileName);
-			using (XmlWriter x = XmlWriter.Create(path))
+			using (var reader = XmlReader.Create(new StringReader(xmlBody)))
 			{
-				x.WriteStartDocument();
-				x.WriteRaw(xmlBody);
+				using (var writer = XmlWriter.Create(path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				{
+					writer.WriteStartDocument();
+					writer.WriteNode(reader, false);
+				}
 			}
 			return new TempFile(path, true);
 		}

@@ -49,7 +49,7 @@ namespace Palaso.Extensions
 		{
 			if (_xmlNodeUsedForEscaping == null)//notice, this is only done once per run
 			{
-				XmlDocument doc = new XmlDocument();
+				XmlDocument doc = new XmlDocument(); // review: There are other, cheaper ways of doing this.  System.Security has a good escape mechanism IIRC CP 2011-01
 				_xmlNodeUsedForEscaping = doc.CreateElement("text", "x", "");
 			}
 

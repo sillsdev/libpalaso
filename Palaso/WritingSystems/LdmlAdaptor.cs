@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems
 {
@@ -340,16 +341,12 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlWriterSettings writerSettings = new XmlWriterSettings();
-			writerSettings.Indent = true;
-			writerSettings.IndentChars = "\t";
-			writerSettings.NewLineHandling = NewLineHandling.None;
 			XmlReader reader = null;
 			try
 			{
 				if (oldFile != null)
 				{
-					XmlReaderSettings readerSettings = new XmlReaderSettings();
+					var readerSettings = new XmlReaderSettings();
 					readerSettings.NameTable = _nameSpaceManager.NameTable;
 					readerSettings.ConformanceLevel = ConformanceLevel.Auto;
 					readerSettings.ValidationType = ValidationType.None;
@@ -357,7 +354,7 @@ namespace Palaso.WritingSystems
 					readerSettings.ProhibitDtd = false;
 					reader = XmlReader.Create(oldFile, readerSettings);
 				}
-				using (XmlWriter writer = XmlWriter.Create(filePath, writerSettings))
+				using (var writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
 				{
 					writer.WriteStartDocument();
 					WriteLdml(writer, reader, ws);
