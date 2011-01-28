@@ -320,7 +320,6 @@
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
-	<Compile Include="WritingSystems\WritingSystemDefinitionValidator.cs" />
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />

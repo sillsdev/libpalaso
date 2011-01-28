@@ -406,6 +406,33 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IpaStatusIsSetToNotIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.SetIsVoice(true);
+			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsIpaPhontetic_IpaStatusIsSetToNotIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
+			ws.SetIsVoice(true);
+			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhileIpaStatusIsIpaPhonemic_IpaStatusIsSetToNotIpa()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
+			ws.SetIsVoice(true);
+			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
+
+		[Test]
 		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition(){Variant = "duplicate-duplicate"};
@@ -544,6 +571,87 @@ namespace Palaso.Tests.WritingSystems
 			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
 			ws.SetIsVoice(true);
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
+		}
+
+		[Test]
+		public void Iso_IsEmpty_ReturnsFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(()=>ws.ISO = String.Empty);
+		}
+
+		[Test]
+		public void Variant_ContainsUnderscore_Throws()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "de";
+			Assert.Throws<ArgumentException>(() => ws.Variant = "x_audio");
+		}
+
+		[Test]
+		public void Variant_ContainsCapitalXDashAUDIOAndScriptIsNotZxxx_Throws()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "de";
+			ws.Script = "bogus";
+			Assert.Throws<ArgumentException>(() => ws.Variant = "X-AUDIO");
+		}
+
+		[Test]
+		public void Variant_IndicatesThatWsIsAudioAndScriptIsCapitalZXXX_ReturnsTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "de";
+			ws.Script = "ZXXX";
+			ws.Variant = WellKnownSubTags.Audio.VariantMarker;
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void IsValidWritingSystem_VariantIndicatesThatWsIsAudioButContainsotherThanJustTheNecassaryXDashAudioTagAndScriptIsNotZxxx_Throws()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "de";
+			ws.Script = "ltn";
+			Assert.Throws<ArgumentException>(()=>ws.Variant = "x-private-x-audio");
+		}
+
+		[Test]
+		public void LanguageSubtag_ContainsXDashAudio_WhatToDo()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(() => ws.ISO = "de-x-audio");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Language_ContainsZxxx_WhatToDo()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "de-Zxxx";
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void LanguageSubtag_ContainsCapitalXDashAudio_WhatToDo()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(() => ws.ISO = "de-X-AuDiO");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void LanguageSubtag_ContainsCapitalZxxx_WhatToDo()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.ISO = "de-ZXXX";
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void ScriptSubtag_ContainsOtherThanLegalScripts_ReturnsFalse()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

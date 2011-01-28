@@ -3,7 +3,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -373,35 +373,45 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
 	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\GetImageFromFileSystemControl.resx">
 	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageCreditsControl.resx">
 	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageLicenseControl.resx">
 	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>ImageToolboxButtons.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxControl.resx">
 	  <DependentUpon>ImageToolboxControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxDialog.resx">
 	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ScannerAcquire.resx">
 	  <DependentUpon>ScannerAcquire.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
@@ -422,6 +432,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Widgets\BetterLabel.resx">
 	  <DependentUpon>BetterLabel.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Widgets\ControlListBox.resx">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
@@ -429,6 +440,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
 	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
@@ -436,21 +448,27 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\NothingSpecialView.resx">
 	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\IpaIdentifierView.resx">
 	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\CustomIdentifierView.resx">
 	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.resx">
 	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.resx">
 	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\WSIdentifierView.resx">
 	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
@@ -494,6 +512,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSTree\WritingSystemTreeView.resx">
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
