@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using LiftIO.Parsing;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
@@ -18,21 +19,28 @@ namespace Palaso.DictionaryServices.Lift
 	/// scratch each time we read a file. But in FLEx it is currently used that way, hence
 	/// we haven't renamed the interface (ILexiconMerger).
 	/// </summary>
-	internal class LexEntryFromLiftBuilder:
+	///
+	public class LexEntryFromLiftBuilder:
 			ILexiconMerger<PalasoDataObject, LexEntry, LexSense, LexExampleSentence>,
 			IDisposable
 	{
-		internal class EntryCreatedEventArgs: EventArgs
+		/// <summary>
+		/// Subscribe to this event in order to do something (or do something to an entry) as soon as it has been parsed in.
+		/// WeSay uses this to populate definitions from glosses.
+		/// </summary>
+		public event EventHandler<EntryEvent> AfterEntryRead;
+
+		public class EntryEventArgs: EventArgs
 		{
 			public readonly LexEntry Entry;
 
-			public EntryCreatedEventArgs(LexEntry entry)
+			public EntryEventArgs(LexEntry entry)
 			{
 				this.Entry = entry;
 			}
 		}
 
-		public event EventHandler<EntryCreatedEventArgs> EntryCreatedEvent = delegate { };
+		public event EventHandler<EntryEventArgs> EntryCreatedEvent = delegate { };
 		private readonly IList<string> _expectedOptionCollectionTraits;
 		private readonly MemoryDataMapper<LexEntry> _dataMapper;
 		private readonly OptionsList _semanticDomainsList;
@@ -73,6 +81,8 @@ namespace Palaso.DictionaryServices.Lift
 			entry.OrderForRoundTripping = order;
 			return entry;
 		}
+
+
 
 		#region ILexiconMerger<PalasoDataObject,LexEntry,LexSense,LexExampleSentence> Members
 
@@ -319,7 +329,7 @@ namespace Palaso.DictionaryServices.Lift
 					}
 					else
 					{
-						//log skipping
+						o.EmbeddedXmlElements.Add(string.Format(@"<trait name='{0}' value='{1}'/>", trait.Name, trait.Value));
 					}
 				}
 			}
@@ -404,7 +414,7 @@ namespace Palaso.DictionaryServices.Lift
 						extensible.GetOrCreateProperty<OptionRefCollection>(trait.Name);
 				if(trait.Name == LexSense.WellKnownProperties.SemanticDomainDdp4)
 				{
-					if(_semanticDomainsList.GetOptionFromKey(key) == null)
+					if (_semanticDomainsList!=null && _semanticDomainsList.GetOptionFromKey(key) == null)
 					{
 						var match =_semanticDomainsList.Options.FirstOrDefault(option => option.Key.StartsWith(key));
 						if(match !=null)
@@ -436,6 +446,16 @@ namespace Palaso.DictionaryServices.Lift
 			LexRelationCollection collection =
 					extensible.GetOrCreateProperty<LexRelationCollection>(relationFieldId);
 			LexRelation relation = new LexRelation(relationFieldId, targetId, extensible);
+
+			if (!string.IsNullOrEmpty(rawXml))
+			{
+				var dom = new XmlDocument();
+				dom.LoadXml(rawXml);
+				foreach (XmlNode child in dom.FirstChild.ChildNodes)
+				{
+					relation.EmbeddedXmlElements.Add(child.OuterXml);
+				}
+			}
 			collection.Relations.Add(relation);
 		}
 
@@ -472,13 +492,29 @@ namespace Palaso.DictionaryServices.Lift
 
 		public void FinishEntry(LexEntry entry)
 		{
-			PostProcessSenses(entry);
-			//_dataMapper.FinishCreateEntry(entry);
 			entry.GetOrCreateId(false);
+
+			if (AfterEntryRead != null)
+			{
+				AfterEntryRead.Invoke(entry, new EntryEvent(entry));
+			}
+			//         PostProcessSenses(entry);
+			//_dataMapper.FinishCreateEntry(entry);
 			entry.ModifiedTimeIsLocked = false;
 			entry.Clean();
 		}
 
+
+		public class EntryEvent : EventArgs
+		{
+			public LexEntry Entry { get; set; }
+
+			public EntryEvent(LexEntry entry)
+			{
+				Entry = entry;
+			}
+		}
+//
 		/// <summary>
 		/// We do this because in linguist tools, there is a distinction that we don't want to
 		/// normally make in WeSay.  There, "gloss" is the first pass at a definition, but its
@@ -486,41 +522,17 @@ namespace Palaso.DictionaryServices.Lift
 		/// to bother with.
 		/// </summary>
 		/// <param name="entry"></param>
-		private void PostProcessSenses(LexEntry entry)
-		{
-			foreach (LexSense sense in entry.Senses)
-			{
-				CopyOverGlossesIfDefinitionsMissing(sense);
-				FixUpOldLiteralMeaningMistake(entry, sense);
-			}
-		}
+//        private void PostProcessSenses(LexEntry entry)
+//        {
+//            foreach (LexSense sense in entry.Senses)
+//            {
+//                CopyOverGlossesIfDefinitionsMissing(sense);
+//                FixUpOldLiteralMeaningMistake(entry, sense);
+//            }
+//        }
 
-		/// <summary>
-		/// we initially, mistakenly put literal meaning on sense. This moves
-		/// it and switches to newer naming style.
-		/// </summary>
-		internal void FixUpOldLiteralMeaningMistake(LexEntry entry, LexSense sense)
-		{
-			KeyValuePair<string, object> prop = sense.Properties.Find(p => p.Key == "LiteralMeaning");
-			if (prop.Key != null)
-			{
-				sense.Properties.Remove(prop);
-				//change the label and move it up to lex entry
-				var newGuy = new KeyValuePair<string, object>("literal-meaning",  prop.Value);
-				entry.Properties.Add(newGuy);
-			}
-		}
 
-		private void CopyOverGlossesIfDefinitionsMissing(LexSense sense)
-		{
-			foreach(LanguageForm form in sense.Gloss.Forms)
-			{
-				if(!sense.Definition.ContainsAlternative(form.WritingSystemId))
-				{
-					sense.Definition.SetAlternative(form.WritingSystemId,form.Form);
-				}
-			}
-		}
+
 
 		public void MergeInMedia(PalasoDataObject pronunciation, string href, LiftMultiText caption)
 		{

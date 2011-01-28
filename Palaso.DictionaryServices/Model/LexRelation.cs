@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Palaso.Lift;
@@ -49,8 +50,12 @@ namespace Palaso.DictionaryServices.Model
 	public class LexRelation: IParentable,
 							  IValueHolder<string>,
 							  IReferenceContainer,
-							  IReportEmptiness
+							  IReportEmptiness,
+								IExtensible
 	{
+
+		public List<string> EmbeddedXmlElements = new List<string>();
+
 		//private LexRelationType _type;
 		private string _fieldId;
 		//private PalasoDataObject _target;
@@ -66,6 +71,9 @@ namespace Palaso.DictionaryServices.Model
 			_fieldId = fieldId;
 			_targetId = targetId ?? string.Empty;
 			_parent = parent;
+
+			Traits = new List<LexTrait>();
+			Fields = new List<LexField>();
 		}
 
 		/// <summary>
@@ -182,6 +190,13 @@ namespace Palaso.DictionaryServices.Model
 		///</summary>
 		///
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region Implementation of IExtensible
+
+		public List<LexTrait> Traits { get; private set; }
+		public List<LexField> Fields { get; private set; }
 
 		#endregion
 	}

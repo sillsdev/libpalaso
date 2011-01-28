@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using NUnit.Framework;
 using Palaso.IO;
+using Palaso.UsbDrive;
 
 namespace Palaso.Tests.IO
 {
@@ -21,7 +19,7 @@ namespace Palaso.Tests.IO
 			{
 				var backup = new Palaso.TestUtilities.TempFile("two");
 
-				var drives = UsbDrive.UsbDriveInfo.GetDrives();
+				var drives = UsbDriveInfo.GetDrives();
 				Assert.Greater(drives.Count, 0, "This test requires at least one writeable USB drive");
 
 				var testFolder = Path.Combine(drives[0].RootDirectory.FullName, "PalasoFileUtilsUnitTests");

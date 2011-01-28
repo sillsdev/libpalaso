@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 namespace Palaso.Extensions
@@ -56,6 +57,20 @@ namespace Palaso.Extensions
 			_xmlNodeUsedForEscaping.InnerText = text;
 			text = _xmlNodeUsedForEscaping.InnerXml;
 			return text;
+		}
+
+		/// <summary>
+		/// Similar to Path.Combine, but it combines as may parts as you have into a single, platform-appropriate path.
+		/// </summary>
+		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
+		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
+		{
+			string result = rootPath.ToString();
+			foreach (var s in partsOfThePath)
+			{
+				result = Path.Combine(result, s);
+			}
+			return result;
 		}
 
 	}

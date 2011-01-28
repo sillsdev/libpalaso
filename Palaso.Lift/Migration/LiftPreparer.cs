@@ -188,7 +188,10 @@ namespace Palaso.Lift.Migration
 				Logger.WriteEvent(status);
 				state.StatusLabel = status;
 				string migratedFile = Migrator.MigrateToLatestVersion(_liftFilePath);
-				string nameForOldFile = _liftFilePath.Replace(".lift", "." + oldVersion + ".lift");
+				//this was hard on test, as it would fail if the file ended in ".tmp"
+				//      string nameForOldFile = _liftFilePath.Replace(".lift", "." + oldVersion + ".lift");
+				var extension = Path.GetExtension(_liftFilePath);
+				string nameForOldFile = _liftFilePath.Replace(extension, "." + oldVersion + extension);
 
 				if (File.Exists(nameForOldFile))
 						// like, if we tried to convert it before and for some reason want to do it again

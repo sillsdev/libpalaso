@@ -122,11 +122,16 @@ namespace Palaso.BuildTasks.StampAssemblies
 		public VersionParts ParseVersionString(string contents)
 		{
 			var result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)\.(.+)");
-			if(result.Groups.Count <5)
+			if(!result.Success)
 			{
 				//handle 1.0.*  (I'm not good enough with regex to
 				//overcome greediness and get a single pattern to work for both situations).
 				result = Regex.Match(contents, @"(.+)\.(.+)\.(\*)");
+			}
+			if (!result.Success)
+			{
+				//handle 0.0.12
+				result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)");
 			}
 			var v = new VersionParts();
 			v.parts[0] = result.Groups[1].Value;

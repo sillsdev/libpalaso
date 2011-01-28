@@ -1,12 +1,9 @@
 using System;
-using System.ComponentModel;
-using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using Palaso.Progress;
 
-
-namespace Palaso.Tests.Progress
+namespace Palaso.Tests.Progress.Commands
 {
 	[TestFixture]
 	public class CommandTests

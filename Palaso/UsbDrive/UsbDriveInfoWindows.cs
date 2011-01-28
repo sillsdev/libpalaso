@@ -40,6 +40,15 @@ namespace Palaso.UsbDrive
 			}
 		}
 
+		public override ulong AvailableFreeSpace
+		{
+			get
+			{
+				//We use a ulong because that's what linux uses
+				return (ulong) _driveInfo.AvailableFreeSpace;
+			}
+		}
+
 		public new static List<UsbDriveInfo> GetDrives()
 		{
 			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();

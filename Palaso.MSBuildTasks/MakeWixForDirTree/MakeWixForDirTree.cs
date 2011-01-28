@@ -224,11 +224,6 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			}
 		}
 
-		public void LogMessage(MessageImportance messageImportance, string s)
-		{
-			Log.LogMessage(messageImportance, s);
-		}
-
 		public bool HasLoggedErrors
 		{
 			get { return _hasLoggedErrors; }
@@ -268,11 +263,9 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			Log.LogWarning(s);
 		}
 
-
-
 		private void ProcessDir(XmlElement parent, string dirPath, string outerDirectoryId)
 		{
-			Log.LogMessage(MessageImportance.Low, "Processing dir {0}", dirPath);
+			LogMessage(MessageImportance.Low, "Processing dir {0}", dirPath);
 
 			XmlDocument doc = parent.OwnerDocument;
 			List<string> files = new List<string>();
@@ -330,7 +323,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 						</Component>
 					 */
 
-				string id = GetSafeDirectoryId(dirPath, parentDirectoryId);
+				string id = GetSafeDirectoryId(string.Empty, parentDirectoryId);
 
 				XmlElement componentElement = doc.CreateElement("Component", XMLNS);
 				componentElement.SetAttribute("Id", id);
@@ -360,6 +353,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			if (Path.GetFullPath(_rootDir) != directoryPath)
 			{
 				id+="." + Path.GetFileName(directoryPath);
+				id = id.TrimEnd('.'); //for the case where directoryPath is intentionally empty
 			}
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 			return id;
@@ -375,7 +369,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				id = '_' + id;
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 
-			Log.LogMessage(MessageImportance.Normal, "Adding file {0} with id {1}", path, id);
+			LogMessage(MessageImportance.Normal, "Adding file {0} with id {1}", path, id);
 			string key = id.ToLower();
 			if (m_suffixes.ContainsKey(key))
 			{
@@ -430,6 +424,49 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			persmission.SetAttribute("User", "Everyone");
 			elementToAddPermissionTo.AppendChild(persmission);
 		}
+
+		private void LogMessage(string message, params object[] args)
+		{
+			LogMessage(MessageImportance.Normal, message, args);
+		}
+
+		public void LogMessage(MessageImportance importance, string message)
+		{
+			try
+			{
+				Log.LogMessage(importance.ToString(), message);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+		private void LogMessage(MessageImportance importance, string message, params object[] args)
+		{
+			try
+			{
+				Log.LogMessage(importance.ToString(), message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+		private void LogError(string message, params object[] args)
+		{
+			try
+			{
+				Log.LogError(message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+
 
 		#endregion
 	}

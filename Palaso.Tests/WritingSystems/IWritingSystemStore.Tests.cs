@@ -39,10 +39,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetTwoDefinitions_CountEquals2()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "two";
+			ws2.ISO639 = "two";
 			StoreUnderTest.Set(ws2);
 
 			Assert.AreEqual(2, StoreUnderTest.Count);
@@ -65,7 +65,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetDefinitionTwice_OnlySetOnce()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, StoreUnderTest.Count);
 			WritingSystemDefinition ws = new WritingSystemDefinition();
@@ -77,12 +77,12 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetDefinitionTwice_UpdatesStore()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, StoreUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "one";
+			ws1.ISO639 = "one";
 			ws1.DefaultFontName = "one font";
 			ws1.StoreID = _writingSystem.StoreID;
 			StoreUnderTest.Set(ws1);
@@ -90,11 +90,34 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("one font", ws2.DefaultFontName);
 		}
 
+
+		/// <summary>
+		/// Language tags should be case insensitive, as required by RFC 5646
+		/// </summary>
+		[Test]
+		public void Get_StoredWithUpperCaseButRequestedUsingLowerCase_Finds()
+		{
+			_writingSystem.ISO639 = "sr-Latn-RS";
+			StoreUnderTest.Set(_writingSystem);
+			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-rs"));
+		}
+
+		/// <summary>
+		/// Language tags should be case insensitive, as required by RFC 5646
+		/// </summary>
+		[Test]
+		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
+		{
+			_writingSystem.ISO639 = "sr-Latn-rs";
+			StoreUnderTest.Set(_writingSystem);
+			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-RS"));
+		}
+
 		[Test]
 		public void Exists_FalseThenTrue()
 		{
 			Assert.IsFalse(StoreUnderTest.Exists("one"));
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.IsTrue(StoreUnderTest.Exists("one"));
 		}
@@ -102,7 +125,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Remove_CountDecreases()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, StoreUnderTest.Count);
 			StoreUnderTest.Remove(_writingSystem.StoreID);
@@ -112,8 +135,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanEmpty_ReturnsNoneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			var ws1 = new WritingSystemDefinition();
+			ws1.ISO639 = "en";
 			StoreUnderTest.Set(ws1);
 
 			IWritingSystemStore store = CreateNewStore();
@@ -128,8 +151,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanOlder_ReturnsOneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			var ws1 = new WritingSystemDefinition();
+			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
 
@@ -149,8 +172,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanNewer_ReturnsNoneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			var ws1 = new WritingSystemDefinition();
+			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
 
@@ -170,8 +193,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void NewerThanCheckedAlready_ReturnsNoneNewer()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			var ws1 = new WritingSystemDefinition();
+			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			StoreUnderTest.Set(ws1);
 
@@ -182,7 +205,7 @@ namespace Palaso.Tests.WritingSystems
 			store.LastChecked("en", new DateTime(2008, 1, 16));
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
+			foreach (var ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
 			{
 				count++;
 			}
@@ -192,8 +215,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanStoreVariants_CountTwo()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			var ws1 = new WritingSystemDefinition();
+			ws1.ISO639 = "en";
 			Assert.AreEqual("en", ws1.RFC5646);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variant = "latn";
@@ -205,13 +228,15 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(2, StoreUnderTest.Count);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void StoreTwoOfSame_Throws()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition("foo");
-			WritingSystemDefinition ws2 = new WritingSystemDefinition("foo");
+			var ws1 = new WritingSystemDefinition("foo");
+			var ws2 = new WritingSystemDefinition("foo");
 			StoreUnderTest.Set(ws1);
-			StoreUnderTest.Set(ws2);
+			Assert.Throws<ArgumentException>(
+				() => StoreUnderTest.Set(ws2)
+			);
 		}
 
 		[Test]
@@ -238,7 +263,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSetUnchangedDuplicate_False()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
 			Assert.IsFalse(StoreUnderTest.CanSet(StoreUnderTest.MakeDuplicate(_writingSystem)));
 		}
@@ -269,7 +294,7 @@ namespace Palaso.Tests.WritingSystems
 			ws1.VersionNumber = "1.0";
 			StoreUnderTest.Set(ws1);
 			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(ws1);
-			Assert.AreEqual(ws1.ISO, ws2.ISO);
+			Assert.AreEqual(ws1.ISO639, ws2.ISO639);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
 			Assert.AreEqual(ws1.Variant, ws2.Variant);
@@ -283,59 +308,77 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(ws1.VersionNumber, ws2.VersionNumber);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void GetNull_Throws()
 		{
-			StoreUnderTest.Get(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.Get(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test]
 		public void Get_NotInStore_Throws()
 		{
-			StoreUnderTest.Get("I sure hope this isn't in the store.");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => StoreUnderTest.Get("I sure hope this isn't in the store.")
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void NewerInNull_Throws()
 		{
-			StoreUnderTest.WritingSystemsNewerIn(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.WritingSystemsNewerIn(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void NewerInNullDefinition_Throws()
 		{
-			WritingSystemDefinition[] list = new WritingSystemDefinition[] {null};
-			StoreUnderTest.WritingSystemsNewerIn(list);
+			var list = new WritingSystemDefinition[] {null};
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.WritingSystemsNewerIn(list)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void SetNull_Throws()
 		{
-			StoreUnderTest.Set(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.Set(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void MakeDuplicateNull_Throws()
 		{
-			StoreUnderTest.MakeDuplicate(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.MakeDuplicate(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void RemoveNull_Throws()
 		{
-			StoreUnderTest.Remove(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.Remove(null)
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test]
 		public void Remove_NotInStore_Throws()
 		{
-			StoreUnderTest.Remove("This isn't in the store!");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => StoreUnderTest.Remove("This isn't in the store!")
+			);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void GetNewStoreIDWhenSet_Null_Throws()
 		{
-			StoreUnderTest.GetNewStoreIDWhenSet(null);
+			Assert.Throws<ArgumentNullException>(
+				() => StoreUnderTest.GetNewStoreIDWhenSet(null)
+			);
 		}
 
 		[Test]

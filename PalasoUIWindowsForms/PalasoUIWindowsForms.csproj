@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -14,31 +14,47 @@
 	</FileUpgradeFlags>
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
-	<OldToolsVersion>2.0</OldToolsVersion>
+	<OldToolsVersion>3.5</OldToolsVersion>
 	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<PublishUrl>publish\</PublishUrl>
+	<Install>true</Install>
+	<InstallFrom>Disk</InstallFrom>
+	<UpdateEnabled>false</UpdateEnabled>
+	<UpdateMode>Foreground</UpdateMode>
+	<UpdateInterval>7</UpdateInterval>
+	<UpdateIntervalUnits>Days</UpdateIntervalUnits>
+	<UpdatePeriodically>false</UpdatePeriodically>
+	<UpdateRequired>false</UpdateRequired>
+	<MapFileExtensions>true</MapFileExtensions>
+	<ApplicationRevision>0</ApplicationRevision>
+	<ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+	<IsWebBootstrapper>false</IsWebBootstrapper>
+	<UseApplicationTrust>false</UseApplicationTrust>
+	<BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\Debug\</OutputPath>
+	<OutputPath>..\output\$(Configuration)</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
+	<LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\Release\</OutputPath>
+	<OutputPath>..\output\$(Configuration)</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\Mono Debug\</OutputPath>
+	<OutputPath>..\output\$(Configuration)</OutputPath>
 	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,8 +62,8 @@
 	<WarningLevel>4</WarningLevel>
 	<Optimize>false</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Release|AnyCPU' ">
-	<OutputPath>..\output\Mono Release\</OutputPath>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
+	<OutputPath>..\output\$(Configuration)</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
@@ -55,7 +71,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' != 'Mono Debug' And '$(Configuration)' != 'Mono Release' ">
+  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\net2.0\Keyman7Interop.dll</HintPath>
@@ -64,6 +80,22 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\net2.0\KeymanLink.dll</HintPath>
 	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
+  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
+	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+	  <SpecificVersion>False</SpecificVersion>
+	  <EmbedInteropTypes>True</EmbedInteropTypes>
+	  <HintPath>..\lib\net2.0\Interop.WIA.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
@@ -76,17 +108,17 @@
 	<Reference Include="System.Drawing.Design" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
-	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ControlExtensions.cs" />
 	<Compile Include="HotSpot\HotSpot.cs" />
 	<Compile Include="HotSpot\HotSpotProvider.cs" />
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
-	<Compile Include="i8n\ILocalizableControl.cs" />
-	<Compile Include="i8n\LocalizationHelper.cs">
+	<Compile Include="i18n\ILocalizableControl.cs" />
+	<Compile Include="i18n\LocalizationHelper.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="i8n\LocalizationHelper.designer.cs">
+	<Compile Include="i18n\LocalizationHelper.designer.cs">
 	  <DependentUpon>LocalizationHelper.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageGallery\ArtOfReadingImageCollection.cs" />
@@ -104,6 +136,78 @@
 	<Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
 	  <DependentUpon>ThumbnailViewer.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\ArtOfReadingChooser.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ArtOfReadingChooser.Designer.cs">
+	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\Cropping\Grip.cs" />
+	<Compile Include="ImageToolbox\Cropping\ImageCropper.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
+	  <DependentUpon>ImageCropper.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.Designer.cs">
+	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageCreditsControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageCreditsControl.Designer.cs">
+	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageLicenseControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageLicenseControl.Designer.cs">
+	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageMetadataControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageMetadataControl.Designer.cs">
+	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageToolboxControl.Designer.cs">
+	  <DependentUpon>ImageToolboxControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageToolboxDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageToolboxDialog.Designer.cs">
+	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\LicenseLogos.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>LicenseLogos.resx</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\PalasoImage.cs" />
+	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>ImageToolboxButtons.resx</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\SampleImages.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>SampleImages.resx</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.Designer.cs">
+	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\Scanner\ImageAcquisitionService.cs" />
 	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
 	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
@@ -117,7 +221,9 @@
 	<Compile Include="Progress\ProgressNotificationProvider.cs" />
 	<Compile Include="Progress\TransformWithProgressDialog.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="Properties\Resources.Designer.cs">
+	<Compile Include="Properties\Resources1.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resources.resx</DependentUpon>
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
@@ -156,6 +262,7 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
+	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -286,6 +393,45 @@
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
+	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
+	  <DependentUpon>ImageCropper.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\GetImageFromFileSystemControl.resx">
+	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageCreditsControl.resx">
+	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageLicenseControl.resx">
+	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
+	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>ImageToolboxButtons.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageToolboxControl.resx">
+	  <DependentUpon>ImageToolboxControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ImageToolboxDialog.resx">
+	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\LicenseLogos.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\Scanner\DeviceAcquire.resx">
+	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -293,6 +439,7 @@
 	<EmbeddedResource Include="Properties\Resources.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
 	<EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
 	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
@@ -388,6 +535,62 @@
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+	  <Visible>False</Visible>
+	  <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+	  <Install>false</Install>
+	</BootstrapperPackage>
+	<BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+	  <Visible>False</Visible>
+	  <ProductName>.NET Framework 3.5 SP1</ProductName>
+	  <Install>true</Install>
+	</BootstrapperPackage>
+	<BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+	  <Visible>False</Visible>
+	  <ProductName>Windows Installer 3.1</ProductName>
+	  <Install>true</Install>
+	</BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\credits.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\browse.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\Licenses.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\scanner.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\searchFolder.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\crop.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="artwork\sampleScan.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\camera.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\File_Cc.logo.circle.svg.html" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\cc-BY-88x311.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\cc-BY-88x31.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\scanner64x64.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\camera64x64.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

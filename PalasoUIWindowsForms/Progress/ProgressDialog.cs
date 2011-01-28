@@ -223,6 +223,11 @@ namespace Palaso.UI.WindowsForms.Progress
 		}
 
 		/// <summary>
+		/// Gets or sets the manner in which progress should be indicated on the progress bar.
+		/// </summary>
+		public ProgressBarStyle BarStyle { get { return _progressBar.Style; } set { _progressBar.Style = value; } }
+
+		/// <summary>
 		/// Optional; one will be created (of some class or subclass) if you don't set it.
 		/// E.g. dlg.ProgressState = new BackgroundWorkerState(dlg.BackgroundWorker);
 		/// Also, you can use the getter to gain access to the progressstate, in order to add arguments
@@ -454,6 +459,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._progressBar.Location = new System.Drawing.Point(9, 78);
 			this._progressBar.Name = "_progressBar";
 			this._progressBar.Size = new System.Drawing.Size(279, 18);
+			this._progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this._progressBar.TabIndex = 11;
 			this._progressBar.Value = 1;
 			//

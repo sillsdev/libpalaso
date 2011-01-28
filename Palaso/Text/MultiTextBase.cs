@@ -134,7 +134,7 @@ namespace Palaso.Text
 		{
 			foreach (LanguageForm f in Forms)
 			{
-				if (f.WritingSystemId == writingSystemId)
+				if (f.WritingSystemId.ToLowerInvariant() == writingSystemId.ToLowerInvariant())
 				{
 					return f;
 				}
@@ -446,6 +446,40 @@ namespace Palaso.Text
 					AddLanguageForm(form); //this actually copies the meat of the form
 				}
 			}
+		}
+
+
+		/// <summary>
+		/// Will merge the two mt's if they are compatible; if they collide anywhere, leaves the original untouched
+		/// and returns false
+		/// </summary>
+		/// <param name="incoming"></param>
+		/// <returns></returns>
+		public bool TryMergeIn(MultiTextBase incoming)
+		{
+			//abort if they collide
+			if (!CanBeUnifiedWith(incoming))
+				return false;
+
+			MergeIn(incoming);
+			return true;
+		}
+
+		/// <summary>
+		/// False if they have different forms on any single writing system. If true, they can be safely merged.
+		/// </summary>
+		/// <param name="incoming"></param>
+		/// <returns></returns>
+		public bool CanBeUnifiedWith(MultiTextBase incoming)
+		{
+			foreach (var form in incoming.Forms)
+			{
+				if (!ContainsAlternative(form.WritingSystemId))
+					continue;//no problem, we don't have one of those
+				if (GetExactAlternative(form.WritingSystemId) != form.Form)
+					return false;
+			}
+			return true;
 		}
 
 		public bool Equals(MultiTextBase other)

@@ -130,27 +130,45 @@ namespace Palaso.WritingSystems
 			{
 				ReadCollationsElement(reader, ws);
 			}
-			if (FindElement(reader, "special"))
+			while (FindElement(reader, "special"))
+			{
+				ReadTopLevelSpecialElement(reader, ws);
+			}
+			ws.StoreID = "";
+			// ws.Modified = false; // Note: This unfortunately is no longer true. The RFC5646 tag may have been auto modified above. CP 2010-12
+		}
+
+		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinition ws)
+		{
+			if (reader.GetAttribute("xmlns:palaso") != null)
 			{
 				reader.ReadStartElement("special");
-				ws.Abbreviation = GetSpecialValue(reader, "abbreviation");
-				ws.DefaultFontName = GetSpecialValue(reader, "defaultFontFamily");
+				ws.Abbreviation = GetSpecialValue(reader, "palaso", "abbreviation");
+				ws.DefaultFontName = GetSpecialValue(reader, "palaso", "defaultFontFamily");
 				float fontSize;
-				if (float.TryParse(GetSpecialValue(reader, "defaultFontSize"), out fontSize))
+				if (float.TryParse(GetSpecialValue(reader, "palaso", "defaultFontSize"), out fontSize))
 				{
 					ws.DefaultFontSize = fontSize;
 				}
-				ws.Keyboard = GetSpecialValue(reader, "defaultKeyboard");
-				string isLegacyEncoded = GetSpecialValue(reader, "isLegacyEncoded");
+				ws.Keyboard = GetSpecialValue(reader, "palaso", "defaultKeyboard");
+				string isLegacyEncoded = GetSpecialValue(reader, "palaso", "isLegacyEncoded");
 				if (!String.IsNullOrEmpty(isLegacyEncoded))
 				{
 					ws.IsLegacyEncoded = Convert.ToBoolean(isLegacyEncoded);
 				}
-				ws.LanguageName = GetSpecialValue(reader, "languageName");
-				ws.SpellCheckingId = GetSpecialValue(reader, "spellCheckingId");
+				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
+				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
+
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					reader.Read();
+				}
+				reader.ReadEndElement();
 			}
-			ws.StoreID = "";
-			ws.Modified = false;
+			else
+			{
+				reader.Skip();
+			}
 		}
 
 		private void ReadIdentityElement(XmlReader reader, WritingSystemDefinition ws)
@@ -178,10 +196,13 @@ namespace Palaso.WritingSystems
 												   DateTimeStyles.AssumeUniversal);
 				}
 				ws.DateModified = modified;
-				ws.ISO = GetSubNodeAttributeValue(identityReader, "language", "type");
-				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
-				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
-				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
+				RFC5646Tag rfcTag = new RFC5646Tag(GetSubNodeAttributeValue(identityReader, "language", "type"),
+													GetSubNodeAttributeValue(identityReader, "script", "type"),
+													GetSubNodeAttributeValue(identityReader, "territory", "type"),
+													GetSubNodeAttributeValue(identityReader, "variant", "type"));
+				ws.Rfc5646TagOnLoad = rfcTag;
+				ws.Rfc5646Tag = new RFC5646Tag(rfcTag);
+
 				// move to end of identity node
 				while (identityReader.Read()) ;
 			}
@@ -263,7 +284,7 @@ namespace Palaso.WritingSystems
 				if (FindElement(collationReader, "special"))
 				{
 					collationReader.Read();
-					rulesTypeAsString = GetSpecialValue(collationReader, "sortRulesType");
+					rulesTypeAsString = GetSpecialValue(collationReader, "palaso", "sortRulesType");
 				}
 				ws.SortUsing = (WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), rulesTypeAsString);
 			}
@@ -430,7 +451,7 @@ namespace Palaso.WritingSystems
 			{
 				CopyUntilElement(writer, reader, "special");
 			}
-			WriteTopLevelSpecialElement(writer, ws);
+			WriteTopLevelSpecialElements(writer, ws);
 			if (reader != null)
 			{
 				CopyOtherSpecialElements(writer, reader);
@@ -492,17 +513,9 @@ namespace Palaso.WritingSystems
 			{
 				if (reader.NodeType == XmlNodeType.Element)
 				{
-					bool palasoNS = false;
-					while (reader.MoveToNextAttribute())
-					{
-						if (reader.Name.StartsWith("xmlns:") && reader.Value == _nameSpaceManager.LookupNamespace("palaso"))
-						{
-							palasoNS = true;
-							break;
-						}
-					}
+					bool knownNS = IsKnownSpecialElement(reader);
 					reader.MoveToElement();
-					if (palasoNS)
+					if (knownNS)
 					{
 						reader.Skip();
 						continue;
@@ -512,13 +525,23 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private bool IsKnownSpecialElement(XmlReader reader)
+		{
+			while (reader.MoveToNextAttribute())
+			{
+				if (reader.Name.StartsWith("xmlns:") && _nameSpaceManager.HasNamespace(reader.Name.Substring(6, reader.Name.Length - 6)))
+					return true;
+			}
+			return false;
+		}
+
 		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
 		{
 			string id = rfc4646.ToLower();
 			switch (id)
 			{
 				case "en-latn":
-					ws.ISO = "en";
+					ws.ISO639 = "en";
 					ws.LanguageName = "English";
 					ws.Abbreviation = "eng";
 					ws.Script = "Latn";
@@ -529,9 +552,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetSpecialValue(XmlReader reader, string field)
+		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindElement(reader, "palaso:" + field, _nameSpaceManager.LookupNamespace("palaso"), string.Compare))
+			if (!XmlHelpers.FindElement(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
 			{
 				return string.Empty;
 			}
@@ -546,8 +569,13 @@ namespace Palaso.WritingSystems
 		private XmlNamespaceManager MakeNameSpaceManager()
 		{
 			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
-			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			AddNamespaces(m);
 			return m;
+		}
+
+		protected virtual void AddNamespaces(XmlNamespaceManager m)
+		{
+			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 		}
 
 		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)
@@ -557,13 +585,13 @@ namespace Palaso.WritingSystems
 			writer.WriteEndElement();
 		}
 
-		private void WriteSpecialValue(XmlWriter writer, string field, string value)
+		protected void WriteSpecialValue(XmlWriter writer, string ns, string field, string value)
 		{
 			if (String.IsNullOrEmpty(value))
 			{
 				return;
 			}
-			writer.WriteStartElement(field, _nameSpaceManager.LookupNamespace("palaso"));
+			writer.WriteStartElement(field, _nameSpaceManager.LookupNamespace(ns));
 			writer.WriteAttributeString("value", value);
 			writer.WriteEndElement();
 		}
@@ -580,7 +608,7 @@ namespace Palaso.WritingSystems
 			writer.WriteString(ws.VersionDescription);
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
-			WriteElementWithAttribute(writer, "language", "type", ws.ISO);
+			WriteElementWithAttribute(writer, "language", "type", ws.ISO639);
 			if (!String.IsNullOrEmpty(ws.Script))
 			{
 				WriteElementWithAttribute(writer, "script", "type", ws.Script);
@@ -655,30 +683,30 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private void WriteBeginSpecialElement(XmlWriter writer)
+		protected void WriteBeginSpecialElement(XmlWriter writer, string ns)
 		{
 			writer.WriteStartElement("special");
-			writer.WriteAttributeString("xmlns", "palaso", null, _nameSpaceManager.LookupNamespace("palaso"));
+			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
 		}
 
-		private void WriteTopLevelSpecialElement(XmlWriter writer, WritingSystemDefinition ws)
+		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemDefinition ws)
 		{
-			WriteBeginSpecialElement(writer);
-			WriteSpecialValue(writer, "abbreviation", ws.Abbreviation);
-			WriteSpecialValue(writer, "defaultFontFamily", ws.DefaultFontName);
+			WriteBeginSpecialElement(writer, "palaso");
+			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
+			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
 			if (ws.DefaultFontSize != 0)
 			{
-				WriteSpecialValue(writer, "defaultFontSize", ws.DefaultFontSize.ToString());
+				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
 			}
-			WriteSpecialValue(writer, "defaultKeyboard", ws.Keyboard);
+			WriteSpecialValue(writer, "palaso", "defaultKeyboard", ws.Keyboard);
 			if (ws.IsLegacyEncoded)
 			{
-				WriteSpecialValue(writer, "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
+				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
-			WriteSpecialValue(writer, "languageName", ws.LanguageName);
-			if (ws.SpellCheckingId != ws.ISO)
+			WriteSpecialValue(writer, "palaso", "languageName", ws.LanguageName);
+			if (ws.SpellCheckingId != ws.ISO639)
 			{
-				WriteSpecialValue(writer, "spellCheckingId", ws.SpellCheckingId);
+				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
 			writer.WriteEndElement();
 		}
@@ -731,15 +759,8 @@ namespace Palaso.WritingSystems
 				needToCopy = false;
 			}
 
-			if (ws.SortUsing == WritingSystemDefinition.SortRulesType.DefaultOrdering)
-			{
-				if (needToCopy)
-				{
-					// copy whole existing node - invalid/undefined collation rules in our definition
-					writer.WriteNode(reader, false);
-				}
+			if (ws.SortUsing == WritingSystemDefinition.SortRulesType.DefaultOrdering && !needToCopy)
 				return;
-			}
 
 			if (needToCopy && reader.IsEmptyElement)
 			{
@@ -760,34 +781,78 @@ namespace Palaso.WritingSystems
 				}
 			}
 
-			writer.WriteStartElement("collation");
-			switch (ws.SortUsing)
+			if (ws.SortUsing != WritingSystemDefinition.SortRulesType.DefaultOrdering)
 			{
-				case WritingSystemDefinition.SortRulesType.OtherLanguage:
-					WriteCollationRulesFromOtherLanguage(writer, reader, ws);
-					break;
-				case WritingSystemDefinition.SortRulesType.CustomSimple:
-					WriteCollationRulesFromCustomSimple(writer, reader, ws);
-					break;
-				case WritingSystemDefinition.SortRulesType.CustomICU:
-					WriteCollationRulesFromCustomICU(writer, reader, ws);
-					break;
-				default:
-					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
-					throw new ApplicationException(message);
+				writer.WriteStartElement("collation");
+				switch (ws.SortUsing)
+				{
+					case WritingSystemDefinition.SortRulesType.OtherLanguage:
+						WriteCollationRulesFromOtherLanguage(writer, reader, ws);
+						break;
+					case WritingSystemDefinition.SortRulesType.CustomSimple:
+						WriteCollationRulesFromCustomSimple(writer, reader, ws);
+						break;
+					case WritingSystemDefinition.SortRulesType.CustomICU:
+						WriteCollationRulesFromCustomICU(writer, reader, ws);
+						break;
+					default:
+						string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
+						throw new ApplicationException(message);
+				}
+				WriteBeginSpecialElement(writer, "palaso");
+				WriteSpecialValue(writer, "palaso", "sortRulesType", ws.SortUsing.ToString());
+				writer.WriteEndElement();
+				if (needToCopy)
+				{
+					if (FindElement(reader, "special"))
+					{
+						CopyOtherSpecialElements(writer, reader);
+					}
+					CopyToEndElement(writer, reader);
+				}
+				writer.WriteEndElement();
 			}
-			WriteBeginSpecialElement(writer);
-			WriteSpecialValue(writer, "sortRulesType", ws.SortUsing.ToString());
-			writer.WriteEndElement();
-			if (needToCopy)
+			else if (needToCopy)
 			{
+				bool startElementWritten = false;
 				if (FindElement(reader, "special"))
 				{
-					CopyOtherSpecialElements(writer, reader);
+					// write out any other special elements
+					while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
+						&& (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
+					{
+						if (reader.NodeType == XmlNodeType.Element)
+						{
+							bool knownNS = IsKnownSpecialElement(reader);
+							reader.MoveToElement();
+							if (knownNS)
+							{
+								reader.Skip();
+								continue;
+							}
+						}
+						if (!startElementWritten)
+						{
+							writer.WriteStartElement("collation");
+							startElementWritten = true;
+						}
+						writer.WriteNode(reader, false);
+					}
 				}
-				CopyToEndElement(writer, reader);
+
+				if (!reader.EOF && reader.NodeType != XmlNodeType.EndElement)
+				{
+					// copy any other elements
+					if (!startElementWritten)
+					{
+						writer.WriteStartElement("collation");
+						startElementWritten = true;
+					}
+					CopyToEndElement(writer, reader);
+				}
+				if (startElementWritten)
+					writer.WriteEndElement();
 			}
-			writer.WriteEndElement();
 		}
 
 		private void WriteCollationRulesFromOtherLanguage(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)

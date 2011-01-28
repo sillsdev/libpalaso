@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems
 		public enum SortRulesType
 		{
 			/// <summary>
-			/// Default Unicode ordering rules
+			/// Default Unicode ordering rules (actually CustomICU without any rules)
 			/// </summary>
 			[Description("Default Ordering")]
 			DefaultOrdering,
@@ -29,17 +29,16 @@ namespace Palaso.WritingSystems
 			[Description("Custom ICU rules")]
 			CustomICU,
 			/// <summary>
-			/// Use the sort rules from another language. When this is set, the SortRules are interpretted as a cultureId for the language to sort like.
+			/// Use the sort rules from another language. When this is set, the SortRules are interpreted as a cultureId for the language to sort like.
 			/// </summary>
 			[Description("Same as another language")]
 			OtherLanguage
 		}
 
-		private string _iso;
-		private string _region;
-		private string _variant;
+		private RFC5646Tag _rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
+
 		private string _languageName;
-		private string _script;
+
 		private string _abbreviation;
 		private bool _isLegacyEncoded;
 
@@ -59,6 +58,7 @@ namespace Palaso.WritingSystems
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
+		private RFC5646Tag _rfcTagOnLoad;
 
 		/// <summary>
 		/// singleton
@@ -70,37 +70,56 @@ namespace Palaso.WritingSystems
 		private static List<LanguageCode> _languageCodes;
 
 		/// <summary>
-		/// For overridding the other identifier fields, to specify a custom RFC5646
+		/// For overriding the other identifier fields, to specify a custom RFC5646
 		/// </summary>
 		//private string _customLanguageTag;
 
 
 		public WritingSystemDefinition()
 		{
-			_iso=_abbreviation = _script=_languageName = _variant = _region =_nativeName = string.Empty;
 			_sortUsing = SortRulesType.DefaultOrdering;
-			Modified = false;
-			IsLegacyEncoded = false;
+			_isLegacyEncoded = false;
 		   // _defaultFontSize = 10; //arbitrary
 		}
 
 		public WritingSystemDefinition(string iso)
 			: this()
 		{
-			_iso = iso;
-			_abbreviation = _script = _languageName = _variant = _region = _nativeName = string.Empty;
+			_rfcTag.Language = iso;
+			_abbreviation = _rfcTag.Script = _languageName = _rfcTag.Variant = _rfcTag.Region = _nativeName = string.Empty;
 		}
 
 		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
-			_region = region;
-			_iso = iso;
+			_rfcTag.Language = iso;
+			_rfcTag.Script = script;
+			_rfcTag.Region = region;
+			_rfcTag.Variant = variant;
 			_abbreviation = abbreviation;
-			_script = script;
 			_languageName = languageName;
-			_variant = variant;
 			_rightToLeftScript = rightToLeftScript;
+		}
+
+		/// <summary>
+		/// Copy constructor.
+		/// </summary>
+		/// <param name="ws">The ws.</param>
+		public WritingSystemDefinition(WritingSystemDefinition ws)
+			: this(ws._rfcTag.Language, ws._rfcTag.Script, ws._rfcTag.Region, ws._rfcTag.Variant, ws._languageName, ws._abbreviation, ws._rightToLeftScript)
+		{
+			_defaultFontName = ws._defaultFontName;
+			_defaultFontSize = ws._defaultFontSize;
+			_keyboard = ws._keyboard;
+			_versionNumber = ws._versionNumber;
+			_versionDescription = ws._versionDescription;
+			_nativeName = ws._nativeName;
+			_sortUsing = ws._sortUsing;
+			_sortRules = ws._sortRules;
+			_spellCheckingId = ws._spellCheckingId;
+			_dateModified = ws._dateModified;
+			_isLegacyEncoded = ws._isLegacyEncoded;
+			_rfcTagOnLoad = ws._rfcTagOnLoad;
 		}
 
 		/// <summary>
@@ -160,7 +179,7 @@ namespace Palaso.WritingSystems
 						continue;
 					string[] fields = tline.Split('\t');
 					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
-					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6]));
+					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
 				}
 				_languageCodes.Sort(LanguageCode.CompareByName);
 				return _languageCodes;
@@ -169,16 +188,19 @@ namespace Palaso.WritingSystems
 
 		public class LanguageCode
 		{
-			public LanguageCode(string code, string name)
+			public LanguageCode(string code, string name, string iso3Code)
 			{
 				Code = code;
 				Name = name;
+				ISO3Code = iso3Code;
 			}
 
 
 			public string Name { get; set; }
 
 			public string Code { get; set; }
+
+			public string ISO3Code { get; set; }
 
 			public static int CompareByName(LanguageCode x, LanguageCode y)
 			{
@@ -208,19 +230,19 @@ namespace Palaso.WritingSystems
 
 		}
 
-		public string VersionNumber
+		virtual public string VersionNumber
 		{
 			get { return _versionNumber; }
 			set { UpdateString(ref _versionNumber, value); }
 		}
 
-		public string VersionDescription
+		virtual public string VersionDescription
 		{
 			get { return _versionDescription; }
 			set { UpdateString(ref _versionDescription, value); }
 		}
 
-		public DateTime DateModified
+		virtual public DateTime DateModified
 		{
 			get { return _dateModified; }
 			set { _dateModified = value; }
@@ -232,19 +254,19 @@ namespace Palaso.WritingSystems
 		/// away with for now, but maybe not if this class grows to be extension aware.
 		/// Ideally, these should be suffixes rather than private use
 		/// </summary>
-		public IpaStatusChoices IpaStatus
+		virtual public IpaStatusChoices IpaStatus
 		{
 			get
 			{
-				if( _variant.Contains("fonipa-x-emic"))
+				if( _rfcTag.Variant.Contains("fonipa-x-emic"))
 				{
 					return IpaStatusChoices.IpaPhonemic;
 				}
-				if (_variant.Contains("fonipa-x-etic"))
+				if (_rfcTag.Variant.Contains("fonipa-x-etic"))
 				{
 					return IpaStatusChoices.IpaPhonetic;
 				}
-				if (_variant.Contains("fonipa"))
+				if (_rfcTag.Variant.Contains("fonipa"))
 				{
 					return IpaStatusChoices.Ipa;
 				}
@@ -257,85 +279,140 @@ namespace Palaso.WritingSystems
 				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 				 * should appear after any other variant subtags with prefix information."
 				 */
-				Variant = _variant.Replace("-x-etic", "");
-				Variant = _variant.Replace("-x-emic", "");
-				Variant = _variant.Replace("fonipa", "");
+				Variant = _rfcTag.Variant.Replace("-x-etic", "");
+				Variant = _rfcTag.Variant.Replace("-x-emic", "");
+				Variant = _rfcTag.Variant.Replace("fonipa", "");
 				switch (value)
 				{
 					default:
 						break;
 					case IpaStatusChoices.Ipa:
-						IsVoice =false;
-						Variant = _variant + "-fonipa";
+						Variant = _rfcTag.Variant + "-fonipa";
 						break;
 					case IpaStatusChoices.IpaPhonemic:
-						IsVoice = false;
-						Variant = _variant + "-fonipa-x-emic";
+						Variant = _rfcTag.Variant + "-fonipa-x-emic";
 						break;
 					case IpaStatusChoices.IpaPhonetic:
-						IsVoice = false;
-						Variant = _variant + "-fonipa-x-etic";
+						Variant = _rfcTag.Variant + "-fonipa-x-etic";
 						break;
 				}
 			}
 		}
 
-		public bool IsVoice
+		virtual public bool IsVoice
 		{
-			get { return _variant.Contains("Zxxx"); }
+			get { return RFC5646Tag.IsRFC5646TagForVoiceWritingSystem(_rfcTag); }
 			set
 			{
-				Variant = _variant.Replace("Zxxx", "");
 				if (value)
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
-					Keyboard=string.Empty;
-					Variant = _variant + "-Zxxx";
+					Keyboard = string.Empty;
+					ISO639 = ISO639.Split('-')[0];
+					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO639, Region);
 				}
+				else if (IsVoice == true)
+				{
+					_rfcTag = new RFC5646Tag(ISO639, "", "", "");
+				}
+				Modified = true;
 			}
 		}
 
 		/// <summary>
 		/// Todo: this could/should become an ordered list of variant tags
 		/// </summary>
-		public string Variant
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
+		virtual public string Variant
 		{
 			get
 			{
-				return _variant;
+				return _rfcTag.Variant;
 			}
 			set
 			{
+				if (value == null || value == Variant)
+				{
+					return;
+				}
 				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
-				UpdateString(ref _variant, value);
+				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, _rfcTag.Region, value);
+				if (!_rfcTag.IsValid())
+				{
+					throw new InvalidOperationException(String.Format("Changing the variant subtag to {0} results in an invalid RFC5646 tag.", value));
+				}
+				Modified = true;
 			}
 		}
 
-		public string Region
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
+		virtual public string Region
 		{
 			get
 			{
-				return _region;
+				return _rfcTag.Region;
 			}
 			set
 			{
-				UpdateString(ref _region, value);
+				if (value == Region) { return; }
+				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, value, _rfcTag.Variant);
+				if (!_rfcTag.IsValid())
+				{
+					throw new InvalidOperationException(String.Format("Changing the region subtag to {0} results in an invalid RFC5646 tag.", value));
+				}
+				Modified = true;
 			}
 		}
 
-		public string ISO
+		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
+		//This method is preferable to setting the individual components independantly, as the order
+		//in which they are set can lead to invalid interim Rfc5646 tags
+		public RFC5646Tag Rfc5646Tag
+		{
+			get{ return _rfcTag;}
+			set
+			{
+				if(!value.IsValid())
+				{
+					value = RFC5646Tag.GetValidTag(value);
+				}
+				_rfcTag = value;
+				Modified = true;
+			}
+		}
+
+		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
+		//This method is preferable to setting the individual components independantly, as the order
+		//in which they are set can lead to invalid interim Rfc5646 tags
+		public RFC5646Tag Rfc5646TagOnLoad
+		{
+			get { return _rfcTagOnLoad; }
+			set { _rfcTagOnLoad = value; }
+		}
+
+		/// <summary>
+		/// The ISO-639 code which is also the Ethnologue code.
+		/// </summary>
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
+		virtual public string ISO639
 		{
 			get
 			{
-				return _iso;
+				return _rfcTag.Language;
 			}
 			set
 			{
-				UpdateString(ref _iso, value);
+				if (value == ISO639) { return; }
+				Rfc5646Tag = new RFC5646Tag(value, _rfcTag.Script, _rfcTag.Region, _rfcTag.Variant);
+				if (!_rfcTag.IsValid())
+				{
+					throw new InvalidOperationException(String.Format("Changing the language subtag to {0} results in an invalid RFC5646 tag.", value));
+				}
+				Modified = true;
 			}
 		}
 
-		public string Abbreviation
+		virtual public string Abbreviation
 		{
 			get
 			{
@@ -347,19 +424,27 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Script
+
+		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
+		virtual public string Script
 		{
 			get
 			{
-				return _script;
+				return _rfcTag.Script;
 			}
 			set
 			{
-				UpdateString(ref _script, value);
+				if (value == Script) { return; }
+				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, value, _rfcTag.Region, _rfcTag.Variant);
+				if (!_rfcTag.IsValid())
+				{
+					throw new InvalidOperationException(String.Format("Changing the script subtag to {0} results in an invalid RFC5646 tag.", value));
+				}
+				Modified = true;
 			}
 		}
 
-		public string LanguageName
+		virtual public string LanguageName
 		{
 			get
 			{
@@ -372,7 +457,7 @@ namespace Palaso.WritingSystems
 		}
 
 
-		private void UpdateString(ref string field, string value)
+		protected void UpdateString(ref string field, string value)
 		{
 			if (field == value)
 				return;
@@ -390,19 +475,25 @@ namespace Palaso.WritingSystems
 		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		public string StoreID { get; set; }
+		virtual public string StoreID { get; set; }
 
-		public string DisplayLabel
+		virtual public string DisplayLabel
 		{
 			get
 			{
+				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
+				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
+				if (!String.IsNullOrEmpty(RFC5646))
+				{
+					return RFC5646;
+				}
 				if (!String.IsNullOrEmpty(_abbreviation))
 				{
 					return _abbreviation;
 				}
-				if (!String.IsNullOrEmpty(_iso))
+				if (!String.IsNullOrEmpty(_rfcTag.Language))
 				{
-					return _iso;
+					return _rfcTag.Language;
 				}
 				if (!String.IsNullOrEmpty(_languageName))
 				{
@@ -413,7 +504,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string ListLabel
+		virtual public string ListLabel
 		{
 			get
 			{
@@ -444,17 +535,17 @@ namespace Palaso.WritingSystems
 							throw new ArgumentOutOfRangeException();
 					}
 				}
-				else if (!String.IsNullOrEmpty(_script))
+				else if (!String.IsNullOrEmpty(_rfcTag.Script))
 				{
-					details += _script+"-";
+					details += _rfcTag.Script+"-";
 				}
-				if (!String.IsNullOrEmpty(_region))
+				if (!String.IsNullOrEmpty(_rfcTag.Region))
 				{
-					details += _region + "-";
+					details += _rfcTag.Region + "-";
 				}
-				if (IpaStatus == IpaStatusChoices.NotIpa && !String.IsNullOrEmpty(_variant))
+				if (IpaStatus == IpaStatusChoices.NotIpa && !String.IsNullOrEmpty(_rfcTag.Variant))
 				{
-					details += _variant + "-";
+					details += _rfcTag.Variant + "-";
 				}
 
 				if (IsVoice)
@@ -468,7 +559,8 @@ namespace Palaso.WritingSystems
 				return n+details;
 			}
 		}
-		public string RFC5646
+
+		virtual public string RFC5646
 		{
 			get
 			{
@@ -476,20 +568,7 @@ namespace Palaso.WritingSystems
 //                {
 //                    return _customLanguageTag;
 //                }
-				string id = String.IsNullOrEmpty(ISO) ? "unknown" : ISO;
-				if (!String.IsNullOrEmpty(Script))
-				{
-					id += "-" + Script;
-				}
-				if (!String.IsNullOrEmpty(Region))
-				{
-					id += "-" + Region;
-				}
-				if (!String.IsNullOrEmpty(Variant))
-				{
-					id += "-" + Variant;
-				}
-				return id;
+				return _rfcTag.CompleteTag;
 			}
 //            set
 //            {
@@ -505,21 +584,21 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string VerboseDescription
+		virtual public string VerboseDescription
 		{
 			get
 			{
 				var summary = new StringBuilder();
-				if (!String.IsNullOrEmpty(_variant))
+				if (!String.IsNullOrEmpty(_rfcTag.Variant))
 				{
-					summary.AppendFormat("{0}", _variant);
+					summary.AppendFormat("{0}", _rfcTag.Variant);
 				}
 				summary.AppendFormat(" {0}", string.IsNullOrEmpty(_languageName)?"???":_languageName);
-				if (!String.IsNullOrEmpty(_region))
+				if (!String.IsNullOrEmpty(_rfcTag.Region))
 				{
-					summary.AppendFormat(" in {0}", _region);
+					summary.AppendFormat(" in {0}", _rfcTag.Region);
 				}
-				if (!String.IsNullOrEmpty(_script))
+				if (!String.IsNullOrEmpty(_rfcTag.Script))
 				{
 					summary.AppendFormat(" written in {0} script", CurrentScriptOptionLabel);
 				}
@@ -534,14 +613,14 @@ namespace Palaso.WritingSystems
 			get
 			{
 				ScriptOption option = ScriptOption;
-				return option == null ? _script : option.Label;
+				return option == null ? _rfcTag.Script : option.Label;
 			}
 		}
 
 		/// <summary>
 		/// If we don't have an option for the current script, returns null
 		/// </summary>
-		public ScriptOption ScriptOption
+		virtual public ScriptOption ScriptOption
 		{
 			get
 			{
@@ -570,11 +649,11 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool Modified { get; set; }
+		virtual public bool Modified { get; set; }
 
-		public bool MarkedForDeletion { get; set; }
+		virtual public bool MarkedForDeletion { get; set; }
 
-		public string DefaultFontName
+		virtual public string DefaultFontName
 		{
 			get
 			{
@@ -586,7 +665,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public float DefaultFontSize
+		virtual public float DefaultFontSize
 		{
 			get
 			{
@@ -607,10 +686,14 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Keyboard
+		virtual public string Keyboard
 		{
 			get
 			{
+				if(String.IsNullOrEmpty(_keyboard))
+				{
+					return "";
+				}
 				return _keyboard;
 			}
 			set
@@ -619,7 +702,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool RightToLeftScript
+		virtual public bool RightToLeftScript
 		{
 			get
 			{
@@ -638,7 +721,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// The windows "NativeName" from the Culture class
 		/// </summary>
-		public string NativeName
+		virtual public string NativeName
 		{
 			get
 			{
@@ -651,7 +734,7 @@ namespace Palaso.WritingSystems
 		}
 
 
-		public SortRulesType SortUsing
+		virtual public SortRulesType SortUsing
 		{
 			get { return _sortUsing; }
 			set
@@ -665,7 +748,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string SortRules
+		virtual public string SortRules
 		{
 			get { return _sortRules ?? string.Empty; }
 			set
@@ -675,13 +758,13 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string SpellCheckingId
+		virtual public string SpellCheckingId
 		{
 			get
 			{
 				if (string.IsNullOrEmpty(_spellCheckingId))
 				{
-					return _iso;
+					return _rfcTag.Language;
 				}
 				return _spellCheckingId;
 			}
@@ -692,7 +775,7 @@ namespace Palaso.WritingSystems
 		/// Returns an ICollator interface that can be used to sort strings based
 		/// on the custom collation rules.
 		/// </summary>
-		public ICollator Collator
+		virtual public ICollator Collator
 		{
 			get
 			{
@@ -701,7 +784,7 @@ namespace Palaso.WritingSystems
 					switch (SortUsing)
 					{
 						case SortRulesType.DefaultOrdering:
-							_collator = new SystemCollator(null);
+							_collator = new IcuRulesCollator(String.Empty); // was SystemCollator(null);
 							break;
 						case SortRulesType.CustomSimple:
 							_collator = new SimpleRulesCollator(SortRules);
@@ -718,7 +801,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public bool IsLegacyEncoded
+		virtual public bool IsLegacyEncoded
 		{
 			get
 			{
@@ -740,7 +823,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		/// <param name="message">Used for an error message if rules do not validate.</param>
 		/// <returns>True if rules are valid, false otherwise.</returns>
-		public bool ValidateCollationRules(out string message)
+		virtual public bool ValidateCollationRules(out string message)
 		{
 			message = null;
 			switch (SortUsing)
@@ -766,21 +849,14 @@ namespace Palaso.WritingSystems
 			return false;
 		}
 
-		public WritingSystemDefinition Clone()
+		public override string ToString()
 		{
-			var ws = new WritingSystemDefinition(_iso, _script, _region, _variant, _languageName, _abbreviation, _rightToLeftScript);
-			ws._defaultFontName = _defaultFontName;
-			ws._defaultFontSize = _defaultFontSize;
-			ws._keyboard = _keyboard;
-			ws._versionNumber = _versionNumber;
-			ws._versionDescription = _versionDescription;
-			ws._nativeName = _nativeName;
-			ws._sortUsing = _sortUsing;
-			ws._sortRules = _sortRules;
-			ws._spellCheckingId = _spellCheckingId;
-			ws._dateModified = _dateModified;
-			ws._isLegacyEncoded = _isLegacyEncoded;
-			return ws;
+			return _rfcTag.ToString();
+		}
+
+		virtual public WritingSystemDefinition Clone()
+		{
+			return new WritingSystemDefinition(this);
 		}
 
 	}

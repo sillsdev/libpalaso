@@ -78,6 +78,13 @@ namespace Palaso.DictionaryServices.Lift
 			// _writer.WriteAttributeString("xmlns", "flex", null, "http://fieldworks.sil.org");
 		}
 
+		public void WriteHeader(string headerConentsNotIncludingHeaderElement)
+		{
+			Writer.WriteStartElement("header");
+			Writer.WriteRaw(headerConentsNotIncludingHeaderElement);
+			Writer.WriteEndElement();
+		}
+
 		public static string ProducerString
 		{
 			get { return "Palaso.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }
@@ -142,7 +149,77 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				Add(sense);
 			}
+			foreach (var variant in entry.Variants)
+			{
+				AddVariant(variant);
+			}
+			foreach (var phonetic in entry.Pronunciations)
+			{
+				AddPronunciation(phonetic);
+			}
+			foreach (var etymology in entry.Etymologies)
+			{
+				AddEtymology(etymology);
+			}
+			foreach (var note in entry.Notes)
+			{
+				AddNote(note);
+			}
 			Writer.WriteEndElement();
+		}
+
+		private void AddEtymology(LexEtymology etymology)
+		{
+//  ok if no form is given          if (!MultiTextBase.IsEmpty(etymology))
+//            {
+				Writer.WriteStartElement("etymology");
+				//type is required, so add the attribute even if it's emtpy
+				Writer.WriteAttributeString("type", etymology.Type.Trim());
+
+				//source is required, so add the attribute even if it's emtpy
+				Writer.WriteAttributeString("source", etymology.Source.Trim());
+				AddMultitextGlosses(string.Empty, etymology.Gloss);
+				WriteCustomMultiTextField("comment", etymology.Comment);
+				AddMultitextForms(string.Empty, etymology);
+				Writer.WriteEndElement();
+//           }
+		}
+		private void AddPronunciation(LexPhonetic phonetic)
+		{
+			WriteMultiWithWrapperIfNonEmpty(string.Empty, "pronunciation", phonetic);
+		}
+
+		public void AddVariant(LexVariant variant)
+		{
+			WriteMultiWithWrapperIfNonEmpty(string.Empty, "variant", variant);
+		}
+
+		public void AddNote(LexNote note)
+		{
+			if (!MultiTextBase.IsEmpty(note))
+			{
+				Writer.WriteStartElement("note");
+				if(!string.IsNullOrEmpty(note.Type))
+				{
+					Writer.WriteAttributeString("type", note.Type.Trim());
+				}
+				AddMultitextForms(string.Empty, note);
+				Writer.WriteEndElement();
+			}
+		}
+
+		public void AddReversal(LexReversal reversal)
+		{
+			if (!MultiTextBase.IsEmpty(reversal))
+			{
+				Writer.WriteStartElement("reversal");
+				if (!string.IsNullOrEmpty(reversal.Type))
+				{
+					Writer.WriteAttributeString("type", reversal.Type.Trim());
+				}
+				AddMultitextForms(string.Empty, reversal);
+				Writer.WriteEndElement();
+			}
 		}
 
 		/// <summary>
@@ -210,6 +287,7 @@ namespace Palaso.DictionaryServices.Lift
 			}
 			if (ShouldOutputProperty(LexSense.WellKnownProperties.Gloss))
 			{
+				// review: I (cp) don't think this has the same checking for round tripping that AddMultiText... methods have.
 				WriteOneElementPerFormIfNonEmpty(LexSense.WellKnownProperties.Gloss,
 												 "gloss",
 												 sense.Gloss,
@@ -224,6 +302,14 @@ namespace Palaso.DictionaryServices.Lift
 			foreach (LexExampleSentence example in sense.ExampleSentences)
 			{
 				Add(example);
+			}
+			foreach (var reversal in sense.Reversals)
+			{
+				AddReversal(reversal);
+			}
+			foreach (var note in sense.Notes)
+			{
+				AddNote(note);
 			}
 			WriteWellKnownCustomMultiText(sense,
 										  PalasoDataObject.WellKnownProperties.Note,
@@ -253,6 +339,10 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteStartElement("grammatical-info");
 			Writer.WriteAttributeString("value", pos.Value);
 			WriteFlags(pos);
+			foreach (string rawXml in pos.EmbeddedXmlElements)
+			{
+				Writer.WriteRaw(rawXml);
+			}
 			Writer.WriteEndElement();
 		}
 
@@ -395,6 +485,14 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteAttributeString("type", GetOutputRelationName(relation));
 				Writer.WriteAttributeString("ref", relation.Key);
 				WriteRelationTarget(relation);
+
+				WriteExtensible(relation);
+
+				foreach (string rawXml in relation.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}
@@ -430,14 +528,14 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void WriteCustomMultiTextField(string tag, MultiText text)  // review cp see WriteEmbeddedXmlCollection
+		private void WriteCustomMultiTextField(string type, MultiText text)  // review cp see WriteEmbeddedXmlCollection
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement("field");
 
-				Writer.WriteAttributeString("type", tag);
-				WriteMultiTextNoWrapper(tag, text);
+				Writer.WriteAttributeString("type", type);
+				WriteMultiTextNoWrapper(type, text);
 				Writer.WriteEndElement();
 			}
 		}
@@ -449,6 +547,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteStartElement("trait");
 				Writer.WriteAttributeString("name", key);
 				Writer.WriteAttributeString("value", optionRef.Value);
+
+				foreach (string rawXml in optionRef.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}
@@ -489,7 +593,7 @@ namespace Palaso.DictionaryServices.Lift
 					propertiesAlreadyOutput.Add("type");
 				}
 
-				Add(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
+				AddMultitextForms(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
 				Writer.WriteEndElement();
 			}
 
@@ -504,12 +608,47 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteEndElement();
 		}
 
-		public void Add(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
+		public void AddMultitextGlosses(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
 		{
-			Add(GetOrderedAndFilteredForms(text, propertyName), false);
+			WriteLanguageFormsInWrapper(GetOrderedAndFilteredForms(text, propertyName), "gloss", false);
 			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
 			WriteEmbeddedXmlCollection(text);
 		}
+
+		public void AddMultitextForms(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
+		{
+			WriteLanguageFormsInWrapper(GetOrderedAndFilteredForms(text, propertyName), "form", false);
+			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
+			WriteEmbeddedXmlCollection(text);
+		}
+
+		private void WriteExtensible(IExtensible extensible)
+		{
+			foreach (var trait in extensible.Traits)
+			{
+				WriteTrait(trait);
+			}
+			foreach (var field in extensible.Fields)
+			{
+				Writer.WriteStartElement("field");
+				Writer.WriteAttributeString("type", field.Type);
+				WriteMultiTextNoWrapper(string.Empty /*what's this for*/ , field);
+				foreach (var trait in field.Traits)
+				{
+					WriteTrait(trait);
+				}
+				Writer.WriteEndElement();
+			}
+		}
+
+		private void WriteTrait(LexTrait trait)
+		{
+			Writer.WriteStartElement("trait");
+			Writer.WriteAttributeString("name", trait.Name);
+			Writer.WriteAttributeString("value", trait.Value.Trim());
+			Writer.WriteEndElement();
+		}
+
 		private void WriteEmbeddedXmlCollection(MultiText text)
 		{
 			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to Palaso.Lift / Palaso.Data also then can use MultiTextBase here (or a better interface).
@@ -522,11 +661,11 @@ namespace Palaso.DictionaryServices.Lift
 		{
 		}
 
-		protected void Add(IEnumerable<LanguageForm> forms, bool doMarkTheFirst)
+		protected void WriteLanguageFormsInWrapper(IEnumerable<LanguageForm> forms, string wrapper, bool doMarkTheFirst)
 		{
 			foreach (LanguageForm form in forms)
 			{
-				Writer.WriteStartElement("form");
+				Writer.WriteStartElement(wrapper);
 				Writer.WriteAttributeString("lang", form.WritingSystemId);
 				if (doMarkTheFirst)
 				{
@@ -588,7 +727,7 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
-				Add(propertyName, text);
+				AddMultitextForms(propertyName, text);
 			}
 		}
 
@@ -626,7 +765,12 @@ namespace Palaso.DictionaryServices.Lift
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement(wrapperName);
-				Add(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+				AddMultitextForms(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+
+				if (text is IExtensible)
+				{
+					WriteExtensible((IExtensible)text);
+				}
 				Writer.WriteEndElement();
 				return true;
 			}
@@ -686,6 +830,8 @@ namespace Palaso.DictionaryServices.Lift
 				if (disposing)
 				{
 					// dispose-only, i.e. non-finalizable logic
+					if(_writer !=null)
+						_writer.Close();
 				}
 
 				// shared (dispose and finalizable) cleanup logic

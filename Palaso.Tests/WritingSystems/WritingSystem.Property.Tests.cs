@@ -19,28 +19,36 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void DisplayLabelWhenJustISO()
+		public void DisplayLabel_NoAbbreviation_UsesRFC5646()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "abc";
-			Assert.AreEqual("abc", ws.DisplayLabel);
+			ws.ISO639 = "abc";
+			ws.Variant = "xyz";
+			Assert.AreEqual("abc-xyz", ws.DisplayLabel);
 		}
 
-		[Test]
-		public void DisplayLabelWhenHasAbbreviation()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "abc";
-			ws.Abbreviation = "xyz";
-			Assert.AreEqual("xyz", ws.DisplayLabel);
-		}
+//        [Test]
+//        public void DisplayLabel_HasAbbreviation_ShowsAbbreviation()
+//        {
+//            WritingSystemDefinition ws = new WritingSystemDefinition();
+//            ws.ISO = "abc";
+//            ws.Abbreviation = "xyz";
+//            Assert.AreEqual("xyz", ws.DisplayLabel);
+//        }
 
 		[Test]
-		public void DisplayLabelWhenJustLanguage()
+		public void DisplayLabel_OnlyHasLanguageName_UsesFirstPartOfLanguageName()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.LanguageName = "abcdefghijk";
 			Assert.AreEqual("abcd", ws.DisplayLabel);
+		}
+
+		[Test]
+		public void Rfc5646_HasOnlyAbbreviation_EmptyString()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition(){Abbreviation = "hello"};
+			Assert.AreEqual(string.Empty, ws.RFC5646);
 		}
 
 		[Test]
@@ -136,7 +144,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ModifyingDefinitionSetsModifiedFlag()
 		{
 			// Put any properties to ignore in this string surrounded by "|"
-			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|";
+			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|";
 			// special test values to use for properties that are particular
 			//Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
 			//Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
@@ -155,6 +163,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
+			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Ltn", "", "1901"));
+			secondValueToSet.Add(typeof(RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("en", String.Empty));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -209,7 +219,8 @@ namespace Palaso.Tests.WritingSystems
 				{typeof (bool), true},
 				{typeof (string), "Foo"},
 				{typeof (DateTime), DateTime.Now},
-				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU}
+				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
+				{typeof (RFC5646Tag), RFC5646Tag.RFC5646TagForVoiceWritingSystem("de", String.Empty)}
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{
@@ -232,7 +243,8 @@ namespace Palaso.Tests.WritingSystems
 				{
 					Assert.Fail("Unhandled field type - please update the test to handle type {0}", fieldInfo.FieldType.Name);
 				}
-				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(ws.Clone()), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldInfo.Name);
+				var theClone = ws.Clone();
+				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(theClone), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldInfo.Name);
 			}
 		}
 
@@ -253,6 +265,172 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsFalse(ws.ValidateCollationRules(out message));
 		}
 
+		[Test]
+		public void IsVoice_SetToTrue_SetsScriptRegionAndVariantCorrectly()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+											 {
+												 Script = "Script",
+												 Region = "Region",
+												 Variant = "Variant"
+											 };
+			ws.IsVoice = true;
+			Assert.AreEqual(ws.Script, "Zxxx");
+			Assert.AreEqual(ws.Region, "Region");
+			Assert.AreEqual(ws.Variant, "x-AUDIO");
+		}
 
+		[Test]
+		public void IsVoice_SetToTrue_RemovesEveryThingAfterTheFirstDashFromTheIsoCode()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+											 {
+												 ISO639 = "id-as-per-old-wesay"
+											 };
+			ws.IsVoice = true;
+			Assert.AreEqual(ws.ISO639, "id");
+		}
+
+		[Test]
+		public void IsVoice_SetToTrue_LeavesIsoCodeWithNoDashesAlone()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				ISO639 = "iso"
+			};
+			ws.IsVoice = true;
+			Assert.AreEqual(ws.ISO639, "iso");
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseFromTrue_ClearsScriptRegionAndVariant()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = true
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("", ws.Script);
+			Assert.AreEqual("", ws.Region);
+			Assert.AreEqual("", ws.Variant);
+		}
+
+		[Test]
+		public void IsVoice_SetToTrueWhenIsoContainsDashes_ShortensIsoToEveryThingPriorToFirstDash()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				ISO639 = "iso-script-region-variant"
+			};
+			ws.IsVoice = true;
+			Assert.AreEqual(ws.ISO639, "iso");
+		}
+
+		[Test]
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IsVoiceIsStillTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+											 {
+												 IsVoice = true
+											 };
+			ws.Script = "change!";
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_ScriptIsZxxx()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = true
+			};
+			ws.Script = "change!";
+			Assert.AreEqual("Zxxx", ws.Script);
+		}
+
+		[Test]
+		public void Variant_SetToXDashAudio_SetsIsVoiceToTrue()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = false,
+				Script = "Script",
+				Region = "Region",
+				Variant = "Variant"
+			};
+			ws.Variant = "x-audio";
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = true
+			};
+			ws.Variant = "change!";
+			Assert.AreEqual("change!", ws.Variant);
+			Assert.IsFalse(ws.IsVoice);
+		}
+
+		[Test]
+		public void Iso_SetToSmthWithDashesWhileIsVoiceIsTrue_IsoIsTruncatedToSubTagBeforeFirstDash()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+											 {
+												 IsVoice = true,
+											 };
+			ws.ISO639 = "iso-script-region-variant";
+			Assert.AreEqual("iso", ws.ISO639);
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void Iso639_SetToSmthContainingZxxxDashxDashaudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				IsVoice = true,
+			};
+			ws.ISO639 = "iso-Zxxx-x-audio";
+			Assert.AreEqual("iso", ws.ISO639);
+			Assert.AreEqual("x-AUDIO", ws.Variant);
+			Assert.AreEqual("Zxxx", ws.Script);
+			Assert.IsTrue(ws.IsVoice);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseAfterVariantHasBeenSet_DoesNotRemoveVariant()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				Variant = "variant"
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("variant", ws.Variant);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseAfterRegionHasBeenSet_DoesNotRemoveRegion()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				Region = "Region"
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("Region", ws.Region);
+		}
+
+		[Test]
+		public void IsVoice_SetToFalseAfterScriptHasBeenSet_DoesNotRemoveScript()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition()
+			{
+				Script = "Zxxx"
+			};
+			ws.IsVoice = false;
+			Assert.AreEqual("Zxxx", ws.Script);
+		}
 	}
 }

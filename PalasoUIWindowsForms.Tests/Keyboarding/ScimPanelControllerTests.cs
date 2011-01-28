@@ -9,6 +9,7 @@ using System.Windows.Forms;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class ScimPanelControllerTests
 	{
 		private Form _window;
@@ -16,7 +17,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindowForFocus()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -87,10 +88,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Scim")]
-		[ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
-			ScimPanelController.Singleton.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => ScimPanelController.Singleton.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 
 		[Test]
@@ -108,7 +110,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreNotEqual(unrealisticContextClientId, currentContext.context);
 		}
 
-		private void ResetKeyboardToDefault()
+		private static void ResetKeyboardToDefault()
 		{
 			ScimPanelController.Singleton.Deactivate();
 		}

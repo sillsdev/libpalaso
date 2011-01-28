@@ -338,7 +338,12 @@ namespace Palaso.Reporting
 
 		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
 		{
-			var result = NotifyUserOfProblem(new ShowAlwaysPolicy(), "Details", DialogResult.Yes, messageFmt, args);
+			NotifyUserOfProblem(new ShowAlwaysPolicy(), error, messageFmt, args);
+		}
+
+		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
+		{
+			var result = NotifyUserOfProblem(policy, "Details", DialogResult.Yes, messageFmt, args);
 			if (result == DialogResult.Yes)
 			{
 				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));

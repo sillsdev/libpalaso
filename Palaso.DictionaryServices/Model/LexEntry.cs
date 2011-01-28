@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using Palaso.Data;
-using Palaso.I8N;
+using Palaso.i18n;
 using Palaso.Lift;
 using Palaso.Reporting;
 using Palaso.Text;
-//using Palaso.UI.WindowsForms.i8n;
+//using Palaso.UI.WindowsForms.i18n;
 
 namespace Palaso.DictionaryServices.Model
 {
@@ -33,6 +33,12 @@ namespace Palaso.DictionaryServices.Model
 		private int _orderInFile;
 
 		private BindingList<LexSense> _senses;
+		//NB: to help with possible confusion: as of wesay 0.9 (oct 2010), wesay doesn't use these lists (it just shoves them in embedded xml), but SOLID does
+		private  BindingList<LexVariant> _variants;
+		private  BindingList<LexNote> _notes;
+		private BindingList<LexPhonetic> _pronunciations;
+		private BindingList<LexEtymology> _etymologies;
+
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
 		private bool _isBeingDeleted;
@@ -86,6 +92,11 @@ namespace Palaso.DictionaryServices.Model
 			}
 			_lexicalForm = new MultiText(this);
 			_senses = new BindingList<LexSense>();
+			_variants = new BindingList<LexVariant>();
+			_notes = new BindingList<LexNote>();
+			_pronunciations = new BindingList<LexPhonetic>();
+			_etymologies = new BindingList<LexEtymology>();
+
 			CreationTime = creationTime;
 
 			WireUpEvents();
@@ -113,6 +124,7 @@ namespace Palaso.DictionaryServices.Model
 			base.WireUpEvents();
 			WireUpChild(_lexicalForm);
 			WireUpList(_senses, "senses");
+			WireUpList(_variants, "variants");
 		}
 
 		public override void SomethingWasModified(string propertyModified)
@@ -214,6 +226,7 @@ namespace Palaso.DictionaryServices.Model
 													 value.Minute,
 													 value.Second,
 													 value.Kind);
+					_isDirty = true;
 				}
 			}
 		}
@@ -221,6 +234,37 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexSense> Senses
 		{
 			get { return _senses; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexVariant> Variants
+		{
+			get { return _variants; }
+		}
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
+		/// </summary>
+		public IList<LexNote> Notes
+		{
+			get { return _notes; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexPhonetic> Pronunciations
+		{
+			get { return _pronunciations; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexEtymology> Etymologies
+		{
+			get { return _etymologies; }
 		}
 
 		/// <summary>
@@ -279,6 +323,7 @@ namespace Palaso.DictionaryServices.Model
 			{
 				sense.CleanUpAfterEditting();
 			}
+			//enhance if ever WeSay does variants, we may need to add this kind of cleanup
 			CleanUpEmptyObjects();
 		}
 
@@ -447,6 +492,9 @@ namespace Palaso.DictionaryServices.Model
 		public bool IsDirty
 		{
 			get { return _isDirty; }
+			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
+			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this setable.
+			set { _isDirty = value; }
 		}
 
 		public LanguageForm GetHeadWord(string writingSystemId)

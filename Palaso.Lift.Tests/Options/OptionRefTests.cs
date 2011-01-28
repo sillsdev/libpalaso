@@ -46,12 +46,13 @@ namespace Palaso.Lift.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void CompareTo_OtherIsNotOptionRef_Throws()
 		{
-			OptionRef reference = new OptionRef();
-			string other = "";
-			Assert.AreEqual(0, reference.CompareTo(other));
+			var reference = new OptionRef();
+			const string other = "";
+			Assert.Throws<ArgumentException>(
+				() => reference.CompareTo(other)
+			);
 		}
 	}
 }

@@ -30,17 +30,17 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepository_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepositoryId_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null)));
 		}
 
 		[Test]
@@ -52,38 +52,28 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepository_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null,
-													   new Dictionary<string, object>(),
-													   new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new Dictionary<string, object>(), new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullResults_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepositoryId_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper,
-													   new Dictionary<string, object>(),
-													   null));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, new Dictionary<string, object>(), null)));
 		}
 	}
 
-	/// <summary>
-	/// NOTE: starting with Resharper 5, these tests get run by themselves, and they all fail
-	/// I think the (old) and expected behavior was to ignore them in isolation, because the
-	/// class is *not* marked as a [TestFixture].  I don't know the correct way to fix this,
-	/// so I'm just adding this note, for now.
-	/// </summary>
-	public class RecordTokenTestsBase
+	public abstract class RecordTokenTestsBase
 	{
 		private RecordToken<PalasoTestItem> _token;
 
@@ -102,10 +92,10 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void GetIndexer_NullFieldName_Throws()
 		{
-			Token[null] = null;
+			Assert.Throws<ArgumentNullException>(
+				() => Token[null] = null);
 		}
 
 		[Test]

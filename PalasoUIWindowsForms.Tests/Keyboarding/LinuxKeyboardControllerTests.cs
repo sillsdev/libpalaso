@@ -1,5 +1,4 @@
 #if MONO
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -9,6 +8,7 @@ using Palaso.UI.WindowsForms.Keyboarding;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class LinuxKeyboardControllerTests
 	{
 		private Form _window;
@@ -22,7 +22,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindowForFocus()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -49,17 +49,19 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
-		[Test, ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
+		[Test]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
-			KeyboardController.ActivateKeyboard("foobar");
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("foobar")
+			);
 		}
 
 		[Test]
 		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
 		{
 			// the keyboardName for this test and above need to be different
-			string keyboardName = "This should never be the same as the name of an installed keyboard";
+			const string keyboardName = "This should never be the same as the name of an installed keyboard";
 			try
 			{
 				KeyboardController.ActivateKeyboard(keyboardName);
@@ -130,13 +132,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Scim")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
-			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 
-		private void ResetKeyboardToDefault()
+		private static void ResetKeyboardToDefault()
 		{
 			KeyboardController.DeactivateKeyboard();
 		}
@@ -182,14 +185,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
 			RequiresWindowForFocus();
 
 			KeyboardController.DeactivateKeyboard();
-			KeyboardController.GetActiveKeyboard();
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.GetActiveKeyboard()
+			);
 		}
 
 		[Test]
@@ -232,13 +236,13 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
 			RequiresWindowForFocus();
-
-			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 	}
 }

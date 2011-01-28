@@ -305,6 +305,29 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
+		public void TwoVariants()
+		{
+			LexEntry e = MakeSimpleEntry();
+			string xml1 =
+				@"
+				 <variant>
+					<form lang='und-fonipa'><text>boo</text></form>
+				  </variant>";
+			String xml2 =
+				@"<variant>
+					<form lang='und-fonipa'><text>baa</text></form>
+				  </variant>";
+
+			_builder.MergeInVariant(e, MakeBasicLiftMultiText(), xml1);
+			_builder.MergeInVariant(e, MakeBasicLiftMultiText(), xml2);
+			_builder.FinishEntry(e);
+			_liftWriter.Add(e);
+			_liftWriter.End();
+			AssertThatXmlIn.String(_stringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//entry/variant/form/text[text()='baa']",1);
+			AssertThatXmlIn.String(_stringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//entry/variant/form/text[text()='boo']", 1);
+		}
+
+		[Test]
 		public void Etymology()
 		{
 			LexEntry e = MakeSimpleEntry();

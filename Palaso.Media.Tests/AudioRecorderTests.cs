@@ -37,11 +37,12 @@ namespace Palaso.Media.Tests
 		   Assert.IsFalse(File.Exists(path));
 	   }
 
-	   [Test, ExpectedException(typeof(ApplicationException))]
+	   [Test]
 	   public void StopRecording_NotRecording_Throws()
 	   {
 		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
-		   x.StopRecordingAndSaveAsWav();
+		Assert.Throws<ApplicationException>(() =>
+x.StopRecordingAndSaveAsWav());
 	   }
 
 	   [Test]
@@ -66,12 +67,13 @@ namespace Palaso.Media.Tests
 		   }
 	   }
 
-	   [Test,ExpectedException(typeof(ApplicationException))]
+	   [Test]
 	   public void Play_WhileRecording_Throws()
 	   {
 		   using (var session = new RecordingSession())
 		   {
-			   session.Recorder.Play();
+			Assert.Throws<ApplicationException>(() =>
+session.Recorder.Play());
 		   }
 	   }
 
@@ -99,20 +101,22 @@ namespace Palaso.Media.Tests
 		   }
 	   }
 
-	   [Test, Ignore("IrrKlang doesn't throw, so we don't really know"), ExpectedException(typeof(ApplicationException))]
+	   [Test, Ignore("IrrKlang doesn't throw, so we don't really know")]
 	   public void Play_FileEmpty_Throws()
 	   {
 		   using (var f = new TempFile())
 		   {
 			   var x = new AudioIrrKlangSession(f.Path);
-			   x.Play();
+			Assert.Throws<ApplicationException>(() =>
+ x.Play());
 		   }
 	   }
-	   [Test, ExpectedException(typeof(FileNotFoundException))]
+	   [Test]
 	   public void Play_FileDoesExist_Throws()
 	   {
 		   var x = new AudioIrrKlangSession(Path.GetRandomFileName());
-		   x.Play();
+		Assert.Throws<FileNotFoundException>(() =>
+x.Play());
 	   }
 
 	   [Test]
@@ -267,12 +271,13 @@ namespace Palaso.Media.Tests
 		   }
 	   }
 
-	   [Test,ExpectedException(typeof(ApplicationException))]
+	   [Test]
 	   public void StartRecording_WhileRecording_Throws()
 	   {
 		   using (var session = new RecordingSession())
 		   {
-			   session.Recorder.StartRecording();
+			Assert.Throws<ApplicationException>(() =>
+session.Recorder.StartRecording());
 		   }
 	   }
 

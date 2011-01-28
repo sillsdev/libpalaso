@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Palaso.Code;
 using Palaso.Reporting;
 using Palaso.Extensions;
 
@@ -91,5 +92,94 @@ namespace Palaso.IO
 			}
 		}
 
+
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+		/// [applicationFolder]/[subPath]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
+		{
+			foreach (var directoryHoldingFiles in new []{null, "DistFiles", "common" /*for wesay*/})
+			{
+				var path = FileLocator.DirectoryOfApplicationOrSolution;
+				path = FileLocator.DirectoryOfApplicationOrSolution;
+				if(directoryHoldingFiles!=null)
+					path = Path.Combine(path, directoryHoldingFiles);
+
+				foreach (var part in partsOfTheSubPath)
+				{
+					path = System.IO.Path.Combine(path, part);
+				}
+				if (File.Exists(path))
+					return path;
+			}
+
+			if (optional)
+				return null;
+			string subpath="";
+			foreach (var part in partsOfTheSubPath)
+				{
+					subpath = System.IO.Path.Combine(subpath, part);
+				}
+			throw new ApplicationException("Could not locate the required file, "+ subpath);
+		}
+
+		/// <summary>
+		/// Find a file which MUST EXIST. On a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+		/// [applicationFolder]/[subPath]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetFileDistributedWithApplication(params string[] partsOfTheSubPath)
+			{
+				return GetFileDistributedWithApplication(false, partsOfTheSubPath);
+			}
+
+
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/DistFiles/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[subPath1]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetDirectoryDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
+		{
+			var path = FileLocator.DirectoryOfApplicationOrSolution;
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
+			if (Directory.Exists(path))
+				return path;
+
+			//try distfiles
+			path = FileLocator.DirectoryOfApplicationOrSolution;
+			path = Path.Combine(path,"DistFiles");
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
+
+
+			if (optional && !Directory.Exists(path))
+				return null;
+
+			RequireThat.Directory(path).Exists();
+			return path;
+		}
+		/// <summary>
+		/// Find a directory which MUST EXIST. On a development machine, lives in [solution]/DistFiles/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[subPath1]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetDirectoryDistributedWithApplication(params string[] partsOfTheSubPath)
+		{
+			return GetDirectoryDistributedWithApplication(false, partsOfTheSubPath);
+		}
 	}
 }

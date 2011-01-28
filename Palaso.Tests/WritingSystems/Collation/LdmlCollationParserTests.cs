@@ -465,11 +465,12 @@ namespace Palaso.Tests.WritingSystems.Collation
 			Assert.AreEqual("& \\(", icu);
 		}
 
-		[Test, ExpectedException(typeof(ApplicationException))]
+		[Test]
 		public void InvalidLdml_Throws()
 		{
 			_collationXml = "<rules><m>a</m></rules>";
-			LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.Throws<ApplicationException>(
+				() => LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml));
 		}
 
 		[Test]

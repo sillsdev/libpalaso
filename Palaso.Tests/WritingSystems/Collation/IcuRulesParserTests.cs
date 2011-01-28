@@ -880,10 +880,12 @@ namespace Palaso.Tests.WritingSystems.Collation
 //            Assert.AreEqual("<rules><reset>'\\&lt;&amp;</reset></rules>", _xmlText.ToString());
 		}
 
-		[Test, ExpectedException(typeof(ApplicationException))]
+		[Test]
 		public void InvalidIcu_Throws()
 		{
-			_icuParser.WriteIcuRules(_writer, "&a <<<< b");
+
+			Assert.Throws<ApplicationException>(
+				() => _icuParser.WriteIcuRules(_writer, "&a <<<< b"));
 			_writer.Close();
 		}
 

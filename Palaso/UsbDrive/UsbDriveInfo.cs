@@ -22,6 +22,8 @@ namespace Palaso.UsbDrive
 			get;
 		}
 
+		public abstract ulong AvailableFreeSpace { get; }
+
 		public static List<UsbDriveInfo> GetDrives()
 		{
 #if MONO

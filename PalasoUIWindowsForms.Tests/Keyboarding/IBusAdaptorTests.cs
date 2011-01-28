@@ -10,6 +10,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class IBusAdaptorTests
 	{
 		private Form _window;
@@ -23,7 +24,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindow()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -44,14 +45,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
 		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			// needed for focus
 			RequiresWindow();
 
 			IBusAdaptor.Deactivate();
-			IBusAdaptor.GetActiveKeyboard();
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				() => IBusAdaptor.GetActiveKeyboard()
+			);
 		}
 
 		[Test]
@@ -94,13 +96,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		[ExpectedException( typeof(ArgumentOutOfRangeException))]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
 			// needed for focus
 			RequiresWindow();
 
-			IBusAdaptor.ActivateKeyboard("Nonexistant Keyboard");
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => IBusAdaptor.ActivateKeyboard("Nonexistant Keyboard")
+			);
 		}
 
 		[Test]
