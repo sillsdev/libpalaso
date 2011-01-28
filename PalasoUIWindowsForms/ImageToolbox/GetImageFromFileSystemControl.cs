@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Windows.Forms;
 
@@ -13,27 +14,30 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	public partial class GetImageFromFileSystemControl : UserControl, IImageToolboxControl
 	{
 	   private PalasoImage _previousImage;
-	   static string _sLastPictureDirectory = string.Empty;
-	   public event EventHandler ImageChanged;
+		private PalasoImage _currentImage;
+
+		public event EventHandler ImageChanged;
 
 		public GetImageFromFileSystemControl()
 		{
 			InitializeComponent();
 			button1.Image = ImageToolboxButtons.browse;
 			button1.Text = string.Empty;
+
 		}
+
 
 		private void button1_Click(object sender, EventArgs e)
 		{
 			using(var dlg = new OpenFileDialog())
 			{
-				if (string.IsNullOrEmpty(_sLastPictureDirectory))
+				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 				{
 					dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 				}
 				else
 				{
-					dlg.InitialDirectory = _sLastPictureDirectory;
+					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
 				}
 
 				dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;*.gif";
@@ -41,11 +45,25 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				dlg.AutoUpgradeEnabled = true;
 				if(DialogResult.OK == dlg.ShowDialog())
 				{
-					_pictureBox.Image = Image.FromFile(dlg.FileName);
-					_sLastPictureDirectory = Path.GetDirectoryName(dlg.FileName);
+					_currentImage = new PalasoImage() { Image = LoadImageWithoutLocking(dlg.FileName), FileName = Path.GetFileName(dlg.FileName) };
+					_pictureBox.Image = _currentImage.Image;
+					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
+					ImageToolboxSettings.Default.Save();
 					if (ImageChanged != null)
 						ImageChanged.Invoke(this, null);
 				}
+			}
+		}
+
+		private static Image LoadImageWithoutLocking(string path)
+		{
+			//locks until the image is dispose of some day, which is counter-intuitive to me
+			//  return Image.FromFile(path);
+
+			//following work-around from http://support.microsoft.com/kb/309482
+			using(var fs = new System.IO.FileStream(path, FileMode.Open,FileAccess.Read))
+			{
+				return Image.FromStream(fs);
 			}
 		}
 
@@ -57,11 +75,24 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		public PalasoImage GetImage()
 		{
-			if (_pictureBox.Image != null)
+			if (_currentImage!=null)
+//            if (_pictureBox.Image != null)
 			{
-				return new PalasoImage() { Image = _pictureBox.Image };
+				//return new PalasoImage() { Image = _pictureBox.Image, FileName = _fileName };
+				return _currentImage;
 			}
 			return _previousImage;
+		}
+
+		private void GetImageFromFileSystemControl_Load(object sender, EventArgs e)
+		{
+		}
+
+		private void _startupTimer_Tick(object sender, EventArgs e)
+		{
+			//nb: had problems doing this on Load event (listeners weren't notified of the new picture)
+			_startupTimer.Enabled = false;
+			button1_Click(this,null);
 		}
 	}
 }
