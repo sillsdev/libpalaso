@@ -37,10 +37,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				keyboards.AddRange(IBusAdaptor.KeyboardDescriptors);
 			}
-			if ((engineKinds & Engines.Scim) == Engines.Scim)
-			{
-				keyboards.AddRange(ScimAdaptor.KeyboardDescriptors);
-			}
+			// Scim no longer supported 2011-01-10 CP
+			//if ((engineKinds & Engines.Scim) == Engines.Scim)
+			//{
+			//    keyboards.AddRange(ScimAdaptor.KeyboardDescriptors);
+			//}
 #else
 			if ((engineKinds & Engines.Windows) == Engines.Windows)
 			{
@@ -66,10 +67,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				IBusAdaptor.ActivateKeyboard(name);
 			}
-			else if (ScimAdaptor.HasKeyboardNamed(name))
-			{
-				ScimAdaptor.ActivateKeyboard(name);
-			}
+			// Scim no longer supported 2011-01-10 CP
+			//else if (ScimAdaptor.HasKeyboardNamed(name))
+			//{
+			//    ScimAdaptor.ActivateKeyboard(name);
+			//}
 #else
 			if (WindowsIMEAdaptor.HasKeyboardNamed(name))
 			{
@@ -104,9 +106,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			if (!string.IsNullOrEmpty(name))
 				return name;
 
-			name = ScimAdaptor.GetActiveKeyboard();
-			if (!string.IsNullOrEmpty(name))
-				return name;
+			// Scim no longer supported 2011-01-10 CP
+			//name = ScimAdaptor.GetActiveKeyboard();
+			//if (!string.IsNullOrEmpty(name))
+			//    return name;
 #else
 			string name = Keyman6Adaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
@@ -127,7 +130,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 #if MONO
 			IBusAdaptor.Deactivate();
-			ScimAdaptor.Deactivate();
+			// Scim no longer supported 2011-01-10 CP
+			//ScimAdaptor.Deactivate();
 #else
 			Keyman6Adaptor.Deactivate();
 			Keyman7Adaptor.Deactivate();
@@ -142,10 +146,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				return IBusAdaptor.EngineAvailable;
 			}
-			if ((engine & Engines.Scim) == Engines.Scim)
-			{
-				return ScimAdaptor.EngineAvailable;
-			}
+			// Scim no longer supported 2011-01-10 CP
+			//if ((engine & Engines.Scim) == Engines.Scim)
+			//{
+			//    return ScimAdaptor.EngineAvailable;
+			//}
 #else
 			if ((engine & Engines.Windows) == Engines.Windows)
 			{

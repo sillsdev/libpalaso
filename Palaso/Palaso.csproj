@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -72,32 +72,31 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
-	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\icu.net.dll</HintPath>
-	</Reference>
-	<None Include="..\lib\net2.0\icudt40.dll">
+	<None Include="..\lib\$(Configuration)\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\net2.0\icuin40.dll">
+	<None Include="..\lib\$(Configuration)\icuin40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\net2.0\icuuc40.dll">
+	<None Include="..\lib\$(Configuration)\icuuc40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+  <ItemGroup>
 	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\mono\icu.net.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\mono\icu.net.dll.config">
+	<None Include="..\lib\$(Configuration)\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
+	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
 	</Reference>
+	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />
@@ -208,7 +207,6 @@
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
-	<Compile Include="Reporting\ErrorReportTests.cs" />
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
 	<Compile Include="Reporting\ExceptionReportingDialog.cs">

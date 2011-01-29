@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -74,18 +74,21 @@
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\Keyman7Interop.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
 	</Reference>
 	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\KeymanLink.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
 	</Reference>
+	<None Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
   <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
@@ -100,6 +103,9 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
 	</Reference>
+	<None Include="..\lib\common\Enchant.Net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
@@ -381,8 +387,6 @@
 	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Keyboarding\ScimAdaptor.cs" />
-	<Compile Include="Keyboarding\ScimPanelController.cs" />
 	<Compile Include="Keyboarding\IBusAdaptor.cs" />
 	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
@@ -400,18 +404,23 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
 	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\GetImageFromFileSystemControl.resx">
 	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageCreditsControl.resx">
 	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageLicenseControl.resx">
 	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
@@ -419,12 +428,15 @@
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>ImageToolboxButtons.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxControl.resx">
 	  <DependentUpon>ImageToolboxControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxDialog.resx">
 	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\LicenseLogos.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -433,9 +445,11 @@
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\Scanner\DeviceAcquire.resx">
 	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
@@ -456,6 +470,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Widgets\BetterLabel.resx">
 	  <DependentUpon>BetterLabel.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Widgets\ControlListBox.resx">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
@@ -463,6 +478,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
 	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
 	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
@@ -470,21 +486,27 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\NothingSpecialView.resx">
 	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\IpaIdentifierView.resx">
 	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\CustomIdentifierView.resx">
 	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.resx">
 	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.resx">
 	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\WSIdentifierView.resx">
 	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
 	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
@@ -528,6 +550,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSTree\WritingSystemTreeView.resx">
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
