@@ -134,7 +134,6 @@
 	<Compile Include="WritingSystems\Collation\LdmlCollationParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
-	<Compile Include="WritingSystems\LdmlStyleStringComparerTests.cs" />
 	<Compile Include="WritingSystems\Rfc5646SubtagParserTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />
