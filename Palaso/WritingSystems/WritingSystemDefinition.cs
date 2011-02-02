@@ -35,7 +35,10 @@ namespace Palaso.WritingSystems
 			OtherLanguage
 		}
 
-
+		static public int LatestVersion
+		{
+			get { return 1; }
+		}
 
 		private RFC5646Tag _rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
 

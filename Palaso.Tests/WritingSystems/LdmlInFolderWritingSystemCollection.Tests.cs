@@ -90,6 +90,12 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void LatestVersion_IsOne()
+		{
+			Assert.AreEqual(1, LdmlInFolderWritingSystemStore.LatestVersion);
+		}
+
+		[Test]
 		public void PathToCollection_SameAsGiven()
 		{
 			Assert.AreEqual(_testPath, _collection.PathToWritingSystems);

@@ -10,6 +10,12 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemDefinitionVariantTests
 	{
 		[Test]
+		public void LatestVersion_IsOne()
+		{
+			Assert.AreEqual(1, WritingSystemDefinition.LatestVersion);
+		}
+
+		[Test]
 		public void IpaStatus_SetToIpaWhenVariantIsEmpty_VariantNowFonIpa()
 		{
 			var ws = new WritingSystemDefinition();

@@ -12,6 +12,11 @@ namespace Palaso.WritingSystems
 		private const string _kExtension = ".ldml";
 		private string _path;
 
+		public static int LatestVersion
+		{
+			get{ return 1;}
+		}
+
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
