@@ -317,6 +317,10 @@
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemStoreMigrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigrator.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlV0Adaptor.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\Version0Migrator.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemV0Definition.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemLdmlVersionGetter.cs" />
 	<Compile Include="WritingSystems\Rfc5646SubtagParser.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
