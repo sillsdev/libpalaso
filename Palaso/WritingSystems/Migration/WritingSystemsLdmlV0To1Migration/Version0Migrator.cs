@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Palaso.Migration;
@@ -21,12 +22,14 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public void Migrate(string sourceFilePath, string destinationFilePath)
 		{
-			var adaptor = new LdmlAdaptorV0();
+			var adaptorToReadLdmlV0 = new LdmlAdaptorV0();
+			var adaptorToWriteLdmlV1 = new LdmlAdaptorV1();
+
 			var wsToMigrate = new WritingSystemDefinitionV0();
 			var migratedWs = new WritingSystemDefinitionV1();
-			adaptor.Read(sourceFilePath, wsToMigrate);
 
-			throw new NotImplementedException();
+			adaptorToReadLdmlV0.Read(sourceFilePath, wsToMigrate);
+			adaptorToWriteLdmlV1.Write(destinationFilePath, migratedWs, new FileStream(sourceFilePath, FileMode.Open));
 		}
 	}
 }

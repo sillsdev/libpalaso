@@ -10,11 +10,11 @@ using Palaso.Xml;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 {
-	public class LdmlAdaptorV0
+	public class LdmlAdaptorV1
 	{
 		private XmlNamespaceManager _nameSpaceManager;
 
-		public LdmlAdaptorV0()
+		public LdmlAdaptorV1()
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
 		}
