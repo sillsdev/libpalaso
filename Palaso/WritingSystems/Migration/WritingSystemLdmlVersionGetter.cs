@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using Palaso.Migration;
 
-namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
+namespace Palaso.WritingSystems.Migration
 {
 	public class WritingSystemLdmlVersionGetter : IFileVersion
 	{

@@ -9,7 +9,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	/// <summary>
 	/// This class stores the information used to define various writing system properties.
 	/// </summary>
-	public class WritingSystemV0Definition
+	public class WritingSystemDefinitionV0
 	{
 		public enum SortRulesType
 		{
@@ -74,21 +74,21 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		/// </summary>
 		//private string _customLanguageTag;
 
-		public WritingSystemV0Definition()
+		public WritingSystemDefinitionV0()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isLegacyEncoded = false;
 		   // _defaultFontSize = 10; //arbitrary
 		}
 
-		public WritingSystemV0Definition(string iso)
+		public WritingSystemDefinitionV0(string iso)
 			: this()
 		{
 			_rfcTag.Language = iso;
 			_abbreviation = _rfcTag.Script = _languageName = _rfcTag.Variant = _rfcTag.Region = _nativeName = string.Empty;
 		}
 
-		public WritingSystemV0Definition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
+		public WritingSystemDefinitionV0(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
 			_rfcTag.Language = iso;
@@ -104,7 +104,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		/// Copy constructor.
 		/// </summary>
 		/// <param name="ws">The ws.</param>
-		public WritingSystemV0Definition(WritingSystemV0Definition ws)
+		public WritingSystemDefinitionV0(WritingSystemDefinitionV0 ws)
 			: this(ws._rfcTag.Language, ws._rfcTag.Script, ws._rfcTag.Region, ws._rfcTag.Variant, ws._languageName, ws._abbreviation, ws._rightToLeftScript)
 		{
 			_defaultFontName = ws._defaultFontName;
@@ -916,9 +916,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			return _rfcTag.ToString();
 		}
 
-		virtual public WritingSystemV0Definition Clone()
+		virtual public WritingSystemDefinitionV0 Clone()
 		{
-			return new WritingSystemV0Definition(this);
+			return new WritingSystemDefinitionV0(this);
 		}
 
 	}

@@ -10,16 +10,16 @@ using Palaso.Xml;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class LdmlV0Adaptor
+	public class LdmlAdaptorV0
 	{
 		private XmlNamespaceManager _nameSpaceManager;
 
-		public LdmlV0Adaptor()
+		public LdmlAdaptorV0()
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
 		}
 
-		public void Read(string filePath, WritingSystemV0Definition ws)
+		public void Read(string filePath, WritingSystemDefinitionV0 ws)
 		{
 			if (filePath == null)
 			{
@@ -40,7 +40,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		public void Read(XmlReader xmlReader, WritingSystemV0Definition ws)
+		public void Read(XmlReader xmlReader, WritingSystemDefinitionV0 ws)
 		{
 			if (xmlReader == null)
 			{
@@ -108,7 +108,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteString(sb.ToString());
 		}
 
-		private void ReadLdml(XmlReader reader, WritingSystemV0Definition ws)
+		private void ReadLdml(XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(reader != null);
 			Debug.Assert(ws != null);
@@ -137,7 +137,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			// ws.Modified = false; // Note: This unfortunately is no longer true. The RFC5646 tag may have been auto modified above. CP 2010-12
 		}
 
-		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemV0Definition ws)
+		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			if (reader.GetAttribute("xmlns:palaso") != null)
 			{
@@ -170,7 +170,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void ReadIdentityElement(XmlReader reader, WritingSystemV0Definition ws)
+		private void ReadIdentityElement(XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "identity");
 			using (XmlReader identityReader = reader.ReadSubtree())
@@ -214,7 +214,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void ReadLayoutElement(XmlReader reader, WritingSystemV0Definition ws)
+		private void ReadLayoutElement(XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			// The orientation node has two attributes, "lines" and "characters" which define direction of writing.
 			// The valid values are: "top-to-bottom", "bottom-to-top", "left-to-right", and "right-to-left"
@@ -238,7 +238,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void ReadCollationsElement(XmlReader reader, WritingSystemV0Definition ws)
+		private void ReadCollationsElement(XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "collations");
 			using (XmlReader collationsReader = reader.ReadSubtree())
@@ -271,7 +271,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void ReadCollationElement(string collationXml, WritingSystemV0Definition ws)
+		private void ReadCollationElement(string collationXml, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(collationXml != null);
 			Debug.Assert(ws != null);
@@ -280,7 +280,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			readerSettings.CloseInput = true;
 			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
 			string rulesTypeAsString = string.Empty;
-			WritingSystemV0Definition.SortRulesType rulesType = WritingSystemV0Definition.SortRulesType.OtherLanguage;
+			WritingSystemDefinitionV0.SortRulesType rulesType = WritingSystemDefinitionV0.SortRulesType.OtherLanguage;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
 				if (FindElement(collationReader, "special"))
@@ -288,17 +288,17 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					collationReader.Read();
 					rulesTypeAsString = GetSpecialValue(collationReader, "palaso", "sortRulesType");
 				}
-				ws.SortUsing = (WritingSystemV0Definition.SortRulesType)Enum.Parse(typeof(WritingSystemV0Definition.SortRulesType), rulesTypeAsString);
+				ws.SortUsing = (WritingSystemDefinitionV0.SortRulesType)Enum.Parse(typeof(WritingSystemDefinitionV0.SortRulesType), rulesTypeAsString);
 			}
 			switch (ws.SortUsing)
 			{
-				case WritingSystemV0Definition.SortRulesType.OtherLanguage:
+				case WritingSystemDefinitionV0.SortRulesType.OtherLanguage:
 					ReadCollationRulesForOtherLanguage(collationXml, ws);
 					break;
-				case WritingSystemV0Definition.SortRulesType.CustomSimple:
+				case WritingSystemDefinitionV0.SortRulesType.CustomSimple:
 					ReadCollationRulesForCustomSimple(collationXml, ws);
 					break;
-				case WritingSystemV0Definition.SortRulesType.CustomICU:
+				case WritingSystemDefinitionV0.SortRulesType.CustomICU:
 					ReadCollationRulesForCustomICU(collationXml, ws);
 					break;
 				default:
@@ -307,7 +307,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void ReadCollationRulesForOtherLanguage(string collationXml, WritingSystemV0Definition ws)
+		private void ReadCollationRulesForOtherLanguage(string collationXml, WritingSystemDefinitionV0 ws)
 		{
 			XmlReaderSettings readerSettings = new XmlReaderSettings();
 			readerSettings.CloseInput = true;
@@ -330,18 +330,18 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				if (!foundValue)
 				{
 					// missing base alias element, fall back to ICU rules
-					ws.SortUsing = WritingSystemV0Definition.SortRulesType.CustomICU;
+					ws.SortUsing = WritingSystemDefinitionV0.SortRulesType.CustomICU;
 					ReadCollationRulesForCustomICU(collationXml, ws);
 				}
 			}
 		}
 
-		private void ReadCollationRulesForCustomICU(string collationXml, WritingSystemV0Definition ws)
+		private void ReadCollationRulesForCustomICU(string collationXml, WritingSystemDefinitionV0 ws)
 		{
 			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationXml);
 		}
 
-		private void ReadCollationRulesForCustomSimple(string collationXml, WritingSystemV0Definition ws)
+		private void ReadCollationRulesForCustomSimple(string collationXml, WritingSystemDefinitionV0 ws)
 		{
 			string rules;
 			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
@@ -350,11 +350,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				return;
 			}
 			// fall back to ICU rules if Simple rules don't work
-			ws.SortUsing = WritingSystemV0Definition.SortRulesType.CustomICU;
+			ws.SortUsing = WritingSystemDefinitionV0.SortRulesType.CustomICU;
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
-		public void Write(string filePath, WritingSystemV0Definition ws, Stream oldFile)
+		public void Write(string filePath, WritingSystemDefinitionV0 ws, Stream oldFile)
 		{
 			if (filePath == null)
 			{
@@ -397,7 +397,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		public void Write(XmlWriter xmlWriter, WritingSystemV0Definition ws, XmlReader xmlReader)
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinitionV0 ws, XmlReader xmlReader)
 		{
 			if (xmlWriter == null)
 			{
@@ -431,7 +431,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
@@ -541,7 +541,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			return false;
 		}
 
-		public void FillWithDefaults(string rfc4646, WritingSystemV0Definition ws)
+		public void FillWithDefaults(string rfc4646, WritingSystemDefinitionV0 ws)
 		{
 			string id = rfc4646.ToLower();
 			switch (id)
@@ -602,7 +602,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteEndElement();
 		}
 
-		private void WriteIdentityElement(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteIdentityElement(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
@@ -645,7 +645,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteEndElement();
 		}
 
-		private void WriteLayoutElement(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteLayoutElement(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
@@ -695,7 +695,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
 		}
 
-		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemV0Definition ws)
+		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemDefinitionV0 ws)
 		{
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
@@ -717,7 +717,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteEndElement();
 		}
 
-		private void WriteCollationsElement(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteCollationsElement(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
@@ -749,7 +749,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteEndElement();
 		}
 
-		private void WriteCollationElement(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteCollationElement(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
@@ -765,7 +765,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				needToCopy = false;
 			}
 
-			if (ws.SortUsing == WritingSystemV0Definition.SortRulesType.DefaultOrdering && !needToCopy)
+			if (ws.SortUsing == WritingSystemDefinitionV0.SortRulesType.DefaultOrdering && !needToCopy)
 				return;
 
 			if (needToCopy && reader.IsEmptyElement)
@@ -787,18 +787,18 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				}
 			}
 
-			if (ws.SortUsing != WritingSystemV0Definition.SortRulesType.DefaultOrdering)
+			if (ws.SortUsing != WritingSystemDefinitionV0.SortRulesType.DefaultOrdering)
 			{
 				writer.WriteStartElement("collation");
 				switch (ws.SortUsing)
 				{
-					case WritingSystemV0Definition.SortRulesType.OtherLanguage:
+					case WritingSystemDefinitionV0.SortRulesType.OtherLanguage:
 						WriteCollationRulesFromOtherLanguage(writer, reader, ws);
 						break;
-					case WritingSystemV0Definition.SortRulesType.CustomSimple:
+					case WritingSystemDefinitionV0.SortRulesType.CustomSimple:
 						WriteCollationRulesFromCustomSimple(writer, reader, ws);
 						break;
-					case WritingSystemV0Definition.SortRulesType.CustomICU:
+					case WritingSystemDefinitionV0.SortRulesType.CustomICU:
 						WriteCollationRulesFromCustomICU(writer, reader, ws);
 						break;
 					default:
@@ -861,11 +861,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void WriteCollationRulesFromOtherLanguage(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteCollationRulesFromOtherLanguage(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == WritingSystemV0Definition.SortRulesType.OtherLanguage);
+			Debug.Assert(ws.SortUsing == WritingSystemDefinitionV0.SortRulesType.OtherLanguage);
 
 			// Since the alias element gets all information from another source,
 			// we should remove all other elements in this collation element.  We
@@ -880,11 +880,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		private void WriteCollationRulesFromCustomSimple(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteCollationRulesFromCustomSimple(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == WritingSystemV0Definition.SortRulesType.CustomSimple);
+			Debug.Assert(ws.SortUsing == WritingSystemDefinitionV0.SortRulesType.CustomSimple);
 
 			string message;
 			// avoid throwing exception, just don't save invalid data
@@ -896,11 +896,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			WriteCollationRulesFromICUString(writer, reader, icu);
 		}
 
-		private void WriteCollationRulesFromCustomICU(XmlWriter writer, XmlReader reader, WritingSystemV0Definition ws)
+		private void WriteCollationRulesFromCustomICU(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == WritingSystemV0Definition.SortRulesType.CustomICU);
+			Debug.Assert(ws.SortUsing == WritingSystemDefinitionV0.SortRulesType.CustomICU);
 			WriteCollationRulesFromICUString(writer, reader, ws.SortRules);
 		}
 
@@ -932,7 +932,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		//This class is used to load writing systems from ldml. It will allow the ldml adaptor to load
 		//writing systems that are otherwise invalid and give the consumer a chance to fix them up before
 		//loading them into a "real" writing system.
-		private class WritingSystemV0DefinitionForValidationChecking:WritingSystemV0Definition
+		private class WritingSystemV0DefinitionForValidationChecking:WritingSystemDefinitionV0
 		{
 
 		}

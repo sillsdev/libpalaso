@@ -9,5 +9,10 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	[TestFixture]
 	public class LdmlV0AdaptorTests
 	{
+		[Test]
+		public void NotYetImplemented()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
