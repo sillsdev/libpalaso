@@ -649,7 +649,25 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void ScriptSubtag_ContainsOtherThanLegalScripts_ReturnsFalse()
+		public void Language_SetWithInvalidLanguageTag_Throws()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Script_SetWithInvalidScriptTag_Throws()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Region_SetWithInvalidRegionTag_Throws()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Variant_SetPrivateUseTag_VariantisSet()
 		{
 			throw new NotImplementedException();
 		}

@@ -284,5 +284,29 @@ namespace Palaso.Tests.WritingSystems
 			RFC5646Tag rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "fonipa-test-x-etic");
 			Assert.IsTrue(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "fonipa-x-etic"));
 		}
+
+		[Test]
+		public void Language_SetWithInvalidLanguageTag_Throws()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Script_SetWithInvalidScriptTag_Throws()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Region_SetWithInvalidRegionTag_Throws()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Variant_SetPrivateUseTag_VariantisSet()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
