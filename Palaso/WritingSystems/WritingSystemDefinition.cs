@@ -68,7 +68,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// singleton
 		/// </summary>
-		private static List<ScriptOption> _scriptOptions = new List<ScriptOption>();
+		private static List<Iso15924Script> _scriptOptions = new List<Iso15924Script>();
 	   /// <summary>
 		/// singleton
 		/// </summary>
@@ -124,41 +124,6 @@ namespace Palaso.WritingSystems
 			_dateModified = ws._dateModified;
 			_isLegacyEncoded = ws._isLegacyEncoded;
 			_rfcTagOnLoad = ws._rfcTagOnLoad;
-		}
-
-		/// <summary>
-		/// parse in the text of the script registry we get from http://unicode.org/iso15924/iso15924-text.html
-		/// </summary>
-		private static void LoadScriptOptionsIfNeeded()
-		{
-		  if (_scriptOptions.Count > 0)
-			  return;
-
-		  //this one isn't an official script: REVIEW: we're not using fonipa, whichis a VARIANT, not a script
-		  _scriptOptions.Add(new ScriptOption("IPA", "Zipa"));
-			//to help people find Latin
-		  _scriptOptions.Add(new ScriptOption("Roman (Latin)", "Latn"));
-
-			string[] scripts = Resource.scriptNames.Split('\n');
-			foreach (string line in scripts)
-			{
-				string tline = line.Trim();
-				if (tline.Length==0 || (tline.Length > 0 && tline[0]=='#'))
-					continue;
-				string[] fields = tline.Split(';');
-				string label = fields[2];
-
-				//these looks awful: "Korean (alias for Hangul + Han)"
-				// and "Japanese (alias for Han + Hiragana + Katakana"
-				if (label.IndexOf(" (alias") > -1)
-				{
-					label = label.Substring(0, fields[2].IndexOf(" (alias "));
-				}
-				_scriptOptions.Add(new ScriptOption(label, fields[0]));
-
-			}
-
-			_scriptOptions.Sort(ScriptOption.CompareScriptOptions);
 		}
 
 		/// <summary>
@@ -617,7 +582,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				ScriptOption option = ScriptOption;
+				Iso15924Script option = Iso15924Script;
 				return option == null ? _rfcTag.Script : option.Label;
 			}
 		}
@@ -625,7 +590,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// If we don't have an option for the current script, returns null
 		/// </summary>
-		virtual public ScriptOption ScriptOption
+		virtual public Iso15924Script Iso15924Script
 		{
 			get
 			{
@@ -645,12 +610,11 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public static List<ScriptOption> ScriptOptions
+		public static List<Iso15924Script> ScriptOptions
 		{
 			get
 			{
-				LoadScriptOptionsIfNeeded();
-				return _scriptOptions;
+				return RFC5646Tag.ValidIso15924Scripts;
 			}
 		}
 
@@ -864,41 +828,6 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
-	}
-
-	public class ScriptOption
-	{
-		public ScriptOption(string label, string code)
-		{
-			Label = label;
-			Code = code;
-		}
-
-		public string Code { get; private set; }
-
-		public string Label { get; private set; }
-
-		public override string ToString()
-		{
-			return Label;
-		}
-
-		public static int CompareScriptOptions(ScriptOption x, ScriptOption y)
-		{
-			if (x == null)
-			{
-				if (y == null)
-				{
-					return 0;
-				}
-				return -1;
-			}
-			if (y == null)
-			{
-				return 1;
-			}
-			return x.Label.CompareTo(y.Label);
-		}
 	}
 
 	public enum IpaStatusChoices

@@ -424,8 +424,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		#region CurrentWritingSystemProperties
 
 // Properties not (yet) mirrored:
-//                Current.ScriptOption; // ro - ScriptOption
-//                Current.ScriptOptions; // ro - List<ScriptOption>
+//                Current.Iso15924Script; // ro - Iso15924Script
+//                Current.ScriptOptions; // ro - List<Iso15924Script>
 //                Current.MarkedForDeletion; // bool
 //                Current.Modified; // bool
 //                Current.StoreID; // string
@@ -781,14 +781,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public ScriptOption CurrentScriptOption
+		public Iso15924Script CurrentIso15924Script
 		{
 			get
 			{
 				if(_currentWritingSystem==null  )
 					return null;
 
-				return _currentWritingSystem.ScriptOption;
+				return _currentWritingSystem.Iso15924Script;
 				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
 			}
 			set

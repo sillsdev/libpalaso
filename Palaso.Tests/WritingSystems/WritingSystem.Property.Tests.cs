@@ -130,14 +130,14 @@ namespace Palaso.Tests.WritingSystems
 		public void CurrentScriptOptionReturnCorrectScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "Kore", "", "", "", "", false);
-			Assert.AreEqual("Korean", ws.ScriptOption.Label);
+			Assert.AreEqual("Korean", ws.Iso15924Script.Label);
 		}
 
 		[Test]
 		public void CurrentScriptOptionReturnsNullWithUnrecognizedScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "blah", "", "", "", "", false);
-			Assert.IsNull(ws.ScriptOption);
+			Assert.IsNull(ws.Iso15924Script);
 		}
 
 		[Test]

@@ -15,12 +15,56 @@ namespace Palaso.WritingSystems
 		}
 
 		private static List<Iso639LanguageCode> _validLanguageCodes;
+		private static List<Iso15924Script> _iso15924ScriptOptions;
 		private List<string> _language;
 		private List<string> _script;
 		private List<string> _region;
 		private List<string> _variant;
 
 		private string[] seperators = new string[]{"-", "_"};
+		public static List<Iso15924Script> ValidIso15924Scripts
+		{
+			get
+			{
+				LoadScriptOptionsIfNeeded();
+				return _iso15924ScriptOptions;
+			}
+		}
+
+		/// <summary>
+		/// parse in the text of the script registry we get from http://unicode.org/iso15924/iso15924-text.html
+		/// </summary>
+		private static void LoadScriptOptionsIfNeeded()
+		{
+			if (_iso15924ScriptOptions.Count > 0)
+				return;
+
+			//this one isn't an official script: REVIEW: we're not using fonipa, whichis a VARIANT, not a script
+			_iso15924ScriptOptions.Add(new Iso15924Script("IPA", "Zipa"));
+			//to help people find Latin
+			_iso15924ScriptOptions.Add(new Iso15924Script("Roman (Latin)", "Latn"));
+
+			string[] scripts = Resource.scriptNames.Split('\n');
+			foreach (string line in scripts)
+			{
+				string tline = line.Trim();
+				if (tline.Length == 0 || (tline.Length > 0 && tline[0] == '#'))
+					continue;
+				string[] fields = tline.Split(';');
+				string label = fields[2];
+
+				//these looks awful: "Korean (alias for Hangul + Han)"
+				// and "Japanese (alias for Han + Hiragana + Katakana"
+				if (label.IndexOf(" (alias") > -1)
+				{
+					label = label.Substring(0, fields[2].IndexOf(" (alias "));
+				}
+				_iso15924ScriptOptions.Add(new Iso15924Script(label, fields[0]));
+
+			}
+
+			_iso15924ScriptOptions.Sort(Iso15924Script.CompareScriptOptions);
+		}
 
 		public static IList<Iso639LanguageCode> ValidLanguageCodes
 		{
