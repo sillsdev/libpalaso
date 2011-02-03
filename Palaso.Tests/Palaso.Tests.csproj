@@ -137,9 +137,7 @@
 	<Compile Include="WritingSystems\Migration\LdmlFileContentForTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemCollectionMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigratorTests.cs" />
-	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0Tests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\Version0MigratorTests.cs" />
-	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0Tests.cs" />
 	<Compile Include="WritingSystems\Rfc5646SubtagParserTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />

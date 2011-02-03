@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class LookupISOCodeDialog : Form
 	{
-		private WritingSystemDefinition.LanguageCode _selectedWritingSystem;
+		private Iso639LanguageCode _selectedWritingSystem;
 		private string _lastSearchedForText;
 		private LookupIsoCodeModel _model;
 		public LookupISOCodeDialog()
@@ -22,7 +22,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Close();
 		}
 
-		public WritingSystemDefinition.LanguageCode ISOCodeAndName
+		public Iso639LanguageCode ISOCodeAndName
 		{
 			get
 			{
@@ -65,7 +65,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (listView1.SelectedIndices != null && listView1.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = listView1.Items[listView1.SelectedIndices[0]];
-				_selectedWritingSystem = item.Tag as WritingSystemDefinition.LanguageCode;
+				_selectedWritingSystem = item.Tag as Iso639LanguageCode;
 			}
 		}
 
@@ -88,7 +88,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			listView1.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
 
-			foreach(WritingSystemDefinition.LanguageCode lang in _model.GetMatchingWritingSystems(typedText))
+			foreach(Iso639LanguageCode lang in _model.GetMatchingWritingSystems(typedText))
 			{
 					ListViewItem item = new ListViewItem(lang.Name);
 					item.SubItems.Add(lang.Code);

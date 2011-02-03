@@ -72,7 +72,7 @@ namespace Palaso.WritingSystems
 	   /// <summary>
 		/// singleton
 		/// </summary>
-		private static List<LanguageCode> _languageCodes;
+		private static List<Iso639LanguageCode> _languageCodes;
 
 		/// <summary>
 		/// For overriding the other identifier fields, to specify a custom RFC5646
@@ -164,74 +164,12 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
 		/// </summary>
-		public static IList<LanguageCode> LanguageCodes
+		public static IList<Iso639LanguageCode> LanguageCodes
 		{
 			get
 			{
-				if (_languageCodes != null)
-				{
-					return _languageCodes;
-				}
-				_languageCodes = new List<LanguageCode>();
-				string[] languages = Resource.languageCodes.Split('\n');
-				foreach (string line in languages)
-				{
-					if(line.Contains("Ref_Name"))//skip first line
-						continue;
-					string tline = line.Trim();
-					if (tline.Length == 0)
-						continue;
-					string[] fields = tline.Split('\t');
-					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
-					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
-				}
-				_languageCodes.Sort(LanguageCode.CompareByName);
-				return _languageCodes;
+				return RFC5646Tag.ValidLanguageCodes;
 			}
-		}
-
-		public class LanguageCode
-		{
-			public LanguageCode(string code, string name, string iso3Code)
-			{
-				Code = code;
-				Name = name;
-				ISO3Code = iso3Code;
-			}
-
-
-			public string Name { get; set; }
-
-			public string Code { get; set; }
-
-			public string ISO3Code { get; set; }
-
-			public static int CompareByName(LanguageCode x, LanguageCode y)
-			{
-				if (x == null)
-				{
-					if (y == null)
-					{
-						return 0;
-					}
-					else
-					{
-						return -1;
-					}
-				}
-				else
-				{
-					if (y == null)
-					{
-						return 1;
-					}
-					else
-					{
-						return x.Name.CompareTo(y.Name);
-					}
-				}
-			}
-
 		}
 
 		virtual public string VersionNumber

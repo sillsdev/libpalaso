@@ -14,12 +14,38 @@ namespace Palaso.WritingSystems
 			Variant
 		}
 
+		private static List<Iso639LanguageCode> _validLanguageCodes;
 		private List<string> _language;
 		private List<string> _script;
 		private List<string> _region;
 		private List<string> _variant;
 
 		private string[] seperators = new string[]{"-", "_"};
+
+		public static IList<Iso639LanguageCode> ValidLanguageCodes
+		{
+			get{
+			if (_validLanguageCodes != null)
+				{
+					return _validLanguageCodes;
+				}
+				_validLanguageCodes = new List<Iso639LanguageCode>();
+				string[] languages = Resource.languageCodes.Split('\n');
+				foreach (string line in languages)
+				{
+					if(line.Contains("Ref_Name"))//skip first line
+						continue;
+					string tline = line.Trim();
+					if (tline.Length == 0)
+						continue;
+					string[] fields = tline.Split('\t');
+					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
+					_validLanguageCodes.Add(new Iso639LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
+				}
+				_validLanguageCodes.Sort(Iso639LanguageCode.CompareByName);
+				return _validLanguageCodes;
+			}
+		}
 
 		public RFC5646Tag(string language, string script, string region, string variant)
 		{

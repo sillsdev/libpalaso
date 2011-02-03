@@ -307,6 +307,7 @@
 	<Compile Include="WritingSystems\Collation\IcuRulesParser.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParser.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollator.cs" />
+	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemStore.cs" />
 	<Compile Include="WritingSystems\LdmlAdaptor.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
