@@ -286,27 +286,67 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Constructor_SetWithInvalidLanguageTag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("bogus", String.Empty,String.Empty,String.Empty));
+		}
+
+		[Test]
+		public void Constructor_SetWithInvalidScriptTag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", "bogus", String.Empty, String.Empty));
+		}
+
+		[Test]
+		public void Constructor_SetWithInvalidRegionTag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", String.Empty, "bogus", String.Empty));
+		}
+
+		[Test]
+		public void Constructor_SetWithInvalidVariantTag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", String.Empty, String.Empty, "bogus"));
+		}
+
+		[Test]
 		public void Language_SetWithInvalidLanguageTag_Throws()
 		{
-			throw new NotImplementedException();
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Language = "bogus");
 		}
 
 		[Test]
 		public void Script_SetWithInvalidScriptTag_Throws()
 		{
-			throw new NotImplementedException();
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Script = "bogus");
 		}
 
 		[Test]
 		public void Region_SetWithInvalidRegionTag_Throws()
 		{
-			throw new NotImplementedException();
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Region = "bogus");
 		}
 
 		[Test]
 		public void Variant_SetPrivateUseTag_VariantisSet()
 		{
-			throw new NotImplementedException();
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Variant = "bogus");
+		}
+
+		[Test]
+		public void Constructor_LanguageIsEmptyAndVariantIsNotPrivateUse_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty));
+		}
+
+		[Test]
+		public void Constructor_LanguageIsEmptyAndVariantIsPrivateUse_SetsVariant()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty));
 		}
 	}
 }
