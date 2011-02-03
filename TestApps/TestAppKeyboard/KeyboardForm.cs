@@ -20,6 +20,7 @@ namespace TestAppKeyboard
 
 			LoadKeyboards(this.keyboardsA);
 			LoadKeyboards(this.keyboardsB);
+			LoadKeyboards(this.keyboardsC);
 		}
 
 		public void LoadKeyboards(ComboBox comboBox)
@@ -34,12 +35,20 @@ namespace TestAppKeyboard
 
 		private void testAreaA_Enter(object sender, EventArgs e)
 		{
+			Application.DoEvents();
 			KeyboardController.ActivateKeyboard((string)keyboardsA.SelectedItem);
 		}
 
 		private void testAreaB_Enter(object sender, EventArgs e)
 		{
+			Application.DoEvents();
 			KeyboardController.ActivateKeyboard((string)keyboardsB.SelectedItem);
+		}
+
+		private void testAreaC_Enter(object sender, EventArgs e)
+		{
+			Application.DoEvents();
+			KeyboardController.ActivateKeyboard((string)keyboardsC.SelectedItem);
 		}
 	}
 }

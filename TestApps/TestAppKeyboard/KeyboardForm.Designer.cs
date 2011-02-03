@@ -36,6 +36,10 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
+			this.label5 = new System.Windows.Forms.Label();
+			this.label6 = new System.Windows.Forms.Label();
+			this.keyboardsC = new System.Windows.Forms.ComboBox();
+			this.testAreaC = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			//
 			// testAreaA
@@ -106,11 +110,49 @@
 			this.label4.TabIndex = 7;
 			this.label4.Text = "Keyboard for B";
 			//
+			// label5
+			//
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(188, 131);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(77, 13);
+			this.label5.TabIndex = 11;
+			this.label5.Text = "Keyboard for C";
+			//
+			// label6
+			//
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(9, 131);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(63, 13);
+			this.label6.TabIndex = 10;
+			this.label6.Text = "Test Area C";
+			//
+			// keyboardsC
+			//
+			this.keyboardsC.FormattingEnabled = true;
+			this.keyboardsC.Location = new System.Drawing.Point(191, 147);
+			this.keyboardsC.Name = "keyboardsC";
+			this.keyboardsC.Size = new System.Drawing.Size(174, 21);
+			this.keyboardsC.TabIndex = 9;
+			//
+			// testAreaC
+			//
+			this.testAreaC.Location = new System.Drawing.Point(12, 147);
+			this.testAreaC.Name = "testAreaC";
+			this.testAreaC.Size = new System.Drawing.Size(173, 20);
+			this.testAreaC.TabIndex = 8;
+			this.testAreaC.Enter += new System.EventHandler(this.testAreaC_Enter);
+			//
 			// KeyboardForm
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(383, 193);
+			this.ClientSize = new System.Drawing.Size(383, 228);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.label6);
+			this.Controls.Add(this.keyboardsC);
+			this.Controls.Add(this.testAreaC);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
@@ -136,5 +178,9 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.ComboBox keyboardsC;
+		private System.Windows.Forms.TextBox testAreaC;
 	}
 }
