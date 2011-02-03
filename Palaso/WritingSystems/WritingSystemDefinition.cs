@@ -129,11 +129,11 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
 		/// </summary>
-		public static IList<Iso639LanguageCode> LanguageCodes
+		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
 			get
 			{
-				return RFC5646Tag.ValidLanguageCodes;
+				return RFC5646Tag.ValidIso639LanguageCodes;
 			}
 		}
 

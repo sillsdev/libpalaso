@@ -66,7 +66,7 @@ namespace Palaso.WritingSystems
 			_iso15924ScriptOptions.Sort(Iso15924Script.CompareScriptOptions);
 		}
 
-		public static IList<Iso639LanguageCode> ValidLanguageCodes
+		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
 			get{
 			if (_validLanguageCodes != null)

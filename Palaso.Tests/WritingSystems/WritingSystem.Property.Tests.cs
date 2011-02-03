@@ -88,7 +88,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void ReadsISORegistry()
 		{
-			Assert.Greater(WritingSystemDefinition.LanguageCodes.Count, 100);
+			Assert.Greater(WritingSystemDefinition.ValidIso639LanguageCodes.Count, 100);
 		}
 
 
