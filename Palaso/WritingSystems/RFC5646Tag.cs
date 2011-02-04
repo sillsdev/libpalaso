@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems
 			Variant
 		}
 
-		private static List<Iso639LanguageCode> _validLanguageCodes;
+		private static List<Iso639LanguageCode> _validIso639LanguageCodes;
 		private static List<Iso15924Script> _iso15924ScriptOptions;
 		private List<string> _language;
 		private List<string> _script;
@@ -69,11 +69,11 @@ namespace Palaso.WritingSystems
 		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
 			get{
-			if (_validLanguageCodes != null)
+			if (_validIso639LanguageCodes != null)
 				{
-					return _validLanguageCodes;
+					return _validIso639LanguageCodes;
 				}
-				_validLanguageCodes = new List<Iso639LanguageCode>();
+				_validIso639LanguageCodes = new List<Iso639LanguageCode>();
 				string[] languages = Resource.languageCodes.Split('\n');
 				foreach (string line in languages)
 				{
@@ -84,10 +84,10 @@ namespace Palaso.WritingSystems
 						continue;
 					string[] fields = tline.Split('\t');
 					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
-					_validLanguageCodes.Add(new Iso639LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
+					_validIso639LanguageCodes.Add(new Iso639LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
 				}
-				_validLanguageCodes.Sort(Iso639LanguageCode.CompareByName);
-				return _validLanguageCodes;
+				_validIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
+				return _validIso639LanguageCodes;
 			}
 		}
 
@@ -138,26 +138,25 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_language = ParseSubtagForParts(value);
-				if (!LanguageTagIsValid)
-				{
-					throw new ArgumentException("Language codes may not contain private use extensions.");
-				}
+				CheckIfLanguageTagIsValid();
 			}
 		}
 
-		private bool LanguageTagIsValid
+		private void CheckIfLanguageTagIsValid()
 		{
-			get
-			{
-				foreach (string part in _language)
+				if(_language.Count>1){throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");}
+				bool partIsValidIso639LanguageCode = false;
+				foreach (Iso639LanguageCode code in ValidIso639LanguageCodes)
 				{
-					if (PartIsExtension(part))
-					{
-						return false;
-					}
+					partIsValidIso639LanguageCode =
+						_language[0].Equals(code.Code, StringComparison.OrdinalIgnoreCase) ||
+						_language[0].Equals(code.ISO3Code, StringComparison.OrdinalIgnoreCase);
+					if(partIsValidIso639LanguageCode) break;
 				}
-				return true;
-			}
+				if (!partIsValidIso639LanguageCode)
+				{
+					throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-639 language code.", _language[0]));
+				}
 		}
 
 		private bool PartIsExtension(string part)

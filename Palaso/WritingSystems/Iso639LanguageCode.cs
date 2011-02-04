@@ -17,7 +17,7 @@ namespace Palaso.WritingSystems
 
 		public string Name { get; set; }
 
-		public string Code { get; set; }
+		public string Code { get; set; }    //Iso 639-1 code or Iso 639-3 code if former is not available
 
 		public string ISO3Code { get; set; }
 

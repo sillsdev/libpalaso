@@ -40,7 +40,7 @@ namespace Palaso.WritingSystems
 			get { return 1; }
 		}
 
-		private RFC5646Tag _rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
+		private RFC5646Tag _rfcTag;
 
 		private string _languageName;
 
@@ -96,10 +96,7 @@ namespace Palaso.WritingSystems
 		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
-			_rfcTag.Language = iso;
-			_rfcTag.Script = script;
-			_rfcTag.Region = region;
-			_rfcTag.Variant = variant;
+			_rfcTag = new RFC5646Tag(iso, script,region,variant);
 			_abbreviation = abbreviation;
 			_languageName = languageName;
 			_rightToLeftScript = rightToLeftScript;

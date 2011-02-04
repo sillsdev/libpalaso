@@ -348,5 +348,77 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty));
 		}
+
+		[Test]
+		public void Language_SetWithCasedButValidLanguageTag_SetsLanguage()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Language = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Script_SetWithCasedButValidScriptTag_SetsScript()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Script = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Region_SetWithCasedButValidRegionTag_SetsRegion()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Region = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Variant_SetSeemingPrivateUseTagButWithCapitalX_Throws()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Variant = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Variant_SetWithCasedButValidVariantTag_SetsVariant()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Variant = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Language_SetWithTwoValidLanguageTags_Throws()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Language = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Script_SetWithTwoValidScriptTags_Throws()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Script = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Region_SetWithTwoValidRegionTags_Throws()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Region = "bogus");
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Variant_SetWithTwoValidVariantTags_WhatToDo()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => tag.Variant = "bogus");
+			throw new NotImplementedException();
+		}
 	}
 }
