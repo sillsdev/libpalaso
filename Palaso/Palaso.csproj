@@ -379,6 +379,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
+	<Content Include="Resources\ianaSubtagRegistry.txt" />
 	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>
