@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using System.Threading;
 using Palaso.Code;
 using Palaso.Reporting;
 
 using NDesk.DBus;
 using org.freedesktop.IBus;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -124,6 +125,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public IBus (NDesk.DBus.Connection connection)
 		{
 			_inputBus = connection.GetObject<org.freedesktop.IBus.IIBus> ("org.freedesktop.IBus", new ObjectPath ("/org/freedesktop/IBus"));
+			//Console.WriteLine("Introspect IBus");
+			//Console.WriteLine(_inputBus.Introspect());
+			//Console.WriteLine("---");
 		}
 
 		/// <summary>
@@ -171,6 +175,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 	{
 		static NDesk.DBus.Connection _connection;
 		private static KeyboardController.KeyboardDescriptor _defaultKeyboard;
+		private static Timer _timer;
+		private static string _requestActivateName;
 
 		enum IBusError
 		{
@@ -255,9 +261,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				try
 				{
-					Console.WriteLine("TryGetFocusedInputContext {0}", i);
 					string inputContextPath = ibus.GetFocusedInputContextPath();
-					Console.WriteLine("TryGetFocusedInputContext: ICPath {0}", inputContextPath);
+					//Console.WriteLine("TryGetFocusedInputContext: {0} ICPath {1}", i, inputContextPath);
 					return new IBusInputContext(_connection, inputContextPath);
 				}
 				catch (Exception)
@@ -266,7 +271,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					{
 						throw;
 					}
-					Application.DoEvents();
+					Thread.Sleep(20);
 				}
 			}
 		}
@@ -280,10 +285,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				throw new ArgumentOutOfRangeException("name", name, "IBus does not have a Keyboard of that name.");
 			}
 
-			var ibus = new IBus (_connection);
-			var inputContextBus = TryGetFocusedInputContext(ibus);
+			if (_timer == null)
+			{
+				_timer = new Timer { Interval = 10 };
+				_timer.Tick += OnTimerTick;
+			}
+			_requestActivateName = name;
+			_timer.Start();
+		}
 
-			inputContextBus.InputContext.SetEngine (name);
+		private static void OnTimerTick(object sender, EventArgs e)
+		{
+			_timer.Stop();
+			var ibus = new IBus(_connection);
+			var inputContextBus = TryGetFocusedInputContext(ibus);
+			inputContextBus.InputContext.SetEngine(_requestActivateName);
 		}
 
 		/// <summary>
@@ -338,7 +354,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void Deactivate ()
 		{
-			ActivateKeyboard(DefaultKeyboardName);
+			// Do nothing. IBus and mono maintain one input context per control.
+			// So, there is no need to deactivate it as the keyboard is not global.
+			//ActivateKeyboard(DefaultKeyboardName);
 		}
 
 		public static bool HasKeyboardNamed (string name)
@@ -365,8 +383,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception)
 			{
-				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
-																 "Could not get ActiveKeyboard");
+				ErrorReport.NotifyUserOfProblem(
+					new ShowOncePerSessionBasedOnExactMessagePolicy(),
+					"Could not get ActiveKeyboard"
+				);
 				return String.Empty;
 			}
 		}

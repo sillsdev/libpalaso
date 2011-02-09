@@ -21,6 +21,7 @@ namespace TestAppKeyboard
 			LoadKeyboards(this.keyboardsA);
 			LoadKeyboards(this.keyboardsB);
 			LoadKeyboards(this.keyboardsC);
+			LoadKeyboards(this.currentKeyboard);
 		}
 
 		public void LoadKeyboards(ComboBox comboBox)
@@ -35,20 +36,39 @@ namespace TestAppKeyboard
 
 		private void testAreaA_Enter(object sender, EventArgs e)
 		{
-			Application.DoEvents();
-			KeyboardController.ActivateKeyboard((string)keyboardsA.SelectedItem);
+			if (cbOnEnter.Checked)
+			{
+				string wantKeyboard = (string)keyboardsA.SelectedItem;
+				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
+				KeyboardController.ActivateKeyboard(wantKeyboard);
+			} else {
+				Console.WriteLine("Enter A");
+			}
 		}
 
 		private void testAreaB_Enter(object sender, EventArgs e)
 		{
-			Application.DoEvents();
-			KeyboardController.ActivateKeyboard((string)keyboardsB.SelectedItem);
+			if (cbOnEnter.Checked)
+			{
+				string wantKeyboard = (string)keyboardsB.SelectedItem;
+				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
+				KeyboardController.ActivateKeyboard(wantKeyboard);
+			} else {
+				Console.WriteLine("Enter B");
+			}
 		}
 
 		private void testAreaC_Enter(object sender, EventArgs e)
 		{
-			Application.DoEvents();
-			KeyboardController.ActivateKeyboard((string)keyboardsC.SelectedItem);
+			if (cbOnEnter.Checked)
+			{
+				string wantKeyboard = (string)keyboardsC.SelectedItem;
+				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
+				KeyboardController.ActivateKeyboard(wantKeyboard);
+			} else {
+				Console.WriteLine("Enter C");
+			}
 		}
+
 	}
 }

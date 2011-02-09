@@ -40,6 +40,12 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.keyboardsC = new System.Windows.Forms.ComboBox();
 			this.testAreaC = new System.Windows.Forms.TextBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.currentKeyboard = new System.Windows.Forms.ComboBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.cbOnEnter = new System.Windows.Forms.CheckBox();
+			this.cbOnActivate = new System.Windows.Forms.CheckBox();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			//
 			// testAreaA
@@ -113,7 +119,7 @@
 			// label5
 			//
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(188, 131);
+			this.label5.Location = new System.Drawing.Point(188, 126);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(77, 13);
 			this.label5.TabIndex = 11;
@@ -122,7 +128,7 @@
 			// label6
 			//
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(9, 131);
+			this.label6.Location = new System.Drawing.Point(9, 126);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(63, 13);
 			this.label6.TabIndex = 10;
@@ -131,24 +137,77 @@
 			// keyboardsC
 			//
 			this.keyboardsC.FormattingEnabled = true;
-			this.keyboardsC.Location = new System.Drawing.Point(191, 147);
+			this.keyboardsC.Location = new System.Drawing.Point(191, 142);
 			this.keyboardsC.Name = "keyboardsC";
 			this.keyboardsC.Size = new System.Drawing.Size(174, 21);
 			this.keyboardsC.TabIndex = 9;
 			//
 			// testAreaC
 			//
-			this.testAreaC.Location = new System.Drawing.Point(12, 147);
+			this.testAreaC.Location = new System.Drawing.Point(12, 142);
 			this.testAreaC.Name = "testAreaC";
 			this.testAreaC.Size = new System.Drawing.Size(173, 20);
 			this.testAreaC.TabIndex = 8;
 			this.testAreaC.Enter += new System.EventHandler(this.testAreaC_Enter);
 			//
+			// groupBox1
+			//
+			this.groupBox1.Controls.Add(this.cbOnActivate);
+			this.groupBox1.Controls.Add(this.cbOnEnter);
+			this.groupBox1.Controls.Add(this.label7);
+			this.groupBox1.Controls.Add(this.currentKeyboard);
+			this.groupBox1.Location = new System.Drawing.Point(12, 174);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(353, 99);
+			this.groupBox1.TabIndex = 12;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Controls";
+			//
+			// currentKeyboard
+			//
+			this.currentKeyboard.FormattingEnabled = true;
+			this.currentKeyboard.Location = new System.Drawing.Point(179, 19);
+			this.currentKeyboard.Name = "currentKeyboard";
+			this.currentKeyboard.Size = new System.Drawing.Size(168, 21);
+			this.currentKeyboard.TabIndex = 0;
+			//
+			// label7
+			//
+			this.label7.AutoSize = true;
+			this.label7.Location = new System.Drawing.Point(67, 22);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(106, 13);
+			this.label7.TabIndex = 1;
+			this.label7.Text = "Set current keyboard";
+			//
+			// cbOnEnter
+			//
+			this.cbOnEnter.AutoSize = true;
+			this.cbOnEnter.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.cbOnEnter.Location = new System.Drawing.Point(61, 46);
+			this.cbOnEnter.Name = "cbOnEnter";
+			this.cbOnEnter.Size = new System.Drawing.Size(131, 17);
+			this.cbOnEnter.TabIndex = 2;
+			this.cbOnEnter.Text = "Set keyboard on enter";
+			this.cbOnEnter.UseVisualStyleBackColor = true;
+			//
+			// cbOnActivate
+			//
+			this.cbOnActivate.AutoSize = true;
+			this.cbOnActivate.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.cbOnActivate.Location = new System.Drawing.Point(47, 69);
+			this.cbOnActivate.Name = "cbOnActivate";
+			this.cbOnActivate.Size = new System.Drawing.Size(145, 17);
+			this.cbOnActivate.TabIndex = 3;
+			this.cbOnActivate.Text = "Set keyboard on activate";
+			this.cbOnActivate.UseVisualStyleBackColor = true;
+			//
 			// KeyboardForm
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(383, 228);
+			this.ClientSize = new System.Drawing.Size(383, 285);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.keyboardsC);
@@ -163,6 +222,8 @@
 			this.Controls.Add(this.testAreaA);
 			this.Name = "KeyboardForm";
 			this.Text = "Keyboard Test App";
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -182,5 +243,10 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.ComboBox keyboardsC;
 		private System.Windows.Forms.TextBox testAreaC;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.ComboBox currentKeyboard;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.CheckBox cbOnEnter;
+		private System.Windows.Forms.CheckBox cbOnActivate;
 	}
 }
