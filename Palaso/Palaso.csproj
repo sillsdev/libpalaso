@@ -318,10 +318,12 @@
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\RFC5646TagV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\Version0Migrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetter.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\LdmlAdaptorV1.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\RFC5646TagV1.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\Version1Migrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\WritingSystemDefinitionV1.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemStoreMigrator.cs" />

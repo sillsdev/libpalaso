@@ -447,7 +447,7 @@ namespace Palaso.WritingSystems
 			return isValidRegisteredVariant;
 		}
 
-		public void AddToSubtag(SubTag subTag, string stringToAppend)
+		private void AddToSubtag(SubTag subTag, string stringToAppend)
 		{
 			List<string> subtagToAddTo = GetSubtag(subTag);
 			if(subtagToAddTo.Count != 0) {AddSeparatorToSubtag(subtagToAddTo);}
@@ -605,6 +605,16 @@ namespace Palaso.WritingSystems
 				}
 			}
 			return true;
+		}
+
+		public void AddToPrivateUse(string subtagToAdd)
+		{
+			AddToSubtag(SubTag.PrivateUse, subtagToAdd);
+		}
+
+		public void AddToVariant(string subtagToAdd)
+		{
+			AddToSubtag(SubTag.PrivateUse, subtagToAdd);
 		}
 	}
 }

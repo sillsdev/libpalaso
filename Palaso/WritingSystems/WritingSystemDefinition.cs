@@ -224,7 +224,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker); ;
+				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.PrivateUseSubtag); ;
 			}
 		}
 
@@ -277,7 +277,7 @@ namespace Palaso.WritingSystems
 			{
 				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
 												  WellKnownSubTags.Ipa.
-													  IpaUnspecified);
+													  IpaVariantSubtag);
 			}
 		}
 
@@ -287,7 +287,7 @@ namespace Palaso.WritingSystems
 			{
 				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
 												  WellKnownSubTags.Ipa.
-													  IpaPhonetic);
+													  IpaPhoneticPrivateUseSubtag);
 			}
 		}
 
@@ -297,7 +297,7 @@ namespace Palaso.WritingSystems
 			{
 				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
 												  WellKnownSubTags.Ipa.
-													  IpaPhonemic);
+													  IpaPhonemicPrivateUseSubtag);
 			}
 		}
 
@@ -309,11 +309,11 @@ namespace Palaso.WritingSystems
 				IpaStatus = IpaStatusChoices.NotIpa;
 				Keyboard = string.Empty;
 				Script = WellKnownSubTags.Audio.Script;
-				_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+				_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 			else
 			{
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 			Modified = true;
 			CheckIfRfcTagIsValid();
@@ -321,7 +321,7 @@ namespace Palaso.WritingSystems
 
 		public void SetIpaStatus(IpaStatusChoices ipaStatus)
 		{
-			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.PrivateUseSubtag);
 			/* "There are some variant subtags that have no prefix field,
 			 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 			 * should appear after any other variant subtags with prefix information."
@@ -335,13 +335,15 @@ namespace Palaso.WritingSystems
 				default:
 					break;
 				case IpaStatusChoices.Ipa:
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaUnspecified);
+					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.IpaVariantSubtag);
 					break;
 				case IpaStatusChoices.IpaPhonemic:
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonemic);
+					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.IpaVariantSubtag);
+					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.IpaPhonemicPrivateUseSubtag);
 					break;
 				case IpaStatusChoices.IpaPhonetic:
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
+					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.IpaVariantSubtag);
+					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.IpaPhoneticPrivateUseSubtag);
 					break;
 			}
 		}
@@ -860,7 +862,7 @@ namespace Palaso.WritingSystems
 	{
 		public class Audio
 		{
-			static public string VariantMarker
+			static public string PrivateUseSubtag
 			{
 				get { return "x-audio"; }
 			}
@@ -872,19 +874,19 @@ namespace Palaso.WritingSystems
 
 		public class Ipa
 		{
-			static public string IpaUnspecified
+			static public string IpaVariantSubtag
 			{
 				get { return "fonipa"; }
 			}
 
-			static public string IpaPhonemic
+			static public string IpaPhonemicPrivateUseSubtag
 			{
-				get { return String.Concat(IpaUnspecified, "-x-emic"); }
+				get { return "-x-emic"; }
 			}
 
-			static public string IpaPhonetic
+			static public string IpaPhoneticPrivateUseSubtag
 			{
-				get { return String.Concat(IpaUnspecified, "-x-etic"); }
+				get { return "-x-etic"; }
 			}
 		}
 	}

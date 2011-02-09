@@ -136,7 +136,7 @@ namespace Palaso.Tests.WritingSystems
 			adaptor.Read(pathToLdmlFile,ws);
 			Assert.AreEqual("tpi", ws.ISO);
 			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
-			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Variant);
+			Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Variant);
 		}
 
 		[Test]
@@ -153,7 +153,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
 			Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
 			Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
-			Assert.AreEqual(WellKnownSubTags.Audio.VariantMarker, ws.Rfc5646TagOnLoad.Variant);
+			Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Rfc5646TagOnLoad.Variant);
 		}
 	}
 }
