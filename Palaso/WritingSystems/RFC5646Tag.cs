@@ -616,5 +616,25 @@ namespace Palaso.WritingSystems
 		{
 			AddToSubtag(SubTag.PrivateUse, subtagToAdd);
 		}
+
+		public void RemoveFromPrivateUse(string subtagToRemove)
+		{
+			RemoveFromSubtag(SubTag.PrivateUse, subtagToRemove);
+		}
+
+		public void RemoveFromVariant(string subtagToRemove)
+		{
+			RemoveFromSubtag(SubTag.Variant, subtagToRemove);
+		}
+
+		public bool PrivateUseContainsPart(string subTagToFind)
+		{
+			return SubtagContainsPart(SubTag.PrivateUse, subTagToFind);
+		}
+
+		public bool VariantContainsPart(string subTagToFind)
+		{
+			return SubtagContainsPart(SubTag.Variant, subTagToFind);
+		}
 	}
 }

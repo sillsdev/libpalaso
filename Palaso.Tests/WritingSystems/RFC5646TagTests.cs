@@ -240,161 +240,299 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("1901-biski", rfcTag.Variant);
 		}
 
-		//**********************
 		[Test]
-		public void RemoveFromSubtag_SubTagIsPrivateUseStringToAddIsPrependedByxDash_StringIsRemoved()
+		public void RemoveFromPrivateUse_StringToTRemoveIsPrependedByxDash_StringIsRemoved()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio");
+			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubTagIsPrivateUseStringToAddIsNotPrependedByxDash_StringIsRemoved()
+		public void RemoveFromPrivateUse_StringToremoveIsNotPrependedByxDash_StringIsRemoved()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "audio");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagIsEmpty_SubTagRemainsUntouched()
+		public void RemoveFromPrivateUse_PrivateUseIsEmpty_PrivateUseRemainsUntouched()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio");
+			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagDoesNotContainStringToRemove_SubTagRemainsUntouched()
+		public void RemoveFromPrivateUse_PrivateUseDoesNotContainStringToRemove_PrivateUseRemainsUntouched()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio");
-			Assert.AreEqual("biske", rfcTag.PrivateUse);
+			rfcTag.RemoveFromPrivateUse("x-audio");
+			Assert.AreEqual("x-test", rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagDoesNotContainPartsOfStringToRemove_PartsThatAreContainedAreRemoved()
+		public void RemoveFromPrivateUse_PrivateUseDoesNotContainPartsOfStringToRemove_PartsThatAreContainedAreRemoved()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-test-audio");
+			rfcTag.RemoveFromPrivateUse("x-test-audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsPartsOfStringToRemoveButNotConsecutively_RemovesPartsCorrectly()
+		public void RemoveFromPrivateUse_PrivateUseDoesNotContainPartsOfStringToRemoveAndStringToRemoveHasNoprependedx_PartsThatAreContainedAreRemoved()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
+			rfcTag.RemoveFromPrivateUse("test-audio");
+			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
+		}
+
+		[Test]
+		public void RemoveFromPrivateUse_PrivateUseContainsPartsOfStringToRemoveButNotConsecutively_RemovesPartsCorrectly()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-smth-audio");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-test-audio");
+			rfcTag.RemoveFromPrivateUse("x-test-audio");
 			Assert.AreEqual(rfcTag.PrivateUse, "x-smth");
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsStringToRemove_SubtagIsStrippedOfStringToRemoveAndPrecedingDash()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemove_PrivateUseIsStrippedOfStringToRemoveAndPrecedingDash()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-audio");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio");
+			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual("x-test", rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsStringToRemoveInDifferentCase_SubtagIsStrippedOfStringToRemoveAndPrecedingDash()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveInDifferentCase_PrivateUseIsStrippedOfStringToRemoveAndPrecedingDash()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty,String.Empty, "x-test-aUdiO");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-audio");
+			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual("x-test", rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_StringToRemoveIsFirstInSubtag_SubtagIsStrippedOfStringToRemoveAndFollowingDash()
-		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "biske-1901", String.Empty);
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "biske");
-			Assert.AreEqual("1901", rfcTag.Variant);
-		}
-
-		[Test]
-		public void RemoveFromSubtag_StringToRemoveInDifferentCaseIsFirstInSubtag_SubtagIsStrippedOfStringToRemoveAndFollowingDash()
-		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "bIsKe-1901", String.Empty);
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "biske");
-			Assert.AreEqual("1901", rfcTag.Variant);
-		}
-
-		[Test]
-		public void RemoveFromSubtag_SubtagEqualsStringToRemove_SubtagIsEmpty()
+		public void RemoveFromPrivateUse_PrivateUseEqualsStringToRemove_PrivateUseIsEmpty()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio");
+			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual(String.Empty ,rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagEqualsStringToRemoveInDifferentCase_SubtagIsEmpty()
+		public void RemoveFromPrivateUse_PrivateUseEqualsStringToRemoveInDifferentCase_PrivateUseIsEmpty()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio");
+			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveStartsWithDash_StringIsRemoved()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveStartsWithDash_StringIsRemoved()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "-x-audio");
+			rfcTag.RemoveFromPrivateUse("-x-audio");
 			Assert.AreEqual(rfcTag.PrivateUse, String.Empty);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_StringIsRemoved()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_StringIsRemoved()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "_x-audio");
+			rfcTag.RemoveFromPrivateUse("_x-audio");
 			Assert.AreEqual(rfcTag.PrivateUse, String.Empty);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveEndsWithDash_StringIsRemoved()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveEndsWithDash_StringIsRemoved()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio-");
+			rfcTag.RemoveFromPrivateUse("x-audio-");
 			Assert.AreEqual(rfcTag.PrivateUse, String.Empty);
 		}
 
 		[Test]
-		public void RemoveFromSubtag_SubtagContainsStringToRemoveAndStringToRemoveEndsWithUnderscore_StringIsRemoved()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveEndsWithUnderscore_StringIsRemoved()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-AudiO_");
-			rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.PrivateUse, "x-audio_");
+			rfcTag.RemoveFromPrivateUse("x-audio_");
 			Assert.AreEqual(rfcTag.PrivateUse, String.Empty);
 		}
 
 		[Test]
-		public void SubtagContainsPart_PartIsNotContainedInSubtag_ReturnsFalse()
+		public void RemoveFromVariant_StringToRemoveIsFirstInVariant_VariantIsStrippedOfStringToRemoveAndFollowingDash()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "biske-1901", String.Empty);
+			rfcTag.RemoveFromPrivateUse("biske");
+			Assert.AreEqual("1901", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_StringToRemoveInDifferentCaseIsFirstInVariant_VariantIsStrippedOfStringToRemoveAndFollowingDash()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "bIsKe-1901", String.Empty);
+			rfcTag.RemoveFromPrivateUse("biske");
+			Assert.AreEqual("1901", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantIsEmpty_VariantRemainsUntouched()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.IsFalse(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "x-audio"));
+			rfcTag.RemoveFromVariant("biske");
+			Assert.AreEqual(String.Empty, rfcTag.Variant);
 		}
 
 		[Test]
-		public void SubtagContainsPart_PartIsContainedInSubtag_ReturnsTrue()
+		public void RemoveFromVariant_VariantDoesNotContainStringToRemove_VariantRemainsUntouched()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
+			rfcTag.RemoveFromVariant("biske");
+			Assert.AreEqual("1901", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantDoesNotContainPartsOfStringToRemove_PartsThatAreContainedAreRemoved()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-bauddha", String.Empty);
+			rfcTag.RemoveFromVariant("biske-1901");
+			Assert.AreEqual("bauddha", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsPartsOfStringToRemoveButNotConsecutively_RemovesPartsCorrectly()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-bauddha-biske", String.Empty);
+			rfcTag.RemoveFromVariant("1901-biske");
+			Assert.AreEqual(rfcTag.Variant, "bauddha");
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsStringToRemove_VariantIsStrippedOfStringToRemoveAndPrecedingDash()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-biske", String.Empty);
+			rfcTag.RemoveFromVariant("biske");
+			Assert.AreEqual("1901", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsStringToRemoveInDifferentCase_VariantIsStrippedOfStringToRemoveAndPrecedingDash()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-BisKe", String.Empty);
+			rfcTag.RemoveFromVariant("biske");
+			Assert.AreEqual("1901", rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantEqualsStringToRemove_VariantIsEmpty()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "biske", String.Empty);
+			rfcTag.RemoveFromVariant("biske");
+			Assert.AreEqual(String.Empty, rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantEqualsStringToRemoveInDifferentCase_VariantIsEmpty()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "bIsKe", String.Empty);
+			rfcTag.RemoveFromVariant("biske");
+			Assert.AreEqual(String.Empty, rfcTag.Variant);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsStringToRemoveAndStringToRemoveStartsWithDash_StringIsRemoved()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "biske", String.Empty);
+			rfcTag.RemoveFromVariant("-biske");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_StringIsRemoved()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "biske", String.Empty);
+			rfcTag.RemoveFromVariant("_biske");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsStringToRemoveAndStringToRemoveEndsWithDash_StringIsRemoved()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "biske", String.Empty);
+			rfcTag.RemoveFromVariant("biske-");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void RemoveFromVariant_VariantContainsStringToRemoveAndStringToRemoveEndsWithUnderscore_StringIsRemoved()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "biske", String.Empty);
+			rfcTag.RemoveFromVariant("biske_");
+			Assert.AreEqual(rfcTag.Variant, String.Empty);
+		}
+
+		[Test]
+		public void PrivateUseContainsPart_PartIsNotContainedInPrivateUse_ReturnsFalse()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.IsFalse(rfcTag.PrivateUseContainsPart("x-audio"));
+		}
+
+		[Test]
+		public void PrivateUseContainsPart_PartIsContainedInPrivateUse_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
-			Assert.IsTrue(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "x-audio"));
+			Assert.IsTrue(rfcTag.PrivateUseContainsPart("x-audio"));
 		}
 
 		[Test]
-		public void SubtagContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInSubtag_ReturnsFalse()
+		public void PrivateUseContainsPart_PartIsContainedInPrivateUseAndpartDoesnNotHavePrependedx_ReturnsTrue()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
+			Assert.IsTrue(rfcTag.PrivateUseContainsPart("audio"));
+		}
+
+		[Test]
+		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInPrivateUse_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.IsFalse(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "x-etic-test"));
+			Assert.IsFalse(rfcTag.PrivateUseContainsPart("x-etic-test"));
 		}
 
 		[Test]
-		public void SubtagContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInSubtag_ReturnsTrue()
+		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInPrivateUse_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-smth-audio");
-			Assert.IsTrue(rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, "x-audio-test"));
+			Assert.IsTrue(rfcTag.PrivateUseContainsPart("x-audio-test"));
+		}
+
+		[Test]
+		public void VariantContainsPart_PartIsNotContainedInVariant_ReturnsFalse()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.IsFalse(rfcTag.VariantContainsPart("1901"));
+		}
+
+		[Test]
+		public void VariantContainsPart_PartIsContainedInVariant_ReturnsTrue()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, "1901", String.Empty);
+			Assert.IsTrue(rfcTag.VariantContainsPart("1901"));
+		}
+
+		[Test]
+		public void VariantContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInVariant_ReturnsFalse()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
+			Assert.IsFalse(rfcTag.VariantContainsPart("biske-1901"));
+		}
+
+		[Test]
+		public void VariantContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInVariant_ReturnsTrue()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-bauddha-biske", String.Empty);
+			Assert.IsTrue(rfcTag.VariantContainsPart("biske-1901"));
 		}
 
 		[Test]
