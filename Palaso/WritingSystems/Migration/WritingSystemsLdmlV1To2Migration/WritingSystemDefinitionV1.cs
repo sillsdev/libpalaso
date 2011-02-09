@@ -35,7 +35,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			OtherLanguage
 		}
 
-		private RFC5646Tag _rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, String.Empty);
+		private RFC5646TagV1 _rfcTag = new RFC5646TagV1(String.Empty, String.Empty, String.Empty, String.Empty, String.Empty);
 
 		private string _languageName;
 
@@ -58,7 +58,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
-		private RFC5646Tag _rfcTagOnLoad;
+		private RFC5646TagV1 _rfcTagOnLoad;
 
 		/// <summary>
 		/// singleton
@@ -298,13 +298,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker); ;
+				return _rfcTag.SubtagContainsPart(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker); ;
 			}
 		}
 
 		private bool ScriptSubTagIsAudioConform
 		{
-			get { return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Script, WellKnownSubTags.Audio.Script); }
+			get { return _rfcTag.SubtagContainsPart(RFC5646TagV1.SubTag.Script, WellKnownSubTags.Audio.Script); }
 		}
 
 		/// <summary>
@@ -349,7 +349,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
+				return _rfcTag.SubtagContainsPart(RFC5646TagV1.SubTag.Variant,
 												  WellKnownSubTags.Ipa.
 													  IpaUnspecified);
 			}
@@ -359,7 +359,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
+				return _rfcTag.SubtagContainsPart(RFC5646TagV1.SubTag.Variant,
 												  WellKnownSubTags.Ipa.
 													  IpaPhonetic);
 			}
@@ -369,7 +369,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				return _rfcTag.SubtagContainsPart(RFC5646Tag.SubTag.Variant,
+				return _rfcTag.SubtagContainsPart(RFC5646TagV1.SubTag.Variant,
 												  WellKnownSubTags.Ipa.
 													  IpaPhonemic);
 			}
@@ -383,11 +383,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 				IpaStatus = IpaStatusChoices.NotIpa;
 				Keyboard = string.Empty;
 				Script = WellKnownSubTags.Audio.Script;
-				_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+				_rfcTag.AddToSubtag(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
 			}
 			else
 			{
-				_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+				_rfcTag.RemoveFromSubtag(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
 			}
 			Modified = true;
 			CheckIfRfcTagIsValid();
@@ -395,27 +395,27 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 
 		public void SetIpaStatus(IpaStatusChoices ipaStatus)
 		{
-			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
+			_rfcTag.RemoveFromSubtag(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Audio.VariantMarker);
 			/* "There are some variant subtags that have no prefix field,
 			 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 			 * should appear after any other variant subtags with prefix information."
 			 */
-			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-etic");
-			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "x-emic");
-			_rfcTag.RemoveFromSubtag(RFC5646Tag.SubTag.Variant, "fonipa");
+			_rfcTag.RemoveFromSubtag(RFC5646TagV1.SubTag.Variant, "x-etic");
+			_rfcTag.RemoveFromSubtag(RFC5646TagV1.SubTag.Variant, "x-emic");
+			_rfcTag.RemoveFromSubtag(RFC5646TagV1.SubTag.Variant, "fonipa");
 
 			switch (ipaStatus)
 			{
 				default:
 					break;
 				case IpaStatusChoices.Ipa:
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaUnspecified);
+					_rfcTag.AddToSubtag(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Ipa.IpaUnspecified);
 					break;
 				case IpaStatusChoices.IpaPhonemic:
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonemic);
+					_rfcTag.AddToSubtag(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonemic);
 					break;
 				case IpaStatusChoices.IpaPhonetic:
-					_rfcTag.AddToSubtag(RFC5646Tag.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
+					_rfcTag.AddToSubtag(RFC5646TagV1.SubTag.Variant, WellKnownSubTags.Ipa.IpaPhonetic);
 					break;
 			}
 		}
@@ -442,7 +442,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		}
 
 		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
-		//private RFC5646Tag Rfc5646Tag
+		//private RFC5646TagV1 RFC5646TagV1
 		//{
 		//    get{ return _rfcTag;}
 		//    set
@@ -456,7 +456,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
 		//This method is preferable to setting the individual components independantly, as the order
 		//in which they are set can lead to invalid interim Rfc5646 tags
-		public RFC5646Tag Rfc5646TagOnLoad
+		public RFC5646TagV1 RFC5646TagV1OnLoad
 		{
 			get { return _rfcTagOnLoad; }
 			set { _rfcTagOnLoad = value; }

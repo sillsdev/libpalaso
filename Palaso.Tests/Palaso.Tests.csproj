@@ -106,7 +106,7 @@
 	<Compile Include="Network\RobustNetworkOperation.Tests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
-	<Compile Include="Spelling\reporting\UsageReporter.Tests.cs" />
+	<Compile Include="reporting\UsageReporter.Tests.cs" />
 	<Compile Include="SFMReaderTest.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="Spart\Actions\Actors\AppendActorTest.cs" />
