@@ -195,15 +195,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 												   DateTimeStyles.AssumeUniversal);
 				}
 				ws.DateModified = modified;
-				RFC5646Tag rfcTag = new RFC5646Tag(GetSubNodeAttributeValue(identityReader, "language", "type"),
-													GetSubNodeAttributeValue(identityReader, "script", "type"),
-													GetSubNodeAttributeValue(identityReader, "territory", "type"),
-													GetSubNodeAttributeValue(identityReader, "variant", "type"));
-				ws.Rfc5646TagOnLoad = rfcTag;
-				ws.ISO = rfcTag.Language;
-				ws.Script = rfcTag.Script;
-				ws.Region = rfcTag.Region;
-				ws.Variant = rfcTag.Variant;
+				ws.ISO = GetSubNodeAttributeValue(identityReader, "language", "type");
+				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
+				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
+				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
 
 				// move to end of identity node
 				while (identityReader.Read()) ;

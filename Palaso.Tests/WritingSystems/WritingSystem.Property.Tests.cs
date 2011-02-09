@@ -163,7 +163,7 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
-			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Ltn", "", "1901"));
+			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Ltn", "", "1901","x-audio"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);

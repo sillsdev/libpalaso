@@ -549,7 +549,8 @@ namespace Palaso.Tests.WritingSystems
 			string script = GetValueofNode(ldmlFile, "//script/@type");
 			string region = GetValueofNode(ldmlFile, "//region/@type");
 			string variant = GetValueofNode(ldmlFile, "//variant/@type");
-			return new RFC5646Tag(language, script, region, variant);
+			throw new NotImplementedException();
+			//return new RFC5646Tag(language, script, region, variant);
 		}
 
 		private string GetValueofNode(XmlDocument ldmlFile, string xpath)

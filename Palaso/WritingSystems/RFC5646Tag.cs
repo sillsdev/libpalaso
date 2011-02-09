@@ -10,7 +10,8 @@ namespace Palaso.WritingSystems
 			Language,
 			Script,
 			Region,
-			Variant
+			Variant,
+			PrivateUse
 		}
 
 		public class IanaSubtag
@@ -77,8 +78,10 @@ namespace Palaso.WritingSystems
 		private List<string> _script;
 		private List<string> _region;
 		private List<string> _variant;
+		private List<string> _privateUse;
 
 		private string[] seperators = new string[]{"-", "_"};
+
 		public static List<Iso15924Script> ValidIso15924Scripts
 		{
 			get
@@ -236,13 +239,14 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public RFC5646Tag(string language, string script, string region, string variant)
+		public RFC5646Tag(string language, string script, string region, string variant, string privateUse)
 		{
 			LoadIanaSubtags();
 			Language = language;
 			Script = script;
 			Region = region;
 			Variant = variant;
+			PrivateUse = privateUse;
 			CheckIfEntireTagIsValid();
 		}
 
@@ -259,7 +263,7 @@ namespace Palaso.WritingSystems
 		/// Copy constructor
 		///</summary>
 		///<param name="rhs"></param>
-		public RFC5646Tag(RFC5646Tag rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant)
+		public RFC5646Tag(RFC5646Tag rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant, rhs.PrivateUse)
 		{
 		}
 
@@ -344,6 +348,23 @@ namespace Palaso.WritingSystems
 				_script = ParseSubtagForParts(value);
 				CheckIfScriptTagIsValid();
 			}
+		}
+
+		public string PrivateUse
+		{
+			get { return AssembleLanguageSubtag(_privateUse); }
+			set
+			{
+				_privateUse = ParseSubtagForParts(value);
+				CheckIfPrivateUseIsValid();
+			}
+		}
+
+		private void CheckIfPrivateUseIsValid()
+		{
+			bool privateUseTagContainsMoreThanOnex =
+				_privateUse.Exists(tag => tag.Equals("x"));
+			if(privateUseTagContainsMoreThanOnex){throw new ArgumentException("A Private Use subtag may not contain a singleton 'x' anywhere but at the beginning of the subtag.");}
 		}
 
 		private void CheckIfScriptTagIsValid()
@@ -463,6 +484,9 @@ namespace Palaso.WritingSystems
 					break;
 				case SubTag.Variant:
 					subtagToAddTo = _variant;
+					break;
+				case SubTag.PrivateUse:
+					subtagToAddTo = _privateUse;
 					break;
 				default: throw new ApplicationException();
 			}

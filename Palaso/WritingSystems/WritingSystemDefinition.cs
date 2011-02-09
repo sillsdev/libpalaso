@@ -96,10 +96,31 @@ namespace Palaso.WritingSystems
 		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
-			_rfcTag = new RFC5646Tag(iso, script,region,variant);
+			string variantAccordingToRfc5646 = GetRfc5646Variant(variant);
+			string privateUseTagAccordingToRfc5646 = GetRfc5646PrivateUseTag(variant);
+			_rfcTag = new RFC5646Tag(iso, script, region, variantAccordingToRfc5646, privateUseTagAccordingToRfc5646);
 			_abbreviation = abbreviation;
 			_languageName = languageName;
 			_rightToLeftScript = rightToLeftScript;
+		}
+
+		private string GetRfc5646PrivateUseTag(string variant)
+		{
+			string[] variantAndPrivateUseTags = GetRfc5646VariantAndPrivateUseTagsFromVariant(variant);
+			return variantAndPrivateUseTags[1];
+		}
+
+		private string[] GetRfc5646VariantAndPrivateUseTagsFromVariant(string variant)
+		{
+			if(variant.EndsWith("-x") || variant.EndsWith("-x-")){throw new ArgumentException("The variant may not end in '-x' or '-x-'");}
+			string[] partsOfVariant = variant.Split(new[] { "-x-" }, StringSplitOptions.None);
+			return partsOfVariant;
+		}
+
+		private string GetRfc5646Variant(string variant)
+		{
+			string[] variantAndExtensions = GetRfc5646VariantAndPrivateUseTagsFromVariant(variant);
+			return variantAndExtensions[0];
 		}
 
 		/// <summary>
