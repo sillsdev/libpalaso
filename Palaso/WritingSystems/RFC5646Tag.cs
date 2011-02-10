@@ -203,7 +203,7 @@ namespace Palaso.WritingSystems
 					continue;   //This is the first line of the file.
 				}
 
-				CheckThatSubtagHasExpectedForm(subTagComponents);
+				CheckIfIanaSubtagFromFileHasExpectedForm(subTagComponents);
 
 				string type = subTagComponents[0].Split(' ')[1];
 				string subtag = subTagComponents[1].Split(' ')[1];
@@ -214,7 +214,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private static void CheckThatSubtagHasExpectedForm(string[] subTagComponents)
+		private static void CheckIfIanaSubtagFromFileHasExpectedForm(string[] subTagComponents)
 		{
 			if(!subTagComponents[0].Contains("Type:"))
 			{
@@ -252,8 +252,11 @@ namespace Palaso.WritingSystems
 
 		private void CheckIfEntireTagIsValid()
 		{
-			bool variantConsistsEntirelyOfPrivateUseTags = _variant.Count > 0 && _variant[0].StartsWith("x-");
-			if(String.IsNullOrEmpty(Language) && !variantConsistsEntirelyOfPrivateUseTags)
+			bool languageSubtagisEmpty = String.IsNullOrEmpty(Language);
+			bool languageSubtagIsEmptyButScriptisNot = languageSubtagisEmpty && (_script.Count != 0);
+			bool languageSubtagIsEmptyButRegionisNot = languageSubtagisEmpty && (_region.Count != 0);
+			bool languageSubtagIsEmptyAndPrivateUseIsEmpty = languageSubtagisEmpty && (_privateUse.Count == 0);
+			if (languageSubtagIsEmptyButRegionisNot || languageSubtagIsEmptyButScriptisNot || languageSubtagIsEmptyAndPrivateUseIsEmpty)
 			{
 				throw new ArgumentException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
 			}
@@ -290,7 +293,7 @@ namespace Palaso.WritingSystems
 
 		public string Language
 		{
-			get { return AssembleLanguageSubtag(_language); }
+			get { return AssembleSubtag(_language); }
 			set
 			{
 				_language = ParseSubtagForParts(value);
@@ -342,7 +345,7 @@ namespace Palaso.WritingSystems
 
 		public string Script
 		{
-			get { return AssembleLanguageSubtag(_script); }
+			get { return AssembleSubtag(_script); }
 			set
 			{
 				_script = ParseSubtagForParts(value);
@@ -352,19 +355,38 @@ namespace Palaso.WritingSystems
 
 		public string PrivateUse
 		{
-			get { return AssembleLanguageSubtag(_privateUse); }
+			get
+			{
+				if (_privateUse.Count != 0)
+				{
+					return "x-" + AssembleSubtag(_privateUse);
+				}
+				return String.Empty;
+			}
 			set
 			{
-				_privateUse = ParseSubtagForParts(value);
-				CheckIfPrivateUseIsValid();
+				_privateUse = new List<string>();
+				AddToPrivateUse(value);
 			}
 		}
 
-		private void CheckIfPrivateUseIsValid()
+		private void CheckIfPrivateUseTagIsValid()
 		{
-			bool privateUseTagContainsMoreThanOnex =
-				_privateUse.Exists(tag => tag.Equals("x"));
-			if(privateUseTagContainsMoreThanOnex){throw new ArgumentException("A Private Use subtag may not contain a singleton 'x' anywhere but at the beginning of the subtag.");}
+			bool partInMiddleOfStringStartsWithxDash = (_privateUse.FindLastIndex(part => part.StartsWith("x-")) > 0);
+			if(partInMiddleOfStringStartsWithxDash){throw new ArgumentException("A Private Use subtag may not contain a singleton 'x' anywhere but at the beginning of the subtag.");}
+			CheckIfSubtagContainsDuplicates(_privateUse);
+		}
+
+		private void CheckIfSubtagContainsDuplicates(List<string> partsOfSubtag)
+		{
+			foreach (string partToTestForDuplicate in partsOfSubtag)
+			{
+				if (partToTestForDuplicate.Equals("-") || partToTestForDuplicate.Equals("_")) {continue; }
+				if(partsOfSubtag.FindAll(part => part.Equals(partToTestForDuplicate, StringComparison.OrdinalIgnoreCase)).Count > 1)
+				{
+					throw new ArgumentException(String.Format("Subtags may never contain duplicate parts. The duplicate part was: {0}", partToTestForDuplicate));
+				}
+			}
 		}
 
 		private void CheckIfScriptTagIsValid()
@@ -380,7 +402,7 @@ namespace Palaso.WritingSystems
 
 		public string Region
 		{
-			get { return AssembleLanguageSubtag(_region); }
+			get { return AssembleSubtag(_region); }
 			set
 			{
 				_region = ParseSubtagForParts(value);
@@ -412,7 +434,7 @@ namespace Palaso.WritingSystems
 
 		public string Variant
 		{
-			get { return AssembleLanguageSubtag(_variant); }
+			get { return AssembleSubtag(_variant); }
 			set
 			{
 				_variant = ParseSubtagForParts(value);
@@ -450,7 +472,6 @@ namespace Palaso.WritingSystems
 		private void AddToSubtag(SubTag subTag, string stringToAppend)
 		{
 			List<string> subtagToAddTo = GetSubtag(subTag);
-			if(subtagToAddTo.Count != 0) {AddSeparatorToSubtag(subtagToAddTo);}
 			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
 			foreach (string part in partsOfStringToAdd)
 			{
@@ -530,38 +551,11 @@ namespace Palaso.WritingSystems
 			List<string> partsOfSubtagToRemovePartFrom = GetSubtag(subTag);
 			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
 
-			if(!SubtagContainsAllPartsOfStringToBeRemoved(partsOfSubtagToRemovePartFrom, partsOfStringToRemove)){return;}
-
-			bool subtagHasMultipleParts = partsOfSubtagToRemovePartFrom.Count > 1;
 			foreach (string partToRemove in partsOfStringToRemove)
 			{
 				if(!SubtagContainsPart(subTag, partToRemove)){continue;}
-				if (Rfc5646SubtagParser.StringIsSeperator(partToRemove)) {continue; }
-				bool stringToRemoveIsFirstItemInSubtag = partsOfSubtagToRemovePartFrom[0].Equals(partToRemove,
-																								 StringComparison.
-																									 OrdinalIgnoreCase);
-				bool stringToRemoveIsOnlyPartOfSubtag = (partsOfSubtagToRemovePartFrom.Count == 1) &&
-														(partsOfSubtagToRemovePartFrom[0].Equals(partToRemove,
-																								 StringComparison.
-																									 OrdinalIgnoreCase));
-				bool stringToRemoveIsFirstPartOfMultiPartSubtag = subtagHasMultipleParts &&
-																  stringToRemoveIsFirstItemInSubtag;
-
 				int indexOfPartToRemove = partsOfSubtagToRemovePartFrom.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
-				if (stringToRemoveIsOnlyPartOfSubtag)
-				{
-					partsOfSubtagToRemovePartFrom.RemoveAt(0);
-				}
-				else if (stringToRemoveIsFirstPartOfMultiPartSubtag)
-				{
-					partsOfSubtagToRemovePartFrom.RemoveAt(1); //Removes following seperator
-					partsOfSubtagToRemovePartFrom.RemoveAt(0);
-				}
-				else
-				{
-					partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
-					partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove - 1); //removes preceding seperator
-				}
+				partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
 			}
 		}
 
@@ -583,12 +577,16 @@ namespace Palaso.WritingSystems
 			return new Rfc5646SubtagParser(subtagToParse).GetParts();
 		}
 
-		private static string AssembleLanguageSubtag(IEnumerable<string> subtag)
+		private static string AssembleSubtag(IEnumerable<string> subtag)
 		{
 			string subtagAsString = "";
 			foreach (string part in subtag)
 			{
-				subtagAsString = String.Concat(String.Concat(subtagAsString, part));
+				if(!String.IsNullOrEmpty(subtagAsString))
+				{
+					subtagAsString = subtagAsString + "-";
+				}
+				subtagAsString = subtagAsString + part;
 			}
 			return subtagAsString;
 		}
@@ -609,17 +607,25 @@ namespace Palaso.WritingSystems
 
 		public void AddToPrivateUse(string subtagToAdd)
 		{
-			AddToSubtag(SubTag.PrivateUse, subtagToAdd);
+			string stringWithoutPrecedingxDash = subtagToAdd.Trim('-','x');
+			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingxDash));
+			if (_privateUse.Contains("x")) {
+				throw new ArgumentException(
+					"A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }
+			CheckIfPrivateUseTagIsValid();
 		}
 
 		public void AddToVariant(string subtagToAdd)
 		{
-			AddToSubtag(SubTag.PrivateUse, subtagToAdd);
+			AddToSubtag(SubTag.Variant, subtagToAdd);
+			CheckIfVariantTagIsValid();
 		}
 
 		public void RemoveFromPrivateUse(string subtagToRemove)
 		{
-			RemoveFromSubtag(SubTag.PrivateUse, subtagToRemove);
+			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
+			RemoveFromSubtag(SubTag.PrivateUse, stringWithoutPrecedingxDash);
+			CheckIfEntireTagIsValid();
 		}
 
 		public void RemoveFromVariant(string subtagToRemove)
@@ -629,7 +635,8 @@ namespace Palaso.WritingSystems
 
 		public bool PrivateUseContainsPart(string subTagToFind)
 		{
-			return SubtagContainsPart(SubTag.PrivateUse, subTagToFind);
+			string stringWithoutPrecedingxDash = subTagToFind.Trim('-', 'x');
+			return SubtagContainsPart(SubTag.PrivateUse, stringWithoutPrecedingxDash);
 		}
 
 		public bool VariantContainsPart(string subTagToFind)

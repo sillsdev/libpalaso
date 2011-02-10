@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Palaso.WritingSystems
 {
@@ -20,7 +21,7 @@ namespace Palaso.WritingSystems
 		private string _stringToparse;
 		private State _state;
 		private int _position;
-		static private string[] _seperators = new string[] { "-", "_" };
+		static private string[] _seperators = new string[] { "-" };
 
 		private char _currentCharacter
 		{
@@ -47,13 +48,20 @@ namespace Palaso.WritingSystems
 						_state = State.Parsing;
 						break;
 					case State.Parsing:
+						if (CurrentCharacterIsSeperator && _state != State.ExpectingPotentialDashAsPartOfExtension)
+						{
+							_state = State.EndGetNextPart;
+							break;
+						}
+						CheckIfCharacterIsAphaNumericorSeperator();
+
 						sb.Append(_currentCharacter);
 						break;
-					case State.ExpectingPotentialDashAsPartOfExtension:
-						if(_currentCharacter == '_'){throw new ArgumentException("Extensions may only have \"-\" as their separator.");}
-						sb.Append(_currentCharacter);
-						_state = State.Parsing;
-						break;
+					//case State.ExpectingPotentialDashAsPartOfExtension:
+					//    if(_currentCharacter == '_'){throw new ArgumentException("Extensions may only have \"-\" as their separator.");}
+					//    sb.Append(_currentCharacter);
+					//    _state = State.Parsing;
+					//    break;
 					case State.StartGetNextParse:
 						if (CurrentCharacterIsSeperator)
 						{
@@ -61,13 +69,14 @@ namespace Palaso.WritingSystems
 							sb.Append(_currentCharacter);
 							_state = State.EndGetNextPart;
 						}
-						else if(CurrentCharacterIsExtensionMarker())
-						{
-							sb.Append(_currentCharacter);
-							_state = State.ExpectingPotentialDashAsPartOfExtension;
-						}
+						//else if(CurrentCharacterIsExtensionMarker())
+						//{
+						//    sb.Append(_currentCharacter);
+						//    _state = State.ExpectingPotentialDashAsPartOfExtension;
+						//}
 						else
 						{
+							CheckIfCharacterIsAphaNumericorSeperator();
 							sb.Append(_currentCharacter);
 							_state = State.Parsing;
 						}
@@ -82,13 +91,18 @@ namespace Palaso.WritingSystems
 				}
 				else {
 					_position++;
-					if (CurrentCharacterIsSeperator && _state != State.ExpectingPotentialDashAsPartOfExtension)
-					{
-						_state = State.EndGetNextPart;
-					}
 				}
 			}
 			return sb.ToString();
+		}
+
+		private void CheckIfCharacterIsAphaNumericorSeperator()
+		{
+			if(!char.IsLetter(_currentCharacter) && !char.IsDigit(_currentCharacter) && !CurrentCharacterIsSeperator)
+			{
+				throw new ArgumentException(
+					String.Format("Languagetags may only consist of alphanumeric characters and '-'. {0} is not a valid character.", _currentCharacter));
+			}
 		}
 
 		private bool CurrentCharacterIsExtensionMarker()
