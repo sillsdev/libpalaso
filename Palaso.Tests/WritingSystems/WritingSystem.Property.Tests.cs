@@ -307,18 +307,19 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IsVoice_SetToTrue_SetsScriptRegionAndVariantCorrectly()
+		public void SetIsVoice_SetToTrue_SetsScriptRegionAndVariantCorrectly()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition()
 											 {
-												 Script = "Script",
-												 Region = "Region",
-												 Variant = "Variant"
+												 Script = "Latn",
+												 Region = "US",
+												 Variant = "1901"
 											 };
-			ws.IsVoice = true;
-			Assert.AreEqual(ws.Script, WellKnownSubTags.Audio.Script);
-			Assert.AreEqual(ws.Region, "Region");
-			Assert.AreEqual(ws.Variant, "Variant-x-audio");
+			ws.SetIsVoice(true);
+			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
+			Assert.AreEqual("US", ws.Region);
+			Assert.AreEqual("1901-x-audio", ws.Variant);
+			Assert.AreEqual("qaa-Zxxx-US-1901-x-audio", ws.RFC5646);
 		}
 
 		[Test]

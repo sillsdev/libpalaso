@@ -295,6 +295,10 @@ namespace Palaso.WritingSystems
 				{
 					id += "-" + Variant;
 				}
+				if (!String.IsNullOrEmpty(PrivateUse))
+				{
+					id += "-" + PrivateUse;
+				}
 				return id;
 			}
 		}

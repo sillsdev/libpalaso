@@ -744,5 +744,12 @@ namespace Palaso.Tests.WritingSystems
 			Assert.Throws<ArgumentException>(() => tag.Variant = "x-private1-x-private2");
 		}
 
+		[Test]
+		public void CompleteTag_AllSubtagsSet_IsSetCorrectly()
+		{
+			var tag = new RFC5646Tag("en", "Latn", "US", "1901", "x-audio");
+			Assert.AreEqual("en-Latn-US-1901-x-audio", tag.CompleteTag);
+		}
+
 	}
 }
