@@ -147,8 +147,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_OneLanguageIsChildOfAnother_GivesParentOnly()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,"fonipa",  "Edolo", "edo", false);
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,"fonipa", "edo", false);
 			SetDefinitionsInStore(new[] { etr,etrIpa });
 			_model.Suggestor.SuggestIpa=true;
 			AssertTreeNodeLabels("Edolo", "+Edolo (IPA)", "", "Add Language");
@@ -161,9 +161,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_ThreeVariantsAreSyblings_ListsAllUnderGroupHeading()
 		{
-			var thai = new WritingSystemDefinition("bii", "Thai", string.Empty, string.Empty, "Bisu", "bt", false);
-			var my = new WritingSystemDefinition("bii", "Mymr", string.Empty, string.Empty, "Bisu", "bm", false);
-			var latin = new WritingSystemDefinition("bii", "Latn", string.Empty, string.Empty, "Bisu", "bl", false);
+			var thai = new WritingSystemDefinition("bii", "Thai", string.Empty, string.Empty, "bt", false);
+			var my = new WritingSystemDefinition("bii", "Mymr", string.Empty, string.Empty, "bm", false);
+			var latin = new WritingSystemDefinition("bii", "Latn", string.Empty, string.Empty, "bl", false);
 			SetDefinitionsInStore(new[] { thai, my, latin });
 			AssertTreeNodeLabels("Bisu", "+Bisu (Thai)", "+Bisu (Mymr)", "+Bisu (Latn)", "", "Add Language");
 		}
@@ -174,7 +174,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_UsesSuggestor()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
 			SetDefinitionsInStore(new WritingSystemDefinition[] {etr });
 			_model.Suggestor.SuggestIpa = true;
 			AssertTreeNodeLabels("Edolo", "+Add IPA writing system for Edolo", "", "Add Language");

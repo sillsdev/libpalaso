@@ -22,19 +22,42 @@ namespace Palaso.Tests.WritingSystems
 		public void DisplayLabel_NoAbbreviation_UsesRFC5646()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.ISO = "abc";
-			ws.Variant = "xyz";
-			Assert.AreEqual("abc-xyz", ws.DisplayLabel);
+			ws.ISO = "en";
+			ws.Variant = "1901";
+			Assert.AreEqual("en-1901", ws.DisplayLabel);
 		}
 
-//        [Test]
-//        public void DisplayLabel_HasAbbreviation_ShowsAbbreviation()
-//        {
-//            WritingSystemDefinition ws = new WritingSystemDefinition();
-//            ws.ISO = "abc";
-//            ws.Abbreviation = "xyz";
-//            Assert.AreEqual("xyz", ws.DisplayLabel);
-//        }
+		[Test]
+		public void DisplayLabel_LanguageTagIsDefaultHasAbbreviation_ShowsAbbreviation()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.Abbreviation = "xyz";
+			Assert.AreEqual("xyz", ws.DisplayLabel);
+		}
+
+		[Test]
+		public void Variant_ConsistsOnlyOfRfc5646Variant_VariantIsSetCorrectly()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "fonipa";
+			Assert.AreEqual("fonipa", ws.Variant);
+		}
+
+		[Test]
+		public void Variant_ConsistsOnlyOfRfc5646PrivateUse_VariantIsSetCorrectly()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "x-etic";
+			Assert.AreEqual("x-etic", ws.Variant);
+		}
+
+		[Test]
+		public void Variant_ConsistsOfBothRfc5646VariantandprivateUse_VariantIsSetCorrectly()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "fonipa-x-etic";
+			Assert.AreEqual("fonipa-x-etic", ws.Variant);
+		}
 
 		[Test]
 		public void DisplayLabel_OnlyHasLanguageName_UsesFirstPartOfLanguageName()
@@ -45,36 +68,36 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Rfc5646_HasOnlyAbbreviation_EmptyString()
+		public void Rfc5646_HasOnlyAbbreviation_ReturnsQaa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition(){Abbreviation = "hello"};
-			Assert.AreEqual(string.Empty, ws.RFC5646);
+			Assert.AreEqual("qaa", ws.RFC5646);
 		}
 
 		[Test]
 		public void Rfc5646WhenJustISO()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso","","","","","", false);
-			Assert.AreEqual("iso", ws.RFC5646);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en","","","","", false);
+			Assert.AreEqual("en", ws.RFC5646);
 		}
 		[Test]
 		public void Rfc5646WhenIsoAndScript()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "scrip", "", "", "", "", false);
-			Assert.AreEqual("iso-scrip", ws.RFC5646);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Zxxx", "", "", "", false);
+			Assert.AreEqual("en-Zxxx", ws.RFC5646);
 		}
 
 		[Test]
 		public void Rfc5646WhenIsoAndRegion()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "", "where", "", "", "", false);
-			Assert.AreEqual("iso-where", ws.RFC5646);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "", "US", "", "", false);
+			Assert.AreEqual("en-US", ws.RFC5646);
 		}
 		[Test]
 		public void Rfc5646WhenIsoScriptRegionVariant()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "scrip", "regn", "var", "", "", false);
-			Assert.AreEqual("iso-scrip-regn-var", ws.RFC5646);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Zxxx", "US", "1901", "", false);
+			Assert.AreEqual("en-Zxxx-US-1901", ws.RFC5646);
 		}
 
 		[Test]
@@ -91,31 +114,50 @@ namespace Palaso.Tests.WritingSystems
 			Assert.Greater(WritingSystemDefinition.ValidIso639LanguageCodes.Count, 100);
 		}
 
+		[Test]
+		public void VerboseDescriptionWhenNoSubtagsSet()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition("", "", "", "", "", false);
+			Assert.AreEqual("Unknown language. (qaa)", ws.VerboseDescription);
+		}
 
 		[Test]
 		public void VerboseDescriptionWhenJustISO()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "", "", "", "", "", false);
-			Assert.AreEqual("???. (iso)", ws.VerboseDescription);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "", "", "", "", false);
+			Assert.AreEqual("English. (en)", ws.VerboseDescription);
 		}
 		[Test]
 		public void VerboseDescriptionWhenIsoAndScript()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "Kore", "", "", "", "", false);
-			Assert.AreEqual("??? written in Korean script. (iso-Kore)", ws.VerboseDescription);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Kore", "", "", "", false);
+			Assert.AreEqual("English written in Korean script. (en-Kore)", ws.VerboseDescription);
+		}
+		[Test]
+		public void VerboseDescriptionWhenOnlyScript()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition("", "Kore", "", "", "", false);
+			Assert.AreEqual("Unknown language written in Korean script. (qaa-Kore)", ws.VerboseDescription);
 		}
 
 		[Test]
 		public void VerboseDescriptionWhenIsoAndRegion()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "", "flubville", "", "foobar", "", false);
-			Assert.AreEqual("foobar in flubville. (iso-flubville)", ws.VerboseDescription);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "", "US", "", "", false);
+			Assert.AreEqual("English in US. (en-US)", ws.VerboseDescription);
 		}
 		[Test]
 		public void VerboseDescriptionWhenIsoScriptRegionVariant()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "Kore", "regn", "western", "foobar", "", false);
-			Assert.AreEqual("western foobar in regn written in Korean script. (iso-Kore-regn-western)", ws.VerboseDescription);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Kore", "US", "1901", "", false);
+			Assert.AreEqual("English in US written in Korean script. (en-Kore-US-1901)", ws.VerboseDescription);
+		}
+		[Test]
+		public void VerboseDescriptionWhenIsoIsUnsetButLanguageNameIs()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition("", "Kore", "US", "1901", "", false);
+			ws.LanguageName = "Eastern lawa";
+			Assert.AreEqual("Eastern lawa in US written in Korean script. (qaa-Kore-US-1901)", ws.VerboseDescription);
 		}
 
 		[Test]
@@ -129,15 +171,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CurrentScriptOptionReturnCorrectScript()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "Kore", "", "", "", "", false);
+			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Kore", "", "", "", false);
 			Assert.AreEqual("Korean", ws.Iso15924Script.Label);
-		}
-
-		[Test]
-		public void CurrentScriptOptionReturnsNullWithUnrecognizedScript()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("iso", "blah", "", "", "", "", false);
-			Assert.IsNull(ws.Iso15924Script);
 		}
 
 		[Test]
@@ -146,8 +181,16 @@ namespace Palaso.Tests.WritingSystems
 			// Put any properties to ignore in this string surrounded by "|"
 			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|";
 			// special test values to use for properties that are particular
-			//Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
-			//Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
+			Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
+			Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
+			firstValueSpecial.Add("Variant", "1901");
+			secondValueSpecial.Add("Variant", "biske");
+			firstValueSpecial.Add("Region", "US");
+			secondValueSpecial.Add("Region", "GB");
+			firstValueSpecial.Add("ISO", "en");
+			secondValueSpecial.Add("ISO", "de");
+			firstValueSpecial.Add("Script", "Zxxx");
+			secondValueSpecial.Add("Script", "Latn");
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");
 			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
@@ -163,7 +206,7 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
-			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Ltn", "", "1901","x-audio"));
+			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Latn", "", "1901","x-audio"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -182,12 +225,12 @@ namespace Palaso.Tests.WritingSystems
 				// We use the setting twice method so we don't require a getter on the property.
 				try
 				{
-					//if (firstValueSpecial.ContainsKey(propertyInfo.Name) && secondValueSpecial.ContainsKey(propertyInfo.Name))
-					//{
-					//    propertyInfo.SetValue(ws, firstValueSpecial[propertyInfo.Name], null);
-					//    propertyInfo.SetValue(ws, secondValueSpecial[propertyInfo.Name], null);
-					//}
-					if (firstValueToSet.ContainsKey(propertyInfo.PropertyType) && secondValueToSet.ContainsKey(propertyInfo.PropertyType))
+					if (firstValueSpecial.ContainsKey(propertyInfo.Name) && secondValueSpecial.ContainsKey(propertyInfo.Name))
+					{
+						propertyInfo.SetValue(ws, firstValueSpecial[propertyInfo.Name], null);
+						propertyInfo.SetValue(ws, secondValueSpecial[propertyInfo.Name], null);
+					}
+					else if (firstValueToSet.ContainsKey(propertyInfo.PropertyType) && secondValueToSet.ContainsKey(propertyInfo.PropertyType))
 					{
 						propertyInfo.SetValue(ws, firstValueToSet[propertyInfo.PropertyType], null);
 						propertyInfo.SetValue(ws, secondValueToSet[propertyInfo.PropertyType], null);
@@ -360,7 +403,7 @@ namespace Palaso.Tests.WritingSystems
 				IsVoice = true,
 			};
 			ws.ISO = "iso-Zxxx-x-audio";
-			Assert.AreEqual("iso", ws.ISO);
+			Assert.AreEqual("en", ws.ISO);
 			Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Variant);
 			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.IsTrue(ws.IsVoice);

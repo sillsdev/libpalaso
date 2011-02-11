@@ -602,7 +602,7 @@ namespace Palaso.Tests.WritingSystems
 
 			public IEnumerator<WritingSystemDefinition> GetEnumerator()
 			{
-					yield return new WritingSystemDefinition("tst", "", "", "", "test", "", false);
+					yield return new WritingSystemDefinition("tst", "", "", "", "", false);
 			}
 
 			IEnumerator IEnumerable.GetEnumerator()

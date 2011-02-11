@@ -285,7 +285,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void MakeDuplicate_FieldsAreEqual()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition("iso", "script", "region", "variant", "language",
+			WritingSystemDefinition ws1 = new WritingSystemDefinition("iso", "script", "region", "variant",
 																	  "abbrev", false);
 			ws1.Keyboard = "keyboard";
 			ws1.NativeName = "native name";

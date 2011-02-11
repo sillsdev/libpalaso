@@ -14,7 +14,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test, Ignore("Only works if there is an ipa keyboard installed")]
 		public void GetSuggestions_HasNormalLacksIpa_IpaSuggestedWhichCopiesAllRelevantFields()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "Edolo", "edo", true);
+			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "edo", true);
 			etr.DefaultFontName = "font";
 			etr.DefaultFontSize = 33;
 			var list = new List<WritingSystemDefinition>(new[] {etr });
@@ -37,8 +37,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetSuggestions_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa","Edolo", "edo", false);
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa", "edo", false);
 			var list = new List<WritingSystemDefinition>(new[] { etr, etrIpa });
 			var suggestor = new WritingSystemSuggestor();
 			var suggestions = suggestor.GetSuggestions(etr, list);
@@ -53,7 +53,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetSuggestions_MajorWorlLanguage_SuggestsOnlyIfSuppressSuggesstionsForMajorWorldLanguagesIsFalse()
 		{
-			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "English", "eng", false);
+			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);
 			var list = new List<WritingSystemDefinition>(new[] { english });
 			var suggestor = new WritingSystemSuggestor();
 			suggestor.SuppressSuggestionsForMajorWorldLanguages =false;

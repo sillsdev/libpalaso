@@ -20,7 +20,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetUp()
 		{
 			_adaptor = new LdmlAdaptor();
-			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "English", "eng", false);
+			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false);
 		}
 
 		[Test]
