@@ -146,6 +146,8 @@ namespace Palaso.WritingSystems
 			_dateModified = ws._dateModified;
 			_isLegacyEncoded = ws._isLegacyEncoded;
 			_rfcTagOnLoad = ws._rfcTagOnLoad;
+			_rfcTag = new RFC5646Tag(ws._rfcTag);
+			_languageName = ws._languageName;
 		}
 
 		/// <summary>
@@ -275,9 +277,11 @@ namespace Palaso.WritingSystems
 				if (variantDoesNotContainPrivateUseSubtags)
 				{
 					_rfcTag.Variant = value;
+					_rfcTag.PrivateUse = "";
 				}
 				else if (variantIsRfc5646ConformPrivateUseSubTag)
 				{
+					_rfcTag.Variant = "";
 					_rfcTag.PrivateUse = value;
 				}
 				else
@@ -350,7 +354,8 @@ namespace Palaso.WritingSystems
 			}
 			else
 			{
-				_rfcTag.RemoveFromVariant(WellKnownSubTags.Audio.PrivateUseSubtag);
+				_rfcTag.Script = String.Empty;
+				_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 			Modified = true;
 			CheckIfRfcTagIsValid();
@@ -392,8 +397,8 @@ namespace Palaso.WritingSystems
 
 		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
 		{
-			_rfcTag.Script = script;
-			_rfcTag.Variant = variant;
+			Script = script;
+			Variant = variant;
 			CheckIfRfcTagIsValid();
 		}
 
