@@ -571,7 +571,12 @@ namespace Palaso.WritingSystems
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			return Equals(other._language, _language) && Equals(other._script, _script) && Equals(other._region, _region) && Equals(other._variant, _variant);
+			bool languagesAreEqual = Equals(other.Language, Language);
+			bool scriptsAreEqual = Equals(other.Script, Script);
+			bool regionsAreEqual = Equals(other.Region, Region);
+			bool variantsArEqual = Equals(other.Variant, Variant);
+			bool privateUseArEqual = Equals(other.PrivateUse, PrivateUse);
+			return languagesAreEqual && scriptsAreEqual && regionsAreEqual && variantsArEqual && privateUseArEqual;
 		}
 
 		public override int GetHashCode()

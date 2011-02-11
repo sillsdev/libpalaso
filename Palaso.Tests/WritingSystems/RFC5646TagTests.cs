@@ -751,5 +751,107 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("en-Latn-US-1901-x-audio", tag.CompleteTag);
 		}
 
+		[Test]
+		public void Equals_IsoIsEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoScriptIsEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", "Zxxx", String.Empty, String.Empty, String.Empty);
+			var tag2 = new RFC5646Tag("en", "Zxxx", String.Empty, String.Empty, String.Empty);
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoRegionIsEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, "US", String.Empty, String.Empty);
+			var tag2 = new RFC5646Tag("en", String.Empty, "US", String.Empty, String.Empty);
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoVariantIsEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, "bauddha", String.Empty);
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, "bauddha", String.Empty);
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_PrivateUseIsEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_AlltagsAreEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", "Zxxx", "US", "1901", "x-audio");
+			var tag2 = new RFC5646Tag("en", "Zxxx", "US", "1901", "x-audio");
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoNotEqual_ReturnsFalse()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			var tag2 = new RFC5646Tag("de", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.AreNotEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoScriptIsNotEqual_ReturnsFalse()
+		{
+			var tag1 = new RFC5646Tag("en", "Zxxx", String.Empty, String.Empty, String.Empty);
+			var tag2 = new RFC5646Tag("en", "Latn", String.Empty, String.Empty, String.Empty);
+			Assert.AreNotEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoRegionIsNotEqual_ReturnsFalse()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, "US", String.Empty, String.Empty);
+			var tag2 = new RFC5646Tag("en", String.Empty, "GB", String.Empty, String.Empty);
+			Assert.AreNotEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_IsoVariantIsNotEqual_ReturnsFalse()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, "bauddha", String.Empty);
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, "biske", String.Empty);
+			Assert.AreNotEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void Equals_PrivateUseIsNotEqual_ReturnsFalse()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-etic");
+			Assert.AreNotEqual(tag1, tag2);
+		}
+
+		[Test]
+		[Ignore("We are not implementing this right now. If it becomes necassary we will.")]
+		public void Equals_VariantTagsAreSameButNotInSameOrder_ReturnsTrue()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		[Ignore("We are not implementing this right now. If it becomes necassary we will.")]
+		public void Equals_PrivateUseTagsAreSameButNotInSameOrder_ReturnsTrue()
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }
