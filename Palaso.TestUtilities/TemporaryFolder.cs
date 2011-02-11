@@ -9,7 +9,6 @@ namespace Palaso.TestUtilities
 {
 	public class TempLiftFile : TempFile
 	{
-
 		public TempLiftFile(string xmlOfEntries)
 			: this(xmlOfEntries, /*LiftIO.Validation.Validator.LiftVersion*/ "0.12")
 		{
@@ -44,6 +43,7 @@ namespace Palaso.TestUtilities
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
 			File.WriteAllText(_path, liftContents);
 		}
+
 		private TempLiftFile()
 		{
 		}
@@ -72,14 +72,13 @@ namespace Palaso.TestUtilities
 		/// </summary>
 		public TempFileFromFolder(TemporaryFolder parentFolder)
 		{
-			if (parentFolder != null)
-			{
-				_path = parentFolder.GetPathForNewTempFile(true);
-			}
-			else
-			{
-				_path = System.IO.Path.GetTempFileName();
-			}
+			_path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
+		}
+
+		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
+		{
+			_path = parentFolder.Combine(name);
+			File.WriteAllText(_path, contents);
 		}
 
 		public static TempFile CreateXmlFileWithContents(string fileName, TemporaryFolder folder, string xmlBody)
@@ -94,6 +93,12 @@ namespace Palaso.TestUtilities
 				}
 			}
 			return new TempFile(path, true);
+		}
+
+		public static TempFile CreateAt(string path, string contents)
+		{
+			File.WriteAllText(path, contents);
+			return TrackExisting(path);
 		}
 	}
 
