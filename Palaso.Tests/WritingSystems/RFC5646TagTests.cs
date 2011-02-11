@@ -544,6 +544,22 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Variant_SetWhileNotEmpty_RemovesOldVariant()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
+			tag.Variant = "bauddha";
+			Assert.AreEqual("bauddha", tag.Variant);
+		}
+
+		[Test]
+		public void PrivateUse_SetWhileNotEmpty_RemovesOldPrivateUse()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty,String.Empty, "x-test");
+			tag.PrivateUse = "audio";
+			Assert.AreEqual("x-audio", tag.PrivateUse);
+		}
+
+		[Test]
 		public void Variant_SetPrivateUseTag_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
@@ -557,6 +573,21 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Constructor_LanguageSubtagIsQaa_IsValid()
+		{
+			var rfcTag = new RFC5646Tag("qaa", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.AreEqual("qaa", rfcTag.Language);
+		}
+
+		[Test]
+		public void LanguageSubtag_SetToQaa_IsSet()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			rfcTag.Language = "qaa";
+			Assert.AreEqual("qaa", rfcTag.Language);
+		}
+
+		[Test]
 		public void Constructor_ScriptIsSetButLanguageIsEmpty_Throws()
 		{
 			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, "Zxxx", String.Empty, String.Empty, String.Empty));
@@ -566,6 +597,54 @@ namespace Palaso.Tests.WritingSystems
 		public void Constructor_RegionIsSetButLanguageIsEmpty_Throws()
 		{
 			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, "US", String.Empty, String.Empty));
+		}
+
+		[Test]
+		public void Constructor_VariantIsSetButLanguageIsEmpty_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, "1901", String.Empty));
+		}
+
+		[Test]
+		public void Language_SetToEmptyWhenScriptIsNotEmpty_Throws()
+		{
+		   var rfcTag = new RFC5646Tag("en", "Zxxx", String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => rfcTag.Language = String.Empty);
+		}
+
+		[Test]
+		public void Language_SetToEmptyWhenRegionIsNotEmpty_Throws()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, "US", String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => rfcTag.Language = String.Empty);
+		}
+
+		[Test]
+		public void Language_SetToEmptyWhenVariantIsNotEmpty_Throws()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
+			Assert.Throws<ArgumentException>(() => rfcTag.Language = String.Empty);
+		}
+
+		[Test]
+		public void Script_SetWhileLanguageSubtagIsEmpty_Throws()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
+			Assert.Throws<ArgumentException>(() => rfcTag.Script = "Zxxx");
+		}
+
+		[Test]
+		public void Region_SetWhileLanguageSubtagIsEmpty_Throws()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
+			Assert.Throws<ArgumentException>(() => rfcTag.Region = "US");
+		}
+
+		[Test]
+		public void Variant_SetWhileLanguageSubtagIsEmpty_Throws()
+		{
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
+			Assert.Throws<ArgumentException>(() => rfcTag.Variant = "1901");
 		}
 
 		[Test]
