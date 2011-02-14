@@ -286,7 +286,11 @@ namespace Palaso.Tests.WritingSystems
 					Assert.Fail("Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.", fieldInfo.FieldType.Name, fieldName);
 				}
 				var theClone = ws.Clone();
-				Assert.AreNotSame(fieldInfo.GetValue(ws), fieldInfo.GetValue(theClone), "The field {0} refers to the same object, it was not copied.", fieldName);
+				if(fieldInfo.GetValue(ws).GetType() != typeof(string))  //strings are special in .net so we won't worry about checking them here.
+				{
+					Assert.AreNotSame(fieldInfo.GetValue(ws), fieldInfo.GetValue(theClone),
+									  "The field {0} refers to the same object, it was not copied.", fieldName);
+				}
 				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(theClone), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldName);
 			}
 		}
@@ -506,11 +510,19 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Variant_ContainsXDashAudioDashFonipa_VariantIsSet()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.IpaVariantSubtag);
+			Assert.AreEqual("x-audio-fonipa", ws.Variant);
+		}
+
+		[Test]
 		public void Variant_ContainsXDashAudioAndFonipa_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				()=>ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.IpaVariantSubtag));
+				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.IpaVariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
 		}
 
 		[Test]

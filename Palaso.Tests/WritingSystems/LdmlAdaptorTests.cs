@@ -142,18 +142,19 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Read_LdmlContainsWellDefinedFaultyIsoThatDescribesAudioWritingSystem_OldRfcTagFieldIsSetCorrectly()
 		{
-			string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"lwl-east\" /><script type=\"Script\" /><territory type=\"overtherainbow\" /><variant type=\"x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
-			string pathToLdmlFile = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlFile, ldml);
+			//string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"lwl-east\" /><script type=\"Script\" /><territory type=\"overtherainbow\" /><variant type=\"x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
+			//string pathToLdmlFile = Path.GetTempFileName();
+			//File.WriteAllText(pathToLdmlFile, ldml);
 
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Read(pathToLdmlFile, ws);
-			Assert.AreEqual("lwl-Zxxx-overtherainbow-x-audio", ws.RFC5646);
-			Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
-			Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
-			Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
-			Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Rfc5646TagOnLoad.Variant);
+			//WritingSystemDefinition ws = new WritingSystemDefinition();
+			//LdmlAdaptor adaptor = new LdmlAdaptor();
+			//adaptor.Read(pathToLdmlFile, ws);
+			//Assert.AreEqual("lwl-Zxxx-overtherainbow-x-audio", ws.RFC5646);
+			//Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
+			//Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
+			//Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
+			//Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Rfc5646TagOnLoad.Variant);
+			throw new NotImplementedException();
 		}
 	}
 }

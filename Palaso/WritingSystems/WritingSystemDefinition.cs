@@ -63,7 +63,6 @@ namespace Palaso.WritingSystems
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
-		private RFC5646Tag _rfcTagOnLoad;
 
 		/// <summary>
 		/// singleton
@@ -145,7 +144,6 @@ namespace Palaso.WritingSystems
 			_spellCheckingId = ws._spellCheckingId;
 			_dateModified = ws._dateModified;
 			_isLegacyEncoded = ws._isLegacyEncoded;
-			_rfcTagOnLoad = ws._rfcTagOnLoad;
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 		}
@@ -414,27 +412,6 @@ namespace Palaso.WritingSystems
 				_rfcTag.Region = value;
 				Modified = true;
 			}
-		}
-
-		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
-		//private RFC5646Tag Rfc5646Tag
-		//{
-		//    get{ return _rfcTag;}
-		//    set
-		//    {
-		//        if (_rfcTag == value){ return; }
-		//        _rfcTag = value;
-		//        Modified = true;
-		//    }
-		//}
-
-		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
-		//This method is preferable to setting the individual components independantly, as the order
-		//in which they are set can lead to invalid interim Rfc5646 tags
-		public RFC5646Tag Rfc5646TagOnLoad
-		{
-			get { return _rfcTagOnLoad; }
-			set { _rfcTagOnLoad = value; }
 		}
 
 		/// <summary>
