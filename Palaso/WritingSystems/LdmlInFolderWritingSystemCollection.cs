@@ -11,6 +11,7 @@ namespace Palaso.WritingSystems
 	{
 		private const string _kExtension = ".ldml";
 		private string _path;
+		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 
 		public static int LatestVersion
 		{
@@ -89,29 +90,28 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
-		static bool ContainsWritingSystemsThatNeedMigrating
-		{
-			get{throw new NotImplementedException();}
-		}
-
 		private void LoadAllDefinitions()
 		{
-			if (ContainsWritingSystemsThatNeedMigrating)
-			{
-				throw new ApplicationException("The writing systems store contains writing systems that need to be migrated. Please use GetWritingSystemsThatNeedMigrating() to migrate these writing systems in a manner that isfriendly to your app.");
-			}
 			Clear();
-
-			List<WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
-			SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(loadedWritingSystems);
-
-			foreach (WritingSystemDefinition ws in loadedWritingSystems)
+			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
-				SaveDefinition(ws);
-				ws.Modified = false;
+				WritingSystemDefinition wsFromFile;
+				try
+				{
+					wsFromFile = GetWritingSystemFromLdml(filePath);
+				}
+				catch(Exception e)
+				{
+					throw new ApplicationException(
+						"Unfortunately we were not able to load all of your writing systems. the problem occurred in file {0}. The exact error message was" +
+						e.Message);
+				}
+				if(wsFromFile.StoreID != wsFromFile.RFC5646)
+				{
+					throw new ApplicationException(String.Format("The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.", filePath));
+				}
+				Set(wsFromFile);
 			}
-
-			AddActiveOSLanguages();
 		}
 
 		private List<WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
@@ -228,9 +228,7 @@ namespace Palaso.WritingSystems
 
 		private void AddActiveOSLanguages()
 		{
-			if (SystemWritingSystemProvider != null)
-			{
-				foreach (WritingSystemDefinition ws in SystemWritingSystemProvider)
+				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 				{
 					if (null == FindAlreadyLoadedWritingSystem(ws.RFC5646))
 					{
@@ -240,7 +238,6 @@ namespace Palaso.WritingSystems
 						}
 					}
 				}
-			}
 		}
 
 //        /// <summary>
@@ -251,7 +248,15 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
-		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider { get; set; }
+		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider {
+			get{ return _systemWritingSystemProvider;}
+			set
+			{
+				if(_systemWritingSystemProvider == value){ return;}
+				_systemWritingSystemProvider = value;
+				AddActiveOSLanguages();
+			}
+		}
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
 		{
@@ -390,11 +395,6 @@ namespace Palaso.WritingSystems
 			}
 			string writingSystemFilePath = GetFilePath(ws);
 			File.Move(oldFilePath, writingSystemFilePath);
-		}
-
-		public string GetStoreId(WritingSystemDefinition definition)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

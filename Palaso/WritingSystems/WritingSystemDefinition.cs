@@ -605,6 +605,7 @@ namespace Palaso.WritingSystems
 //            }
 		}
 
+		[Obsolete("Use RFC5646 Property.")]
 		public string Id
 		{
 			get
