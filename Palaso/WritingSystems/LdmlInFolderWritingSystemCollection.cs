@@ -94,8 +94,7 @@ namespace Palaso.WritingSystems
 			get{throw new NotImplementedException();}
 		}
 
-		// TODO This can be made private, but breaks 19 test which need an upgrade anyway CP 2010-11.
-		public void LoadAllDefinitions()
+		private void LoadAllDefinitions()
 		{
 			if (ContainsWritingSystemsThatNeedMigrating)
 			{
@@ -391,6 +390,11 @@ namespace Palaso.WritingSystems
 			}
 			string writingSystemFilePath = GetFilePath(ws);
 			File.Move(oldFilePath, writingSystemFilePath);
+		}
+
+		public string GetStoreId(WritingSystemDefinition definition)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

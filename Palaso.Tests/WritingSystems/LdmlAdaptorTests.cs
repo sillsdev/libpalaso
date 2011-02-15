@@ -91,7 +91,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ExistingUnusedLdml_Write_PreservesData()
 		{
 			StringWriter sw = new StringWriter();
-			WritingSystemDefinition ws = new WritingSystemDefinition("xxx");
+			WritingSystemDefinition ws = new WritingSystemDefinition("en");
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.ConformanceLevel = ConformanceLevel.Fragment;
 			settings.Indent = false;
@@ -100,8 +100,7 @@ namespace Palaso.Tests.WritingSystems
 			XmlWriter writer = XmlWriter.Create(sw, settings);
 			_adaptor.Write(writer, ws, XmlReader.Create(new StringReader("<ldml><!--Comment--><dates/><special>hey</special></ldml>")));
 			writer.Close();
-			string s = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"xxx\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special>hey</special></ldml>";
-			Assert.AreEqual(s, sw.ToString());
+			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
 		[Test]
@@ -122,39 +121,6 @@ namespace Palaso.Tests.WritingSystems
 			}
 
 			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
-		}
-
-		[Test]
-		public void Read_LdmlContainsWellDefinedFaultyIsoThatDescribesAudioWritingSystem_RFC5646FieldsAreCorrected()
-		{
-			string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"tpi-Zxxx-x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
-			string pathToLdmlFile = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlFile, ldml);
-
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Read(pathToLdmlFile,ws);
-			Assert.AreEqual("tpi", ws.ISO);
-			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
-			Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Variant);
-		}
-
-		[Test]
-		public void Read_LdmlContainsWellDefinedFaultyIsoThatDescribesAudioWritingSystem_OldRfcTagFieldIsSetCorrectly()
-		{
-			//string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"lwl-east\" /><script type=\"Script\" /><territory type=\"overtherainbow\" /><variant type=\"x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
-			//string pathToLdmlFile = Path.GetTempFileName();
-			//File.WriteAllText(pathToLdmlFile, ldml);
-
-			//WritingSystemDefinition ws = new WritingSystemDefinition();
-			//LdmlAdaptor adaptor = new LdmlAdaptor();
-			//adaptor.Read(pathToLdmlFile, ws);
-			//Assert.AreEqual("lwl-Zxxx-overtherainbow-x-audio", ws.RFC5646);
-			//Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
-			//Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
-			//Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
-			//Assert.AreEqual(WellKnownSubTags.Audio.PrivateUseSubtag, ws.Rfc5646TagOnLoad.Variant);
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -32,10 +32,10 @@ namespace Palaso.Tests.WritingSystems.Migration
 			var migrator = new LdmlInFolderWritingSystemStoreMigrator(ldmlWs.Path);
 			migrator.MigrateIfNecassary();
 			var store = new LdmlInFolderWritingSystemStore();
-			store.LoadAllDefinitions();
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl1", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl2", StringComparison.OrdinalIgnoreCase)));
+			throw new NotImplementedException("Why is pathToSecondWsThatWillLeadToDuplicate grayed out?");
 		}
 
 		[Test]
@@ -51,7 +51,6 @@ namespace Palaso.Tests.WritingSystems.Migration
 			var migrator = new LdmlInFolderWritingSystemStoreMigrator(ldmlWs.Path);
 			migrator.MigrateIfNecassary();
 			var store = new LdmlInFolderWritingSystemStore();
-			store.LoadAllDefinitions();
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl1", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl2", StringComparison.OrdinalIgnoreCase)));
