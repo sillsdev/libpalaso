@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -41,17 +42,17 @@ namespace Palaso.Tests.WritingSystems.Migration
 
 		private TestEnvironment _environment;
 
-		private WritingSystemDefinition GetMigratedWs()
-		{
-			var migratedWs = new WritingSystemDefinition();
-			var adaptor = new LdmlAdaptor();
-			adaptor.Read(_environment.PathToWritingSystemLdmlFile, migratedWs);
-			return migratedWs;
-		}
-
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsFonipa_IpaStatusIsSetToIpa()
 		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version0LdmlFile);
+				var migrator = new WritingSystemDefinitionLdmlMigrator(1, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				var versionGetter = new WritingSystemLdmlVersionGetter();
+				Assert.AreEqual(1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
+			}
 			throw new NotImplementedException();
 		}
 
@@ -110,8 +111,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 			{
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
-				WritingSystemDefinition migratedWs = GetMigratedWs();
-				Assert.IsTrue(migratedWs.IsVoice);
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[text()='x-audio'");
 			}
 		}
 
@@ -200,6 +200,36 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsDuplicateValidLanguageSubtag_DuplicateIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsDuplicateValidScript_DuplicateIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsDuplicateValidRegion_DuplicateIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsDuplicateValidVariant_DuplicateIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsDuplicatePrivateUse_DuplicateIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
 		public void MigrateIfNecassary_ScriptSubtagContainsAnythingButValidScriptAndIsDuplicateOfDataInPrivateUse_DataIsNotDuplicatedInPrivateUse()
 		{
 			throw new NotImplementedException();
@@ -214,6 +244,26 @@ namespace Palaso.Tests.WritingSystems.Migration
 		[Test]
 		public void MigrateIfNecassary_VariantSubtagContainsAnythingButValidVariantOrprivateUseAndIsDuplicateOfDataInPrivateUse_DataIsNotDuplicatedInPrivateUse()
 		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_OriginalFileContainsCustomLdmlData_DataIsCopied()
+		{
+			//Test for fallback, localeDisplayNames, characters, delimiters, measurement, dates, numbers, units, listPatterns, posix, segmentations, rbnf and references
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_OriginalFileContainsDefaultFontFamilyInfo_DataIsMigrated()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_OriginalFileIsNotLdmlVWhat_Throw()
+		{
+			//Need to make sure we are reading/writing the right vrsions of Ldml.rename LdmlAdaptor to LdmlDataMapper
 			throw new NotImplementedException();
 		}
 
