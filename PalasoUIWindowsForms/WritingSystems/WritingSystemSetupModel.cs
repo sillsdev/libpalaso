@@ -502,12 +502,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentISO
 		{
-			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.ISO ?? string.Empty); }
+			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.ISO639 ?? string.Empty); }
 			set
 			{
-				if (CurrentDefinition.ISO != value)
+				if (CurrentDefinition.ISO639 != value)
 				{
-					CurrentDefinition.ISO = value;
+					CurrentDefinition.ISO639 = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -1007,20 +1007,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					cantSet.Add(ws, ws.ISO);
+					cantSet.Add(ws, ws.ISO639);
 				}
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
 				while (!_writingSystemStore.CanSet(kvp.Key))
 				{
-					kvp.Key.ISO += "X";
+					kvp.Key.ISO639 += "X";
 				}
 				_writingSystemStore.Set(kvp.Key);
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
-				kvp.Key.ISO = kvp.Value;
+				kvp.Key.ISO639 = kvp.Value;
 				if (_writingSystemStore.CanSet(kvp.Key))
 				{
 					_writingSystemStore.Set(kvp.Key);

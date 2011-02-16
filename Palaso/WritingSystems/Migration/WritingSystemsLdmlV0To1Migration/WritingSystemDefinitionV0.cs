@@ -157,7 +157,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		}
 
 		/// <summary>
-		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
+		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
 		/// </summary>
 		public static IList<LanguageCode> LanguageCodes
 		{
@@ -177,7 +177,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					if (tline.Length == 0)
 						continue;
 					string[] fields = tline.Split('\t');
-					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
+					// use ISO639 639-1 code where available, otherwise use ISO639 639-3 code
 					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
 				}
 				_languageCodes.Sort(LanguageCode.CompareByName);
@@ -465,7 +465,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		}
 
 		/// <summary>
-		/// The ISO-639 code which is also the Ethnologue code.
+		/// The ISO639-639 code which is also the Ethnologue code.
 		/// </summary>
 		virtual public string ISO
 		{

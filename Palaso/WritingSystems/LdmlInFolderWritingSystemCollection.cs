@@ -196,12 +196,12 @@ namespace Palaso.WritingSystems
 			//    return;
 			//}
 			//var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid) ? wsFromFile : existingWritingSystem;
-			//var newTag = new RFC5646Tag(wsToMakeUnique.ISO, wsToMakeUnique.Script, wsToMakeUnique.Region, wsToMakeUnique.Variant);
+			//var newTag = new RFC5646Tag(wsToMakeUnique.ISO639, wsToMakeUnique.Script, wsToMakeUnique.Region, wsToMakeUnique.Variant);
 			//do
 			//{
 			//    newTag.Variant += "-x-dupl";
 			//} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
-			//wsToMakeUnique.ISO = newTag.Language;
+			//wsToMakeUnique.ISO639 = newTag.Language;
 			//wsToMakeUnique.Script = newTag.Script;
 			//wsToMakeUnique.Region = newTag.Region;
 			//wsToMakeUnique.Variant = newTag.Variant;

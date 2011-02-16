@@ -102,10 +102,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SaveDefinitionsThenLoad_CountEquals2()
 		{
-			_writingSystem.ISO = "one";
+			_writingSystem.ISO639 = "one";
 			_collection.SaveDefinition(_writingSystem);
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "two";
+			ws2.ISO639 = "two";
 			_collection.SaveDefinition(ws2);
 			var newStore = new LdmlInFolderWritingSystemStore(_testPath);
 
@@ -129,14 +129,14 @@ namespace Palaso.Tests.WritingSystems
 		public void FileNameWhenOnlyHaveIso()
 		{
 
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			Assert.AreEqual("en.ldml", _collection.GetFileName(_writingSystem));
 		}
 		[Test]
 		public void FileNameWhenHaveIsoAndRegion()
 		{
 
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Region = "us";
 			Assert.AreEqual("en-us.ldml", _collection.GetFileName(_writingSystem));
 		}
@@ -144,19 +144,19 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SavesWhenPreexisting()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			_collection.SaveDefinition(_writingSystem);
 
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(ws2);
 		}
 
 		[Test]
 		public void RegressionWhereUnchangedDefDeleted()
 		{
-			_writingSystem.ISO = "qaa";
+			_writingSystem.ISO639 = "qaa";
 			_collection.SaveDefinition(_writingSystem);
 			WritingSystemDefinition ws2 = _collection.Get(_writingSystem.StoreID);
 			_collection.SaveDefinition(ws2);
@@ -174,7 +174,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void StoreIDAfterSave_SameAsFileNameWithoutExtension()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			Assert.AreEqual("en", _writingSystem.StoreID);
 		}
@@ -182,7 +182,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void StoreIDAfterLoad_SameAsFileNameWithoutExtension()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			Assert.AreNotEqual(0, Directory.GetFiles(_testPath, "*.ldml"));
 			_collection.SaveDefinition(_writingSystem);
 			var newStore = new LdmlInFolderWritingSystemStore(_testPath);
@@ -193,12 +193,12 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void UpdatesFileNameWhenISOChanges()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			string path = Path.Combine(_collection.PathToWritingSystems, "en.ldml");
 			Assert.IsTrue(File.Exists(path));
 			WritingSystemDefinition ws2 = _collection.Get(_writingSystem.StoreID);
-			ws2.ISO = "de";
+			ws2.ISO639 = "de";
 			Assert.AreEqual("en", ws2.StoreID);
 			_collection.SaveDefinition(ws2);
 			Assert.AreEqual("de", ws2.StoreID);
@@ -211,7 +211,7 @@ namespace Palaso.Tests.WritingSystems
 		public void MakesNewFileIfNeeded()
 		{
 
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			AssertThatXmlIn.File(PathToWS).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
 		}
@@ -230,7 +230,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CanAddVariantToExistingLDML()
 		{
 
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Abbreviation = "bl";//crucially, abbreviation isn't part of the name of the file
 			_collection.SaveDefinition(_writingSystem);
 
@@ -246,7 +246,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanReadVariant()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Variant = "x-piglatin";
 			_collection.SaveDefinition(_writingSystem);
 
@@ -258,7 +258,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSaveAndReadDefaultFont()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.DefaultFontName = "Courier";
 			_collection.SaveDefinition(_writingSystem);
 
@@ -270,7 +270,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSaveAndReadKeyboardName()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Keyboard = "Thai";
 			_collection.SaveDefinition(_writingSystem);
 
@@ -282,7 +282,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSaveAndReadRightToLeft()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			Assert.IsFalse(_writingSystem.RightToLeftScript);
 			_writingSystem.RightToLeftScript = true;
 			Assert.IsTrue(_writingSystem.RightToLeftScript);
@@ -296,7 +296,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSaveAndReadIsUnicode()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			Assert.IsFalse(_writingSystem.IsLegacyEncoded);
 			_writingSystem.IsLegacyEncoded = true;
 			Assert.IsTrue(_writingSystem.IsLegacyEncoded);
@@ -310,7 +310,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void IsLegacyEncoded_FalseByDefault()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 
 			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
@@ -321,7 +321,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanRemoveVariant()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Variant = "x-piglatin";
 			_collection.SaveDefinition(_writingSystem);
 			string path = _collection.FilePathToWritingSystem(_writingSystem);
@@ -337,7 +337,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CanRemoveAbbreviation()
 		{
 
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Abbreviation = "abbrev";
 			_collection.SaveDefinition(_writingSystem);
 			string path = _collection.FilePathToWritingSystem(_writingSystem);
@@ -351,7 +351,7 @@ namespace Palaso.Tests.WritingSystems
 		public void WritesAbbreviationToLDML()
 		{
 
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_writingSystem.Abbreviation = "bl";
 			_collection.SaveDefinition(_writingSystem);
 			AssertThatXmlIn.File(PathToWS).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation[@value='bl']", _namespaceManager);
@@ -368,11 +368,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanDeleteFileThatIsNotInTrash()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(_writingSystem));
 			Assert.IsTrue(File.Exists(path));
-			_collection.Remove(_writingSystem.ISO);
+			_collection.Remove(_writingSystem.ISO639);
 			Assert.IsFalse(File.Exists(path));
 			AssertFileIsInTrash(_writingSystem);
 		}
@@ -387,11 +387,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanDeleteFileMatchingOneThatWasPreviouslyTrashed()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			_collection.Remove(_writingSystem.StoreID);
 			AssertFileIsInTrash(_writingSystem);
-			WritingSystemDefinition ws2 = new WritingSystemDefinition {ISO = "en"};
+			WritingSystemDefinition ws2 = new WritingSystemDefinition {ISO639 = "en"};
 			_collection.SaveDefinition(ws2);
 			_collection.Remove(ws2.StoreID);
 			string path = Path.Combine(_collection.PathToWritingSystems, _collection.GetFileName(_writingSystem));
@@ -409,14 +409,14 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void MarkedAsModifiedWhenISOChanges()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			Assert.IsTrue(_writingSystem.Modified);
 		}
 
 		[Test]
 		public void MarkedAsNotModifiedWhenLoaded()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get(_writingSystem.StoreID);
@@ -426,11 +426,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void MarkedAsNotModifiedWhenSaved()
 		{
-			_writingSystem.ISO = "en";
+			_writingSystem.ISO639 = "en";
 			Assert.IsTrue(_writingSystem.Modified);
 			_collection.SaveDefinition(_writingSystem);
 			Assert.IsFalse(_writingSystem.Modified);
-			_writingSystem.ISO = "de";
+			_writingSystem.ISO639 = "de";
 			Assert.IsTrue(_writingSystem.Modified);
 		}
 
@@ -450,7 +450,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(ContainsLanguageWithName(list, "English"));
 			IList<WritingSystemDefinition> list2 = new List<WritingSystemDefinition>(_collection.WritingSystemDefinitions);
 			WritingSystemDefinition ws2 = list2[0];
-			_collection.Remove(ws2.ISO);
+			_collection.Remove(ws2.ISO639);
 
 			var repository = new LdmlInFolderWritingSystemStore(_testPath);
 		  //  repository.DontAddDefaultDefinitions = false;

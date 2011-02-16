@@ -72,11 +72,11 @@ namespace Palaso.Tests.WritingSystems
 		public void SaveAllToXmlReaderReadAsFile_ReadsBackCorrect()
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			_writingSystemStore.Set(ws1);
 
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "fr";
+			ws2.ISO639 = "fr";
 			_writingSystemStore.Set(ws2);
 			Assert.AreEqual(2, _writingSystemStore.Count);
 
@@ -98,11 +98,11 @@ namespace Palaso.Tests.WritingSystems
 		public void SaveAllToXmlReaderReadAsXmlReader_ReadsBackCorrect()
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO = "en";
+			ws1.ISO639 = "en";
 			_writingSystemStore.Set(ws1);
 
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO = "fr";
+			ws2.ISO639 = "fr";
 			_writingSystemStore.Set(ws2);
 			Assert.AreEqual(2, _writingSystemStore.Count);
 

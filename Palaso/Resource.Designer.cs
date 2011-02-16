@@ -92,7 +92,7 @@ namespace Palaso {
 
 		/// <summary>
 		///   Looks up a localized string similar to #
-		///# ISO 15924 - Codes for the representation of names of scripts
+		///# ISO639 15924 - Codes for the representation of names of scripts
 		///#             Codes pour la représentation des noms d’écritures
 		///# Format:
 		///#             Code;N°;English Name;Nom français;PVA;Date

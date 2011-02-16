@@ -96,7 +96,7 @@ namespace Palaso.WritingSystems
 		public WritingSystemDefinition(string iso, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
-			ISO = String.IsNullOrEmpty(iso)?"qaa":iso;
+			ISO639 = String.IsNullOrEmpty(iso)?"qaa":iso;
 			Script = script;
 			Region = region;
 			Variant = variant;
@@ -149,7 +149,7 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
+		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
 		/// </summary>
 		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
@@ -415,9 +415,9 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// The ISO-639 code which is also the Ethnologue code.
+		/// The ISO639-639 code which is also the Ethnologue code.
 		/// </summary>
-		virtual public string ISO
+		virtual public string ISO639
 		{
 			get
 			{
@@ -425,10 +425,20 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == ISO) { return; }
+				if (value == ISO639) { return; }
 				_rfcTag.Language = value;
 				Modified = true;
 			}
+		}
+
+		/// <summary>
+		/// The ISO639-639 code which is also the Ethnologue code.
+		/// </summary>
+		[Obsolete("Please use ISO639")]
+		virtual public string ISO
+		{
+			get { return ISO639; }
+			set { ISO639 = value; }
 		}
 
 		virtual public string Abbreviation
@@ -467,7 +477,7 @@ namespace Palaso.WritingSystems
 				{
 					foreach (Iso639LanguageCode code in ValidIso639LanguageCodes)
 					{
-						if(code.Code.Equals(ISO))
+						if(code.Code.Equals(ISO639))
 						{
 							return code.Name;
 						}
