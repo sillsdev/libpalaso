@@ -38,9 +38,6 @@ namespace Palaso.WritingSystems
 		virtual public WritingSystemDefinition CreateNew()
 		{
 			var retval = new WritingSystemDefinition();
-
-			//!!! TODO: Add to shared
-
 			return retval;
 		}
 

@@ -43,6 +43,8 @@
 	<DocumentationFile>..\output\Debug\Palaso.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
+	<NoWarn>
+	</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -305,6 +307,8 @@
 	<Compile Include="WritingSystems\Collation\IcuRulesParser.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParser.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollator.cs" />
+	<Compile Include="WritingSystems\Iso15924Script.cs" />
+	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemStore.cs" />
 	<Compile Include="WritingSystems\LdmlAdaptor.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
@@ -313,7 +317,20 @@
 	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\RFC5646TagV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\Version0Migrator.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetter.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\LdmlAdaptorV1.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\RFC5646TagV1.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\Version1Migrator.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\WritingSystemDefinitionV1.cs" />
+	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemStoreMigrator.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigrator.cs" />
+	<Compile Include="WritingSystems\Rfc5646SubtagParser.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
+	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
 	<Compile Include="Xml\CanonicalXmlSettings.cs" />
@@ -365,6 +382,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
+	<Content Include="Resources\ianaSubtagRegistry.txt" />
 	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,12 @@ namespace Palaso.WritingSystems
 	{
 		private const string _kExtension = ".ldml";
 		private string _path;
+		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
+
+		public static int LatestVersion
+		{
+			get{ return 1;}
+		}
 
 		/// <summary>
 		/// Use the default repository
@@ -84,21 +90,28 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
-		// TODO This can be made private, but breaks 19 test which need an upgrade anyway CP 2010-11.
-		public void LoadAllDefinitions()
+		private void LoadAllDefinitions()
 		{
 			Clear();
-
-			List<WritingSystemDefinition> loadedWritingSystems = ReadAndDisambiguateWritingSystems();
-			SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(loadedWritingSystems);
-
-			foreach (WritingSystemDefinition ws in loadedWritingSystems)
+			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
-				SaveDefinition(ws);
-				ws.Modified = false;
+				WritingSystemDefinition wsFromFile;
+				try
+				{
+					wsFromFile = GetWritingSystemFromLdml(filePath);
+				}
+				catch(Exception e)
+				{
+					throw new ApplicationException(
+						"Unfortunately we were not able to load all of your writing systems. the problem occurred in file {0}. The exact error message was" +
+						e.Message);
+				}
+				if(wsFromFile.StoreID != wsFromFile.RFC5646)
+				{
+					throw new ApplicationException(String.Format("The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.", filePath));
+				}
+				Set(wsFromFile);
 			}
-
-			AddActiveOSLanguages();
 		}
 
 		private List<WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
@@ -106,22 +119,22 @@ namespace Palaso.WritingSystems
 			List<WritingSystemDefinition> loadedWritingSystems = new List<WritingSystemDefinition>();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 			{
-				WritingSystemDefinition wsFromFile;
-				wsFromFile = GetWritingSystemFromLdml(filePath);
-				WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
-					loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
+				//WritingSystemDefinition wsFromFile;
+				//wsFromFile = GetWritingSystemFromLdml(filePath);
+				//WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
+				//    loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
 
-				if (writingSystemWithIdenticalRfc5646Tag != null)
-				{
-					throw new ArgumentException
-						(
+				//if (writingSystemWithIdenticalRfc5646Tag != null)
+				//{
+				//    throw new ArgumentException
+				//        (
 						String.Format("Ldml files {0} and {1} contain writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
-						GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
-						);
-				}
-				wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
-				MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
-				loadedWritingSystems.Add(wsFromFile);
+				//        GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
+				//        );
+				//}
+				//wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
+				//MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
+				//loadedWritingSystems.Add(wsFromFile);
 			}
 			return loadedWritingSystems;
 		}
@@ -136,38 +149,36 @@ namespace Palaso.WritingSystems
 
 		private void MoveFilesToFinalDestination(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
 		{
-			foreach (WritingSystemDefinition ws in loadedWritingSystems)
-			{
-				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
-				{
-					string sourceFilePath = Path.Combine(pathToFolderForSafeFileRenaming,
-																		  GetFileName(ws));
-
-					string targetFilePath = GetFilePathFromIdentifier(ws.RFC5646);
-					if (File.Exists(targetFilePath))
-					{
-						File.Delete(sourceFilePath); //Had a case converting form the old audio style where the new file already existed, causing a crash
-					}
-					else
-					{
-						File.Move(sourceFilePath, targetFilePath);
-					}
-					ws.StoreID = ws.RFC5646;
-				}
-			}
+			throw new NotImplementedException("broken for now");
+			//foreach (WritingSystemDefinition ws in loadedWritingSystems)
+			//{
+			//    if (!ws.Rfc5646TagOnLoad.IsValid) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
+			//    {
+			//        string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+			//                                                              GetFileName(ws));
+			//        File.Move(pathInFolderForSafeFileRenaming, GetFilePathFromIdentifier(ws.RFC5646));
+			//        ws.StoreID = ws.RFC5646;
+			//    }
+			//}
+			//        }
+			//        else
+			//        {
+			//            File.Move(sourceFilePath, targetFilePath);
+			//        }
 		}
 
 		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
 		{
-			foreach (WritingSystemDefinition ws in loadedWritingSystems)
-			{
-				if (!ws.Rfc5646TagOnLoad.IsValid()) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
-				{
-					string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
-																		  GetFileName(ws));
-					File.Move(GetFilePathFromIdentifier(ws.StoreID), pathInFolderForSafeFileRenaming);
-				}
-			}
+			throw new NotImplementedException("broken for now");
+			//foreach (WritingSystemDefinition ws in loadedWritingSystems)
+			//{
+			//    if (!ws.Rfc5646TagOnLoad.IsValid) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
+			//    {
+			//        string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
+			//                                                              GetFileName(ws));
+			//        File.Move(GetFilePathFromIdentifier(ws.StoreID), pathInFolderForSafeFileRenaming);
+			//    }
+			//}
 		}
 
 		private string CreateFolderForSafeFileRenaming()
@@ -183,18 +194,22 @@ namespace Palaso.WritingSystems
 
 		private static void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
 		{
-			var existingWritingSystem = listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646); //.ContainsKey(wsFromFile.RFC5646))
-			if (existingWritingSystem == null)
-			{
-				return;
-			}
-			var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid()) ? wsFromFile : existingWritingSystem;
-			var newTag = new RFC5646Tag(wsToMakeUnique.Rfc5646Tag);
-			do
-			{
-				newTag.Variant += "-x-dupl";
-			} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
-			wsToMakeUnique.Rfc5646Tag = newTag;
+			throw new NotImplementedException("broken for now");
+			//var existingWritingSystem = listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646); //.ContainsKey(wsFromFile.RFC5646))
+			//if (existingWritingSystem == null)
+			//{
+			//    return;
+			//}
+			//var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid) ? wsFromFile : existingWritingSystem;
+			//var newTag = new RFC5646Tag(wsToMakeUnique.ISO639, wsToMakeUnique.Script, wsToMakeUnique.Region, wsToMakeUnique.Variant);
+			//do
+			//{
+			//    newTag.Variant += "-x-dupl";
+			//} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
+			//wsToMakeUnique.ISO639 = newTag.Language;
+			//wsToMakeUnique.Script = newTag.Script;
+			//wsToMakeUnique.Region = newTag.Region;
+			//wsToMakeUnique.Variant = newTag.Variant;
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
@@ -218,9 +233,7 @@ namespace Palaso.WritingSystems
 
 		private void AddActiveOSLanguages()
 		{
-			if (SystemWritingSystemProvider != null)
-			{
-				foreach (WritingSystemDefinition ws in SystemWritingSystemProvider)
+				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 				{
 					if (null == FindAlreadyLoadedWritingSystem(ws.RFC5646))
 					{
@@ -230,7 +243,6 @@ namespace Palaso.WritingSystems
 						}
 					}
 				}
-			}
 		}
 
 //        /// <summary>
@@ -241,7 +253,15 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
-		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider { get; set; }
+		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider {
+			get{ return _systemWritingSystemProvider;}
+			set
+			{
+				if(_systemWritingSystemProvider == value){ return;}
+				_systemWritingSystemProvider = value;
+				AddActiveOSLanguages();
+			}
+		}
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
 		{

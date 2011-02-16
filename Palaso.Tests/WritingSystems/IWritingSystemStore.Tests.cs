@@ -97,9 +97,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithUpperCaseButRequestedUsingLowerCase_Finds()
 		{
-			_writingSystem.ISO639 = "sr-Latn-RS";
+			_writingSystem.ISO639 = "sr";
+			_writingSystem.Script = "Latn";
+			_writingSystem.Variant = "x-RS";
 			StoreUnderTest.Set(_writingSystem);
-			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-rs"));
+			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-x-rs"));
 		}
 
 		/// <summary>
@@ -108,9 +110,12 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
 		{
-			_writingSystem.ISO639 = "sr-Latn-rs";
+
+			_writingSystem.ISO639 = "sR";
+			_writingSystem.Script = "LaTn";
+			_writingSystem.Variant = "x-rs";
 			StoreUnderTest.Set(_writingSystem);
-			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-RS"));
+			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-x-RS"));
 		}
 
 		[Test]
@@ -219,8 +224,8 @@ namespace Palaso.Tests.WritingSystems
 			ws1.ISO639 = "en";
 			Assert.AreEqual("en", ws1.RFC5646);
 			WritingSystemDefinition ws2 = ws1.Clone();
-			ws2.Variant = "latn";
-			Assert.AreEqual("en-latn", ws2.RFC5646);
+			ws2.Variant = "1901";
+			Assert.AreEqual("en-1901", ws2.RFC5646);
 
 			StoreUnderTest.Set(ws1);
 			Assert.AreEqual(1, StoreUnderTest.Count);
@@ -231,8 +236,8 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void StoreTwoOfSame_Throws()
 		{
-			var ws1 = new WritingSystemDefinition("foo");
-			var ws2 = new WritingSystemDefinition("foo");
+			var ws1 = new WritingSystemDefinition("en");
+			var ws2 = new WritingSystemDefinition("en");
 			StoreUnderTest.Set(ws1);
 			Assert.Throws<ArgumentException>(
 				() => StoreUnderTest.Set(ws2)
@@ -285,7 +290,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void MakeDuplicate_FieldsAreEqual()
 		{
-			WritingSystemDefinition ws1 = new WritingSystemDefinition("iso", "script", "region", "variant", "language",
+			WritingSystemDefinition ws1 = new WritingSystemDefinition("en", "Zxxx", "US", "x-audio",
 																	  "abbrev", false);
 			ws1.Keyboard = "keyboard";
 			ws1.NativeName = "native name";
@@ -384,7 +389,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void GetNewStoreIDWhenSet_ReturnsSameStoreIDAsSet()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("ws1");
+			var ws = new WritingSystemDefinition("de");
 			string newID = StoreUnderTest.GetNewStoreIDWhenSet(ws);
 			StoreUnderTest.Set(ws);
 			Assert.AreEqual(ws.StoreID, newID);

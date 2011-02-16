@@ -33,7 +33,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_updatingFromModel = true;
 				_region.Text= _model.CurrentRegion;
 				_variant.Text=_model.CurrentVariant;
-				_scriptCombo.SelectedItem = _model.CurrentScriptOption;
+				_scriptCombo.SelectedItem = _model.CurrentIso15924Script;
 				_updatingFromModel = false;
 			}
 		}
@@ -72,7 +72,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			}
 			else
 			{
-				_model.CurrentScriptCode = ((ScriptOption) _scriptCombo.SelectedItem).Code;
+				_model.CurrentScriptCode = ((Iso15924Script) _scriptCombo.SelectedItem).Code;
 			}
 		}
 
