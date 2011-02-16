@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -424,6 +424,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -441,6 +442,7 @@
 	<EmbeddedResource Include="ImageToolbox\LicenseLogos.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
