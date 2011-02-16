@@ -441,16 +441,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		/// <summary>
-		/// The ISO639-639 code which is also the Ethnologue code.
-		/// </summary>
-		[Obsolete("Please use ISO639")]
-		virtual public string ISO
-		{
-			get { return ISO639; }
-			set { ISO639 = value; }
-		}
-
 		virtual public string Abbreviation
 		{
 			get

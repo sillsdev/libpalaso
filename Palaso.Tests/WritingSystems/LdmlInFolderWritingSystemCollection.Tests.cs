@@ -476,20 +476,6 @@ namespace Palaso.Tests.WritingSystems
 			Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemStore(_testPath));
 		}
 
-		[Test]
-		public void LoadAllDefinitions_WouldRenameFileButFileWithThatNameAlreadyExists_JustRemovesBadFile()
-		{
-			string badNamedFile = Path.Combine(_testPath, "de-Zxxx-AUDIO.ldml");
-			File.WriteAllText(badNamedFile, GetLdmlFileContent("de-Zxxx-AUDIO", "", "", ""));
-
-			string goodNamedFile = Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml");
-			File.WriteAllText(goodNamedFile, GetLdmlFileContent("de-Zxxx-x-AUDIO", "", "", ""));
-
-			_collection.LoadAllDefinitions();
-			Assert.IsTrue(File.Exists(goodNamedFile));
-			Assert.IsFalse(File.Exists(badNamedFile));
-		}
-
 		private string GetLdmlFileContent(string language, string script, string region, string variant)
 		{
 			string ldml = "<ldml><!--Comment--><identity><version number='' /><generation date='0001-01-01T00:00:00' />".Replace("'","\"");

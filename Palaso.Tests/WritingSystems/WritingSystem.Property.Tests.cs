@@ -189,6 +189,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueSpecial.Add("Region", "GB");
 			firstValueSpecial.Add("ISO639", "en");
 			secondValueSpecial.Add("ISO639", "de");
+			firstValueSpecial.Add("ISO", "en");
+			secondValueSpecial.Add("ISO", "de");
 			firstValueSpecial.Add("Script", "Zxxx");
 			secondValueSpecial.Add("Script", "Latn");
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");

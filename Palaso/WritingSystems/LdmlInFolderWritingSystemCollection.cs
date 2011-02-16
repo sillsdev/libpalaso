@@ -128,7 +128,7 @@ namespace Palaso.WritingSystems
 				//{
 				//    throw new ArgumentException
 				//        (
-						String.Format("Ldml files {0} and {1} contain writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
+				//      String.Format("Ldml files {0} and {1} contain writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
 				//        GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
 				//        );
 				//}
