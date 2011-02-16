@@ -7,7 +7,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.WritingSystems
 {
-	public class LdmlInFolderWritingSystemStore : WritingSystemStoreBase
+	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		private const string _kExtension = ".ldml";
 		private string _path;
@@ -21,7 +21,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		public LdmlInFolderWritingSystemStore()
+		public LdmlInFolderWritingSystemRepository()
 		{
 			string p =
 				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
@@ -36,7 +36,7 @@ namespace Palaso.WritingSystems
 		/// use a special path for the repository
 		/// </summary>
 		/// <param name="path"></param>
-		public LdmlInFolderWritingSystemStore(string path)
+		public LdmlInFolderWritingSystemRepository(string path)
 		{
 			PathToWritingSystems = path;
 			LoadAllDefinitions();

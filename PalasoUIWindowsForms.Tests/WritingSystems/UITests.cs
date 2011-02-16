@@ -35,7 +35,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			{
 				var f = new Form();
 				f.Size=new Size(800,600);
-				var model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore(folder.Path));
+				var model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository(folder.Path));
 				var v = new WritingSystemSetupView(model);
 				var combo = new WSPickerUsingComboBox(model);
 				f.Controls.Add(combo);

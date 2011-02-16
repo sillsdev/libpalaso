@@ -4,7 +4,7 @@ using Palaso.Code;
 
 namespace Palaso.WritingSystems
 {
-	public class WritingSystemStoreBase : IWritingSystemStore
+	public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
@@ -12,11 +12,11 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		public WritingSystemStoreBase()
+		public WritingSystemRepositoryBase()
 		{
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-			//_sharedStore = LdmlSharedWritingSystemCollection.Singleton;
+			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
 		}
 
 		public IEnumerable<WritingSystemDefinition> WritingSystemDefinitions

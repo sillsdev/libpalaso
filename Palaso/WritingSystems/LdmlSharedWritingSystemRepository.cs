@@ -6,11 +6,11 @@ using Palaso.WritingSystems;
 
 namespace Palaso.WritingSystems
 {
-	public sealed class LdmlSharedWritingSystemCollection : LdmlInFolderWritingSystemStore
+	public sealed class LdmlSharedWritingSystemRepository : LdmlInFolderWritingSystemRepository
 	{
-		static readonly LdmlSharedWritingSystemCollection _instance = new LdmlSharedWritingSystemCollection();
+		static readonly LdmlSharedWritingSystemRepository _instance = new LdmlSharedWritingSystemRepository();
 
-		public static IWritingSystemStore Singleton
+		public static IWritingSystemRepository Singleton
 		{
 			get
 			{
@@ -20,14 +20,14 @@ namespace Palaso.WritingSystems
 
 		// Explicit static constructor to tell C# compiler
 		// not to mark type as before fieldinit
-		static LdmlSharedWritingSystemCollection()
+		static LdmlSharedWritingSystemRepository()
 		{
 		}
 
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		private LdmlSharedWritingSystemCollection()
+		private LdmlSharedWritingSystemRepository()
 		{
 			string p = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL"

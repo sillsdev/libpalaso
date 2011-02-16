@@ -11,7 +11,7 @@ using Palaso.WritingSystems.Migration;
 namespace Palaso.Tests.WritingSystems.Migration
 {
 	[TestFixture]
-	public class LdmlInFolderWritingSystemCollectionMigratorTests
+	public class LdmlInFolderWritingSystemRepositoryMigratorTests
 	{
 		[Test]
 		public void MigrateIfNecassary_WritingSystemIsV0_MigratedToLatest()
@@ -20,7 +20,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void MigrateIfNecassary_WritingSystemCollectionContainsWsThatWouldBeMigratedToDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
+		public void MigrateIfNecassary_WritingSystemRepositoryContainsWsThatWouldBeMigratedToDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
 		{
 			TemporaryFolder ldmlWs = new TemporaryFolder("WsCollectionForTesting");
 			TempFile pathToWs = ldmlWs.GetNewTempFile(true);
@@ -29,9 +29,9 @@ namespace Palaso.Tests.WritingSystems.Migration
 			pathToWsThatWillLeadToDuplicate.MoveTo(ldmlWs.Path + "en-x-audio.ldml");
 			TempFile pathToSecondWsThatWillLeadToDuplicate = ldmlWs.GetNewTempFile(true);
 			pathToWsThatWillLeadToDuplicate.MoveTo(ldmlWs.Path + "en-Zxxx-Region-x-audio.ldml");
-			var migrator = new LdmlInFolderWritingSystemStoreMigrator(ldmlWs.Path);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(ldmlWs.Path);
 			migrator.MigrateIfNecassary();
-			var store = new LdmlInFolderWritingSystemStore();
+			var store = new LdmlInFolderWritingSystemRepository();
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl1", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl2", StringComparison.OrdinalIgnoreCase)));
@@ -39,7 +39,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void MigrateIfNecassary_WritingSystemCollectionContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
+		public void MigrateIfNecassary_WritingSystemRepositoryContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
 		{
 			TemporaryFolder ldmlWs = new TemporaryFolder("WsCollectionForTesting");
 			TempFile pathToWs = ldmlWs.GetNewTempFile(true);
@@ -48,28 +48,28 @@ namespace Palaso.Tests.WritingSystems.Migration
 			pathToWsThatWillLeadToDuplicate.MoveTo(ldmlWs.Path + "en-x-audio.ldml");
 			TempFile pathToSecondWsThatWillLeadToDuplicate = ldmlWs.GetNewTempFile(true);
 			pathToSecondWsThatWillLeadToDuplicate.MoveTo(ldmlWs.Path + "en-zXxX-Region-x-AuDio.ldml");
-			var migrator = new LdmlInFolderWritingSystemStoreMigrator(ldmlWs.Path);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(ldmlWs.Path);
 			migrator.MigrateIfNecassary();
-			var store = new LdmlInFolderWritingSystemStore();
+			var store = new LdmlInFolderWritingSystemRepository();
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl1", StringComparison.OrdinalIgnoreCase)));
 			Assert.IsTrue(store.WritingSystemDefinitions.Any(ws => ws.RFC5646.Equals("en-Zxxx-x-audio-dupl2", StringComparison.OrdinalIgnoreCase)));
 		}
 
 		[Test]
-		public void MigrateIfNecassary_WritingSystemIsV0_WritingSystemIsLoadableByLdmlInFolderWritingSystemCollection()
+		public void MigrateIfNecassary_WritingSystemIsV0_WritingSystemIsLoadableByLdmlInFolderWritingSystemRepository()
 		{
 			throw new NotImplementedException();
 		}
 
 		[Test]
-		public void MigrateIfNecassary_WritingSystemCollectionContainsWsThatWouldBeMigratedToDuplicateOfExistingWs_WritingSystemIsLoadableByLdmlInFolderWritingSystemCollection()
+		public void MigrateIfNecassary_WritingSystemRepositoryContainsWsThatWouldBeMigratedToDuplicateOfExistingWs_WritingSystemIsLoadableByLdmlInFolderWritingSystemRepository()
 		{
 			throw new NotImplementedException();
 		}
 
 		[Test]
-		public void MigrateIfNecassary_WritingSystemCollectionContainsWritingSystemsThatWouldBeMigratedToDuplicateOfEachother_WritingSystemIsLoadableByLdmlInFolderWritingSystemCollection()
+		public void MigrateIfNecassary_WritingSystemRepositoryContainsWritingSystemsThatWouldBeMigratedToDuplicateOfEachother_WritingSystemIsLoadableByLdmlInFolderWritingSystemRepository()
 		{
 			throw new NotImplementedException();
 		}

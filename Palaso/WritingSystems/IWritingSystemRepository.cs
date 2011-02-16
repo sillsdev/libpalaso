@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Palaso.WritingSystems
 {
-	public interface IWritingSystemStore
+	public interface IWritingSystemRepository
 	{
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about

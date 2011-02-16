@@ -6,16 +6,16 @@ using Palaso.Migration;
 
 namespace Palaso.WritingSystems.Migration
 {
-	public class LdmlInFolderWritingSystemStoreMigrator
+	public class LdmlInFolderWritingSystemRepositoryMigrator
 	{
 		private Migrator _migrator;
 
-		public LdmlInFolderWritingSystemStoreMigrator(int versionToMigrateTo, string pathOfFileToMigrate)
+		public LdmlInFolderWritingSystemRepositoryMigrator(int versionToMigrateTo, string pathOfFileToMigrate)
 		{
 			_migrator = new Migrator(versionToMigrateTo, pathOfFileToMigrate);
 		}
 
-		public LdmlInFolderWritingSystemStoreMigrator(string pathOfFileToMigrate):this(LdmlInFolderWritingSystemStore.LatestVersion, pathOfFileToMigrate)
+		public LdmlInFolderWritingSystemRepositoryMigrator(string pathOfFileToMigrate):this(LdmlInFolderWritingSystemRepository.LatestVersion, pathOfFileToMigrate)
 		{
 		}
 

@@ -13,15 +13,15 @@ namespace TestApp
 	public partial class WritingSystemTest : Form
 	{
 		private WritingSystemSetupModel _wsModel;
-		private IWritingSystemStore _store;
+		private IWritingSystemRepository _repository;
 
 		public WritingSystemTest()
 		{
 
 			InitializeComponent();
 
-			_store = new LdmlInFolderWritingSystemStore();
-			_wsModel = new WritingSystemSetupModel(_store);
+			_repository = new LdmlInFolderWritingSystemRepository();
+			_wsModel = new WritingSystemSetupModel(_repository);
 			this.wsPropertiesPanel1.BindToModel(_wsModel);
 		}
 

@@ -10,7 +10,7 @@ using Palaso.TestUtilities;
 namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
-	public class LdmlInFolderWritingSystemStoreInterfaceTests : IWritingSystemStoreTests
+	public class LdmlInFolderWritingSystemRepositoryInterfaceTests : IWritingSystemRepositoryTests
 	{
 		private List<string> _testPaths;
 
@@ -34,7 +34,7 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
-		public override IWritingSystemStore CreateNewStore()
+		public override IWritingSystemRepository CreateNewStore()
 		{
 			string testPath = Path.GetTempPath() + "PalasoTest" + _testPaths.Count;
 			if (Directory.Exists(testPath))
@@ -42,17 +42,17 @@ namespace Palaso.Tests.WritingSystems
 				Directory.Delete(testPath, true);
 			}
 			_testPaths.Add(testPath);
-			LdmlInFolderWritingSystemStore store = new LdmlInFolderWritingSystemStore(testPath);
-			//store.DontAddDefaultDefinitions = true;
-			return store;
+			LdmlInFolderWritingSystemRepository repository = new LdmlInFolderWritingSystemRepository(testPath);
+			//repository.DontAddDefaultDefinitions = true;
+			return repository;
 		}
 	}
 
 	[TestFixture]
-	public class LdmlInFolderWritingSystemCollectionTests
+	public class LdmlInFolderWritingSystemRepositoryTests
 	{
 		private string _testPath;
-		private LdmlInFolderWritingSystemStore _collection;
+		private LdmlInFolderWritingSystemRepository _collection;
 		private WritingSystemDefinition _writingSystem;
 		private XmlNamespaceManager _namespaceManager;
 
@@ -65,7 +65,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				Directory.Delete(_testPath, true);
 			}
-			_collection = new LdmlInFolderWritingSystemStore(_testPath);
+			_collection = new LdmlInFolderWritingSystemRepository(_testPath);
 			_namespaceManager = new XmlNamespaceManager(new NameTable());
 			_namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 		}
@@ -81,7 +81,7 @@ namespace Palaso.Tests.WritingSystems
 			AssertWritingSystemFileExists(writingSystem, _collection);
 		}
 
-		private void AssertWritingSystemFileExists(WritingSystemDefinition writingSystem, LdmlInFolderWritingSystemStore collection)
+		private void AssertWritingSystemFileExists(WritingSystemDefinition writingSystem, LdmlInFolderWritingSystemRepository collection)
 		{
 			string path = collection.FilePathToWritingSystem(writingSystem);
 			Assert.IsTrue(File.Exists(path));
@@ -90,7 +90,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LatestVersion_IsOne()
 		{
-			Assert.AreEqual(1, LdmlInFolderWritingSystemStore.LatestVersion);
+			Assert.AreEqual(1, LdmlInFolderWritingSystemRepository.LatestVersion);
 		}
 
 		[Test]
@@ -107,7 +107,7 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
 			ws2.ISO639 = "two";
 			_collection.SaveDefinition(ws2);
-			var newStore = new LdmlInFolderWritingSystemStore(_testPath);
+			var newStore = new LdmlInFolderWritingSystemRepository(_testPath);
 
 			Assert.AreEqual(2, newStore.Count);
 		}
@@ -166,7 +166,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SavesWhenDirectoryNotFound()
 		{
-			LdmlInFolderWritingSystemStore newRepository = new LdmlInFolderWritingSystemStore(Path.Combine(_testPath, "newguy"));
+			LdmlInFolderWritingSystemRepository newRepository = new LdmlInFolderWritingSystemRepository(Path.Combine(_testPath, "newguy"));
 			newRepository.SaveDefinition(_writingSystem);
 			AssertWritingSystemFileExists(_writingSystem,newRepository);
 		}
@@ -185,7 +185,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO639 = "en";
 			Assert.AreNotEqual(0, Directory.GetFiles(_testPath, "*.ldml"));
 			_collection.SaveDefinition(_writingSystem);
-			var newStore = new LdmlInFolderWritingSystemStore(_testPath);
+			var newStore = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newStore.Get("en");
 			Assert.AreEqual(Path.GetFileNameWithoutExtension(Directory.GetFiles(_testPath, "*.ldml")[0]), ws2.StoreID);
 		}
@@ -234,7 +234,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Abbreviation = "bl";//crucially, abbreviation isn't part of the name of the file
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get(_writingSystem.StoreID);
 			ws2.Variant = "x-piglatin";
 			_collection.SaveDefinition(ws2);
@@ -250,7 +250,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Variant = "x-piglatin";
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get(_writingSystem.StoreID);
 			Assert.AreEqual("x-piglatin", ws2.Variant);
 		}
@@ -262,7 +262,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.DefaultFontName = "Courier";
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get("en");
 			Assert.AreEqual("Courier", ws2.DefaultFontName);
 		}
@@ -274,7 +274,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Keyboard = "Thai";
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get("en");
 			Assert.AreEqual("Thai", ws2.Keyboard);
 		}
@@ -288,7 +288,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(_writingSystem.RightToLeftScript);
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get("en");
 			Assert.IsTrue(ws2.RightToLeftScript);
 		}
@@ -302,7 +302,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(_writingSystem.IsLegacyEncoded);
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get("en");
 			Assert.IsTrue(ws2.IsLegacyEncoded);
 		}
@@ -313,7 +313,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
 
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get("en");
 			Assert.IsFalse(ws2.IsLegacyEncoded);
 		}
@@ -418,7 +418,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_writingSystem.ISO639 = "en";
 			_collection.SaveDefinition(_writingSystem);
-			var newCollection = new LdmlInFolderWritingSystemStore(_testPath);
+			var newCollection = new LdmlInFolderWritingSystemRepository(_testPath);
 			WritingSystemDefinition ws2 = newCollection.Get(_writingSystem.StoreID);
 			Assert.IsFalse(ws2.Modified);
 		}
@@ -452,7 +452,7 @@ namespace Palaso.Tests.WritingSystems
 			WritingSystemDefinition ws2 = list2[0];
 			_collection.Remove(ws2.ISO639);
 
-			var repository = new LdmlInFolderWritingSystemStore(_testPath);
+			var repository = new LdmlInFolderWritingSystemRepository(_testPath);
 		  //  repository.DontAddDefaultDefinitions = false;
 			repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 			Assert.IsFalse(ContainsLanguageWithName(repository.WritingSystemDefinitions, "English"));
@@ -465,7 +465,7 @@ namespace Palaso.Tests.WritingSystems
 			File.WriteAllText(Path.Combine(_testPath, "de-Zxxx-x-audio.ldml"), GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
 			File.WriteAllText(Path.Combine(_testPath, "inconsistent-filename.ldml"), GetLdmlFileContent("de", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag));
 
-			Assert.Throws<ApplicationException>(() => _collection = new LdmlInFolderWritingSystemStore(_testPath));
+			Assert.Throws<ApplicationException>(() => _collection = new LdmlInFolderWritingSystemRepository(_testPath));
 		}
 
 		[Test]
@@ -473,7 +473,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Constructor_LdmlFolderStoreContainsInconsistentlyNamedFile_Throws()
 		{
 			File.WriteAllText(Path.Combine(_testPath, "tpi-Zxxx-x-audio.ldml"), GetLdmlFileContent("de", "latn", "ch", "1901"));
-			Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemStore(_testPath));
+			Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(_testPath));
 		}
 
 		private string GetLdmlFileContent(string language, string script, string region, string variant)

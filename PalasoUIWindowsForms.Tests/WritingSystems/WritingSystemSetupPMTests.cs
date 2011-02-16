@@ -23,8 +23,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Setup()
 		{
 			_testFilePath = Path.GetTempFileName();
-			IWritingSystemStore writingSystemStore = new LdmlInXmlWritingSystemStore();
-			_model = new WritingSystemSetupModel(writingSystemStore);
+			IWritingSystemRepository writingSystemRepository = new LdmlInXmlWritingSystemRepository();
+			_model = new WritingSystemSetupModel(writingSystemRepository);
 		}
 
 		[TearDown]
@@ -493,13 +493,13 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SingleWSMode_UsingStore_IsFalse()
 		{
 			_model = new WritingSystemSetupModel(new WritingSystemDefinition());
-			Assert.IsFalse(_model.UsingWritingSystemStore);
+			Assert.IsFalse(_model.UsingWritingSystemRepository);
 		}
 
 		[Test]
 		public void NormalMode_UsingStore_IsTrue()
 		{
-			Assert.IsTrue(_model.UsingWritingSystemStore);
+			Assert.IsTrue(_model.UsingWritingSystemRepository);
 		}
 
 		[Test]

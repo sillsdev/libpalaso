@@ -6,31 +6,31 @@ using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
 {
-	public abstract class IWritingSystemStoreTests
+	public abstract class IWritingSystemRepositoryTests
 	{
-		private IWritingSystemStore _storeUnderTest;
+		private IWritingSystemRepository _repositoryUnderTest;
 		private WritingSystemDefinition _writingSystem;
 
-		public IWritingSystemStore StoreUnderTest
+		public IWritingSystemRepository RepositoryUnderTest
 		{
 			get
 			{
-				if (_storeUnderTest == null)
+				if (_repositoryUnderTest == null)
 				{
-					throw new InvalidOperationException("StoreUnderTest must be set before the tests are run.");
+					throw new InvalidOperationException("RepositoryUnderTest must be set before the tests are run.");
 				}
-				return _storeUnderTest;
+				return _repositoryUnderTest;
 			}
-			set { _storeUnderTest = value; }
+			set { _repositoryUnderTest = value; }
 		}
 
-		public abstract IWritingSystemStore CreateNewStore();
+		public abstract IWritingSystemRepository CreateNewStore();
 
 		[SetUp]
 		public virtual void SetUp()
 		{
 			_writingSystem = new WritingSystemDefinition();
-			StoreUnderTest = CreateNewStore();
+			RepositoryUnderTest = CreateNewStore();
 		}
 
 		[TearDown]
@@ -40,53 +40,53 @@ namespace Palaso.Tests.WritingSystems
 		public void SetTwoDefinitions_CountEquals2()
 		{
 			_writingSystem.ISO639 = "one";
-			StoreUnderTest.Set(_writingSystem);
+			RepositoryUnderTest.Set(_writingSystem);
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
 			ws2.ISO639 = "two";
-			StoreUnderTest.Set(ws2);
+			RepositoryUnderTest.Set(ws2);
 
-			Assert.AreEqual(2, StoreUnderTest.Count);
+			Assert.AreEqual(2, RepositoryUnderTest.Count);
 		}
 
 		[Test]
 		public void CreateNewDefinition_CountEquals0()
 		{
-			StoreUnderTest.CreateNew();
-			Assert.AreEqual(0, StoreUnderTest.Count);
+			RepositoryUnderTest.CreateNew();
+			Assert.AreEqual(0, RepositoryUnderTest.Count);
 		}
 
 		[Test]
 		public void CreateNewDefinitionThenSet_CountEquals1()
 		{
-			StoreUnderTest.Set(StoreUnderTest.CreateNew());
-			Assert.AreEqual(1, StoreUnderTest.Count);
+			RepositoryUnderTest.Set(RepositoryUnderTest.CreateNew());
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
 		[Test]
 		public void SetDefinitionTwice_OnlySetOnce()
 		{
 			_writingSystem.ISO639 = "one";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.AreEqual(1, StoreUnderTest.Count);
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			ws.StoreID = _writingSystem.StoreID;
-			StoreUnderTest.Set(ws);
-			Assert.AreEqual(1, StoreUnderTest.Count);
+			RepositoryUnderTest.Set(ws);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
 		[Test]
 		public void SetDefinitionTwice_UpdatesStore()
 		{
 			_writingSystem.ISO639 = "one";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.AreEqual(1, StoreUnderTest.Count);
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
 			ws1.ISO639 = "one";
 			ws1.DefaultFontName = "one font";
 			ws1.StoreID = _writingSystem.StoreID;
-			StoreUnderTest.Set(ws1);
-			WritingSystemDefinition ws2 = StoreUnderTest.Get("one");
+			RepositoryUnderTest.Set(ws1);
+			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
 			Assert.AreEqual("one font", ws2.DefaultFontName);
 		}
 
@@ -100,8 +100,8 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO639 = "sr";
 			_writingSystem.Script = "Latn";
 			_writingSystem.Variant = "x-RS";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-x-rs"));
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.IsNotNull(RepositoryUnderTest.Get("sr-Latn-x-rs"));
 		}
 
 		/// <summary>
@@ -114,27 +114,27 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.ISO639 = "sR";
 			_writingSystem.Script = "LaTn";
 			_writingSystem.Variant = "x-rs";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.IsNotNull(StoreUnderTest.Get("sr-Latn-x-RS"));
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.IsNotNull(RepositoryUnderTest.Get("sr-Latn-x-RS"));
 		}
 
 		[Test]
 		public void Exists_FalseThenTrue()
 		{
-			Assert.IsFalse(StoreUnderTest.Exists("one"));
+			Assert.IsFalse(RepositoryUnderTest.Exists("one"));
 			_writingSystem.ISO639 = "one";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.IsTrue(StoreUnderTest.Exists("one"));
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.IsTrue(RepositoryUnderTest.Exists("one"));
 		}
 
 		[Test]
 		public void Remove_CountDecreases()
 		{
 			_writingSystem.ISO639 = "one";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.AreEqual(1, StoreUnderTest.Count);
-			StoreUnderTest.Remove(_writingSystem.StoreID);
-			Assert.AreEqual(0, StoreUnderTest.Count);
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			RepositoryUnderTest.Remove(_writingSystem.StoreID);
+			Assert.AreEqual(0, RepositoryUnderTest.Count);
 		}
 
 		[Test]
@@ -142,11 +142,11 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.ISO639 = "en";
-			StoreUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(ws1);
 
-			IWritingSystemStore store = CreateNewStore();
+			IWritingSystemRepository repository = CreateNewStore();
 			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
 			{
 				count++;
 			}
@@ -159,15 +159,15 @@ namespace Palaso.Tests.WritingSystems
 			var ws1 = new WritingSystemDefinition();
 			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
-			StoreUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(ws1);
 
-			IWritingSystemStore store = CreateNewStore();
-			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(ws1);
+			IWritingSystemRepository repository = CreateNewStore();
+			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 14);
-			store.Set(ws2);
+			repository.Set(ws2);
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
 			{
 				count++;
 			}
@@ -180,15 +180,15 @@ namespace Palaso.Tests.WritingSystems
 			var ws1 = new WritingSystemDefinition();
 			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
-			StoreUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(ws1);
 
-			IWritingSystemStore store = CreateNewStore();
-			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(ws1);
+			IWritingSystemRepository repository = CreateNewStore();
+			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 16);
-			store.Set(ws2);
+			repository.Set(ws2);
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
 			{
 				count++;
 			}
@@ -201,16 +201,16 @@ namespace Palaso.Tests.WritingSystems
 			var ws1 = new WritingSystemDefinition();
 			ws1.ISO639 = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
-			StoreUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(ws1);
 
-			IWritingSystemStore store = CreateNewStore();
-			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(ws1);
+			IWritingSystemRepository repository = CreateNewStore();
+			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 14);
-			store.Set(ws2);
-			store.LastChecked("en", new DateTime(2008, 1, 16));
+			repository.Set(ws2);
+			repository.LastChecked("en", new DateTime(2008, 1, 16));
 
 			int count = 0;
-			foreach (var ws in store.WritingSystemsNewerIn(StoreUnderTest.WritingSystemDefinitions))
+			foreach (var ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
 			{
 				count++;
 			}
@@ -227,10 +227,10 @@ namespace Palaso.Tests.WritingSystems
 			ws2.Variant = "1901";
 			Assert.AreEqual("en-1901", ws2.RFC5646);
 
-			StoreUnderTest.Set(ws1);
-			Assert.AreEqual(1, StoreUnderTest.Count);
-			StoreUnderTest.Set(ws2);
-			Assert.AreEqual(2, StoreUnderTest.Count);
+			RepositoryUnderTest.Set(ws1);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			RepositoryUnderTest.Set(ws2);
+			Assert.AreEqual(2, RepositoryUnderTest.Count);
 		}
 
 		[Test]
@@ -238,52 +238,52 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws1 = new WritingSystemDefinition("en");
 			var ws2 = new WritingSystemDefinition("en");
-			StoreUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(ws1);
 			Assert.Throws<ArgumentException>(
-				() => StoreUnderTest.Set(ws2)
+				() => RepositoryUnderTest.Set(ws2)
 			);
 		}
 
 		[Test]
 		public void CanSetAfterSetting_True()
 		{
-			StoreUnderTest.Set(_writingSystem);
-			Assert.IsTrue(StoreUnderTest.CanSet(_writingSystem));
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.IsTrue(RepositoryUnderTest.CanSet(_writingSystem));
 		}
 
 		[Test]
 		public void CanSetNewWritingSystem_True()
 		{
-			Assert.IsTrue(StoreUnderTest.CanSet(_writingSystem));
+			Assert.IsTrue(RepositoryUnderTest.CanSet(_writingSystem));
 		}
 
 		[Test]
 		public void CanSetSecondNew_False()
 		{
-			StoreUnderTest.Set(_writingSystem);
-			_writingSystem = StoreUnderTest.CreateNew();
-			Assert.IsFalse(StoreUnderTest.CanSet(_writingSystem));
+			RepositoryUnderTest.Set(_writingSystem);
+			_writingSystem = RepositoryUnderTest.CreateNew();
+			Assert.IsFalse(RepositoryUnderTest.CanSet(_writingSystem));
 		}
 
 		[Test]
 		public void CanSetUnchangedDuplicate_False()
 		{
 			_writingSystem.ISO639 = "one";
-			StoreUnderTest.Set(_writingSystem);
-			Assert.IsFalse(StoreUnderTest.CanSet(StoreUnderTest.MakeDuplicate(_writingSystem)));
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.IsFalse(RepositoryUnderTest.CanSet(RepositoryUnderTest.MakeDuplicate(_writingSystem)));
 		}
 
 		[Test]
 		public void CanSetNull_False()
 		{
-			Assert.IsFalse(StoreUnderTest.CanSet(null));
+			Assert.IsFalse(RepositoryUnderTest.CanSet(null));
 		}
 
 		[Test]
 		public void MakeDuplicate_ReturnsNewObject()
 		{
-			StoreUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(_writingSystem);
+			RepositoryUnderTest.Set(_writingSystem);
+			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(_writingSystem);
 			Assert.AreNotSame(_writingSystem, ws2);
 		}
 
@@ -297,8 +297,8 @@ namespace Palaso.Tests.WritingSystems
 			ws1.DefaultFontName = "font";
 			ws1.VersionDescription = "description of this version";
 			ws1.VersionNumber = "1.0";
-			StoreUnderTest.Set(ws1);
-			WritingSystemDefinition ws2 = StoreUnderTest.MakeDuplicate(ws1);
+			RepositoryUnderTest.Set(ws1);
+			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			Assert.AreEqual(ws1.ISO639, ws2.ISO639);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
@@ -317,7 +317,7 @@ namespace Palaso.Tests.WritingSystems
 		public void GetNull_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.Get(null)
+				() => RepositoryUnderTest.Get(null)
 			);
 		}
 
@@ -325,7 +325,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Get_NotInStore_Throws()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(
-				() => StoreUnderTest.Get("I sure hope this isn't in the store.")
+				() => RepositoryUnderTest.Get("I sure hope this isn't in the store.")
 			);
 		}
 
@@ -333,7 +333,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerInNull_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.WritingSystemsNewerIn(null)
+				() => RepositoryUnderTest.WritingSystemsNewerIn(null)
 			);
 		}
 
@@ -342,7 +342,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var list = new WritingSystemDefinition[] {null};
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.WritingSystemsNewerIn(list)
+				() => RepositoryUnderTest.WritingSystemsNewerIn(list)
 			);
 		}
 
@@ -350,7 +350,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetNull_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.Set(null)
+				() => RepositoryUnderTest.Set(null)
 			);
 		}
 
@@ -358,7 +358,7 @@ namespace Palaso.Tests.WritingSystems
 		public void MakeDuplicateNull_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.MakeDuplicate(null)
+				() => RepositoryUnderTest.MakeDuplicate(null)
 			);
 		}
 
@@ -366,7 +366,7 @@ namespace Palaso.Tests.WritingSystems
 		public void RemoveNull_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.Remove(null)
+				() => RepositoryUnderTest.Remove(null)
 			);
 		}
 
@@ -374,7 +374,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Remove_NotInStore_Throws()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(
-				() => StoreUnderTest.Remove("This isn't in the store!")
+				() => RepositoryUnderTest.Remove("This isn't in the store!")
 			);
 		}
 
@@ -382,7 +382,7 @@ namespace Palaso.Tests.WritingSystems
 		public void GetNewStoreIDWhenSet_Null_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => StoreUnderTest.GetNewStoreIDWhenSet(null)
+				() => RepositoryUnderTest.GetNewStoreIDWhenSet(null)
 			);
 		}
 
@@ -390,8 +390,8 @@ namespace Palaso.Tests.WritingSystems
 		public void GetNewStoreIDWhenSet_ReturnsSameStoreIDAsSet()
 		{
 			var ws = new WritingSystemDefinition("de");
-			string newID = StoreUnderTest.GetNewStoreIDWhenSet(ws);
-			StoreUnderTest.Set(ws);
+			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
+			RepositoryUnderTest.Set(ws);
 			Assert.AreEqual(ws.StoreID, newID);
 		}
 	}

@@ -9,12 +9,12 @@ using Palaso.WritingSystems;
 
 namespace Palaso.WritingSystems
 {
-	public class LdmlInXmlWritingSystemStore : WritingSystemStoreBase
+	public class LdmlInXmlWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		public LdmlInXmlWritingSystemStore()
+		public LdmlInXmlWritingSystemRepository()
 		{
 		}
 

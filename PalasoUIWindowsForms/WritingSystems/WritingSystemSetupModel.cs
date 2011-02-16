@@ -23,16 +23,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// WritingSystemSetupDialog provides its own WritingSystemSetupModel object and can be used by itself.
 	/// </summary>
 	/// <example><code>
-	/// WritingSystemSetupModel model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore();
+	/// WritingSystemSetupModel model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository();
 	/// WritingSystemSetupView panel = new WritingSystemSetupView();
 	/// panel.BindToModel(model);
 	/// </code></example>
 	public class WritingSystemSetupModel
 	{
-		private readonly bool _usingStore;
+		private readonly bool _usingRepository;
 		private WritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
-		private readonly IWritingSystemStore _writingSystemStore;
+		private readonly IWritingSystemRepository _writingSystemRepository;
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
@@ -51,19 +51,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <summary>
 		/// Creates the presentation model object based off of a writing system store of some sort.
 		/// </summary>
-		public WritingSystemSetupModel(IWritingSystemStore writingSystemStore)
+		public WritingSystemSetupModel(IWritingSystemRepository writingSystemRepository)
 		{
-			if (writingSystemStore == null)
+			if (writingSystemRepository == null)
 			{
-				throw new ArgumentNullException("writingSystemStore");
+				throw new ArgumentNullException("writingSystemRepository");
 			}
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
-			_writingSystemStore = writingSystemStore;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemStore.WritingSystemDefinitions);
+			_writingSystemRepository = writingSystemRepository;
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.WritingSystemDefinitions);
 			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
 			_currentIndex = -1;
-			_usingStore = true;
+			_usingRepository = true;
 		}
 
 		/// <summary>
@@ -81,11 +81,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
-			_writingSystemStore = null;
+			_writingSystemRepository = null;
 			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
 			WritingSystemDefinitions.Add(ws);
 			_deletedWritingSystemDefinitions = null;
-			_usingStore = false;
+			_usingRepository = false;
 		}
 
 		#region Properties
@@ -135,7 +135,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					throw new InvalidOperationException("Unable to change selection without writing system store.");
 				}
@@ -186,7 +186,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					throw new InvalidOperationException("Unable to change selection without writing system store.");
 				}
@@ -262,7 +262,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					return new bool[] {false};
 				}
@@ -270,7 +270,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = _writingSystemStore.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
+					string id = _writingSystemRepository.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -316,7 +316,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					return false;
 				}
@@ -414,9 +414,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// True if the model has an underlying writing system store,
 		/// false if it is operating on only a single WritingSystemDefinition.
 		/// </summary>
-		public bool UsingWritingSystemStore
+		public bool UsingWritingSystemRepository
 		{
-			get { return _usingStore; }
+			get { return _usingRepository; }
 		}
 
 		#endregion
@@ -861,7 +861,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void DeleteCurrent()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to delete current selection when there is no writing system store.");
 			}
@@ -879,7 +879,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// if it doesn't have a store ID, it shouldn't be in the store
 			if (!string.IsNullOrEmpty(idToDelete))
 			{
-				_writingSystemStore.Remove(idToDelete);
+				_writingSystemRepository.Remove(idToDelete);
 			}
 			OnAddOrDelete();
 		}
@@ -889,7 +889,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void DuplicateCurrent()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no writing system store.");
 			}
@@ -897,7 +897,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			WritingSystemDefinition ws = _writingSystemStore.MakeDuplicate(CurrentDefinition);
+			WritingSystemDefinition ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -909,14 +909,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns></returns>
 		public virtual void AddNew()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
 			WritingSystemDefinition ws=null;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
 			{
-				ws = _writingSystemStore.CreateNew();
+				ws = _writingSystemRepository.CreateNew();
 				ws.Abbreviation = "New";
 			}
 			else
@@ -967,12 +967,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void Save()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to save when there is no writing system store.");
 			}
 			SetAllPossibleAndRemoveOthers();
-			_writingSystemStore.Save();
+			_writingSystemRepository.Save();
 		}
 
 		/// <summary>
@@ -1001,9 +1001,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Dictionary<WritingSystemDefinition, string> cantSet = new Dictionary<WritingSystemDefinition, string>();
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				if (_writingSystemStore.CanSet(ws))
+				if (_writingSystemRepository.CanSet(ws))
 				{
-					_writingSystemStore.Set(ws);
+					_writingSystemRepository.Set(ws);
 				}
 				else
 				{
@@ -1012,22 +1012,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
-				while (!_writingSystemStore.CanSet(kvp.Key))
+				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
 					kvp.Key.ISO639 += "X";
 				}
-				_writingSystemStore.Set(kvp.Key);
+				_writingSystemRepository.Set(kvp.Key);
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
 				kvp.Key.ISO639 = kvp.Value;
-				if (_writingSystemStore.CanSet(kvp.Key))
+				if (_writingSystemRepository.CanSet(kvp.Key))
 				{
-					_writingSystemStore.Set(kvp.Key);
+					_writingSystemRepository.Set(kvp.Key);
 				}
 				else
 				{
-					_writingSystemStore.Remove(kvp.Key.StoreID);
+					_writingSystemRepository.Remove(kvp.Key.StoreID);
 				}
 			}
 		}
@@ -1094,7 +1094,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <param name="fileName">Full path of file to import</param>
 		public void ImportFile(string fileName)
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to import file when not using writing system store.");
 			}
@@ -1107,7 +1107,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new ArgumentException("File does not exist.", "fileName");
 			}
 			LdmlAdaptor _adaptor = new LdmlAdaptor();
-			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
+			WritingSystemDefinition ws = _writingSystemRepository.CreateNew();
 			_adaptor.Read(fileName, ws);
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
@@ -1124,7 +1124,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        }
 		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
