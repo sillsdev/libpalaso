@@ -9,7 +9,7 @@ namespace Palaso.WritingSystems.Migration
 		private readonly int _versionToMigrateTo;
 		private readonly string _pathOfFileToMigrate;
 
-		public WritingSystemDefinitionLdmlMigrator(string pathToFileToMigrate):this(WritingSystemDefinition.LatestVersion, pathToFileToMigrate)
+		public WritingSystemDefinitionLdmlMigrator(string pathToFileToMigrate):this(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, pathToFileToMigrate)
 		{
 		}
 
