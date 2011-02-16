@@ -35,7 +35,10 @@ namespace Palaso.WritingSystems
 			OtherLanguage
 		}
 
-		static public int LatestVersion
+		//This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
+		//This should not be confused with the version of the locale data contained in this writing system.
+		//That information is stored in the "VersionNumber" property.
+		static public int LatestWritingSystemDefinitionVersion
 		{
 			get { return 1; }
 		}
@@ -159,6 +162,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		//This is the version of the locale data contained in this writing system.
+		//This should not be confused with the version of our writingsystemDefinition implementation which is mostly used for migration purposes.
+		//That information is stored in the "LatestWritingSystemDefinitionVersion" property.
 		virtual public string VersionNumber
 		{
 			get { return _versionNumber; }

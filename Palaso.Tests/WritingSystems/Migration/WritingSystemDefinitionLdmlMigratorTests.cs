@@ -98,35 +98,13 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void MigrateIfNecassary_LdmlIsAlreadyCorrectVersion_NeedsMigratingIsFalse()
+		public void MigrateIfNecassary_LdmlIsAlreadyLatestVersion_NeedsMigratingIsFalse()
 		{
 			using (_environment = new TestEnvironment())
 			{
 				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version1LdmlFile);
 				var migrator = new WritingSystemDefinitionLdmlMigrator(1, _environment.PathToWritingSystemLdmlFile);
 				Assert.IsFalse(migrator.FileNeedsMigrating);
-			}
-		}
-
-		[Test]
-		public void WritingSystemLdmlVersionGetterGetFileVersion_FileHasNoVersion_Returns0()
-		{
-			using (_environment = new TestEnvironment())
-			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version0LdmlFile);
-				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(0, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
-			}
-		}
-
-		[Test]
-		public void WritingSystemLdmlVersionGetterGetFileVersion_FileIsVersion1_Returns1()
-		{
-			using (_environment = new TestEnvironment())
-			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version1LdmlFile);
-				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
 			}
 		}
 	}
