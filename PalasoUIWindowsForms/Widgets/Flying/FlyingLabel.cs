@@ -2,16 +2,16 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace WeSay.UI
+namespace Palaso.UI.WindowsForms.Widgets.Flying
 {
-	public class MovingLabel: Label
+	public class FlyingLabel: Label
 	{
 		private Point _to;
 		private Point _from;
 		private Animator _animator;
 		public event EventHandler Finished;
 
-		public MovingLabel()
+		public FlyingLabel()
 		{
 			Visible = false;
 			BackColor = Color.Transparent; //didn't work

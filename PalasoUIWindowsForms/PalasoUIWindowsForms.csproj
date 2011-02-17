@@ -266,6 +266,10 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\Flying\Animator.cs" />
+	<Compile Include="Widgets\Flying\FlyingLabel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
