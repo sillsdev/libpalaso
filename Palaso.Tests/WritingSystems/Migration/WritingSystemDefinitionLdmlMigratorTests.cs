@@ -109,7 +109,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version0LdmlFile);
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio",String.Empty,String.Empty,String.Empty));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[text()='x-audio']");
@@ -301,6 +301,90 @@ namespace Palaso.Tests.WritingSystems.Migration
 				var migrator = new WritingSystemDefinitionLdmlMigrator(1, _environment.PathToWritingSystemLdmlFile);
 				Assert.IsFalse(migrator.FileNeedsMigrating);
 			}
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsExcessiveXs_OnlyFirstXisConsideredprivateUseMarkerAndRestAreRemoved()
+		{
+				throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_ScriptTagContainsExcessiveXs_ExcessiveXsAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_RegionTagContainsExcessiveXs_ExcessiveXsAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_VariantTagContainsExcessiveXs_ExcessiveXsAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_MultipelIndividualTagsContainSingleX_EachXIsConsideredPrivateUseMarkerForThatTag()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagEndsInDashXDash_DashXDashIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_ScriptSubtagEndsInDashXDash_DashXDashIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_RegionSubtagEndsInDashXDash_DashXDashIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_VariantSubtagEndsInDashXDash_DashXDashIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsNonAlphaNumericCharacters_NonAlphaNumericCharactersAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_ScriptSubtagContainsNonAlphaNumericCharacters_NonAlphaNumericCharactersAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_RegionSubtagContainsNonAlphaNumericCharacters_NonAlphaNumericCharactersAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_VariantSubtagContainsNonAlphaNumericCharacters_NonAlphaNumericCharactersAreRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_RfcTagContainsOnlyNonAlphaNumericCharactersAndEndsInDashXDash_WritingsystemIsSetToqaa()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
