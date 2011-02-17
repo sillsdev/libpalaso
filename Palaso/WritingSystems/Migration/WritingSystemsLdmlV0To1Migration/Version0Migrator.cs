@@ -29,7 +29,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			var migratedWs = new WritingSystemDefinitionV1();
 
 			adaptorToReadLdmlV0.Read(sourceFilePath, wsToMigrate);
-			adaptorToWriteLdmlV1.Write(destinationFilePath, migratedWs, new FileStream(sourceFilePath, FileMode.Open));
+			Stream streamOfOldFile = new FileStream(sourceFilePath, FileMode.Open);
+			adaptorToWriteLdmlV1.Write(destinationFilePath, migratedWs, streamOfOldFile);
+			streamOfOldFile.Close();
 		}
 	}
 }
