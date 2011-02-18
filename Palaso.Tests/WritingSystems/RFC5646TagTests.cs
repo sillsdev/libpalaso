@@ -311,10 +311,11 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_throws()
+		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_DoesNotRemoveString()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AudiO");
-			Assert.Throws<ArgumentException> (()=>rfcTag.RemoveFromPrivateUse("_x-audio"));
+			rfcTag.RemoveFromPrivateUse("_audio");
+			Assert.AreEqual("x-AudiO", rfcTag.PrivateUse);
 		}
 
 		[Test]
@@ -414,10 +415,11 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void RemoveFromVariant_VariantContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_Throws()
+		public void RemoveFromVariant_VariantContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_StringIsNotRemoved()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "biske", String.Empty);
-			Assert.Throws<ArgumentException>(()=>rfcTag.RemoveFromVariant("_biske"));
+			rfcTag.RemoveFromVariant("_biske");
+			Assert.AreEqual("biske", rfcTag.Variant);
 		}
 
 		[Test]

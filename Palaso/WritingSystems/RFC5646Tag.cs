@@ -402,8 +402,25 @@ namespace Palaso.WritingSystems
 		private void CheckIfPrivateUseTagIsValid()
 		{
 			bool partInMiddleOfStringStartsWithxDash = (_privateUse.FindLastIndex(part => part.StartsWith("x-")) > 0);
+			string offendingSubtag = "";
+			if ((!String.IsNullOrEmpty(offendingSubtag = _privateUse.Find(StringContainsNonAlphaNumericCharacters))))
+			{
+				throw new ArgumentException(String.Format("Private use subtags may not contain non alpha numeric characters. The offending subtag was {0}", offendingSubtag));
+			}
 			if(partInMiddleOfStringStartsWithxDash){throw new ArgumentException("A Private Use subtag may not contain a singleton 'x' anywhere but at the beginning of the subtag.");}
 			CheckIfSubtagContainsDuplicates(_privateUse);
+		}
+
+		private static bool StringContainsNonAlphaNumericCharacters(string stringToSearch)
+		{
+			foreach (char c in stringToSearch.ToCharArray())
+			{
+				if(!Char.IsLetterOrDigit(c))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void CheckIfSubtagContainsDuplicates(List<string> partsOfSubtag)
@@ -515,7 +532,8 @@ namespace Palaso.WritingSystems
 			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
 			foreach (string part in partsOfStringToAdd)
 			{
-				 bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = !Rfc5646SubtagParser.StringIsSeperator(part) && SubtagContainsPart(subTag, part);
+				 bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = SubtagContainsPart(subTag, part);
+				StringContainsNonAlphaNumericCharacters(part);
 				if (subTagAlreadyContainsAtLeastOnePartOfStringToAdd)
 				{
 						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.",part));
@@ -608,7 +626,6 @@ namespace Palaso.WritingSystems
 		{
 			foreach (string part in partsOfStringToRemove)
 			{
-				if (Rfc5646SubtagParser.StringIsSeperator(part)) {continue; }
 				if (!partsOfSubtagToRemovePartFrom.Contains(part, StringComparison.OrdinalIgnoreCase))
 				{
 					return false;
@@ -619,7 +636,10 @@ namespace Palaso.WritingSystems
 
 		private static List<string> ParseSubtagForParts(string subtagToParse)
 		{
-			return new Rfc5646SubtagParser(subtagToParse).GetParts();
+			var parts = new List<string>();
+			parts.AddRange(subtagToParse.Split('-'));
+			parts.RemoveAll(str => str == "");
+			return parts;
 		}
 
 		private static string AssembleSubtag(IEnumerable<string> subtag)

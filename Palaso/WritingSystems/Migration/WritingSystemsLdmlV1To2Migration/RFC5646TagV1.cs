@@ -516,7 +516,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
 			foreach (string part in partsOfStringToAdd)
 			{
-				bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = !Rfc5646SubtagParser.StringIsSeperator(part) && SubtagContainsPart(subTag, part);
+				bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = SubtagContainsPart(subTag, part);
 				if (subTagAlreadyContainsAtLeastOnePartOfStringToAdd)
 				{
 					throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.", part));
@@ -609,7 +609,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			foreach (string part in partsOfStringToRemove)
 			{
-				if (Rfc5646SubtagParser.StringIsSeperator(part)) { continue; }
 				if (!partsOfSubtagToRemovePartFrom.Contains(part, StringComparison.OrdinalIgnoreCase))
 				{
 					return false;
@@ -620,7 +619,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 
 		private static List<string> ParseSubtagForParts(string subtagToParse)
 		{
-			return new Rfc5646SubtagParser(subtagToParse).GetParts();
+			var parts = new List<string>();
+			parts.AddRange(subtagToParse.Split('-'));
+			parts.RemoveAll(str => str == "");
+			return parts;
 		}
 
 		private static string AssembleSubtag(IEnumerable<string> subtag)

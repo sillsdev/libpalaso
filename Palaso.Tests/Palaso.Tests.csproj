@@ -140,7 +140,6 @@
 	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\Version0MigratorTests.cs" />
-	<Compile Include="WritingSystems\Rfc5646SubtagParserTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.Tests.cs" />
