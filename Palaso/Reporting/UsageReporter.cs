@@ -375,7 +375,7 @@ namespace Palaso.Reporting
 				{
 					client.Proxy = proxy;
 					response = client.UploadData(uri, bytes);
-				});
+				}, null);
 
 
 				return System.Text.Encoding.ASCII.GetString(response);
