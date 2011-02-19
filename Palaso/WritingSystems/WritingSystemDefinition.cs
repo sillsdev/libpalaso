@@ -322,7 +322,6 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Todo: this could/should become an ordered list of variant tags
 		/// </summary>
-		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		virtual public string Variant
 		{
 			get
@@ -345,7 +344,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		virtual public string Region
 		{
 			get
@@ -393,7 +391,16 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// The ISO-639 code which is also the Ethnologue code.
 		/// </summary>
-		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
+		[Obsolete("Please use ISO639")]
+		virtual public string ISO
+		{
+			get { return ISO639; }
+			set { ISO639 = value; }
+		}
+
+		/// <summary>
+		/// The ISO-639 code which is also the Ethnologue code.
+		/// </summary>
 		virtual public string ISO639
 		{
 			get
@@ -424,8 +431,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
-		[Obsolete("Please use the RFC5646Tag property to set the RFC5646 tag as this avoids invalid intermediate tags.")]
 		virtual public string Script
 		{
 			get
