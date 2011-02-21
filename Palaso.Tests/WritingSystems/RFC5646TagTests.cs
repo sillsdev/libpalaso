@@ -19,6 +19,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void AddToPrivateUse_StringToAddContainsNonAlphaNumericCharacter_Throws()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("_audio"));
+		}
+
+		[Test]
 		public void AddToPrivateUse_StringToAddContainsUnderScoreAfterx_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
@@ -839,6 +846,50 @@ namespace Palaso.Tests.WritingSystems
 			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
 			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-etic");
 			Assert.AreNotEqual(tag1, tag2);
+		}
+
+		[Test]
+		public void ParseSubtagForParts_SubtagContainsMultipleParts_PartsAreReturned()
+		{
+			List<string> parts = RFC5646Tag.ParseSubtagForParts("en-Latn-x-audio");
+			Assert.AreEqual(4, parts.Count);
+			Assert.AreEqual("en", parts[0]);
+			Assert.AreEqual("Latn", parts[1]);
+			Assert.AreEqual("x", parts[2]);
+			Assert.AreEqual("audio", parts[3]);
+		}
+
+		[Test]
+		public void ParseSubtagForParts_SubtagContainsOnePart_PartIsReturned()
+		{
+			List<string> parts = RFC5646Tag.ParseSubtagForParts("en");
+			Assert.AreEqual(1, parts.Count);
+			Assert.AreEqual("en", parts[0]);
+		}
+
+		[Test]
+		public void ParseSubtagForParts_SubtagIsEmpty_ListisEmpty()
+		{
+			List<string> parts = RFC5646Tag.ParseSubtagForParts("");
+			Assert.IsTrue(parts.Count == 0);
+		}
+
+		[Test]
+		public void ParseSubtagForParts_SubtagconatinsOnlyDashes_ListisEmpty()
+		{
+			List<string> parts = RFC5646Tag.ParseSubtagForParts("-------");
+			Assert.IsTrue(parts.Count == 0);
+		}
+
+		[Test]
+		public void ParseSubtagForParts_SubtagContainsMultipleConsecutiveDashes_DashesAreTreatedAsSingleDashes()
+		{
+			List<string> parts = RFC5646Tag.ParseSubtagForParts("-en--Latn-x---audio--");
+			Assert.AreEqual(4, parts.Count);
+			Assert.AreEqual("en", parts[0]);
+			Assert.AreEqual("Latn", parts[1]);
+			Assert.AreEqual("x", parts[2]);
+			Assert.AreEqual("audio", parts[3]);
 		}
 
 		[Test]

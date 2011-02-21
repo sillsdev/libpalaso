@@ -515,7 +515,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsXDashAudioDashFonipa_VariantIsSet()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.IpaVariantSubtag);
+			ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.VariantSubtag);
 			Assert.AreEqual("x-audio-fonipa", ws.Variant);
 		}
 
@@ -524,7 +524,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.IpaVariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
+				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
 		}
 
 		[Test]
@@ -532,7 +532,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.IpaPhoneticPrivateUseSubtag));
+				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
 		}
 
 		[Test]
@@ -540,7 +540,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.IpaPhonemicPrivateUseSubtag));
+				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
 		}
 
 		[Test]

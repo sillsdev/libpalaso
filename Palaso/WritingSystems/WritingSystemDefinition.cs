@@ -324,7 +324,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.IpaVariantSubtag);
+				return _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.VariantSubtag);
 			}
 		}
 
@@ -332,8 +332,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return  _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.IpaVariantSubtag) &&
-					_rfcTag.PrivateUseContainsPart(WellKnownSubTags.Ipa.IpaPhoneticPrivateUseSubtag);
+				return  _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.VariantSubtag) &&
+					_rfcTag.PrivateUseContainsPart(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
 			}
 		}
 
@@ -341,8 +341,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.IpaVariantSubtag) &&
-					_rfcTag.PrivateUseContainsPart(WellKnownSubTags.Ipa.IpaPhonemicPrivateUseSubtag);
+				return _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.VariantSubtag) &&
+					_rfcTag.PrivateUseContainsPart(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
 			}
 		}
 
@@ -385,15 +385,15 @@ namespace Palaso.WritingSystems
 				default:
 					break;
 				case IpaStatusChoices.Ipa:
-					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.IpaVariantSubtag);
+					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
 					break;
 				case IpaStatusChoices.IpaPhonemic:
-					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.IpaVariantSubtag);
-					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.IpaPhonemicPrivateUseSubtag);
+					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
 					break;
 				case IpaStatusChoices.IpaPhonetic:
-					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.IpaVariantSubtag);
-					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.IpaPhoneticPrivateUseSubtag);
+					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
 					break;
 			}
 			Modified = true;
@@ -920,25 +920,25 @@ namespace Palaso.WritingSystems
 			}
 			static public string Script
 			{
-				get { return "Zxxx"; }
+				get{return "Zxxx";}
 			}
 		}
 
 		public class Ipa
 		{
-			static public string IpaVariantSubtag
+			static public string VariantSubtag
 			{
 				get { return "fonipa"; }
 			}
 
-			static public string IpaPhonemicPrivateUseSubtag
+			static public string PhonemicPrivateUseSubtag
 			{
-				get { return "-x-emic"; }
+				get { return "x-emic"; }
 			}
 
-			static public string IpaPhoneticPrivateUseSubtag
+			static public string PhoneticPrivateUseSubtag
 			{
-				get { return "-x-etic"; }
+				get { return "x-etic"; }
 			}
 		}
 	}

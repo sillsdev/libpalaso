@@ -195,7 +195,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 												   DateTimeStyles.AssumeUniversal);
 				}
 				ws.DateModified = modified;
-				ws.Language = GetSubNodeAttributeValue(identityReader, "language", "type");
+				ws.ISO639 = GetSubNodeAttributeValue(identityReader, "language", "type");
 				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
 				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
 				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
@@ -542,7 +542,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			switch (id)
 			{
 				case "en-latn":
-					ws.Language = "en";
+					ws.ISO639 = "en";
 					ws.LanguageName = "English";
 					ws.Abbreviation = "eng";
 					ws.Script = "Latn";
@@ -609,7 +609,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteString(ws.VersionDescription);
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
-			WriteElementWithAttribute(writer, "language", "type", ws.Language);
+			WriteElementWithAttribute(writer, "language", "type", ws.ISO639);
 			if (!String.IsNullOrEmpty(ws.Script))
 			{
 				WriteElementWithAttribute(writer, "script", "type", ws.Script);
@@ -705,7 +705,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
 			WriteSpecialValue(writer, "palaso", "languageName", ws.LanguageName);
-			if (ws.SpellCheckingId != ws.Language)
+			if (ws.SpellCheckingId != ws.ISO639)
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}

@@ -29,7 +29,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public string Region{get; set;}
 
-		public string Language{get;set;}
+		public string ISO639{get;set;}
 
 		public string Abbreviation{ get;set;}
 

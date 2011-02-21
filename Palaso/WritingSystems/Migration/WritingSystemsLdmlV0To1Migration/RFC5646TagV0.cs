@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 namespace Palaso.WritingSystems
 {
-	public class RFC5646Tag : Object
+	//This is basically a copy of Rfc5646V1 but with all the checking removed.
+	//It is used as a convenient place with convenient methods to hold temporary data during migration.
+	public class RFC5646TagV0 : Object
 	{
 		public class IanaSubtag
 		{
@@ -229,7 +231,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public RFC5646Tag(string language, string script, string region, string variant, string privateUse)
+		public RFC5646TagV0(string language, string script, string region, string variant, string privateUse)
 		{
 			LoadIanaSubtags();
 
@@ -238,34 +240,13 @@ namespace Palaso.WritingSystems
 			SetRegionSubtags(region);
 			SetVariantSubtags(variant);
 			SetPrivateUseSubtags(privateUse);
-			CheckIfEntireTagIsValid();
-		}
-
-		private void CheckIfEntireTagIsValid()
-		{
-			CheckIfLanguageTagIsValid();
-			CheckIfScriptTagIsValid();
-			CheckIfRegionTagIsValid();
-			CheckIfVariantTagIsValid();
-			CheckIfPrivateUseTagIsValid();
-			bool languageIsEmpty = String.IsNullOrEmpty(Language);
-			bool scriptIsEmpty = String.IsNullOrEmpty(Script);
-			bool regionIsEmpty = String.IsNullOrEmpty(Region);
-			bool variantIsEmpty = String.IsNullOrEmpty(Variant);
-			bool privateUseEmpty = String.IsNullOrEmpty(PrivateUse);
-			bool onlyPrivateUseIsNotSet = (languageIsEmpty && scriptIsEmpty && regionIsEmpty && variantIsEmpty && !privateUseEmpty);
-			bool languageTagIsSetOrOnlyPrivateUseTagIsSet = !languageIsEmpty || onlyPrivateUseIsNotSet;
-			if (!languageTagIsSetOrOnlyPrivateUseTagIsSet)
-			{
-				throw new ArgumentException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
-			}
 		}
 
 		///<summary>
 		/// Copy constructor
 		///</summary>
 		///<param name="rhs"></param>
-		public RFC5646Tag(RFC5646Tag rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant, rhs.PrivateUse)
+		public RFC5646TagV0(RFC5646Tag rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant, rhs.PrivateUse)
 		{
 		}
 
@@ -300,7 +281,6 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_language = value;
-				CheckIfEntireTagIsValid();
 			}
 		}
 
@@ -354,7 +334,6 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_script = value;
-				CheckIfEntireTagIsValid();
 			}
 		}
 
@@ -432,7 +411,6 @@ namespace Palaso.WritingSystems
 			set
 			{
 				SetRegionSubtags(value);
-				CheckIfEntireTagIsValid();
 			}
 		}
 
@@ -625,20 +603,17 @@ namespace Palaso.WritingSystems
 			if (_privateUse.Contains("x")) {
 				throw new ArgumentException(
 					"A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }
-			CheckIfEntireTagIsValid();
 		}
 
 		public void AddToVariant(string subtagToAdd)
 		{
 			AddToSubtag(_variant, subtagToAdd);
-			CheckIfEntireTagIsValid();
 		}
 
 		public void RemoveFromPrivateUse(string subtagToRemove)
 		{
 			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
 			RemoveFromSubtag(_privateUse, stringWithoutPrecedingxDash);
-			CheckIfEntireTagIsValid();
 		}
 
 		public void RemoveFromVariant(string subtagToRemove)
@@ -655,6 +630,30 @@ namespace Palaso.WritingSystems
 		public bool VariantContainsPart(string subTagToFind)
 		{
 			return SubtagContainsPart(_variant, subTagToFind);
+		}
+
+		public string VariantAndPrivateUse
+		{
+			get
+			{
+				bool privateUseIsPopulatedAndVariantIsNot = String.IsNullOrEmpty(Variant) && !String.IsNullOrEmpty(PrivateUse);
+				bool variantIsPopulatedAndPrivateUseIsNot = !String.IsNullOrEmpty(Variant) && String.IsNullOrEmpty(PrivateUse);
+				bool variantAndPrivateUseAreBothPopulated = !String.IsNullOrEmpty(Variant) && !String.IsNullOrEmpty(PrivateUse);
+				string variantToReturn = "";
+				if (variantIsPopulatedAndPrivateUseIsNot)
+				{
+					variantToReturn = Variant;
+				}
+				else if (privateUseIsPopulatedAndVariantIsNot)
+				{
+					variantToReturn = PrivateUse;
+				}
+				else if (variantAndPrivateUseAreBothPopulated)
+				{
+					variantToReturn = Variant + "-" + PrivateUse;
+				}
+				return variantToReturn;
+			}
 		}
 	}
 }

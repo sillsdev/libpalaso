@@ -112,7 +112,33 @@ namespace Palaso.Tests.WritingSystems.Migration
 				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio",String.Empty,String.Empty,String.Empty));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
+			}
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsxDashaudioAndScriptSubtagIsNotEmpty_ScriptSubtagPartsAreMovedToprivateUseIsOverwrittenToBecomeZxxx()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio", String.Empty, String.Empty, String.Empty));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[text()='x-audio']");
+			}
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsVariableCaseAuDio_IsVoiceIsSetToTrue()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio", String.Empty, String.Empty, String.Empty));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[text()='x-AuDio']");
+				throw new NotImplementedException();
 			}
 		}
 
