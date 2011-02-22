@@ -419,7 +419,7 @@ namespace Palaso.WritingSystems
 		private void CheckIfScriptTagIsValid()
 		{
 			if (String.IsNullOrEmpty(_script)) { return; }
-			if (_script.Contains("-")) { throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (_script.Contains("-")) { throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
 			if(!IsValidIso15924ScriptCode(_script))
 			{
 				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-15924 script code.", _script[0]));
@@ -454,7 +454,7 @@ namespace Palaso.WritingSystems
 		private void CheckIfRegionTagIsValid()
 		{
 			if (String.IsNullOrEmpty(_region)) { return; }
-			if (_region.Contains("-")) { throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (_region.Contains("-")) { throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
 			if (!IsValidIso3166Region(_region))
 			{
 				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-3166 region code.", _region[0]));
@@ -620,8 +620,9 @@ namespace Palaso.WritingSystems
 
 		public void AddToPrivateUse(string subtagToAdd)
 		{
-			string stringWithoutPrecedingxDash = subtagToAdd.Trim('-','x');
-			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingxDash));
+			string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
+			if(stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")){stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2);}
+			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
 			if (_privateUse.Contains("x")) {
 				throw new ArgumentException(
 					"A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }

@@ -67,9 +67,9 @@ namespace Palaso.WritingSystems
 		private static readonly List<IanaSubtag> _validIso3166Regions = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _validRegisteredVariants = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _ianaSubtags = new List<IanaSubtag>();
-		private string _language = "";
-		private string _script = "";
-		private string _region = "";
+		private List<string> _language = new List<string>();
+		private List<string> _script = new List<string>();
+		private List<string> _region = new List<string>();
 		private List<string> _variant = new List<string>();
 		private List<string> _privateUse = new List<string>();
 
@@ -235,11 +235,11 @@ namespace Palaso.WritingSystems
 		{
 			LoadIanaSubtags();
 
-			SetLanguageSubtag(language);
-			SetScriptSubtag(script);
-			SetRegionSubtags(region);
-			SetVariantSubtags(variant);
-			SetPrivateUseSubtags(privateUse);
+			Language = language;
+			Script = script;
+			Region = region;
+			Variant = variant;
+			PrivateUse = privateUse;
 		}
 
 		///<summary>
@@ -277,20 +277,10 @@ namespace Palaso.WritingSystems
 
 		public string Language
 		{
-			get { return _language; }
+			get { return AssembleSubtag(_language); }
 			set
 			{
-				_language = value;
-			}
-		}
-
-		private void CheckIfLanguageTagIsValid()
-		{
-			if(String.IsNullOrEmpty(_language)){return;}
-			if(_language.Contains("-")){throw new ArgumentException("The language tag may not contain dashes. I.e. there may only be a single iso 639 tag in this subtag");}
-			if (!IsValidIso639LanguageCode(_language))
-			{
-				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-639 language code.", _language[0]));
+				_language = ParseSubtagForParts(value);
 			}
 		}
 
@@ -321,19 +311,12 @@ namespace Palaso.WritingSystems
 			return isValidIso15924ScriptCode;
 		}
 
-		//this is not implmented correctly as there should only be a single "x" in a language tag, so all subtags after the "x" are private use but are not indivudally prefixed with an "x"
-		private bool PartIsPrivateUse(string part)
-		{
-			//return part.StartsWith("x-",StringComparison.OrdinalIgnoreCase) ? true : false;
-			throw new NotImplementedException();
-		}
-
 		public string Script
 		{
-			get { return _script; }
+			get { return AssembleSubtag(_script); }
 			set
 			{
-				_script = value;
+				_script = ParseSubtagForParts(value);
 			}
 		}
 
@@ -349,26 +332,9 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				SetPrivateUseSubtags(value);
+				_privateUse = new List<string>();
+				AddToPrivateUse(value);
 			}
-		}
-
-		private void SetPrivateUseSubtags(string value)
-		{
-			_privateUse = new List<string>();
-			AddToPrivateUse(value);
-		}
-
-		private void CheckIfPrivateUseTagIsValid()
-		{
-			bool partInMiddleOfStringStartsWithxDash = (_privateUse.FindLastIndex(part => part.StartsWith("x-")) > 0);
-			string offendingSubtag = "";
-			if ((!String.IsNullOrEmpty(offendingSubtag = _privateUse.Find(StringContainsNonAlphaNumericCharacters))))
-			{
-				throw new ArgumentException(String.Format("Private use subtags may not contain non alpha numeric characters. The offending subtag was {0}", offendingSubtag));
-			}
-			if(partInMiddleOfStringStartsWithxDash){throw new ArgumentException("A Private Use subtag may not contain a singleton 'x' anywhere but at the beginning of the subtag.");}
-			CheckIfSubtagContainsDuplicates(_privateUse);
 		}
 
 		private static bool StringContainsNonAlphaNumericCharacters(string stringToSearch)
@@ -395,47 +361,12 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private void CheckIfScriptTagIsValid()
-		{
-			if (String.IsNullOrEmpty(_script)) { return; }
-			if (_script.Contains("-")) { throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
-			if(!IsValidIso15924ScriptCode(_script))
-			{
-				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-15924 script code.", _script[0]));
-			}
-		}
-
 		public string Region
 		{
-			get { return _region; }
+			get { return AssembleSubtag(_region); }
 			set
 			{
-				SetRegionSubtags(value);
-			}
-		}
-
-		private void SetLanguageSubtag(string value)
-		{
-			_language = value;
-		}
-
-		private void SetScriptSubtag(string value)
-		{
-			_script = value;
-		}
-
-		private void SetRegionSubtags(string value)
-		{
-			_region = value;
-		}
-
-		private void CheckIfRegionTagIsValid()
-		{
-			if (String.IsNullOrEmpty(_region)) { return; }
-			if (_region.Contains("-")) { throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
-			if (!IsValidIso3166Region(_region))
-			{
-				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-3166 region code.", _region[0]));
+				_region = ParseSubtagForParts(value);
 			}
 		}
 
@@ -457,28 +388,7 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_variant.Clear();
-				AddToVariant(value);
-			}
-		}
-
-		private void SetVariantSubtags(string value)
-		{
-			_variant.Clear();
-			_variant = ParseSubtagForParts(value);
-		}
-
-		private void CheckIfVariantTagIsValid()
-		{
-			if (_variant.Count == 0) { return; }
-			foreach (string subtagPart in _variant)
-			{
-				if (subtagPart.Equals("-") || subtagPart.Equals("_")) {continue; }
-				if(subtagPart.StartsWith("x-")){return;}    //From here on out it is a private use tag
-				if (!IsValidRegisteredVariant(subtagPart))
-				{
-					throw new ArgumentException(String.Format("\"{0}\" is not a valid registered variant code.",
-															  subtagPart));
-				}
+				_variant = ParseSubtagForParts(value);
 			}
 		}
 
@@ -598,8 +508,9 @@ namespace Palaso.WritingSystems
 
 		public void AddToPrivateUse(string subtagToAdd)
 		{
-			string stringWithoutPrecedingxDash = subtagToAdd.Trim('-','x');
-			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingxDash));
+			string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
+			if (stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")) { stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2); }
+			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
 			if (_privateUse.Contains("x")) {
 				throw new ArgumentException(
 					"A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }

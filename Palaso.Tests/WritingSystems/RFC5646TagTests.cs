@@ -78,6 +78,22 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void AddToPrivateUse_TagEndingInx_Set()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			rfcTag.AddToPrivateUse("testx");
+			Assert.AreEqual("x-testx", rfcTag.PrivateUse);
+		}
+
+		[Test]
+		public void AddToPrivateUse_TagBeginningWithx_Set()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			rfcTag.AddToPrivateUse("xtest");
+			Assert.AreEqual("x-xtest", rfcTag.PrivateUse);
+		}
+
+		[Test]
 		public void AddToPrivateUse_PrivateUseAlreadyContainsStringToAddInDifferentCase_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AUDIO");

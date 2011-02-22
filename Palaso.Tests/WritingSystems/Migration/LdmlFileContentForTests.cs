@@ -19,15 +19,15 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		static public string CreateVersion0LdmlContent(string language, string script, string region, string variant)
 		{
-			return
-String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+			return String.Format(
+@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
 	<generation date='0001-01-01T00:00:00' />
 	<language type='{0}' />
 	<script type='{1}' />
-	<region type='{2}' />
+	<territory type='{2}' />
 	<variant type='{3}' />
 </identity>
 <collations />
@@ -48,7 +48,7 @@ String.Format(@"<?xml version='1.0' encoding='utf-8'?>
 	<generation date='0001-01-01T00:00:00' />
 	<language type='{0}' />
 	<script type='{1}' />
-	<region type='{2}' />
+	<territory type='{2}' />
 	<variant type='{3}' />
 </identity>
 <collations />

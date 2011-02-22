@@ -329,7 +329,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			}
 		}
 
-		private static bool IsValidIso639LanguageCode(string languageCodeToCheck)
+		public static bool IsValidIso639LanguageCode(string languageCodeToCheck)
 		{
 			if (languageCodeToCheck.Equals("qaa", StringComparison.OrdinalIgnoreCase)) { return true; }
 
@@ -344,7 +344,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			return partIsValidIso639LanguageCode;
 		}
 
-		private static bool IsValidIso15924ScriptCode(string languageCodeToCheck)
+		public static bool IsValidIso15924ScriptCode(string languageCodeToCheck)
 		{
 			bool isValidIso15924ScriptCode = false;
 			foreach (Iso15924Script script in ValidIso15924Scripts)
@@ -423,7 +423,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 
 			if (_script.Count == 0) { return; }
-			if (_script.Count > 1) { throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (_script.Count > 1) { throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
 			if (!IsValidIso15924ScriptCode(_script[0]))
 			{
 				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-15924 script code.", _script[0]));
@@ -448,14 +448,14 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		private void CheckIfRegionTagIsValid()
 		{
 			if (_region.Count == 0) { return; }
-			if (_region.Count > 1) { throw new ArgumentException("The language tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (_region.Count > 1) { throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
 			if (!IsValidIso3166Region(_region[0]))
 			{
 				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-3166 region code.", _region[0]));
 			}
 		}
 
-		private static bool IsValidIso3166Region(string regionCodeToCheck)
+		public static bool IsValidIso3166Region(string regionCodeToCheck)
 		{
 			bool isValidIso3166Region = false;
 			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
@@ -498,7 +498,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			}
 		}
 
-		private static bool IsValidRegisteredVariant(string subtagPartToCheck)
+		public static bool IsValidRegisteredVariant(string subtagPartToCheck)
 		{
 			bool isValidRegisteredVariant = false;
 			foreach (IanaSubtag variant in ValidRegisteredVariants)
@@ -655,8 +655,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 
 		public void AddToPrivateUse(string subtagToAdd)
 		{
-			string stringWithoutPrecedingxDash = subtagToAdd.Trim('-', 'x');
-			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingxDash));
+			string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
+			if (stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")) { stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2); }
+			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
 			if (_privateUse.Contains("x"))
 			{
 				throw new ArgumentException(
