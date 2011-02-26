@@ -20,5 +20,19 @@ namespace Palaso.UsbDrive.Linux
 			get { return _udisks; }
 		}
 
+		public IEnumerable<string> EnumerateDeviceOnInterface(string onInterface)
+		{
+			var devices = Interface.EnumerateDevices();
+			foreach (var device in devices)
+			{
+				var uDiskDevice = new UDiskDevice(device);
+				string iface = uDiskDevice.GetProperty("DriveConnectionInterface");
+				string partition = uDiskDevice.GetProperty("DeviceIsPartition");
+				if (iface == onInterface && partition == "True")
+				{
+					yield return device;
+				}
+			}
+		}
 	}
 }

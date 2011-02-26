@@ -41,8 +41,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Email.TestApp", "Pal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard", "TestApps\TestAppKeyboard\TestAppKeyboard.csproj", "{776BECCD-102A-4C69-A478-4A4A6F695019}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppUSB", "TestApps\TestAppUSB\TestAppUSB.csproj", "{88C9681D-39C7-4B82-89A8-859F59E83BF4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,20 +71,16 @@ Global
 		{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}.ReleaseMono|x86.Build.0 = ReleaseMono|x86
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Debug|x86.ActiveCfg = Debug|x86
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Debug|x86.Build.0 = Debug|x86
+		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.DebugMono|Any CPU.ActiveCfg = DebugMono|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.DebugMono|Any CPU.Build.0 = DebugMono|Any CPU
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.DebugMono|x86.ActiveCfg = DebugMono|x86
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.DebugMono|x86.Build.0 = DebugMono|x86
+		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.DebugMono|x86.ActiveCfg = DebugMono|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Release|x86.ActiveCfg = Release|x86
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Release|x86.Build.0 = Release|x86
+		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.Release|x86.ActiveCfg = Release|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.ReleaseMono|Any CPU.ActiveCfg = ReleaseMono|Any CPU
 		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.ReleaseMono|Any CPU.Build.0 = ReleaseMono|Any CPU
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.ReleaseMono|x86.ActiveCfg = ReleaseMono|x86
-		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.ReleaseMono|x86.Build.0 = ReleaseMono|x86
+		{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}.ReleaseMono|x86.ActiveCfg = ReleaseMono|Any CPU
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}.Debug|x86.ActiveCfg = Debug|x86
@@ -334,18 +328,6 @@ Global
 		{776BECCD-102A-4C69-A478-4A4A6F695019}.ReleaseMono|Any CPU.Build.0 = Release|Any CPU
 		{776BECCD-102A-4C69-A478-4A4A6F695019}.ReleaseMono|x86.ActiveCfg = Release|x86
 		{776BECCD-102A-4C69-A478-4A4A6F695019}.ReleaseMono|x86.Build.0 = Release|x86
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.DebugMono|Any CPU.ActiveCfg = Debug|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.DebugMono|Any CPU.Build.0 = Debug|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.DebugMono|x86.ActiveCfg = Debug|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.Release|x86.ActiveCfg = Release|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.ReleaseMono|Any CPU.ActiveCfg = Release|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.ReleaseMono|Any CPU.Build.0 = Release|Any CPU
-		{88C9681D-39C7-4B82-89A8-859F59E83BF4}.ReleaseMono|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using NDesk.DBus;
-using org.freedesktop.DBus;
 
 namespace Palaso.UsbDrive.Linux
 {
@@ -10,17 +8,16 @@ namespace Palaso.UsbDrive.Linux
 	{
 		private readonly UDiskDevice _device;
 
-		public UsbDriveInfoUDisks(UDiskDevice device)
+		public UsbDriveInfoUDisks(string device)
 		{
-			_device = device;
+			_device = new UDiskDevice(device);
 		}
 
 		public override bool IsReady
 		{
 			get
 			{
-				// TODO: confirm is mounted
-				return TryGetDevicePropertyBoolean(_device, "volume.is_mounted");
+				return _device.IsMounted;
 			}
 		}
 
@@ -28,18 +25,20 @@ namespace Palaso.UsbDrive.Linux
 		{
 			get
 			{
-				// TODO: return path where the device is mounted
-				string devicePath = TryGetDevicePropertyString(_device, "volume.mount_point");
-				//When a device is present but not mounted. This method will throw an ArgumentException.
-				//In particular this can be the case just after inserting a UsbDevice
-				return new DirectoryInfo(devicePath);
+				if (_device.IsMounted)
+				{
+					string mountPath = _device.MountPaths[0];
+					//When a device is present but not mounted. This method will throw an ArgumentException.
+					//In particular this can be the case just after inserting a UsbDevice
+					return new DirectoryInfo(mountPath);
+				}
+				return new DirectoryInfo(String.Empty);
 			}
 		}
 
 		public override ulong TotalSize
 		{
-			// TODO
-			get { return TryGetDevicePropertyInteger(_device, "volume.size"); }
+			get { return _device.TotalSize; }
 		}
 
 		public override ulong AvailableFreeSpace
@@ -53,17 +52,14 @@ namespace Palaso.UsbDrive.Linux
 			var drives = new List<UsbDriveInfo>();
 
 			var uDisks = new UDisks();
-			foreach (string device in uDisks.Interface.EnumerateDevices())
+			// ReSharper disable LoopCanBeConvertedToQuery
+			foreach (string device in uDisks.EnumerateDeviceOnInterface("usb"))
+			// ReSharper restore LoopCanBeConvertedToQuery
 			{
-				var uDiskDevice = new UDiskDevice(device);
-				// Check if the device is on USB
-				if (uDiskDevice.IsConnectedViaUSB)
+				var deviceInfo = new UsbDriveInfoUDisks(device);
+				if (deviceInfo.IsReady)
 				{
-					var deviceInfo = new UsbDriveInfoUDisks(uDiskDevice);
-					if (deviceInfo.IsReady)
-					{
-						drives.Add(deviceInfo);
-					}
+					drives.Add(deviceInfo);
 				}
 			}
 			return drives;

@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+
+#if MONO
 using Palaso.UsbDrive.Linux;
+#else
+using Palaso.UsbDrive.Windows;
+#endif
 
 namespace Palaso.UsbDrive
 {
