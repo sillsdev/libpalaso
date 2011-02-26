@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-
 using NUnit.Framework;
 using Palaso.UsbDrive.Linux;
 
 namespace Palaso.Tests.UsbDrive.Linux
 {
+	[Category("SkipOnTeamCity")]
 	[TestFixture]
 	public class UDiskDeviceTests
 	{
