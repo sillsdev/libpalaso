@@ -300,7 +300,7 @@
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDevice.cs" />
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisks.cs" />
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
-	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoHal.cs" />
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
 	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
