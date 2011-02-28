@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
@@ -52,19 +53,45 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public PalasoImage ImageInfo
 		{
-			get{ return _imageInfo;}
+			get { return _imageInfo; }
 			set
 			{
+				try
+				{
 
-				if (value == null || value.Image == null)
-				{
-					_currentImageBox.Image = null;
+					if (value == null || value.Image == null)
+					{
+						_currentImageBox.Image = null;
+					}
+					else
+					{
+						if(value.Image == _currentImageBox.Image)
+						{
+							return;
+						}
+						/* this seemed like a good idea, but it lead to "parameter errors" later in the image
+						 * try
+												{
+													if (_currentImageBox.Image != null)
+													{
+														  _currentImageBox.Image.Dispose();
+													}
+												}
+												catch (Exception)
+												{
+													//ah well. I haven't got a way to know when it's disposable and when it isn't
+													throw;
+												}
+						  */
+						_currentImageBox.Image = value.Image;
+					}
+					_imageInfo = value;
+
 				}
-				else
+				catch (Exception e)
 				{
-					_currentImageBox.Image = value.Image;
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.");
 				}
-				_imageInfo = value;
 			}
 		}
 
@@ -88,6 +115,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			try
+			{
+
 			if (_toolListView.SelectedItems.Count == 0)
 				return;
 			if(_currentControl !=null)
@@ -112,6 +142,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			imageToolboxControl.SetImage(ImageInfo);
 			imageToolboxControl.ImageChanged += new EventHandler(imageToolboxControl_ImageChanged);
 			Refresh();
+
+
+			}
+			catch (Exception error)
+			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
+																 "Sorry, something went wrong with the ImageToolbox");
+			}
 		}
 
 		private void GetImageFromCurrentControl()
