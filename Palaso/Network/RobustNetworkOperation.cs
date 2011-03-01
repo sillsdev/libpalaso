@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -30,11 +29,11 @@ namespace Palaso.Network
 			}
 			catch (WebException e)
 			{
-				if (verboseLog!=null)
-					verboseLog.Invoke("Doing the action with the SystemWebProxy gave exception: "+ e.Message);
+				if (verboseLog != null)
+					verboseLog.Invoke("Doing the action with the SystemWebProxy gave exception: " + e.Message);
 
 				if (!e.Message.Contains("407"))
-					throw e;
+					throw;
 
 				try
 				{
@@ -49,18 +48,18 @@ namespace Palaso.Network
 					if (verboseLog != null)
 						verboseLog.Invoke("Trying action again with user credentials.");
 
-				   if (verboseLog != null)
+					if (verboseLog != null)
 						verboseLog.Invoke("RobustNetworkOperation.Do() action again, with credentials this time.");
 
 					action(proxy);
 				}
 				catch (WebException e2)
 				{
-					if (verboseLog!=null)
-						verboseLog.Invoke("Doing the action with the SystemWebProxy gave exception: "+ e.Message);
+					if (verboseLog != null)
+						verboseLog.Invoke("Doing the action with the SystemWebProxy gave exception: " + e.Message);
 
 					if (!e2.Message.Contains("407"))
-						throw e2;
+						throw;
 					//I think something like this would tell us the name of the proxy: e.Response.Headers.GetValues("Proxy-Authenticate")
 
 					proxy.Credentials = ProxyCredentialsRequestDialog.GetCredentials(false);
@@ -74,7 +73,7 @@ namespace Palaso.Network
 				}
 			}
 
-			  return proxy;
+			return proxy;
 		}
 
 		/// <summary>
@@ -108,41 +107,37 @@ namespace Palaso.Network
 			var client = new WebClient();
 
 			//note: this can throw
-			var proxyInfo = RobustNetworkOperation.Do(proxy =>
-														  {
-															  client.Proxy = proxy;
-
-															  client.DownloadData(url);
-																  //we don't actually care what comes back
-														  }, verboseLog);
+			var proxyInfo = Do(
+				proxy =>
+				{
+					client.Proxy = proxy;
+					client.DownloadData(url);
+					//we don't actually care what comes back
+				}, verboseLog
+			);
 
 			var destination = new Uri(url);
 			var proxyUrl = proxyInfo.GetProxy(destination);
 			hostAndPort = proxyUrl.OriginalString;
+
 			if (string.IsNullOrEmpty(hostAndPort))
 				return false;
 
-			if(hostAndPort.Contains("palaso.org"))
-			{
-				if (verboseLog != null)
-				{
-					verboseLog.Invoke("Hit this weird bug where the proxy was returned as " + hostAndPort);
-					verboseLog.Invoke("Will report that no proxy was found");
-					Debug.Fail("Hit important, hard to reproduce bug!");
-				}
-				hostAndPort = string.Empty;
+			if (!proxyInfo.IsBypassed(destination))
 				return false;
-			}
 
-			if(proxyInfo.Credentials ==null) //this happened to Randy, may be the normal course of things without a proxy
-			{
+			// In the absense of a proxy it is reported as being the same as the destination url.
+			if (proxyUrl.AbsoluteUri == url)
 				return false;
-			}
+
+			if (proxyInfo.Credentials == null) // This seems to be the normal course of things without a proxy
+				return false;
+
 			var networkCredential = proxyInfo.Credentials.GetCredential(destination, "");
 			userName = networkCredential.UserName;
 			password = networkCredential.Password;
 			if (verboseLog != null)
-				verboseLog.Invoke("DoHttpGetAndGetProxyInfo Returning with credentials. UserName is " +userName);
+				verboseLog.Invoke("DoHttpGetAndGetProxyInfo Returning with credentials. UserName is " + userName);
 
 
 			return true;
