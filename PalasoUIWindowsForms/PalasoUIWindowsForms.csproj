@@ -173,6 +173,11 @@
 	<Compile Include="ImageToolbox\ImageMetadataControl.Designer.cs">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>ImageToolbox.settings</DependentUpon>
+	</Compile>
 	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -260,6 +265,10 @@
 	</Compile>
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Widgets\Flying\Animator.cs" />
+	<Compile Include="Widgets\Flying\FlyingLabel.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
@@ -554,6 +563,11 @@
 	</BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+	<None Include="app.config" />
+	<None Include="ImageToolbox\ImageToolbox.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>ImageToolbox.Designer.cs</LastGenOutput>
+	</None>
 	<None Include="Resources\credits.png" />
   </ItemGroup>
   <ItemGroup>

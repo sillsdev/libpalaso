@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.IO;
 using System.Media;
-using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using Palaso.IO;
 using Palaso.TestUtilities;
 
 

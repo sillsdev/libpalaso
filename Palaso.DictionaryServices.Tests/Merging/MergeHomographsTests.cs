@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Processors;
+using Palaso.IO;
 using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 
@@ -17,7 +17,7 @@ namespace Palaso.DictionaryServices.Tests.Merging
 		[SetUp]
 		public void Setup()
 		{
-			_outputLift = new Palaso.TestUtilities.TempFile();
+			_outputLift = new TempFile();
 			_progress = new StringBuilderProgress();
 			_resultDom = new XmlDocument();
 		}

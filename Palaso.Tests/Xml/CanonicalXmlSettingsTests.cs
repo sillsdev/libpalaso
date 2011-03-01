@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using NUnit.Framework;
+using Palaso.IO;
 using Palaso.Xml;
 
 namespace Palaso.Tests.Xml
@@ -32,7 +33,7 @@ namespace Palaso.Tests.Xml
 		{
 			string xmlInput = @"<a attrib1='value1' attrib2='value2'><b>Content</b></a>".Replace('\'', '"');
 			const string expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<a\r\n\tattrib1=\"value1\"\r\n\tattrib2=\"value2\">\r\n\t<b>Content</b>\r\n</a>";
-			using (var tempFile = TestUtilities.TempFile.CreateAndGetPathButDontMakeTheFile())
+			using (var tempFile = TempFile.CreateAndGetPathButDontMakeTheFile())
 			{
 				using (var reader = XmlReader.Create(new StringReader(xmlInput)))
 				{

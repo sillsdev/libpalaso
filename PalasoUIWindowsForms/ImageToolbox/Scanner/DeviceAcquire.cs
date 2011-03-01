@@ -1,5 +1,8 @@
 ﻿#if !MONO
 using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 
@@ -56,6 +59,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 				var temp = Path.GetTempFileName();
 				File.Delete(temp);
 				file.SaveFile(temp);
+				temp = ConvertToPngIfNotAlready(temp);
 				_pictureBox.Load(temp);
 				File.Delete(temp);
 				if (ImageChanged != null)
@@ -71,7 +75,35 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 			}
 		}
 
-
+		/// <summary>
+		/// Will delete the incoming file if it needs to do a conversion
+		/// </summary>
+		private string ConvertToPngIfNotAlready(string incoming)
+		{
+			string outgoing = incoming;
+			//important to dispose of these things, they lock down the file.
+			using (var image = Image.FromFile(incoming))
+			{
+				 if(!ImageFormat.Png.Equals(image.PixelFormat))
+				 {
+					 outgoing = Path.GetTempFileName();
+					 image.Save(outgoing, ImageFormat.Png);
+				 }
+			}
+			if(outgoing != incoming)
+			{
+				try
+				{
+					File.Delete(incoming);
+				}
+				catch (Exception e)
+				{
+					Debug.Fail(e.Message);
+					//in release, just keep going
+				}
+			}
+			return outgoing;
+		}
 	}
 }
 #endif

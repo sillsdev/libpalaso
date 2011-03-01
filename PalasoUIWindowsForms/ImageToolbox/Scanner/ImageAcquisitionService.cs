@@ -1,5 +1,6 @@
 ﻿#if !MONO
 using System;
+using System.Drawing;
 using WIA;
 using System.Runtime.InteropServices;
 
@@ -56,7 +57,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 						type,
 						WiaImageIntent.GrayscaleIntent,
 						WiaImageBias.MinimizeSize,
-						WIA.FormatID.wiaFormatPNG,
+						WIA.FormatID.wiaFormatPNG, // at least canoscan 200 ignores this, gives me a jpeg
 						false,
 						true,
 						false);
