@@ -45,7 +45,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				dlg.AutoUpgradeEnabled = true;
 				if(DialogResult.OK == dlg.ShowDialog())
 				{
-					_currentImage = new PalasoImage() { Image = LoadImageWithoutLocking(dlg.FileName), FileName = Path.GetFileName(dlg.FileName) };
+					_currentImage = PalasoImage.FromFile(dlg.FileName);
 					_pictureBox.Image = _currentImage.Image;
 					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
 					ImageToolboxSettings.Default.Save();
@@ -54,19 +54,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 		}
-
-		private static Image LoadImageWithoutLocking(string path)
-		{
-			//locks until the image is dispose of some day, which is counter-intuitive to me
-			//  return Image.FromFile(path);
-
-			//following work-around from http://support.microsoft.com/kb/309482
-			using(var fs = new System.IO.FileStream(path, FileMode.Open,FileAccess.Read))
-			{
-				return Image.FromStream(fs);
-			}
-		}
-
 
 		public void SetImage(PalasoImage image)
 		{

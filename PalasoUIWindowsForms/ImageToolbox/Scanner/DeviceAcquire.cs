@@ -41,7 +41,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 		{
 			if(_pictureBox.Image != null)
 			{
-				return new PalasoImage(){Image = _pictureBox.Image};
+				return PalasoImage.FromImage(_pictureBox.Image);
 			}
 			return _previousImage;
 		}

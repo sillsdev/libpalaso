@@ -88,11 +88,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				try
 				{
-					return new PalasoImage
-							   {
-								   Image = Image.FromFile(ChosenPath),
-								   FileName = Path.GetFileName(ChosenPath)
-							   };
+					return PalasoImage.FromFile(ChosenPath);
 				}
 				catch (Exception error)
 				{

@@ -18,7 +18,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public ImageToolboxControl()
 		{
 			InitializeComponent();
-			//_panelForControls.Visible = false;
 
 			ImageInfo = new PalasoImage();
 			_toolListView.Groups.Clear();
@@ -26,7 +25,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			var getImageGroup = AddGroup("Get Image");
 			var editImageGroup = AddGroup("Edit Image");
-			var otherGroup = AddGroup("Other");
 
 			//doing our own image list because VS2010 croaks their resx if have an imagelist while set to .net 3.5 with x86 on a 64bit os (something like that). This is a known bug MS doesn't plan to fix.
 			_toolImages = new ImageList();
@@ -43,8 +41,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 #endif
 			AddControl("From Gallery", ImageToolboxButtons.searchFolder, "gallery", getImageGroup, (x) => new ArtOfReadingChooser(string.Empty));
 			AddControl("Crop",  ImageToolboxButtons.crop, "crop", editImageGroup, (x) => new ImageCropper());
-//            AddControl("Credits", ImageToolboxButtons.credits, "credits", otherGroup, (x) => new ImageCreditsControl());
-//            AddControl("License", ImageToolboxButtons.Licenses, "license", otherGroup, (x) => new ImageLicenseControl());
 			_toolListView.Refresh();
 		}
 
@@ -58,7 +54,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				try
 				{
-
 					if (value == null || value.Image == null)
 					{
 						_currentImageBox.Image = null;
@@ -86,7 +81,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						_currentImageBox.Image = value.Image;
 					}
 					_imageInfo = value;
-
+					_imageMetadataControl.SetImage(_imageInfo);
 				}
 				catch (Exception e)
 				{
@@ -131,9 +126,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			System.Func<PalasoImage, Control> fun =
 				(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
 			_currentControl = fun(ImageInfo);
-//            _currentControl.Bounds = _panelForControls.Bounds;
-//            _currentControl.Anchor = _panelForControls.Anchor;
-//            Controls.Add(_currentControl);
 
 			_currentControl.Dock = DockStyle.Fill;
 			_panelForControls.Controls.Add(_currentControl);
@@ -165,9 +157,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		public void Closing()
 		{
-			ImageInfo = ((IImageToolboxControl)_currentControl).GetImage();
-			Controls.Remove(_currentControl);
-			_currentControl.Dispose();
+			if (_currentControl == null)
+			{
+
+			}
+			else
+			{
+				ImageInfo = ((IImageToolboxControl)_currentControl).GetImage();
+				Controls.Remove(_currentControl);
+				_currentControl.Dispose();
+			}
+
 		}
 	}
 

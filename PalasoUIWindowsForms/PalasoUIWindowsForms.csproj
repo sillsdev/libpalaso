@@ -155,18 +155,6 @@
 	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.Designer.cs">
 	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\ImageCreditsControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageCreditsControl.Designer.cs">
-	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageLicenseControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageLicenseControl.Designer.cs">
-	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
-	</Compile>
 	<Compile Include="ImageToolbox\ImageMetadataControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -410,12 +398,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\GetImageFromFileSystemControl.resx">
 	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageCreditsControl.resx">
-	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageLicenseControl.resx">
-	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
