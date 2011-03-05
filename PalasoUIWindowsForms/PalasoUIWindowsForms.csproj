@@ -136,6 +136,12 @@
 	<Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
 	  <DependentUpon>ThumbnailViewer.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\AcquireImageControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\AcquireImageControl.Designer.cs">
+	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
+	</Compile>
 	<Compile Include="ImageToolbox\ArtOfReadingChooser.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -148,12 +154,6 @@
 	</Compile>
 	<Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.Designer.cs">
-	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageMetadataControl.cs">
 	  <SubType>UserControl</SubType>
@@ -194,13 +194,7 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>SampleImages.resx</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.Designer.cs">
-	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\Scanner\ImageAcquisitionService.cs" />
+	<Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
 	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
 	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
@@ -390,14 +384,14 @@
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\AcquireImageControl.resx">
+	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
 	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\GetImageFromFileSystemControl.resx">
-	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
@@ -419,9 +413,6 @@
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\Scanner\DeviceAcquire.resx">
-	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>

@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
 #if !MONO
-	using Palaso.UI.WindowsForms.ImageToolbox.Scanner;
+
 #endif
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
@@ -20,11 +20,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			InitializeComponent();
 
 			ImageInfo = new PalasoImage();
-			_toolListView.Groups.Clear();
 			_toolListView.Items.Clear();
 
-			var getImageGroup = AddGroup("Get Image");
-			var editImageGroup = AddGroup("Edit Image");
 
 			//doing our own image list because VS2010 croaks their resx if have an imagelist while set to .net 3.5 with x86 on a 64bit os (something like that). This is a known bug MS doesn't plan to fix.
 			_toolImages = new ImageList();
@@ -33,14 +30,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_toolImages.ImageSize = new Size(32,32);
 
 
-			AddControl("From File", ImageToolboxButtons.browse, "browse", getImageGroup, (x) => new GetImageFromFileSystemControl());
-#if !MONO
+			 AddControl("Get Picture", ImageToolboxButtons.browse, "browse",  (x) => new AcquireImageControl());
+			  AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
-			AddControl("From Scan", ImageToolboxButtons.scanner, "scanner", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Scanner));
-			AddControl("From Camera", ImageToolboxButtons.camera, "camera", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Camera));
-#endif
-			AddControl("From Gallery", ImageToolboxButtons.searchFolder, "gallery", getImageGroup, (x) => new ArtOfReadingChooser(string.Empty));
-			AddControl("Crop",  ImageToolboxButtons.crop, "crop", editImageGroup, (x) => new ImageCropper());
+			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
 		}
 
@@ -90,19 +83,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 		}
 
-		private ListViewGroup AddGroup(string header)
-		{
-			var g= new ListViewGroup(header,HorizontalAlignment.Left);
-			_toolListView.Groups.Add(g);
-			return g;
-		}
 
-		private void AddControl(string label, Bitmap bitmap, string imageKey, ListViewGroup group, System.Func<PalasoImage, Control> makeControl)
+		private void AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
 		{
 			_toolImages.Images.Add(bitmap);
 			_toolImages.Images.SetKeyName(_toolImages.Images.Count - 1, imageKey);
 
-			var item= new ListViewItem(label, group);
+			var item= new ListViewItem(label);
 			item.ImageKey = imageKey;
 			item.Tag = makeControl;
 			this._toolListView.Items.Add(item);
@@ -147,7 +134,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void GetImageFromCurrentControl()
 		{
 			ImageInfo = ((IImageToolboxControl) _currentControl).GetImage();
-			_currentImageBox.Image = ImageInfo.Image;
+			if (ImageInfo == null)
+				_currentImageBox.Image = null;
+			else
+				_currentImageBox.Image = ImageInfo.Image;
 		}
 
 		void imageToolboxControl_ImageChanged(object sender, EventArgs e)

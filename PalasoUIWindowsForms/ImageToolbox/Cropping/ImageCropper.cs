@@ -342,12 +342,22 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		public void SetImage(PalasoImage image)
 		{
-			Image = image.Image;
+			if (image == null)
+			{
+				Image = null;
+			}
+			else
+			{
+				Image = image.Image;
+			}
 		}
 
 		public PalasoImage GetImage()
 		{
-			return PalasoImage.FromImage(GetCroppedImage());
+			Image image = GetCroppedImage();
+			if (image == null)
+				return null;
+			return PalasoImage.FromImage(image);
 		}
 
 		public event EventHandler ImageChanged;

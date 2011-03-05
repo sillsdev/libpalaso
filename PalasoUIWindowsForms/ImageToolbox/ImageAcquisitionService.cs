@@ -1,10 +1,9 @@
 ﻿#if !MONO
 using System;
-using System.Drawing;
 using WIA;
 using System.Runtime.InteropServices;
 
-namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
+namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public class ImageDeviceException : ApplicationException
 	{

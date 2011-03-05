@@ -38,8 +38,8 @@
 			this._toolListView = new System.Windows.Forms.ListView();
 			this._panelForControls = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this._imageMetadataControl = new Palaso.UI.WindowsForms.ImageToolbox.ImageMetadataControl();
+			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
 			this.SuspendLayout();
@@ -58,6 +58,7 @@
 			listViewItem1});
 			this._toolListView.Location = new System.Drawing.Point(0, 0);
 			this._toolListView.Name = "_toolListView";
+			this._toolListView.ShowGroups = false;
 			this._toolListView.Size = new System.Drawing.Size(112, 497);
 			this._toolListView.TabIndex = 0;
 			this._toolListView.UseCompatibleStateImageBehavior = false;
@@ -86,6 +87,15 @@
 			this.panel1.Size = new System.Drawing.Size(267, 498);
 			this.panel1.TabIndex = 5;
 			//
+			// _imageMetadataControl
+			//
+			this._imageMetadataControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._imageMetadataControl.Location = new System.Drawing.Point(7, 251);
+			this._imageMetadataControl.Name = "_imageMetadataControl";
+			this._imageMetadataControl.Size = new System.Drawing.Size(251, 247);
+			this._imageMetadataControl.TabIndex = 6;
+			//
 			// _currentImageBox
 			//
 			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -97,15 +107,6 @@
 			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this._currentImageBox.TabIndex = 5;
 			this._currentImageBox.TabStop = false;
-			//
-			// _imageMetadataControl
-			//
-			this._imageMetadataControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this._imageMetadataControl.Location = new System.Drawing.Point(7, 251);
-			this._imageMetadataControl.Name = "_imageMetadataControl";
-			this._imageMetadataControl.Size = new System.Drawing.Size(251, 247);
-			this._imageMetadataControl.TabIndex = 6;
 			//
 			// ImageToolboxControl
 			//

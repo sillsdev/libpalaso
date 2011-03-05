@@ -13,13 +13,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				private readonly IImageCollection _images;
 		private PalasoImage _previousImage;
 
-		public ArtOfReadingChooser(string searchWords)
+		public ArtOfReadingChooser()
 		{
-			_images =  ArtOfReadingImageCollection.FromStandardLocations();
 			InitializeComponent();
-			_searchTermsBox.Text = searchWords;
+			_images = ArtOfReadingImageCollection.FromStandardLocations();
+			_searchTermsBox.Text = "flower";
 			_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
 		}
+
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
