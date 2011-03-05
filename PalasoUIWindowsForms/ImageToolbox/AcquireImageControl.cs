@@ -63,6 +63,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public void SetImage(PalasoImage image)
 		{
 			_previousImage = image;
+			_scannerButton.Checked = _cameraButton.Checked = false;
 			_currentImage = image;
 			if (image == null)
 				_pictureBox.Image = null;
@@ -88,12 +89,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void OnScannerClick(object sender, EventArgs e)
 		{
+			_scannerButton.Checked = true;
+			SetImage(null);
 			SetMode(Modes.SingleImage);
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
 		}
 		private void OnCameraClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.SingleImage);
+			SetImage(null);
+			_cameraButton.Checked = true;
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
 		}
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
@@ -115,7 +120,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			catch (ImageDeviceNotFoundException error)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error.Message);
+				_messageLabel.Text = error.Message + Environment.NewLine +Environment.NewLine+
+									 "Note: this program works with devices that have a 'WIA' driver, not the old-style 'TWAIN' driver";
+				_messageLabel.Visible = true;
 			}
 			catch (Exception error)
 			{
@@ -157,6 +164,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private enum Modes {Gallery, SingleImage}
 		private void SetMode(Modes mode)
 		{
+			_messageLabel.Visible = false;
 			switch (mode)
 			{
 				case Modes.Gallery:
@@ -182,7 +190,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void AcquireImageControl_Load(object sender, EventArgs e)
 		{
-			SetMode(Modes.Gallery);
+			if(_galleryControl.HaveImageCollectionOnThisComputer)
+			{
+				SetMode(Modes.Gallery);
+			}
+			else
+			{
+				SetMode(Modes.SingleImage);
+			}
+
 		}
 	}
 }

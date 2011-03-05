@@ -36,6 +36,7 @@
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this._pictureBox = new System.Windows.Forms.PictureBox();
 			this._galleryControl = new Palaso.UI.WindowsForms.ImageToolbox.ArtOfReadingChooser();
+			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
 			this.SuspendLayout();
@@ -121,10 +122,28 @@
 			this._galleryControl.Size = new System.Drawing.Size(551, 349);
 			this._galleryControl.TabIndex = 7;
 			//
+			// _messageLabel
+			//
+			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._messageLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._messageLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._messageLabel.ForeColor = System.Drawing.Color.Gray;
+			this._messageLabel.Location = new System.Drawing.Point(39, 87);
+			this._messageLabel.Multiline = true;
+			this._messageLabel.Name = "_messageLabel";
+			this._messageLabel.ReadOnly = true;
+			this._messageLabel.Size = new System.Drawing.Size(333, 150);
+			this._messageLabel.TabIndex = 11;
+			this._messageLabel.TabStop = false;
+			this._messageLabel.Text = "This will notify you of problems";
+			this._messageLabel.Visible = false;
+			//
 			// AcquireImageControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._messageLabel);
 			this.Controls.Add(this._galleryControl);
 			this.Controls.Add(this._pictureBox);
 			this.Controls.Add(this.toolStrip1);
@@ -148,5 +167,6 @@
 		private System.Windows.Forms.ToolStripButton _galleryButton;
 		private System.Windows.Forms.PictureBox _pictureBox;
 		private ArtOfReadingChooser _galleryControl;
+		private Widgets.BetterLabel _messageLabel;
 	}
 }
