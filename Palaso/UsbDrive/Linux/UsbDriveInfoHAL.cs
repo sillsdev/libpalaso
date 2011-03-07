@@ -1,15 +1,17 @@
-﻿#if MONO
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using NDesk.DBus;
 using org.freedesktop.DBus;
 
-namespace Palaso.UsbDrive
+namespace Palaso.UsbDrive.Linux
 {
-	internal class UsbDriveInfoLinux:UsbDriveInfo
+	internal class UsbDriveInfoHal : UsbDriveInfo
 	{
-		private HalDevice _volumeDevice;
+		// Suppressed because it is an interface created by NDesk.DBus
+		#pragma warning disable 649
+		private IHalDevice _volumeDevice;
+		#pragma warning restore 649
 
 		public override bool IsReady
 		{
@@ -40,7 +42,7 @@ namespace Palaso.UsbDrive
 			get { throw new NotImplementedException("TotalFreeSpace not implemented in Mono yet."); }
 		}
 
-		private static string TryGetDevicePropertyString(HalDevice device, string propertyName)
+		private static string TryGetDevicePropertyString(IHalDevice device, string propertyName)
 		{
 			//if the property does not exist, we don't care
 			try
@@ -51,7 +53,7 @@ namespace Palaso.UsbDrive
 			return String.Empty;
 		}
 
-		private static bool TryGetDevicePropertyBoolean(HalDevice device, string propertyName)
+		private static bool TryGetDevicePropertyBoolean(IHalDevice device, string propertyName)
 		{
 			//if the property does not exist, we don't care
 			try
@@ -62,7 +64,7 @@ namespace Palaso.UsbDrive
 			return false;
 		}
 
-		private static ulong TryGetDevicePropertyInteger(HalDevice device, string propertyName)
+		private static ulong TryGetDevicePropertyInteger(IHalDevice device, string propertyName)
 		{
 			//if the property does not exist, we don't care
 			try
@@ -75,22 +77,22 @@ namespace Palaso.UsbDrive
 
 		public new static List<UsbDriveInfo> GetDrives()
 		{
-			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();
+			var drives = new List<UsbDriveInfo>();
 			Connection conn =  Bus.System;
 
-			ObjectPath halManagerPath = new ObjectPath("/org/freedesktop/Hal/Manager");
-			string halNameOnDbus = "org.freedesktop.Hal";
+			var halManagerPath = new ObjectPath("/org/freedesktop/Hal/Manager");
+			const string halNameOnDbus = "org.freedesktop.Hal";
 
-			HalManager manager = conn.GetObject<HalManager>(halNameOnDbus, halManagerPath);
+			var manager = conn.GetObject<IHalManager>(halNameOnDbus, halManagerPath);
 
 			ObjectPath[] volumeDevicePaths = manager.FindDeviceByCapability("volume");
-			foreach (ObjectPath volumeDevicePath in volumeDevicePaths)
+			foreach (var volumeDevicePath in volumeDevicePaths)
 			{
-				HalDevice volumeDevice = conn.GetObject<HalDevice>(halNameOnDbus, volumeDevicePath);
+				var volumeDevice = conn.GetObject<IHalDevice>(halNameOnDbus, volumeDevicePath);
 
 				if (DeviceIsOnUsbBus(conn, halNameOnDbus, volumeDevice))
 				{
-					UsbDriveInfoLinux deviceInfo = new UsbDriveInfoLinux();
+					var deviceInfo = new UsbDriveInfoHal();
 					deviceInfo._volumeDevice = volumeDevice;
 					//This emulates Windows behavior
 					if (deviceInfo.IsReady)
@@ -102,7 +104,7 @@ namespace Palaso.UsbDrive
 			return drives;
 		}
 
-		private static bool DeviceIsOnUsbBus(Connection conn, string halNameOnDbus, HalDevice device)
+		private static bool DeviceIsOnUsbBus(Connection conn, string halNameOnDbus, IHalDevice device)
 		{
 			bool deviceIsOnUsbSubsystem;
 			bool thereIsAPathToParent;
@@ -112,20 +114,20 @@ namespace Palaso.UsbDrive
 				deviceIsOnUsbSubsystem = subsystem.Contains("usb");
 				string pathToParent = TryGetDevicePropertyString(device, "info.parent");
 				thereIsAPathToParent = String.IsNullOrEmpty(pathToParent);
-				device = conn.GetObject<HalDevice>(halNameOnDbus, new ObjectPath(pathToParent));
+				device = conn.GetObject<IHalDevice>(halNameOnDbus, new ObjectPath(pathToParent));
 			} while (!deviceIsOnUsbSubsystem && !thereIsAPathToParent);
 			return deviceIsOnUsbSubsystem;
 		}
 
 		[Interface ("org.freedesktop.Hal.Manager")]
-		interface HalManager : Introspectable
+		interface IHalManager : Introspectable
 		{
 			ObjectPath[] GetAllDevices();
 			ObjectPath[] FindDeviceByCapability(string capability);
 		}
 
 		[Interface("org.freedesktop.Hal.Device")]
-		interface HalDevice : Introspectable
+		interface IHalDevice : Introspectable
 		{
 			string GetPropertyString(string propertyName);
 			string[] GetPropertyStringList(string propertyName);
@@ -134,5 +136,3 @@ namespace Palaso.UsbDrive
 		}
 	}
 }
-
-#endif

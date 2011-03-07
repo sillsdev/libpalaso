@@ -72,7 +72,9 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ArchiveTests.cs" />
 	<Compile Include="MakePotTests.cs" />
+	<Compile Include="MockTaskItem.cs" />
 	<Compile Include="StampAssemblyTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

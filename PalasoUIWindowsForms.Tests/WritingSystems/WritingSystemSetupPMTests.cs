@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Text;
 
 using NUnit.Framework;
-
+using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
 
@@ -22,6 +22,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[SetUp]
 		public void Setup()
 		{
+			ErrorReport.IsOkToInteractWithUser = false;
+			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
+
 			_testFilePath = Path.GetTempFileName();
 			IWritingSystemStore writingSystemStore = new LdmlInXmlWritingSystemStore();
 			_model = new WritingSystemSetupModel(writingSystemStore);

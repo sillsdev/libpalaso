@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management;
 
-namespace Palaso.UsbDrive
+namespace Palaso.UsbDrive.Windows
 {
 	internal class UsbDriveInfoWindows : UsbDriveInfo
 	{
@@ -51,18 +51,16 @@ namespace Palaso.UsbDrive
 
 		public new static List<UsbDriveInfo> GetDrives()
 		{
-			List<UsbDriveInfo> drives = new List<UsbDriveInfo>();
-			using (ManagementObjectSearcher driveSearcher =
-				new ManagementObjectSearcher(
-					"SELECT Caption, DeviceID FROM Win32_DiskDrive WHERE InterfaceType='USB'")
-				)
+			var drives = new List<UsbDriveInfo>();
+			using (var driveSearcher = new ManagementObjectSearcher(
+				"SELECT Caption, DeviceID FROM Win32_DiskDrive WHERE InterfaceType='USB'")
+			)
 			{
 				// walk all USB WMI physical disks
 				foreach (ManagementObject drive in driveSearcher.Get())
 				{
 					// browse all USB WMI physical disks
-					using (ManagementObjectSearcher searcher =
-						new ManagementObjectSearcher(
+					using (var searcher = new ManagementObjectSearcher(
 							"ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" +
 							drive["DeviceID"] +
 							"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition"))
@@ -71,8 +69,7 @@ namespace Palaso.UsbDrive
 						foreach (ManagementObject partition in searcher.Get())
 						{
 							using (
-								ManagementObjectSearcher partitionSearcher =
-									new ManagementObjectSearcher(
+								var partitionSearcher = new ManagementObjectSearcher(
 										"ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" +
 										partition["DeviceID"] +
 										"'} WHERE AssocClass = Win32_LogicalDiskToPartition")
@@ -80,13 +77,12 @@ namespace Palaso.UsbDrive
 							{
 								foreach (ManagementObject diskInfoFromWMI in partitionSearcher.Get())
 								{
-									foreach (DriveInfo driveInfo in DriveInfo.GetDrives())
+									foreach (var driveInfo in DriveInfo.GetDrives())
 									{
 										string s = driveInfo.Name.Replace("\\", "");
 										if (s == diskInfoFromWMI["NAME"].ToString())
 										{
-											UsbDriveInfoWindows usbDriveinfo = new UsbDriveInfoWindows();
-
+											var usbDriveinfo = new UsbDriveInfoWindows();
 											usbDriveinfo._driveInfo = driveInfo;
 											drives.Add(usbDriveinfo);
 										}

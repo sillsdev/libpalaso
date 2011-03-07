@@ -88,9 +88,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				try
 				{
-					var pi = new PalasoImage();
-					pi.Image = Image.FromFile(ChosenPath);
-					return pi;
+					return new PalasoImage
+							   {
+								   Image = Image.FromFile(ChosenPath),
+								   FileName = Path.GetFileName(ChosenPath)
+							   };
 				}
 				catch (Exception error)
 				{
@@ -109,6 +111,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				_searchButton_Click(sender, null);
 			}
+		}
+
+		private void ArtOfReadingChooser_Load(object sender, EventArgs e)
+		{
+#if DEBUG
+			//when just testing, I just want to see some choices.
+			_searchTermsBox.Text = @"flower";
+			_searchButton_Click(this,null);
+#endif
+
 		}
 	}
 }
