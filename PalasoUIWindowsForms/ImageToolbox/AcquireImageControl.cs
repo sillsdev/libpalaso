@@ -89,21 +89,26 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void OnScannerClick(object sender, EventArgs e)
 		{
+			#if !MONO
 			_scannerButton.Checked = true;
 			SetImage(null);
 			SetMode(Modes.SingleImage);
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
+			#endif
 		}
 		private void OnCameraClick(object sender, EventArgs e)
 		{
+			#if !MONO
 			SetMode(Modes.SingleImage);
 			SetImage(null);
 			_cameraButton.Checked = true;
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
+			#endif
 		}
+	  #if !MONO
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
 		{
-	  #if !MONO      //_pictureBox.Image = SampleImages.sampleScan;
+	  //_pictureBox.Image = SampleImages.sampleScan;
 			try
 			{
 				var acquisitionService = new ImageAcquisitionService(deviceKind);
@@ -128,8 +133,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image");
 			}
-#endif
+
 		}
+		#endif
 
 		/// <summary>
 		/// Will delete the incoming file if it needs to do a conversion
