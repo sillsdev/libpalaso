@@ -70,10 +70,8 @@ namespace Palaso.Progress.LogBox
 
 		private void Write(Color color, string message, params object[] args)
 		{
-#if !DEBUG
-			try
-			{
-#endif
+//            try
+//            {
 				SafeInvoke(_box, new Action(() =>
 									  {
 								_box.SelectionStart = _box.Text.Length;
@@ -87,16 +85,11 @@ namespace Palaso.Progress.LogBox
 					_verboseBox.SelectionColor = color;
 					_verboseBox.AppendText(String.Format(message + Environment.NewLine, args));
 				}));
-#if !DEBUG
-
-			}
-			catch (Exception)
-			{
-				//swallow. If the dreaded XP "Invoke or BeginInvoke cannot be called on a control until the window handle has been created" happens, it's really not worth crashing over
-				//we  shouldn't be getting that, given the SafeInvoke thing, but I did get a crash report here (but it was confusing, as if the
-				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
-			}
-#endif
+//            }
+//            catch (Exception)
+//            {
+//
+//            }
 		}
 
 		public void WriteWarning(string message, params object[] args)

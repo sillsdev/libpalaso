@@ -13,7 +13,6 @@ namespace Palaso.IO
 	{
 		string LocateFile(string fileName);
 		string LocateFile(string fileName, string descriptionForErrorMessage);
-		string LocateOptionalFile(string fileName);
 	}
 
 	public class FileLocator :IFileLocator
@@ -50,15 +49,6 @@ namespace Palaso.IO
 			return path;
 		}
 
-		public string LocateOptionalFile(string fileName)
-		{
-			var path = LocateFile(fileName);
-			if (string.IsNullOrEmpty(path) || !File.Exists(path))
-			{
-				return null;
-			}
-			return path;
-		}
 
 		/// <summary>
 		/// Gives the directory of either the project folder (if running from visual studio), or

@@ -513,10 +513,5 @@ namespace Palaso.Reporting
 		{
 			get { return "This message will not be shown again this session."; }
 		}
-
-		public static void Reset()
-		{
-			_alreadyReportedMessages.Clear();
-		}
 	}
 }
