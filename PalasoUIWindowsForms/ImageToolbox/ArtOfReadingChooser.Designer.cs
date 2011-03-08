@@ -104,7 +104,6 @@
 			this.Controls.Add(this._thumbnailViewer);
 			this.Name = "ArtOfReadingChooser";
 			this.Size = new System.Drawing.Size(408, 325);
-			this.Load += new System.EventHandler(this.ArtOfReadingChooser_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
