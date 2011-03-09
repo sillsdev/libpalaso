@@ -15,8 +15,27 @@ namespace Palaso.Xml
 
 		public static void AddStyleSheet(this XmlDocument dom, string cssFilePath)
 		{
+			RemoveStyleSheetIfFound(dom, cssFilePath);//prevent duplicates
 			var head = dom.SelectSingleNodeHonoringDefaultNS("//head");
 			AddSheet(dom, head, cssFilePath);
+		}
+
+		public static void RemoveStyleSheetIfFound(XmlDocument dom, string cssFilePath)
+		{
+			foreach (XmlElement linkNode in dom.SafeSelectNodes("/html/head/link"))
+			{
+				var href = linkNode.GetAttribute("href");
+				if (href == null)
+				{
+					continue;
+				}
+				//strip it down to just the name+extension, so other forms (e.g., via slightly different urls) will be removed.
+				var path = href.ToLower().Replace("file://", "");
+				if(Path.GetFileName(path)==Path.GetFileName(cssFilePath.ToLower()))
+				{
+					linkNode.ParentNode.RemoveChild(linkNode);
+				}
+			}
 		}
 
 		private static void AddSheet(this XmlDocument dom, XmlNode head, string cssFilePath)
