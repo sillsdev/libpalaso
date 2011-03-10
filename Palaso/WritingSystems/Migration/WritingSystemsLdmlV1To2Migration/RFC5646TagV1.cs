@@ -125,7 +125,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 					_validIso3166Regions.Add(ianaSubtag);
 				}
 			}
-			_validIso3166Regions.Sort();
+			_validIso3166Regions.Sort(IanaSubtag.CompareByDescription);
 		}
 
 		public static IList<IanaSubtag> ValidRegisteredVariants
@@ -458,7 +458,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		public static bool IsValidIso3166Region(string regionCodeToCheck)
 		{
 			bool isValidIso3166Region = false;
-			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
+			foreach (IanaSubtag ianaSubtag in ValidIso3166Regions)
 			{
 				isValidIso3166Region =
 					regionCodeToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);

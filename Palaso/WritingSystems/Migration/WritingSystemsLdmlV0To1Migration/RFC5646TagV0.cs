@@ -118,7 +118,7 @@ namespace Palaso.WritingSystems
 					_validIso3166Regions.Add(ianaSubtag);
 				}
 			}
-			_validIso3166Regions.Sort();
+			_validIso3166Regions.Sort(IanaSubtag.CompareByDescription);
 		}
 
 		public static IList<IanaSubtag> ValidRegisteredVariants
@@ -284,6 +284,30 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private static bool IsValidIso3166Region(string regionCodeToCheck)
+		{
+			bool isValidIso3166Region = false;
+			foreach (IanaSubtag ianaSubtag in ValidIso3166Regions)
+			{
+				isValidIso3166Region =
+					regionCodeToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);
+				if (isValidIso3166Region) break;
+			}
+			return isValidIso3166Region;
+		}
+
+		private static bool IsValidRegisteredVariant(string subtagPartToCheck)
+		{
+			bool isValidRegisteredVariant = false;
+			foreach (IanaSubtag variant in ValidRegisteredVariants)
+			{
+				isValidRegisteredVariant =
+					subtagPartToCheck.Equals(variant.Subtag, StringComparison.OrdinalIgnoreCase);
+				if (isValidRegisteredVariant) break;
+			}
+			return isValidRegisteredVariant;
+		}
+
 		private static bool IsValidIso639LanguageCode(string languageCodeToCheck)
 		{
 			if(languageCodeToCheck.Equals("qaa",StringComparison.OrdinalIgnoreCase)){return true;}
@@ -370,18 +394,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private static bool IsValidIso3166Region(string regionCodeToCheck)
-		{
-			bool isValidIso3166Region = false;
-			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
-			{
-				isValidIso3166Region =
-					regionCodeToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);
-				if (isValidIso3166Region) break;
-			}
-			return isValidIso3166Region;
-		}
-
 		public string Variant
 		{
 			get { return AssembleSubtag(_variant); }
@@ -390,18 +402,6 @@ namespace Palaso.WritingSystems
 				_variant.Clear();
 				_variant = ParseSubtagForParts(value);
 			}
-		}
-
-		private static bool IsValidRegisteredVariant(string subtagPartToCheck)
-		{
-			bool isValidRegisteredVariant = false;
-			foreach (IanaSubtag variant in ValidRegisteredVariants)
-			{
-				isValidRegisteredVariant =
-					subtagPartToCheck.Equals(variant.Subtag, StringComparison.OrdinalIgnoreCase);
-				if (isValidRegisteredVariant) break;
-			}
-			return isValidRegisteredVariant;
 		}
 
 		private void AddToSubtag(List<string> subtagToAddTo, string stringToAppend)
@@ -506,6 +506,145 @@ namespace Palaso.WritingSystems
 			return true;
 		}
 
+		public bool LanguageSubtagContainsPart(string partToFind)
+		{
+			return SubtagContainsPart(_language, partToFind);
+		}
+
+		public bool ScriptSubtagContainsPart(string partToFind)
+		{
+			return SubtagContainsPart(_language, partToFind);
+		}
+
+		public bool RegionSubtagContainsPart(string partToFind)
+		{
+			return SubtagContainsPart(_language, partToFind);
+		}
+
+		public bool VariantSubtagContainsPart(string partToFind)
+		{
+			return SubtagContainsPart(_language, partToFind);
+		}
+
+		public bool PrivateUseSubtagContainsPart(string partToFind)
+		{
+			return SubtagContainsPart(_language, partToFind);
+		}
+
+		public List<string> GetIso15924CodesInSubtag(List<string> subtag)
+		{
+			List<string> foundIso15924Codes = new List<string>();
+			foreach (var part in subtag)
+			{
+				if(IsValidIso15924ScriptCode(part))
+				{
+					foundIso15924Codes.Add(part);
+				}
+			}
+			return foundIso15924Codes;
+		}
+
+		public List<string> GetIso15924CodesInLanguageSubtag()
+		{
+			return GetIso15924CodesInSubtag(_language);
+		}
+
+		public List<string> GetIso15924CodesInScriptSubtag()
+		{
+			return GetIso15924CodesInSubtag(_script);
+		}
+
+		public List<string> GetIso15924CodesInRegionSubtag()
+		{
+			return GetIso15924CodesInSubtag(_region);
+		}
+
+		public List<string> GetIso15924CodesInVariantSubtag()
+		{
+			return GetIso15924CodesInSubtag(_variant);
+		}
+
+		public List<string> GetIso15924CodesInPrivateUseSubtag()
+		{
+			return GetIso15924CodesInSubtag(_privateUse);
+		}
+
+		private List<string> GetIso3166RegionCodesInSubtag(List<string> subtag)
+		{
+			List<string> foundIso3166RegionCodes = new List<string>();
+			foreach (var part in subtag)
+			{
+				if (IsValidIso3166Region(part))
+				{
+					foundIso3166RegionCodes.Add(part);
+				}
+			}
+			return foundIso3166RegionCodes;
+		}
+
+		public List<string> GetIso3166RegionsInLanguageSubtag()
+		{
+			return GetIso3166RegionCodesInSubtag(_language);
+		}
+
+		public List<string> GetIso3166RegionsInScriptSubtag()
+		{
+			return GetIso3166RegionCodesInSubtag(_script);
+		}
+
+		public List<string> GetIso3166RegionsInRegionSubtag()
+		{
+			return GetIso3166RegionCodesInSubtag(_region);
+		}
+
+		public List<string> GetIso3166RegionsInVariantSubtag()
+		{
+			return GetIso3166RegionCodesInSubtag(_variant);
+		}
+
+		public List<string> GetIso3166RegionsInPrivateUseSubtag()
+		{
+			return GetIso3166RegionCodesInSubtag(_privateUse);
+		}
+
+		private List<string> GetRegisteredVariantsInSubtag(List<string> subtag)
+		{
+			List<string> foundRegisteredVariants = new List<string>();
+			foreach (var part in subtag)
+			{
+				if (IsValidRegisteredVariant(part))
+				{
+					foundRegisteredVariants.Add(part);
+				}
+			}
+			return foundRegisteredVariants;
+		}
+
+		public List<string> GetRegisteredVariantsInLanguageSubtag()
+		{
+			return GetRegisteredVariantsInSubtag(_language);
+		}
+
+		public List<string> GetRegisteredVariantsInScriptSubtag()
+		{
+			return GetRegisteredVariantsInSubtag(_script);
+		}
+
+		public List<string> GetRegisteredVariantsInRegionSubtag()
+		{
+			return GetRegisteredVariantsInSubtag(_region);
+		}
+
+		public List<string> GetRegisteredVariantsInVariantSubtag()
+		{
+			return GetRegisteredVariantsInSubtag(_variant);
+		}
+
+		public List<string> GetRegisteredVariantsInPrivateUseSubtag()
+		{
+			return GetRegisteredVariantsInSubtag(_privateUse);
+		}
+
 		public void AddToPrivateUse(string subtagToAdd)
 		{
 			string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
@@ -519,6 +658,37 @@ namespace Palaso.WritingSystems
 		public void AddToVariant(string subtagToAdd)
 		{
 			AddToSubtag(_variant, subtagToAdd);
+		}
+
+		public void AddToLanguage(string subtagToAdd)
+		{
+			AddToSubtag(_language, subtagToAdd);
+		}
+
+		public void AddToScript(string subtagToAdd)
+		{
+			AddToSubtag(_script, subtagToAdd);
+		}
+
+		public void AddToRegion(string subtagToAdd)
+		{
+			AddToSubtag(_region, subtagToAdd);
+		}
+
+		public void RemoveFromLanguage(string subtagToRemove)
+		{
+			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
+			RemoveFromSubtag(_language, stringWithoutPrecedingxDash);
+		}
+
+		public void RemoveFromScript(string subtagToRemove)
+		{
+			RemoveFromSubtag(_script, subtagToRemove);
+		}
+
+		public void RemoveFromRegion(string subtagToRemove)
+		{
+			RemoveFromSubtag(_region, subtagToRemove);
 		}
 
 		public void RemoveFromPrivateUse(string subtagToRemove)

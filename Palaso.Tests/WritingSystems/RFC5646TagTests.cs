@@ -922,5 +922,28 @@ namespace Palaso.Tests.WritingSystems
 			throw new NotImplementedException();
 		}
 
+		[Test]
+		public void Constructor_RegionSubtagContainsLanguageSubtag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "", "en", "", ""));
+		}
+
+		[Test]
+		public void Constructor_ScriptSubtagContainsLanguageSubtag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "en", "", "", ""));
+		}
+
+		[Test]
+		public void Constructor_VariantSubtagContainsLanguageSubtag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
+		}
+
+		[Test]
+		public void Constructor_languageSubtagContainsScriptSubtag_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
+		}
 	}
 }

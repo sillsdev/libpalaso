@@ -43,65 +43,42 @@ namespace Palaso.Tests.WritingSystems.Migration
 		private TestEnvironment _environment;
 
 		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsFonipa_IpaStatusIsSetToIpa()
+		public void MigrateIfNecassary_LanguageSubtagContainsFonipa_VariantContainsIpaVariantSubtag()
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version0LdmlFile);
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-fonipa", "","",""));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(1, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
-				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='fonipa']");
 			}
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsFonipa_FonipaIsMovedToVariantSubtag()
-		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsFonipa_FonipaIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsxDashEtic_IpaStatusIsSetToPhonetic()
-		{
-			throw new NotImplementedException();
 		}
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsxDashEtic_xDashEticIsMovedToPrivateUseSubtag()
 		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsxDashEtic_xDashEticIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsxDashEmic_IpaStatusIsSetToPhonemic()
-		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-etic", "", "", ""));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(1, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-etic']");
+			}
 		}
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsxDashEmic_xDashEmicIsMovedToPrivateUseSubtag()
 		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsxDashEmic_xDashEmicIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-emic", "", "", ""));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(1, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-emic']");
+			}
 		}
 
 		[Test]
@@ -130,59 +107,64 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsVariableCaseAuDio_IsVoiceIsSetToTrue()
+		public void MigrateIfNecassary_LanguageSubtagContainsxDashaudioAndScriptSubtagcontainsZxxx_ZxxxIsNotAppendedToPrivateUseSubtag()
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio", String.Empty, String.Empty, String.Empty));
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio", "Zxxx", String.Empty, String.Empty));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[text()='x-AuDio']");
-				throw new NotImplementedException();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
 			}
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsxDashaudio_xDashaudioIsMovedToPrivateUseSubtag()
-		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsxDashaudio_xDashaudioIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
 		}
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsValidScript_ScriptIsMovedToScript()
 		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsValidScript_ScriptIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-Latn", String.Empty, String.Empty, String.Empty));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
+			}
 		}
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsValidRegion_RegionIsMovedToRegion()
 		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsValidRegion_RegionIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-US", String.Empty, String.Empty, String.Empty));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='US']");
+			}
 		}
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsValidVariant_VariantIsMovedToVariant()
 		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-1901", String.Empty, String.Empty, String.Empty));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='1901']");
+			}
 		}
+
+		[Test]
+		public void DO_NOT_FORGET()
+		{
+			throw new NotImplementedException("Move GetIsoxxxxCodesInXXXSubtag methods out of Rfc5646V0 and into migratorv0 class");
+		}
+
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsValidVariant_VariantIsRemovedFromLanguageSubtag()
