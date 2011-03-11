@@ -108,7 +108,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				if (_validIso639LanguageCodes.Count == 0)
+				if (_validIso3166Regions.Count == 0)
 				{
 					LoadValidIso3166Regions();
 				}
@@ -423,7 +423,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 
 			if (_script.Count == 0) { return; }
-			if (_script.Count > 1) { throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (_script.Count > 1) { throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single Iso-15924 tag in this subtag"); }
 			if (!IsValidIso15924ScriptCode(_script[0]))
 			{
 				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-15924 script code.", _script[0]));
@@ -448,7 +448,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		private void CheckIfRegionTagIsValid()
 		{
 			if (_region.Count == 0) { return; }
-			if (_region.Count > 1) { throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (_region.Count > 1) { throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single Iso-3166 tag in this subtag"); }
 			if (!IsValidIso3166Region(_region[0]))
 			{
 				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-3166 region code.", _region[0]));

@@ -99,7 +99,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				if (_validIso639LanguageCodes.Count == 0)
+				if (_validIso3166Regions.Count == 0)
 				{
 					LoadValidIso3166Regions();
 				}

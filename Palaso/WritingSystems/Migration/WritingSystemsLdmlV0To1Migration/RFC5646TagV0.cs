@@ -7,6 +7,15 @@ namespace Palaso.WritingSystems
 	//It is used as a convenient place with convenient methods to hold temporary data during migration.
 	public class RFC5646TagV0 : Object
 	{
+		public enum Subtags
+		{
+			Language,
+			Script,
+			Region,
+			Variant,
+			PrivateUse
+		}
+
 		public class IanaSubtag
 		{
 			private readonly string _type;
@@ -357,7 +366,8 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_privateUse = new List<string>();
-				AddToPrivateUse(value);
+				_privateUse.AddRange(ParseSubtagForParts(value));
+				//AddToPrivateUse(value);
 			}
 		}
 
@@ -422,6 +432,12 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private void SetSubtag(List<string> subtagToSet, string stringToSetTo)
+		{
+			subtagToSet.Clear();
+			subtagToSet.AddRange(ParseSubtagForParts(stringToSetTo));
+		}
+
 		public new string ToString()
 		{
 			return CompleteTag;
@@ -465,13 +481,18 @@ namespace Palaso.WritingSystems
 
 			foreach (string partToRemove in partsOfStringToRemove)
 			{
-				if (!SubtagContainsPart(partsOfSubtagToRemovePartFrom, partToRemove)) { continue; }
-				int indexOfPartToRemove = partsOfSubtagToRemovePartFrom.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
-				partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
+				//This construct is needed because we can't simpy partsOfSubtagToRemovePartFrom.Remove a string due to casing issues;
+				while (SubtagContainsPart(partsOfSubtagToRemovePartFrom, partToRemove))
+				{
+					int indexOfPartToRemove =
+						partsOfSubtagToRemovePartFrom.FindIndex(
+							partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
+					partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
+				}
 			}
 		}
 
-		public static List<string> ParseSubtagForParts(string subtagToParse)
+		private static List<string> ParseSubtagForParts(string subtagToParse)
 		{
 			var parts = new List<string>();
 			parts.AddRange(subtagToParse.Split('-'));
@@ -544,29 +565,27 @@ namespace Palaso.WritingSystems
 			return foundIso15924Codes;
 		}
 
-		public List<string> GetIso15924CodesInLanguageSubtag()
+		public List<string> GetIso639CodesInSubtag(Subtags subtag)
 		{
-			return GetIso15924CodesInSubtag(_language);
+			return GetIso639CodesInSubtag(GetPartsOfSubtag(subtag));
 		}
 
-		public List<string> GetIso15924CodesInScriptSubtag()
+		private List<string> GetIso639CodesInSubtag(List<string> subtag)
 		{
-			return GetIso15924CodesInSubtag(_script);
+			List<string> foundIso639RegionCodes = new List<string>();
+			foreach (var part in subtag)
+			{
+				if (IsValidIso639LanguageCode(part))
+				{
+					foundIso639RegionCodes.Add(part);
+				}
+			}
+			return foundIso639RegionCodes;
 		}
 
-		public List<string> GetIso15924CodesInRegionSubtag()
+		public List<string> GetIso15924CodesInSubtag(Subtags subtag)
 		{
-			return GetIso15924CodesInSubtag(_region);
-		}
-
-		public List<string> GetIso15924CodesInVariantSubtag()
-		{
-			return GetIso15924CodesInSubtag(_variant);
-		}
-
-		public List<string> GetIso15924CodesInPrivateUseSubtag()
-		{
-			return GetIso15924CodesInSubtag(_privateUse);
+			return GetIso15924CodesInSubtag(GetPartsOfSubtag(subtag));
 		}
 
 		private List<string> GetIso3166RegionCodesInSubtag(List<string> subtag)
@@ -582,29 +601,9 @@ namespace Palaso.WritingSystems
 			return foundIso3166RegionCodes;
 		}
 
-		public List<string> GetIso3166RegionsInLanguageSubtag()
+		public List<string> GetIso3166RegionsInSubtag(Subtags subtag)
 		{
-			return GetIso3166RegionCodesInSubtag(_language);
-		}
-
-		public List<string> GetIso3166RegionsInScriptSubtag()
-		{
-			return GetIso3166RegionCodesInSubtag(_script);
-		}
-
-		public List<string> GetIso3166RegionsInRegionSubtag()
-		{
-			return GetIso3166RegionCodesInSubtag(_region);
-		}
-
-		public List<string> GetIso3166RegionsInVariantSubtag()
-		{
-			return GetIso3166RegionCodesInSubtag(_variant);
-		}
-
-		public List<string> GetIso3166RegionsInPrivateUseSubtag()
-		{
-			return GetIso3166RegionCodesInSubtag(_privateUse);
+			return GetIso3166RegionCodesInSubtag(GetPartsOfSubtag(subtag));
 		}
 
 		private List<string> GetRegisteredVariantsInSubtag(List<string> subtag)
@@ -620,86 +619,54 @@ namespace Palaso.WritingSystems
 			return foundRegisteredVariants;
 		}
 
-		public List<string> GetRegisteredVariantsInLanguageSubtag()
+		public List<string> GetPartsOfSubtag(Subtags subtag)
 		{
-			return GetRegisteredVariantsInSubtag(_language);
+			switch (subtag)
+			{
+				case Subtags.Language:
+					return _language;
+				case Subtags.Script:
+					return _script;
+				case Subtags.Region:
+					return _region;
+				case Subtags.Variant:
+					return _variant;
+				case Subtags.PrivateUse:
+					return _privateUse;
+				default:
+					throw new ApplicationException(String.Format("{0} is an invalid subtag.", subtag));
+			}
 		}
 
-		public List<string> GetRegisteredVariantsInScriptSubtag()
+		public List<string> GetRegisteredVariantsInSubtag(Subtags subtag)
 		{
-			return GetRegisteredVariantsInSubtag(_script);
+			List<string> partsOfSubtag = GetPartsOfSubtag(subtag);
+			return GetRegisteredVariantsInSubtag(partsOfSubtag);
 		}
 
-		public List<string> GetRegisteredVariantsInRegionSubtag()
+		//public void AddToPrivateUse(string subtagToAdd)
+		//{
+		//    string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
+		//    if (stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")) { stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2); }
+		//    _privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
+		//    if (_privateUse.Contains("x")) {
+		//        throw new ArgumentException(
+		//            "A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }
+		//}
+
+		public void SetSubtag(string part, Subtags subtag)
 		{
-			return GetRegisteredVariantsInSubtag(_region);
+			SetSubtag(GetPartsOfSubtag(subtag), part);
 		}
 
-		public List<string> GetRegisteredVariantsInVariantSubtag()
+		public void AddToSubtag(string subtagToAdd, Subtags subtag)
 		{
-			return GetRegisteredVariantsInSubtag(_variant);
+			AddToSubtag(GetPartsOfSubtag(subtag), subtagToAdd);
 		}
 
-		public List<string> GetRegisteredVariantsInPrivateUseSubtag()
+		public void RemoveFromSubtag(string partToRemove, Subtags subtag)
 		{
-			return GetRegisteredVariantsInSubtag(_privateUse);
-		}
-
-		public void AddToPrivateUse(string subtagToAdd)
-		{
-			string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
-			if (stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")) { stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2); }
-			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
-			if (_privateUse.Contains("x")) {
-				throw new ArgumentException(
-					"A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }
-		}
-
-		public void AddToVariant(string subtagToAdd)
-		{
-			AddToSubtag(_variant, subtagToAdd);
-		}
-
-		public void AddToLanguage(string subtagToAdd)
-		{
-			AddToSubtag(_language, subtagToAdd);
-		}
-
-		public void AddToScript(string subtagToAdd)
-		{
-			AddToSubtag(_script, subtagToAdd);
-		}
-
-		public void AddToRegion(string subtagToAdd)
-		{
-			AddToSubtag(_region, subtagToAdd);
-		}
-
-		public void RemoveFromLanguage(string subtagToRemove)
-		{
-			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
-			RemoveFromSubtag(_language, stringWithoutPrecedingxDash);
-		}
-
-		public void RemoveFromScript(string subtagToRemove)
-		{
-			RemoveFromSubtag(_script, subtagToRemove);
-		}
-
-		public void RemoveFromRegion(string subtagToRemove)
-		{
-			RemoveFromSubtag(_region, subtagToRemove);
-		}
-
-		public void RemoveFromPrivateUse(string subtagToRemove)
-		{
-			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
-			RemoveFromSubtag(_privateUse, stringWithoutPrecedingxDash);
-		}
-
-		public void RemoveFromVariant(string subtagToRemove)
-		{
-			RemoveFromSubtag(_variant, subtagToRemove);
+			RemoveFromSubtag(GetPartsOfSubtag(subtag), partToRemove);
 		}
 
 		public bool PrivateUseContainsPart(string subTagToFind)

@@ -165,23 +165,30 @@ namespace Palaso.Tests.WritingSystems.Migration
 			throw new NotImplementedException("Move GetIsoxxxxCodesInXXXSubtag methods out of Rfc5646V0 and into migratorv0 class");
 		}
 
-
-		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsValidVariant_VariantIsRemovedFromLanguageSubtag()
-		{
-			throw new NotImplementedException();
-		}
-
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsValidPrivateUse_xIsNotDuplicated()
 		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-x-audio", String.Empty, String.Empty, "x-test"));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test-audio']");
+			}
 		}
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsDataThatIsNotValidLanguageScriptRegionOrVariant_DataIsMovedToPrivateUse()
 		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-bogus-stuff", String.Empty, String.Empty, String.Empty));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-bogus-stuff']");
+			}
 		}
 
 		[Test]
@@ -197,27 +204,27 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void MigrateIfNecassary_LanguageSubtagContainsMultipleValidLanguageSubtagsAsWellAsDataThatIsNotValidLanguageScriptRegionOrVariant_NonValidDataisMovedToPrivateUse()
+		public void MigrateIfNecassary_LanguageSubtagContainsMultipleValidLanguageSubtagsAsWellAsDataThatIsNotValidLanguageScriptRegionOrVariant_AllSubtagsButFirstValidLanguageSubtagAreMovedToPrivateUse()
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("x-bogus-en-audio-de-bogus2-x-", "", "", ""));
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("x-bogus-en-audio-tpi-bogus2-x-", "", "", ""));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio-bogus-de-bogus2']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio-bogus-tpi-bogus2']");
 			}
 		}
 
 		[Test]
-		public void MigrateIfNecassary_ScriptSubtagContainsAnythingButValidScript_InvalidContentIsMovedToPrivateUse()
+		public void MigrateIfNecassary_ScriptSubtagContainsInvalidData_InvalidDataIsMovedToPrivateUse()
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("", "x-bogus-en", "", ""));
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("", "bogus-stuff", "", ""));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/script");
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-bogus-en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
 		}
 
@@ -275,7 +282,14 @@ namespace Palaso.Tests.WritingSystems.Migration
 		[Test]
 		public void MigrateIfNecassary_RegionSubtagContainsAnythingButValidRegion_InvalidContentIsMovedToPrivateUse()
 		{
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("qaa", "", "bogus-stuff", ""));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/territory");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-bogus-stuff']");
+			}
 		}
 
 		[Test]
@@ -310,6 +324,18 @@ namespace Palaso.Tests.WritingSystems.Migration
 
 		[Test]
 		public void MigrateIfNecassary_LanguageSubtagContainsDuplicateValidVariant_DuplicateIsRemoved()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsOnlyInvalidData_DataIsMovedToPrivateUse()
+		{
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageSubtagContainsInvalidCharacters_WhatToDo()
 		{
 			throw new NotImplementedException();
 		}
