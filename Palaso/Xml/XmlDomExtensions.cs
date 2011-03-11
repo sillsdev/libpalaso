@@ -43,7 +43,7 @@ namespace Palaso.Xml
 			var link = dom.CreateElement("link", "http://www.w3.org/1999/xhtml");
 			link.SetAttribute("rel", "stylesheet");
 
-			if(cssFilePath.Contains(Path.PathSeparator.ToString())) // review: not sure about relative vs. complete paths
+			if(cssFilePath.Contains(Path.DirectorySeparatorChar.ToString())) // review: not sure about relative vs. complete paths
 			{
 				link.SetAttribute("href", "file://" + cssFilePath);
 			}
