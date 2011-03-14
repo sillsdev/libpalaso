@@ -420,14 +420,6 @@ namespace Palaso.WritingSystems
 			foreach (string part in partsOfStringToAdd)
 			{
 				bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = SubtagContainsPart(subtagToAddTo, part);
-				if(StringContainsNonAlphaNumericCharacters(part))
-				{
-					throw new ArgumentException(String.Format("Rfc5646 tags may only contain alphanumeric characters. '{0}' can not be added to the Rfc5646 tag.", part));
-				}
-				if (subTagAlreadyContainsAtLeastOnePartOfStringToAdd)
-				{
-						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.",part));
-				}
 				subtagToAddTo.Add(part);
 			}
 		}
@@ -525,31 +517,6 @@ namespace Palaso.WritingSystems
 				}
 			}
 			return true;
-		}
-
-		public bool LanguageSubtagContainsPart(string partToFind)
-		{
-			return SubtagContainsPart(_language, partToFind);
-		}
-
-		public bool ScriptSubtagContainsPart(string partToFind)
-		{
-			return SubtagContainsPart(_language, partToFind);
-		}
-
-		public bool RegionSubtagContainsPart(string partToFind)
-		{
-			return SubtagContainsPart(_language, partToFind);
-		}
-
-		public bool VariantSubtagContainsPart(string partToFind)
-		{
-			return SubtagContainsPart(_language, partToFind);
-		}
-
-		public bool PrivateUseSubtagContainsPart(string partToFind)
-		{
-			return SubtagContainsPart(_language, partToFind);
 		}
 
 		public List<string> GetIso15924CodesInSubtag(List<string> subtag)
@@ -669,10 +636,9 @@ namespace Palaso.WritingSystems
 			RemoveFromSubtag(GetPartsOfSubtag(subtag), partToRemove);
 		}
 
-		public bool PrivateUseContainsPart(string subTagToFind)
+		public bool SubtagContainsPart(string partToFind, Subtags subtag)
 		{
-			string stringWithoutPrecedingxDash = subTagToFind.Trim('-', 'x');
-			return SubtagContainsPart(_privateUse, stringWithoutPrecedingxDash);
+			return SubtagContainsPart(GetPartsOfSubtag(subtag), partToFind);
 		}
 
 		public bool VariantContainsPart(string subTagToFind)
