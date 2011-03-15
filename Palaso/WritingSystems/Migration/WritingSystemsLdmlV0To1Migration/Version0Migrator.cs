@@ -42,10 +42,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private void FixRfc5646Subtags()
 		{
-			MoveRegisteredVariantsInAllSubtagsToVariantSubtag();
-			MoveIso3166CodesInAllSubtagsToRegionSubtag();
-			MoveIso15924CodesInAllSubtagsToScriptSubtag();
-			MoveIso639CodesInAllSubtagsToLanguageSubtag();
+			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Script, RFC5646TagV0.CodeTypes.Iso15924);
+			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Region, RFC5646TagV0.CodeTypes.Iso3166);
+			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Variant, RFC5646TagV0.CodeTypes.RegisteredVariant);
 			MoveNonValidDataInAllSubtagsToPrivateUse();
 
 			MoveAllButFirstPartInSubtagToPrivateUse(RFC5646TagV0.Subtags.Language);
@@ -171,16 +170,16 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			List<string> validCodes = new List<string>();
 
-			validCodes = _temporaryRfc5646TagHolder.GetIso639CodesInSubtag(RFC5646TagV0.Subtags.Language);
+			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.CodeTypes.Iso639);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Language);
 
-			validCodes = _temporaryRfc5646TagHolder.GetIso15924CodesInSubtag(RFC5646TagV0.Subtags.Script);
+			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Script, RFC5646TagV0.CodeTypes.Iso15924);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Script);
 
-			validCodes = _temporaryRfc5646TagHolder.GetIso3166RegionsInSubtag(RFC5646TagV0.Subtags.Region);
+			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Region, RFC5646TagV0.CodeTypes.Iso3166);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Region);
 
-			validCodes = _temporaryRfc5646TagHolder.GetRegisteredVariantsInSubtag(RFC5646TagV0.Subtags.Variant);
+			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Variant, RFC5646TagV0.CodeTypes.RegisteredVariant);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Variant);
 		}
 
@@ -195,38 +194,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					MoveContentFromSubtagToSubtag(part, subtagToMoveFrom, RFC5646TagV0.Subtags.PrivateUse);
 				}
 			}
-		}
-
-		private void MoveRegisteredVariantsInAllSubtagsToVariantSubtag()
-		{
-			MoveValidRegisteredVariantsFromSubtagToVariantTag(RFC5646TagV0.Subtags.Language);
-			MoveValidRegisteredVariantsFromSubtagToVariantTag(RFC5646TagV0.Subtags.Script);
-			MoveValidRegisteredVariantsFromSubtagToVariantTag(RFC5646TagV0.Subtags.Region);
-			MoveValidRegisteredVariantsFromSubtagToVariantTag(RFC5646TagV0.Subtags.PrivateUse);
-		}
-
-		private void MoveIso3166CodesInAllSubtagsToRegionSubtag()
-		{
-			MoveValidIso3166RegionTagsFromSubtagToRegionTag(RFC5646TagV0.Subtags.Language);
-			MoveValidIso3166RegionTagsFromSubtagToRegionTag(RFC5646TagV0.Subtags.Script);
-			MoveValidIso3166RegionTagsFromSubtagToRegionTag(RFC5646TagV0.Subtags.Variant);
-			MoveValidIso3166RegionTagsFromSubtagToRegionTag(RFC5646TagV0.Subtags.PrivateUse);
-		}
-
-		private void MoveIso15924CodesInAllSubtagsToScriptSubtag()
-		{
-			MoveValidIso15924ScriptCodesFromSubtagToScriptTag(RFC5646TagV0.Subtags.Language);
-			MoveValidIso15924ScriptCodesFromSubtagToScriptTag(RFC5646TagV0.Subtags.Region);
-			MoveValidIso15924ScriptCodesFromSubtagToScriptTag(RFC5646TagV0.Subtags.Variant);
-			MoveValidIso15924ScriptCodesFromSubtagToScriptTag(RFC5646TagV0.Subtags.PrivateUse);
-		}
-
-		private void MoveIso639CodesInAllSubtagsToLanguageSubtag()
-		{
-			MoveValidIso639ScriptCodesFromSubtagToLanguageTag(RFC5646TagV0.Subtags.Script);
-			MoveValidIso639ScriptCodesFromSubtagToLanguageTag(RFC5646TagV0.Subtags.Region);
-			MoveValidIso639ScriptCodesFromSubtagToLanguageTag(RFC5646TagV0.Subtags.Variant);
-			MoveValidIso639ScriptCodesFromSubtagToLanguageTag(RFC5646TagV0.Subtags.PrivateUse);
 		}
 
 		private void MoveAllButFirstPartInSubtagToPrivateUse(RFC5646TagV0.Subtags subtag)
@@ -257,48 +224,40 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_temporaryRfc5646TagHolder.RemoveFromSubtag(part, subtagToRemoveFrom);
 		}
 
+		private void RemovePartFromSubtagAtIndex(int indexToRemove, RFC5646TagV0.Subtags subtagToRemoveFrom)
+		{
+			_temporaryRfc5646TagHolder.RemoveFromSubtagAtIndex(indexToRemove, subtagToRemoveFrom);
+		}
+
 		private void AddPartToSubtag(string part, RFC5646TagV0.Subtags subtagToAddTo)
 		{
 			_temporaryRfc5646TagHolder.AddToSubtag(part, subtagToAddTo);
 		}
 
-		private void MoveValidIso639ScriptCodesFromSubtagToLanguageTag(RFC5646TagV0.Subtags subtagToMoveFrom)
+		private void MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags subtagToMoveFrom, RFC5646TagV0.Subtags subtagToMoveTo, RFC5646TagV0.CodeTypes codetype)
 		{
-			List<string> languageCodesInSubtag = _temporaryRfc5646TagHolder.GetIso639CodesInSubtag(subtagToMoveFrom);
-
-			foreach (var languageCode in languageCodesInSubtag)
+			bool codeForSubtagToMoveFromAlreadyFound = false;
+			int currentIndex = 0;
+			List<string> copyOfsubtagParts = new List<string>();
+			copyOfsubtagParts.AddRange(_temporaryRfc5646TagHolder.GetPartsOfSubtag(subtagToMoveFrom));
+			foreach (var part in copyOfsubtagParts)
 			{
-				MoveContentFromSubtagToSubtag(languageCode, subtagToMoveFrom, RFC5646TagV0.Subtags.Language);
-			}
-		}
+				bool partIsCodeWeAreLookingFor = RFC5646TagV0.IsValidCode(part, codetype);
+				bool partIsValidOnSubtagWeAreMovingFrom = RFC5646TagV0.IsValidCode(part,RFC5646TagV0.SubtagToCodeTypeMap[subtagToMoveFrom]);
+				bool partIsNotAmbiguous = partIsCodeWeAreLookingFor && !partIsValidOnSubtagWeAreMovingFrom;
+				bool partIsAmbiguousAndWeHaveNotYetFoundAValidCodeForTheFromSubtag =
+					partIsCodeWeAreLookingFor && partIsValidOnSubtagWeAreMovingFrom && codeForSubtagToMoveFromAlreadyFound;
 
-		private void MoveValidIso15924ScriptCodesFromSubtagToScriptTag(RFC5646TagV0.Subtags subtagToMoveFrom)
-		{
-			List<string> scriptCodesInSubtag = _temporaryRfc5646TagHolder.GetIso15924CodesInSubtag(subtagToMoveFrom);
-
-			foreach (var scriptCode in scriptCodesInSubtag)
-			{
-				MoveContentFromSubtagToSubtag(scriptCode, subtagToMoveFrom, RFC5646TagV0.Subtags.Script);
-			}
-		}
-
-		private void MoveValidIso3166RegionTagsFromSubtagToRegionTag(RFC5646TagV0.Subtags subtagToMoveFrom)
-		{
-			List<string> regionCodesInSubtag = _temporaryRfc5646TagHolder.GetIso3166RegionsInSubtag(subtagToMoveFrom);
-
-			foreach (var scriptCode in regionCodesInSubtag)
-			{
-				MoveContentFromSubtagToSubtag(scriptCode, subtagToMoveFrom, RFC5646TagV0.Subtags.Region);
-			}
-		}
-
-		private void MoveValidRegisteredVariantsFromSubtagToVariantTag(RFC5646TagV0.Subtags subtagToMoveFrom)
-		{
-			List<string> registeredVariantsInSubtag =_temporaryRfc5646TagHolder.GetRegisteredVariantsInSubtag(subtagToMoveFrom);
-
-			foreach (var registeredVariant in registeredVariantsInSubtag)
-			{
-				MoveContentFromSubtagToSubtag(registeredVariant, subtagToMoveFrom, RFC5646TagV0.Subtags.Variant);
+				if(partIsNotAmbiguous || partIsAmbiguousAndWeHaveNotYetFoundAValidCodeForTheFromSubtag)
+				{
+					RemovePartFromSubtagAtIndex(currentIndex, subtagToMoveFrom);
+					AddPartToSubtag(part, subtagToMoveTo);
+				}
+				if (RFC5646TagV0.IsValidCode(part, RFC5646TagV0.SubtagToCodeTypeMap[subtagToMoveFrom]))
+				{
+					codeForSubtagToMoveFromAlreadyFound = true;
+				}
+				currentIndex++;
 			}
 		}
 

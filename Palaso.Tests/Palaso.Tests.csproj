@@ -139,7 +139,6 @@
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
-	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\Version0MigratorTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.Tests.cs" />
@@ -177,6 +176,9 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+	<Folder Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

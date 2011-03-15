@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Palaso.WritingSystems
@@ -14,6 +15,14 @@ namespace Palaso.WritingSystems
 			Region,
 			Variant,
 			PrivateUse
+		}
+
+		public enum CodeTypes
+		{
+			Iso639,
+			Iso15924,
+			Iso3166,
+			RegisteredVariant
 		}
 
 		public class IanaSubtag
@@ -71,8 +80,8 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private static readonly List<Iso639LanguageCode> _validIso639LanguageCodes = new List<Iso639LanguageCode>();
-		private static readonly List<Iso15924Script> _validIso15924Scripts = new List<Iso15924Script>();
+		private static readonly List<IanaSubtag> _validIso639LanguageCodes = new List<IanaSubtag>();
+		private static readonly List<IanaSubtag> _validIso15924Scripts = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _validIso3166Regions = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _validRegisteredVariants = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _ianaSubtags = new List<IanaSubtag>();
@@ -81,8 +90,12 @@ namespace Palaso.WritingSystems
 		private List<string> _region = new List<string>();
 		private List<string> _variant = new List<string>();
 		private List<string> _privateUse = new List<string>();
+		private static Dictionary<Subtags, CodeTypes> subtagToCodeTypeMap = new Dictionary<Subtags, CodeTypes>{{Subtags.Language, CodeTypes.Iso639},
+																								{Subtags.Script, CodeTypes.Iso15924},
+																								{Subtags.Region,CodeTypes.Iso3166},
+																								{Subtags.Variant, CodeTypes.RegisteredVariant}};
 
-		public static List<Iso15924Script> ValidIso15924Scripts
+		public static List<IanaSubtag> ValidIso15924Scripts
 		{
 			get
 			{
@@ -94,7 +107,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
+		public static IList<IanaSubtag> ValidIso639LanguageCodes
 		{
 			get
 			{
@@ -110,7 +123,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				if (_validIso639LanguageCodes.Count == 0)
+				if (_validIso3166Regions.Count == 0)
 				{
 					LoadValidIso3166Regions();
 				}
@@ -156,16 +169,15 @@ namespace Palaso.WritingSystems
 
 		private static void LoadValidIso639LanguageCodes()
 		{
-			_validIso639LanguageCodes.Add( new Iso639LanguageCode("qaa", "Unknown language", "qaa"));
+			_validIso639LanguageCodes.Add( new IanaSubtag("language", "qaa", "Unknown language"));
 			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
 			{
 				if (ianaSubtag.Type == "language")
 				{
-					var language = new Iso639LanguageCode(ianaSubtag.Subtag,ianaSubtag.Description,string.Empty);
-					_validIso639LanguageCodes.Add(language);
+					_validIso639LanguageCodes.Add(ianaSubtag);
 				}
 			}
-			_validIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
+			_validIso639LanguageCodes.Sort(IanaSubtag.CompareByDescription);
 		}
 
 		/// <summary>
@@ -176,20 +188,16 @@ namespace Palaso.WritingSystems
 			if (_validIso15924Scripts.Count != 0)
 				return;
 
-			//to help people find Latin
-			_validIso15924Scripts.Add(new Iso15924Script("Roman (Latin)", "Latn"));
-
 			LoadIanaSubtags();
 
 			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
 			{
 				if(ianaSubtag.Type == "script")
 				{
-					var script = new Iso15924Script(ianaSubtag.Description, ianaSubtag.Subtag);
-					_validIso15924Scripts.Add(script);
+					_validIso15924Scripts.Add(ianaSubtag);
 				}
 			}
-			_validIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
+			_validIso15924Scripts.Sort(IanaSubtag.CompareByDescription);
 		}
 
 		private static void LoadIanaSubtags()
@@ -293,55 +301,33 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private static bool IsValidIso3166Region(string regionCodeToCheck)
+		public static bool IsValidCode(string subtagToCheck, CodeTypes codeType)
 		{
-			bool isValidIso3166Region = false;
-			foreach (IanaSubtag ianaSubtag in ValidIso3166Regions)
+			bool isValidCode = false;
+			foreach (IanaSubtag ianaSubtag in GetValidCodes(codeType))
 			{
-				isValidIso3166Region =
-					regionCodeToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);
-				if (isValidIso3166Region) break;
+				isValidCode =
+					subtagToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);
+				if (isValidCode) break;
 			}
-			return isValidIso3166Region;
+			return isValidCode;
 		}
 
-		private static bool IsValidRegisteredVariant(string subtagPartToCheck)
+		private static IEnumerable<IanaSubtag> GetValidCodes(CodeTypes codeType)
 		{
-			bool isValidRegisteredVariant = false;
-			foreach (IanaSubtag variant in ValidRegisteredVariants)
+			switch(codeType)
 			{
-				isValidRegisteredVariant =
-					subtagPartToCheck.Equals(variant.Subtag, StringComparison.OrdinalIgnoreCase);
-				if (isValidRegisteredVariant) break;
+				case CodeTypes.Iso639:
+					return ValidIso639LanguageCodes;
+				case CodeTypes.Iso15924:
+					return ValidIso15924Scripts;
+				case CodeTypes.Iso3166:
+					return ValidIso3166Regions;
+				case CodeTypes.RegisteredVariant:
+					return ValidRegisteredVariants;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
-			return isValidRegisteredVariant;
-		}
-
-		private static bool IsValidIso639LanguageCode(string languageCodeToCheck)
-		{
-			if(languageCodeToCheck.Equals("qaa",StringComparison.OrdinalIgnoreCase)){return true;}
-
-			bool partIsValidIso639LanguageCode = false;
-			foreach (Iso639LanguageCode code in ValidIso639LanguageCodes)
-			{
-				partIsValidIso639LanguageCode =
-					languageCodeToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase) ||
-					languageCodeToCheck.Equals(code.ISO3Code, StringComparison.OrdinalIgnoreCase);
-				if(partIsValidIso639LanguageCode) break;
-			}
-			return partIsValidIso639LanguageCode;
-		}
-
-		private static bool IsValidIso15924ScriptCode(string languageCodeToCheck)
-		{
-			bool isValidIso15924ScriptCode = false;
-			foreach (Iso15924Script script in ValidIso15924Scripts)
-			{
-				isValidIso15924ScriptCode =
-					languageCodeToCheck.Equals(script.Code, StringComparison.OrdinalIgnoreCase);
-				if (isValidIso15924ScriptCode) break;
-			}
-			return isValidIso15924ScriptCode;
 		}
 
 		public string Script
@@ -484,6 +470,11 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private void RemoveFromSubtagAtIndex(List<string> partsOfSubtagToRemovePartFrom, int indexToRemove)
+		{
+			partsOfSubtagToRemovePartFrom.RemoveAt(indexToRemove);
+		}
+
 		private static List<string> ParseSubtagForParts(string subtagToParse)
 		{
 			var parts = new List<string>();
@@ -519,71 +510,17 @@ namespace Palaso.WritingSystems
 			return true;
 		}
 
-		public List<string> GetIso15924CodesInSubtag(List<string> subtag)
-		{
-			List<string> foundIso15924Codes = new List<string>();
-			foreach (var part in subtag)
-			{
-				if(IsValidIso15924ScriptCode(part))
-				{
-					foundIso15924Codes.Add(part);
-				}
-			}
-			return foundIso15924Codes;
-		}
-
-		public List<string> GetIso639CodesInSubtag(Subtags subtag)
-		{
-			return GetIso639CodesInSubtag(GetPartsOfSubtag(subtag));
-		}
-
-		private List<string> GetIso639CodesInSubtag(List<string> subtag)
+		public List<string> GetCodesInSubtag(Subtags subtag, CodeTypes codeType)
 		{
 			List<string> foundIso639RegionCodes = new List<string>();
-			foreach (var part in subtag)
+			foreach (var part in GetPartsOfSubtag(subtag))
 			{
-				if (IsValidIso639LanguageCode(part))
+				if (IsValidCode(part, codeType))
 				{
 					foundIso639RegionCodes.Add(part);
 				}
 			}
 			return foundIso639RegionCodes;
-		}
-
-		public List<string> GetIso15924CodesInSubtag(Subtags subtag)
-		{
-			return GetIso15924CodesInSubtag(GetPartsOfSubtag(subtag));
-		}
-
-		private List<string> GetIso3166RegionCodesInSubtag(List<string> subtag)
-		{
-			List<string> foundIso3166RegionCodes = new List<string>();
-			foreach (var part in subtag)
-			{
-				if (IsValidIso3166Region(part))
-				{
-					foundIso3166RegionCodes.Add(part);
-				}
-			}
-			return foundIso3166RegionCodes;
-		}
-
-		public List<string> GetIso3166RegionsInSubtag(Subtags subtag)
-		{
-			return GetIso3166RegionCodesInSubtag(GetPartsOfSubtag(subtag));
-		}
-
-		private List<string> GetRegisteredVariantsInSubtag(List<string> subtag)
-		{
-			List<string> foundRegisteredVariants = new List<string>();
-			foreach (var part in subtag)
-			{
-				if (IsValidRegisteredVariant(part))
-				{
-					foundRegisteredVariants.Add(part);
-				}
-			}
-			return foundRegisteredVariants;
 		}
 
 		public List<string> GetPartsOfSubtag(Subtags subtag)
@@ -605,22 +542,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public List<string> GetRegisteredVariantsInSubtag(Subtags subtag)
-		{
-			List<string> partsOfSubtag = GetPartsOfSubtag(subtag);
-			return GetRegisteredVariantsInSubtag(partsOfSubtag);
-		}
-
-		//public void AddToPrivateUse(string subtagToAdd)
-		//{
-		//    string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
-		//    if (stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")) { stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2); }
-		//    _privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
-		//    if (_privateUse.Contains("x")) {
-		//        throw new ArgumentException(
-		//            "A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }
-		//}
-
 		public void SetSubtag(string part, Subtags subtag)
 		{
 			SetSubtag(GetPartsOfSubtag(subtag), part);
@@ -634,6 +555,11 @@ namespace Palaso.WritingSystems
 		public void RemoveFromSubtag(string partToRemove, Subtags subtag)
 		{
 			RemoveFromSubtag(GetPartsOfSubtag(subtag), partToRemove);
+		}
+
+		public void RemoveFromSubtagAtIndex(int indexToRemove, Subtags subtag)
+		{
+			RemoveFromSubtagAtIndex(GetPartsOfSubtag(subtag), indexToRemove);
 		}
 
 		public bool SubtagContainsPart(string partToFind, Subtags subtag)
@@ -668,6 +594,11 @@ namespace Palaso.WritingSystems
 				}
 				return variantToReturn;
 			}
+		}
+
+		public static Dictionary<Subtags, CodeTypes> SubtagToCodeTypeMap
+		{
+			get { return subtagToCodeTypeMap; }
 		}
 	}
 }
