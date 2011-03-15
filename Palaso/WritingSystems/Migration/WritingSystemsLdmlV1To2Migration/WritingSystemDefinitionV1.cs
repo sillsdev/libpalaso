@@ -516,89 +516,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		/// </summary>
 		virtual public string StoreID { get; set; }
 
-		virtual public string DisplayLabel
-		{
-			get
-			{
-				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
-				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = RFC5646.Equals("qaa", StringComparison.OrdinalIgnoreCase);
-				if (!String.IsNullOrEmpty(RFC5646) && !languageIsUnknown)
-				{
-					return RFC5646;
-				}
-				if (languageIsUnknown)
-				{
-					if (!String.IsNullOrEmpty(_abbreviation))
-					{
-						return _abbreviation;
-					}
-					if (!String.IsNullOrEmpty(_languageName))
-					{
-						string n = _languageName;
-						return n.Substring(0, n.Length > 4 ? 4 : n.Length);
-					}
-				}
-				return "???";
-			}
-		}
-
-		virtual public string ListLabel
-		{
-			get
-			{
-				string n = string.Empty;
-				if (!String.IsNullOrEmpty(_languageName))
-				{
-					n=_languageName;
-				}
-				else
-				{
-					n = DisplayLabel;
-				}
-				string details = "";
-				if(IpaStatus != IpaStatusChoices.NotIpa)
-				{
-					switch (IpaStatus)
-					{
-						case IpaStatusChoices.Ipa:
-							details += "IPA-";
-							break;
-						case IpaStatusChoices.IpaPhonetic:
-							details += "IPA-etic-";
-							break;
-						case IpaStatusChoices.IpaPhonemic:
-							details += "IPA-emic-";
-							break;
-						default:
-							throw new ArgumentOutOfRangeException();
-					}
-				}
-				else if (!String.IsNullOrEmpty(_rfcTag.Script))
-				{
-					details += _rfcTag.Script+"-";
-				}
-				if (!String.IsNullOrEmpty(_rfcTag.Region))
-				{
-					details += _rfcTag.Region + "-";
-				}
-				if (IpaStatus == IpaStatusChoices.NotIpa && !String.IsNullOrEmpty(_rfcTag.Variant))
-				{
-					details += _rfcTag.Variant + "-";
-				}
-
-				if (IsVoice)
-				{
-					details = details.Replace("Zxxx-", "");
-					details += "voice";
-				}
-				details = details.Trim(new char[] { '-' });
-				if (details.Length > 0)
-					details = " ("+details + ")";
-				return n+details;
-			}
-		}
-
 		virtual public string RFC5646
 		{
 			get
@@ -656,7 +573,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		/// <summary>
 		/// If we don't have an option for the current script, returns null
 		/// </summary>
-		virtual public Iso15924Script Iso15924Script
+		private Iso15924Script Iso15924Script
 		{
 			get
 			{
@@ -685,8 +602,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		}
 
 		virtual public bool Modified { get; set; }
-
-		virtual public bool MarkedForDeletion { get; set; }
 
 		virtual public string DefaultFontName
 		{
@@ -804,36 +719,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 				return _spellCheckingId;
 			}
 			set { UpdateString(ref _spellCheckingId, value); }
-		}
-
-		/// <summary>
-		/// Returns an ICollator interface that can be used to sort strings based
-		/// on the custom collation rules.
-		/// </summary>
-		virtual public ICollator Collator
-		{
-			get
-			{
-				if (_collator == null)
-				{
-					switch (SortUsing)
-					{
-						case SortRulesType.DefaultOrdering:
-							_collator = new IcuRulesCollator(String.Empty); // was SystemCollator(null);
-							break;
-						case SortRulesType.CustomSimple:
-							_collator = new SimpleRulesCollator(SortRules);
-							break;
-						case SortRulesType.CustomICU:
-							_collator = new IcuRulesCollator(SortRules);
-							break;
-						case SortRulesType.OtherLanguage:
-							_collator = new SystemCollator(SortRules);
-							break;
-					}
-				}
-				return _collator;
-			}
 		}
 
 		virtual public bool IsLegacyEncoded

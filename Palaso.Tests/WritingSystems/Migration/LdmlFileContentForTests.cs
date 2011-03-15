@@ -38,6 +38,39 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
+		static public string CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
+		{
+			return String.Format(
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+	<script type='{1}' />
+	<territory type='{2}' />
+	<variant type='{3}' />
+</identity>
+<layout>
+	<orientation characters='left-to-right'/>
+</layout>
+<collation>
+	<base>
+		<alias source=''/>
+	</base>
+</collation>
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+	<palaso:abbreviation value='la' />
+	<palaso:isLegacyEncoded value='true' />
+	<palaso:defaultKeyboard value='bogusKeyboard' />
+	<palaso:languageName value='language' />
+	<palaso:sortRulesType value='OtherLanguage' />
+</special>
+</ldml>".Replace('\'', '"'), language, script, region, variant);
+		}
+
 		static private string CreateVersion1LdmlContent(string language, string script, string region, string variant)
 		{
 			return

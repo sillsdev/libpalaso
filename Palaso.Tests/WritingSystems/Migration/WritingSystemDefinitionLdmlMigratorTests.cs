@@ -515,25 +515,43 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void MigrateIfNecassary_OriginalFileContainsDefaultFontFamilyInfo_DataIsMigrated()
+		public void MigrateIfNecassary_OriginalFileContainsAllSortsOfDataThatShouldJustBeCopiedOver_DataIsMigrated()
 		{
 			using (_environment = new TestEnvironment())
 			{
 				_environment.WriteContentToWritingSystemLdmlFile(
-					LdmlFileContentForTests.CreateVersion0LdmlContentWithLdmlInfoWeDontCareAbout("", "", "", ""));
-				var migrator =
-					new WritingSystemDefinitionLdmlMigrator(
-						WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
-						_environment.PathToWritingSystemLdmlFile);
+					LdmlFileContentForTests.CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention("", "", "", ""));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
+				migrator.MigrateIfNecassary();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultFontFamily");
+			}
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_DateModified_WhatToDo()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(
+					LdmlFileContentForTests.CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention("", "", "", ""));
+				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath(
-					"/ldml/identity/language[@type='qaa']");
+					"/ldml/identity/special[@xmlns:palaso='urn://palaso.org/ldmlExtensions/v1']/defaultFontFamily[@type='Arial']");
 			}
 			throw new NotImplementedException();
 		}
 
 		[Test]
 		public void MigrateIfNecassary_OriginalFileIsNotLdmlVWhat_Throw()
+		{
+			//Need to make sure we are reading/writing the right vrsions of Ldml.rename LdmlAdaptor to LdmlDataMapper
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void MigrateIfNecassary_LanguageNameIsSetTootherThanWhatIanaSubtagRegistrySays_LanguageNameIsMaintained()
 		{
 			//Need to make sure we are reading/writing the right vrsions of Ldml.rename LdmlAdaptor to LdmlDataMapper
 			throw new NotImplementedException();
@@ -704,7 +722,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("", "Z._.x!x%x-Latn", "", ""));
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("", "Z._x!x%x-Latn", "", ""));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
@@ -730,34 +748,10 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "b!is$^k*_e-1901"));
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "b*is^k_e-1901"));
 				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
 				migrator.MigrateIfNecassary();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='1901-x-biske']");
-			}
-		}
-
-		[Test]
-		public void MigrateIfNecassary_AmpersandInRfcTagCausesXmlReaderToThrow()
-		{
-			using (_environment = new TestEnvironment())
-			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "&"));
-				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
-				migrator.MigrateIfNecassary();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/variant");
-			}
-		}
-
-		[Test]
-		public void MigrateIfNecassary_QuoteInRfcTagCausesXmlReaderToThrow()
-		{
-			using (_environment = new TestEnvironment())
-			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "\""));
-				var migrator = new WritingSystemDefinitionLdmlMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, _environment.PathToWritingSystemLdmlFile);
-				migrator.MigrateIfNecassary();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/variant");
 			}
 		}
 

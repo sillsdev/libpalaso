@@ -30,14 +30,39 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			_adaptorToReadLdmlV0.Read(sourceFilePath, _wsToMigrate);
 
-			CopyRfc5646InfoFromWsToMigrateIntoRfc5646ClassForEasyManipulation(_wsToMigrate);
+			_temporaryRfc5646TagHolder = new RFC5646TagV0(_wsToMigrate.ISO639, _wsToMigrate.Script, _wsToMigrate.Region, _wsToMigrate.Variant, String.Empty);
 			CleanUpRfcTagForMigration();
 
 			FixRfc5646Subtags();
 
-			CopyTemporaryRfc5646InfoToMigratedWs(_migratedWs);
+			MapDataFromWsV0ToWsV1();
 
-			WriteOutMigratedWs(sourceFilePath, destinationFilePath);
+			Stream streamOfOldFile = new FileStream(sourceFilePath, FileMode.Open);
+			_adaptorToWriteLdmlV1.Write(destinationFilePath, _migratedWs, streamOfOldFile);
+			streamOfOldFile.Close();
+		}
+
+		private void MapDataFromWsV0ToWsV1()
+		{
+			_migratedWs.ISO639 = _temporaryRfc5646TagHolder.Language;
+			_migratedWs.Script = _temporaryRfc5646TagHolder.Script;
+			_migratedWs.Region = _temporaryRfc5646TagHolder.Region;
+			_migratedWs.Variant = _temporaryRfc5646TagHolder.VariantAndPrivateUse;
+			_migratedWs.DefaultFontName = _wsToMigrate.DefaultFontName;
+			_migratedWs.Abbreviation = _wsToMigrate.Abbreviation;
+			_migratedWs.DefaultFontSize = _wsToMigrate.DefaultFontSize;
+			_migratedWs.IsLegacyEncoded = _wsToMigrate.IsLegacyEncoded;
+			_migratedWs.Keyboard = _wsToMigrate.Keyboard;
+			_migratedWs.LanguageName = _wsToMigrate.LanguageName;
+			_migratedWs.RightToLeftScript = _wsToMigrate.RightToLeftScript;
+			_migratedWs.SortRules = _migratedWs.SortRules;
+			_migratedWs.SortUsing = _migratedWs.SortUsing;
+			_migratedWs.SpellCheckingId = _migratedWs.SpellCheckingId;
+			_migratedWs.VersionDescription = _wsToMigrate.VersionDescription;
+			_migratedWs.VersionNumber = _wsToMigrate.VersionNumber;
+			//_migratedWs.VerboseDescription //not written out by ldmladaptor - flex?
+			//_migratedWs.StoreID = ??? //what to do?
+			//_migratedWs.NativeName //not written out by ldmladaptor - flex?
 		}
 
 		private void FixRfc5646Subtags()
@@ -63,11 +88,34 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				MoveContentFromSubtagToSubtag(WellKnownSubTags.Ipa.VariantSubtag, RFC5646TagV0.Subtags.PrivateUse, RFC5646TagV0.Subtags.Variant);
 			}
 
+			TruncateOverlongPrivateUseTags();
+
 			RemoveDuplicatesFromPrivateUse();
 			RemoveAllNonAlphaNumericCharactersFromPrivateUse();
 			if (String.IsNullOrEmpty(_temporaryRfc5646TagHolder.Language))
 			{
 				AddPrivateUseLanguageTag();
+			}
+		}
+
+		private void TruncateOverlongPrivateUseTags()
+		{
+			List<string> truncatedpricateUseParts = new List<string>();
+			foreach (var part in _temporaryRfc5646TagHolder.GetPartsOfSubtag(RFC5646TagV0.Subtags.PrivateUse))
+			{
+				if(part.Length > 8)
+				{
+					truncatedpricateUseParts.Add(part.Substring(0, 8));
+				}
+				else
+				{
+					truncatedpricateUseParts.Add(part);
+				}
+			}
+			_temporaryRfc5646TagHolder.PrivateUse = String.Empty;
+			foreach (var part in truncatedpricateUseParts)
+			{
+				_temporaryRfc5646TagHolder.AddToSubtag(part, RFC5646TagV0.Subtags.PrivateUse);
 			}
 		}
 
@@ -338,26 +386,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_temporaryRfc5646TagHolder.RemoveFromSubtag("x", RFC5646TagV0.Subtags.Region);
 			_temporaryRfc5646TagHolder.RemoveFromSubtag("x", RFC5646TagV0.Subtags.Variant);
 			_temporaryRfc5646TagHolder.RemoveFromSubtag("x", RFC5646TagV0.Subtags.PrivateUse);
-		}
-
-		private void WriteOutMigratedWs(string sourceFilePath, string destinationFilePath)
-		{
-			Stream streamOfOldFile = new FileStream(sourceFilePath, FileMode.Open);
-			_adaptorToWriteLdmlV1.Write(destinationFilePath, _migratedWs, streamOfOldFile);
-			streamOfOldFile.Close();
-		}
-
-		private void CopyTemporaryRfc5646InfoToMigratedWs(WritingSystemDefinitionV1 migratedWs)
-		{
-			migratedWs.ISO639 = _temporaryRfc5646TagHolder.Language;
-			migratedWs.Script = _temporaryRfc5646TagHolder.Script;
-			migratedWs.Region = _temporaryRfc5646TagHolder.Region;
-			migratedWs.Variant = _temporaryRfc5646TagHolder.VariantAndPrivateUse;
-		}
-
-		private void CopyRfc5646InfoFromWsToMigrateIntoRfc5646ClassForEasyManipulation(WritingSystemDefinitionV0 wsToMigrate)
-		{
-			_temporaryRfc5646TagHolder = new RFC5646TagV0(wsToMigrate.ISO639, wsToMigrate.Script, wsToMigrate.Region, wsToMigrate.Variant, String.Empty);
 		}
 
 		private class WellKnownSubTags
