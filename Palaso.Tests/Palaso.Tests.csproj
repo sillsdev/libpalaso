@@ -144,6 +144,7 @@
 	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
+	<Compile Include="Xmp\LanguageAlternativeTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
