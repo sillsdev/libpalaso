@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Palaso.Migration
 {
 	public class Migrator
 	{
-		private readonly List<IMigrationStrategy> _migrationStrategies;
-		private readonly List<IFileVersion> _versionStrategies;
-		private readonly int _codeVersion;
-		private IEnumerable<IMigrationStrategy> MigrationStrategies { get { return _migrationStrategies; } }
+		protected readonly List<IMigrationStrategy> _migrationStrategies;
+		protected readonly List<IFileVersion> _versionStrategies;
+		protected readonly int _versionToMigrateTo;
 
 		private class VersionComparerDescending : IComparer<IFileVersion>
 		{
@@ -23,10 +23,33 @@ namespace Palaso.Migration
 			}
 		}
 
-		public Migrator(int codeVersion, string sourceFilePath)
+		public int MaximumVersionThatFileCanBeMigratedTo
+		{
+			get
+			{
+				int highestVersionWeCanMigrateThisFileTo = GetFileVersion();
+				foreach (var migrationStrategy in _migrationStrategies)
+				{
+					if(migrationStrategy.FromVersion< highestVersionWeCanMigrateThisFileTo &&
+						highestVersionWeCanMigrateThisFileTo < migrationStrategy.ToVersion)
+					{
+						highestVersionWeCanMigrateThisFileTo = migrationStrategy.ToVersion;
+					}
+				}
+				while(_migrationStrategies.Any(m=>m.FromVersion==highestVersionWeCanMigrateThisFileTo))
+				{
+					highestVersionWeCanMigrateThisFileTo =
+						_migrationStrategies.Where(m => m.FromVersion == highestVersionWeCanMigrateThisFileTo).First().ToVersion;
+				}
+
+				return highestVersionWeCanMigrateThisFileTo;
+			}
+		}
+
+		public Migrator(int versionToMigrateTo, string sourceFilePath)
 		{
 			SourceFilePath = sourceFilePath;
-			_codeVersion = codeVersion;
+			_versionToMigrateTo = versionToMigrateTo;
 			_migrationStrategies = new List<IMigrationStrategy>();
 			_versionStrategies = new List<IFileVersion>();
 		}
@@ -60,7 +83,7 @@ namespace Palaso.Migration
 
 		public bool NeedsMigration()
 		{
-			return GetFileVersion() != _codeVersion;
+			return GetFileVersion() != _versionToMigrateTo;
 		}
 
 		public string BackupFilePath
@@ -80,7 +103,7 @@ namespace Palaso.Migration
 			int currentVersion = GetFileVersion();
 			string sourceFilePath = SourceFilePath;
 			string destinationFilePath = "";
-			while (currentVersion != _codeVersion)
+			while (currentVersion != _versionToMigrateTo)
 			{
 				IMigrationStrategy strategy = _migrationStrategies.Find(s => s.FromVersion == currentVersion);
 				if (strategy == null)

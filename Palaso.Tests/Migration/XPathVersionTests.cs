@@ -23,7 +23,7 @@ namespace Palaso.Tests.Migration
 
 			using (var file = new TempFile(xml))
 			{
-				var xPathVersion = new XPathVersion(10, "configuration/@version");
+				var xPathVersion = new XPathVersion(1, 10, "configuration/@version");
 				int result = xPathVersion.GetFileVersion(file.Path);
 				Assert.That(result, Is.EqualTo(3));
 			}

@@ -28,7 +28,7 @@ namespace Palaso.WritingSystems.Migration
 
 		public int StrategyGoodToVersion
 		{
-			get { return _migrator.GoodToVersion; }
+			get { return _migrator.MaximumVersionThatFileCanBeMigratedTo; }
 		}
 
 		public int StrategyGoodFromVersion
