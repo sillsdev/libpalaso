@@ -8,7 +8,7 @@ using Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class Version0Migrator : IMigrationStrategy
+	public class Version0MigrationStrategy : IMigrationStrategy
 	{
 		readonly LdmlAdaptorV0 _adaptorToReadLdmlV0 = new LdmlAdaptorV0();
 		readonly LdmlAdaptorV1 _adaptorToWriteLdmlV1 = new LdmlAdaptorV1();
@@ -40,6 +40,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			Stream streamOfOldFile = new FileStream(sourceFilePath, FileMode.Open);
 			_adaptorToWriteLdmlV1.Write(destinationFilePath, _migratedWs, streamOfOldFile);
 			streamOfOldFile.Close();
+			string newDestinationFilePath = Path.Combine(Path.GetDirectoryName(destinationFilePath), _migratedWs.RFC5646 + ".ldml");
+			File.Move(destinationFilePath, newDestinationFilePath);
+			destinationFilePath = newDestinationFilePath;
 		}
 
 		private void MapDataFromWsV0ToWsV1()
@@ -59,7 +62,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_migratedWs.SortUsing = _migratedWs.SortUsing;
 			_migratedWs.SpellCheckingId = _migratedWs.SpellCheckingId;
 			_migratedWs.VersionDescription = _wsToMigrate.VersionDescription;
-			_migratedWs.VersionNumber = _wsToMigrate.VersionNumber;
 			//_migratedWs.VerboseDescription //not written out by ldmladaptor - flex?
 			//_migratedWs.StoreID = ??? //what to do?
 			//_migratedWs.NativeName //not written out by ldmladaptor - flex?
