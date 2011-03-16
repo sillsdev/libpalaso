@@ -86,7 +86,7 @@ String.Format(@"<?xml version='1.0' encoding='utf-8'?>
 </identity>
 <collations />
 <special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-	<palaso:version>1</palaso:version>
+	<palaso:version value='1' />
 	<palaso:defaultFontFamily value='Arial' />
 	<palaso:defaultFontSize value='12' />
 </special>

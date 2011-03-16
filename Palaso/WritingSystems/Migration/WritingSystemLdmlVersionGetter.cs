@@ -17,7 +17,7 @@ namespace Palaso.WritingSystems.Migration
 				reader.ReadToDescendant("ldml");
 				reader.ReadToDescendant("special");
 				reader.ReadToDescendant("palaso:version");
-				string versionAsString = reader.ReadString();
+				string versionAsString = reader.GetAttribute("value");
 				version = String.IsNullOrEmpty(versionAsString) ? 0 : Convert.ToInt32(versionAsString);
 			}
 			return version;
@@ -26,6 +26,11 @@ namespace Palaso.WritingSystems.Migration
 		public int StrategyGoodToVersion
 		{
 			get { return 1; }
+		}
+
+		public int StrategyGoodFromVersion
+		{
+			get { return 0; }
 		}
 	}
 }

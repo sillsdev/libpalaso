@@ -134,7 +134,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 				ReadTopLevelSpecialElement(reader, ws);
 			}
 			ws.StoreID = "";
-			// ws.Modified = false; // Note: This unfortunately is no longer true. The RFC5646 tag may have been auto modified above. CP 2010-12
 		}
 
 		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinitionV1 ws)
@@ -142,6 +141,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			if (reader.GetAttribute("xmlns:palaso") != null)
 			{
 				reader.ReadStartElement("special");
+				ws.VersionNumber = GetSpecialValue(reader, "palaso", "version");
 				ws.Abbreviation = GetSpecialValue(reader, "palaso", "abbreviation");
 				ws.DefaultFontName = GetSpecialValue(reader, "palaso", "defaultFontFamily");
 				float fontSize;
@@ -694,6 +694,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemDefinitionV1 ws)
 		{
 			WriteBeginSpecialElement(writer, "palaso");
+			WriteSpecialValue(writer, "palaso", "version", WritingSystemDefinitionV1.LatestWritingSystemDefinitionVersion.ToString());
 			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
 			if (ws.DefaultFontSize != 0)
