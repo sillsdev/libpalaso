@@ -193,11 +193,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			OpenConnection();
 			if (_connection != null)
 			{
-				foreach (var keyboard in GetKeyboardDescriptors())
-				{
-					_defaultKeyboard = keyboard;
-					break;
-				}
+				_defaultKeyboard = GetKeyboardDescriptors().First();
 			}
 		}
 
@@ -361,6 +357,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboardNamed (string name)
 		{
+			EnsureConnection();
 			return GetKeyboardDescriptors().Any(d => d.Name.Equals(name));
 		}
 
