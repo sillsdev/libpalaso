@@ -16,8 +16,8 @@ namespace Palaso.WritingSystems.Migration
 			int versionOfLowestVersionFileInRepo = WritingSystemDefinition.LatestWritingSystemDefinitionVersion + 1;
 			foreach (var filePath in Directory.GetFiles(pathToLdmlRepository))
 			{
-				Migrator migrator = new WritingSystemDefinitionLdmlMigrator(filePath);
-				int currentFileVersion = migrator.GetFileVersion();
+				var ldmlFileVersionGetter = new WritingSystemLdmlVersionGetter();
+				int currentFileVersion = ldmlFileVersionGetter.GetFileVersion(filePath);
 				if(currentFileVersion < versionOfLowestVersionFileInRepo)
 				{
 					versionOfLowestVersionFileInRepo = currentFileVersion;

@@ -40,9 +40,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			Stream streamOfOldFile = new FileStream(sourceFilePath, FileMode.Open);
 			_adaptorToWriteLdmlV1.Write(destinationFilePath, _migratedWs, streamOfOldFile);
 			streamOfOldFile.Close();
-			string newDestinationFilePath = Path.Combine(Path.GetDirectoryName(destinationFilePath), _migratedWs.RFC5646 + ".ldml");
-			File.Move(destinationFilePath, newDestinationFilePath);
-			destinationFilePath = newDestinationFilePath;
 		}
 
 		private void MapDataFromWsV0ToWsV1()

@@ -14,11 +14,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 	[TestFixture]
 	public class LdmlInFolderWritingSystemRepositoryMigratorTests
 	{
-		private class Environment:IDisposable
+		private class TestEnvironment : IDisposable
 		{
 			private TemporaryFolder _folderContainingLdml;
 
-			public Environment()
+			public TestEnvironment()
 			{
 				FolderContainingLdml = new TemporaryFolder("WsCollectionForTesting");
 			}
@@ -45,7 +45,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		[Test]
 		public void Migrate_LdmlContainsWritingSystemThatIsVersion0_MigratedToLatest()
 		{
-			using (var environment = new Environment())
+			using (var environment = new TestEnvironment())
 			{
 				environment.CreateLdmlFileWithContent("en-Zxxx-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("en", "Zxxx", "", "x-audio"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.FolderContainingLdml.Path);
@@ -57,7 +57,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		[Test]
 		public void Migrate_LdmlContainsWritingSystemThatIsVersion0_NeedsMigratingIsTrue()
 		{
-			using (var environment = new Environment())
+			using (var environment = new TestEnvironment())
 			{
 				environment.CreateLdmlFileWithContent("en-Zxxx-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("en", "Zxxx", "", "x-audio"));
 				environment.CreateLdmlFileWithContent("en.ldml", LdmlFileContentForTests.Version1LdmlFile);
@@ -67,40 +67,68 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void Migrate_LdmlContainsWritingSystemThatIsLatestVersionButFileNameIsNotidenticalToRfcTag_WhatToDo_Throw()
-		{
-			throw new NotImplementedException();
-		}
-
-		[Test]
 		public void Migrate_WritingSystemRepositoryContainsWsThatWouldBeMigratedToDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
 		{
-			using (var environment = new Environment())
+			using (var environment = new TestEnvironment())
 			{
 				environment.CreateLdmlFileWithContent("en-Zxxx-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("en", "Zxxx", "", "x-audio"));
 				environment.CreateLdmlFileWithContent("en-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "x-audio"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.FolderContainingLdml.Path);
 				migrator.Migrate();
-				Assert.True(File.Exists("en-Zxxx-x-audio.ldml"));
-				Assert.True(File.Exists("en-Zxxx-x-audio-dupl1.ldml"));
-				AssertThatXmlIn.File("en-Zxxx-x-audio-dupl1.ldml").HasAtLeastOneMatchForXpath("/ldml/identity/script[@type=en");
-				AssertThatXmlIn.File("en-Zxxx-x-audio-dupl1.ldml").HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type=x-audio-dupl1");
+				string pathToFile1 = Path.Combine(environment.FolderContainingLdml.Path, "en-Zxxx-x-audio.ldml");
+				string pathToFileDuplicate = Path.Combine(environment.FolderContainingLdml.Path, "en-Zxxx-x-audio-dupl1.ldml");
+				Assert.True(File.Exists(pathToFile1));
+				Assert.True(File.Exists(pathToFileDuplicate));
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio-dupl1']");
 			}
 		}
 
 		[Test]
 		public void Migrate_WritingSystemRepositoryContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
 		{
-			using (var environment = new Environment())
+			using (var environment = new TestEnvironment())
 			{
 				environment.CreateLdmlFileWithContent("en-Zxxx-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("en", "Zxxx", "", "x-audio"));
 				environment.CreateLdmlFileWithContent("en-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("eN", "", "", "x-AuDio"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.FolderContainingLdml.Path);
 				migrator.Migrate();
-				Assert.True(File.Exists("en-Zxxx-x-audio.ldml"));
-				Assert.True(File.Exists("eN-Zxxx-x-AuDio-dupl1.ldml"));
-				AssertThatXmlIn.File("en-Zxxx-x-audio-dupl1.ldml").HasAtLeastOneMatchForXpath("/ldml/identity/script[@type=eN");
-				AssertThatXmlIn.File("eN-Zxxx-x-AuDio-dupl1.ldml").HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type=x-AuDio-dupl1");
+				string pathToFile1 = Path.Combine(environment.FolderContainingLdml.Path, "en-Zxxx-x-audio.ldml");
+				string pathToFileDuplicate = Path.Combine(environment.FolderContainingLdml.Path, "eN-Zxxx-x-AuDio-dupl1.ldml");
+				Assert.True(File.Exists(pathToFile1));
+				Assert.True(File.Exists(pathToFileDuplicate));
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='eN']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-AuDio-dupl1']");
+			}
+		}
+
+		[Test]
+		public void Migrate_RepoContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWswithBogusFileName_WritingSystemWithValidRfcTagBeforeMigrationIsNotTheDuplicate()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.CreateLdmlFileWithContent("bogus.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("eN", "ZxXx", "", "x-AuDio"));
+				environment.CreateLdmlFileWithContent("en-Zxxx-x-audio.ldml", LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "x-audio"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.FolderContainingLdml.Path);
+				migrator.Migrate();
+				string pathToFile1 = Path.Combine(environment.FolderContainingLdml.Path, "en-Zxxx-x-audio.ldml");
+				string pathToFileDuplicate = Path.Combine(environment.FolderContainingLdml.Path, "eN-Zxxx-x-AuDio-dupl1.ldml");
+				Assert.True(File.Exists(pathToFile1));
+				Assert.True(File.Exists(pathToFileDuplicate));
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='eN']");
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='ZxXx']");
+				AssertThatXmlIn.File(pathToFile1).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-AuDio']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(pathToFileDuplicate).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio-dupl1']");
 			}
 		}
 	}
