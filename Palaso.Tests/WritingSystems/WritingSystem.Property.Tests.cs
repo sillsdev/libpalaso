@@ -708,5 +708,21 @@ namespace Palaso.Tests.WritingSystems
 			ws.Variant = "x-lalala";
 			Assert.AreEqual("x-lalala", ws.Variant);
 		}
+
+		[Test]
+		public void DuplicateNumber_PrivateUseContainsdupl1_Returns1()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "x-dupl1";
+			Assert.AreEqual(1, ws.DuplicateNumber);
+		}
+
+		[Test]
+		public void DuplicateNumber_PrivateUsedoesNotContainDuplicateMarker_Returns0()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "";
+			Assert.AreEqual(0, ws.DuplicateNumber);
+		}
 	}
 }
