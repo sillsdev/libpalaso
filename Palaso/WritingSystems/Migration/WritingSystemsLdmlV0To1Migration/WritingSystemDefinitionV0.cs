@@ -37,6 +37,30 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public string LanguageName{get; set;}
 
+		public string Rfc5646
+		{
+			get
+			{
+				string id = String.IsNullOrEmpty(ISO639) ? string.Empty : ISO639;
+				if (!String.IsNullOrEmpty(Script))
+				{
+					if (!String.IsNullOrEmpty(id)) {id += "-"; }
+					id += Script;
+				}
+				if (!String.IsNullOrEmpty(Region))
+				{
+					if (!String.IsNullOrEmpty(id)) { id += "-"; }
+					id += Region;
+				}
+				if (!String.IsNullOrEmpty(Variant))
+				{
+					if (!String.IsNullOrEmpty(id)) { id += "-"; }
+					id += Variant;
+				}
+				return id;
+			}
+		}
+
 		/// <summary>
 		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
