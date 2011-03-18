@@ -657,5 +657,10 @@ namespace Palaso.WritingSystems
 		{
 			return SubtagContainsPart(_variant, subTagToFind);
 		}
+
+		internal string GetPartMatchingRegExInPrivateUse(System.Text.RegularExpressions.Regex regex)
+		{
+			return _privateUse.Find(str => regex.Match(str).Success);
+		}
 	}
 }

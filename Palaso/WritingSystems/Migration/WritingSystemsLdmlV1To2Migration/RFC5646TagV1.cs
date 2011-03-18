@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 {
@@ -693,6 +694,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		public bool VariantContainsPart(string subTagToFind)
 		{
 			return SubtagContainsPart(SubTag.Variant, subTagToFind);
+		}
+
+		public string GetPartMatchingRegExInPrivateUse(Regex regex)
+		{
+			return _privateUse.Find(str => regex.Match(str).Success);
 		}
 	}
 }

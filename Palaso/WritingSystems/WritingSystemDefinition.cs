@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Text.RegularExpressions;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -898,6 +899,23 @@ namespace Palaso.WritingSystems
 		virtual public WritingSystemDefinition Clone()
 		{
 			return new WritingSystemDefinition(this);
+		}
+
+		public int DuplicateNumber
+		{
+			get
+			{
+				Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
+				string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
+				if(String.IsNullOrEmpty(duplicateTag))
+				{
+					return 0;
+				}
+				Regex numberRegex = new Regex("[0-9]*$");
+				//int valueFound = String.IsNullOrEmpty(numberRegex.Match(duplicateTag).Value) ? 0 : Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
+				return Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
+			}
+			set { throw new NotImplementedException(); }
 		}
 
 	}
