@@ -46,46 +46,66 @@ namespace Palaso.WritingSystems.Migration
 				}
 			}
 
-			var migratedFiles = new List<string>();
-			var unmigratedFiles = new List<string>();   //We use this instead of the Directory.GetFiles directly, because we would otherwise be changing the thing we are enumerating over
-			unmigratedFiles.AddRange(Directory.GetFiles(directoryToMigrate));
-
-			foreach (var pathToCheckNameFor in unmigratedFiles)
+			var copyOfFileToOldAndNewRfcTagMap = new Dictionary<string, KeyValuePair<string, string>>();
+			foreach (var map in _fileToOldAndNewRfcTagMap)
 			{
-				if(migratedFiles.Contains(pathToCheckNameFor, StringComparison.OrdinalIgnoreCase))
+				copyOfFileToOldAndNewRfcTagMap.Add(map.Key, map.Value);
+			}
+
+			var uniqueRfcTagsToFilenameMap = new Dictionary<string, string>();
+			foreach (var map in copyOfFileToOldAndNewRfcTagMap)
+			{
+				string rfcTagInQuestion = map.Value.Value;
+				if (uniqueRfcTagsToFilenameMap.Keys.Any(rfcTag => rfcTag.Equals(rfcTagInQuestion, StringComparison.OrdinalIgnoreCase)))
 				{
-					continue;
-				}
-				if (!NameOfFileMatchesRfcTagInFile(pathToCheckNameFor))
-				{
-					string rfcTagBeforeMigration = _fileToOldAndNewRfcTagMap[pathToCheckNameFor].Key;
-					string rfcTagAfterMigration = _fileToOldAndNewRfcTagMap[pathToCheckNameFor].Value;
-					string rfcConformPath = Path.Combine(Path.GetDirectoryName(pathToCheckNameFor),
-												  GetRfcTagFromFileV1(pathToCheckNameFor) + ".ldml");
-					if (rfcTagBeforeMigration.Equals(rfcTagAfterMigration, StringComparison.OrdinalIgnoreCase))
+					if(map.Value.Key.Equals(rfcTagInQuestion, StringComparison.OrdinalIgnoreCase))
 					{
-						if (File.Exists(rfcConformPath))
-						{
-							MarkWritingSystemAsNextFreeDuplicateAndRenameFileAccordingly(rfcConformPath);
-							migratedFiles.Add(rfcConformPath);
-						}
-						File.Move(pathToCheckNameFor, rfcConformPath);
-						migratedFiles.Add(pathToCheckNameFor);
+						WritingSystemDefinitionV1 ws = new WritingSystemDefinitionV1();
+						var adaptor = new LdmlAdaptorV1();
+						string duplicateRfcTag =
+							uniqueRfcTagsToFilenameMap.Keys.First(
+								rfcTag => rfcTag.Equals(rfcTagInQuestion, StringComparison.OrdinalIgnoreCase));
+						string fileContainingRfcTag = uniqueRfcTagsToFilenameMap[duplicateRfcTag];
+						adaptor.Read(fileContainingRfcTag, ws);
+						ws.DuplicateNumber++;
+						File.Move(fileContainingRfcTag, fileContainingRfcTag + ".bak");
+						var streamFromOldFile = new FileStream(fileContainingRfcTag + ".bak", FileMode.Open);
+						adaptor.Write(fileContainingRfcTag, ws, streamFromOldFile);
+						streamFromOldFile.Close();
+						File.Delete(fileContainingRfcTag + ".bak");
+						var oldToNewRfcTagsMap = _fileToOldAndNewRfcTagMap[fileContainingRfcTag];
+						oldToNewRfcTagsMap = new KeyValuePair<string, string>(oldToNewRfcTagsMap.Key, ws.RFC5646);
+						_fileToOldAndNewRfcTagMap[fileContainingRfcTag] = oldToNewRfcTagsMap;
+						uniqueRfcTagsToFilenameMap.Add(ws.RFC5646, fileContainingRfcTag);
+						uniqueRfcTagsToFilenameMap[rfcTagInQuestion] = map.Key;
 					}
 					else
 					{
-						if (File.Exists(rfcConformPath))
-						{
-							MarkWritingSystemAsNextFreeDuplicateAndRenameFileAccordingly(pathToCheckNameFor);
-							migratedFiles.Add(pathToCheckNameFor);
-						}
+						WritingSystemDefinitionV1 ws = new WritingSystemDefinitionV1();
+						var adaptor = new LdmlAdaptorV1();
+						adaptor.Read(map.Key, ws);
+						ws.DuplicateNumber++;
+						File.Move(map.Key, map.Key + ".bak");
+						var streamFromOldFile = new FileStream(map.Key + ".bak", FileMode.Open);
+						adaptor.Write(map.Key, ws, streamFromOldFile);
+						streamFromOldFile.Close();
+						File.Delete(map.Key + ".bak");
+						var rfcTagsInFileToRfcTagsMap = _fileToOldAndNewRfcTagMap[map.Key];
+						rfcTagsInFileToRfcTagsMap = new KeyValuePair<string, string>(rfcTagsInFileToRfcTagsMap.Key, ws.RFC5646);
+						_fileToOldAndNewRfcTagMap[map.Key] = rfcTagsInFileToRfcTagsMap;
+						uniqueRfcTagsToFilenameMap[ws.RFC5646] = map.Key;
 					}
+				}
+				else
+				{
+					uniqueRfcTagsToFilenameMap[rfcTagInQuestion] = map.Key;
 				}
 			}
 
 			foreach (var file in Directory.GetFiles(directoryToMigrate))
 			{
-				string pathTomoveTo = Path.Combine(destinationDirectory, Path.GetFileName(file));
+				string newFileName = _fileToOldAndNewRfcTagMap[file].Value + ".ldml";
+				string pathTomoveTo = Path.Combine(destinationDirectory, newFileName);
 				File.Move(file, pathTomoveTo);
 			}
 		}
