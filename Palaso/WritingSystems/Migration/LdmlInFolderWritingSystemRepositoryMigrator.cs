@@ -11,7 +11,6 @@ namespace Palaso.WritingSystems.Migration
 {
 	public class LdmlInFolderWritingSystemRepositoryMigrator:Migrator
 	{
-
 		public LdmlInFolderWritingSystemRepositoryMigrator(string pathToFolderWithLdml):base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, pathToFolderWithLdml)
 		{
 			AddVersionStrategy(new LdmlInFolderWritingSystemRepositoryVersionGetter());
@@ -24,8 +23,7 @@ namespace Palaso.WritingSystems.Migration
 			var DirectorysToDelete = new List<string>();
 			if (Directory.Exists(BackupFilePath))
 			{
-				DeleteFolderThatMayBeInUse(BackupFilePath);
-
+				DeleteFolderAvoidingDeletionBug(BackupFilePath);
 			}
 			CopyDirectory(new DirectoryInfo(SourceFilePath), new DirectoryInfo(BackupFilePath));
 			DirectorysToDelete.Add(BackupFilePath);
@@ -43,13 +41,18 @@ namespace Palaso.WritingSystems.Migration
 				}
 				destinationDirectoryPath = String.Format("{0}.Migrate_{1}_{2}", SourceFilePath,
 														 strategy.FromVersion, strategy.ToVersion);
+				if (Directory.Exists(destinationDirectoryPath))
+				{
+					DeleteFolderThatMayBeInUse(destinationDirectoryPath);
+				}
 				Directory.CreateDirectory(destinationDirectoryPath);
 				strategy.Migrate(sourceDirectoryPath, destinationDirectoryPath);
 				DirectorysToDelete.Add(destinationDirectoryPath);
 				currentVersion = strategy.ToVersion;
 				sourceDirectoryPath = destinationDirectoryPath;
 			}
-			Directory.Delete(SourceFilePath, true);
+
+			DeleteFolderAvoidingDeletionBug(SourceFilePath);
 			Directory.Move(destinationDirectoryPath, SourceFilePath);
 			foreach (var DirectoryPath in DirectorysToDelete)
 			{
@@ -58,6 +61,15 @@ namespace Palaso.WritingSystems.Migration
 					DeleteFolderThatMayBeInUse(DirectoryPath);
 				}
 			}
+		}
+
+		//This method works  around a bug where creating a folder shortly after deleting it, fails. Documented here:
+		//http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/c7c4557b-a940-40dc-9fdf-1d8e8b64c46c
+		private void DeleteFolderAvoidingDeletionBug(string folderToDelete)
+		{
+			string deletionPath = folderToDelete + "ToBeDeleted";
+			Directory.Move(folderToDelete, deletionPath);
+			DeleteFolderThatMayBeInUse(deletionPath);
 		}
 
 		// Gleaned from http://xneuron.wordpress.com/2007/04/12/copy-directory-and-its-content-to-another-directory-in-c/

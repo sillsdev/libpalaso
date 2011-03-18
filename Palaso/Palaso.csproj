@@ -329,7 +329,6 @@
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\Version1Migrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\WritingSystemDefinitionV1.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
-	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigrator.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
