@@ -837,6 +837,20 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
+		public void Migrate_LanguageSubtagStartsWithDashAndContainsValidScript_LangugaeIsSetToQaaAndScriptIsMoved()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("-Zxxx", "", "", ""));
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='qaa']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/variant");
+			}
+		}
+
+		[Test]
 		public void Migrate_FileIsVersion0_IsMigratedToLatestVersion()
 		{
 			using (_environment = new TestEnvironment())

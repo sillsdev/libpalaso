@@ -44,18 +44,15 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				string id = String.IsNullOrEmpty(ISO639) ? string.Empty : ISO639;
 				if (!String.IsNullOrEmpty(Script))
 				{
-					if (!String.IsNullOrEmpty(id)) {id += "-"; }
-					id += Script;
+					id += "-" + Script;
 				}
 				if (!String.IsNullOrEmpty(Region))
 				{
-					if (!String.IsNullOrEmpty(id)) { id += "-"; }
-					id += Region;
+					id += "-" + Region;
 				}
 				if (!String.IsNullOrEmpty(Variant))
 				{
-					if (!String.IsNullOrEmpty(id)) { id += "-"; }
-					id += Variant;
+					id += "-" + Variant;
 				}
 				return id;
 			}

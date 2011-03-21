@@ -12,6 +12,13 @@ namespace Palaso.WritingSystems.Migration
 {
 	public class LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy : IMigrationStrategy
 	{
+		private ConsumerLevelRfcTagChanger _rfcTagChanger;
+
+		public LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy(ConsumerLevelRfcTagChanger rfcTagChanger)
+		{
+			_rfcTagChanger = rfcTagChanger;
+		}
+
 		public int FromVersion
 		{
 			get { return 0; }
@@ -31,10 +38,17 @@ namespace Palaso.WritingSystems.Migration
 
 			DisambiguateWritingSystemsInLdmlRepo();
 
-			MoveFilestofinalDestinationWhileRenamingThemToMatchContainedRfcTags(directoryToMigrate, destinationDirectory);
+			MoveFilesToFinalDestinationWhileRenamingThemToMatchContainedRfcTags(directoryToMigrate, destinationDirectory);
+
+			Dictionary<string, string> oldToNewRfcTagMap = new Dictionary<string, string>();
+			foreach (var map in _fileToOldAndNewRfcTagMap)
+			{
+				oldToNewRfcTagMap.Add(map.Value.Key, map.Value.Value);
+			}
+			_rfcTagChanger(oldToNewRfcTagMap);
 		}
 
-		private void MoveFilestofinalDestinationWhileRenamingThemToMatchContainedRfcTags(string directoryToMigrate, string destinationDirectory)
+		private void MoveFilesToFinalDestinationWhileRenamingThemToMatchContainedRfcTags(string directoryToMigrate, string destinationDirectory)
 		{
 			foreach (var file in Directory.GetFiles(directoryToMigrate))
 			{

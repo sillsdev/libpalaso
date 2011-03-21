@@ -9,12 +9,27 @@ using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.WritingSystems.Migration
 {
+	public delegate void ConsumerLevelRfcTagChanger(Dictionary<string,string> oldToNewRfcTagMap);
+
 	public class LdmlInFolderWritingSystemRepositoryMigrator:Migrator
 	{
-		public LdmlInFolderWritingSystemRepositoryMigrator(string pathToFolderWithLdml):base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, pathToFolderWithLdml)
+		private Dictionary<string, string> _oldToNewRfcTagMap = new Dictionary<string, string>();
+		private ConsumerLevelRfcTagChanger _consumerRfcTagChanger;
+
+		public LdmlInFolderWritingSystemRepositoryMigrator(string pathToFolderWithLdml, ConsumerLevelRfcTagChanger rfcTagChanger):base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, pathToFolderWithLdml)
 		{
+			_consumerRfcTagChanger = rfcTagChanger;
+			ConsumerLevelRfcTagChanger singleStrategyRfcTagChanger = UpdateOldToNewRfcTagMap;
 			AddVersionStrategy(new LdmlInFolderWritingSystemRepositoryVersionGetter());
-			AddMigrationStrategy(new LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy());
+			AddMigrationStrategy(new LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy(singleStrategyRfcTagChanger));
+		}
+
+		void UpdateOldToNewRfcTagMap(Dictionary<string, string> oldToNewRfcTagMapFromSingleStrategy)
+		{
+			foreach (var oldandNewRfcTagPair in oldToNewRfcTagMapFromSingleStrategy)
+			{
+				_oldToNewRfcTagMap[oldandNewRfcTagPair.Key] = oldandNewRfcTagPair.Value;
+			}
 		}
 
 		//This was overridden to handle a directory
@@ -61,6 +76,7 @@ namespace Palaso.WritingSystems.Migration
 					DeleteFolderThatMayBeInUse(DirectoryPath);
 				}
 			}
+			_consumerRfcTagChanger(_oldToNewRfcTagMap);
 		}
 
 		//This method works  around a bug where creating a folder shortly after deleting it, fails. Documented here:
