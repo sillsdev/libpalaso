@@ -116,10 +116,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Exists_FalseThenTrue()
 		{
-			Assert.IsFalse(StoreUnderTest.Exists("one"));
+			Assert.IsFalse(StoreUnderTest.Contains("one"));
 			_writingSystem.ISO639 = "one";
 			StoreUnderTest.Set(_writingSystem);
-			Assert.IsTrue(StoreUnderTest.Exists("one"));
+			Assert.IsTrue(StoreUnderTest.Contains("one"));
 		}
 
 		[Test]

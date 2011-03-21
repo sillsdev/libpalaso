@@ -32,6 +32,13 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
 		/// </summary>
+		bool Contains(string identifier);
+
+		/// <summary>
+		/// Returns true if a writing system with the given Store ID exists in the store
+		/// Contains is preferred
+		/// </summary>
+		[Obsolete("Use Contains instead")]
 		bool Exists(string identifier);
 
 		/// <summary>

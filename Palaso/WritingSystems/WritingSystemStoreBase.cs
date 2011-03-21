@@ -93,10 +93,15 @@ namespace Palaso.WritingSystems
 			return definition.Clone();
 		}
 
-
-		public bool Exists(string identifier)
+		public bool Contains(string identifier)
 		{
 			return _writingSystems.ContainsKey(identifier);
+		}
+
+		[Obsolete("Use Contains instead")]
+		public bool Exists(string identifier)
+		{
+			return Contains(identifier);
 		}
 
 		public virtual void Set(WritingSystemDefinition ws)

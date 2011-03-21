@@ -481,9 +481,9 @@ namespace Palaso.Tests.WritingSystems
 
 			_collection.LoadAllDefinitions();
 
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO-x-dupl"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
 		}
 
 		[Test]
@@ -499,9 +499,9 @@ namespace Palaso.Tests.WritingSystems
 
 			_collection.LoadAllDefinitions();
 
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO-x-dupl"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
 
 			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml")));
 			Assert.IsTrue(File.Exists(Path.Combine(_testPath, "de-Zxxx-x-AUDIO-x-dupl.ldml")));
@@ -517,9 +517,9 @@ namespace Palaso.Tests.WritingSystems
 
 			_collection.LoadAllDefinitions();
 
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl"));
-			Assert.IsTrue(_collection.Exists("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO-x-dupl"));
+			Assert.IsTrue(_collection.Contains("de-Zxxx-x-AUDIO-x-dupl-x-dupl"));
 
 			Assert.AreEqual("de-Zxxx-x-AUDIO", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-AUDIO.ldml")).CompleteTag);
 			Assert.AreEqual("de-Zxxx-x-AUDIO-x-dupl", ConstructRfc5646TagDirectFromLdml(Path.Combine(_testPath, "de-Zxxx-x-AUDIO-x-dupl.ldml")).CompleteTag);
