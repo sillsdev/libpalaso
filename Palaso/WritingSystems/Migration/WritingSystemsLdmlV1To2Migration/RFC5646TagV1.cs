@@ -6,13 +6,21 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 {
 	public class RFC5646TagV1 : Object
 	{
-		public enum SubTag
+		public enum Subtags
 		{
 			Language,
 			Script,
 			Region,
 			Variant,
 			PrivateUse
+		}
+
+		public enum CodeTypes
+		{
+			Iso639,
+			Iso15924,
+			Iso3166,
+			RegisteredVariant
 		}
 
 		public class IanaSubtag
@@ -70,8 +78,8 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			}
 		}
 
-		private static readonly List<Iso639LanguageCode> _validIso639LanguageCodes = new List<Iso639LanguageCode>();
-		private static readonly List<Iso15924Script> _validIso15924Scripts = new List<Iso15924Script>();
+		private static readonly List<IanaSubtag> _validIso639LanguageCodes = new List<IanaSubtag>();
+		private static readonly List<IanaSubtag> _validIso15924Scripts = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _validIso3166Regions = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _validRegisteredVariants = new List<IanaSubtag>();
 		private static readonly List<IanaSubtag> _ianaSubtags = new List<IanaSubtag>();
@@ -80,8 +88,42 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		private List<string> _region = new List<string>();
 		private List<string> _variant = new List<string>();
 		private List<string> _privateUse = new List<string>();
+		private static Dictionary<Subtags, CodeTypes> subtagToCodeTypeMap = new Dictionary<Subtags, CodeTypes>{{Subtags.Language, CodeTypes.Iso639},
+																								{Subtags.Script, CodeTypes.Iso15924},
+																								{Subtags.Region,CodeTypes.Iso3166},
+																								{Subtags.Variant, CodeTypes.RegisteredVariant}};
 
-		public static List<Iso15924Script> ValidIso15924Scripts
+
+		public static bool IsValidCode(string subtagToCheck, CodeTypes codeType)
+		{
+			bool isValidCode = false;
+			foreach (IanaSubtag ianaSubtag in GetValidCodes(codeType))
+			{
+				isValidCode =
+					subtagToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);
+				if (isValidCode) break;
+			}
+			return isValidCode;
+		}
+
+		private static IEnumerable<IanaSubtag> GetValidCodes(CodeTypes codeType)
+		{
+			switch (codeType)
+			{
+				case CodeTypes.Iso639:
+					return ValidIso639LanguageCodes;
+				case CodeTypes.Iso15924:
+					return ValidIso15924Scripts;
+				case CodeTypes.Iso3166:
+					return ValidIso3166Regions;
+				case CodeTypes.RegisteredVariant:
+					return ValidRegisteredVariants;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		public static List<IanaSubtag> ValidIso15924Scripts
 		{
 			get
 			{
@@ -93,7 +135,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			}
 		}
 
-		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
+		public static IList<IanaSubtag> ValidIso639LanguageCodes
 		{
 			get
 			{
@@ -155,16 +197,15 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 
 		private static void LoadValidIso639LanguageCodes()
 		{
-			_validIso639LanguageCodes.Add(new Iso639LanguageCode("qaa", "Unknown language", "qaa"));
+			_validIso639LanguageCodes.Add(new IanaSubtag("language", "qaa", "Unknown language"));
 			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
 			{
 				if (ianaSubtag.Type == "language")
 				{
-					var language = new Iso639LanguageCode(ianaSubtag.Subtag, ianaSubtag.Description, string.Empty);
-					_validIso639LanguageCodes.Add(language);
+					_validIso639LanguageCodes.Add(ianaSubtag);
 				}
 			}
-			_validIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
+			_validIso639LanguageCodes.Sort(IanaSubtag.CompareByDescription);
 		}
 
 		/// <summary>
@@ -175,20 +216,16 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			if (_validIso15924Scripts.Count != 0)
 				return;
 
-			//to help people find Latin
-			_validIso15924Scripts.Add(new Iso15924Script("Roman (Latin)", "Latn"));
-
 			LoadIanaSubtags();
 
 			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
 			{
 				if (ianaSubtag.Type == "script")
 				{
-					var script = new Iso15924Script(ianaSubtag.Description, ianaSubtag.Subtag);
-					_validIso15924Scripts.Add(script);
+					_validIso15924Scripts.Add(ianaSubtag);
 				}
 			}
-			_validIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
+			_validIso15924Scripts.Sort(IanaSubtag.CompareByDescription);
 		}
 
 		private static void LoadIanaSubtags()
@@ -335,11 +372,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			if (languageCodeToCheck.Equals("qaa", StringComparison.OrdinalIgnoreCase)) { return true; }
 
 			bool partIsValidIso639LanguageCode = false;
-			foreach (Iso639LanguageCode code in ValidIso639LanguageCodes)
+			foreach (IanaSubtag code in ValidIso639LanguageCodes)
 			{
 				partIsValidIso639LanguageCode =
-					languageCodeToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase) ||
-					languageCodeToCheck.Equals(code.ISO3Code, StringComparison.OrdinalIgnoreCase);
+					languageCodeToCheck.Equals(code.Subtag, StringComparison.OrdinalIgnoreCase);
 				if (partIsValidIso639LanguageCode) break;
 			}
 			return partIsValidIso639LanguageCode;
@@ -348,10 +384,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		public static bool IsValidIso15924ScriptCode(string languageCodeToCheck)
 		{
 			bool isValidIso15924ScriptCode = false;
-			foreach (Iso15924Script script in ValidIso15924Scripts)
+			foreach (IanaSubtag script in ValidIso15924Scripts)
 			{
 				isValidIso15924ScriptCode =
-					languageCodeToCheck.Equals(script.Code, StringComparison.OrdinalIgnoreCase);
+					languageCodeToCheck.Equals(script.Subtag, StringComparison.OrdinalIgnoreCase);
 				if (isValidIso15924ScriptCode) break;
 			}
 			return isValidIso15924ScriptCode;
@@ -511,13 +547,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			return isValidRegisteredVariant;
 		}
 
-		private void AddToSubtag(SubTag subTag, string stringToAppend)
+		private void AddToSubtag(Subtags subtags, string stringToAppend)
 		{
-			List<string> subtagToAddTo = GetSubtag(subTag);
+			List<string> subtagToAddTo = GetSubtag(subtags);
 			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
 			foreach (string part in partsOfStringToAdd)
 			{
-				bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = SubtagContainsPart(subTag, part);
+				bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = SubtagContainsPart(subtags, part);
 				if (subTagAlreadyContainsAtLeastOnePartOfStringToAdd)
 				{
 					throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.", part));
@@ -531,24 +567,24 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			subtagToAddTo.Add("-");
 		}
 
-		private List<string> GetSubtag(SubTag subTag)
+		private List<string> GetSubtag(Subtags subtags)
 		{
 			List<string> subtagToAddTo;
-			switch (subTag)
+			switch (subtags)
 			{
-				case SubTag.Language:
+				case Subtags.Language:
 					subtagToAddTo = _language;
 					break;
-				case SubTag.Script:
+				case Subtags.Script:
 					subtagToAddTo = _script;
 					break;
-				case SubTag.Region:
+				case Subtags.Region:
 					subtagToAddTo = _region;
 					break;
-				case SubTag.Variant:
+				case Subtags.Variant:
 					subtagToAddTo = _variant;
 					break;
-				case SubTag.PrivateUse:
+				case Subtags.PrivateUse:
 					subtagToAddTo = _privateUse;
 					break;
 				default: throw new ApplicationException();
@@ -593,14 +629,14 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			}
 		}
 
-		private void RemoveFromSubtag(SubTag subTag, string stringToRemove)
+		private void RemoveFromSubtag(Subtags subtags, string stringToRemove)
 		{
-			List<string> partsOfSubtagToRemovePartFrom = GetSubtag(subTag);
+			List<string> partsOfSubtagToRemovePartFrom = GetSubtag(subtags);
 			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
 
 			foreach (string partToRemove in partsOfStringToRemove)
 			{
-				if (!SubtagContainsPart(subTag, partToRemove)) { continue; }
+				if (!SubtagContainsPart(subtags, partToRemove)) { continue; }
 				int indexOfPartToRemove = partsOfSubtagToRemovePartFrom.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
 				partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
 			}
@@ -640,7 +676,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			return subtagAsString;
 		}
 
-		private bool SubtagContainsPart(SubTag subtagToCheck, string partToFind)
+		private bool SubtagContainsPart(Subtags subtagToCheck, string partToFind)
 		{
 			List<string> partsOfSubTag = GetSubtag(subtagToCheck);
 			List<string> partsOfPart = ParseSubtagForParts(partToFind);
@@ -669,36 +705,41 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 
 		public void AddToVariant(string subtagToAdd)
 		{
-			AddToSubtag(SubTag.Variant, subtagToAdd);
+			AddToSubtag(Subtags.Variant, subtagToAdd);
 			CheckIfEntireTagIsValid();
 		}
 
 		public void RemoveFromPrivateUse(string subtagToRemove)
 		{
 			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
-			RemoveFromSubtag(SubTag.PrivateUse, stringWithoutPrecedingxDash);
+			RemoveFromSubtag(Subtags.PrivateUse, stringWithoutPrecedingxDash);
 			CheckIfEntireTagIsValid();
 		}
 
 		public void RemoveFromVariant(string subtagToRemove)
 		{
-			RemoveFromSubtag(SubTag.Variant, subtagToRemove);
+			RemoveFromSubtag(Subtags.Variant, subtagToRemove);
 		}
 
 		public bool PrivateUseContainsPart(string subTagToFind)
 		{
 			string stringWithoutPrecedingxDash = subTagToFind.Trim('-', 'x');
-			return SubtagContainsPart(SubTag.PrivateUse, stringWithoutPrecedingxDash);
+			return SubtagContainsPart(Subtags.PrivateUse, stringWithoutPrecedingxDash);
 		}
 
 		public bool VariantContainsPart(string subTagToFind)
 		{
-			return SubtagContainsPart(SubTag.Variant, subTagToFind);
+			return SubtagContainsPart(Subtags.Variant, subTagToFind);
 		}
 
 		public string GetPartMatchingRegExInPrivateUse(Regex regex)
 		{
 			return _privateUse.Find(str => regex.Match(str).Success);
+		}
+
+		public static Dictionary<Subtags, CodeTypes> SubtagToCodeTypeMap
+		{
+			get { return subtagToCodeTypeMap; }
 		}
 	}
 }

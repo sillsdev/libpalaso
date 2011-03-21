@@ -206,7 +206,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				Assert.AreEqual("de-x-bogus-stuff", environment.OldToNewRfcTagMap["de-bogus-stuff"]);
 				Assert.AreEqual("en-Zxxx-x-audio", environment.OldToNewRfcTagMap["en-Zxxx-x-audio"]);
 				Assert.AreEqual("en-Zxxx-x-audio-dupl1", environment.OldToNewRfcTagMap["en-x-audio"]);
-				Assert.AreEqual("qaa-Zxxx", environment.OldToNewRfcTagMap["-Zxxx"]);
+				Assert.AreEqual("qaa-Zxxx-x-audio", environment.OldToNewRfcTagMap["-Zxxx"]);
 			}
 		}
 	}

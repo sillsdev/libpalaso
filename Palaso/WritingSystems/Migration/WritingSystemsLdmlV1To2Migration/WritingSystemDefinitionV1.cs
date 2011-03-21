@@ -156,7 +156,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				return RFC5646TagV1.ValidIso639LanguageCodes;
+				var iso639Codes = new List<Iso639LanguageCode>();
+				foreach (var ianaSubtag in RFC5646TagV1.ValidIso639LanguageCodes)
+				{
+					iso639Codes.Add(new Iso639LanguageCode(ianaSubtag.Subtag, ianaSubtag.Description, ianaSubtag.Subtag));
+				}
+				return iso639Codes;
 			}
 		}
 
@@ -598,7 +603,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 		{
 			get
 			{
-				return RFC5646TagV1.ValidIso15924Scripts;
+				var scriptOptions = new List<Iso15924Script>();
+				foreach (var ianaSubtag in RFC5646TagV1.ValidIso15924Scripts)
+				{
+					scriptOptions.Add(new Iso15924Script(ianaSubtag.Description, ianaSubtag.Subtag));
+				}
+				return scriptOptions;
 			}
 		}
 

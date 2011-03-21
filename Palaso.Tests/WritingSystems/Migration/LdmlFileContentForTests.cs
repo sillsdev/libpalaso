@@ -38,6 +38,44 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
+		static public string CreateVersion0LdmlContentwithLanguageSubtagAndName(string languageSubtag, string languageName)
+		{
+			return String.Format(
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+</identity>
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:languageName value={1} />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+</ldml>".Replace('\'', '"'), languageSubtag, languageName);
+		}
+
+		static public string CreateVersion99LdmlContent()
+		{
+			return
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='en' />
+</identity>
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:version value='99' />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+</ldml>".Replace('\'', '"');
+		}
+
 		static public string CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
 		{
 			return String.Format(

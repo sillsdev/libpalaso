@@ -10,6 +10,7 @@ using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration;
 
 namespace Palaso.Tests.WritingSystems.Migration
 {
@@ -538,31 +539,58 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void Migrate_DateModified_WhatToDo()
+		public void Migrate_DateModified_IsLaterThanBeforeMigration()
 		{
 			using (_environment = new TestEnvironment())
 			{
 				_environment.WriteContentToWritingSystemLdmlFile(
 					LdmlFileContentForTests.CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention("", "", "", ""));
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(_environment.PathToWritingSystemLdmlFile, wsV0);
+				DateTime dateBeforeMigration = wsV0.DateModified;
 				var migrator = _environment.GetMigrator;
 				migrator.Migrate();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath(
-					"/ldml/identity/special[@xmlns:palaso='urn://palaso.org/ldmlExtensions/v1']/defaultFontFamily[@type='Arial']");
+				var wsV1= new WritingSystemDefinitionV1();
+				new LdmlAdaptorV1().Read(_environment.PathToWritingSystemLdmlFile, wsV1);
+				DateTime dateAfterMigration = wsV1.DateModified;
+				Assert.IsTrue(dateAfterMigration > dateBeforeMigration);
 			}
-			throw new NotImplementedException();
 		}
 
 		[Test]
-		public void Migrate_OriginalFileIsNotLdmlVWhat_Throw()
+		public void Migrate_OriginalFileIsNotVersionThatWeCanMigrate_Throws()
 		{
-			//Need to make sure we are reading/writing the right vrsions of Ldml.rename LdmlAdaptor to LdmlDataMapper
-			throw new NotImplementedException();
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion99LdmlContent());
+				var migrator = _environment.GetMigrator;
+				Assert.Throws<InvalidOperationException>(() => migrator.Migrate());
+			}
 		}
 
 		[Test]
 		public void Migrate_LanguageNameIsSetTootherThanWhatIanaSubtagRegistrySays_LanguageNameIsMaintained()
 		{
-			//Need to make sure we are reading/writing the right vrsions of Ldml.rename LdmlAdaptor to LdmlDataMapper
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContentwithLanguageSubtagAndName("en", "German"));
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'German'");
+			}
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Migrate_LanguageNameIsNotSet_LanguageNameIsSetToWhatIanaSubtagRegistrySays()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("", "", "", ""));
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'English'");
+			}
 			throw new NotImplementedException();
 		}
 
@@ -846,7 +874,21 @@ namespace Palaso.Tests.WritingSystems.Migration
 				migrator.Migrate();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='qaa']");
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/variant");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
+			}
+		}
+
+		[Test]
+		public void Migrate_LanguageSubtagContainsZxxx_VariantContainsxDashaudio()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en-Zxxx", "", "", ""));
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
 			}
 		}
 

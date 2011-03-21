@@ -15,6 +15,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		readonly WritingSystemDefinitionV0 _wsToMigrate = new WritingSystemDefinitionV0();
 		readonly WritingSystemDefinitionV1 _migratedWs = new WritingSystemDefinitionV1();
 		private RFC5646TagV0 _temporaryRfc5646TagHolder;
+		private static Dictionary<RFC5646TagV0.Subtags, RFC5646TagV1.CodeTypes> _subtagToCodeTypeMap =
+			new Dictionary<RFC5646TagV0.Subtags, RFC5646TagV1.CodeTypes>{                                                                                                             {RFC5646TagV0.Subtags.Language, RFC5646TagV1.CodeTypes.Iso639},
+				{RFC5646TagV0.Subtags.Script, RFC5646TagV1.CodeTypes.Iso15924},
+				{RFC5646TagV0.Subtags.Region, RFC5646TagV1.CodeTypes.Iso3166},
+				{RFC5646TagV0.Subtags.Variant, RFC5646TagV1.CodeTypes.RegisteredVariant}};
 
 		public int FromVersion
 		{
@@ -59,6 +64,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_migratedWs.SortUsing = _migratedWs.SortUsing;
 			_migratedWs.SpellCheckingId = _migratedWs.SpellCheckingId;
 			_migratedWs.VersionDescription = _wsToMigrate.VersionDescription;
+			_migratedWs.DateModified = DateTime.Now;
 			//_migratedWs.VerboseDescription //not written out by ldmladaptor - flex?
 			//_migratedWs.StoreID = ??? //what to do?
 			//_migratedWs.NativeName //not written out by ldmladaptor - flex?
@@ -66,9 +72,16 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private void FixRfc5646Subtags()
 		{
-			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Script, RFC5646TagV0.CodeTypes.Iso15924);
-			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Region, RFC5646TagV0.CodeTypes.Iso3166);
-			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Variant, RFC5646TagV0.CodeTypes.RegisteredVariant);
+			//this first check deals with a bug where setting IsVoice to true set the variant to Zxxx
+			bool languageTagContainsZxxx = _temporaryRfc5646TagHolder.SubtagContainsPart("Zxxx", RFC5646TagV0.Subtags.Language);
+			if (languageTagContainsZxxx)
+			{
+				_temporaryRfc5646TagHolder.AddToSubtag(WellKnownSubTags.Audio.PrivateUseSubtag, RFC5646TagV0.Subtags.PrivateUse);
+			}
+
+			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Script, RFC5646TagV1.CodeTypes.Iso15924);
+			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Region, RFC5646TagV1.CodeTypes.Iso3166);
+			MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.Subtags.Variant, RFC5646TagV1.CodeTypes.RegisteredVariant);
 			MoveNonValidDataInAllSubtagsToPrivateUse();
 
 			MoveAllButFirstPartInSubtagToPrivateUse(RFC5646TagV0.Subtags.Language);
@@ -217,17 +230,31 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			List<string> validCodes = new List<string>();
 
-			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV0.CodeTypes.Iso639);
+			validCodes = GetCodesInSubtag(RFC5646TagV0.Subtags.Language, RFC5646TagV1.CodeTypes.Iso639);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Language);
 
-			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Script, RFC5646TagV0.CodeTypes.Iso15924);
+			validCodes = GetCodesInSubtag(RFC5646TagV0.Subtags.Script, RFC5646TagV1.CodeTypes.Iso15924);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Script);
 
-			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Region, RFC5646TagV0.CodeTypes.Iso3166);
+			validCodes = GetCodesInSubtag(RFC5646TagV0.Subtags.Region, RFC5646TagV1.CodeTypes.Iso3166);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Region);
 
-			validCodes = _temporaryRfc5646TagHolder.GetCodesInSubtag(RFC5646TagV0.Subtags.Variant, RFC5646TagV0.CodeTypes.RegisteredVariant);
+			validCodes = GetCodesInSubtag(RFC5646TagV0.Subtags.Variant, RFC5646TagV1.CodeTypes.RegisteredVariant);
 			MovePartsOfSubtagNotFoundInListToPrivateUse(validCodes, RFC5646TagV0.Subtags.Variant);
+		}
+
+
+		public List<string> GetCodesInSubtag(RFC5646TagV0.Subtags subtag, RFC5646TagV1.CodeTypes codeType)
+		{
+			List<string> foundIso639RegionCodes = new List<string>();
+			foreach (var part in _temporaryRfc5646TagHolder.GetPartsOfSubtag(subtag))
+			{
+				if (RFC5646TagV1.IsValidCode(part, codeType))
+				{
+					foundIso639RegionCodes.Add(part);
+				}
+			}
+			return foundIso639RegionCodes;
 		}
 
 		private void MovePartsOfSubtagNotFoundInListToPrivateUse(List<string> validCodes, RFC5646TagV0.Subtags subtagToMoveFrom)
@@ -281,7 +308,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_temporaryRfc5646TagHolder.AddToSubtag(part, subtagToAddTo);
 		}
 
-		private void MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags subtagToMoveFrom, RFC5646TagV0.Subtags subtagToMoveTo, RFC5646TagV0.CodeTypes codetype)
+		private void MoveParticularCodesFromSubtagToSubtag(RFC5646TagV0.Subtags subtagToMoveFrom, RFC5646TagV0.Subtags subtagToMoveTo, RFC5646TagV1.CodeTypes codetype)
 		{
 			bool codeForSubtagToMoveFromAlreadyFound = false;
 			int currentIndex = 0;
@@ -289,8 +316,8 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			copyOfsubtagParts.AddRange(_temporaryRfc5646TagHolder.GetPartsOfSubtag(subtagToMoveFrom));
 			foreach (var part in copyOfsubtagParts)
 			{
-				bool partIsCodeWeAreLookingFor = RFC5646TagV0.IsValidCode(part, codetype);
-				bool partIsValidOnSubtagWeAreMovingFrom = RFC5646TagV0.IsValidCode(part,RFC5646TagV0.SubtagToCodeTypeMap[subtagToMoveFrom]);
+				bool partIsCodeWeAreLookingFor = RFC5646TagV1.IsValidCode(part, codetype);
+				bool partIsValidOnSubtagWeAreMovingFrom = RFC5646TagV1.IsValidCode(part, _subtagToCodeTypeMap[subtagToMoveFrom]);
 				bool partIsNotAmbiguous = partIsCodeWeAreLookingFor && !partIsValidOnSubtagWeAreMovingFrom;
 				bool partIsAmbiguousAndWeHaveNotYetFoundAValidCodeForTheFromSubtag =
 					partIsCodeWeAreLookingFor && partIsValidOnSubtagWeAreMovingFrom && codeForSubtagToMoveFromAlreadyFound;
@@ -300,7 +327,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					RemovePartFromSubtagAtIndex(currentIndex, subtagToMoveFrom);
 					AddPartToSubtag(part, subtagToMoveTo);
 				}
-				if (RFC5646TagV0.IsValidCode(part, RFC5646TagV0.SubtagToCodeTypeMap[subtagToMoveFrom]))
+				if (RFC5646TagV1.IsValidCode(part, _subtagToCodeTypeMap[subtagToMoveFrom]))
 				{
 					codeForSubtagToMoveFromAlreadyFound = true;
 				}
