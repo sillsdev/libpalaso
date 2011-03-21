@@ -25,6 +25,7 @@ namespace Palaso.Xml
 		/// </summary>
 		public static XmlNodeList SafeSelectNodes(this XmlNode node, string path)
 		{
+			//REVIEW JH(jh): this will put pfx in front of every element in the path, but in html, that actually makes the queries fail.
 			const string prefix = "pfx";
 			XmlNamespaceManager nsmgr = GetNsmgr(node, prefix);
 			string prefixedPath = GetPrefixedPath(path, prefix);

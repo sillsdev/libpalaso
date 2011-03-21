@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
 #if !MONO
-	using Palaso.UI.WindowsForms.ImageToolbox.Scanner;
+
 #endif
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
@@ -17,15 +18,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public ImageToolboxControl()
 		{
 			InitializeComponent();
-			//_panelForControls.Visible = false;
 
 			ImageInfo = new PalasoImage();
-			_toolListView.Groups.Clear();
 			_toolListView.Items.Clear();
 
-			var getImageGroup = AddGroup("Get Image");
-			var editImageGroup = AddGroup("Edit Image");
-			var otherGroup = AddGroup("Other");
 
 			//doing our own image list because VS2010 croaks their resx if have an imagelist while set to .net 3.5 with x86 on a 64bit os (something like that). This is a known bug MS doesn't plan to fix.
 			_toolImages = new ImageList();
@@ -34,16 +30,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_toolImages.ImageSize = new Size(32,32);
 
 
-			AddControl("From File", ImageToolboxButtons.browse, "browse", getImageGroup, (x) => new GetImageFromFileSystemControl());
-#if !MONO
+			 AddControl("Get Picture", ImageToolboxButtons.browse, "browse",  (x) => new AcquireImageControl());
+			  AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
-			AddControl("From Scan", ImageToolboxButtons.scanner, "scanner", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Scanner));
-			AddControl("From Camera", ImageToolboxButtons.camera, "camera", getImageGroup, (x) => new DeviceAcquire(ImageAcquisitionService.DeviceKind.Camera));
-#endif
-			AddControl("From Gallery", ImageToolboxButtons.searchFolder, "gallery", getImageGroup, (x) => new ArtOfReadingChooser(string.Empty));
-			AddControl("Crop",  ImageToolboxButtons.crop, "crop", editImageGroup, (x) => new ImageCropper());
-//            AddControl("Credits", ImageToolboxButtons.credits, "credits", otherGroup, (x) => new ImageCreditsControl());
-//            AddControl("License", ImageToolboxButtons.Licenses, "license", otherGroup, (x) => new ImageLicenseControl());
+			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
 		}
 
@@ -52,35 +42,54 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public PalasoImage ImageInfo
 		{
-			get{ return _imageInfo;}
+			get { return _imageInfo; }
 			set
 			{
-
-				if (value == null || value.Image == null)
+				try
 				{
-					_currentImageBox.Image = null;
+					if (value == null || value.Image == null)
+					{
+						_currentImageBox.Image = null;
+					}
+					else
+					{
+						if(value.Image == _currentImageBox.Image)
+						{
+							return;
+						}
+						/* this seemed like a good idea, but it lead to "parameter errors" later in the image
+						 * try
+												{
+													if (_currentImageBox.Image != null)
+													{
+														  _currentImageBox.Image.Dispose();
+													}
+												}
+												catch (Exception)
+												{
+													//ah well. I haven't got a way to know when it's disposable and when it isn't
+													throw;
+												}
+						  */
+						_currentImageBox.Image = value.Image;
+					}
+					_imageInfo = value;
+					_imageMetadataControl.SetImage(_imageInfo);
 				}
-				else
+				catch (Exception e)
 				{
-					_currentImageBox.Image = value.Image;
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.");
 				}
-				_imageInfo = value;
 			}
 		}
 
-		private ListViewGroup AddGroup(string header)
-		{
-			var g= new ListViewGroup(header,HorizontalAlignment.Left);
-			_toolListView.Groups.Add(g);
-			return g;
-		}
 
-		private void AddControl(string label, Bitmap bitmap, string imageKey, ListViewGroup group, System.Func<PalasoImage, Control> makeControl)
+		private void AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
 		{
 			_toolImages.Images.Add(bitmap);
 			_toolImages.Images.SetKeyName(_toolImages.Images.Count - 1, imageKey);
 
-			var item= new ListViewItem(label, group);
+			var item= new ListViewItem(label);
 			item.ImageKey = imageKey;
 			item.Tag = makeControl;
 			this._toolListView.Items.Add(item);
@@ -88,6 +97,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			try
+			{
+
 			if (_toolListView.SelectedItems.Count == 0)
 				return;
 			if(_currentControl !=null)
@@ -101,9 +113,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			System.Func<PalasoImage, Control> fun =
 				(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
 			_currentControl = fun(ImageInfo);
-//            _currentControl.Bounds = _panelForControls.Bounds;
-//            _currentControl.Anchor = _panelForControls.Anchor;
-//            Controls.Add(_currentControl);
 
 			_currentControl.Dock = DockStyle.Fill;
 			_panelForControls.Controls.Add(_currentControl);
@@ -112,12 +121,23 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			imageToolboxControl.SetImage(ImageInfo);
 			imageToolboxControl.ImageChanged += new EventHandler(imageToolboxControl_ImageChanged);
 			Refresh();
+
+
+			}
+			catch (Exception error)
+			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
+																 "Sorry, something went wrong with the ImageToolbox");
+			}
 		}
 
 		private void GetImageFromCurrentControl()
 		{
 			ImageInfo = ((IImageToolboxControl) _currentControl).GetImage();
-			_currentImageBox.Image = ImageInfo.Image;
+			if (ImageInfo == null)
+				_currentImageBox.Image = null;
+			else
+				_currentImageBox.Image = ImageInfo.Image;
 		}
 
 		void imageToolboxControl_ImageChanged(object sender, EventArgs e)
@@ -127,9 +147,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		public void Closing()
 		{
-			ImageInfo = ((IImageToolboxControl)_currentControl).GetImage();
-			Controls.Remove(_currentControl);
-			_currentControl.Dispose();
+			if (_currentControl == null)
+			{
+
+			}
+			else
+			{
+				ImageInfo = ((IImageToolboxControl)_currentControl).GetImage();
+				Controls.Remove(_currentControl);
+				_currentControl.Dispose();
+			}
+
 		}
 	}
 

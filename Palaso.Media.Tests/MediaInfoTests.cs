@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Palaso.IO;
 using Palaso.Media.Tests.Properties;
-using Palaso.TestUtilities;
-
 
 namespace Palaso.Media.Tests
 {
