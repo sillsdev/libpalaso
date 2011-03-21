@@ -915,7 +915,23 @@ namespace Palaso.WritingSystems
 				//int valueFound = String.IsNullOrEmpty(numberRegex.Match(duplicateTag).Value) ? 0 : Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
 				return Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
 			}
-			set { throw new NotImplementedException(); }
+			set
+			{
+				if(value<0){throw new ArgumentOutOfRangeException("We can't have a negaive number of duplicates.");}
+				if(DuplicateNumber == value){
+					return;}
+				Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
+				string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
+				if (!String.IsNullOrEmpty(duplicateTag))
+				{
+					_rfcTag.RemoveFromPrivateUse(duplicateTag);
+				}
+				if (value > 0)
+				{
+					_rfcTag.AddToPrivateUse("dupl" + value);
+				}
+				Modified = true;
+			}
 		}
 
 	}

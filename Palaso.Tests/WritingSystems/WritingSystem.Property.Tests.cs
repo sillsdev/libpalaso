@@ -193,6 +193,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueSpecial.Add("ISO", "de");
 			firstValueSpecial.Add("Script", "Zxxx");
 			secondValueSpecial.Add("Script", "Latn");
+			firstValueSpecial.Add("DuplicateNumber", 0);
+			secondValueSpecial.Add("DuplicateNumber", 1);
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");
 			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
@@ -715,6 +717,32 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition();
 			ws.Variant = "x-dupl1";
 			Assert.AreEqual(1, ws.DuplicateNumber);
+		}
+
+		[Test]
+		public void DuplicateNumber_IsSetTo0WhilePrivateUseContainsdupl1_Returns1()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "x-dupl1";
+			ws.DuplicateNumber = 0;
+			Assert.AreEqual(0, ws.DuplicateNumber);
+		}
+
+		[Test]
+		public void DuplicateNumber_IsSetTo0WhilePrivateUseContainsdupl1_VariantDoesNotContainDuplicateMarker()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "x-dupl1-test";
+			ws.DuplicateNumber = 0;
+			Assert.AreEqual("x-test", ws.Variant);
+		}
+
+		[Test]
+		public void DuplicateNumber_IsSetTo1from0_VariantContainsDuplicateMarker()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.DuplicateNumber = 1;
+			Assert.AreEqual("x-dupl1", ws.Variant);
 		}
 
 		[Test]

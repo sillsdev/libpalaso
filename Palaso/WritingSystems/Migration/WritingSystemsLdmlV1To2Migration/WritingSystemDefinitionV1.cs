@@ -791,13 +791,17 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 			}
 			set
 			{
+				if (value < 0) { throw new ArgumentOutOfRangeException("We can't have a negaive number of duplicates."); }
 				Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
 				string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
 				if (!String.IsNullOrEmpty(duplicateTag))
 				{
 					_rfcTag.RemoveFromPrivateUse(duplicateTag);
 				}
-				_rfcTag.AddToPrivateUse("dupl" + value);
+				if (value > 0)
+				{
+					_rfcTag.AddToPrivateUse("dupl" + value);
+				}
 			}
 		}
 
