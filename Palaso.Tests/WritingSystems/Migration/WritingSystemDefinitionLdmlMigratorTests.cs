@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using NUnit.Framework;
 using Palaso.Migration;
 using Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -20,10 +21,12 @@ namespace Palaso.Tests.WritingSystems.Migration
 		private class TestEnvironment : IDisposable
 		{
 			readonly string _pathToLdml = Path.GetTempFileName();
-
+			readonly private XmlNamespaceManager _namespaceManager;
 			public TestEnvironment()
 			{
 				_pathToLdml = Path.GetTempFileName();
+				 _namespaceManager = new XmlNamespaceManager(new NameTable());
+				_namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			}
 
 			public string PathToWritingSystemLdmlFile
@@ -50,6 +53,14 @@ namespace Palaso.Tests.WritingSystems.Migration
 			public void Dispose()
 			{
 				File.Delete(_pathToLdml);
+			}
+
+			public XmlNamespaceManager NamespaceManager
+			{
+				get
+				{
+					return _namespaceManager;
+				}
 			}
 		}
 
@@ -183,12 +194,6 @@ namespace Palaso.Tests.WritingSystems.Migration
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='1901']");
 			}
-		}
-
-		[Test]
-		public void DO_NOT_FORGET()
-		{
-			throw new NotImplementedException("Move GetIsoxxxxCodesInXXXSubtag methods out of Rfc5646V0 and into migratorv0 class");
 		}
 
 		[Test]
@@ -500,7 +505,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void Migrate_OriginalFileContainsCustomLdmlData_DataIsCopied()
+		public void Migrate_OriginalFileContainsLdmlDataWeDontCareAbout_DataIsCopied()
 		{
 			using (_environment = new TestEnvironment())
 			{
@@ -533,9 +538,91 @@ namespace Palaso.Tests.WritingSystems.Migration
 					LdmlFileContentForTests.CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention("", "", "", ""));
 				var migrator = _environment.GetMigrator;
 				migrator.Migrate();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultFontFamily");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultFontFamily[@value='Arial']", _environment.NamespaceManager);
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultFontSize[@value='12']", _environment.NamespaceManager);
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:abbreviation[@value='la']", _environment.NamespaceManager);
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:isLegacyEncoded[@value='True']", _environment.NamespaceManager);
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultKeyboard[@value='bogusKeyboard']", _environment.NamespaceManager);
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:spellCheckingId[@value='ol']", _environment.NamespaceManager);
 			}
-			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Migrate_OriginalFileContainsNoCollationInfo_CollationInfoIsMigrated()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(
+					LdmlFileContentForTests.CreateVersion0LdmlWithCollationInfo(WritingSystemDefinitionV0.SortRulesType.DefaultOrdering));
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(_environment.PathToWritingSystemLdmlFile, wsV0);
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				var wsV1 = new WritingSystemDefinitionV1();
+				new LdmlAdaptorV1().Read(_environment.PathToWritingSystemLdmlFile, wsV1);
+				Assert.AreEqual(String.Empty, wsV1.SortRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalFileContainsOtherLanguageCollationInfo_CollationInfoIsMigrated()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(
+					LdmlFileContentForTests.CreateVersion0LdmlWithCollationInfo(WritingSystemDefinitionV0.SortRulesType.OtherLanguage));
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(_environment.PathToWritingSystemLdmlFile, wsV0);
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				var wsV1 = new WritingSystemDefinitionV1();
+				new LdmlAdaptorV1().Read(_environment.PathToWritingSystemLdmlFile, wsV1);
+				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalFileContainsCustomSimpleCollationInfo_CollationInfoIsMigrated()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(
+					LdmlFileContentForTests.CreateVersion0LdmlWithCollationInfo(WritingSystemDefinitionV0.SortRulesType.CustomSimple));
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(_environment.PathToWritingSystemLdmlFile, wsV0);
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				var wsV1 = new WritingSystemDefinitionV1();
+				new LdmlAdaptorV1().Read(_environment.PathToWritingSystemLdmlFile, wsV1);
+				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalFileContainsCustomIcuCollationInfo_CollationInfoIsMigrated()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(
+					LdmlFileContentForTests.CreateVersion0LdmlWithCollationInfo(WritingSystemDefinitionV0.SortRulesType.CustomICU));
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(_environment.PathToWritingSystemLdmlFile, wsV0);
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				var wsV1 = new WritingSystemDefinitionV1();
+				new LdmlAdaptorV1().Read(_environment.PathToWritingSystemLdmlFile, wsV1);
+				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+			}
 		}
 
 		[Test]
@@ -576,9 +663,9 @@ namespace Palaso.Tests.WritingSystems.Migration
 				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContentwithLanguageSubtagAndName("en", "German"));
 				var migrator = _environment.GetMigrator;
 				migrator.Migrate();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'German'");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value='German']", _environment.NamespaceManager);
 			}
-			throw new NotImplementedException();
 		}
 
 		[Test]
@@ -586,12 +673,12 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("", "", "", ""));
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContentwithLanguageSubtagAndName("en", String.Empty));
 				var migrator = _environment.GetMigrator;
 				migrator.Migrate();
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'English'");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).
+					HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'English']", _environment.NamespaceManager);
 			}
-			throw new NotImplementedException();
 		}
 
 		[Test]

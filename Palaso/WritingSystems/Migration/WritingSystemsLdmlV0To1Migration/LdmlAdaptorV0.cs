@@ -134,7 +134,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				ReadTopLevelSpecialElement(reader, ws);
 			}
 			ws.StoreID = "";
-			// ws.Modified = false; // Note: This unfortunately is no longer true. The RFC5646 tag may have been auto modified above. CP 2010-12
 		}
 
 		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinitionV0 ws)

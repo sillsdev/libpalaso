@@ -60,9 +60,11 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_migratedWs.Keyboard = _wsToMigrate.Keyboard;
 			_migratedWs.LanguageName = _wsToMigrate.LanguageName;
 			_migratedWs.RightToLeftScript = _wsToMigrate.RightToLeftScript;
-			_migratedWs.SortRules = _migratedWs.SortRules;
-			_migratedWs.SortUsing = _migratedWs.SortUsing;
-			_migratedWs.SpellCheckingId = _migratedWs.SpellCheckingId;
+			_migratedWs.SortRules = _wsToMigrate.SortRules;
+			string sortUsingAsString = Enum.GetName(typeof (WritingSystemDefinitionV0.SortRulesType),
+													_wsToMigrate.SortUsing);
+			_migratedWs.SortUsing = (WritingSystemDefinitionV1.SortRulesType)Enum.Parse(typeof(WritingSystemDefinitionV1.SortRulesType), sortUsingAsString);
+			_migratedWs.SpellCheckingId = _wsToMigrate.SpellCheckingId;
 			_migratedWs.VersionDescription = _wsToMigrate.VersionDescription;
 			_migratedWs.DateModified = DateTime.Now;
 			//_migratedWs.VerboseDescription //not written out by ldmladaptor - flex?
