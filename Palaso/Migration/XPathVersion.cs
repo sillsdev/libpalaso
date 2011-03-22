@@ -9,9 +9,8 @@ namespace Palaso.Migration
 {
 	public class XPathVersion : IFileVersion
 	{
-		public XPathVersion(int goodFromVersion, int goodToVersion, string xPath)
+		public XPathVersion(int goodToVersion, string xPath)
 		{
-			StrategyGoodFromVersion = goodFromVersion;
 			StrategyGoodToVersion = goodToVersion;
 			XPath = xPath;
 		}
@@ -32,6 +31,5 @@ namespace Palaso.Migration
 		}
 
 		public int StrategyGoodToVersion { get; private set; }
-		public int StrategyGoodFromVersion { get; private set; }
 	}
 }

@@ -9,6 +9,5 @@ namespace Palaso.Migration
 	{
 		int GetFileVersion(string pathToFile);
 		int StrategyGoodToVersion { get; }
-		int StrategyGoodFromVersion { get; }
 	}
 }

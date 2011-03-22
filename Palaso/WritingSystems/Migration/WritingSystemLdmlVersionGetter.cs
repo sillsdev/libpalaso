@@ -27,10 +27,5 @@ namespace Palaso.WritingSystems.Migration
 		{
 			get { return 1; }
 		}
-
-		public int StrategyGoodFromVersion
-		{
-			get { return 0; }
-		}
 	}
 }

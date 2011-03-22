@@ -111,11 +111,6 @@ namespace Palaso.Tests.Migration
 			{
 				get { return _goodToVersion; }
 			}
-
-			public int StrategyGoodFromVersion
-			{
-				get { return 0; }
-			}
 		}
 
 		private class VersionStrategyThatThrows : VersionStrategyThatsGood
@@ -201,7 +196,7 @@ namespace Palaso.Tests.Migration
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(3, sourceFile.Path);
 						File.Copy(migrator.SourceFilePath, migrator.BackupFilePath); // Place the backup file in the way.
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(2, 3, e.Xsl2To3));
 
@@ -222,7 +217,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(3, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(2, 3, e.Xsl2To3));
 
@@ -246,7 +241,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(3, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 
 						Assert.Throws<InvalidOperationException>(() => migrator.Migrate());
@@ -270,7 +265,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(7, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, highestAchievableVersion, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(highestAchievableVersion, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, highestAchievableVersion, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(highestAchievableVersion+2, 7, e.Xsl1To2));
 
@@ -291,7 +286,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(7, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(5, 7, e.Xsl1To2));
 
 						Assert.AreEqual(1, migrator.MaximumVersionThatFileCanBeMigratedTo);
@@ -311,7 +306,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(7, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 5, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(5, 7, e.Xsl1To2));
 
@@ -332,7 +327,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion0);
 						var migrator = new Migrator(7, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 
 						Assert.AreEqual(-1, migrator.MaximumVersionThatFileCanBeMigratedTo);
@@ -353,7 +348,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(3, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 
 						Assert.Throws<InvalidOperationException>(() => migrator.Migrate());
@@ -379,7 +374,7 @@ namespace Palaso.Tests.Migration
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
 						var migrator = new Migrator(3, sourceFile.Path);
-						migrator.AddVersionStrategy(new XPathVersion(1, 3, "/configuration/@version"));
+						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(2, 3, e.Xsl2To3));
 
