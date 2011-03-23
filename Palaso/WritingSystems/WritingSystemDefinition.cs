@@ -401,7 +401,9 @@ namespace Palaso.WritingSystems
 
 		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
 		{
+			ISO639 = language;
 			Script = script;
+			Region = region;
 			Variant = variant;
 			CheckIfRfcTagIsValid();
 		}
@@ -467,7 +469,10 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == Script) { return; }
+				if (value == Script)
+				{
+					return;
+				}
 				_rfcTag.Script = value;
 				Modified = true;
 				CheckIfRfcTagIsValid();

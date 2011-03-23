@@ -310,7 +310,7 @@ namespace Palaso.WritingSystems
 			if(_language.Contains("-")){throw new ArgumentException("The language tag may not contain dashes. I.e. there may only be a single iso 639 tag in this subtag");}
 			if (!IsValidIso639LanguageCode(_language))
 			{
-				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-639 language code.", _language[0]));
+				throw new ArgumentException(String.Format("'{0}' is not a valid ISO-639 language code.", _language));
 			}
 		}
 
@@ -418,11 +418,17 @@ namespace Palaso.WritingSystems
 
 		private void CheckIfScriptTagIsValid()
 		{
-			if (String.IsNullOrEmpty(_script)) { return; }
-			if (_script.Contains("-")) { throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (String.IsNullOrEmpty(_script))
+			{
+				return;
+			}
+			if (_script.Contains("-"))
+			{
+				throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
+			}
 			if(!IsValidIso15924ScriptCode(_script))
 			{
-				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-15924 script code.", _script[0]));
+				throw new ArgumentException(String.Format("'{0}' is not a valid ISO-15924 script code.", _script));
 			}
 		}
 
@@ -453,11 +459,17 @@ namespace Palaso.WritingSystems
 
 		private void CheckIfRegionTagIsValid()
 		{
-			if (String.IsNullOrEmpty(_region)) { return; }
-			if (_region.Contains("-")) { throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag"); }
+			if (String.IsNullOrEmpty(_region))
+			{
+				return;
+			}
+			if (_region.Contains("-"))
+			{
+				throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
+			}
 			if (!IsValidIso3166Region(_region))
 			{
-				throw new ArgumentException(String.Format("\"{0}\" is not a valid Iso-3166 region code.", _region[0]));
+				throw new ArgumentException(String.Format("'{0}' is not a valid ISO-3166 region code.", _region));
 			}
 		}
 
@@ -494,12 +506,20 @@ namespace Palaso.WritingSystems
 			if (_variant.Count == 0) { return; }
 			foreach (string subtagPart in _variant)
 			{
-				if (subtagPart.Equals("-") || subtagPart.Equals("_")) {continue; }
-				if(subtagPart.StartsWith("x-")){return;}    //From here on out it is a private use tag
+				if (subtagPart.Equals("-") || subtagPart.Equals("_"))
+				{
+					continue;
+				}
+				if (subtagPart.StartsWith("x-"))
+				{
+					return;
+				}
+				//From here on out it is a private use tag
 				if (!IsValidRegisteredVariant(subtagPart))
 				{
-					throw new ArgumentException(String.Format("\"{0}\" is not a valid registered variant code.",
-															  subtagPart));
+					throw new ArgumentException(
+						String.Format("'{0}' is not a valid registered variant code.", subtagPart)
+					);
 				}
 			}
 		}
