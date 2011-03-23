@@ -904,6 +904,31 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
+		public bool IsUnicodeEncoded { get; set; } // TODO Introduce IsUnicodeEncoded to palaso wsd.
+
+		public static WritingSystemDefinition FromRFC5646(string tag)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SortUsingOtherLanguage(string sortRules)
+		{
+			SortUsing = SortRulesType.OtherLanguage;
+			SortRules = sortRules;
+		}
+
+		public void SortUsingCustomICU(string sortRules)
+		{
+			SortUsing = SortRulesType.CustomICU;
+			SortRules = sortRules;
+		}
+
+		public void SortUsingCustomSimple(string sortRules)
+		{
+			SortUsing = SortRulesType.CustomSimple;
+			SortRules = sortRules;
+		}
+
 	}
 
 	public enum IpaStatusChoices

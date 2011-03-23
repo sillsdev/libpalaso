@@ -140,13 +140,13 @@
 	<Compile Include="WritingSystems\Migration\WritingSystemDefinitionLdmlMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
-	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />
-	<Compile Include="WritingSystems\IWritingSystemRepository.Tests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionVariantTests.cs" />
+	<Compile Include="WritingSystems\IWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlAdaptorTests.cs" />
-	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepository.Tests.cs" />
-	<Compile Include="WritingSystems\LdmlInStreamWritingSystemRepository.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepositoryTests.cs" />
+	<Compile Include="WritingSystems\LdmlInStreamWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
-	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
   </ItemGroup>
