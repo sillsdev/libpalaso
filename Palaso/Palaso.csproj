@@ -320,11 +320,13 @@
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryVersionGetter.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlNodeComparerV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\RFC5646TagV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemsLdmlVersion0MigrationStrategy.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetter.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\LdmlAdaptorV1.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\LdmlNodeComparerV1.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\RFC5646TagV1.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\Version1Migrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\WritingSystemDefinitionV1.cs" />

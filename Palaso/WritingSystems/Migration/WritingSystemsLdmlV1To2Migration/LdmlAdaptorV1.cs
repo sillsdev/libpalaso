@@ -64,12 +64,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 
 		private static bool FindElement(XmlReader reader, string name)
 		{
-			return XmlHelpers.FindElement(reader, name, LdmlNodeComparer.CompareElementNames);
+			return XmlHelpers.FindElement(reader, name, LdmlNodeComparerV1.CompareElementNames);
 		}
 
 		private static bool FindElement(XmlReader reader, string name, string nameSpace)
 		{
-			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
+			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparerV1.CompareElementNames);
 		}
 
 		public static void WriteLdmlText(XmlWriter writer, string text)
@@ -472,7 +472,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration
 				reader.Read();
 			}
 			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
-				&& (reader.NodeType != XmlNodeType.Element || LdmlNodeComparer.CompareElementNames(reader.Name, elementName) < 0))
+				&& (reader.NodeType != XmlNodeType.Element || LdmlNodeComparerV1.CompareElementNames(reader.Name, elementName) < 0))
 			{
 				// XmlWriter.WriteNode doesn't do anything if the node type is Attribute
 				if (reader.NodeType == XmlNodeType.Attribute)
