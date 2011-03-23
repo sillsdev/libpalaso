@@ -7,7 +7,7 @@ using Palaso.WritingSystems;
 namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
-	public class WritingSystemPropertyTests
+	public class WritingSystemDefinitionPropertyTests
 	{
 
 
