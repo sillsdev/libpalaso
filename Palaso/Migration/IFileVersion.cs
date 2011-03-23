@@ -7,7 +7,7 @@ namespace Palaso.Migration
 {
 	public interface IFileVersion
 	{
-		int GetFileVersion(string pathToFile);
+		int GetFileVersion(string filePath);
 		int StrategyGoodToVersion { get; }
 	}
 }

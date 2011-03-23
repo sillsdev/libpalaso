@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using System.Text.RegularExpressions;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -775,7 +774,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
 		virtual public SortRulesType SortUsing
 		{
 			get { return _sortUsing; }
@@ -901,79 +899,29 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
-		public int DuplicateNumber
-		{
-			get
-			{
-				Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
-				string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
-				if(String.IsNullOrEmpty(duplicateTag))
-				{
-					return 0;
-				}
-				Regex numberRegex = new Regex("[0-9]*$");
-				//int valueFound = String.IsNullOrEmpty(numberRegex.Match(duplicateTag).Value) ? 0 : Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
-				return Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
-			}
-			set
-			{
-				if(value<0){throw new ArgumentOutOfRangeException("We can't have a negaive number of duplicates.");}
-				if(DuplicateNumber == value){
-					return;}
-				Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
-				string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
-				if (!String.IsNullOrEmpty(duplicateTag))
-				{
-					_rfcTag.RemoveFromPrivateUse(duplicateTag);
-				}
-				if (value > 0)
-				{
-					_rfcTag.AddToPrivateUse("dupl" + value);
-				}
-				Modified = true;
-			}
-		}
-
 	}
 
 	public enum IpaStatusChoices
-		{
-			NotIpa,
-			Ipa,
-			IpaPhonetic,
-			IpaPhonemic
-		}
+	{
+		NotIpa,
+		Ipa,
+		IpaPhonetic,
+		IpaPhonemic
+	}
 
 	public class WellKnownSubTags
 	{
 		public class Audio
 		{
-			static public string PrivateUseSubtag
-			{
-				get { return "x-audio"; }
-			}
-			static public string Script
-			{
-				get{return "Zxxx";}
-			}
+			public const string PrivateUseSubtag = "x-audio";
+			public const string Script= "Zxxx";
 		}
 
 		public class Ipa
 		{
-			static public string VariantSubtag
-			{
-				get { return "fonipa"; }
-			}
-
-			static public string PhonemicPrivateUseSubtag
-			{
-				get { return "x-emic"; }
-			}
-
-			static public string PhoneticPrivateUseSubtag
-			{
-				get { return "x-etic"; }
-			}
+			public const string VariantSubtag = "fonipa";
+			public const string PhonemicPrivateUseSubtag = "x-emic";
+			public const string PhoneticPrivateUseSubtag = "x-etic";
 		}
 	}
 }

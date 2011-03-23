@@ -712,45 +712,10 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void DuplicateNumber_PrivateUseContainsdupl1_Returns1()
+		public void SetRfc5646LanguageTagComponents_Language_IsSet()
 		{
-			var ws = new WritingSystemDefinition();
-			ws.Variant = "x-dupl1";
-			Assert.AreEqual(1, ws.DuplicateNumber);
+
 		}
 
-		[Test]
-		public void DuplicateNumber_IsSetTo0WhilePrivateUseContainsdupl1_Returns1()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Variant = "x-dupl1";
-			ws.DuplicateNumber = 0;
-			Assert.AreEqual(0, ws.DuplicateNumber);
-		}
-
-		[Test]
-		public void DuplicateNumber_IsSetTo0WhilePrivateUseContainsdupl1_VariantDoesNotContainDuplicateMarker()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Variant = "x-dupl1-test";
-			ws.DuplicateNumber = 0;
-			Assert.AreEqual("x-test", ws.Variant);
-		}
-
-		[Test]
-		public void DuplicateNumber_IsSetTo1from0_VariantContainsDuplicateMarker()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.DuplicateNumber = 1;
-			Assert.AreEqual("x-dupl1", ws.Variant);
-		}
-
-		[Test]
-		public void DuplicateNumber_PrivateUsedoesNotContainDuplicateMarker_Returns0()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Variant = "";
-			Assert.AreEqual(0, ws.DuplicateNumber);
-		}
 	}
 }

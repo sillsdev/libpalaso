@@ -123,9 +123,7 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>UsageMemory.Designer.cs</LastGenOutput>
 	</None>
-	<None Include="Resources\scriptNames.txt" />
 	<None Include="Reporting\app.config" />
-	<None Include="Resources\languageCodes.txt" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Base32\Base32Convert.cs" />

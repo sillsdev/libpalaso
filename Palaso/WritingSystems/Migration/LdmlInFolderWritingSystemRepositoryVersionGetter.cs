@@ -11,10 +11,10 @@ namespace Palaso.WritingSystems.Migration
 	{
 		private Migrator _migrator;
 
-		public int GetFileVersion(string pathToLdmlRepository)
+		public int GetFileVersion(string ldmlFolderPath)
 		{
 			int versionOfLowestVersionFileInRepo = WritingSystemDefinition.LatestWritingSystemDefinitionVersion + 1;
-			foreach (var filePath in Directory.GetFiles(pathToLdmlRepository))
+			foreach (var filePath in Directory.GetFiles(ldmlFolderPath))
 			{
 				var ldmlFileVersionGetter = new WritingSystemLdmlVersionGetter();
 				int currentFileVersion = ldmlFileVersionGetter.GetFileVersion(filePath);

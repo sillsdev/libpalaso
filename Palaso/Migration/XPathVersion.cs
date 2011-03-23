@@ -17,10 +17,10 @@ namespace Palaso.Migration
 
 		private string XPath { get; set; }
 
-		public int GetFileVersion(string source)
+		public int GetFileVersion(string filePath)
 		{
 			int result = -1;
-			using (var sourceStream = new StreamReader(source))
+			using (var sourceStream = new StreamReader(filePath))
 			{
 				var xPathDocument = new XPathDocument(sourceStream);
 				var navigator = xPathDocument.CreateNavigator();

@@ -9,10 +9,10 @@ namespace Palaso.WritingSystems.Migration
 {
 	public class WritingSystemLdmlVersionGetter : IFileVersion
 	{
-		public int GetFileVersion(string pathToFile)
+		public int GetFileVersion(string ldmlFilePath)
 		{
 			int version;
-			using (XmlReader reader = XmlReader.Create(pathToFile))
+			using (XmlReader reader = XmlReader.Create(ldmlFilePath))
 			{
 				reader.ReadToDescendant("ldml");
 				reader.ReadToDescendant("special");

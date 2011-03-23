@@ -415,6 +415,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -432,6 +433,7 @@
 	<EmbeddedResource Include="ImageToolbox\LicenseLogos.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>

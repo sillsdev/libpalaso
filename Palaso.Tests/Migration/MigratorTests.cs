@@ -102,7 +102,7 @@ namespace Palaso.Tests.Migration
 				_actualVersion = actualVersion;
 				_goodToVersion = goodToVersion;
 			}
-			public int GetFileVersion(string source)
+			public int GetFileVersion(string filePath)
 			{
 				return _actualVersion;
 			}
