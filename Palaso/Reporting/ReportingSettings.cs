@@ -13,24 +13,26 @@ namespace Palaso.Reporting
 		public ReportingSettings()
 		{
 			UserIdentifier = string.Empty;
-			LastLaunchDate = default(DateTime);
+			PreviousLaunchDate = default(DateTime);
 			OkToPingBasicUsageData = true;
 			HaveShowRegistrationDialog = false;
+			PreviousVersion = string.Empty;
 		}
 
-		public int Launches
-		{
-			get;
-			set;
-		}
+		public int Launches { get; set;}
 
 		public string UserIdentifier { get; set; }
 
-		public DateTime LastLaunchDate { get; set; }
+		public DateTime PreviousLaunchDate { get; set; }
 
 		public bool OkToPingBasicUsageData { get; set; }
 
 		public bool HaveShowRegistrationDialog { get; set; }
+
+		/// <summary>
+		/// help notice that someone upgraded
+		/// </summary>
+		public string PreviousVersion { get; set; }
 
 
 	}

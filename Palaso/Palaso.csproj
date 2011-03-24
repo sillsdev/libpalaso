@@ -117,10 +117,6 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
 	</None>
-	<None Include="Reporting\UsageMemory.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>UsageMemory.Designer.cs</LastGenOutput>
-	</None>
 	<None Include="Resources\scriptNames.txt" />
 	<None Include="Reporting\app.config" />
 	<None Include="Resources\languageCodes.txt" />
@@ -228,11 +224,6 @@
 	</Compile>
 	<Compile Include="Reporting\UsageEmailDialog.cs">
 	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Reporting\UsageMemory.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>UsageMemory.settings</DependentUpon>
 	</Compile>
 	<Compile Include="Reporting\UsageReporter.cs" />
 	<Compile Include="Reporting\UserRegistrationDialog.cs">
