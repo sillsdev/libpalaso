@@ -73,11 +73,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void DeleteCurrent_NoLongerInList()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "ws2";
+			_model.CurrentISO = "de";
 			_model.AddNew();
-			_model.CurrentISO = "ws3";
+			_model.CurrentISO = "th";
 			List<string> writingSystems = new List<string>();
 			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
@@ -108,15 +108,15 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SetCurrentIndexFromRfc4646_NotFound_ReturnsTrueAndCurrentIsChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
-			_model.CurrentRegion = "r";
+			_model.CurrentISO = "pt";
+			_model.CurrentRegion = "BR";
 			_model.AddNew();
-			_model.CurrentISO = "ws2";
-			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("ws2"));
+			_model.CurrentISO = "de";
+			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("de"));
 			Assert.AreEqual(1, _model.CurrentIndex);
-			Assert.AreEqual("ws2", _model.CurrentISO);
-			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("ws1-r"));
-			Assert.AreEqual("ws1", _model.CurrentISO);
+			Assert.AreEqual("de", _model.CurrentISO);
+			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("pt-BR"));
+			Assert.AreEqual("pt", _model.CurrentISO);
 			Assert.AreEqual(0, _model.CurrentIndex);
 
 		}
@@ -125,13 +125,13 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void CurrentSelectByIndex_GetCurrentCorrect()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "ws2";
+			_model.CurrentISO = "de";
 			_model.AddNew();
-			_model.CurrentISO = "ws3";
+			_model.CurrentISO = "th";
 			_model.CurrentIndex = 1;
-			Assert.AreEqual("ws2", _model.CurrentISO);
+			Assert.AreEqual("de", _model.CurrentISO);
 		}
 
 		[Test]
@@ -163,7 +163,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_Duplicate_TriggersOnAddDelete()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			bool eventTriggered = false;
 			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
 			_model.DuplicateCurrent();
@@ -174,7 +174,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_Delete_TriggersOnAddDelete()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			bool eventTriggered = false;
 			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
 			_model.DeleteCurrent();
@@ -194,9 +194,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_SameItemSelected_DoesNotTriggerSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "ws2";
+			_model.CurrentISO = "de";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -208,9 +208,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_DifferentItemSelected_TriggersSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "ws2";
+			_model.CurrentISO = "de";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -222,7 +222,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_ItemSelectedSelectNegative1_TriggersSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -234,7 +234,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_ItemSelectedClearSelection_TriggersSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -246,7 +246,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Event_NoItemSelectedClearSelection_DoesNotTriggerSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			bool eventTriggered = false;
 			_model.ClearSelection();
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -260,7 +260,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.AddNew();
 			bool eventTriggered = false;
 			_model.CurrentItemUpdated += delegate { eventTriggered = true; };
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			Assert.IsTrue(eventTriggered);
 		}
 
@@ -269,9 +269,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			_model.AddNew();
 			bool eventTriggered = false;
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentItemUpdated += delegate { eventTriggered = true; };
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			Assert.IsFalse(eventTriggered);
 		}
 
@@ -286,11 +286,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void DuplicateCurrent_AppearsInList()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "ws2";
+			_model.CurrentISO = "de";
 			_model.AddNew();
-			_model.CurrentISO = "ws3";
+			_model.CurrentISO = "th";
 			_model.CurrentIndex = 1;
 			_model.DuplicateCurrent();
 			Assert.AreEqual(4, _model.WritingSystemCount);
@@ -316,10 +316,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void EditCurrentSelection_UpdatesCanSaveForCurrent()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
 			Assert.IsTrue(_model.CanSaveCurrent);
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			Assert.IsFalse(_model.CanSaveCurrent);
 		}
 
@@ -327,19 +327,19 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void EditCurrentSelection_UpdatesCanSaveForAll()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "a";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "b";
+			_model.CurrentISO = "de";
 			_model.AddNew();
-			_model.CurrentISO = "b";
+			_model.CurrentISO = "de";
 			_model.CurrentIndex = 1;
-			_model.CurrentISO = "a";
+			_model.CurrentISO = "pt";
 			_model.CurrentIndex = 0;
 			bool[] canSave = _model.WritingSystemListCanSave;
 			Assert.IsFalse(canSave[0]);
 			Assert.IsFalse(canSave[1]);
 			Assert.IsTrue(canSave[2]);
-			_model.CurrentISO = "c";
+			_model.CurrentISO = "th";
 			canSave = _model.WritingSystemListCanSave;
 			Assert.IsTrue(canSave[0]);
 			Assert.IsTrue(canSave[1]);
@@ -350,14 +350,14 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void EditCurrentSelection_UpdatesCanSaveAndFixesCycle()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "a";
+			_model.CurrentISO = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "b";
+			_model.CurrentISO = "de";
 			_model.CurrentIndex = 0;
-			_model.CurrentISO = "b";
+			_model.CurrentISO = "de";
 			Assert.IsFalse(_model.CanSaveCurrent);
 			_model.CurrentIndex = 1;
-			_model.CurrentISO = "a";
+			_model.CurrentISO = "pt";
 			bool[] canSave = _model.WritingSystemListCanSave;
 			Assert.IsTrue(canSave[0]);
 			Assert.IsTrue(canSave[1]);
@@ -379,7 +379,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SortLanuageOptions_DoesNotIncludeCurrnt()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "TestLanguage";
+			_model.CurrentISO = "pt";
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
 				Assert.AreNotEqual(_model.CurrentRFC4646, languageOption.Key);
@@ -390,10 +390,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SortLanuageOptions_DoesIncludeOtherWritingSystems()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "TestLanguage1";
+			_model.CurrentISO = "pt";
 			string key = _model.CurrentRFC4646;
 			_model.AddNew();
-			_model.CurrentISO = "TestLanguage2";
+			_model.CurrentISO = "de";
 			bool found = false;
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
@@ -406,10 +406,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SortLanuageOptions_DoesNotIncludeOtherWritingSystemsThatMakeACycle()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "TestLanguage1";
+			_model.CurrentISO = "pt";
 			string key = _model.CurrentRFC4646;
 			_model.AddNew();
-			_model.CurrentISO = "TestLanguage2";
+			_model.CurrentISO = "de";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage.ToString();
 			_model.CurrentSortRules = key;
 			key = _model.CurrentRFC4646;
@@ -513,7 +513,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void TestSort_NullString_DoesNothing()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
 			_model.CurrentSortRules = "&b<a<c";
 			Assert.IsNull(_model.TestSort(null));
@@ -523,7 +523,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void TestSort_RulesAndString_SortsCorrectly()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
 			_model.CurrentSortRules = "&b<a<c";
 			Assert.AreEqual("b\r\na\r\nc", _model.TestSort("a\r\nb\r\nc"));
@@ -534,7 +534,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
 			_model.CurrentSortRules = "&b<a<c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
@@ -545,7 +545,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
 			_model.CurrentSortRules = "&&b<a<c";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
@@ -556,7 +556,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomSimple.ToString();
 			_model.CurrentSortRules = "b a c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
@@ -567,7 +567,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomSimple.ToString();
 			_model.CurrentSortRules = "ab b b";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
@@ -578,7 +578,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "ws1";
+			_model.CurrentISO = "pt";
 			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage.ToString();
 			_model.CurrentSortRules = "en";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
@@ -658,7 +658,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
-			_model.CurrentRegion = "r";
+			_model.CurrentRegion = "BR";
 			_model.CurrentVariant = "fonipa";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
@@ -667,7 +667,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SelectionForSpecialCombo_HasRegion_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
-			_model.CurrentRegion = "x";
+			_model.CurrentRegion = "BR";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
 		[Test]
@@ -681,7 +681,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SelectionForSpecialCombo_HasUnknownScript_GivesCustom()
 		{
 			_model.AddNew();
-			_model.CurrentScriptCode = "foobar";
+			_model.CurrentScriptCode = "Arab";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
 		}
 

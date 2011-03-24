@@ -48,7 +48,7 @@ namespace Palaso.WritingSystems
 		private string _languageName;
 
 		private string _abbreviation;
-		private bool _isLegacyEncoded;
+		private bool _isUnicodeEncoded;
 
 		private string _versionNumber;
 		private string _versionDescription;
@@ -84,7 +84,7 @@ namespace Palaso.WritingSystems
 		public WritingSystemDefinition()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
-			_isLegacyEncoded = false;
+			_isUnicodeEncoded = true;
 			_rfcTag = new RFC5646Tag("qaa",String.Empty,String.Empty,String.Empty,String.Empty);
 		   // _defaultFontSize = 10; //arbitrary
 		}
@@ -146,7 +146,7 @@ namespace Palaso.WritingSystems
 			_sortRules = ws._sortRules;
 			_spellCheckingId = ws._spellCheckingId;
 			_dateModified = ws._dateModified;
-			_isLegacyEncoded = ws._isLegacyEncoded;
+			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 		}
@@ -846,18 +846,19 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		[Obsolete("Use isUnicodeEncoded instead - which is the inverse of isLegacyEncoded")]
 		virtual public bool IsLegacyEncoded
 		{
 			get
 			{
-				return _isLegacyEncoded;
+				return !_isUnicodeEncoded;
 			}
 			set
 			{
-				if(value != _isLegacyEncoded)
+				if(value == _isUnicodeEncoded)
 				{
 					Modified = true;
-					_isLegacyEncoded = value;
+					_isUnicodeEncoded = !value;
 				}
 			}
 		}
@@ -904,7 +905,22 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
-		public bool IsUnicodeEncoded { get; set; } // TODO Introduce IsUnicodeEncoded to palaso wsd.
+		public bool IsUnicodeEncoded
+		{
+			get
+			{
+				return _isUnicodeEncoded;
+			}
+			set
+			{
+				if (value != _isUnicodeEncoded)
+				{
+					Modified = true;
+					_isUnicodeEncoded = value;
+				}
+			}
+		}
+
 
 		public static WritingSystemDefinition FromRFC5646(string tag)
 		{
