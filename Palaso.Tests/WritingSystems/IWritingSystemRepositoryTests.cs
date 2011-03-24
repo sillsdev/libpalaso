@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.WritingSystems;
@@ -119,12 +120,12 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Exists_FalseThenTrue()
+		public void Contains_FalseThenTrue()
 		{
-			Assert.IsFalse(RepositoryUnderTest.Exists("one"));
+			Assert.IsFalse(RepositoryUnderTest.Contains("one"));
 			_writingSystem.ISO639 = "one";
 			RepositoryUnderTest.Set(_writingSystem);
-			Assert.IsTrue(RepositoryUnderTest.Exists("one"));
+			Assert.IsTrue(RepositoryUnderTest.Contains("one"));
 		}
 
 		[Test]
@@ -393,6 +394,51 @@ namespace Palaso.Tests.WritingSystems
 			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
 			RepositoryUnderTest.Set(ws);
 			Assert.AreEqual(ws.StoreID, newID);
+		}
+
+		[Test]
+		public void OnWritingSystemIDChange_DifferentId_OldIdIsRemoved()
+		{
+			var ws = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(ws);
+			Assert.IsTrue(RepositoryUnderTest.Contains("fr"));
+			ws.ISO639 = "th";
+			RepositoryUnderTest.OnWritingSystemIDChange(ws, "fr");
+			Assert.IsFalse(RepositoryUnderTest.Contains("fr"));
+			Assert.IsTrue(RepositoryUnderTest.Contains("th"));
+		}
+
+		[Test]
+		public void AllWritingSystems_HasAllWritingSystems_ReturnsAllWritingSystems()
+		{
+			var ws1 = new WritingSystemDefinition("fr");
+			ws1.SetIsVoice(true);
+			RepositoryUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
+			Assert.IsTrue(RepositoryUnderTest.AllWritingSystems.Count() == 3);
+		}
+
+		[Test]
+		public void VoiceWritingSystems_HasAllWritingSystems_ReturnsVoiceWritingSystems()
+		{
+			var ws1 = new WritingSystemDefinition("fr");
+			ws1.SetIsVoice(true);
+			RepositoryUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
+			Assert.IsTrue(RepositoryUnderTest.VoiceWritingSystems.Count() == 1);
+		}
+
+		[Test]
+		public void TextWritingSystems_HasAllWritingSystems_ReturnsTextWritingSystems()
+		{
+			var ws1 = new WritingSystemDefinition("fr");
+			ws1.SetIsVoice(true);
+			RepositoryUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
+			Assert.IsTrue(RepositoryUnderTest.TextWritingSystems.Count() == 2);
 		}
 	}
 }

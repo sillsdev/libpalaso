@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Palaso.Code;
 
 namespace Palaso.WritingSystems
@@ -19,12 +20,10 @@ namespace Palaso.WritingSystems
 			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
 		}
 
+		[Obsolete("Deprecated: use AllWritingSystems instead")]
 		public IEnumerable<WritingSystemDefinition> WritingSystemDefinitions
 		{
-			get
-			{
-				return _writingSystems.Values;
-			}
+			get { return AllWritingSystems; }
 		}
 
 		protected IDictionary<string, DateTime> WritingSystemsToIgnore
@@ -90,8 +89,13 @@ namespace Palaso.WritingSystems
 			return definition.Clone();
 		}
 
-
+		[Obsolete("Deprecated: use Contains instead")]
 		public bool Exists(string identifier)
+		{
+			return Contains(identifier);
+		}
+
+		public bool Contains(string identifier)
 		{
 			return _writingSystems.ContainsKey(identifier);
 		}
@@ -196,5 +200,28 @@ namespace Palaso.WritingSystems
 			return newerWritingSystems;
 		}
 
+		public IEnumerable<WritingSystemDefinition> AllWritingSystems
+		{
+			get
+			{
+				return _writingSystems.Values;
+			}
+		}
+
+		public IEnumerable<WritingSystemDefinition> TextWritingSystems
+		{
+			get { return _writingSystems.Values.Where(ws => !ws.IsVoice); }
+		}
+
+		public IEnumerable<WritingSystemDefinition> VoiceWritingSystems
+		{
+			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
+		}
+
+		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		{
+			_writingSystems[ws.Id] = ws;
+			_writingSystems.Remove(oldId);
+		}
 	}
 }
