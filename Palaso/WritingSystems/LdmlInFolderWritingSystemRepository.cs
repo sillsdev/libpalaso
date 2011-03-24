@@ -273,6 +273,12 @@ namespace Palaso.WritingSystems
 			return null;
 		}
 
+		public void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		{
+			base.OnWritingSystemIDChange(ws, oldId);
+			throw new NotImplementedException();
+		}
+
 		public void SaveDefinition(WritingSystemDefinition ws)
 		{
 			string incomingFileName = GetFileNameFromIdentifier(ws.StoreID);
