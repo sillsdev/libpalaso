@@ -199,8 +199,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_SetToIpaWhileIsVoiceIsTrue_IpaStatusIsIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.IsVoice = true;
+			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.AreEqual(IpaStatusChoices.Ipa, ws.IpaStatus);
 		}
 
@@ -208,8 +208,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_SetToIpaWhileIsVoiceIsTrue_IsVoiceIsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
+			ws.IsVoice = true;
+			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.IsFalse(ws.IsVoice);
 		}
 
@@ -217,8 +217,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_SetToPhoneticWhileIsVoiceIsTrue_IpaStatusIsPhonetic()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
+			ws.IsVoice = true;
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
 			Assert.AreEqual(IpaStatusChoices.IpaPhonetic, ws.IpaStatus);
 		}
 
@@ -226,8 +226,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_SetToPhoneticWhileIsVoiceIsTrue_IsVoiceIsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
+			ws.IsVoice = true;
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
 			Assert.IsFalse(ws.IsVoice);
 		}
 
@@ -235,8 +235,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_SetToPhonemicWhileIsVoiceIsTrue_IpaStatusIsPhonemic()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
+			ws.IsVoice = true;
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
 			Assert.AreEqual(IpaStatusChoices.IpaPhonemic, ws.IpaStatus);
 		}
 
@@ -244,8 +244,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_SetToPhonemicWhileIsVoiceIsTrue_IsVoiceIsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
+			ws.IsVoice = true;
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
 			Assert.IsFalse(ws.IsVoice);
 		}
 

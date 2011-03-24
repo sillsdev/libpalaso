@@ -457,63 +457,63 @@ namespace Palaso.Tests.WritingSystems
 		public void PrivateUseContainsPart_PartIsNotContainedInPrivateUse_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.IsFalse(rfcTag.PrivateUseContainsPart("x-audio"));
+			Assert.IsFalse(rfcTag.PrivateUseContains("x-audio"));
 		}
 
 		[Test]
 		public void PrivateUseContainsPart_PartIsContainedInPrivateUse_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
-			Assert.IsTrue(rfcTag.PrivateUseContainsPart("x-audio"));
+			Assert.IsTrue(rfcTag.PrivateUseContains("x-audio"));
 		}
 
 		[Test]
 		public void PrivateUseContainsPart_PartIsContainedInPrivateUseAndpartDoesnNotHavePrependedx_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
-			Assert.IsTrue(rfcTag.PrivateUseContainsPart("audio"));
+			Assert.IsTrue(rfcTag.PrivateUseContains("audio"));
 		}
 
 		[Test]
 		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInPrivateUse_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.IsFalse(rfcTag.PrivateUseContainsPart("x-etic-test"));
+			Assert.IsFalse(rfcTag.PrivateUseContains("x-etic-test"));
 		}
 
 		[Test]
 		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInPrivateUse_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-smth-audio");
-			Assert.IsTrue(rfcTag.PrivateUseContainsPart("x-audio-test"));
+			Assert.IsTrue(rfcTag.PrivateUseContains("x-audio-test"));
 		}
 
 		[Test]
 		public void VariantContainsPart_PartIsNotContainedInVariant_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.IsFalse(rfcTag.VariantContainsPart("1901"));
+			Assert.IsFalse(rfcTag.VariantContains("1901"));
 		}
 
 		[Test]
 		public void VariantContainsPart_PartIsContainedInVariant_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
-			Assert.IsTrue(rfcTag.VariantContainsPart("1901"));
+			Assert.IsTrue(rfcTag.VariantContains("1901"));
 		}
 
 		[Test]
 		public void VariantContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInVariant_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
-			Assert.IsFalse(rfcTag.VariantContainsPart("biske-1901"));
+			Assert.IsFalse(rfcTag.VariantContains("biske-1901"));
 		}
 
 		[Test]
 		public void VariantContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInVariant_ReturnsTrue()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-bauddha-biske", String.Empty);
-			Assert.IsTrue(rfcTag.VariantContainsPart("biske-1901"));
+			Assert.IsTrue(rfcTag.VariantContains("biske-1901"));
 		}
 
 		[Test]

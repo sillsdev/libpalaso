@@ -70,7 +70,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Rfc5646_HasOnlyAbbreviation_ReturnsQaa()
 		{
-			WritingSystemDefinition ws = new WritingSystemDefinition(){Abbreviation = "hello"};
+			WritingSystemDefinition ws = new WritingSystemDefinition {Abbreviation = "hello"};
 			Assert.AreEqual("qaa", ws.RFC5646);
 		}
 
@@ -325,7 +325,7 @@ namespace Palaso.Tests.WritingSystems
 												 Region = "US",
 												 Variant = "1901"
 											 };
-			ws.SetIsVoice(true);
+			ws.IsVoice = true;
 			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual("US", ws.Region);
 			Assert.AreEqual("1901-x-audio", ws.Variant);
@@ -339,7 +339,7 @@ namespace Palaso.Tests.WritingSystems
 											 {
 												 ISO639 = "en"
 											 };
-			ws.SetIsVoice(true);
+			ws.IsVoice = true;
 			Assert.AreEqual("en", ws.ISO639);
 		}
 
@@ -347,8 +347,8 @@ namespace Palaso.Tests.WritingSystems
 		public void SetVoice_FalseFromTrue_ClearsScript()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
-			ws.SetIsVoice(false);
+			ws.IsVoice = true;
+			ws.IsVoice = false;
 			Assert.AreEqual("", ws.Script);
 			Assert.AreEqual("", ws.Region);
 			Assert.AreEqual("", ws.Variant);
@@ -394,7 +394,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
+			ws.IsVoice = true;
 			ws.Variant = "1901";
 			Assert.AreEqual("1901", ws.Variant);
 			Assert.IsFalse(ws.IsVoice);
@@ -404,7 +404,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Iso639_SetToSmthWithDashesWhileIsVoiceIsTrue_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIsVoice(true);
+			ws.IsVoice = true;
 			Assert.Throws<ArgumentException>(() => ws.ISO639 = "iso-script-region-variant");
 		}
 
@@ -430,8 +430,8 @@ namespace Palaso.Tests.WritingSystems
 			{
 				Variant = "1901"
 			};
-			ws.SetIsVoice(true);
-			ws.SetIsVoice(false);
+			ws.IsVoice = true;
+			ws.IsVoice = false;
 			Assert.AreEqual("1901", ws.Variant);
 		}
 
@@ -442,8 +442,8 @@ namespace Palaso.Tests.WritingSystems
 			{
 				Region = "US"
 			};
-			ws.SetIsVoice(true);
-			ws.SetIsVoice(false);
+			ws.IsVoice = true;
+			ws.IsVoice = false;
 			Assert.AreEqual("US", ws.Region);
 		}
 
@@ -454,8 +454,8 @@ namespace Palaso.Tests.WritingSystems
 			{
 				Script = "Latn"
 			};
-			ws.SetIsVoice(true);
-			ws.SetIsVoice(false);
+			ws.IsVoice = true;
+			ws.IsVoice = false;
 			Assert.AreEqual("", ws.Script);
 		}
 
@@ -463,8 +463,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IpaStatusIsSetToNotIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			ws.IsVoice = true;
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
@@ -472,8 +472,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpaPhontetic_IpaStatusIsSetToNotIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			ws.IsVoice = true;
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
@@ -481,8 +481,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpaPhonemic_IpaStatusIsSetToNotIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			ws.IsVoice = true;
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
@@ -599,8 +599,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IsVoiceIsTrue()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			ws.IsVoice = true;
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -608,8 +608,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IpaStatusIsNotIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			ws.IsVoice = true;
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
@@ -617,8 +617,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToFalseWhileIpaStatusIsIpa_IsVoiceIsFalse()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
-			ws.SetIsVoice(false);
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			ws.IsVoice = false;
 			Assert.IsFalse(ws.IsVoice);
 		}
 
@@ -626,8 +626,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToFalseWhileIpaStatusIsIpa_IpaStatusIsIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.Ipa);
-			ws.SetIsVoice(false);
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			ws.IsVoice = false;
 			Assert.AreEqual(IpaStatusChoices.Ipa, ws.IpaStatus);
 		}
 
@@ -635,8 +635,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsPhonetic_IsVoiceIsTrue()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			ws.IsVoice = true;
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -644,8 +644,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsPhonetic_IpaStatusIsNotIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonetic);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			ws.IsVoice = true;
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
@@ -653,8 +653,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsPhonemic_IsVoiceIsTrue()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			ws.IsVoice = true;
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -662,8 +662,8 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_SetToTrueWhileIpaStatusIsPhonemic_IpaStatusIsNotIpa()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.SetIpaStatus(IpaStatusChoices.IpaPhonemic);
-			ws.SetIsVoice(true);
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			ws.IsVoice = true;
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 

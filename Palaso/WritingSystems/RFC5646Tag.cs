@@ -248,14 +248,7 @@ namespace Palaso.WritingSystems
 			CheckIfRegionTagIsValid();
 			CheckIfVariantTagIsValid();
 			CheckIfPrivateUseTagIsValid();
-			bool languageIsEmpty = String.IsNullOrEmpty(Language);
-			bool scriptIsEmpty = String.IsNullOrEmpty(Script);
-			bool regionIsEmpty = String.IsNullOrEmpty(Region);
-			bool variantIsEmpty = String.IsNullOrEmpty(Variant);
-			bool privateUseEmpty = String.IsNullOrEmpty(PrivateUse);
-			bool onlyPrivateUseIsNotSet = (languageIsEmpty && scriptIsEmpty && regionIsEmpty && variantIsEmpty && !privateUseEmpty);
-			bool languageTagIsSetOrOnlyPrivateUseTagIsSet = !languageIsEmpty || onlyPrivateUseIsNotSet;
-			if (!languageTagIsSetOrOnlyPrivateUseTagIsSet)
+			if (!(HasLanguage || (!HasLanguage && !HasScript && !HasRegion && !HasVariant && HasPrivateUse)))
 			{
 				throw new ArgumentException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
 			}
@@ -495,6 +488,31 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public bool HasRegion
+		{
+			get { return !String.IsNullOrEmpty(_region); }
+		}
+
+		public bool HasScript
+		{
+			get { return !String.IsNullOrEmpty(_script); }
+		}
+
+		public bool HasLanguage
+		{
+			get { return !String.IsNullOrEmpty(_language); }
+		}
+
+		public bool HasVariant
+		{
+			get { return _variant.Count > 0; }
+		}
+
+		public bool HasPrivateUse
+		{
+			get { return _privateUse.Count > 0; }
+		}
+
 		private void SetVariantSubtags(string value)
 		{
 			_variant.Clear();
@@ -667,13 +685,13 @@ namespace Palaso.WritingSystems
 			RemoveFromSubtag(_variant, subtagToRemove);
 		}
 
-		public bool PrivateUseContainsPart(string subTagToFind)
+		public bool PrivateUseContains(string subTagToFind)
 		{
 			string stringWithoutPrecedingxDash = subTagToFind.Trim('-', 'x');
 			return SubtagContainsPart(_privateUse, stringWithoutPrecedingxDash);
 		}
 
-		public bool VariantContainsPart(string subTagToFind)
+		public bool VariantContains(string subTagToFind)
 		{
 			return SubtagContainsPart(_variant, subTagToFind);
 		}
@@ -682,5 +700,6 @@ namespace Palaso.WritingSystems
 		{
 			return _privateUse.Find(str => regex.Match(str).Success);
 		}
+
 	}
 }

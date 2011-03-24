@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using Palaso.WritingSystems.Collation;
 
@@ -67,26 +68,11 @@ namespace Palaso.WritingSystems
 		private bool _rightToLeftScript;
 		private ICollator _collator;
 
-		/// <summary>
-		/// singleton
-		/// </summary>
-		private static List<Iso15924Script> _scriptOptions = new List<Iso15924Script>();
-	   /// <summary>
-		/// singleton
-		/// </summary>
-		private static List<Iso639LanguageCode> _languageCodes;
-
-		/// <summary>
-		/// For overriding the other identifier fields, to specify a custom RFC5646
-		/// </summary>
-		//private string _customLanguageTag;
-
 		public WritingSystemDefinition()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isUnicodeEncoded = true;
 			_rfcTag = new RFC5646Tag("qaa",String.Empty,String.Empty,String.Empty,String.Empty);
-		   // _defaultFontSize = 10; //arbitrary
 		}
 
 		public WritingSystemDefinition(string iso)
@@ -105,28 +91,6 @@ namespace Palaso.WritingSystems
 			Variant = variant;
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
-		}
-
-		private string GetRfc5646PrivateUseTag(string variant)
-		{
-			string[] variantAndPrivateUseTags = GetRfc5646VariantAndPrivateUseTagsFromVariant(variant);
-			if (variantAndPrivateUseTags.Length > 1)
-			{
-				return variantAndPrivateUseTags[1];
-			}
-			return String.Empty;
-		}
-
-		private string[] GetRfc5646VariantAndPrivateUseTagsFromVariant(string variant)
-		{
-			string[] partsOfVariant = variant.Split(new[] { "-x-" }, StringSplitOptions.None);
-			return partsOfVariant;
-		}
-
-		private string GetRfc5646Variant(string variant)
-		{
-			string[] variantAndExtensions = GetRfc5646VariantAndPrivateUseTagsFromVariant(variant);
-			return variantAndExtensions[0];
 		}
 
 		/// <summary>
@@ -154,6 +118,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
 		/// </summary>
+		// TODO Move this to some other class that provides WritingSystemResources? Info?
 		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
 			get
@@ -189,7 +154,6 @@ namespace Palaso.WritingSystems
 		/// away with for now, but maybe not if this class grows to be extension aware.
 		/// Ideally, these should be suffixes rather than private use
 		/// </summary>
-		[Obsolete("The setter on this property is being deprecated. Please use the new SetIpaStatus method instead.")]
 		virtual public IpaStatusChoices IpaStatus
 		{
 			get
@@ -211,34 +175,74 @@ namespace Palaso.WritingSystems
 
 			set
 			{
-				SetIpaStatus(value);
+				if (IpaStatus == value)
+				{
+					return;
+				}
+				_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
+				/* "There are some variant subtags that have no prefix field,
+				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
+				 * should appear after any other variant subtags with prefix information."
+				 */
+				_rfcTag.RemoveFromPrivateUse("x-etic");
+				_rfcTag.RemoveFromPrivateUse("x-emic");
+				_rfcTag.RemoveFromVariant("fonipa");
+
+				switch (value)
+				{
+					default:
+						break;
+					case IpaStatusChoices.Ipa:
+						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+						break;
+					case IpaStatusChoices.IpaPhonemic:
+						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+						_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
+						break;
+					case IpaStatusChoices.IpaPhonetic:
+						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+						_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+						break;
+				}
+				Modified = true;
 			}
 		}
 
-		[Obsolete("The setter on this property is being deprecated. Please use the new SetIsVoice method instead.")]
 		virtual public bool IsVoice
 		{
 			get
 			{
-				bool rfcTagindicatesVoiceWritingSystem = ScriptSubTagIsAudioConform && VariantSubTagIsAudioConform;
-				if (rfcTagindicatesVoiceWritingSystem) { return true; }
-				return false;
+				return ScriptSubTagIsAudio && VariantSubTagIsAudio;
 			}
 			set
 			{
-				SetIsVoice(value);
+				if (IsVoice == value) { return; }
+				if (value)
+				{
+					IpaStatus = IpaStatusChoices.NotIpa;
+					Keyboard = string.Empty;
+					Script = WellKnownSubTags.Audio.Script;
+					_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
+				}
+				else
+				{
+					_rfcTag.Script = String.Empty;
+					_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
+				}
+				Modified = true;
+				CheckVariantAndScriptRules();
 			}
 		}
 
-		private bool VariantSubTagIsAudioConform
+		private bool VariantSubTagIsAudio
 		{
 			get
 			{
-				return _rfcTag.PrivateUseContainsPart(WellKnownSubTags.Audio.PrivateUseSubtag);
+				return _rfcTag.PrivateUseContains(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 		}
 
-		private bool ScriptSubTagIsAudioConform
+		private bool ScriptSubTagIsAudio
 		{
 			get { return _rfcTag.Script.Equals(WellKnownSubTags.Audio.Script,StringComparison.OrdinalIgnoreCase); }
 		}
@@ -250,19 +254,16 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				bool privateUseIsPopulatedAndVariantIsNot = String.IsNullOrEmpty(_rfcTag.Variant) && !String.IsNullOrEmpty(_rfcTag.PrivateUse);
-				bool variantIsPopulatedAndPrivateUseIsNot = !String.IsNullOrEmpty(_rfcTag.Variant) && String.IsNullOrEmpty(_rfcTag.PrivateUse);
-				bool variantAndPrivateUseAreBothPopulated = !String.IsNullOrEmpty(_rfcTag.Variant) && !String.IsNullOrEmpty(_rfcTag.PrivateUse);
 				string variantToReturn = "";
-				if(variantIsPopulatedAndPrivateUseIsNot)
+				if (_rfcTag.HasVariant && !_rfcTag.HasPrivateUse)
 				{
 					variantToReturn = _rfcTag.Variant;
 				}
-				else if(privateUseIsPopulatedAndVariantIsNot)
+				else if(_rfcTag.HasPrivateUse && !_rfcTag.HasVariant)
 				{
 					variantToReturn = _rfcTag.PrivateUse;
 				}
-				else if(variantAndPrivateUseAreBothPopulated)
+				else if(_rfcTag.HasVariant && _rfcTag.HasPrivateUse)
 				{
 					variantToReturn = _rfcTag.Variant + "-" + _rfcTag.PrivateUse;
 				}
@@ -271,60 +272,51 @@ namespace Palaso.WritingSystems
 			set
 			{
 				if (value == null || value == Variant) { return; }
-				bool variantEndsInXorXDash = value.EndsWith("-x") || value.EndsWith("-x-");
-				bool variantDoesNotContainPrivateUseSubtags = !value.Contains("x-");
-				bool variantIsRfc5646ConformPrivateUseSubTag = value.StartsWith("x-");
-				if(variantEndsInXorXDash)
+				// Note that the WritingSystemDefinition provides no direct support for private use except via Variant set.
+				// x- starts a private use marker. See RFC5646
+				if (value.EndsWith("-x") || value.EndsWith("-x-"))
 				{
 					throw new ArgumentException("The variant may not end in '-x' or '-x-'");
 				}
-				if (variantDoesNotContainPrivateUseSubtags)
+				if (!value.Contains("x-"))
 				{
 					_rfcTag.Variant = value;
 					_rfcTag.PrivateUse = "";
 				}
-				else if (variantIsRfc5646ConformPrivateUseSubTag)
+				else if (value.StartsWith("x-"))
 				{
 					_rfcTag.Variant = "";
 					_rfcTag.PrivateUse = value;
 				}
 				else
 				{
-					string variantAccordingToRfc5646 = GetRfc5646Variant(value);
-					string privateUseTagAccordingToRfc5646 = GetRfc5646PrivateUseTag(value);
-					_rfcTag.Variant = variantAccordingToRfc5646;
-					_rfcTag.PrivateUse = privateUseTagAccordingToRfc5646;
+					string[] partsOfVariant = value.Split(new[] { "-x-" }, StringSplitOptions.None);
+					_rfcTag.Variant = partsOfVariant[0];
+					_rfcTag.PrivateUse = partsOfVariant[1];
 				}
 				Modified = true;
-				CheckIfRfcTagIsValid();
+				CheckVariantAndScriptRules();
 			}
 		}
 
-		private void CheckIfRfcTagIsValid()
+		private void CheckVariantAndScriptRules()
 		{
-			bool variantIsAudioConformButScriptIsNot = VariantSubTagIsAudioConform && !ScriptSubTagIsAudioConform;
-			if(variantIsAudioConformButScriptIsNot)
+			if (VariantSubTagIsAudio && !ScriptSubTagIsAudio)
 			{
 				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");
 			}
-			bool variantContainsVoiceMarkerAsWellAsSomeFormOfIpaMarker = VariantSubTagIsAudioConform &&
-															   VariantSubtagIndicatesSomeFormOfIpa;
-			if(variantContainsVoiceMarkerAsWellAsSomeFormOfIpaMarker)
+			bool rfcTagHasAnyIpa = VariantSubTagIsIpaConform || Rfc5646TagIsPhonemicConform || Rfc5646TagIsPhoneticConform;
+			if (VariantSubTagIsAudio && rfcTagHasAnyIpa)
 			{
 				throw new ArgumentException("A writing system may not be marked as audio and ipa at the same time.");
 			}
-		}
-
-		private bool VariantSubtagIndicatesSomeFormOfIpa
-		{
-			get { return VariantSubTagIsIpaConform || Rfc5646TagIsPhonemicConform || Rfc5646TagIsPhoneticConform; }
 		}
 
 		private bool VariantSubTagIsIpaConform
 		{
 			get
 			{
-				return _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.VariantSubtag);
+				return _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag);
 			}
 		}
 
@@ -332,8 +324,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return  _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.VariantSubtag) &&
-					_rfcTag.PrivateUseContainsPart(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+				return  _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag) &&
+					_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
 			}
 		}
 
@@ -341,62 +333,9 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.VariantContainsPart(WellKnownSubTags.Ipa.VariantSubtag) &&
-					_rfcTag.PrivateUseContainsPart(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
+				return _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag) &&
+					_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
 			}
-		}
-
-		public void SetIsVoice(bool isVoice)
-		{
-			if (IsVoice == isVoice) { return; }
-			if (isVoice)
-			{
-				IpaStatus = IpaStatusChoices.NotIpa;
-				Keyboard = string.Empty;
-				Script = WellKnownSubTags.Audio.Script;
-				_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
-			}
-			else
-			{
-				_rfcTag.Script = String.Empty;
-				_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
-			}
-			Modified = true;
-			CheckIfRfcTagIsValid();
-		}
-
-		public void SetIpaStatus(IpaStatusChoices ipaStatus)
-		{
-			if(IpaStatus == ipaStatus)
-			{
-				return;
-			}
-			_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
-			/* "There are some variant subtags that have no prefix field,
-			 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
-			 * should appear after any other variant subtags with prefix information."
-			 */
-			_rfcTag.RemoveFromPrivateUse("x-etic");
-			_rfcTag.RemoveFromPrivateUse("x-emic");
-			_rfcTag.RemoveFromVariant("fonipa");
-
-			switch (ipaStatus)
-			{
-				default:
-					break;
-				case IpaStatusChoices.Ipa:
-					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
-					break;
-				case IpaStatusChoices.IpaPhonemic:
-					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
-					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
-					break;
-				case IpaStatusChoices.IpaPhonetic:
-					_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
-					_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
-					break;
-			}
-			Modified = true;
 		}
 
 		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
@@ -405,7 +344,7 @@ namespace Palaso.WritingSystems
 			Script = script;
 			Region = region;
 			Variant = variant;
-			CheckIfRfcTagIsValid();
+			CheckVariantAndScriptRules();
 		}
 
 		virtual public string Region
@@ -475,7 +414,7 @@ namespace Palaso.WritingSystems
 				}
 				_rfcTag.Script = value;
 				Modified = true;
-				CheckIfRfcTagIsValid();
+				CheckVariantAndScriptRules();
 			}
 		}
 
@@ -484,21 +423,19 @@ namespace Palaso.WritingSystems
 			get
 			{
 				bool customLanguageNameIsSet = !String.IsNullOrEmpty(_languageName);
-				if (!customLanguageNameIsSet)
-				{
-					foreach (Iso639LanguageCode code in ValidIso639LanguageCodes)
-					{
-						if(code.Code.Equals(ISO639))
-						{
-							return code.Name;
-						}
-					}
-				}
-				else if (customLanguageNameIsSet)
+				if (customLanguageNameIsSet)
 				{
 					return _languageName;
 				}
+				var code = ValidIso639LanguageCodes.First(c => c.Code.Equals(ISO639));
+				if (code != null)
+				{
+					return code.Name;
+				}
 				return "Unknown Language";
+
+				// TODO Make the below work.
+				//return Resource.LanguageName(ISO639) ?? "Unknown Language";
 			}
 			set
 			{
@@ -614,19 +551,10 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-//                if(!string.IsNullOrEmpty(_customLanguageTag))
-//                {
-//                    return _customLanguageTag;
-//                }
 				return _rfcTag.CompleteTag;
 			}
-//            set
-//            {
-//                _customLanguageTag=value;
-//            }
 		}
 
-		[Obsolete("Use RFC5646 Property.")]
 		public string Id
 		{
 			get
@@ -803,6 +731,24 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public void SortUsingOtherLanguage(string sortRules)
+		{
+			SortUsing = SortRulesType.OtherLanguage;
+			SortRules = sortRules;
+		}
+
+		public void SortUsingCustomICU(string sortRules)
+		{
+			SortUsing = SortRulesType.CustomICU;
+			SortRules = sortRules;
+		}
+
+		public void SortUsingCustomSimple(string sortRules)
+		{
+			SortUsing = SortRulesType.CustomSimple;
+			SortRules = sortRules;
+		}
+
 		virtual public string SpellCheckingId
 		{
 			get
@@ -851,15 +797,11 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return !_isUnicodeEncoded;
+				return !IsUnicodeEncoded;
 			}
 			set
 			{
-				if(value == _isUnicodeEncoded)
-				{
-					Modified = true;
-					_isUnicodeEncoded = !value;
-				}
+				IsUnicodeEncoded = !value;
 			}
 		}
 
@@ -921,28 +863,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
-		public static WritingSystemDefinition FromRFC5646(string tag)
+		public static WritingSystemDefinition FromLanguage(string language)
 		{
-			throw new NotImplementedException();
-		}
-
-		public void SortUsingOtherLanguage(string sortRules)
-		{
-			SortUsing = SortRulesType.OtherLanguage;
-			SortRules = sortRules;
-		}
-
-		public void SortUsingCustomICU(string sortRules)
-		{
-			SortUsing = SortRulesType.CustomICU;
-			SortRules = sortRules;
-		}
-
-		public void SortUsingCustomSimple(string sortRules)
-		{
-			SortUsing = SortRulesType.CustomSimple;
-			SortRules = sortRules;
+			return new WritingSystemDefinition(language);
 		}
 
 	}
@@ -957,10 +880,15 @@ namespace Palaso.WritingSystems
 
 	public class WellKnownSubTags
 	{
+		public class Unwritten
+		{
+			public const string Script = "Zxxx";
+		}
+
 		public class Audio
 		{
 			public const string PrivateUseSubtag = "x-audio";
-			public const string Script= "Zxxx";
+			public const string Script= Unwritten.Script;
 		}
 
 		public class Ipa
