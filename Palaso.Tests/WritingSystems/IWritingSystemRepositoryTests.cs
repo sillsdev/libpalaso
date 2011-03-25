@@ -412,7 +412,7 @@ namespace Palaso.Tests.WritingSystems
 		public void AllWritingSystems_HasAllWritingSystems_ReturnsAllWritingSystems()
 		{
 			var ws1 = new WritingSystemDefinition("fr");
-			ws1.SetIsVoice(true);
+			ws1.IsVoice = true;
 			RepositoryUnderTest.Set(ws1);
 			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
@@ -423,7 +423,7 @@ namespace Palaso.Tests.WritingSystems
 		public void VoiceWritingSystems_HasAllWritingSystems_ReturnsVoiceWritingSystems()
 		{
 			var ws1 = new WritingSystemDefinition("fr");
-			ws1.SetIsVoice(true);
+			ws1.IsVoice = true;
 			RepositoryUnderTest.Set(ws1);
 			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
@@ -434,7 +434,7 @@ namespace Palaso.Tests.WritingSystems
 		public void TextWritingSystems_HasAllWritingSystems_ReturnsTextWritingSystems()
 		{
 			var ws1 = new WritingSystemDefinition("fr");
-			ws1.SetIsVoice(true);
+			ws1.IsVoice = true;
 			RepositoryUnderTest.Set(ws1);
 			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
