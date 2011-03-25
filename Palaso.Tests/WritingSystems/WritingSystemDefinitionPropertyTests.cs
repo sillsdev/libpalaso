@@ -829,5 +829,20 @@ namespace Palaso.Tests.WritingSystems
 			);
 		}
 
+		[Test]
+		public void Abbreviation_Sets_GetsSame()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Abbreviation = "en";
+			Assert.AreEqual("en", ws.Abbreviation);
+		}
+
+		[Test]
+		public void Abbreviation_Uninitialized_ReturnsISO639()
+		{
+			var writingSystem = new WritingSystemDefinition("en");
+			Assert.AreEqual("en", writingSystem.Abbreviation);
+		}
+
 	}
 }

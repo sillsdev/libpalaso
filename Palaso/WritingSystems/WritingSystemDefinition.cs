@@ -392,7 +392,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _abbreviation;
+				return String.IsNullOrEmpty(_abbreviation) ? ISO639 : _abbreviation;
 			}
 			set
 			{
