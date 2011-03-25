@@ -332,6 +332,7 @@
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
+	<Compile Include="WritingSystems\WritingSystemInfo.cs" />
 	<Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />
 	<Compile Include="Xml\CanonicalXmlSettings.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />
