@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using Palaso.Data;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -162,7 +163,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IpaStatus_VariantSetToPrefixFonipaDashXDashEticPostfix_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(()=>ws.Variant = "Prefixfonipa-x-eticPostfix");
+			Assert.Throws<ValidationException>(()=>ws.Variant = "Prefixfonipa-x-eticPostfix");
 		}
 
 		[Test]

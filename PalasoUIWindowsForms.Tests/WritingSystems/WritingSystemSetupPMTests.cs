@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using System.Text;
-
 using NUnit.Framework;
 
 using Palaso.WritingSystems;
@@ -78,17 +75,17 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentISO = "de";
 			_model.AddNew();
 			_model.CurrentISO = "th";
-			List<string> writingSystems = new List<string>();
+			var writingSystems = new List<string>();
 			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
 				writingSystems.Insert(0, _model.CurrentISO);
 			}
-			string deletedWS = writingSystems[1];
+			string deletedWritingSystem = writingSystems[1];
 			_model.CurrentIndex = 1;
 			_model.DeleteCurrent();
 			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
-				Assert.AreNotEqual(deletedWS, _model.CurrentISO);
+				Assert.AreNotEqual(deletedWritingSystem, _model.CurrentISO);
 			}
 		}
 
@@ -654,6 +651,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentDefinition.IsVoice = true;
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Voice, _model.SelectionForSpecialCombo);
 		}
+
 		[Test]
 		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesScriptRegionVariant()
 		{
@@ -670,6 +668,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentRegion = "BR";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
+
 		[Test]
 		public void SelectionForSpecialCombo_HasKnownScript_GivesScriptRegionVariant()
 		{
@@ -677,6 +676,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentScriptCode = "Cyrl";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
+
 		[Test]
 		public void SelectionForSpecialCombo_HasUnknownScript_GivesCustom()
 		{
@@ -684,6 +684,64 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentScriptCode = "Arab";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
 		}
+
+		[Test]
+		public void VerboseDescriptionWhenNoSubtagsSet()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("", "", "", "", "", false);
+			Assert.AreEqual("Unknown language. (qaa)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenJustISO()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "", "", "", "", false);
+			Assert.AreEqual("English. (en)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenIsoAndScript()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "", "", "", false);
+			Assert.AreEqual("English written in Korean script. (en-Kore)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenOnlyScript()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("", "Kore", "", "", "", false);
+			Assert.AreEqual("Unknown language written in Korean script. (qaa-Kore)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenIsoAndRegion()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "", "US", "", "", false);
+			Assert.AreEqual("English in US. (en-US)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenIsoScriptRegionVariant()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "US", "1901", "", false);
+			Assert.AreEqual("English in US written in Korean script. (en-Kore-US-1901)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenIsoIsUnsetButLanguageNameIs()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("", "Kore", "US", "1901", "", false);
+			_model.CurrentDefinition.LanguageName = "Eastern lawa";
+			Assert.AreEqual("Eastern lawa in US written in Korean script. (qaa-Kore-US-1901)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void CurrentScriptOptionReturnCorrectScript()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "", "", "", false);
+			Assert.AreEqual("Korean", _model.CurrentIso15924Script.Label);
+		}
+
 
 	}
 }

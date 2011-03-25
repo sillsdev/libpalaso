@@ -123,7 +123,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return RFC5646Tag.ValidIso639LanguageCodes;
+				return StandardTags.ValidIso639LanguageCodes;
 			}
 		}
 
@@ -278,21 +278,22 @@ namespace Palaso.WritingSystems
 				{
 					throw new ArgumentException("The variant may not end in '-x' or '-x-'");
 				}
-				if (!value.Contains("x-"))
+				if (value.StartsWith("x-")) // Private Use at the beginning
 				{
-					_rfcTag.Variant = value;
-					_rfcTag.PrivateUse = "";
-				}
-				else if (value.StartsWith("x-"))
-				{
+					value = value.Substring(2); // Strip the leading x-
 					_rfcTag.Variant = "";
 					_rfcTag.PrivateUse = value;
 				}
-				else
+				else if (value.Contains("-x-")) // Private Use from the middle
 				{
 					string[] partsOfVariant = value.Split(new[] { "-x-" }, StringSplitOptions.None);
 					_rfcTag.Variant = partsOfVariant[0];
 					_rfcTag.PrivateUse = partsOfVariant[1];
+				}
+				else // No Private Use, it's contains variants only
+				{
+					_rfcTag.Variant = value;
+					_rfcTag.PrivateUse = "";
 				}
 				Modified = true;
 				CheckVariantAndScriptRules();
@@ -435,7 +436,7 @@ namespace Palaso.WritingSystems
 				return "Unknown Language";
 
 				// TODO Make the below work.
-				//return Resource.LanguageName(ISO639) ?? "Unknown Language";
+				//return StandardTags.LanguageName(ISO639) ?? "Unknown Language";
 			}
 			set
 			{
@@ -563,63 +564,13 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		virtual public string VerboseDescription
-		{
-			get
-			{
-				var summary = new StringBuilder();
-				summary.AppendFormat(" {0}", LanguageName);
-				if (!String.IsNullOrEmpty(Region))
-				{
-					summary.AppendFormat(" in {0}", Region);
-				}
-				if (!String.IsNullOrEmpty(Script))
-				{
-					summary.AppendFormat(" written in {0} script", CurrentScriptOptionLabel);
-				}
 
-				summary.AppendFormat(". ({0})", RFC5646);
-				return summary.ToString().Trim();
-			}
-		}
-
-		private string CurrentScriptOptionLabel
-		{
-			get
-			{
-				Iso15924Script option = Iso15924Script;
-				return option == null ? _rfcTag.Script : option.Label;
-			}
-		}
-
-		/// <summary>
-		/// If we don't have an option for the current script, returns null
-		/// </summary>
-		virtual public Iso15924Script Iso15924Script
-		{
-			get
-			{
-				string script = Script;
-				if (String.IsNullOrEmpty(script))
-				{
-					script = "latn";
-				}
-				foreach (var option in ScriptOptions)
-				{
-					if (option.Code == script)
-					{
-						return option;
-					}
-				}
-				return null;
-			}
-		}
-
+		[Obsolete("Use StandardTags directly")]
 		public static List<Iso15924Script> ScriptOptions
 		{
 			get
 			{
-				return RFC5646Tag.ValidIso15924Scripts;
+				return StandardTags.ValidIso15924Scripts;
 			}
 		}
 

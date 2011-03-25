@@ -143,6 +143,7 @@
 	<Compile Include="Data\ResultSet.cs" />
 	<Compile Include="Data\ResultSetCache.cs" />
 	<Compile Include="Data\ResultSetCacheManager.cs" />
+	<Compile Include="Data\ValidationException.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
 	<Compile Include="Email\EmailProviderFactory.cs" />
 	<Compile Include="Email\IEmailMessage.cs" />
@@ -330,6 +331,7 @@
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV1To2Migration\WritingSystemDefinitionV1.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
+	<Compile Include="WritingSystems\StandardTags.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />

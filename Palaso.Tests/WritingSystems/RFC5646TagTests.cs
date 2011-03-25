@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
+using Palaso.Data;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -14,7 +12,7 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToPrivateUse_PrivateUseIsEmpty_PrivateUseEqualsStringToAdd()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			rfcTag.AddToPrivateUse("x-audio");
+			rfcTag.AddToPrivateUse("audio");
 			Assert.AreEqual("x-audio", rfcTag.PrivateUse);
 		}
 
@@ -42,39 +40,39 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void AddToPrivateUse_PrivateUseIsNotEmpty_StringToAddIsAppendedToPrivateUseWithDashDelimiter()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.AddToPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
+			rfcTag.AddToPrivateUse("audio");
 			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddIsSubStringOfStringAlreadyContainedInPrivateUse_StringToAddIsAppendedToPrivateUseWithDashDelimiter()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audios-test");
-			rfcTag.AddToPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audios-test");
+			rfcTag.AddToPrivateUse("audio");
 			Assert.AreEqual("x-audios-test-audio", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddConsistsOfMultipleParts_StringToAddIsAppendedToPrivateUseWithDashDelimiter()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-audios");
-			rfcTag.AddToPrivateUse("x-audio-variant2");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test-audios");
+			rfcTag.AddToPrivateUse("audio-variant2");
 			Assert.AreEqual("x-test-audios-audio-variant2", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void AddToPrivateUse_PrivateUseAlreadyContainsStringToAdd_Throws()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-audio");
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("x-audio"));
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test-audio");
+			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("audio"));
 		}
 
 		[Test]
 		public void AddToPrivateUse_PrivateUseAlreadyContainsPartsOfStringToAdd_Throws()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio-test");
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("x-smth-test"));
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio-test");
+			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("smth-test"));
 		}
 
 		[Test]
@@ -96,55 +94,48 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void AddToPrivateUse_PrivateUseAlreadyContainsStringToAddInDifferentCase_Throws()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AUDIO");
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("x-audio"));
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "AUDIO");
+			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("audio"));
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddBeginsWithDash_StringIsAdded()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.AddToPrivateUse("-x-audio");
-			Assert.AreEqual(rfcTag.PrivateUse, "x-test-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
+			rfcTag.AddToPrivateUse("-audio");
+			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
+		}
+
+		[Test]
+		public void AddToPrivateUse_StringToAddWithx_Throws()
+		{
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
+			Assert.Throws<ValidationException>(
+				() => rfcTag.AddToPrivateUse("bbb-x-audio")
+			);
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddBeginsWithx_StringIsAdded()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
 			rfcTag.AddToPrivateUse("x-audio");
-			Assert.AreEqual(rfcTag.PrivateUse, "x-test-audio");
+			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddDoesNotBeginWithx_StringIsAdded()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
 			rfcTag.AddToPrivateUse("audio");
-			Assert.AreEqual(rfcTag.PrivateUse, "x-test-audio");
+			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddEndsWithDash_StringIsAdded()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.AddToPrivateUse("x-audio-");
-			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
-		}
-
-		[Test]
-		public void AddToPrivateUse_PrivateUseStringToAddIsPrependedByxDash_StringIsAdded()
-		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.AddToPrivateUse("x-audio");
-			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
-		}
-
-		[Test]
-		public void AddToPrivateUse_PrivateUseIsPrivateUseStringToAddIsNotPrependedByxDash_StringIsAdded()
-		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.AddToPrivateUse("audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
+			rfcTag.AddToPrivateUse("audio-");
 			Assert.AreEqual("x-test-audio", rfcTag.PrivateUse);
 		}
 
@@ -196,7 +187,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void AddToVariant_VariantAlreadyContainsStringToAddInDifferentCase_Throws()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "biske", String.Empty);
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "BisKe", String.Empty);
 			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("biske"));
 		}
 
@@ -205,21 +196,21 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "biske", String.Empty);
 			rfcTag.AddToVariant("-1901");
-			Assert.AreEqual(rfcTag.Variant, "biske-1901");
+			Assert.AreEqual("biske-1901", rfcTag.Variant);
 		}
 
 		[Test]
 		public void AddToVariant_StringToAddBeginsWithx_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "biske", String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("x-bauddha"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToVariant("x-bauddha"));
 		}
 
 		[Test]
 		public void AddToVariant_StringToAddIsNotValidVariant_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("bogus"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToVariant("bogus"));
 		}
 
 		[Test]
@@ -231,9 +222,9 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void RemoveFromPrivateUse_StringToTRemoveIsPrependedByxDash_StringIsRemoved()
+		public void RemoveFromPrivateUse_StringToTRemoveIsPrependedByxDash_Throws()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio");
 			rfcTag.RemoveFromPrivateUse("x-audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
@@ -241,7 +232,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void RemoveFromPrivateUse_StringToremoveIsNotPrependedByxDash_StringIsRemoved()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio");
 			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
@@ -250,30 +241,22 @@ namespace Palaso.Tests.WritingSystems
 		public void RemoveFromPrivateUse_PrivateUseIsEmpty_PrivateUseRemainsUntouched()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			rfcTag.RemoveFromPrivateUse("x-audio");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseDoesNotContainStringToRemove_PrivateUseRemainsUntouched()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.RemoveFromPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual("x-test", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseDoesNotContainPartsOfStringToRemove_PartsThatAreContainedAreRemoved()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			rfcTag.RemoveFromPrivateUse("x-test-audio");
-			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
-		}
-
-		[Test]
-		public void RemoveFromPrivateUse_PrivateUseDoesNotContainPartsOfStringToRemoveAndStringToRemoveHasNoprependedx_PartsThatAreContainedAreRemoved()
-		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
 			rfcTag.RemoveFromPrivateUse("test-audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
@@ -281,71 +264,71 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsPartsOfStringToRemoveButNotConsecutively_RemovesPartsCorrectly()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-smth-audio");
-			rfcTag.RemoveFromPrivateUse("x-test-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test-smth-audio");
+			rfcTag.RemoveFromPrivateUse("test-audio");
 			Assert.AreEqual("x-smth", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsPartAndNoValidlanguageTag_Throws()
 		{
-			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.Throws<ArgumentException>(() => rfcTag.RemoveFromPrivateUse("x-test"));
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "test");
+			Assert.Throws<ValidationException>(() => rfcTag.RemoveFromPrivateUse("x-test"));
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemove_PrivateUseIsStrippedOfStringToRemoveAndPrecedingDash()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-audio");
-			rfcTag.RemoveFromPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test-audio");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual("x-test", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveInDifferentCase_PrivateUseIsStrippedOfStringToRemoveAndPrecedingDash()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty,String.Empty, "x-test-aUdiO");
-			rfcTag.RemoveFromPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty,String.Empty, "test-aUdiO");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual("x-test", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseEqualsStringToRemove_PrivateUseIsEmpty()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
-			rfcTag.RemoveFromPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual(String.Empty ,rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseEqualsStringToRemoveInDifferentCase_PrivateUseIsEmpty()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromPrivateUse("x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "AudiO");
+			rfcTag.RemoveFromPrivateUse("audio");
 			Assert.AreEqual(String.Empty, rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveStartsWithDash_StringIsRemoved()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromPrivateUse("-x-audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "AudiO");
+			rfcTag.RemoveFromPrivateUse("-audio");
 			Assert.AreEqual(rfcTag.PrivateUse, String.Empty);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveStartsWithUnderscore_DoesNotRemoveString()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromPrivateUse("_audio");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "AudiO");
+			rfcTag.RemoveFromPrivateUse("_!@#$bogus");
 			Assert.AreEqual("x-AudiO", rfcTag.PrivateUse);
 		}
 
 		[Test]
 		public void RemoveFromPrivateUse_PrivateUseContainsStringToRemoveAndStringToRemoveEndsWithDash_StringIsRemoved()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-AudiO");
-			rfcTag.RemoveFromPrivateUse("x-audio-");
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "AudiO");
+			rfcTag.RemoveFromPrivateUse("audio-");
 			Assert.AreEqual(rfcTag.PrivateUse, String.Empty);
 		}
 
@@ -394,7 +377,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-bauddha-biske", String.Empty);
 			rfcTag.RemoveFromVariant("1901-biske");
-			Assert.AreEqual(rfcTag.Variant, "bauddha");
+			Assert.AreEqual("bauddha", rfcTag.Variant);
 		}
 
 		[Test]
@@ -457,35 +440,35 @@ namespace Palaso.Tests.WritingSystems
 		public void PrivateUseContainsPart_PartIsNotContainedInPrivateUse_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.IsFalse(rfcTag.PrivateUseContains("x-audio"));
+			Assert.IsFalse(rfcTag.PrivateUseContains("audio"));
 		}
 
 		[Test]
 		public void PrivateUseContainsPart_PartIsContainedInPrivateUse_ReturnsTrue()
 		{
-			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
-			Assert.IsTrue(rfcTag.PrivateUseContains("x-audio"));
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "audio");
+			Assert.IsTrue(rfcTag.PrivateUseContains("audio"));
 		}
 
 		[Test]
-		public void PrivateUseContainsPart_PartIsContainedInPrivateUseAndpartDoesnNotHavePrependedx_ReturnsTrue()
+		public void PrivateUseContainsPart_PartIsContainedInPrivateUseAndpartDoesNotHavePrependedx_ReturnsTrue()
 		{
-			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-audio");
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "audio");
 			Assert.IsTrue(rfcTag.PrivateUseContains("audio"));
 		}
 
 		[Test]
 		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndNotAllPartsAreContainedInPrivateUse_ReturnsFalse()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.IsFalse(rfcTag.PrivateUseContains("x-etic-test"));
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test");
+			Assert.IsFalse(rfcTag.PrivateUseContains("etic-test"));
 		}
 
 		[Test]
-		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInPrivateUse_ReturnsTrue()
+		public void PrivateUseContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInPrivateUse_ReturnsFalse()
 		{
-			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-test-smth-audio");
-			Assert.IsTrue(rfcTag.PrivateUseContains("x-audio-test"));
+			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test-audio");
+			Assert.IsFalse(rfcTag.PrivateUseContains("test-audio"));
 		}
 
 		[Test]
@@ -510,62 +493,62 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void VariantContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInVariant_ReturnsTrue()
+		public void VariantContainsPart_PartConsistsOfMultiplePartsAndAllPartsAreContainedInVariant_ReturnsFalse()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901-bauddha-biske", String.Empty);
-			Assert.IsTrue(rfcTag.VariantContains("biske-1901"));
+			Assert.IsFalse(rfcTag.VariantContains("1901-bauddha"));
 		}
 
 		[Test]
 		public void Constructor_SetWithInvalidLanguageTag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("bogus", String.Empty, String.Empty, String.Empty, String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("bogus", String.Empty, String.Empty, String.Empty, String.Empty));
 		}
 
 		[Test]
 		public void Constructor_SetWithInvalidScriptTag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", "bogus", String.Empty, String.Empty, String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("en", "bogus", String.Empty, String.Empty, String.Empty));
 		}
 
 		[Test]
 		public void Constructor_SetWithInvalidRegionTag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", String.Empty, "bogus", String.Empty, String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("en", String.Empty, "bogus", String.Empty, String.Empty));
 		}
 
 		[Test]
 		public void Constructor_SetWithInvalidVariantTag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", String.Empty, String.Empty, "bogus", String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("en", String.Empty, String.Empty, "bogus", String.Empty));
 		}
 
 		[Test]
 		public void Language_SetWithInvalidLanguageTag_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Language = "bogus");
+			Assert.Throws<ValidationException>(() => tag.Language = "bogus");
 		}
 
 		[Test]
 		public void Script_SetWithInvalidScriptTag_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Script = "bogus");
+			Assert.Throws<ValidationException>(() => tag.Script = "bogus");
 		}
 
 		[Test]
 		public void Region_SetWithInvalidRegionTag_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Region = "bogus");
+			Assert.Throws<ValidationException>(() => tag.Region = "bogus");
 		}
 
 		[Test]
 		public void Variant_SetWithInvalidVariant_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Variant = "bogus");
+			Assert.Throws<ValidationException>(() => tag.Variant = "bogus");
 		}
 
 		[Test]
@@ -579,22 +562,22 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void PrivateUse_SetWhileNotEmpty_RemovesOldPrivateUse()
 		{
-			var tag = new RFC5646Tag("en", String.Empty, String.Empty,String.Empty, "x-test");
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty,String.Empty, "test");
 			tag.PrivateUse = "audio";
 			Assert.AreEqual("x-audio", tag.PrivateUse);
 		}
 
 		[Test]
-		public void Variant_SetPrivateUseTag_Throws()
+		public void Variant_SetStringContainingxAsPart_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(()=>tag.Variant = "x-bogus");
+			Assert.Throws<ValidationException>(() => tag.Variant = "x-1901");
 		}
 
 		[Test]
 		public void Constructor_LanguageIsEmptyAndPrivateUseIsEmpty_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, String.Empty));
 		}
 
 		[Test]
@@ -615,79 +598,79 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Constructor_ScriptIsSetButLanguageIsEmpty_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, "Zxxx", String.Empty, String.Empty, String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag(String.Empty, "Zxxx", String.Empty, String.Empty, String.Empty));
 		}
 
 		[Test]
 		public void Constructor_RegionIsSetButLanguageIsEmpty_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, "US", String.Empty, String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag(String.Empty, String.Empty, "US", String.Empty, String.Empty));
 		}
 
 		[Test]
 		public void Constructor_VariantIsSetButLanguageIsEmpty_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, "1901", String.Empty));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag(String.Empty, String.Empty, String.Empty, "1901", String.Empty));
 		}
 
 		[Test]
 		public void Language_SetToEmptyWhenScriptIsNotEmpty_Throws()
 		{
 		   var rfcTag = new RFC5646Tag("en", "Zxxx", String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.Language = String.Empty);
+		   Assert.Throws<ValidationException>(() => rfcTag.Language = String.Empty);
 		}
 
 		[Test]
 		public void Language_SetToEmptyWhenRegionIsNotEmpty_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, "US", String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.Language = String.Empty);
+			Assert.Throws<ValidationException>(() => rfcTag.Language = String.Empty);
 		}
 
 		[Test]
 		public void Language_SetToEmptyWhenVariantIsNotEmpty_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.Language = String.Empty);
+			Assert.Throws<ValidationException>(() => rfcTag.Language = String.Empty);
 		}
 
 		[Test]
 		public void Script_SetWhileLanguageSubtagIsEmpty_Throws()
 		{
-			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.Throws<ArgumentException>(() => rfcTag.Script = "Zxxx");
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "test");
+			Assert.Throws<ValidationException>(() => rfcTag.Script = "Zxxx");
 		}
 
 		[Test]
 		public void Region_SetWhileLanguageSubtagIsEmpty_Throws()
 		{
-			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.Throws<ArgumentException>(() => rfcTag.Region = "US");
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "test");
+			Assert.Throws<ValidationException>(() => rfcTag.Region = "US");
 		}
 
 		[Test]
 		public void Variant_SetWhileLanguageSubtagIsEmpty_Throws()
 		{
-			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "x-test");
-			Assert.Throws<ArgumentException>(() => rfcTag.Variant = "1901");
+			var rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "test");
+			Assert.Throws<ValidationException>(() => rfcTag.Variant = "1901");
 		}
 
 		[Test]
 		public void Constructor_ScriptAndPrivateUseAreSetButLanguageIsEmpty_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, "Zxxx", String.Empty, String.Empty, "x-test"));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag(String.Empty, "Zxxx", String.Empty, String.Empty, "test"));
 		}
 
 		[Test]
 		public void Constructor_RegionAndPrivateUseAreSetButLanguageIsEmpty_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag(String.Empty, String.Empty, "US", String.Empty, "x-test"));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag(String.Empty, String.Empty, "US", String.Empty, "test"));
 		}
 
 		[Test]
 		public void Constructor_LanguageIsEmptyAndPrivateUseIsSet_SetsPrivateUse()
 		{
-			var tag = new RFC5646Tag(String.Empty, String.Empty, String.Empty,String.Empty, "x-audio");
+			var tag = new RFC5646Tag(String.Empty, String.Empty, String.Empty,String.Empty, "audio");
 			Assert.AreEqual("x-audio", tag.PrivateUse);
 		}
 
@@ -716,28 +699,28 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_SetWithCasedButValidVariantTag_SetsVariant()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, "1694AcaD", String.Empty);
-			Assert.AreEqual(tag.Variant, "1694AcaD");
+			Assert.AreEqual("1694AcaD", tag.Variant);
 		}
 
 		[Test]
 		public void Language_SetWithTwoValidLanguageTags_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Language = "en-de");
+			Assert.Throws<ValidationException>(() => tag.Language = "en-de");
 		}
 
 		[Test]
 		public void Script_SetWithTwoValidScriptTags_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Script = "Latn-Afak");
+			Assert.Throws<ValidationException>(() => tag.Script = "Latn-Afak");
 		}
 
 		[Test]
 		public void Region_SetWithTwoValidRegionTags_Throws()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Region = "US-GB");
+			Assert.Throws<ValidationException>(() => tag.Region = "US-GB");
 		}
 
 		[Test]
@@ -750,9 +733,15 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Constructor_PrivateuseSetWithTwoPrivateUseSubtagsBothPrefixedWithx_Throws()
+		public void Constructor_PrivateuseSetWithTwoPrivateUseSubtagsBothPrefixedWithx_ThrowsArgumentException()
 		{
 			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-private1-x-private2"));
+		}
+
+		[Test]
+		public void Constructor_PrivateuseSetWithTwoPrivateUseSubtagsTheLatterPrefixedWithx_ThrowsValidationException()
+		{
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "private1-x-private2"));
 		}
 
 		[Test]
@@ -763,16 +752,23 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void PrivateUse_SetWithTwoPrivateUseSubtagsBothPrefixedWithx_Throws()
+		public void PrivateUse_SetWithTwoPrivateUseSubtagsBothPrefixedWithx_ThrowsArgumentException()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
 			Assert.Throws<ArgumentException>(() => tag.Variant = "x-private1-x-private2");
 		}
 
 		[Test]
+		public void PrivateUse_SetWithTwoPrivateUseSubtagsTheLatterPrefixedWithx_ThrowsValidationException()
+		{
+			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
+			Assert.Throws<ValidationException>(() => tag.Variant = "private1-x-private2");
+		}
+
+		[Test]
 		public void CompleteTag_AllSubtagsSet_IsSetCorrectly()
 		{
-			var tag = new RFC5646Tag("en", "Latn", "US", "1901", "x-audio");
+			var tag = new RFC5646Tag("en", "Latn", "US", "1901", "audio");
 			Assert.AreEqual("en-Latn-US-1901-x-audio", tag.CompleteTag);
 		}
 
@@ -809,18 +805,26 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Equals_PrivateUseWithTwoTagsIsEqual_ReturnsTrue()
+		{
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio-phonetic");
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio-phonetic");
+			Assert.AreEqual(tag1, tag2);
+		}
+
+		[Test]
 		public void Equals_PrivateUseIsEqual_ReturnsTrue()
 		{
-			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
-			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio");
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio");
 			Assert.AreEqual(tag1, tag2);
 		}
 
 		[Test]
 		public void Equals_AlltagsAreEqual_ReturnsTrue()
 		{
-			var tag1 = new RFC5646Tag("en", "Zxxx", "US", "1901", "x-audio");
-			var tag2 = new RFC5646Tag("en", "Zxxx", "US", "1901", "x-audio");
+			var tag1 = new RFC5646Tag("en", "Zxxx", "US", "1901", "audio");
+			var tag2 = new RFC5646Tag("en", "Zxxx", "US", "1901", "audio");
 			Assert.AreEqual(tag1, tag2);
 		}
 
@@ -859,53 +863,9 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Equals_PrivateUseIsNotEqual_ReturnsFalse()
 		{
-			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-audio");
-			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-etic");
+			var tag1 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio");
+			var tag2 = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "etic");
 			Assert.AreNotEqual(tag1, tag2);
-		}
-
-		[Test]
-		public void ParseSubtagForParts_SubtagContainsMultipleParts_PartsAreReturned()
-		{
-			List<string> parts = RFC5646Tag.ParseSubtagForParts("en-Latn-x-audio");
-			Assert.AreEqual(4, parts.Count);
-			Assert.AreEqual("en", parts[0]);
-			Assert.AreEqual("Latn", parts[1]);
-			Assert.AreEqual("x", parts[2]);
-			Assert.AreEqual("audio", parts[3]);
-		}
-
-		[Test]
-		public void ParseSubtagForParts_SubtagContainsOnePart_PartIsReturned()
-		{
-			List<string> parts = RFC5646Tag.ParseSubtagForParts("en");
-			Assert.AreEqual(1, parts.Count);
-			Assert.AreEqual("en", parts[0]);
-		}
-
-		[Test]
-		public void ParseSubtagForParts_SubtagIsEmpty_ListisEmpty()
-		{
-			List<string> parts = RFC5646Tag.ParseSubtagForParts("");
-			Assert.IsTrue(parts.Count == 0);
-		}
-
-		[Test]
-		public void ParseSubtagForParts_SubtagconatinsOnlyDashes_ListisEmpty()
-		{
-			List<string> parts = RFC5646Tag.ParseSubtagForParts("-------");
-			Assert.IsTrue(parts.Count == 0);
-		}
-
-		[Test]
-		public void ParseSubtagForParts_SubtagContainsMultipleConsecutiveDashes_DashesAreTreatedAsSingleDashes()
-		{
-			List<string> parts = RFC5646Tag.ParseSubtagForParts("-en--Latn-x---audio--");
-			Assert.AreEqual(4, parts.Count);
-			Assert.AreEqual("en", parts[0]);
-			Assert.AreEqual("Latn", parts[1]);
-			Assert.AreEqual("x", parts[2]);
-			Assert.AreEqual("audio", parts[3]);
 		}
 
 		[Test]
@@ -923,27 +883,27 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Constructor_RegionSubtagContainsLanguageSubtag_Throws()
+		public void Constructor_LanguageSubtagContainsScriptSubtag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "", "en", "", ""));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("Latn", "", "", "", ""));
 		}
 
 		[Test]
 		public void Constructor_ScriptSubtagContainsLanguageSubtag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "en", "", "", ""));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("qaa", "en", "", "", ""));
+		}
+
+		[Test]
+		public void Constructor_RegionSubtagContainsLanguageSubtag_Throws()
+		{
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("qaa", "", "en", "", ""));
 		}
 
 		[Test]
 		public void Constructor_VariantSubtagContainsLanguageSubtag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
-		}
-
-		[Test]
-		public void Constructor_languageSubtagContainsScriptSubtag_Throws()
-		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
 		}
 	}
 }

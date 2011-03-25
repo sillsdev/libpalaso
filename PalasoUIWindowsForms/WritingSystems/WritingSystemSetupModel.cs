@@ -636,7 +636,51 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentVerboseDescription
 		{
-			get { return CurrentDefinition!=null ? CurrentDefinition.VerboseDescription : string.Empty; }
+			get
+			{
+				return CurrentDefinition != null ? VerboseDescription(CurrentDefinition) : String.Empty;
+			}
+		}
+
+		virtual public string VerboseDescription(WritingSystemDefinition writingSystem)
+		{
+			var summary = new StringBuilder();
+			summary.AppendFormat(" {0}", writingSystem.LanguageName);
+			if (!String.IsNullOrEmpty(writingSystem.Region))
+			{
+				summary.AppendFormat(" in {0}", writingSystem.Region);
+			}
+			if (!String.IsNullOrEmpty(writingSystem.Script))
+			{
+				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.Label);
+			}
+
+			summary.AppendFormat(". ({0})", writingSystem.RFC5646);
+			return summary.ToString().Trim();
+		}
+
+		public Iso15924Script CurrentIso15924Script
+		{
+			get
+			{
+				if (_currentWritingSystem == null)
+					return null;
+
+				string script = String.IsNullOrEmpty(_currentWritingSystem.Script) ? "latn" : _currentWritingSystem.Script;
+				return StandardTags.ValidIso15924Scripts.FirstOrDefault(scriptInfo => scriptInfo.Code == script);
+				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
+			}
+			set
+			{
+				if (value == null)
+				{
+					CurrentScriptCode = string.Empty;
+				}
+				else
+				{
+					CurrentScriptCode = value.Code;
+				}
+			}
 		}
 
 		public string CurrentVersionDescription
@@ -777,29 +821,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
-				}
-			}
-		}
-
-		public Iso15924Script CurrentIso15924Script
-		{
-			get
-			{
-				if(_currentWritingSystem==null  )
-					return null;
-
-				return _currentWritingSystem.Iso15924Script;
-				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
-			}
-			set
-			{
-				if(value==null)
-				{
-					CurrentScriptCode=string.Empty;
-				}
-				else
-				{
-					CurrentScriptCode = value.Code;
 				}
 			}
 		}

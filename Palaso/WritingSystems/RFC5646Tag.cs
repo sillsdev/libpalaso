@@ -1,265 +1,178 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Palaso.Data;
 
 namespace Palaso.WritingSystems
 {
 	public class RFC5646Tag : Object
 	{
-		public class IanaSubtag
+		internal class SubTag
 		{
-			private readonly string _type;
-			private readonly string _subtag;
-			private readonly string _description;
+			private List<string> _subTagParts;
 
-			public IanaSubtag(string type, string subtag, string description)
+			public SubTag()
 			{
-				_type = type;
-				_subtag = subtag;
-				_description = description;
+				_subTagParts = new List<string>();
 			}
 
-			public string Type
+			public SubTag(SubTag rhs)
 			{
-				get { return _type; }
+				_subTagParts = new List<string>(rhs._subTagParts);
 			}
 
-			public string Subtag
+			public int Count
 			{
-				get { return _subtag; }
+				get { return _subTagParts.Count; }
 			}
 
-			public string Description
+			public string CompleteTag
 			{
-				get { return _description; }
-			}
-
-			public static int CompareByDescription(IanaSubtag x, IanaSubtag y)
-			{
-				if (x == null)
+				get
 				{
-					if (y == null)
+					if (_subTagParts.Count == 0)
 					{
-						return 0;
+						return String.Empty;
 					}
-					else
+					string subtagAsString = "";
+					foreach (string part in _subTagParts)
 					{
-						return -1;
+						if (!String.IsNullOrEmpty(subtagAsString))
+						{
+							subtagAsString = subtagAsString + "-";
+						}
+						subtagAsString = subtagAsString + part;
 					}
-				}
-				else
-				{
-					if (y == null)
-					{
-						return 1;
-					}
-					else
-					{
-						return x.Description.CompareTo(y.Description);
-					}
+					return subtagAsString;
 				}
 			}
+
+			public IEnumerable<string> AllParts
+			{
+				get { return _subTagParts; }
+			}
+
+			public static List<string> ParseSubtagForParts(string subtagToParse)
+			{
+				var parts = new List<string>();
+				parts.AddRange(subtagToParse.Split('-'));
+				parts.RemoveAll(str => str == "");
+				return parts;
+			}
+
+			public void AddToSubtag(string partsToAdd)
+			{
+				List<string> partsOfStringToAdd = ParseSubtagForParts(partsToAdd);
+				foreach (string part in partsOfStringToAdd)
+				{
+					if (StringContainsNonAlphaNumericCharacters(part))
+					{
+						throw new ArgumentException(String.Format("Rfc5646 tags may only contain alphanumeric characters. '{0}' can not be added to the Rfc5646 tag.", part));
+					}
+					if (Contains(part))
+					{
+						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.", part));
+					}
+					_subTagParts.Add(part);
+				}
+			}
+
+			public void ThrowIfSubtagContainsInvalidContent()
+			{
+				string offendingSubtag;
+				if ((!String.IsNullOrEmpty(offendingSubtag = _subTagParts.Find(StringContainsNonAlphaNumericCharacters))))
+				{
+					throw new ValidationException(
+						String.Format(
+							"Private use subtags may not contain non alpha numeric characters. The offending subtag was {0}",
+							offendingSubtag
+							)
+						);
+				}
+			}
+
+			private static bool StringContainsNonAlphaNumericCharacters(string stringToSearch)
+			{
+				return stringToSearch.Any(c => !Char.IsLetterOrDigit(c));
+			}
+
+			public void RemoveAllParts(string partsToRemove)
+			{
+				List<string> partsOfStringToRemove = ParseSubtagForParts(partsToRemove);
+
+				foreach (string partToRemove in partsOfStringToRemove)
+				{
+					if (!Contains(partToRemove))
+					{
+						continue;
+					}
+					int indexOfPartToRemove = _subTagParts.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
+					_subTagParts.RemoveAt(indexOfPartToRemove);
+				}
+			}
+
+			public bool Contains(string partToFind)
+			{
+				return _subTagParts.Any(part => part.Equals(partToFind, StringComparison.OrdinalIgnoreCase));
+			}
+
+			public void ThrowIfSubtagContainsDuplicates()
+			{
+				foreach (string part in _subTagParts)
+				{
+					//if (part.Equals("-") || part.Equals("_"))
+					//{
+					//    continue;
+					//}
+					if(_subTagParts.FindAll(p => p.Equals(part, StringComparison.OrdinalIgnoreCase)).Count > 1)
+					{
+						throw new ValidationException(String.Format("Subtags may never contain duplicate parts. The duplicate part was: {0}", part));
+					}
+				}
+			}
+
 		}
 
-		private static readonly List<Iso639LanguageCode> _validIso639LanguageCodes = new List<Iso639LanguageCode>();
-		private static readonly List<Iso15924Script> _validIso15924Scripts = new List<Iso15924Script>();
-		private static readonly List<IanaSubtag> _validIso3166Regions = new List<IanaSubtag>();
-		private static readonly List<IanaSubtag> _validRegisteredVariants = new List<IanaSubtag>();
-		private static readonly List<IanaSubtag> _ianaSubtags = new List<IanaSubtag>();
 		private string _language = "";
 		private string _script = "";
 		private string _region = "";
-		private List<string> _variant = new List<string>();
-		private List<string> _privateUse = new List<string>();
-
-		public static List<Iso15924Script> ValidIso15924Scripts
-		{
-			get
-			{
-				if(_validIso15924Scripts.Count == 0)
-				{
-					LoadScriptOptionsIfNeeded();
-				}
-				return _validIso15924Scripts;
-			}
-		}
-
-		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
-		{
-			get
-			{
-				if (_validIso639LanguageCodes.Count == 0)
-				{
-					LoadValidIso639LanguageCodes();
-				}
-				return _validIso639LanguageCodes;
-			}
-		}
-
-		public static IList<IanaSubtag> ValidIso3166Regions
-		{
-			get
-			{
-				if (_validIso3166Regions.Count == 0)
-				{
-					LoadValidIso3166Regions();
-				}
-				return _validIso3166Regions;
-			}
-		}
-
-		private static void LoadValidIso3166Regions()
-		{
-			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
-			{
-				if (ianaSubtag.Type == "region")
-				{
-					_validIso3166Regions.Add(ianaSubtag);
-				}
-			}
-			_validIso3166Regions.Sort(IanaSubtag.CompareByDescription);
-		}
-
-		public static IList<IanaSubtag> ValidRegisteredVariants
-		{
-			get
-			{
-				if (_validRegisteredVariants.Count == 0)
-				{
-					LoadValidRegisteredVariants();
-				}
-				return _validRegisteredVariants;
-			}
-		}
-
-		private static void LoadValidRegisteredVariants()
-		{
-			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
-			{
-				if (ianaSubtag.Type == "variant")
-				{
-					_validRegisteredVariants.Add(ianaSubtag);
-				}
-			}
-			_validRegisteredVariants.Sort(IanaSubtag.CompareByDescription);
-		}
-
-		private static void LoadValidIso639LanguageCodes()
-		{
-			_validIso639LanguageCodes.Add( new Iso639LanguageCode("qaa", "Unknown language", "qaa"));
-			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
-			{
-				if (ianaSubtag.Type == "language")
-				{
-					var language = new Iso639LanguageCode(ianaSubtag.Subtag,ianaSubtag.Description,string.Empty);
-					_validIso639LanguageCodes.Add(language);
-				}
-			}
-			_validIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
-		}
-
-		/// <summary>
-		/// parse in the text of the script registry we get from http://unicode.org/iso15924/iso15924-text.html
-		/// </summary>
-		private static void LoadScriptOptionsIfNeeded()
-		{
-			if (_validIso15924Scripts.Count != 0)
-				return;
-
-			//to help people find Latin
-			_validIso15924Scripts.Add(new Iso15924Script("Roman (Latin)", "Latn"));
-
-			LoadIanaSubtags();
-
-			foreach (IanaSubtag ianaSubtag in _ianaSubtags)
-			{
-				if(ianaSubtag.Type == "script")
-				{
-					var script = new Iso15924Script(ianaSubtag.Description, ianaSubtag.Subtag);
-					_validIso15924Scripts.Add(script);
-				}
-			}
-			_validIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
-		}
-
-		private static void LoadIanaSubtags()
-		{
-			string[] ianaSubtagsAsStrings = Resource.IanaSubtags.Split(new []{"%%"}, StringSplitOptions.None);
-			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
-			{
-				string[] subTagComponents = ianaSubtagAsString.Split(new []{"\r\n"},StringSplitOptions.RemoveEmptyEntries);
-
-				if (subTagComponents[0].Contains("File-Date"))
-				{
-					continue;   //This is the first line of the file.
-				}
-
-				CheckIfIanaSubtagFromFileHasExpectedForm(subTagComponents);
-
-				string type = subTagComponents[0].Split(' ')[1];
-				string subtag = subTagComponents[1].Split(' ')[1];
-				string description = subTagComponents[2].Split(' ')[1];
-
-				var ianaSubtag = new IanaSubtag(type, subtag, description);
-				_ianaSubtags.Add(ianaSubtag);
-			}
-		}
-
-		private static void CheckIfIanaSubtagFromFileHasExpectedForm(string[] subTagComponents)
-		{
-			if(!subTagComponents[0].Contains("Type:"))
-			{
-				throw new ApplicationException(
-					String.Format(
-						"Unable to parse IANA subtag. First line was '{0}' when it should have denoted the type of subtag.",
-						subTagComponents[0]));
-			}
-			if (!subTagComponents[1].Contains("Subtag:") && !subTagComponents[1].Contains("Tag:"))
-			{
-				throw new ApplicationException(
-					String.Format(
-						"Unable to parse IANA subtag. Second line was '{0}' when it should have denoted the subtag code.",
-						subTagComponents[1]));
-			}
-			if (!subTagComponents[2].Contains("Description:"))
-			{
-				throw new ApplicationException(
-					String.Format(
-						"Unable to parse IANA subtag. Second line was '{0}' when it should have contained a description.",
-						subTagComponents[2]));
-			}
-		}
+		private SubTag _variant = new SubTag();
+		private SubTag _privateUse = new SubTag();
 
 		public RFC5646Tag(string language, string script, string region, string variant, string privateUse)
 		{
-			LoadIanaSubtags();
-
-			SetLanguageSubtag(language);
-			SetScriptSubtag(script);
-			SetRegionSubtags(region);
-			SetVariantSubtags(variant);
-			SetPrivateUseSubtags(privateUse);
-			CheckIfEntireTagIsValid();
-		}
-
-		private void CheckIfEntireTagIsValid()
-		{
-			CheckIfLanguageTagIsValid();
-			CheckIfScriptTagIsValid();
-			CheckIfRegionTagIsValid();
-			CheckIfVariantTagIsValid();
-			CheckIfPrivateUseTagIsValid();
-			if (!(HasLanguage || (!HasLanguage && !HasScript && !HasRegion && !HasVariant && HasPrivateUse)))
-			{
-				throw new ArgumentException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
-			}
+			_language = language;
+			_script = script;
+			_region = region;
+			_variant.AddToSubtag(variant);
+			_privateUse.AddToSubtag(privateUse);
+			Validate();
 		}
 
 		///<summary>
 		/// Copy constructor
 		///</summary>
 		///<param name="rhs"></param>
-		public RFC5646Tag(RFC5646Tag rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant, rhs.PrivateUse)
+		public RFC5646Tag(RFC5646Tag rhs)
 		{
+			_language = rhs._language;
+			_script = rhs._script;
+			_region = rhs._region;
+			_variant = new SubTag(rhs._variant);
+			_privateUse = new SubTag(rhs._privateUse);
+		}
+
+		private void Validate()
+		{
+			ValidateLanguage();
+			ValidateScript();
+			ValidateRegion();
+			ValidateVariant();
+			ValidatePrivateUse();
+			if (!(HasLanguage || (!HasLanguage && !HasScript && !HasRegion && !HasVariant && HasPrivateUse)))
+			{
+				throw new ValidationException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
+			}
 		}
 
 		public string CompleteTag
@@ -293,52 +206,27 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_language = value;
-				CheckIfEntireTagIsValid();
+				Validate();
 			}
 		}
 
-		private void CheckIfLanguageTagIsValid()
+		private void ValidateLanguage()
 		{
-			if(String.IsNullOrEmpty(_language)){return;}
-			if(_language.Contains("-")){throw new ArgumentException("The language tag may not contain dashes. I.e. there may only be a single iso 639 tag in this subtag");}
-			if (!IsValidIso639LanguageCode(_language))
+			if (String.IsNullOrEmpty(_language))
 			{
-				throw new ArgumentException(String.Format("'{0}' is not a valid ISO-639 language code.", _language));
+				return;
 			}
-		}
 
-		private static bool IsValidIso639LanguageCode(string languageCodeToCheck)
-		{
-			if(languageCodeToCheck.Equals("qaa",StringComparison.OrdinalIgnoreCase)){return true;}
-
-			bool partIsValidIso639LanguageCode = false;
-			foreach (Iso639LanguageCode code in ValidIso639LanguageCodes)
+			if (_language.Contains("-"))
 			{
-				partIsValidIso639LanguageCode =
-					languageCodeToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase) ||
-					languageCodeToCheck.Equals(code.ISO3Code, StringComparison.OrdinalIgnoreCase);
-				if(partIsValidIso639LanguageCode) break;
+				throw new ValidationException(
+					"The language tag may not contain dashes. I.e. there may only be a single iso 639 tag in this subtag"
+				);
 			}
-			return partIsValidIso639LanguageCode;
-		}
-
-		private static bool IsValidIso15924ScriptCode(string languageCodeToCheck)
-		{
-			bool isValidIso15924ScriptCode = false;
-			foreach (Iso15924Script script in ValidIso15924Scripts)
+			if (!StandardTags.IsValidIso639LanguageCode(_language))
 			{
-				isValidIso15924ScriptCode =
-					languageCodeToCheck.Equals(script.Code, StringComparison.OrdinalIgnoreCase);
-				if (isValidIso15924ScriptCode) break;
+				throw new ValidationException(String.Format("'{0}' is not a valid ISO-639 language code.", _language));
 			}
-			return isValidIso15924ScriptCode;
-		}
-
-		//this is not implmented correctly as there should only be a single "x" in a language tag, so all subtags after the "x" are private use but are not indivudally prefixed with an "x"
-		private bool PartIsPrivateUse(string part)
-		{
-			//return part.StartsWith("x-",StringComparison.OrdinalIgnoreCase) ? true : false;
-			throw new NotImplementedException();
 		}
 
 		public string Script
@@ -347,7 +235,7 @@ namespace Palaso.WritingSystems
 			set
 			{
 				_script = value;
-				CheckIfEntireTagIsValid();
+				Validate();
 			}
 		}
 
@@ -355,11 +243,12 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				if (_privateUse.Count != 0)
+				var result = _privateUse.CompleteTag;
+				if (!String.IsNullOrEmpty(result))
 				{
-					return "x-" + AssembleSubtag(_privateUse);
+					result = "x-" + result;
 				}
-				return String.Empty;
+				return result;
 			}
 			set
 			{
@@ -367,49 +256,23 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private void SetPrivateUseSubtags(string value)
+		private void SetPrivateUseSubtags(string tags)
 		{
-			_privateUse = new List<string>();
-			AddToPrivateUse(value);
+			_privateUse = new SubTag();
+			AddToPrivateUse(tags);
 		}
 
-		private void CheckIfPrivateUseTagIsValid()
+		private void ValidatePrivateUse()
 		{
-			bool partInMiddleOfStringStartsWithxDash = (_privateUse.FindLastIndex(part => part.StartsWith("x-")) > 0);
-			string offendingSubtag = "";
-			if ((!String.IsNullOrEmpty(offendingSubtag = _privateUse.Find(StringContainsNonAlphaNumericCharacters))))
+			if (_privateUse.Contains("x"))
 			{
-				throw new ArgumentException(String.Format("Private use subtags may not contain non alpha numeric characters. The offending subtag was {0}", offendingSubtag));
+				throw new ValidationException("Private Use tag may not contain 'x'");
 			}
-			if(partInMiddleOfStringStartsWithxDash){throw new ArgumentException("A Private Use subtag may not contain a singleton 'x' anywhere but at the beginning of the subtag.");}
-			CheckIfSubtagContainsDuplicates(_privateUse);
+			_privateUse.ThrowIfSubtagContainsInvalidContent();
+			_privateUse.ThrowIfSubtagContainsDuplicates();
 		}
 
-		private static bool StringContainsNonAlphaNumericCharacters(string stringToSearch)
-		{
-			foreach (char c in stringToSearch.ToCharArray())
-			{
-				if(!Char.IsLetterOrDigit(c))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private void CheckIfSubtagContainsDuplicates(List<string> partsOfSubtag)
-		{
-			foreach (string partToTestForDuplicate in partsOfSubtag)
-			{
-				if (partToTestForDuplicate.Equals("-") || partToTestForDuplicate.Equals("_")) {continue; }
-				if(partsOfSubtag.FindAll(part => part.Equals(partToTestForDuplicate, StringComparison.OrdinalIgnoreCase)).Count > 1)
-				{
-					throw new ArgumentException(String.Format("Subtags may never contain duplicate parts. The duplicate part was: {0}", partToTestForDuplicate));
-				}
-			}
-		}
-
-		private void CheckIfScriptTagIsValid()
+		private void ValidateScript()
 		{
 			if (String.IsNullOrEmpty(_script))
 			{
@@ -417,11 +280,11 @@ namespace Palaso.WritingSystems
 			}
 			if (_script.Contains("-"))
 			{
-				throw new ArgumentException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
+				throw new ValidationException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
 			}
-			if(!IsValidIso15924ScriptCode(_script))
+			if(!StandardTags.IsValidIso15924ScriptCode(_script))
 			{
-				throw new ArgumentException(String.Format("'{0}' is not a valid ISO-15924 script code.", _script));
+				throw new ValidationException(String.Format("'{0}' is not a valid ISO-15924 script code.", _script));
 			}
 		}
 
@@ -430,27 +293,12 @@ namespace Palaso.WritingSystems
 			get { return _region; }
 			set
 			{
-				SetRegionSubtags(value);
-				CheckIfEntireTagIsValid();
+				_region = value;
+				Validate();
 			}
 		}
 
-		private void SetLanguageSubtag(string value)
-		{
-			_language = value;
-		}
-
-		private void SetScriptSubtag(string value)
-		{
-			_script = value;
-		}
-
-		private void SetRegionSubtags(string value)
-		{
-			_region = value;
-		}
-
-		private void CheckIfRegionTagIsValid()
+		private void ValidateRegion()
 		{
 			if (String.IsNullOrEmpty(_region))
 			{
@@ -458,32 +306,23 @@ namespace Palaso.WritingSystems
 			}
 			if (_region.Contains("-"))
 			{
-				throw new ArgumentException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
+				throw new ValidationException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
 			}
-			if (!IsValidIso3166Region(_region))
+			if (!StandardTags.IsValidIso3166Region(_region))
 			{
-				throw new ArgumentException(String.Format("'{0}' is not a valid ISO-3166 region code.", _region));
+				throw new ValidationException(String.Format("'{0}' is not a valid ISO-3166 region code.", _region));
 			}
-		}
-
-		private static bool IsValidIso3166Region(string regionCodeToCheck)
-		{
-			bool isValidIso3166Region = false;
-			foreach (IanaSubtag ianaSubtag in ValidIso3166Regions)
-			{
-				isValidIso3166Region =
-					regionCodeToCheck.Equals(ianaSubtag.Subtag, StringComparison.OrdinalIgnoreCase);
-				if (isValidIso3166Region) break;
-			}
-			return isValidIso3166Region;
 		}
 
 		public string Variant
 		{
-			get { return AssembleSubtag(_variant); }
+			get
+			{
+				return _variant.CompleteTag;
+			}
 			set
 			{
-				_variant.Clear();
+				_variant = new SubTag();
 				AddToVariant(value);
 			}
 		}
@@ -513,62 +352,20 @@ namespace Palaso.WritingSystems
 			get { return _privateUse.Count > 0; }
 		}
 
-		private void SetVariantSubtags(string value)
+		private void SetVariantSubtags(string tags)
 		{
-			_variant.Clear();
-			_variant = ParseSubtagForParts(value);
+			_variant = new SubTag();
+			AddToVariant(tags);
 		}
 
-		private void CheckIfVariantTagIsValid()
+		private void ValidateVariant()
 		{
-			if (_variant.Count == 0) { return; }
-			foreach (string subtagPart in _variant)
+			var invalidPart = _variant.AllParts.FirstOrDefault(part => !StandardTags.IsValidRegisteredVariant(part));
+			if (!String.IsNullOrEmpty(invalidPart))
 			{
-				if (subtagPart.Equals("-") || subtagPart.Equals("_"))
-				{
-					continue;
-				}
-				if (subtagPart.StartsWith("x-"))
-				{
-					return;
-				}
-				//From here on out it is a private use tag
-				if (!IsValidRegisteredVariant(subtagPart))
-				{
-					throw new ArgumentException(
-						String.Format("'{0}' is not a valid registered variant code.", subtagPart)
-					);
-				}
-			}
-		}
-
-		private static bool IsValidRegisteredVariant(string subtagPartToCheck)
-		{
-			bool isValidRegisteredVariant = false;
-			foreach (IanaSubtag variant in ValidRegisteredVariants)
-			{
-				isValidRegisteredVariant =
-					subtagPartToCheck.Equals(variant.Subtag, StringComparison.OrdinalIgnoreCase);
-				if (isValidRegisteredVariant) break;
-			}
-			return isValidRegisteredVariant;
-		}
-
-		private void AddToSubtag(List<string> subtagToAddTo, string stringToAppend)
-		{
-			List<string> partsOfStringToAdd = ParseSubtagForParts(stringToAppend);
-			foreach (string part in partsOfStringToAdd)
-			{
-				bool subTagAlreadyContainsAtLeastOnePartOfStringToAdd = SubtagContainsPart(subtagToAddTo, part);
-				if(StringContainsNonAlphaNumericCharacters(part))
-				{
-					throw new ArgumentException(String.Format("Rfc5646 tags may only contain alphanumeric characters. '{0}' can not be added to the Rfc5646 tag.", part));
-				}
-				if (subTagAlreadyContainsAtLeastOnePartOfStringToAdd)
-				{
-						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.",part));
-				}
-				subtagToAddTo.Add(part);
+				throw new ValidationException(
+					String.Format("'{0}' is not a valid registered variant code.", invalidPart)
+				);
 			}
 		}
 
@@ -602,103 +399,59 @@ namespace Palaso.WritingSystems
 			unchecked
 			{
 				int result = (_language != null ? _language.GetHashCode() : 0);
-				result = (result*397) ^ (_script != null ? _script.GetHashCode() : 0);
-				result = (result*397) ^ (_region != null ? _region.GetHashCode() : 0);
-				result = (result*397) ^ (_variant != null ? _variant.GetHashCode() : 0);
+				result = (result * 397) ^ (_script != null ? _script.GetHashCode() : 0);
+				result = (result * 397) ^ (_region != null ? _region.GetHashCode() : 0);
+				result = (result * 397) ^ (_variant != null ? _variant.GetHashCode() : 0);
+				result = (result * 397) ^ (_privateUse != null ? _privateUse.GetHashCode() : 0);
 				return result;
 			}
 		}
 
-		private void RemoveFromSubtag(List<string> partsOfSubtagToRemovePartFrom, string stringToRemove)
+		public void AddToPrivateUse(string tagsToAdd)
 		{
-			List<string> partsOfStringToRemove = ParseSubtagForParts(stringToRemove);
+			tagsToAdd = StripLeadingPrivateUseMarker(tagsToAdd);
+			_privateUse.AddToSubtag(tagsToAdd);
 
-			foreach (string partToRemove in partsOfStringToRemove)
+			Validate();
+		}
+
+		public void RemoveFromPrivateUse(string tagsToRemove)
+		{
+			tagsToRemove = StripLeadingPrivateUseMarker(tagsToRemove);
+			_privateUse.RemoveAllParts(tagsToRemove);
+			Validate();
+		}
+
+		public bool PrivateUseContains(string tagToFind)
+		{
+			tagToFind = StripLeadingPrivateUseMarker(tagToFind);
+			return _privateUse.Contains(tagToFind);
+		}
+
+		private string StripLeadingPrivateUseMarker(string tag)
+		{
+			if (tag.StartsWith("x-"))
 			{
-				if (!SubtagContainsPart(partsOfSubtagToRemovePartFrom, partToRemove)) { continue; }
-				int indexOfPartToRemove = partsOfSubtagToRemovePartFrom.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
-				partsOfSubtagToRemovePartFrom.RemoveAt(indexOfPartToRemove);
+				tag = tag.Substring(2); // strip the leading x-. Ideally we would throw if WritingSystemDefinition exposed the Private Use tags.
+				// throw new ArgumentException("RFC Private Use tags may not start with 'x-', try giving the tag only");
 			}
+			return tag;
 		}
 
-		public static List<string> ParseSubtagForParts(string subtagToParse)
+		public void AddToVariant(string tagsToAdd)
 		{
-			var parts = new List<string>();
-			parts.AddRange(subtagToParse.Split('-'));
-			parts.RemoveAll(str => str == "");
-			return parts;
+			_variant.AddToSubtag(tagsToAdd);
+			Validate();
 		}
 
-		private static string AssembleSubtag(IEnumerable<string> subtag)
+		public void RemoveFromVariant(string tagsToRemove)
 		{
-			string subtagAsString = "";
-			foreach (string part in subtag)
-			{
-				if(!String.IsNullOrEmpty(subtagAsString))
-				{
-					subtagAsString = subtagAsString + "-";
-				}
-				subtagAsString = subtagAsString + part;
-			}
-			return subtagAsString;
+			_variant.RemoveAllParts(tagsToRemove);
 		}
 
-		private static bool SubtagContainsPart(List<string> partsOfSubTag, string partToFind)
+		public bool VariantContains(string tagToFind)
 		{
-			List<string> partsOfPart = ParseSubtagForParts(partToFind);
-			foreach (string subPart in partsOfPart)
-			{
-				if (!partsOfSubTag.Contains(subPart, StringComparison.OrdinalIgnoreCase))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		public void AddToPrivateUse(string subtagToAdd)
-		{
-			string stringWithoutPrecedingOrTrailingDashes = subtagToAdd.Trim('-');
-			if(stringWithoutPrecedingOrTrailingDashes.StartsWith("x-")){stringWithoutPrecedingOrTrailingDashes = stringWithoutPrecedingOrTrailingDashes.Remove(0, 2);}
-			_privateUse.AddRange(ParseSubtagForParts(stringWithoutPrecedingOrTrailingDashes));
-			if (_privateUse.Contains("x")) {
-				throw new ArgumentException(
-					"A Private Use subtag may only contain one 'x' at the beginning of the subtag."); }
-			CheckIfEntireTagIsValid();
-		}
-
-		public void AddToVariant(string subtagToAdd)
-		{
-			AddToSubtag(_variant, subtagToAdd);
-			CheckIfEntireTagIsValid();
-		}
-
-		public void RemoveFromPrivateUse(string subtagToRemove)
-		{
-			string stringWithoutPrecedingxDash = subtagToRemove.Trim('-', 'x');
-			RemoveFromSubtag(_privateUse, stringWithoutPrecedingxDash);
-			CheckIfEntireTagIsValid();
-		}
-
-		public void RemoveFromVariant(string subtagToRemove)
-		{
-			RemoveFromSubtag(_variant, subtagToRemove);
-		}
-
-		public bool PrivateUseContains(string subTagToFind)
-		{
-			string stringWithoutPrecedingxDash = subTagToFind.Trim('-', 'x');
-			return SubtagContainsPart(_privateUse, stringWithoutPrecedingxDash);
-		}
-
-		public bool VariantContains(string subTagToFind)
-		{
-			return SubtagContainsPart(_variant, subTagToFind);
-		}
-
-		internal string GetPartMatchingRegExInPrivateUse(System.Text.RegularExpressions.Regex regex)
-		{
-			return _privateUse.Find(str => regex.Match(str).Success);
+			return _variant.Contains(tagToFind);
 		}
 
 	}

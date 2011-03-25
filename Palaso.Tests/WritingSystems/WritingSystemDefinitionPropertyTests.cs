@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using Palaso.Data;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -115,64 +116,10 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void VerboseDescriptionWhenNoSubtagsSet()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("", "", "", "", "", false);
-			Assert.AreEqual("Unknown language. (qaa)", ws.VerboseDescription);
-		}
-
-		[Test]
-		public void VerboseDescriptionWhenJustISO()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("en", "", "", "", "", false);
-			Assert.AreEqual("English. (en)", ws.VerboseDescription);
-		}
-		[Test]
-		public void VerboseDescriptionWhenIsoAndScript()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Kore", "", "", "", false);
-			Assert.AreEqual("English written in Korean script. (en-Kore)", ws.VerboseDescription);
-		}
-		[Test]
-		public void VerboseDescriptionWhenOnlyScript()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("", "Kore", "", "", "", false);
-			Assert.AreEqual("Unknown language written in Korean script. (qaa-Kore)", ws.VerboseDescription);
-		}
-
-		[Test]
-		public void VerboseDescriptionWhenIsoAndRegion()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("en", "", "US", "", "", false);
-			Assert.AreEqual("English in US. (en-US)", ws.VerboseDescription);
-		}
-		[Test]
-		public void VerboseDescriptionWhenIsoScriptRegionVariant()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Kore", "US", "1901", "", false);
-			Assert.AreEqual("English in US written in Korean script. (en-Kore-US-1901)", ws.VerboseDescription);
-		}
-		[Test]
-		public void VerboseDescriptionWhenIsoIsUnsetButLanguageNameIs()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("", "Kore", "US", "1901", "", false);
-			ws.LanguageName = "Eastern lawa";
-			Assert.AreEqual("Eastern lawa in US written in Korean script. (qaa-Kore-US-1901)", ws.VerboseDescription);
-		}
-
-		[Test]
 		public void HasLotsOfScriptOptions()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
 			Assert.Greater(WritingSystemDefinition.ScriptOptions.Count, 40);
-		}
-
-
-		[Test]
-		public void CurrentScriptOptionReturnCorrectScript()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition("en", "Kore", "", "", "", false);
-			Assert.AreEqual("Korean", ws.Iso15924Script.Label);
 		}
 
 		[Test]
@@ -210,7 +157,7 @@ namespace Palaso.Tests.WritingSystems
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
-			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Latn", "", "1901","x-audio"));
+			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Latn", "", "1901","audio"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -266,7 +213,7 @@ namespace Palaso.Tests.WritingSystems
 				{typeof (string), "Foo"},
 				{typeof (DateTime), DateTime.Now},
 				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
-				{typeof (RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "x-test")}
+				{typeof (RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "test")}
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{
@@ -361,7 +308,7 @@ namespace Palaso.Tests.WritingSystems
 											 {
 												 IsVoice = true
 											 };
-			Assert.Throws<ArgumentException>(() => ws.Script = "change!");
+			Assert.Throws<ValidationException>(() => ws.Script = "change!");
 		}
 
 		[Test]
@@ -401,14 +348,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Iso639_SetToSmthWithDashesWhileIsVoiceIsTrue_Throws()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.IsVoice = true;
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "iso-script-region-variant");
-		}
-
-		[Test]
 		public void Iso639_SetValidLanguage_IsSet()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
@@ -420,7 +359,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Iso639_SetInvalidLanguage_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "xyz");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "xyz");
 		}
 
 		[Test]
@@ -509,7 +448,7 @@ namespace Palaso.Tests.WritingSystems
 				"",
 				WellKnownSubTags.Audio.PrivateUseSubtag
 			);
-			Assert.Throws<ArgumentException>(() => ws.Script = "Ltn");
+			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
 		}
 
 		[Test]
@@ -542,7 +481,7 @@ namespace Palaso.Tests.WritingSystems
 				"",
 				"x-AUDIO"
 			);
-			Assert.Throws<ArgumentException>(() => ws.Script = "Ltn");
+			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
 		}
 
 		[Test]
@@ -575,7 +514,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsXDashAudioAndFonipa_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
 		}
 
@@ -583,7 +522,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsXDashAudioAndPhoneticMarker_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
 		}
 
@@ -591,7 +530,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsXDashAudioAndPhonemicMarker_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
 		}
 
@@ -668,10 +607,10 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Iso_IsEmpty_ReturnsFalse()
+		public void Iso639_SetEmpty_ThrowsValidationException()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(()=>ws.ISO639 = String.Empty);
+			Assert.Throws<ValidationException>(()=>ws.ISO639 = String.Empty);
 		}
 
 		[Test]
@@ -714,35 +653,35 @@ namespace Palaso.Tests.WritingSystems
 		public void LanguageSubtag_ContainsXDashAudio_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "de-x-audio");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "de-x-audio");
 		}
 
 		[Test]
 		public void Language_ContainsZxxx_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "de-Zxxx");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "de-Zxxx");
 		}
 
 		[Test]
 		public void LanguageSubtag_ContainsCapitalXDashAudio_Throws()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "de-X-AuDiO");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "de-X-AuDiO");
 		}
 
 		[Test]
 		public void Language_SetWithInvalidLanguageTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "bogus");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "bogus");
 		}
 
 		[Test]
 		public void Script_SetWithInvalidScriptTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "bogus");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "bogus");
 		}
 
 		[Test]
@@ -750,7 +689,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.ISO639 = "bogus");
+			Assert.Throws<ValidationException>(() => ws.ISO639 = "bogus");
 		}
 
 		[Test]
@@ -773,7 +712,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_BadLanguage_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("BadLanguage", "", "", "")
 			);
 		}
@@ -790,7 +729,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_BadScript_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("th", "BadScript", "", "")
 			);
 		}
@@ -807,7 +746,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_BadRegion_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("th", "Thai", "BadRegion", "")
 			);
 		}
@@ -824,7 +763,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_BadVariant_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => ws.SetAllRfc5646LanguageTagComponents("th", "Thai", "TH", "BadVariant")
 			);
 		}
