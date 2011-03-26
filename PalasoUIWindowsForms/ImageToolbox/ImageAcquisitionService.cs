@@ -3,7 +3,7 @@ using System;
 using WIA;
 using System.Runtime.InteropServices;
 
-namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
+namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public class ImageDeviceException : ApplicationException
 	{
@@ -56,7 +56,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Scanner
 						type,
 						WiaImageIntent.GrayscaleIntent,
 						WiaImageBias.MinimizeSize,
-						WIA.FormatID.wiaFormatPNG,
+						WIA.FormatID.wiaFormatPNG, // at least canoscan 200 ignores this, gives me a jpeg
 						false,
 						true,
 						false);

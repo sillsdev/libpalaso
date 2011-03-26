@@ -8,16 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.Reporting {
+namespace Palaso.UI.WindowsForms.ImageToolbox {
 
 
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "10.0.0.0")]
-	internal sealed partial class UsageMemory : global::System.Configuration.ApplicationSettingsBase {
+	internal sealed partial class ImageToolboxSettings : global::System.Configuration.ApplicationSettingsBase {
 
-		private static UsageMemory defaultInstance = ((UsageMemory)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new UsageMemory())));
+		private static ImageToolboxSettings defaultInstance = ((ImageToolboxSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new ImageToolboxSettings())));
 
-		public static UsageMemory Default {
+		public static ImageToolboxSettings Default {
 			get {
 				return defaultInstance;
 			}
@@ -25,13 +25,13 @@ namespace Palaso.Reporting {
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("0")]
-		public int Launches {
+		[global::System.Configuration.DefaultSettingValueAttribute("")]
+		public string LastImageFolder {
 			get {
-				return ((int)(this["Launches"]));
+				return ((string)(this["LastImageFolder"]));
 			}
 			set {
-				this["Launches"] = value;
+				this["LastImageFolder"] = value;
 			}
 		}
 	}

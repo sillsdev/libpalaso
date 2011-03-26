@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-
 using NUnit.Framework;
+using Palaso.IO;
 using Palaso.Migration;
 using Palaso.TestUtilities;
 

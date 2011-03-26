@@ -23,23 +23,49 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// call this each time the application is launched
 		/// </summary>
+		[Obsolete("Use RecordLaunchAsync, instead")]
 		public static void RecordLaunch()
 		{
-
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
 
 		   GetUserIdentifierIfNeeded();
 
-			 if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
+			 if (DateTime.UtcNow.Date != s_settings.PreviousLaunchDate.Date)
 			{
-				s_settings.LastLaunchDate = DateTime.UtcNow.Date;
+				s_settings.PreviousLaunchDate = DateTime.UtcNow.Date;
 				s_settings.Launches++;
 
 				AttemptHttpReport();
 			}
 		}
 
-		private static void GetUserIdentifierIfNeeded( )
+		/// <summary>
+		/// A unique guid for this machine, which is the same for all palaso apps (because we store it in special palaso text file in appdata)
+		/// </summary>
+		public static Guid UserGuid
+		{
+			get
+			{
+				try
+				{
+					string guid;
+					if (GetAllApplicationValuesForThisUser().TryGetValue("guid", out guid))
+						return new Guid(guid);
+					else
+					{
+						Debug.Fail("Why wasn't there a guid already in the values for this user?");
+					}
+				}
+				catch (Exception)
+				{
+					//ah well.  Debug mode only, we tell the programmer. Otherwise, we're giving a random guid
+					Debug.Fail("couldn't parse the user indentifier into a guid");
+				}
+				return new Guid(); //outside of debug mode, we guarantee some guid is returned... it's only for reporting after all
+			}
+		}
+
+		public static void GetUserIdentifierIfNeeded( )
 		{
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
 
@@ -77,11 +103,11 @@ namespace Palaso.Reporting
 		{
 			try
 			{
-				DateTime dummy = s_settings.LastLaunchDate;
+				DateTime dummy = s_settings.PreviousLaunchDate;
 			}
 			catch
 			{
-				s_settings.LastLaunchDate = default(DateTime);
+				s_settings.PreviousLaunchDate = default(DateTime);
 			}
 		}
 /*
@@ -187,7 +213,7 @@ namespace Palaso.Reporting
 			MakeLaunchDateSafe();
 
 			//avoid asking the user more than once on the special reporting days
-			if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
+			if (DateTime.UtcNow.Date != s_settings.PreviousLaunchDate.Date)
 			{
 				foreach (int launch in intervals)
 				{
@@ -271,9 +297,9 @@ namespace Palaso.Reporting
 		/// store and retrieve values which are the same for all apps using this usage libary
 		/// </summary>
 		/// <returns></returns>
-		public static List<KeyValuePair<string, string>> GetAllApplicationValuesForThisUser()
+		public static Dictionary<string, string> GetAllApplicationValuesForThisUser()
 		{
-			var values = new List<KeyValuePair<string, string>>();
+			var values = new Dictionary<string, string>();
 			try
 			{
 				var path = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -296,7 +322,7 @@ namespace Palaso.Reporting
 					var parts = line.Split(new string[] {"=="}, 2, StringSplitOptions.RemoveEmptyEntries);
 					if (parts.Length == 2)
 					{
-						values.Add(new KeyValuePair<string, string>(parts[0].Trim(), parts[1].Trim()));
+						values.Add(parts[0].Trim(), parts[1].Trim());
 					}
 				}
 			}
@@ -309,9 +335,21 @@ namespace Palaso.Reporting
 
 		public static void ReportLaunchesAsync()
 		{
+			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
+			Debug.Assert(AppReportingSettings == s_settings, "CHecking to see if this is supposed to be true...");
+			AppReportingSettings.Launches++;//review... should be the same as
+			s_settings.PreviousLaunchDate = DateTime.UtcNow.Date;
 			var worker = new BackgroundWorker();
 			worker.DoWork += new DoWorkEventHandler(OnReportDoWork);
 			worker.RunWorkerAsync();
+		}
+
+		/// <summary>
+		/// before calling this, remember to do anything special (like report an upgrade)
+		/// </summary>
+		public static void RecordCurrentVersion()
+		{
+			s_settings.PreviousVersion = ErrorReport.VersionNumberString;
 		}
 
 		static void OnReportDoWork(object sender, DoWorkEventArgs e)
@@ -320,9 +358,9 @@ namespace Palaso.Reporting
 			Dictionary<string, string> parameters = new Dictionary<string, string>();
 			parameters.Add("app", UsageReporter.AppNameToUseInReporting);
 			parameters.Add("version", ErrorReport.VersionNumberString);
-			UsageMemory.Default.Launches++;
-			parameters.Add("launches", UsageMemory.Default.Launches.ToString());
-			UsageMemory.Default.Save();
+
+			parameters.Add("launches", AppReportingSettings.Launches.ToString());
+
 
 			foreach (var pair in GetAllApplicationValuesForThisUser())
 			{

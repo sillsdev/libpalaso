@@ -197,11 +197,20 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			return null;
 		}
 
+		public static bool DoNotFindArtOfReading_Test = false;
 
 		public static IImageCollection FromStandardLocations()
 		{
+			string path = TryToGetRootImageCatalogPath();
+			if (DoNotFindArtOfReading_Test)
+				path = null;
+
+			if (path == null)
+				return null;
+
 			var c = new ArtOfReadingImageCollection();
-			c.RootImagePath = TryToGetRootImageCatalogPath();
+
+			c.RootImagePath = path;
 
 			string pathToIndexFile = TryToGetPathToIndex();
 			c.LoadIndex(pathToIndexFile);

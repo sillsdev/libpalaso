@@ -29,10 +29,10 @@
 		private void InitializeComponent()
 		{
 			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
-			this._notFoundLabel = new System.Windows.Forms.Label();
 			this._searchButton = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this._searchTermsBox = new System.Windows.Forms.TextBox();
+			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.SuspendLayout();
 			//
 			// _thumbnailViewer
@@ -50,19 +50,6 @@
 			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
 			this._thumbnailViewer.ThumbNailSize = 95;
 			this._thumbnailViewer.UseCompatibleStateImageBehavior = false;
-			//
-			// _notFoundLabel
-			//
-			this._notFoundLabel.AutoSize = true;
-			this._notFoundLabel.BackColor = System.Drawing.SystemColors.Window;
-			this._notFoundLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-			this._notFoundLabel.ForeColor = System.Drawing.Color.Gray;
-			this._notFoundLabel.Location = new System.Drawing.Point(29, 71);
-			this._notFoundLabel.Name = "_notFoundLabel";
-			this._notFoundLabel.Size = new System.Drawing.Size(196, 25);
-			this._notFoundLabel.TabIndex = 9;
-			this._notFoundLabel.Text = "~No matching images";
-			this._notFoundLabel.Visible = false;
 			//
 			// _searchButton
 			//
@@ -93,17 +80,34 @@
 			this._searchTermsBox.TabIndex = 6;
 			this._searchTermsBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._searchTermsBox_KeyDown);
 			//
+			// _messageLabel
+			//
+			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._messageLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._messageLabel.Font = new System.Drawing.Font("Segoe UI", 15F);
+			this._messageLabel.ForeColor = System.Drawing.Color.Gray;
+			this._messageLabel.Location = new System.Drawing.Point(34, 99);
+			this._messageLabel.Multiline = true;
+			this._messageLabel.Name = "_messageLabel";
+			this._messageLabel.ReadOnly = true;
+			this._messageLabel.Size = new System.Drawing.Size(333, 150);
+			this._messageLabel.TabIndex = 10;
+			this._messageLabel.TabStop = false;
+			this._messageLabel.Text = "~No matching images";
+			//
 			// ArtOfReadingChooser
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this._notFoundLabel);
+			this.Controls.Add(this._messageLabel);
 			this.Controls.Add(this._searchButton);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this._searchTermsBox);
 			this.Controls.Add(this._thumbnailViewer);
 			this.Name = "ArtOfReadingChooser";
 			this.Size = new System.Drawing.Size(408, 325);
+			this.Load += new System.EventHandler(this.ArtOfReadingChooser_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -112,9 +116,9 @@
 		#endregion
 
 		private ImageGallery.ThumbnailViewer _thumbnailViewer;
-		private System.Windows.Forms.Label _notFoundLabel;
 		private System.Windows.Forms.Button _searchButton;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox _searchTermsBox;
+		private Widgets.BetterLabel _messageLabel;
 	}
 }

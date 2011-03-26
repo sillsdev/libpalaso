@@ -209,32 +209,47 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			if (_image == null || _sourceImageArea.Width==0)
+			if (_image == null || _sourceImageArea.Width == 0)
 				return;
 
-			e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);
-		   e.Graphics.DrawImage(
-				_image,
-				_sourceImageArea,
-				new Rectangle( // Source
-					0, 0,
-					_image.Width, _image.Height),
-				GraphicsUnit.Pixel);
+			try
+			{
 
-			Brush brush = new Pen(Color.FromArgb(150, Color.LightBlue)).Brush;
-			e.Graphics.FillRectangle(brush, _leftGrip.InnerEdge, _bottomGrip.InnerEdge, _rightGrip.InnerEdge - _leftGrip.InnerEdge /*this avoids overlapp which makes it twice as light*/
-								, Height - _bottomGrip.InnerEdge);
-			e.Graphics.FillRectangle(brush, _leftGrip.InnerEdge, 0, _rightGrip.InnerEdge - _leftGrip.InnerEdge, _topGrip.InnerEdge);
-			e.Graphics.FillRectangle(brush, 0, 0, _leftGrip.InnerEdge, Height);
-			e.Graphics.FillRectangle(brush, _rightGrip.InnerEdge, 0, Width - _rightGrip.InnerEdge, Height);
+				e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);
+				e.Graphics.DrawImage(
+					_image,
+					_sourceImageArea,
+					new Rectangle( // Source
+						0, 0,
+						_image.Width, _image.Height),
+					GraphicsUnit.Pixel);
 
-			e.Graphics.DrawRectangle(Pens.LightBlue, _leftGrip.Right, _topGrip.Bottom, _rightGrip.Left - _leftGrip.Right, _bottomGrip.Top - _topGrip.Bottom);
+				using (Brush brush = new Pen(Color.FromArgb(150, Color.LightBlue)).Brush)
+				{
+					e.Graphics.FillRectangle(brush, _leftGrip.InnerEdge, _bottomGrip.InnerEdge,
+											 _rightGrip.InnerEdge - _leftGrip.InnerEdge
+											 /*this avoids overlapp which makes it twice as light*/
+											 , Height - _bottomGrip.InnerEdge);
+					e.Graphics.FillRectangle(brush, _leftGrip.InnerEdge, 0, _rightGrip.InnerEdge - _leftGrip.InnerEdge,
+											 _topGrip.InnerEdge);
+					e.Graphics.FillRectangle(brush, 0, 0, _leftGrip.InnerEdge, Height);
+					e.Graphics.FillRectangle(brush, _rightGrip.InnerEdge, 0, Width - _rightGrip.InnerEdge, Height);
+				}
+				e.Graphics.DrawRectangle(Pens.LightBlue, _leftGrip.Right, _topGrip.Bottom,
+										 _rightGrip.Left - _leftGrip.Right, _bottomGrip.Top - _topGrip.Bottom);
 
-			_bottomGrip.Paint(e.Graphics);
-			_topGrip.Paint(e.Graphics);
-			_leftGrip.Paint(e.Graphics);
-			_rightGrip.Paint(e.Graphics);
+				_bottomGrip.Paint(e.Graphics);
+				_topGrip.Paint(e.Graphics);
+				_leftGrip.Paint(e.Graphics);
+				_rightGrip.Paint(e.Graphics);
 
+			}
+			catch (Exception error)
+			{
+				Debug.Fail(error.Message);
+				e.Graphics.DrawString("Error in OnPaint()", SystemFonts.DefaultFont, Brushes.Red, 20,20);
+				//swallow in release build
+			}
 		}
 
 		private Grip[] Grips
@@ -288,26 +303,61 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		public Image GetCroppedImage()
 		{
-			var z = 1.0/GetImageToCanvasScaleFactor();
+			if(_image==null)
+				return null;
 
-			var selection = new Rectangle((int)(z*_leftGrip.Value),
-				(int)(z*_topGrip.Value),
-				(int)(z*(_rightGrip.Value-_leftGrip.Value)),
-				(int)(z*(_bottomGrip.Value-_topGrip.Value)));
-			Bitmap bmp = _image as Bitmap;
-			if (bmp == null)
-				throw new ArgumentException("No valid bitmap");
-			return bmp.Clone(selection, bmp.PixelFormat);
+			try
+			{
+				var z = 1.0/GetImageToCanvasScaleFactor();
+
+
+				var selection = new Rectangle((int) (z*_leftGrip.Value),
+											  (int) (z*_topGrip.Value),
+											  (int) (z*(_rightGrip.Value - _leftGrip.Value)),
+											  (int) (z*(_bottomGrip.Value - _topGrip.Value)));
+
+				//jpeg = b96b3cae-0728-11d3-9d7b-0000f81ef32e
+
+				Bitmap bmp = _image as Bitmap;
+				if (bmp == null)
+					throw new ArgumentException("No valid bitmap");
+
+				//NB: this worked for tiff and png, but would crash with Out Of Memory for jpegs.
+				//This may be because I closed the stream? THe doc says you have to keep that stream open.
+				// return bmp.Clone(selection, _image.PixelFormat);
+				//So now, I first copy it, then clone with the bounds of our crop:
+				using (var copy = new Bitmap(_image))
+				{
+					return copy.Clone(selection, copy.PixelFormat);
+				}
+
+			}
+			catch(Exception e)
+			{
+				Debug.Fail(e.Message);
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e,"Sorry, there was a problem getting the image");
+				return null;
+			}
 		}
 
 		public void SetImage(PalasoImage image)
 		{
-			Image = image.Image;
+			if (image == null)
+			{
+				Image = null;
+			}
+			else
+			{
+				Image = image.Image;
+			}
 		}
 
 		public PalasoImage GetImage()
 		{
-			return new PalasoImage() {Image = GetCroppedImage()};
+			Image image = GetCroppedImage();
+			if (image == null)
+				return null;
+			return PalasoImage.FromImage(image);
 		}
 
 		public event EventHandler ImageChanged;

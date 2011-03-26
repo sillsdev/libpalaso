@@ -89,5 +89,20 @@ namespace PalasoUIWindowsForms.Tests.ImageGallery
 				found.Add(s.ToString());
 			}
 		}
+
+		[Test]
+		public void FromStandardLocations_NoArtOfReadingInstalled_Null()
+		{
+			try
+			{
+				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = true;
+				Assert.IsNull(ArtOfReadingImageCollection.FromStandardLocations());
+			}
+			finally
+			{
+				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = false;
+			}
+		}
+
 	}
 }
