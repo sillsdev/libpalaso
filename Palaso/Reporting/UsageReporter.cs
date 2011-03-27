@@ -19,7 +19,17 @@ namespace Palaso.Reporting
 		private static string s_appNameToUseInDialogs;
 		private static string s_appNameToUseInReporting;
 		private static ReportingSettings s_settings;
+		private AnalyticsEventSender _analytics;
+		private string _realPreviousVersion;
+		private string _mostRecentArea;
 
+		public UsageReporter(ReportingSettings settings)
+		{
+			s_settings = settings;
+			GetUserIdentifierIfNeeded();
+			_realPreviousVersion = s_settings.PreviousVersion;
+			s_settings.PreviousVersion = ErrorReport.VersionNumberString;
+		}
 		/// <summary>
 		/// call this each time the application is launched
 		/// </summary>
@@ -65,7 +75,7 @@ namespace Palaso.Reporting
 			}
 		}
 
-		public static void GetUserIdentifierIfNeeded( )
+		private static void GetUserIdentifierIfNeeded( )
 		{
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
 
@@ -206,6 +216,7 @@ namespace Palaso.Reporting
 		/// if you call this every time the application starts, it will send reports on those intervals
 		/// (e.g. {1, 10}) that are listed in the intervals parameter.  It will get version number and name out of the application.
 		/// </summary>
+		[Obsolete("Use BeginGoogleAnalytics Instead ")]
 		public static void DoTrivialUsageReport(string emailAddress, string topMessage, int[] intervals)
 		{
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
@@ -333,6 +344,7 @@ namespace Palaso.Reporting
 			return values;
 		}
 
+		[Obsolete("Use BeginGoogleAnalytics Instead ")]
 		public static void ReportLaunchesAsync()
 		{
 			Guard.AgainstNull(s_settings, "Client must set the settings with AppReportSettings");
@@ -344,13 +356,6 @@ namespace Palaso.Reporting
 			worker.RunWorkerAsync();
 		}
 
-		/// <summary>
-		/// before calling this, remember to do anything special (like report an upgrade)
-		/// </summary>
-		public static void RecordCurrentVersion()
-		{
-			s_settings.PreviousVersion = ErrorReport.VersionNumberString;
-		}
 
 		static void OnReportDoWork(object sender, DoWorkEventArgs e)
 		{
@@ -423,5 +428,121 @@ namespace Palaso.Reporting
 				return null;
 			}
 		}
+
+		/// <summary>
+		///  Reports upgrades, launches, etc., and allows for later calls to notify analytics of navigation and events
+		/// </summary>
+
+		public void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode)
+		{
+			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid);
+
+			 if (DateTime.UtcNow.Date != s_settings.PreviousLaunchDate.Date)
+			{
+				s_settings.PreviousLaunchDate = DateTime.UtcNow.Date;
+				s_settings.Launches++;
+			}
+
+			//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
+			//(i.e., how many people are return vistors, etc.)
+
+			if (string.IsNullOrEmpty(_realPreviousVersion))
+			{
+				_analytics.SendNavigationNotice("firstApparentLaunchForAnyVersionOnMachine"+"/"+ErrorReport.VersionNumberString);
+			}
+			else if (_realPreviousVersion != ErrorReport.VersionNumberString)
+			{
+				_analytics.SendNavigationNotice("versionChange/version{0}-previousVersion{1}",ErrorReport.VersionNumberString,_realPreviousVersion );
+			}
+
+			if (UsageReporter.AppReportingSettings.Launches == 1)
+			{
+				SendNavigationNotice("firstLaunch/version{0}", ErrorReport.VersionNumberString);
+			}
+
+
+			//Usage.Send("Runtime", "launched", ErrorReport.VersionNumberString, UsageReporter.AppReportingSettings.Launches);
+		}
+
+		/// <summary>
+		/// Send an navigation notice to Google Analytics, if BeginGoogleAnalytics was previously called
+		/// Record a visit to part of the application, just as if it  were a page.
+		/// Leave it up to this method to insert things like the fact that you are in DEBUG mode, or what version is being used, etc.
+		/// </summary>
+		/// <example>SendNavigationNotice("aboutBox"), SendNavigationNotice("dictionary/browseView")</example>
+		public void SendNavigationNotice(string programArea, params object[] args)
+		{
+			if (!Palaso.Reporting.UsageReporter.AppReportingSettings.OkToPingBasicUsageData)
+				return;
+			try
+			{
+				if (_analytics == null)
+				{
+					//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+					//so we don't act like it is an error.
+					Debug.WriteLine("Got Navigation notice but google analytics wasn't enabled");
+					return;
+				}
+
+				//var uri = new Uri(programArea);
+
+
+				var area = string.Format("SendNavigationNotice(" + programArea + ")", args);
+				Debug.WriteLine(area);
+				_analytics.SendNavigationNotice(programArea,args);
+				_mostRecentArea = area;
+			}
+			catch (Exception e)
+			{
+#if DEBUG
+				throw;
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Send an event to Google Analytics, if BeginGoogleAnalytics was previously called
+		/// </summary>
+		/// <param name="programArea">DictionaryBrowse</param>
+		/// <param name="action">       DeleteWord                   Error</param>
+		/// <param name="optionalLabel">Some Exception Message</param>
+		/// <param name="optionalInteger">some integer that makes sense for this event</param>
+		/// <example>SendEvent("dictionary/browseView", "Command", "DeleteWord", "","")</example>
+		/// <example>SendEvent("dictionary/browseView", "Error", "DeleteWord", "some error message we got","")</example>
+		public void SendEvent(string programArea, string category, string action, string optionalLabel, int optionalInteger)
+				{
+					if (!Palaso.Reporting.UsageReporter.AppReportingSettings.OkToPingBasicUsageData)
+						return;
+ try
+			{
+				if (_analytics == null)
+				{
+					//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+					//so we don't act like it is an error.
+					Debug.WriteLine("Got SendEvent notice but google analytics wasn't enabled");
+					return;
+				}
+				Debug.WriteLine(string.Format("SendEvent(cat={0},action={1},label={2},value={3}",category,action,optionalLabel,optionalInteger));
+				_analytics.SendEvent(programArea, "runtime",action,optionalLabel,optionalInteger);
+			}
+			catch (Exception e)
+			{
+#if DEBUG
+				throw;
+#endif
+			}
+				}
+
+		/// <summary>
+		/// Send an error to Google Analytics, if BeginGoogleAnalytics was previously called
+		/// </summary>
+		public void ReportException(bool wasFatal, string theCommandOrOtherContext, Exception error)
+		{
+			string message = error.Message;
+			if (error.InnerException != null)
+				message += " Inner: " + error.InnerException.Message;
+			SendEvent(_mostRecentArea, wasFatal?"Fatal Error":"Non-Fatal Error", theCommandOrOtherContext, message, 0);
+		}
+
 	}
 }
