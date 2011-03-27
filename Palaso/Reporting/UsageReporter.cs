@@ -26,7 +26,7 @@ namespace Palaso.Reporting
 		public UsageReporter(ReportingSettings settings)
 		{
 			s_settings = settings;
-			GetUserIdentifierIfNeeded();
+			//this is a dialog for getting email, which we never use, so why ask: GetUserIdentifierIfNeeded();
 			_realPreviousVersion = s_settings.PreviousVersion;
 			s_settings.PreviousVersion = ErrorReport.VersionNumberString;
 		}
