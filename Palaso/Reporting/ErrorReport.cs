@@ -28,6 +28,12 @@ namespace Palaso.Reporting
 		private static string s_previousNonFatalMessage;
 		private static Exception s_previousNonFatalException;
 
+		public static void Init(string emailAddress)
+		{
+			s_emailAddress = emailAddress;
+			ErrorReport.AddStandardProperties();
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
