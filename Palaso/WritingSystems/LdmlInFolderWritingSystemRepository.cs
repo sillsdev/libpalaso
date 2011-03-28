@@ -103,7 +103,7 @@ namespace Palaso.WritingSystems
 				catch(Exception e)
 				{
 					throw new ApplicationException(
-						"Unfortunately we were not able to load all of your writing systems. the problem occurred in file {0}. The exact error message was" +
+						String.Format("Unfortunately we were not able to load all of your writing systems. the problem occurred in file {0}. The exact error message was: ", filePath) +
 						e.Message);
 				}
 				if(wsFromFile.StoreID != wsFromFile.RFC5646)
