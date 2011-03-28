@@ -52,38 +52,34 @@ namespace Palaso.Tests.WritingSystems
 	public class LdmlInFolderWritingSystemRepositoryTests
 	{
 
-		private class TestEnvironment:IDisposable
+		private class TestEnvironment : IDisposable
 		{
-			private string _testPath;
-			private LdmlInFolderWritingSystemRepository _collection;
+			private readonly TemporaryFolder _tempFolder;
 			private WritingSystemDefinition _writingSystem;
-			private XmlNamespaceManager _namespaceManager;
 
 			public TestEnvironment()
 			{
-				_writingSystem = new WritingSystemDefinition();
-				_testPath = Path.GetTempPath() + "PalasoTest";
+				_tempFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
+				NamespaceManager = new XmlNamespaceManager(new NameTable());
+				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 				if (Directory.Exists(TestPath))
 				{
 					Directory.Delete(TestPath, true);
 				}
-				_collection = new LdmlInFolderWritingSystemRepository(TestPath);
-				_namespaceManager = new XmlNamespaceManager(new NameTable());
-				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+				_writingSystem = new WritingSystemDefinition();
+				Collection = new LdmlInFolderWritingSystemRepository(TestPath);
 			}
 
-			public LdmlInFolderWritingSystemRepository Collection
+			public void Dispose()
 			{
-				get { return _collection; }
-				set
-				{
-					_collection = value;
-				}
+				_tempFolder.Dispose();
 			}
+
+			public LdmlInFolderWritingSystemRepository Collection { get; set; }
 
 			public string TestPath
 			{
-				get { return _testPath; }
+				get { return _tempFolder.Path; }
 			}
 
 			public WritingSystemDefinition WritingSystem
@@ -91,15 +87,7 @@ namespace Palaso.Tests.WritingSystems
 				get { return _writingSystem; }
 			}
 
-			public XmlNamespaceManager NamespaceManager
-			{
-				get { return _namespaceManager; }
-			}
-
-			public void Dispose()
-			{
-				Directory.Delete(TestPath, true);
-			}
+			public XmlNamespaceManager NamespaceManager { get; private set; }
 		}
 
 		private void AssertWritingSystemFileExists(TestEnvironment environment)
@@ -430,18 +418,22 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanRemoveAbbreviation()
 		{
-
 			using (var environment = new TestEnvironment())
 			{
 				environment.WritingSystem.ISO639 = "en";
 				environment.WritingSystem.Abbreviation = "abbrev";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = environment.Collection.FilePathToWritingSystem(environment.WritingSystem);
-				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation",
-																	  environment.NamespaceManager);
+				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath(
+					"ldml/special/palaso:abbreviation[@value='abbrev']",
+					environment.NamespaceManager
+				);
 				environment.WritingSystem.Abbreviation = string.Empty;
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(PathToWS(environment)).HasNoMatchForXpath("ldml/special/palaso:abbreviation", environment.NamespaceManager);
+				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath(
+					"ldml/special/palaso:abbreviation[@value='en']",
+					environment.NamespaceManager
+				);
 			}
 		}
 

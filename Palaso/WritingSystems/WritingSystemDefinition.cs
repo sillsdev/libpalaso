@@ -423,12 +423,11 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				bool customLanguageNameIsSet = !String.IsNullOrEmpty(_languageName);
-				if (customLanguageNameIsSet)
+				if (!String.IsNullOrEmpty(_languageName))
 				{
 					return _languageName;
 				}
-				var code = ValidIso639LanguageCodes.First(c => c.Code.Equals(ISO639));
+				var code = ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(ISO639));
 				if (code != null)
 				{
 					return code.Name;

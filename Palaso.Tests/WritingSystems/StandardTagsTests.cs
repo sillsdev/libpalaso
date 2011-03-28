@@ -39,6 +39,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void ValidIso15924Scripts_HasSome()
+		{
+			var codes = StandardTags.ValidIso15924Scripts;
+			Assert.Greater(codes.Count, 4);
+		}
+
+		[Test]
 		public void ValidIso3166Regions_HasUS_True()
 		{
 			var codes = StandardTags.ValidIso3166Regions;
@@ -89,6 +96,20 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void IsValidIso639LanguageCode_one_ReturnTrue()
+		{
+			// Yes it's true
+			Assert.IsTrue(StandardTags.IsValidIso639LanguageCode("one"));
+		}
+
+		[Test]
+		public void IsValidIso639LanguageCode_two_ReturnTrue()
+		{
+			// Yes it's true
+			Assert.IsTrue(StandardTags.IsValidIso639LanguageCode("two"));
+		}
+
+		[Test]
 		public void IsValidIso15924ScriptCode_Latn_ReturnsTrue()
 		{
 			Assert.IsTrue(StandardTags.IsValidIso15924ScriptCode("Latn"));
@@ -122,5 +143,6 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.IsFalse(StandardTags.IsValidRegisteredVariant("en"));
 		}
+
 	}
 }
