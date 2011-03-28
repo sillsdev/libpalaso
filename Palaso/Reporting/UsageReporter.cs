@@ -466,6 +466,9 @@ namespace Palaso.Reporting
 		/// <example>SendNavigationNotice("aboutBox"), SendNavigationNotice("dictionary/browseView")</example>
 		public static void SendNavigationNotice(string programArea, params object[] args)
 		{
+			if (s_singleton == null)
+				return;
+
 			if (!s_singleton._settings.OkToPingBasicUsageData)
 				return;
 			try
@@ -505,7 +508,10 @@ namespace Palaso.Reporting
 		/// <example>SendEvent("dictionary/browseView", "Error", "DeleteWord", "some error message we got","")</example>
 		public static void SendEvent(string programArea, string category, string action, string optionalLabel, int optionalInteger)
 				{
-					if (!s_singleton._settings.OkToPingBasicUsageData)
+					if (s_singleton == null)
+						return;
+
+			if (!s_singleton._settings.OkToPingBasicUsageData)
 						return;
  try
 			{
@@ -532,6 +538,9 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportException(bool wasFatal, string theCommandOrOtherContext, Exception error)
 		{
+			if (s_singleton == null)
+				return;
+
 			string message = error.Message;
 			if (error.InnerException != null)
 				message += " Inner: " + error.InnerException.Message;
