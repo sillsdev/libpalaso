@@ -11,6 +11,15 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemDefinitionPropertyTests
 	{
 
+		[Test]
+		public void FromRFC5646_AllArgs_SetsOk()
+		{
+			var ws = WritingSystemDefinition.FromRFC5646("en", "Latn", "US", "x-whatever");
+			Assert.AreEqual(ws.ISO639, "en");
+			Assert.AreEqual(ws.Script, "Latn");
+			Assert.AreEqual(ws.Region, "US");
+			Assert.AreEqual(ws.Variant, "x-whatever");
+		}
 
 		[Test]
 		public void DisplayLabelWhenUnknown()

@@ -818,6 +818,11 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(language);
 		}
 
+		public static WritingSystemDefinition FromRFC5646(string language, string script, string region, string variant)
+		{
+			return new WritingSystemDefinition(language, script, region, variant, string.Empty, false);
+		}
+
 	}
 
 	public enum IpaStatusChoices
