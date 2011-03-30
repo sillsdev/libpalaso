@@ -905,5 +905,125 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.Throws<ValidationException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
 		}
+
+		[Test]
+		public void Constructor_LanguageIsSetToqaa_SetsLanguageToqaa()
+		{
+			var rfctag =  new RFC5646Tag("qaa", "", "", "", "");
+			Assert.AreEqual("qaa", rfctag.Language);
+		}
+
+		[Test]
+		public void Constructor_LanguageIsSetToqtz_SetsLanguageToqtz()
+		{
+			var rfctag = new RFC5646Tag("qtz", "", "", "", "");
+			Assert.AreEqual("qtz", rfctag.Language);
+		}
+
+		[Test]
+		public void Constructor_ScriptIsSetToQaaa_SetsScriptToQaaa()
+		{
+			var rfctag = new RFC5646Tag("qaa", "Qaaa", "", "", "");
+			Assert.AreEqual("Qaaa", rfctag.Script);
+		}
+
+		[Test]
+		public void Constructor_ScriptIsSetToQabx_SetsScriptToQabx ()
+		{
+			var rfctag = new RFC5646Tag("qaa", "Qabx", "", "", "");
+			Assert.AreEqual("Qabx", rfctag.Script);
+		}
+
+		[Test]
+		public void Constructor_RegionIsSetToQM_SetsRegionToQM()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "QM", "", "");
+			Assert.AreEqual("QM", rfctag.Region);
+		}
+
+		[Test]
+		public void Constructor_RegionIsSetToQZ_SetsRegionToQZ()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "QZ", "", "");
+			Assert.AreEqual("QZ", rfctag.Region);
+		}
+
+		[Test]
+		public void Constructor_RegionIsSetToXA_SetsRegionToXA()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "XA", "", "");
+			Assert.AreEqual("XA", rfctag.Region);
+		}
+
+		[Test]
+		public void Constructor_RegionIsSetToXZ_SetsRegionToXZ()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "XZ", "", "");
+			Assert.AreEqual("XZ", rfctag.Region);
+		}
+
+		[Test]
+		public void Language_IsSetToqaa_SetsLanguageToqaa()
+		{
+			var rfctag = new RFC5646Tag("en", "", "", "", "");
+			rfctag.Language = "qaa";
+			Assert.AreEqual("qaa", rfctag.Language);
+		}
+
+		[Test]
+		public void Language_IsSetToqtz_SetsLanguageToqtz()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "", "", "");
+			rfctag.Language = "qtz";
+			Assert.AreEqual("qtz", rfctag.Language);
+		}
+
+		[Test]
+		public void Script_IsSetToQaaa_SetsScriptToQaaa()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "", "", "");
+			rfctag.Script = "Qaaa";
+			Assert.AreEqual("Qaaa", rfctag.Script);
+		}
+
+		[Test]
+		public void Script_IsSetToQabx_SetsScriptToQabx()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "", "", "");
+			rfctag.Script = "Qabx";
+			Assert.AreEqual("Qabx", rfctag.Script);
+		}
+
+		[Test]
+		public void Region_IsSetToQM_SetsRegionToQM()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "QM", "", "");
+			rfctag.Region = "QM";
+			Assert.AreEqual("QM", rfctag.Region);
+		}
+
+		[Test]
+		public void Region_IsSetToQZ_SetsRegionToQZ()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "QZ", "", "");
+			rfctag.Region = "QZ";
+			Assert.AreEqual("QZ", rfctag.Region);
+		}
+
+		[Test]
+		public void Region_IsSetToXA_SetsRegionToXA()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "XA", "", "");
+			rfctag.Region = "XA";
+			Assert.AreEqual("XA", rfctag.Region);
+		}
+
+		[Test]
+		public void Region_IsSetToXZ_SetsRegionToXZ()
+		{
+			var rfctag = new RFC5646Tag("qaa", "", "XZ", "", "");
+			rfctag.Region = "XZ";
+			Assert.AreEqual("XZ", rfctag.Region);
+		}
 	}
 }
