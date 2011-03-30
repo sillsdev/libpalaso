@@ -143,6 +143,5 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.IsFalse(StandardTags.IsValidRegisteredVariant("en"));
 		}
-
 	}
 }

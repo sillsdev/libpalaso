@@ -72,7 +72,7 @@ namespace Palaso.WritingSystems
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isUnicodeEncoded = true;
-			_rfcTag = new RFC5646Tag("qaa",String.Empty,String.Empty,String.Empty,String.Empty);
+			_rfcTag = new RFC5646Tag();
 		}
 
 		public WritingSystemDefinition(string iso)
@@ -818,11 +818,17 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(language);
 		}
 
-		public static WritingSystemDefinition FromRFC5646(string language, string script, string region, string variant)
+		public static WritingSystemDefinition FromRFC5646Subtags(string language, string script, string region, string variantAndPrivateUse)
 		{
-			return new WritingSystemDefinition(language, script, region, variant, string.Empty, false);
+			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
 		}
 
+		public static WritingSystemDefinition FromRFC5646Tag(RFC5646Tag tag)
+		{
+			return new WritingSystemDefinition(tag.Language, tag.Script, tag.Region,
+				String.IsNullOrEmpty(tag.PrivateUse) ? tag.Variant : tag.Variant + "-" + tag.PrivateUse,
+				string.Empty, false);
+		}
 	}
 
 	public enum IpaStatusChoices

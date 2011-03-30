@@ -905,5 +905,119 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.Throws<ValidationException>(() => new RFC5646Tag("qaa", "", "", "en", ""));
 		}
+
+		private void AssertTag(RFC5646Tag tag, string language, string script, string region, string variant, string privateUse)
+		{
+			Assert.AreEqual(language, tag.Language);
+			Assert.AreEqual(script, tag.Script);
+			Assert.AreEqual(region, tag.Region);
+			Assert.AreEqual(variant, tag.Variant);
+			Assert.AreEqual(privateUse, tag.PrivateUse);
+		}
+
+		[Test]
+		public void Parse_HasOnlyPrivateUse_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("x-privuse");
+			AssertTag(tag, "qaa", string.Empty, string.Empty, string.Empty, "x-privuse");
+		}
+
+		[Test]
+		public void Parse_HasMultiplePrivateUse_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("x-private-use");
+			AssertTag(tag, "qaa", string.Empty, string.Empty, string.Empty, "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguage_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de");
+			AssertTag(tag, "de", string.Empty, string.Empty, string.Empty, string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScript_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("en-Latn");
+			AssertTag(tag, "en", "Latn", string.Empty, string.Empty, string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegion_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("en-Latn-US");
+			AssertTag(tag, "en", "Latn", "US", string.Empty, string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndVariant_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de-Latn-DE-1901");
+			AssertTag(tag, "de", "Latn", "DE", "1901", string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndMultipleVariants_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de-Latn-DE-1901-bauddha");
+			AssertTag(tag, "de", "Latn", "DE", "1901-bauddha", string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndMultipleVariantsAndPrivateUse_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de-Latn-DE-1901-bauddha-x-private");
+			AssertTag(tag, "de", "Latn", "DE", "1901-bauddha", "x-private");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndMultipleVariantsAndMultiplePrivateUse_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de-Latn-DE-1901-bauddha-x-private-use");
+			AssertTag(tag, "de", "Latn", "DE", "1901-bauddha", "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndVariantAndMultiplePrivateUse_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de-Latn-DE-bauddha-x-private-use");
+			AssertTag(tag, "de", "Latn", "DE", "bauddha", "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegionAndVariantAndMultiplePrivateUse_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("de-DE-bauddha-x-private-use");
+			AssertTag(tag, "de", string.Empty, "DE", "bauddha", "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndVariant_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("en-alalc97");
+			AssertTag(tag, "en", string.Empty, string.Empty, "alalc97", string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndMultipleVariants_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("en-alalc97-aluku");
+			AssertTag(tag, "en", string.Empty, string.Empty, "alalc97-aluku", string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegion_RFC5646TagHasExpectedFields()
+		{
+			var tag = RFC5646Tag.Parse("en-US");
+			AssertTag(tag, "en", string.Empty, "US", string.Empty, string.Empty);
+		}
+
+		[Test]
+		public void RFC5646Tag_EmptyConstructor_HasDefaultLanguage()
+		{
+			var tag = new RFC5646Tag();
+			AssertTag(tag, "qaa", string.Empty, string.Empty, string.Empty, string.Empty);
+		}
 	}
 }
