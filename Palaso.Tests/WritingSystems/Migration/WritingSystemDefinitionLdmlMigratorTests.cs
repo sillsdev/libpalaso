@@ -966,7 +966,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void Migrate_LanguageSubtagContainsZxxx_VariantContainsxDashaudio()
+		public void Migrate_LanguageSubtagContainsZxxx_VariantDoesNotContainxDashaudio()
 		{
 			using (_environment = new TestEnvironment())
 			{
@@ -975,7 +975,21 @@ namespace Palaso.Tests.WritingSystems.Migration
 				migrator.Migrate();
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
 				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
-				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-audio']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/variant");
+			}
+		}
+
+		[Test]
+		public void Migrate_VariantSubtagContainsZxxx_RfctagisConvertedToAudio()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.CreateVersion0LdmlContent("en", "", "", "Zxxx"));
+				var migrator = _environment.GetMigrator;
+				migrator.Migrate();
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Zxxx']");
+				AssertThatXmlIn.File(_environment.PathToWritingSystemLdmlFile).HasNoMatchForXpath("/ldml/identity/variant[@type='x-audio']");
 			}
 		}
 
