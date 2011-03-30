@@ -81,15 +81,13 @@ namespace Palaso.Reporting
 			if (pagePath.Trim().Length == 0)
 			{
 				Debug.Fail("Empty path");
-				pagePath = "/unknown";
+				pagePath = "unknown";
 			}
-			if (!pagePath.StartsWith("/"))
+
+			pagePath = pagePath.TrimStart(new char[] {'/'});
+			if (!pagePath.StartsWith("application/"))
 			{
-				pagePath = "/" + pagePath;
-			}
-			if (!pagePath.StartsWith("/application"))
-			{
-				pagePath = "/application"+pagePath;
+				pagePath = "application/"+pagePath;
 			}
 
 #if DEBUG
