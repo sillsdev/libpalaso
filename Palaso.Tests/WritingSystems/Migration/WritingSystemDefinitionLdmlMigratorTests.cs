@@ -34,11 +34,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 				get { return _pathToLdml; }
 			}
 
-			public Migrator GetMigrator
+			public FileMigrator GetMigrator
 			{
 				get
 				{
-					var migrator = new Migrator(1, PathToWritingSystemLdmlFile);
+					var migrator = new FileMigrator(1, PathToWritingSystemLdmlFile);
 					migrator.AddVersionStrategy(new WritingSystemLdmlVersionGetter());
 					migrator.AddMigrationStrategy(new Version0MigrationStrategy());
 					return migrator;

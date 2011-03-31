@@ -13,5 +13,8 @@ namespace Palaso.Migration
 		int FromVersion { get; }
 		int ToVersion { get; }
 		void Migrate(string sourceFilePath, string destinationFilePath);
+
+		void PreMigrate();
+		void PostMigrate();
 	}
 }

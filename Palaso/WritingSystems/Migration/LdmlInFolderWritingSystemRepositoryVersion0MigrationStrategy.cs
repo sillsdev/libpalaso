@@ -2,31 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using Palaso.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration;
-using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems.Migration
 {
-	public class LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy : IMigrationStrategy
+	public class LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy : MigrationStrategyBase
 	{
-		private ConsumerLevelRfcTagChanger _rfcTagChanger;
+		public delegate void OnWritingSystemIDChanged(IEnumerable<KeyValuePair<string, string>> mapTagOldToNew);
+		private readonly OnWritingSystemIDChanged _onWritingSystemIDChanged;
 
-		public LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy(ConsumerLevelRfcTagChanger rfcTagChanger)
+		public LdmlInFolderWritingSystemRepositoryVersion0MigrationStrategy(OnWritingSystemIDChanged onWritingSystemIDChanged) :
+			base(0, 1)
 		{
-			_rfcTagChanger = rfcTagChanger;
-		}
-
-		public int FromVersion
-		{
-			get { return 0; }
-		}
-
-		public int ToVersion
-		{
-			get { return 1; }
+			_onWritingSystemIDChanged = onWritingSystemIDChanged;
 		}
 
 		private Dictionary<string, KeyValuePair<string, string>> _fileToOldAndNewRfcTagMap = new Dictionary<string, KeyValuePair<string, string>>();
@@ -45,7 +35,7 @@ namespace Palaso.WritingSystems.Migration
 			{
 				oldToNewRfcTagMap.Add(map.Value.Key, map.Value.Value);
 			}
-			_rfcTagChanger(oldToNewRfcTagMap);
+			_onWritingSystemIDChanged(oldToNewRfcTagMap);
 		}
 
 		private void MoveFilesToFinalDestinationWhileRenamingThemToMatchContainedRfcTags(string directoryToMigrate, string destinationDirectory)
@@ -108,8 +98,8 @@ namespace Palaso.WritingSystems.Migration
 
 		private string RemoveDuplicateMarkerFromWsInLdmlFile(string file)
 		{
-			WritingSystemDefinitionV1 ws = new WritingSystemDefinitionV1();
-			var adaptor = new LdmlAdaptorV1();
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			var adaptor = new LdmlAdaptor();
 			adaptor.Read(file, ws);
 			ws.DuplicateNumber = 0;
 			string pathToBackupTo = file + ".bak";
@@ -125,11 +115,41 @@ namespace Palaso.WritingSystems.Migration
 			return ws.RFC5646;
 		}
 
+		public int DuplicateNumber         {
+		  get
+		  {
+			  Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
+			  string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
+			  if (String.IsNullOrEmpty(duplicateTag))
+			  {
+				  return 0;
+			  }
+			  Regex numberRegex = new Regex("[0-9]*$");
+			  //int valueFound = String.IsNullOrEmpty(numberRegex.Match(duplicateTag).Value) ? 0 : Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
+			  return Convert.ToInt32(numberRegex.Match(duplicateTag).Value);
+		  }
+
+		  set
+		  {
+			  if (value < 0) { throw new ArgumentOutOfRangeException("We can't have a negaive number of duplicates."); }
+			  Regex duplicateTagRegex = new Regex("^dupl[0-9]*$");
+			  string duplicateTag = _rfcTag.GetPartMatchingRegExInPrivateUse(duplicateTagRegex);
+			  if (!String.IsNullOrEmpty(duplicateTag))
+			  {
+				  _rfcTag.RemoveFromPrivateUse(duplicateTag);
+			  }
+			  if (value > 0)
+			  {
+				  _rfcTag.AddToPrivateUse("dupl" + value);
+			  }
+		  }
+	  }
+
 		private void MigrateIndividualFiles(string directoryToMigrate)
 		{
 			foreach (var pathToFileToMigrate in Directory.GetFiles(directoryToMigrate))
 			{
-				Migrator individualFileMigrator = GetMigratorForSingleLdmlFile(pathToFileToMigrate);
+				FileMigrator individualFileMigrator = CreateMigratorForSingleLdmlFile(pathToFileToMigrate);
 				if(individualFileMigrator.NeedsMigration())
 				{
 					string rfcTagBeforeMigration = GetRfcTagFromFileV0(pathToFileToMigrate);
@@ -150,8 +170,8 @@ namespace Palaso.WritingSystems.Migration
 
 		private string UpDuplicateNumberOfWsInLdmlFileAndReturnNewRfcTag(string fileContainingRfcTag)
 		{
-			WritingSystemDefinitionV1 ws = new WritingSystemDefinitionV1();
-			var adaptor = new LdmlAdaptorV1();
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			var adaptor = new LdmlAdaptor();
 			adaptor.Read(fileContainingRfcTag, ws);
 			do
 			{
@@ -172,19 +192,18 @@ namespace Palaso.WritingSystems.Migration
 			return ws.RFC5646;
 		}
 
-		private Migrator GetMigratorForSingleLdmlFile(string pathToFileToMigrate)
+		private FileMigrator CreateMigratorForSingleLdmlFile(string pathToFileToMigrate)
 		{
-			var individualFileMigrator = new Migrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, pathToFileToMigrate);
+			var individualFileMigrator = new FileMigrator(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, pathToFileToMigrate);
 			individualFileMigrator.AddVersionStrategy(new WritingSystemLdmlVersionGetter());
-			IMigrationStrategy ldmlV0MigrationStrategy = new Version0MigrationStrategy();
-			individualFileMigrator.AddMigrationStrategy(ldmlV0MigrationStrategy);
+			individualFileMigrator.AddMigrationStrategy(new Version0MigrationStrategy());
 			return individualFileMigrator;
 		}
 
 		private string GetRfcTagFromFileV1(string pathToFileToMigrate)
 		{
-			var ws = new WritingSystemDefinitionV1();
-			new LdmlAdaptorV1().Read(pathToFileToMigrate, ws);
+			var ws = new WritingSystemDefinition();
+			new LdmlAdaptor().Read(pathToFileToMigrate, ws);
 			return ws.RFC5646;
 		}
 

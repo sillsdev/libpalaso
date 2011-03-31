@@ -72,7 +72,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparerV0.CompareElementNames);
 		}
 
-		public static void WriteLdmlText(XmlWriter writer, string text)
+		private static void WriteLdmlText(XmlWriter writer, string text)
 		{
 			// Not all Unicode characters are valid in an XML document, so we need to create
 			// the <cp hex="X"> elements to replace the invalid characters.

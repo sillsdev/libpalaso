@@ -145,7 +145,7 @@ namespace Palaso.Tests.Migration
 		[Test]
 		public void FileVersion_OneStrategy_Correct()
 		{
-			var migrator = new Migrator(10, "somefile");
+			var migrator = new FileMigrator(10, "somefile");
 			migrator.AddVersionStrategy(new VersionStrategyThatsGood(8, 10));
 			Assert.That(migrator.GetFileVersion(), Is.EqualTo(8));
 		}
@@ -153,7 +153,7 @@ namespace Palaso.Tests.Migration
 		[Test]
 		public void FileVersion_TwoStragies_UsesHigherStrategyFirst()
 		{
-			var migrator = new Migrator(10, "somefile");
+			var migrator = new FileMigrator(10, "somefile");
 			migrator.AddVersionStrategy(new VersionStrategyThatsGood(8, 10));
 			migrator.AddVersionStrategy(new VersionStrategyThatThrows(2));
 			Assert.That(migrator.GetFileVersion(), Is.EqualTo(8));
@@ -162,7 +162,7 @@ namespace Palaso.Tests.Migration
 		[Test]
 		public void FileVersion_TwoStragiesSort_UsesHigherStrategyFirst()
 		{
-			var migrator = new Migrator(10, "somefile");
+			var migrator = new FileMigrator(10, "somefile");
 			migrator.AddVersionStrategy(new VersionStrategyThatThrows(2));
 			migrator.AddVersionStrategy(new VersionStrategyThatsGood(8, 10));
 			Assert.That(migrator.GetFileVersion(), Is.EqualTo(8));
@@ -171,7 +171,7 @@ namespace Palaso.Tests.Migration
 		[Test]
 		public void NeedsMigration_WithDifferentFileVersion_True()
 		{
-			var migrator = new Migrator(10, "somefile");
+			var migrator = new FileMigrator(10, "somefile");
 			migrator.AddVersionStrategy(new VersionStrategyThatsGood(8, 10));
 			Assert.That(migrator.NeedsMigration(), Is.True);
 		}
@@ -179,7 +179,7 @@ namespace Palaso.Tests.Migration
 		[Test]
 		public void NeedsMigration_WithSameVersion_False()
 		{
-			var migrator = new Migrator(10, "somefile");
+			var migrator = new FileMigrator(10, "somefile");
 			migrator.AddVersionStrategy(new VersionStrategyThatsGood(10, 10));
 			Assert.That(migrator.NeedsMigration(), Is.False);
 		}
@@ -194,7 +194,7 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(3, sourceFile.Path);
+						var migrator = new FileMigrator(3, sourceFile.Path);
 						File.Copy(migrator.SourceFilePath, migrator.BackupFilePath); // Place the backup file in the way.
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
@@ -216,7 +216,7 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(3, sourceFile.Path);
+						var migrator = new FileMigrator(3, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(2, 3, e.Xsl2To3));
@@ -240,7 +240,7 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(3, sourceFile.Path);
+						var migrator = new FileMigrator(3, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 
@@ -264,12 +264,12 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(7, sourceFile.Path);
+						var migrator = new FileMigrator(7, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(highestAchievableVersion, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, highestAchievableVersion, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(highestAchievableVersion+2, 7, e.Xsl1To2));
 
-						Assert.AreEqual(highestAchievableVersion, migrator.MaximumVersionThatFileCanBeMigratedTo);
+						Assert.AreEqual(highestAchievableVersion, migrator.ToVersion);
 					}
 				}
 			}
@@ -285,11 +285,11 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(7, sourceFile.Path);
+						var migrator = new FileMigrator(7, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(5, 7, e.Xsl1To2));
 
-						Assert.AreEqual(1, migrator.MaximumVersionThatFileCanBeMigratedTo);
+						Assert.AreEqual(1, migrator.ToVersion);
 					}
 				}
 			}
@@ -305,12 +305,12 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(7, sourceFile.Path);
+						var migrator = new FileMigrator(7, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 5, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(5, 7, e.Xsl1To2));
 
-						Assert.AreEqual(7, migrator.MaximumVersionThatFileCanBeMigratedTo);
+						Assert.AreEqual(7, migrator.ToVersion);
 					}
 				}
 			}
@@ -326,11 +326,11 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion0);
-						var migrator = new Migrator(7, sourceFile.Path);
+						var migrator = new FileMigrator(7, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 
-						Assert.AreEqual(-1, migrator.MaximumVersionThatFileCanBeMigratedTo);
+						Assert.AreEqual(-1, migrator.ToVersion);
 					}
 				}
 			}
@@ -347,7 +347,7 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(3, sourceFile.Path);
+						var migrator = new FileMigrator(3, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 
@@ -373,7 +373,7 @@ namespace Palaso.Tests.Migration
 					using (var sourceFile = folder.GetNewTempFile(true))
 					{
 						File.WriteAllText(sourceFile.Path, e.XmlVersion1);
-						var migrator = new Migrator(3, sourceFile.Path);
+						var migrator = new FileMigrator(3, sourceFile.Path);
 						migrator.AddVersionStrategy(new XPathVersion(3, "/configuration/@version"));
 						migrator.AddMigrationStrategy(new XslStringMigrator(1, 2, e.Xsl1To2));
 						migrator.AddMigrationStrategy(new XslStringMigrator(2, 3, e.Xsl2To3));
