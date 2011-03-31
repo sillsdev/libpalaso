@@ -15,13 +15,17 @@ namespace Palaso.Reporting
 		private string _domain;
 		private string _googleAccountCode;
 		private readonly Guid _userId;
+		private readonly DateTime _firstLaunch;
+		private readonly DateTime _previousLaunch;
 		private int _sequence;
 
-		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId)
+		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch)
 		{
 			_domain = domain;
 			_googleAccountCode = googleAccountCode;
 			_userId = userId;
+			_firstLaunch = firstLaunch;
+			_previousLaunch = previousLaunch;
 
 			//I don't acutally know how this is used by google... we don't have a way of giving a sequence order across
 			//all users... for now we only make sure they are sequential during a given run, starting from a random number.
@@ -178,20 +182,18 @@ namespace Palaso.Reporting
 			//<domain hash>.<unique visitor id>.<timstamp of first visit>.<timestamp of previous (most recent) visit>.<timestamp of current visit>.<visit count>
 			get
 			{
-				var nowForUnix = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime()).TotalSeconds;
-
 				string utma = String.Format("{0}.{1}.{2}.{3}.{4}.{5}",
 											DomainHash,
 											_userId.GetHashCode(), //pseudo-unique visitor id
-											nowForUnix, //enhance       //timstamp of first visit.
-											nowForUnix,//enhance        //timestamp of previous (most recent) visit
-											nowForUnix,//timestamp of current visit
+											DateTimeToUnixFormat(_firstLaunch), //enhance       //timstamp of first visit.
+											DateTimeToUnixFormat(_previousLaunch),//enhance        //timestamp of previous (most recent) visit
+											DateTimeToUnixFormat(DateTime.UtcNow),//timestamp of current visit
 											"1");//enhance      //visitcount
 
 
 				string utmz = String.Format("{0}.{1}.{2}.{3}.utmcsr={4}|utmccn={5}|utmcmd={6}",
 											DomainHash,
-											nowForUnix,
+											DateTimeToUnixFormat(DateTime.UtcNow),
 											"1",
 											"1",
 											"(direct)",//ReferralSource
@@ -203,6 +205,12 @@ namespace Palaso.Reporting
 				return (utmcc);
 			}
 		}
+
+		private int DateTimeToUnixFormat(DateTime dateTime)
+		{
+			return (int)(dateTime - new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime()).TotalSeconds;
+		}
+
 		private int DomainHash
 		{
 			get

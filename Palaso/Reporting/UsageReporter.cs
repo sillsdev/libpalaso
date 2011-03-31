@@ -1,16 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Web;
 using System.Windows.Forms;
-using Palaso.Code;
-using Palaso.Network;
 
 namespace Palaso.Reporting
 {
@@ -429,7 +421,7 @@ namespace Palaso.Reporting
 
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode)
 		{
-			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid);
+			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate);
 
 			 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
