@@ -60,6 +60,12 @@ namespace Palaso.Media.Tests.Properties {
 			}
 		}
 
+		internal static System.IO.UnmanagedMemoryStream _24bitH4NSample {
+			get {
+				return ResourceManager.GetStream("_24bitH4NSample", resourceCulture);
+			}
+		}
+
 		internal static System.IO.UnmanagedMemoryStream finished {
 			get {
 				return ResourceManager.GetStream("finished", resourceCulture);
