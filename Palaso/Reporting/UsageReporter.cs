@@ -421,12 +421,17 @@ namespace Palaso.Reporting
 
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode)
 		{
-			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate);
+			if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
+			{
+				_settings.Launches++;
+			}
+
+			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches);
 
 			 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
-				_settings.PreviousLaunchDate = DateTime.UtcNow.Date;
 				_settings.Launches++;
+				SendNavigationNotice("launch/version{0}", ErrorReport.VersionNumberString);
 			}
 
 			//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
@@ -434,11 +439,11 @@ namespace Palaso.Reporting
 
 			if (string.IsNullOrEmpty(_realPreviousVersion))
 			{
-				_analytics.SendNavigationNotice("firstApparentLaunchForAnyVersionOnMachine"+"/"+ErrorReport.VersionNumberString);
+				SendNavigationNotice("firstApparentLaunchForAnyVersionOnMachine"+"/"+ErrorReport.VersionNumberString);
 			}
 			else if (_realPreviousVersion != ErrorReport.VersionNumberString)
 			{
-				_analytics.SendNavigationNotice("versionChange/version{0}-previousVersion{1}",ErrorReport.VersionNumberString,_realPreviousVersion );
+				SendNavigationNotice("versionChange/version{0}-previousVersion{1}",ErrorReport.VersionNumberString,_realPreviousVersion );
 			}
 
 			if (s_singleton._settings.Launches == 1)
@@ -476,9 +481,9 @@ namespace Palaso.Reporting
 				//var uri = new Uri(programArea);
 
 
-				var area = string.Format("SendNavigationNotice(" + programArea + ")", args);
-				Debug.WriteLine(area);
-				s_singleton._analytics.SendNavigationNotice(programArea, args);
+				var area = string.Format(programArea, args);
+				Debug.WriteLine("SendNavigationNotice(" + area + ")");
+				s_singleton._analytics.SendNavigationNotice(area);
 				s_singleton._mostRecentArea = area;
 			}
 			catch (Exception e)

@@ -17,15 +17,18 @@ namespace Palaso.Reporting
 		private readonly Guid _userId;
 		private readonly DateTime _firstLaunch;
 		private readonly DateTime _previousLaunch;
+		private readonly int _launches;
 		private int _sequence;
 
-		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch)
+		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch, int launches)
 		{
 			_domain = domain;
 			_googleAccountCode = googleAccountCode;
 			_userId = userId;
 			_firstLaunch = firstLaunch;
 			_previousLaunch = previousLaunch;
+			_launches = launches;
+
 
 			//I don't acutally know how this is used by google... we don't have a way of giving a sequence order across
 			//all users... for now we only make sure they are sequential during a given run, starting from a random number.
@@ -188,7 +191,7 @@ namespace Palaso.Reporting
 											DateTimeToUnixFormat(_firstLaunch), //enhance       //timstamp of first visit.
 											DateTimeToUnixFormat(_previousLaunch),//enhance        //timestamp of previous (most recent) visit
 											DateTimeToUnixFormat(DateTime.UtcNow),//timestamp of current visit
-											"1");//enhance      //visitcount
+											_launches.ToString());      //visitcount
 
 
 				string utmz = String.Format("{0}.{1}.{2}.{3}.utmcsr={4}|utmccn={5}|utmcmd={6}",
