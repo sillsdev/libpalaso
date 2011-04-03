@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Palaso.DictionaryServices.Model;
 using Palaso.Progress.LogBox;
 
@@ -8,7 +9,6 @@ namespace Palaso.DictionaryServices.Processors
 	{
 		public static bool TryMergeEntries(LexEntry entry1, LexEntry entry2, IProgress progress)
 		{
-
 			if (!entry1.LexicalForm.CanBeUnifiedWith(entry2.LexicalForm))
 			{
 				progress.WriteMessageWithColor("gray","Attempting to merge entries, but could not because their Lexical Forms clash in some writing system.");
@@ -32,9 +32,11 @@ namespace Palaso.DictionaryServices.Processors
 			{
 				entry1.ModificationTime = entry2.ModificationTime;
 			}
+
 			entry1.IsDirty = true;
 			return true;
 		}
+
 
 		private static void MergeOrAddSense(LexEntry targetEntry, LexSense incomingSense, IProgress progress)
 		{
