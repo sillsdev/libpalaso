@@ -17,7 +17,7 @@ namespace Palaso.DictionaryServices.Processors
 				return false;
 			}
 
-			progress.WriteMessageWithColor("blue", "Merged two {0} senses of {1} together: {2} into {3}", targetSense.Parent.ToString(), targetSense.Gloss.GetFirstAlternative(), incomingSense.Id, targetSense.Id);
+			progress.WriteMessageWithColor("blue", "Merged two senses of {0} together: {1} into {2}", targetSense.Parent.ToString(), incomingSense.Id, targetSense.Id);
 
 			//at this point, we're committed);
 

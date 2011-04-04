@@ -77,7 +77,7 @@ namespace Palaso.DictionaryServices.Processors
 		/// <summary>
 		/// it can happen that within a single entry, you can have mergable senses.
 		///
-		/// NB!!!! this only merges them with the first sense! (this was written as an emergency cleanup for a FLEx bug).
+		/// NB!!!! this only thinks about merging the first 2 senses. (this was written as an emergency cleanup for a FLEx bug).
 		/// </summary>
 		private static void MergeSensesWithinEntries(LiftLexEntryRepository repo, IProgress progress)
 		{
