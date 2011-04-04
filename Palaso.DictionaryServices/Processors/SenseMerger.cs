@@ -12,7 +12,7 @@ namespace Palaso.DictionaryServices.Processors
 		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, IProgress progress)
 		{
 			//can we unify the properites?
-			if (!TryMergeProperties(targetSense, incomingSense, "senses", progress))
+			if (!TryMergeProperties(targetSense, incomingSense, "senses of " + targetSense.Parent.ToString(), progress))
 			{
 				return false;
 			}

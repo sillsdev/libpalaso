@@ -15,7 +15,7 @@ namespace Palaso.DictionaryServices.Processors
 				return false;
 			}
 
-			if (!SenseMerger.TryMergeProperties(entry1, entry2, "entries", progress))
+			if (!SenseMerger.TryMergeProperties(entry1, entry2, "entries for "+entry1.ToString(), progress))
 				return false;
 
 			// at this point, we're committed to doing the merge
