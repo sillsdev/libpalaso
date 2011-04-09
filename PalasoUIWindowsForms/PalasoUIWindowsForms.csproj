@@ -111,6 +111,12 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ControlExtensions.cs" />
+	<Compile Include="FileSystem\ConfirmRecycleDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
+	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="HotSpot\HotSpot.cs" />
 	<Compile Include="HotSpot\HotSpotProvider.cs" />
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
@@ -380,6 +386,9 @@
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
+	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -578,6 +587,15 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\camera64x64.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\RecycleBin.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\DeleteMessageBoxButtonImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\DeleteMessageBoxImage.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
