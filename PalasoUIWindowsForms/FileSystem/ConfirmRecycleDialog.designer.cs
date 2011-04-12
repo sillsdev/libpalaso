@@ -1,6 +1,4 @@
-﻿using Palaso.UI.WindowsForms.Properties;
-
-namespace Palaso.UI.WindowsForms.FileSystem
+﻿namespace Palaso.UI.WindowsForms.FileSystem
 {
 	partial class ConfirmRecycleDialog
 	{
@@ -30,93 +28,113 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmRecycleDialog));
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
-			this.deleteBtn = new System.Windows.Forms.Button();
+			this.tableLayout = new System.Windows.Forms.TableLayoutPanel();
+			this._messageLabel = new System.Windows.Forms.Label();
+			this.pictureRecycleBin = new System.Windows.Forms.PictureBox();
 			this.cancelBtn = new System.Windows.Forms.Button();
-			this._messageLabel = new System.Windows.Forms.TextBox();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).BeginInit();
+			this.deleteBtn = new System.Windows.Forms.Button();
+			this.tableLayout.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureRecycleBin)).BeginInit();
 			this.SuspendLayout();
 			//
-			// pictureBox1
+			// tableLayout
 			//
-			this.pictureBox1.Image = Resources.RecycleBin;
-			this.pictureBox1.Location = new System.Drawing.Point(16, 24);
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(102, 102);
-			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-			this.pictureBox1.TabIndex = 1;
-			this.pictureBox1.TabStop = false;
+			this.tableLayout.AutoSize = true;
+			this.tableLayout.BackColor = System.Drawing.Color.Transparent;
+			this.tableLayout.ColumnCount = 3;
+			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayout.Controls.Add(this._messageLabel, 1, 0);
+			this.tableLayout.Controls.Add(this.pictureRecycleBin, 0, 0);
+			this.tableLayout.Controls.Add(this.cancelBtn, 2, 1);
+			this.tableLayout.Controls.Add(this.deleteBtn, 1, 1);
+			this.tableLayout.Dock = System.Windows.Forms.DockStyle.Top;
+			this.tableLayout.Location = new System.Drawing.Point(20, 20);
+			this.tableLayout.Name = "tableLayout";
+			this.tableLayout.RowCount = 2;
+			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayout.Size = new System.Drawing.Size(359, 100);
+			this.tableLayout.TabIndex = 1;
+			this.tableLayout.SizeChanged += new System.EventHandler(this.HandleTableLayoutSizeChanged);
 			//
-			// localizationHelper1
+			// _messageLabel
 			//
-			this.localizationHelper1.Parent = this;
+			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._messageLabel.AutoSize = true;
+			this.tableLayout.SetColumnSpan(this._messageLabel, 2);
+			this._messageLabel.Location = new System.Drawing.Point(75, 4);
+			this._messageLabel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 10);
+			this._messageLabel.Name = "_messageLabel";
+			this._messageLabel.Size = new System.Drawing.Size(284, 13);
+			this._messageLabel.TabIndex = 2;
+			this._messageLabel.Text = "{0} will be moved to the Recycle Bin.";
 			//
-			// deleteBtn
+			// pictureRecycleBin
 			//
-			this.deleteBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.deleteBtn.Image = Resources.DeleteMessageBoxButtonImage;
-			this.deleteBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.deleteBtn.Location = new System.Drawing.Point(134, 132);
-			this.deleteBtn.Name = "deleteBtn";
-			this.deleteBtn.Size = new System.Drawing.Size(121, 33);
-			this.deleteBtn.TabIndex = 1;
-			this.deleteBtn.Text = "&Delete";
-			this.deleteBtn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.deleteBtn.UseVisualStyleBackColor = true;
-			this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click);
+			this.pictureRecycleBin.Image = global::Palaso.UI.WindowsForms.Properties.Resources.RecycleBin;
+			this.pictureRecycleBin.Location = new System.Drawing.Point(0, 0);
+			this.pictureRecycleBin.Margin = new System.Windows.Forms.Padding(0, 0, 20, 10);
+			this.pictureRecycleBin.Name = "pictureRecycleBin";
+			this.pictureRecycleBin.Size = new System.Drawing.Size(55, 64);
+			this.pictureRecycleBin.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.pictureRecycleBin.TabIndex = 1;
+			this.pictureRecycleBin.TabStop = false;
 			//
 			// cancelBtn
 			//
+			this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cancelBtn.AutoSize = true;
 			this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.cancelBtn.Location = new System.Drawing.Point(271, 132);
+			this.cancelBtn.Location = new System.Drawing.Point(284, 74);
+			this.cancelBtn.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.cancelBtn.Name = "cancelBtn";
-			this.cancelBtn.Size = new System.Drawing.Size(108, 33);
-			this.cancelBtn.TabIndex = 0;
+			this.cancelBtn.Size = new System.Drawing.Size(75, 26);
+			this.cancelBtn.TabIndex = 1;
 			this.cancelBtn.Text = "&Cancel";
 			this.cancelBtn.UseVisualStyleBackColor = true;
 			this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
 			//
-			// _messageLabel
+			// deleteBtn
 			//
-			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this._messageLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._messageLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._messageLabel.Location = new System.Drawing.Point(134, 24);
-			this._messageLabel.Multiline = true;
-			this._messageLabel.Name = "_messageLabel";
-			this._messageLabel.ReadOnly = true;
-			this._messageLabel.Size = new System.Drawing.Size(245, 87);
-			this._messageLabel.TabIndex = 4;
-			this._messageLabel.TabStop = false;
-			this._messageLabel.Text = "{0} will be moved to the Recycle Bin.";
+			this.deleteBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.deleteBtn.AutoSize = true;
+			this.deleteBtn.Image = global::Palaso.UI.WindowsForms.Properties.Resources.DeleteMessageBoxButtonImage;
+			this.deleteBtn.Location = new System.Drawing.Point(201, 74);
+			this.deleteBtn.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.deleteBtn.Name = "deleteBtn";
+			this.deleteBtn.Size = new System.Drawing.Size(75, 26);
+			this.deleteBtn.TabIndex = 0;
+			this.deleteBtn.Text = "&Delete";
+			this.deleteBtn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.deleteBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+			this.deleteBtn.UseVisualStyleBackColor = true;
+			this.deleteBtn.Click += new System.EventHandler(this.deleteBtn_Click);
 			//
-			// ConfirmDelete
+			// ConfirmRecycleDialog
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Window;
 			this.CancelButton = this.cancelBtn;
-			this.ClientSize = new System.Drawing.Size(399, 177);
+			this.ClientSize = new System.Drawing.Size(394, 157);
 			this.ControlBox = false;
-			this.Controls.Add(this._messageLabel);
-			this.Controls.Add(this.cancelBtn);
-			this.Controls.Add(this.deleteBtn);
-			this.Controls.Add(this.pictureBox1);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Controls.Add(this.tableLayout);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(400, 28);
 			this.Name = "ConfirmRecycleDialog";
+			this.Padding = new System.Windows.Forms.Padding(20, 20, 15, 15);
+			this.ShowIcon = false;
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Confirm Delete";
-			this.Load += new System.EventHandler(this.ConfirmDelete_Load);
-			this.BackColorChanged += new System.EventHandler(this.ConfirmDelete_BackColorChanged);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();
+			this.tableLayout.ResumeLayout(false);
+			this.tableLayout.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureRecycleBin)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -124,10 +142,10 @@ namespace Palaso.UI.WindowsForms.FileSystem
 
 		#endregion
 
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private Palaso.UI.WindowsForms.i18n.LocalizationHelper localizationHelper1;
-		private System.Windows.Forms.Button deleteBtn;
+		private System.Windows.Forms.TableLayoutPanel tableLayout;
+		private System.Windows.Forms.Label _messageLabel;
+		private System.Windows.Forms.PictureBox pictureRecycleBin;
 		private System.Windows.Forms.Button cancelBtn;
-		private System.Windows.Forms.TextBox _messageLabel;
+		private System.Windows.Forms.Button deleteBtn;
 	}
 }

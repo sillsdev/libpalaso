@@ -7,42 +7,53 @@ namespace Palaso.UI.WindowsForms.FileSystem
 {
 	public partial class ConfirmRecycleDialog : Form
 	{
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="labelForThingBeingDeleted">e.g. "This book"</param>
-		public ConfirmRecycleDialog(string labelForThingBeingDeleted)
+		public string LabelForThingBeingDeleted { get; set; }
+
+		public ConfirmRecycleDialog()
+		{
+			InitializeComponent();
+			_messageLabel.Font = SystemFonts.MessageBoxFont;
+		}
+
+		public ConfirmRecycleDialog(string labelForThingBeingDeleted) : this()
 		{
 			LabelForThingBeingDeleted = labelForThingBeingDeleted.Trim();
-			Font = SystemFonts.MessageBoxFont;
-			InitializeComponent();
-			_messageLabel.BackColor = this.BackColor;
+			_messageLabel.Text = string.Format(_messageLabel.Text, LabelForThingBeingDeleted);
+
+			// Sometimes, setting the text in the previous line will force the table layout control
+			// to resize itself accordingly, which will fire its SizeChanged event. However,
+			// sometimes the text is not long enough to force the table layout to be resized,
+			// therefore, we need to call it manually, just to be sure the form gets sized correctly.
+			HandleTableLayoutSizeChanged(null, null);
 		}
-		public string LabelForThingBeingDeleted { get; set; }
+
+		private void HandleTableLayoutSizeChanged(object sender, EventArgs e)
+		{
+			if (!IsHandleCreated)
+				CreateHandle();
+
+			var scn = Screen.FromControl(this);
+			var desiredHeight = tableLayout.Height + Padding.Top + Padding.Bottom + (Height - ClientSize.Height);
+			Height = Math.Min(desiredHeight, scn.WorkingArea.Height - 20);
+		}
+
+		protected override void OnBackColorChanged(EventArgs e)
+		{
+			base.OnBackColorChanged(e);
+			_messageLabel.BackColor = BackColor;
+		}
 
 		private void deleteBtn_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.Close();
+			DialogResult = DialogResult.OK;
+			Close();
 		}
 
 		private void cancelBtn_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.Close();
-
+			DialogResult = DialogResult.Cancel;
+			Close();
 		}
-
-		private void ConfirmDelete_BackColorChanged(object sender, EventArgs e)
-		{
-			_messageLabel.BackColor = this.BackColor;
-		}
-
-		private void ConfirmDelete_Load(object sender, EventArgs e)
-		{
-			_messageLabel.Text = string.Format(_messageLabel.Text, LabelForThingBeingDeleted);
-		}
-
 
 		public static bool JustConfirm(string labelForThingBeingDeleted)
 		{
@@ -52,15 +63,16 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			}
 		}
 
-		 public static bool ConfirmThenRecycle(string labelForThingBeingDeleted, string pathToRecycle)
-		 {
-			 using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted))
-			 {
-				 if (DialogResult.OK != dlg.ShowDialog())
-					 return false;
-			 }
-			 return Recycle(pathToRecycle);
-		 }
+		public static bool ConfirmThenRecycle(string labelForThingBeingDeleted, string pathToRecycle)
+		{
+			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted))
+			{
+				if (DialogResult.OK != dlg.ShowDialog())
+					return false;
+			}
+
+			return Recycle(pathToRecycle);
+		}
 
 		/// <summary>
 		/// Actually do the move of a file/directory to the recycleBin
@@ -71,7 +83,6 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		{
 			try
 			{
-
 			   #if MONO
 					// TODO: Find a way in Mono to send something to the recycle bin.
 									Directory.Delete(item.FolderPath);
@@ -124,7 +135,4 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		public const int FOF_SIMPLEPROGRESS = 0x0100;
 #endif
 	}
-
-
-
 }
