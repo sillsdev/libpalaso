@@ -89,7 +89,6 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="FileSystem\ConfirmRecycleDialogTests.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTests.cs" />
 	<Compile Include="Hotspot\HotSpotTests.cs" />

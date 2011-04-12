@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -84,17 +83,15 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		{
 			try
 			{
-				if (!File.Exists(path))
-					return false;
-#if MONO
+			   #if MONO
 					// TODO: Find a way in Mono to send something to the recycle bin.
 									Directory.Delete(item.FolderPath);
 									return true;
-#else
-				// Alternative  would be to use visual basic dll:
-				// FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
+				#else
 
-				// Moves file to the recyle bin using Windows Shell API
+				//alternative using visual basic dll:  FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
+
+				//moves it to the recyle bin
 				var shf = new SHFILEOPSTRUCT();
 				shf.wFunc = FO_DELETE;
 				shf.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION;
@@ -103,11 +100,12 @@ namespace Palaso.UI.WindowsForms.FileSystem
 
 				SHFileOperation(ref shf);
 				return !shf.fAnyOperationsAborted;
-#endif
+				#endif
+
 			}
 			catch (Exception exception)
 			{
-				Reporting.ErrorReport.NotifyUserOfProblem(exception, "Could not delete that book.");
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(exception, "Could not delete that book.");
 				return false;
 			}
 		}
