@@ -115,6 +115,13 @@ namespace Palaso.WritingSystems
 			_languageName = ws._languageName;
 		}
 
+		public static WritingSystemDefinition Parse(string inputString)
+		{
+			RFC5646Tag tag = RFC5646Tag.Parse(inputString);
+			return FromRFC5646Subtags(tag.Language, tag.Script, tag.Region,
+									  GetConcatenatedVariantAndPrivateUseFromTag(tag));
+		}
+
 		/// <summary>
 		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
 		/// </summary>
@@ -255,18 +262,7 @@ namespace Palaso.WritingSystems
 			get
 			{
 				string variantToReturn = "";
-				if (_rfcTag.HasVariant && !_rfcTag.HasPrivateUse)
-				{
-					variantToReturn = _rfcTag.Variant;
-				}
-				else if(_rfcTag.HasPrivateUse && !_rfcTag.HasVariant)
-				{
-					variantToReturn = _rfcTag.PrivateUse;
-				}
-				else if(_rfcTag.HasVariant && _rfcTag.HasPrivateUse)
-				{
-					variantToReturn = _rfcTag.Variant + "-" + _rfcTag.PrivateUse;
-				}
+				variantToReturn = GetConcatenatedVariantAndPrivateUseFromTag(_rfcTag);
 				return variantToReturn;
 			}
 			set
@@ -298,6 +294,24 @@ namespace Palaso.WritingSystems
 				Modified = true;
 				CheckVariantAndScriptRules();
 			}
+		}
+
+		private static string GetConcatenatedVariantAndPrivateUseFromTag(RFC5646Tag tag)
+		{
+			string variantToReturn = "";
+			if (tag.HasVariant && !tag.HasPrivateUse)
+			{
+				variantToReturn = tag.Variant;
+			}
+			else if(tag.HasPrivateUse && !tag.HasVariant)
+			{
+				variantToReturn = tag.PrivateUse;
+			}
+			else if(tag.HasVariant && tag.HasPrivateUse)
+			{
+				variantToReturn = tag.Variant + "-" + tag.PrivateUse;
+			}
+			return variantToReturn;
 		}
 
 		private void CheckVariantAndScriptRules()
@@ -821,13 +835,6 @@ namespace Palaso.WritingSystems
 		public static WritingSystemDefinition FromRFC5646Subtags(string language, string script, string region, string variantAndPrivateUse)
 		{
 			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
-		}
-
-		public static WritingSystemDefinition FromRFC5646Tag(RFC5646Tag tag)
-		{
-			return new WritingSystemDefinition(tag.Language, tag.Script, tag.Region,
-				String.IsNullOrEmpty(tag.PrivateUse) ? tag.Variant : tag.Variant + "-" + tag.PrivateUse,
-				string.Empty, false);
 		}
 	}
 

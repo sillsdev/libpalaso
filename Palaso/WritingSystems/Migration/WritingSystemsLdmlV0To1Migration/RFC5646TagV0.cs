@@ -116,7 +116,7 @@ namespace Palaso.WritingSystems
 		/// Copy constructor
 		///</summary>
 		///<param name="rhs"></param>
-		public RFC5646TagV0(RFC5646Tag rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant, rhs.PrivateUse)
+		public RFC5646TagV0(RFC5646TagV0 rhs):this(rhs.Language,rhs.Script,rhs.Region,rhs.Variant, rhs.PrivateUse)
 		{
 		}
 
@@ -228,7 +228,7 @@ namespace Palaso.WritingSystems
 			return Equals((RFC5646Tag) obj);
 		}
 
-		public bool Equals(RFC5646Tag other)
+		public bool Equals(RFC5646TagV0 other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
