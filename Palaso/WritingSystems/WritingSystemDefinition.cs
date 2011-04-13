@@ -112,6 +112,13 @@ namespace Palaso.WritingSystems
 			_languageName = ws._languageName;
 		}
 
+		public static WritingSystemDefinition Parse(string inputString)
+		{
+			RFC5646Tag tag = RFC5646Tag.Parse(inputString);
+			return FromRFC5646Subtags(tag.Language, tag.Script, tag.Region,
+									  GetConcatenatedVariantAndPrivateUseFromTag(tag));
+		}
+
 		/// <summary>
 		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
 		/// </summary>
@@ -251,15 +258,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				string variantToReturn = _rfcTag.Variant;
-				if (!String.IsNullOrEmpty(variantToReturn))
-				{
-					variantToReturn += "-";
-				}
-				if (_rfcTag.HasPrivateUse)
-				{
-					variantToReturn += _rfcTag.PrivateUse;
-				}
+				string variantToReturn = GetConcatenatedVariantAndPrivateUseFromTag(_rfcTag);
 				return variantToReturn;
 			}
 			set
@@ -291,6 +290,20 @@ namespace Palaso.WritingSystems
 				Modified = true;
 				CheckVariantAndScriptRules();
 			}
+		}
+
+		private static string GetConcatenatedVariantAndPrivateUseFromTag(RFC5646Tag tag)
+		{
+				string variantToReturn = tag.Variant;
+				if (!String.IsNullOrEmpty(variantToReturn))
+				{
+					variantToReturn += "-";
+				}
+				if (tag.HasPrivateUse)
+				{
+					variantToReturn += tag.PrivateUse;
+				}
+				return variantToReturn;
 		}
 
 		private void CheckVariantAndScriptRules()

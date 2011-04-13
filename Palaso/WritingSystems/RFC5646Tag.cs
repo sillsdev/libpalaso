@@ -5,7 +5,7 @@ using Palaso.Data;
 
 namespace Palaso.WritingSystems
 {
-	public class RFC5646Tag : Object
+	internal class RFC5646Tag : Object
 	{
 		internal class SubTag
 		{

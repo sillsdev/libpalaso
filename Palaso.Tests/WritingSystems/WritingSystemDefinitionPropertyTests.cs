@@ -21,26 +21,159 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(ws.Variant, "x-whatever");
 		}
 
-		[Test]
-		public void FromRFC5646_RFC5646TagWithAllRFCFields_SetsOK()
+		private void AssertWritingSystem(WritingSystemDefinition wsDef, string language, string script, string region, string variant)
 		{
-			var tag = new RFC5646Tag("en", "Latn", "US", "1901", "whatever");
-			var ws = WritingSystemDefinition.FromRFC5646Tag(tag);
-			Assert.AreEqual(ws.ISO639, tag.Language);
-			Assert.AreEqual(ws.Script, tag.Script);
-			Assert.AreEqual(ws.Region, tag.Region);
-			Assert.AreEqual(ws.Variant, tag.Variant + "-" + tag.PrivateUse);
+			Assert.AreEqual(language, wsDef.ISO639);
+			Assert.AreEqual(script, wsDef.Script);
+			Assert.AreEqual(region, wsDef.Region);
+			Assert.AreEqual(variant, wsDef.Variant);
 		}
 
 		[Test]
-		public void FromRFC5646_RFC5646TagWithoutPrivateUse_SetsOK()
+		public void Parse_HasOnlyPrivateUse_WritingSystemHasExpectedFields()
 		{
-			var tag = new RFC5646Tag("en", "Latn", "US", "1901", string.Empty);
-			var ws = WritingSystemDefinition.FromRFC5646Tag(tag);
-			Assert.AreEqual(ws.ISO639, tag.Language);
-			Assert.AreEqual(ws.Script, tag.Script);
-			Assert.AreEqual(ws.Region, tag.Region);
-			Assert.AreEqual(ws.Variant, tag.Variant);
+			var tag = WritingSystemDefinition.Parse("x-privuse");
+			AssertWritingSystem(tag, "qaa", string.Empty, string.Empty, "x-privuse");
+		}
+
+		[Test]
+		public void Parse_HasMultiplePrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("x-private-use");
+			AssertWritingSystem(tag, "qaa", string.Empty, string.Empty, "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguage_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de");
+			AssertWritingSystem(tag, "de", string.Empty, string.Empty, string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScript_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-Latn");
+			AssertWritingSystem(tag, "en", "Latn", string.Empty, string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegion_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-Latn-US");
+			AssertWritingSystem(tag, "en", "Latn", "US", string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndVariant_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de-Latn-DE-1901");
+			AssertWritingSystem(tag, "de", "Latn", "DE", "1901");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndMultipleVariants_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de-Latn-DE-1901-bauddha");
+			AssertWritingSystem(tag, "de", "Latn", "DE", "1901-bauddha");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndMultipleVariantsAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de-Latn-DE-1901-bauddha-x-private");
+			AssertWritingSystem(tag, "de", "Latn", "DE", "1901-bauddha-x-private");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndMultipleVariantsAndMultiplePrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de-Latn-DE-1901-bauddha-x-private-use");
+			AssertWritingSystem(tag, "de", "Latn", "DE", "1901-bauddha-x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndVariantAndMultiplePrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de-Latn-DE-bauddha-x-private-use");
+			AssertWritingSystem(tag, "de", "Latn", "DE", "bauddha-x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegionAndVariantAndMultiplePrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("de-DE-bauddha-x-private-use");
+			AssertWritingSystem(tag, "de", string.Empty, "DE", "bauddha-x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndVariant_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-alalc97");
+			AssertWritingSystem(tag, "en", string.Empty, string.Empty, "alalc97");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndMultipleVariants_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-alalc97-aluku");
+			AssertWritingSystem(tag, "en", string.Empty, string.Empty, "alalc97-aluku");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegion_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-US");
+			AssertWritingSystem(tag, "en", string.Empty, "US", string.Empty);
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-x-private-use");
+			AssertWritingSystem(tag, "en", string.Empty, String.Empty, "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndVariantAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-1901-bauddha-x-private-use");
+			AssertWritingSystem(tag, "en", string.Empty, String.Empty, "1901-bauddha-x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegionAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-US-x-private-use");
+			AssertWritingSystem(tag, "en", string.Empty, "US", "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegionAndVariant_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-US-1901-bauddha");
+			AssertWritingSystem(tag, "en", string.Empty, "US", "1901-bauddha");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndRegionAndVariantAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-US-1901-bauddha-x-private-use");
+			AssertWritingSystem(tag, "en", string.Empty, "US", "1901-bauddha-x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-Latn-x-private-use");
+			AssertWritingSystem(tag, "en", "Latn", String.Empty, "x-private-use");
+		}
+
+		[Test]
+		public void Parse_HasLanguageAndScriptAndRegionAndPrivateUse_WritingSystemHasExpectedFields()
+		{
+			var tag = WritingSystemDefinition.Parse("en-Latn-US-x-private-use");
+			AssertWritingSystem(tag, "en", "Latn", "US", "x-private-use");
 		}
 
 		[Test]
