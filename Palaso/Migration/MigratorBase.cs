@@ -53,9 +53,9 @@ namespace Palaso.Migration
 			return result;
 		}
 
-		public bool NeedsMigration()
+		public bool NeedsMigration(string filePath)
 		{
-			return GetFileVersion() != ToVersion;
+			return GetFileVersion(filePath) != ToVersion;
 		}
 
 	}

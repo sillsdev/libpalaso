@@ -158,11 +158,19 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
+		internal class MigrationInfo
+		{
+			public string FileName;
+			public string RfcTagBeforeMigration;
+			public string RfcTagAfterMigration;
+		}
 
+		private readonly List<MigrationInfo> _migrationInfo;
 
 		public LdmlVersion0MigrationStrategy() :
 			base(0, 1)
 		{
+			_migrationInfo = new List<MigrationInfo>();
 		}
 
 		public override void Migrate(string sourceFilePath, string destinationFilePath)
@@ -261,6 +269,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				adaptorToWriteLdmlV1.Write(destinationFilePath, migratedWritingSystemDefinition, streamOfOldFile);
 				streamOfOldFile.Close();
 			}
+
+			// Record the details for use in PostMigrate where we change the file name to match the rfc tag where we can.
+			var migrationInfo = new MigrationInfo();
+			migrationInfo.FileName = Path.GetFileName(sourceFilePath);
+			migrationInfo.RfcTagBeforeMigration = writingSystemDefinitionToMigrate.Rfc5646;
+			migrationInfo.RfcTagAfterMigration = migratedWritingSystemDefinition.RFC5646;
+			_migrationInfo.Add(migrationInfo);
 		}
 
 		private static string ConcatenateVariantAndPrivateUse(SubTag variant, SubTag privateUse)
@@ -288,9 +303,75 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		public override void PostMigrate()
-		{
+#region FolderMigrationCode
 
+		public override void PostMigrate(string folderPath)
+		{
+			DisambiguateWritingSystemsInLdmlRepo(_migrationInfo);
+
+			// Move files into the temporary source path
+			string temporarySourcePath = Path.Combine(folderPath, "Source");
+			foreach (var migrationInfo in _migrationInfo)
+			{
+				string sourceFilePath = Path.Combine(folderPath, migrationInfo.FileName);
+				string destinationFilePath = Path.Combine(temporarySourcePath, migrationInfo.FileName);
+				File.Move(sourceFilePath, destinationFilePath);
+			}
+			// Move them back, renaming as we go.
+			foreach (var migrationInfo in _migrationInfo)
+			{
+				string sourceFilePath = Path.Combine(temporarySourcePath, migrationInfo.FileName);
+				string destinationFilePath = Path.Combine(folderPath, migrationInfo.RfcTagAfterMigration);
+				File.Move(sourceFilePath, destinationFilePath);
+			}
 		}
+
+		internal void DisambiguateWritingSystemsInLdmlRepo(IEnumerable<MigrationInfo> migrationInfo)
+		{
+			var uniqueRfcTags = new HashSet<string>();
+			foreach (var info in migrationInfo)
+			{
+				MigrationInfo currentInfo = info;
+				if (uniqueRfcTags.Any(rfcTag => rfcTag.Equals(currentInfo.RfcTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
+				{
+					if (currentInfo.RfcTagBeforeMigration.Equals(currentInfo.RfcTagAfterMigration, StringComparison.OrdinalIgnoreCase))
+					{
+						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
+						MigrationInfo otherInfo = _migrationInfo.First(
+							i => i.RfcTagAfterMigration.Equals(currentInfo.RfcTagAfterMigration, StringComparison.OrdinalIgnoreCase)
+						);
+						otherInfo.RfcTagAfterMigration = UniqueTagForDuplicate(otherInfo.RfcTagAfterMigration, uniqueRfcTags);
+						uniqueRfcTags.Add(otherInfo.RfcTagAfterMigration);
+					}
+					else
+					{
+						currentInfo.RfcTagAfterMigration = UniqueTagForDuplicate(currentInfo.RfcTagAfterMigration, uniqueRfcTags);
+						uniqueRfcTags.Add(currentInfo.RfcTagAfterMigration);
+					}
+				}
+				else
+				{
+					uniqueRfcTags.Add(currentInfo.RfcTagAfterMigration);
+				}
+			}
+		}
+
+		private static string UniqueTagForDuplicate(string rfcTag, IEnumerable<string> uniqueRfcTags)
+		{
+			RFC5646Tag tag = RFC5646Tag.Parse(rfcTag);
+			string originalPrivateUse = tag.PrivateUse;
+			int duplicateNumber = 0;
+			do
+			{
+				duplicateNumber++;
+				tag.PrivateUse = originalPrivateUse;
+				tag.AddToPrivateUse(String.Format("dupl{0}", duplicateNumber));
+			} while (uniqueRfcTags.Any(s => s.Equals(tag.CompleteTag, StringComparison.OrdinalIgnoreCase)));
+			return tag.CompleteTag;
+		}
+
+		#endregion
+
+
 	}
 }

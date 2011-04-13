@@ -18,7 +18,7 @@ namespace Palaso.WritingSystems.Migration
 				reader.ReadToDescendant("special");
 				reader.ReadToDescendant("palaso:version");
 				string versionAsString = reader.GetAttribute("value");
-				version = String.IsNullOrEmpty(versionAsString) ? 0 : Convert.ToInt32(versionAsString);
+				version = String.IsNullOrEmpty(versionAsString) ? 0 : int.Parse(versionAsString);
 			}
 			return version;
 		}

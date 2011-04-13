@@ -16,7 +16,12 @@ namespace Palaso.Migration
 
 		public int GetFileVersion()
 		{
-			return base.GetFileVersion(SourceFilePath);
+			return GetFileVersion(SourceFilePath);
+		}
+
+		public bool NeedsMigration()
+		{
+			return NeedsMigration(SourceFilePath);
 		}
 
 		public string BackupFilePath

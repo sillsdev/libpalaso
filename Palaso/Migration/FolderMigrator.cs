@@ -7,7 +7,7 @@ using System.Threading;
 namespace Palaso.Migration
 {
 	///<summary>
-	/// Migrates a set of files (of one type) in a folder up to the given version using a set of strategies to migrate each
+	/// Migrates a set of files (of one type) in a folder matching an optional SearchPattern up to the given version using a set of strategies to migrate each
 	/// version of the file.
 	///</summary>
 	public class FolderMigrator : MigratorBase
@@ -52,14 +52,14 @@ namespace Palaso.Migration
 			}
 			// Backup current folder to backup path under backup root
 			CopyDirectory(SourcePath, BackupPath);
-			CopyDirectory(SourcePath, WorkingPath);
 
+			string currentPath = BackupPath;
 			int lowestVersionInFolder;
-			while ((lowestVersionInFolder = GetLowestVersionInFolder(WorkingPath)) != ToVersion)
+			while ((lowestVersionInFolder = GetLowestVersionInFolder(currentPath)) != ToVersion)
 			{
 				int currentVersion = lowestVersionInFolder;
 				// Get all files in folder with this version
-				var fileNamesToMigrate = GetFilesOfVersion(currentVersion, WorkingPath);
+				var fileNamesToMigrate = GetFilesOfVersion(currentVersion, currentPath);
 
 				// Find a strategy to migrate this version
 				IMigrationStrategy strategy = _migrationStrategies.Find(s => s.FromVersion == currentVersion);
@@ -73,21 +73,38 @@ namespace Palaso.Migration
 					MigrationPath, String.Format("{0}_{1}", strategy.FromVersion, strategy.ToVersion)
 				);
 				Directory.CreateDirectory(destinationPath);
-				// Migrate all the files
-				foreach (string fileName in fileNamesToMigrate)
+				// Migrate all the files of the current version
+				foreach (var filePath in Directory.GetFiles(currentPath))
 				{
-					string sourceFilePath = Path.Combine(WorkingPath, fileName);
+					string fileName = Path.GetFileName(filePath);
+					if (fileName == null)
+						continue;
+					string sourceFilePath = Path.Combine(currentPath, fileName);
 					string targetFilePath = Path.Combine(destinationPath, fileName);
-					strategy.Migrate(sourceFilePath, targetFilePath);
+					if (fileNamesToMigrate.Contains(fileName))
+					{
+						strategy.Migrate(sourceFilePath, targetFilePath);
+					}
+					else
+					{
+						File.Copy(sourceFilePath, targetFilePath);
+					}
 				}
-				// Copy into the working folder
-				foreach (var fileName in fileNamesToMigrate)
-				{
-					string sourceFilePath = Path.Combine(destinationPath, fileName);
-					string targetFilePath = Path.Combine(WorkingPath, fileName);
-					File.Copy(sourceFilePath, targetFilePath);
-				}
+
+				strategy.PostMigrate(destinationPath);
+
+				currentPath = destinationPath;
+
 			}
+
+			// Delete all tbe files in SourcePath matching SearchPattern
+			foreach (var filePath in Directory.GetFiles(SourcePath, SearchPattern))
+			{
+				File.Delete(filePath);
+			}
+
+			// Copy the migration results into SourcePath
+			CopyDirectory(currentPath, SourcePath);
 
 		}
 
@@ -131,14 +148,6 @@ namespace Palaso.Migration
 			get
 			{
 				return Path.Combine(SourcePath, "Migration");
-			}
-		}
-
-		private string WorkingPath
-		{
-			get
-			{
-				return Path.Combine(MigrationPath, "Working");
 			}
 		}
 

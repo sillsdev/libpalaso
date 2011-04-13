@@ -31,7 +31,7 @@ namespace Palaso.Migration
 		{
 		}
 
-		public virtual void PostMigrate()
+		public virtual void PostMigrate(string folderPath)
 		{
 		}
 	}
