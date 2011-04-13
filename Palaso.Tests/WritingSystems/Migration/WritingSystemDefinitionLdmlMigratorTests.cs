@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.Migration;
 using Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using Palaso.TestUtilities;
-using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV1To2Migration;
 
 namespace Palaso.Tests.WritingSystems.Migration
 {
@@ -34,13 +29,13 @@ namespace Palaso.Tests.WritingSystems.Migration
 				get { return _pathToLdml; }
 			}
 
-			public Migrator GetMigrator
+			public FileMigrator GetMigrator
 			{
 				get
 				{
-					var migrator = new Migrator(1, PathToWritingSystemLdmlFile);
+					var migrator = new FileMigrator(1, PathToWritingSystemLdmlFile);
 					migrator.AddVersionStrategy(new WritingSystemLdmlVersionGetter());
-					migrator.AddMigrationStrategy(new Version0MigrationStrategy());
+					migrator.AddMigrationStrategy(new LdmlVersion0MigrationStrategy());
 					return migrator;
 				}
 			}

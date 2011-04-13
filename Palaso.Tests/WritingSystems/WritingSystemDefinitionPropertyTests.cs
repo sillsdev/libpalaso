@@ -11,6 +11,37 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemDefinitionPropertyTests
 	{
 
+		[Test]
+		public void FromRFC5646Subtags_AllArgs_SetsOk()
+		{
+			var ws = WritingSystemDefinition.FromRFC5646Subtags("en", "Latn", "US", "x-whatever");
+			Assert.AreEqual(ws.ISO639, "en");
+			Assert.AreEqual(ws.Script, "Latn");
+			Assert.AreEqual(ws.Region, "US");
+			Assert.AreEqual(ws.Variant, "x-whatever");
+		}
+
+		[Test]
+		public void FromRFC5646_RFC5646TagWithAllRFCFields_SetsOK()
+		{
+			var tag = new RFC5646Tag("en", "Latn", "US", "1901", "whatever");
+			var ws = WritingSystemDefinition.FromRFC5646Tag(tag);
+			Assert.AreEqual(ws.ISO639, tag.Language);
+			Assert.AreEqual(ws.Script, tag.Script);
+			Assert.AreEqual(ws.Region, tag.Region);
+			Assert.AreEqual(ws.Variant, tag.Variant + "-" + tag.PrivateUse);
+		}
+
+		[Test]
+		public void FromRFC5646_RFC5646TagWithoutPrivateUse_SetsOK()
+		{
+			var tag = new RFC5646Tag("en", "Latn", "US", "1901", string.Empty);
+			var ws = WritingSystemDefinition.FromRFC5646Tag(tag);
+			Assert.AreEqual(ws.ISO639, tag.Language);
+			Assert.AreEqual(ws.Script, tag.Script);
+			Assert.AreEqual(ws.Region, tag.Region);
+			Assert.AreEqual(ws.Variant, tag.Variant);
+		}
 
 		[Test]
 		public void DisplayLabelWhenUnknown()

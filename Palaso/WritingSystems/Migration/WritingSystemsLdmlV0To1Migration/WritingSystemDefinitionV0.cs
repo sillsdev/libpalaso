@@ -11,11 +11,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	/// </summary>
 	public class WritingSystemDefinitionV0
 	{
-		private SortRulesType _sortUsing;
-
 		public WritingSystemDefinitionV0()
 		{
-			_sortUsing = SortRulesType.DefaultOrdering;
+			SortUsing = SortRulesType.DefaultOrdering;
 		   // _defaultFontSize = 10; //arbitrary
 		}
 
@@ -72,7 +70,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public bool RightToLeftScript{get;set;}
 
-		public SortRulesType SortUsing { get { return _sortUsing; } set { _sortUsing = value; } }
+		public SortRulesType SortUsing { get; set; }
 
 		public string SortRules { get; set; }
 

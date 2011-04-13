@@ -39,10 +39,7 @@ namespace Palaso.WritingSystems
 		//This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
 		//This should not be confused with the version of the locale data contained in this writing system.
 		//That information is stored in the "VersionNumber" property.
-		static public int LatestWritingSystemDefinitionVersion
-		{
-			get { return 1; }
-		}
+		public const int LatestWritingSystemDefinitionVersion = 1;
 
 		private RFC5646Tag _rfcTag;
 
@@ -72,7 +69,7 @@ namespace Palaso.WritingSystems
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isUnicodeEncoded = true;
-			_rfcTag = new RFC5646Tag("qaa",String.Empty,String.Empty,String.Empty,String.Empty);
+			_rfcTag = new RFC5646Tag();
 		}
 
 		public WritingSystemDefinition(string iso)
@@ -254,18 +251,14 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				string variantToReturn = "";
-				if (_rfcTag.HasVariant && !_rfcTag.HasPrivateUse)
+				string variantToReturn = _rfcTag.Variant;
+				if (!String.IsNullOrEmpty(variantToReturn))
 				{
-					variantToReturn = _rfcTag.Variant;
+					variantToReturn += "-";
 				}
-				else if(_rfcTag.HasPrivateUse && !_rfcTag.HasVariant)
+				if (_rfcTag.HasPrivateUse)
 				{
-					variantToReturn = _rfcTag.PrivateUse;
-				}
-				else if(_rfcTag.HasVariant && _rfcTag.HasPrivateUse)
-				{
-					variantToReturn = _rfcTag.Variant + "-" + _rfcTag.PrivateUse;
+					variantToReturn += _rfcTag.PrivateUse;
 				}
 				return variantToReturn;
 			}
@@ -816,6 +809,11 @@ namespace Palaso.WritingSystems
 		public static WritingSystemDefinition FromLanguage(string language)
 		{
 			return new WritingSystemDefinition(language);
+		}
+
+		public static WritingSystemDefinition FromRFC5646Subtags(string language, string script, string region, string variantAndPrivateUse)
+		{
+			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
 		}
 
 	}

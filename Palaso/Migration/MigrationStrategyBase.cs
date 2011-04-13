@@ -26,5 +26,13 @@ namespace Palaso.Migration
 		public int ToVersion { get; private set; }
 
 		public abstract void Migrate(string sourceFilePath, string destinationFilePath);
+
+		public virtual void PreMigrate()
+		{
+		}
+
+		public virtual void PostMigrate(string folderPath)
+		{
+		}
 	}
 }

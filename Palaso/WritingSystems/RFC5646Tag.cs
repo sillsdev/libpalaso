@@ -139,6 +139,11 @@ namespace Palaso.WritingSystems
 		private SubTag _variant = new SubTag();
 		private SubTag _privateUse = new SubTag();
 
+		public RFC5646Tag() :
+			this("qaa", String.Empty, String.Empty, String.Empty, String.Empty)
+		{
+		}
+
 		public RFC5646Tag(string language, string script, string region, string variant, string privateUse)
 		{
 			_language = language;
@@ -372,6 +377,54 @@ namespace Palaso.WritingSystems
 		public new string ToString()
 		{
 			return CompleteTag;
+		}
+
+		///<summary>Constructor method to parse a valid RFC5646 tag as a string
+		///</summary>
+		///<param name="inputString">valid RFC5646 string</param>
+		///<returns>RFC5646Tag object</returns>
+		public static RFC5646Tag Parse(string inputString)
+		{
+			var tokens = inputString.Split(new[] {'-'});
+
+			var rfc5646Tag = new RFC5646Tag();
+
+			bool haveX = false;
+			for (int position = 0; position < tokens.Length; ++position)
+			{
+				var token = tokens[position];
+				if (token == "x")
+				{
+					haveX = true;
+					continue;
+				}
+				if (haveX)
+				{
+					rfc5646Tag.AddToPrivateUse(token);
+					continue;
+				}
+				if (position == 0)
+				{
+					rfc5646Tag.Language = token;
+					continue;
+				}
+				if (position <= 1 && StandardTags.IsValidIso15924ScriptCode(token))
+				{
+					rfc5646Tag.Script = token;
+					continue;
+				}
+				if (position <= 2 && StandardTags.IsValidIso3166Region(token))
+				{
+					rfc5646Tag.Region = token;
+					continue;
+				}
+				if (StandardTags.IsValidRegisteredVariant(token))
+				{
+					rfc5646Tag.AddToVariant(token);
+					continue;
+				}
+			}
+			return rfc5646Tag;
 		}
 
 		public override bool Equals(Object obj)
