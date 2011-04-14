@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -72,20 +71,21 @@ namespace Palaso.WritingSystems
 			_rfcTag = new RFC5646Tag();
 		}
 
-		public WritingSystemDefinition(string iso)
+		public WritingSystemDefinition(string language)
 			: this()
 		{
-			_rfcTag.Language = iso;
+			_rfcTag.Language = language;
 			_abbreviation = _rfcTag.Script = _languageName = _rfcTag.Variant = _rfcTag.Region = _nativeName = string.Empty;
 		}
 
-		public WritingSystemDefinition(string iso, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
+		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
-			ISO639 = String.IsNullOrEmpty(iso)?"qaa":iso;
-			Script = script;
-			Region = region;
-			Variant = variant;
+			string variantPart;
+			string privateUsePart;
+			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
+
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
 		}
@@ -110,13 +110,6 @@ namespace Palaso.WritingSystems
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
-		}
-
-		public static WritingSystemDefinition Parse(string inputString)
-		{
-			RFC5646Tag tag = RFC5646Tag.Parse(inputString);
-			return FromRFC5646Subtags(tag.Language, tag.Script, tag.Region,
-									  GetConcatenatedVariantAndPrivateUseFromTag(tag));
 		}
 
 		/// <summary>
@@ -258,52 +251,62 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				string variantToReturn = GetConcatenatedVariantAndPrivateUseFromTag(_rfcTag);
+				string variantToReturn = ConcatenateVariantAndPrivateUse(_rfcTag);
 				return variantToReturn;
 			}
 			set
 			{
 				if (value == null || value == Variant) { return; }
 				// Note that the WritingSystemDefinition provides no direct support for private use except via Variant set.
-				// x- starts a private use marker. See RFC5646
-				if (value.EndsWith("-x") || value.EndsWith("-x-"))
-				{
-					throw new ArgumentException("The variant may not end in '-x' or '-x-'");
-				}
-				if (value.StartsWith("x-")) // Private Use at the beginning
-				{
-					value = value.Substring(2); // Strip the leading x-
-					_rfcTag.Variant = "";
-					_rfcTag.PrivateUse = value;
-				}
-				else if (value.Contains("-x-")) // Private Use from the middle
-				{
-					string[] partsOfVariant = value.Split(new[] { "-x-" }, StringSplitOptions.None);
-					_rfcTag.Variant = partsOfVariant[0];
-					_rfcTag.PrivateUse = partsOfVariant[1];
-				}
-				else // No Private Use, it's contains variants only
-				{
-					_rfcTag.Variant = value;
-					_rfcTag.PrivateUse = "";
-				}
+				string variant;
+				string privateUse;
+				SplitVariantAndPrivateUse(value, out variant, out privateUse);
+				_rfcTag.Variant = variant;
+				_rfcTag.PrivateUse = privateUse;
+
 				Modified = true;
 				CheckVariantAndScriptRules();
 			}
 		}
 
-		private static string GetConcatenatedVariantAndPrivateUseFromTag(RFC5646Tag tag)
+		private static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
 		{
-				string variantToReturn = tag.Variant;
+			// x- starts a private use marker. See RFC5646
+			if (variantAndPrivateUse.EndsWith("-x") || variantAndPrivateUse.EndsWith("-x-"))
+			{
+				throw new ArgumentException("The variant may not end in '-x' or '-x-'");
+			}
+			if (variantAndPrivateUse.StartsWith("x-")) // Private Use at the beginning
+			{
+				variantAndPrivateUse = variantAndPrivateUse.Substring(2); // Strip the leading x-
+				variant = "";
+				privateUse = variantAndPrivateUse;
+			}
+			else if (variantAndPrivateUse.Contains("-x-")) // Private Use from the middle
+			{
+				string[] partsOfVariant = variantAndPrivateUse.Split(new[] { "-x-" }, StringSplitOptions.None);
+				variant = partsOfVariant[0];
+				privateUse = partsOfVariant[1];
+			}
+			else // No Private Use, it's contains variants only
+			{
+				variant = variantAndPrivateUse;
+				privateUse = "";
+			}
+		}
+
+		private static string ConcatenateVariantAndPrivateUse(RFC5646Tag tag)
+		{
+			string variantToReturn = tag.Variant;
+			if (tag.HasPrivateUse)
+			{
 				if (!String.IsNullOrEmpty(variantToReturn))
 				{
 					variantToReturn += "-";
 				}
-				if (tag.HasPrivateUse)
-				{
-					variantToReturn += tag.PrivateUse;
-				}
-				return variantToReturn;
+				variantToReturn += tag.PrivateUse;
+			}
+			return variantToReturn;
 		}
 
 		private void CheckVariantAndScriptRules()
@@ -347,10 +350,10 @@ namespace Palaso.WritingSystems
 
 		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
 		{
-			ISO639 = language;
-			Script = script;
-			Region = region;
-			Variant = variant;
+			string variantPart;
+			string privateUsePart;
+			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
 			CheckVariantAndScriptRules();
 		}
 
@@ -748,7 +751,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		[Obsolete("Use isUnicodeEncoded instead - which is the inverse of isLegacyEncoded")]
+		[Obsolete("Use IsUnicodeEncoded instead - which is the inverse of IsLegacyEncoded")]
 		virtual public bool IsLegacyEncoded
 		{
 			get
@@ -817,6 +820,19 @@ namespace Palaso.WritingSystems
 					_isUnicodeEncoded = value;
 				}
 			}
+		}
+
+		public void SetRfc5646FromString(string completeTag)
+		{
+			_rfcTag = RFC5646Tag.Parse(completeTag);
+			Modified = true;
+		}
+
+		public static WritingSystemDefinition Parse(string completeTag)
+		{
+			var writingSystemDefinition = new WritingSystemDefinition();
+			writingSystemDefinition.SetRfc5646FromString(completeTag);
+			return writingSystemDefinition;
 		}
 
 		public static WritingSystemDefinition FromLanguage(string language)

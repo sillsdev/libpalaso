@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Palaso.Migration
 {
@@ -40,17 +41,16 @@ namespace Palaso.Migration
 
 		public int GetFileVersion(string filePath)
 		{
-			int result = -1;
 			_versionStrategies.Sort(new VersionComparerDescending());
 			foreach (IFileVersion strategy in _versionStrategies)
 			{
-				result = strategy.GetFileVersion(filePath);
+				int result = strategy.GetFileVersion(filePath);
 				if (result >= 0)
 				{
-					break;
+					return result;
 				}
 			}
-			return result;
+			throw new ApplicationException("Could not determine file version");
 		}
 
 		public bool NeedsMigration(string filePath)

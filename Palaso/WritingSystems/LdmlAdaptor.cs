@@ -13,7 +13,7 @@ namespace Palaso.WritingSystems
 {
 	public class LdmlAdaptor
 	{
-		private XmlNamespaceManager _nameSpaceManager;
+		private readonly XmlNamespaceManager _nameSpaceManager;
 
 		public LdmlAdaptor()
 		{
@@ -30,7 +30,7 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlReaderSettings settings = new XmlReaderSettings();
+			var settings = new XmlReaderSettings();
 			settings.NameTable = _nameSpaceManager.NameTable;
 			settings.ValidationType = ValidationType.None;
 			settings.XmlResolver = null;
@@ -158,6 +158,15 @@ namespace Palaso.WritingSystems
 				}
 				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
+				int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
+				if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+				{
+					throw new ApplicationException(String.Format(
+						"Cannot read LDML expecting version {0} but got {1}",
+						WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
+						version
+					));
+				}
 
 				while (reader.NodeType != XmlNodeType.EndElement)
 				{
@@ -690,6 +699,7 @@ namespace Palaso.WritingSystems
 
 		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemDefinition ws)
 		{
+			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
@@ -707,6 +717,7 @@ namespace Palaso.WritingSystems
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
+			WriteSpecialValue(writer, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
 		}
 

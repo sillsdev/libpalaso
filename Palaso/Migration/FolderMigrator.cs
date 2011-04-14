@@ -32,11 +32,11 @@ namespace Palaso.Migration
 		/// Constructor
 		///</summary>
 		///<param name="versionToMigrateTo">Target version to migrate to</param>
-		///<param name="path">Folder path containing files to migrate</param>
-		public FolderMigrator(int versionToMigrateTo, string path) :
+		///<param name="ldmlPath">Folder path containing files to migrate</param>
+		public FolderMigrator(int versionToMigrateTo, string ldmlPath) :
 			base(versionToMigrateTo)
 		{
-			SourcePath = path;
+			SourcePath = ldmlPath;
 		}
 
 		///<summary>
@@ -51,12 +51,21 @@ namespace Palaso.Migration
 				DeleteFolderAvoidingDeletionBug(MigrationPath);
 			}
 			// Backup current folder to backup path under backup root
-			CopyDirectory(SourcePath, BackupPath);
+			CopyDirectory(SourcePath, BackupPath, MigrationPath);
 
 			string currentPath = BackupPath;
 			int lowestVersionInFolder;
+			int lowestVersoinInFolder1 = -1;
 			while ((lowestVersionInFolder = GetLowestVersionInFolder(currentPath)) != ToVersion)
 			{
+				if (lowestVersionInFolder == lowestVersoinInFolder1)
+				{
+					throw new ApplicationException(
+						String.Format("The migration strategy for {0} failed to migrate from version {1}",
+						SearchPattern,
+						lowestVersoinInFolder1)
+					);
+				}
 				int currentVersion = lowestVersionInFolder;
 				// Get all files in folder with this version
 				var fileNamesToMigrate = GetFilesOfVersion(currentVersion, currentPath);
@@ -81,7 +90,7 @@ namespace Palaso.Migration
 						continue;
 					string sourceFilePath = Path.Combine(currentPath, fileName);
 					string targetFilePath = Path.Combine(destinationPath, fileName);
-					if (fileNamesToMigrate.Contains(fileName))
+					if (fileNamesToMigrate.Contains(sourceFilePath))
 					{
 						strategy.Migrate(sourceFilePath, targetFilePath);
 					}
@@ -91,10 +100,11 @@ namespace Palaso.Migration
 					}
 				}
 
-				strategy.PostMigrate(destinationPath);
+				strategy.PostMigrate(currentPath, destinationPath);
 
+				// Setup for the next iteration
 				currentPath = destinationPath;
-
+				lowestVersoinInFolder1 = lowestVersionInFolder;
 			}
 
 			// Delete all tbe files in SourcePath matching SearchPattern
@@ -104,7 +114,7 @@ namespace Palaso.Migration
 			}
 
 			// Copy the migration results into SourcePath
-			CopyDirectory(currentPath, SourcePath);
+			CopyDirectory(currentPath, SourcePath, "");
 
 		}
 
@@ -167,13 +177,13 @@ namespace Palaso.Migration
 			DeleteFolderThatMayBeInUse(deletionPath);
 		}
 
-		private static void CopyDirectory(string sourcePath, string targetPath)
+		private static void CopyDirectory(string sourcePath, string targetPath, string excludePath)
 		{
-			CopyDirectory(new DirectoryInfo(sourcePath), new DirectoryInfo(targetPath));
+			CopyDirectory(new DirectoryInfo(sourcePath), new DirectoryInfo(targetPath), excludePath);
 		}
 
 		// Gleaned from http://xneuron.wordpress.com/2007/04/12/copy-directory-and-its-content-to-another-directory-in-c/
-		private static void CopyDirectory(DirectoryInfo source, DirectoryInfo target)
+		private static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, string excludePath)
 		{
 			// Check if the target directory exists, if not, create it.
 			if (Directory.Exists(target.FullName) == false)
@@ -190,8 +200,12 @@ namespace Palaso.Migration
 			// Copy each subdirectory using recursion.
 			foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
 			{
+				if (diSourceSubDir.FullName == excludePath)
+				{
+					continue;
+				}
 				DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-				CopyDirectory(diSourceSubDir, nextTargetSubDir);
+				CopyDirectory(diSourceSubDir, nextTargetSubDir, excludePath);
 			}
 		}
 

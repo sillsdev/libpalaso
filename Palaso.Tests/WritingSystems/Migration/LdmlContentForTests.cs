@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
+namespace Palaso.Tests.WritingSystems.Migration
 {
-	public class LdmlFileContentForTests
+	internal class LdmlContentForTests
 	{
-		static public string Version0LdmlFile
+		public static string Version0English()
 		{
-			get { return CreateVersion0LdmlContent("en", String.Empty,String.Empty, String.Empty); }
+			return Version0("en", String.Empty, String.Empty, String.Empty);
 		}
 
-		static public string Version1LdmlFile
+		public static string Version1English()
 		{
-			get { return CreateVersion1LdmlContent("en", String.Empty, String.Empty, String.Empty); }
+			return Version1("en", String.Empty, String.Empty, String.Empty);
 		}
 
-		static public string CreateVersion0LdmlContent(string language, string script, string region, string variant)
+		static public string Version0(string language, string script, string region, string variant)
 		{
 			return String.Format(
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -39,7 +36,7 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string CreateVersion0LdmlContentwithLanguageSubtagAndName(string languageSubtag, string languageName)
+		static public string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)
 		{
 			return String.Format(
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -58,7 +55,7 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"'), languageSubtag, languageName);
 		}
 
-		static public string CreateVersion99LdmlContent()
+		static public string Version99Default()
 		{
 			return
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -77,7 +74,7 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"');
 		}
 
-		static public string CreateVersion0LdmlContentWithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
+		static public string Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
 		{
 			return String.Format(
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -115,7 +112,7 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string CreateVersion0LdmlWithCollationInfo(WritingSystemDefinitionV0.SortRulesType sortType)
+		static public string Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType sortType)
 		{
 			string collationelement = GetCollationElementXml(sortType);
 
@@ -145,7 +142,7 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 </ldml>".Replace('\'', '"'), collationelement);
 		}
 
-		static public string CreateVersion0LdmlContentWithLdmlInfoWeDontCareAbout(string language, string script, string region, string variant)
+		static public string Version0WithLdmlInfoWeDontCareAbout(string language, string script, string region, string variant)
 		{
 			return String.Format(
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -235,7 +232,7 @@ namespace Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			return collationelement;
 		}
 
-		static private string CreateVersion1LdmlContent(string language, string script, string region, string variant)
+		static private string Version1(string language, string script, string region, string variant)
 		{
 			return
 String.Format(@"<?xml version='1.0' encoding='utf-8'?>

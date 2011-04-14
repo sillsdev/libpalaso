@@ -9,7 +9,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	/// <summary>
 	/// This class stores the information used to define various writing system properties.
 	/// </summary>
-	public class WritingSystemDefinitionV0
+	internal class WritingSystemDefinitionV0
 	{
 		public WritingSystemDefinitionV0()
 		{

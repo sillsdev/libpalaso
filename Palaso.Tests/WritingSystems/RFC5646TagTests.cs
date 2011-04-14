@@ -976,6 +976,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var tag = RFC5646Tag.Parse("de-Latn-DE-1901-bauddha-x-private-use");
 			AssertTag(tag, "de", "Latn", "DE", "1901-bauddha", "x-private-use");
+		}
+
 		[Test]
 		public void Constructor_LanguageIsSetToqaa_SetsLanguageToqaa()
 		{
@@ -983,49 +985,49 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("qaa", rfctag.Language);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Constructor_LanguageIsSetToqtz_SetsLanguageToqtz()
 		{
 			var rfctag = new RFC5646Tag("qtz", "", "", "", "");
 			Assert.AreEqual("qtz", rfctag.Language);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Constructor_ScriptIsSetToQaaa_SetsScriptToQaaa()
 		{
 			var rfctag = new RFC5646Tag("qaa", "Qaaa", "", "", "");
 			Assert.AreEqual("Qaaa", rfctag.Script);
 		}
 
-		[Test]
-		public void Constructor_ScriptIsSetToQabx_SetsScriptToQabx ()
+		[Test, Ignore("NYI at this time")]
+		public void Constructor_ScriptIsSetToQabx_SetsScriptToQabx()
 		{
 			var rfctag = new RFC5646Tag("qaa", "Qabx", "", "", "");
 			Assert.AreEqual("Qabx", rfctag.Script);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Constructor_RegionIsSetToQM_SetsRegionToQM()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "QM", "", "");
 			Assert.AreEqual("QM", rfctag.Region);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Constructor_RegionIsSetToQZ_SetsRegionToQZ()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "QZ", "", "");
 			Assert.AreEqual("QZ", rfctag.Region);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Constructor_RegionIsSetToXA_SetsRegionToXA()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "XA", "", "");
 			Assert.AreEqual("XA", rfctag.Region);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Constructor_RegionIsSetToXZ_SetsRegionToXZ()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "XZ", "", "");
@@ -1040,7 +1042,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("qaa", rfctag.Language);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Language_IsSetToqtz_SetsLanguageToqtz()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "", "", "");
@@ -1090,7 +1092,7 @@ namespace Palaso.Tests.WritingSystems
 			AssertTag(tag, "qaa", string.Empty, string.Empty, string.Empty, string.Empty);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Script_IsSetToQaaa_SetsScriptToQaaa()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "", "", "");
@@ -1098,7 +1100,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("Qaaa", rfctag.Script);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Script_IsSetToQabx_SetsScriptToQabx()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "", "", "");
@@ -1106,7 +1108,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("Qabx", rfctag.Script);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Region_IsSetToQM_SetsRegionToQM()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "QM", "", "");
@@ -1114,7 +1116,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("QM", rfctag.Region);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Region_IsSetToQZ_SetsRegionToQZ()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "QZ", "", "");
@@ -1122,7 +1124,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("QZ", rfctag.Region);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Region_IsSetToXA_SetsRegionToXA()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "XA", "", "");
@@ -1130,7 +1132,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("XA", rfctag.Region);
 		}
 
-		[Test]
+		[Test, Ignore("NYI at this time")]
 		public void Region_IsSetToXZ_SetsRegionToXZ()
 		{
 			var rfctag = new RFC5646Tag("qaa", "", "XZ", "", "");

@@ -15,6 +15,6 @@ namespace Palaso.Migration
 		void Migrate(string sourceFilePath, string destinationFilePath);
 
 		void PreMigrate();
-		void PostMigrate(string folderPath);
+		void PostMigrate(string sourcePath, string destinationPath);
 	}
 }

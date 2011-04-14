@@ -239,6 +239,7 @@ namespace Palaso.Xml
 						break;
 				}
 			}
+			int result = comparison(name, reader.Name);
 			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
 		}
 

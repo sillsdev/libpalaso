@@ -6,8 +6,23 @@ using Palaso.Migration;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
+
 	public class LdmlVersion0MigrationStrategy : MigrationStrategyBase
 	{
+		private static class WellKnownSubTags
+		{
+			private static class Unwritten
+			{
+				public const string Script = "Zxxx";
+			}
+
+			public static class Audio
+			{
+				public const string PrivateUseSubtag = "audio";
+				public const string Script = Unwritten.Script;
+			}
+		}
+
 		internal class SubTag
 		{
 			private List<string> _subTagParts;
@@ -17,7 +32,8 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				_subTagParts = new List<string>();
 			}
 
-			public SubTag(string partsToAdd)
+			public SubTag(string partsToAdd) :
+				this()
 			{
 				AddToSubtag(partsToAdd);
 			}
@@ -65,15 +81,16 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 			public void RemoveNonAlphaNumericCharacters()
 			{
-				//This does not deal with duplicates introduced through truncation. should it?
-				var subtagsContainingIllegalCharacters =
-					_subTagParts.Where(part => part.Any(c => !Char.IsLetterOrDigit(c)));
-				foreach (var subtag in subtagsContainingIllegalCharacters)
+				for (int i = _subTagParts.Count - 1; i >= 0; i--)
 				{
-					// got this from here: http://stackoverflow.com/questions/449513/removing-characters-from-strings-with-linq
-					string subtagWithoutIllegalCharacters = new String(subtag.Where(Char.IsLetterOrDigit).ToArray());
-					_subTagParts.Remove(subtag);
-					_subTagParts.Add(subtagWithoutIllegalCharacters);
+					if (_subTagParts[i].Any(c => !Char.IsLetterOrDigit(c)))
+					{
+						_subTagParts[i] = new String(_subTagParts[i].Where(Char.IsLetterOrDigit).ToArray());
+					}
+					if (String.IsNullOrEmpty(_subTagParts[i]))
+					{
+						_subTagParts.RemoveAt(i);
+					}
 				}
 			}
 
@@ -87,12 +104,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 			public void TruncatePartsToNumCharacters(int size)
 			{
-				//This does not deal with duplicates introduced through truncation. should it?
-				var partsToTruncate = _subTagParts.Where(part => part.Length > size);
-				foreach (var partToTruncate in partsToTruncate)
+				// Note: This does not deal with duplicates introduced through truncation.
+				for (int i = 0; i < _subTagParts.Count; i++)
 				{
-					_subTagParts.Remove(partToTruncate);
-					_subTagParts.Add(partToTruncate.Substring(0, size));
+					if (_subTagParts[i].Length > size)
+					{
+						_subTagParts[i] = _subTagParts[i].Substring(0, size);
+					}
 				}
 			}
 
@@ -101,34 +119,22 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				List<string> partsOfStringToAdd = ParseSubtagForParts(partsToAdd);
 				foreach (string part in partsOfStringToAdd)
 				{
-					if (StringContainsNonAlphaNumericCharacters(part))
-					{
-						throw new ArgumentException(String.Format("Rfc5646 tags may only contain alphanumeric characters. '{0}' can not be added to the Rfc5646 tag.", part));
-					}
-					if (Contains(part))
-					{
-						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.", part));
-					}
 					_subTagParts.Add(part);
 				}
 			}
 
-			private static bool StringContainsNonAlphaNumericCharacters(string stringToSearch)
-			{
-				return stringToSearch.Any(c => !Char.IsLetterOrDigit(c));
-			}
-
-			public void RemoveAllParts(string partsToRemove)
+			public void RemoveParts(string partsToRemove)
 			{
 				List<string> partsOfStringToRemove = ParseSubtagForParts(partsToRemove);
 
 				foreach (string partToRemove in partsOfStringToRemove)
 				{
-					if (!Contains(partToRemove))
+					string part = partToRemove;
+					if (!Contains(part))
 					{
 						continue;
 					}
-					int indexOfPartToRemove = _subTagParts.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
+					int indexOfPartToRemove = _subTagParts.FindLastIndex(partInSubtag => partInSubtag.Equals(part, StringComparison.OrdinalIgnoreCase));
 					_subTagParts.RemoveAt(indexOfPartToRemove);
 				}
 			}
@@ -156,35 +162,48 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				}
 				_subTagParts = tags;
 			}
+
+			public override string ToString()
+			{
+				return CompleteTag;
+			}
 		}
 
-		internal class MigrationInfo
+		public class MigrationInfo
 		{
 			public string FileName;
 			public string RfcTagBeforeMigration;
 			public string RfcTagAfterMigration;
 		}
 
-		private readonly List<MigrationInfo> _migrationInfo;
+		public delegate void OnMigrationFn(IEnumerable<MigrationInfo> migrationInfo);
 
-		public LdmlVersion0MigrationStrategy() :
+		private readonly List<MigrationInfo> _migrationInfo;
+		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
+		private readonly OnMigrationFn _onMigrationCallback;
+
+		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback) :
 			base(0, 1)
 		{
 			_migrationInfo = new List<MigrationInfo>();
+			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();
+			_onMigrationCallback = onMigrationCallback;
 		}
 
 		public override void Migrate(string sourceFilePath, string destinationFilePath)
 		{
-			var writingSystemDefinitionToMigrate = new WritingSystemDefinitionV0();
-			new LdmlAdaptorV0().Read(sourceFilePath, writingSystemDefinitionToMigrate);
+			string sourceFileName = Path.GetFileName(sourceFilePath);
 
-			var language = new SubTag(writingSystemDefinitionToMigrate.ISO639);
-			var script = new SubTag(writingSystemDefinitionToMigrate.Script);
-			var region = new SubTag(writingSystemDefinitionToMigrate.Region);
-			var variant = new SubTag(writingSystemDefinitionToMigrate.Variant);
+			var writingSystemDefinitionV0 = new WritingSystemDefinitionV0();
+			new LdmlAdaptorV0().Read(sourceFilePath, writingSystemDefinitionV0);
+
+			var language = new SubTag(writingSystemDefinitionV0.ISO639);
+			var script = new SubTag(writingSystemDefinitionV0.Script);
+			var region = new SubTag(writingSystemDefinitionV0.Region);
+			var variant = new SubTag(writingSystemDefinitionV0.Variant);
 			var privateUse = new SubTag();
 
-			//This fixes a bug where the ldmladaptor was writing out Zxxx as part of the variant to mark an audio writing system
+			//This fixes a bug where the LdmlAdaptorV1 was writing out Zxxx as part of the variant to mark an audio writing system
 			if(variant.Contains(WellKnownSubTags.Audio.Script))
 			{
 				MoveTagsMatching(variant, script, tag => tag.Equals(WellKnownSubTags.Audio.Script));
@@ -192,9 +211,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 
 			// Move script, region, and variants present in the langauge tag to their proper subtag.
-			MoveTagsMatching(language, script, StandardTags.IsValidIso15924ScriptCode);
-			MoveTagsMatching(language, region, StandardTags.IsValidIso3166Region);
-			MoveTagsMatching(language, variant, StandardTags.IsValidRegisteredVariant);
+			MoveTagsMatching(language, script, StandardTags.IsValidIso15924ScriptCode, StandardTags.IsValidIso639LanguageCode);
+			MoveTagsMatching(language, region, StandardTags.IsValidIso3166Region, StandardTags.IsValidIso639LanguageCode);
+			MoveTagsMatching(language, variant, StandardTags.IsValidRegisteredVariant, StandardTags.IsValidIso639LanguageCode);
 
 			// Move all other tags that don't belong to the private use subtag.
 			MoveTagsMatching(
@@ -210,20 +229,22 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				variant, privateUse, tag => !StandardTags.IsValidRegisteredVariant(tag)
 			);
 
-			// Any 'x' in the other tags will have arrived in the privateUse tag, so remove them.
-			privateUse.RemoveAllParts("x");
-
 			language.KeepFirstAndMoveRemainderTo(privateUse);
 			script.KeepFirstAndMoveRemainderTo(privateUse);
 			region.KeepFirstAndMoveRemainderTo(privateUse);
 
 			if(privateUse.Contains(WellKnownSubTags.Audio.PrivateUseSubtag))
 			{
+				// Move every tag that's not a Zxxx to private use
 				if(!script.IsEmpty && !script.Contains(WellKnownSubTags.Audio.Script))
 				{
 					MoveTagsMatching(script, privateUse, tag => !privateUse.Contains(tag));
 				}
-				script = new SubTag(WellKnownSubTags.Audio.PrivateUseSubtag);
+				// If we don't have a Zxxx already, set it. This protects tags already present, but with unusual case
+				if (!script.Contains(WellKnownSubTags.Audio.Script))
+				{
+					script = new SubTag(WellKnownSubTags.Audio.Script);
+				}
 			}
 
 			//These two methods may produce duplicates that will subsequently be removed. Do we care? - TA 29/3/2011
@@ -232,6 +253,8 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 			variant.RemoveDuplicates();
 			privateUse.RemoveDuplicates();
+			// Any 'x' in the other tags will have arrived in the privateUse tag, so remove them.
+			privateUse.RemoveParts("x");
 
 			if ((language.IsEmpty && (!script.IsEmpty || !region.IsEmpty || !variant.IsEmpty)) ||
 				(language.IsEmpty && script.IsEmpty && region.IsEmpty && variant.IsEmpty && privateUse.IsEmpty))
@@ -240,41 +263,39 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 
 			//MapDataFromWsV0ToWsV1();
-			var migratedWritingSystemDefinition = new WritingSystemDefinition
+			var writingSystemDefinitionV1 = new WritingSystemDefinitionV1
 				{
-					ISO639 = language.CompleteTag,
-					Script = script.CompleteTag,
-					Region = region.CompleteTag,
-					Variant = ConcatenateVariantAndPrivateUse(variant, privateUse),
-					DefaultFontName = writingSystemDefinitionToMigrate.DefaultFontName,
-					Abbreviation = writingSystemDefinitionToMigrate.Abbreviation,
-					DefaultFontSize = writingSystemDefinitionToMigrate.DefaultFontSize,
-					IsLegacyEncoded = writingSystemDefinitionToMigrate.IsLegacyEncoded,
-					Keyboard = writingSystemDefinitionToMigrate.Keyboard,
-					LanguageName = writingSystemDefinitionToMigrate.LanguageName,
-					RightToLeftScript = writingSystemDefinitionToMigrate.RightToLeftScript,
-					SortRules = writingSystemDefinitionToMigrate.SortRules,
-					SortUsing = (WritingSystemDefinition.SortRulesType)writingSystemDefinitionToMigrate.SortUsing,
-					SpellCheckingId = writingSystemDefinitionToMigrate.SpellCheckingId,
-					VersionDescription = writingSystemDefinitionToMigrate.VersionDescription,
+					DefaultFontName = writingSystemDefinitionV0.DefaultFontName,
+					Abbreviation = writingSystemDefinitionV0.Abbreviation,
+					DefaultFontSize = writingSystemDefinitionV0.DefaultFontSize,
+					IsLegacyEncoded = writingSystemDefinitionV0.IsLegacyEncoded,
+					Keyboard = writingSystemDefinitionV0.Keyboard,
+					LanguageName = writingSystemDefinitionV0.LanguageName,
+					RightToLeftScript = writingSystemDefinitionV0.RightToLeftScript,
+					SortRules = writingSystemDefinitionV0.SortRules,
+					SortUsing = (WritingSystemDefinitionV1.SortRulesType)writingSystemDefinitionV0.SortUsing,
+					SpellCheckingId = writingSystemDefinitionV0.SpellCheckingId,
+					VersionDescription = writingSystemDefinitionV0.VersionDescription,
 					DateModified = DateTime.Now
 				};
-			//_migratedWs.VerboseDescription //not written out by ldmladaptor - flex?
+			writingSystemDefinitionV1.SetAllRfc5646LanguageTagComponents(
+				language.CompleteTag,
+				script.CompleteTag,
+				region.CompleteTag,
+				ConcatenateVariantAndPrivateUse(variant, privateUse)
+			);
+			_writingSystemsV1[sourceFileName] = writingSystemDefinitionV1;
+			//_migratedWs.VerboseDescription //not written out by LdmlAdaptorV1 - flex?
 			//_migratedWs.StoreID = ??? //what to do?
-			//_migratedWs.NativeName //not written out by ldmladaptor - flex?
-
-			using (Stream streamOfOldFile = new FileStream(sourceFilePath, FileMode.Open))
-			{
-				var adaptorToWriteLdmlV1 = new LdmlAdaptor();
-				adaptorToWriteLdmlV1.Write(destinationFilePath, migratedWritingSystemDefinition, streamOfOldFile);
-				streamOfOldFile.Close();
-			}
+			//_migratedWs.NativeName //not written out by LdmlAdaptorV1 - flex?);
 
 			// Record the details for use in PostMigrate where we change the file name to match the rfc tag where we can.
-			var migrationInfo = new MigrationInfo();
-			migrationInfo.FileName = Path.GetFileName(sourceFilePath);
-			migrationInfo.RfcTagBeforeMigration = writingSystemDefinitionToMigrate.Rfc5646;
-			migrationInfo.RfcTagAfterMigration = migratedWritingSystemDefinition.RFC5646;
+			var migrationInfo = new MigrationInfo
+				{
+					FileName = sourceFileName,
+					RfcTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
+					RfcTagAfterMigration = writingSystemDefinitionV1.RFC5646
+				};
 			_migrationInfo.Add(migrationInfo);
 		}
 
@@ -293,40 +314,60 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			return concatenatedTags;
 		}
 
-		private static void MoveTagsMatching(SubTag from, SubTag to, Predicate<string> predicate)
+		private static void MoveTagsMatching(SubTag from, SubTag to, Predicate<string> moveAllMatching)
 		{
-			var list = new List<string>(from.AllParts.Where(part => predicate(part)));
+			var list = new List<string>(from.AllParts.Where(part => moveAllMatching(part)));
 			foreach (var part in list)
 			{
 				to.AddToSubtag(part);
-				from.RemoveAllParts(part);
+				from.RemoveParts(part);
+			}
+		}
+
+		private static void MoveTagsMatching(SubTag from, SubTag to, Predicate<string> moveAllMatching, Predicate<string> keepFirstMatching)
+		{
+			var list = new List<string>(from.AllParts.Where(part => moveAllMatching(part)));
+			bool haveFirstMatching = false;
+			foreach (var part in list)
+			{
+				if (!haveFirstMatching && keepFirstMatching(part))
+				{
+					haveFirstMatching = true;
+					continue;
+				}
+				to.AddToSubtag(part);
+				from.RemoveParts(part);
 			}
 		}
 
 #region FolderMigrationCode
 
-		public override void PostMigrate(string folderPath)
+		public override void PostMigrate(string sourcePath, string destinationPath)
 		{
-			DisambiguateWritingSystemsInLdmlRepo(_migrationInfo);
+			EnsureRfcTagsUnique(_migrationInfo);
 
-			// Move files into the temporary source path
-			string temporarySourcePath = Path.Combine(folderPath, "Source");
+			// Write them back, with their new file name.
 			foreach (var migrationInfo in _migrationInfo)
 			{
-				string sourceFilePath = Path.Combine(folderPath, migrationInfo.FileName);
-				string destinationFilePath = Path.Combine(temporarySourcePath, migrationInfo.FileName);
-				File.Move(sourceFilePath, destinationFilePath);
+				var writingSystemDefinitionV1 = _writingSystemsV1[migrationInfo.FileName];
+				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
+				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.RfcTagAfterMigration + ".ldml");
+				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
-			// Move them back, renaming as we go.
-			foreach (var migrationInfo in _migrationInfo)
+			_onMigrationCallback(_migrationInfo);
+		}
+
+		private static void WriteLdml(WritingSystemDefinitionV1 writingSystemDefinitionV1, string sourceFilePath, string destinationFilePath)
+		{
+			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
 			{
-				string sourceFilePath = Path.Combine(temporarySourcePath, migrationInfo.FileName);
-				string destinationFilePath = Path.Combine(folderPath, migrationInfo.RfcTagAfterMigration);
-				File.Move(sourceFilePath, destinationFilePath);
+				var ldmlDataMapper = new LdmlAdaptorV1();
+				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV1, sourceStream);
+				sourceStream.Close();
 			}
 		}
 
-		internal void DisambiguateWritingSystemsInLdmlRepo(IEnumerable<MigrationInfo> migrationInfo)
+		internal void EnsureRfcTagsUnique(IEnumerable<MigrationInfo> migrationInfo)
 		{
 			var uniqueRfcTags = new HashSet<string>();
 			foreach (var info in migrationInfo)
@@ -342,11 +383,15 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 						);
 						otherInfo.RfcTagAfterMigration = UniqueTagForDuplicate(otherInfo.RfcTagAfterMigration, uniqueRfcTags);
 						uniqueRfcTags.Add(otherInfo.RfcTagAfterMigration);
+						var writingSystemV1 = _writingSystemsV1[otherInfo.FileName];
+						writingSystemV1.SetRfc5646FromString(otherInfo.RfcTagAfterMigration);
 					}
 					else
 					{
 						currentInfo.RfcTagAfterMigration = UniqueTagForDuplicate(currentInfo.RfcTagAfterMigration, uniqueRfcTags);
 						uniqueRfcTags.Add(currentInfo.RfcTagAfterMigration);
+						var writingSystemV1 = _writingSystemsV1[currentInfo.FileName];
+						writingSystemV1.SetRfc5646FromString(currentInfo.RfcTagAfterMigration);
 					}
 				}
 				else

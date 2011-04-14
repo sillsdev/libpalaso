@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using Palaso.Tests.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using Palaso.WritingSystems.Migration;
 
 namespace Palaso.Tests.WritingSystems.Migration
@@ -41,7 +40,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version0LdmlFile);
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlContentForTests.Version0English());
 				var versionGetter = new WritingSystemLdmlVersionGetter();
 				Assert.AreEqual(0, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
 			}
@@ -52,7 +51,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (_environment = new TestEnvironment())
 			{
-				_environment.WriteContentToWritingSystemLdmlFile(LdmlFileContentForTests.Version1LdmlFile);
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlContentForTests.Version1English());
 				var versionGetter = new WritingSystemLdmlVersionGetter();
 				Assert.AreEqual(1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
 			}
