@@ -64,12 +64,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private static bool FindElement(XmlReader reader, string name)
 		{
-			return XmlHelpers.FindNextElementInSequence(reader, name, LdmlNodeComparerV0.CompareElementNames);
+			return XmlHelpersV0.FindNextElementInSequence(reader, name, LdmlNodeComparerV0.CompareElementNames);
 		}
 
 		private static bool FindElement(XmlReader reader, string name, string nameSpace)
 		{
-			return XmlHelpers.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparerV0.CompareElementNames);
+			return XmlHelpersV0.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparerV0.CompareElementNames);
 		}
 
 		private static void WriteLdmlText(XmlWriter writer, string text)
@@ -332,13 +332,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private void ReadCollationRulesForCustomICU(string collationXml, WritingSystemDefinitionV0 ws)
 		{
-			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationXml);
+			ws.SortRules = LdmlCollationParserV0.GetIcuRulesFromCollationNode(collationXml);
 		}
 
 		private void ReadCollationRulesForCustomSimple(string collationXml, WritingSystemDefinitionV0 ws)
 		{
 			string rules;
-			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
+			if (LdmlCollationParserV0.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
 			{
 				ws.SortRules = rules;
 				return;
@@ -554,7 +554,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
+			if (!XmlHelpersV0.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
 			{
 				return string.Empty;
 			}
