@@ -26,6 +26,12 @@ namespace Palaso.Reporting
 			set { _reoccurenceMessage.Text = value;}
 		}
 
+		public Image Icon
+		{
+			get { return _icon.Image; }
+			set { _icon.Image = value; }
+		}
+
 		public static void Show(string message)
 		{
 			using (var d = new ProblemNotificationDialog(message, "Problem"))
@@ -56,10 +62,20 @@ namespace Palaso.Reporting
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="dialogTitle"></param>
-		public ProblemNotificationDialog(string message, string dialogTitle) : this()
+		public ProblemNotificationDialog(string message, string dialogTitle) : this(message, dialogTitle, null)
+		{
+		}
+
+		/// <summary>
+		/// Use this one if you need to customize the dialog, e.g. to setup an alternate button
+		/// </summary>
+		public ProblemNotificationDialog(string message, string dialogTitle, Image icon) : this()
 		{
 			Text = dialogTitle;
 			_message.Text = message;
+
+			if (icon != null)
+				_icon.Image = icon;
 
 			// Sometimes, setting the text in the previous line will force the table layout control
 			// to resize itself accordingly, which will fire its SizeChanged event. However,
