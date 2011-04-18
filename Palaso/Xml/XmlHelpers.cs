@@ -223,7 +223,7 @@ namespace Palaso.Xml
 			}
 		}
 
-		public static bool FindElement(XmlReader reader, string name, Comparison<string> comparison)
+		public static bool FindNextElementInSequence(XmlReader reader, string name, Comparison<string> comparison)
 		{
 			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement &&
 				(reader.NodeType != XmlNodeType.Element || comparison(name, reader.Name) > 0))
@@ -243,9 +243,9 @@ namespace Palaso.Xml
 			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
 		}
 
-		public static bool FindElement(XmlReader reader, string name, string nameSpace, Comparison<string> comparison)
+		public static bool FindNextElementInSequence(XmlReader reader, string name, string nameSpace, Comparison<string> comparison)
 		{
-			while (FindElement(reader, name, comparison))
+			while (FindNextElementInSequence(reader, name, comparison))
 			{
 				if (reader.NamespaceURI == nameSpace)
 				{

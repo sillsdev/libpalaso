@@ -64,12 +64,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private static bool FindElement(XmlReader reader, string name)
 		{
-			return XmlHelpers.FindElement(reader, name, LdmlNodeComparerV0.CompareElementNames);
+			return XmlHelpers.FindNextElementInSequence(reader, name, LdmlNodeComparerV0.CompareElementNames);
 		}
 
 		private static bool FindElement(XmlReader reader, string name, string nameSpace)
 		{
-			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparerV0.CompareElementNames);
+			return XmlHelpers.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparerV0.CompareElementNames);
 		}
 
 		private static void WriteLdmlText(XmlWriter writer, string text)
@@ -554,7 +554,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindElement(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
+			if (!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
 			{
 				return string.Empty;
 			}

@@ -65,12 +65,12 @@ namespace Palaso.WritingSystems
 
 		private static bool FindElement(XmlReader reader, string name)
 		{
-			return XmlHelpers.FindElement(reader, name, LdmlNodeComparer.CompareElementNames);
+			return XmlHelpers.FindNextElementInSequence(reader, name, LdmlNodeComparer.CompareElementNames);
 		}
 
 		private static bool FindElement(XmlReader reader, string name, string nameSpace)
 		{
-			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
+			return XmlHelpers.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
 		}
 
 		public static void WriteLdmlText(XmlWriter writer, string text)
@@ -562,7 +562,7 @@ namespace Palaso.WritingSystems
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindElement(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
+			if (!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
 			{
 				return string.Empty;
 			}
