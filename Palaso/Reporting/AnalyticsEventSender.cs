@@ -18,9 +18,10 @@ namespace Palaso.Reporting
 		private readonly DateTime _firstLaunch;
 		private readonly DateTime _previousLaunch;
 		private readonly int _launches;
+		private readonly bool _reportAsDeveloper;
 		private int _sequence;
 
-		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch, int launches)
+		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch, int launches, bool reportAsDeveloper)
 		{
 			_domain = domain;
 			_googleAccountCode = googleAccountCode;
@@ -28,6 +29,7 @@ namespace Palaso.Reporting
 			_firstLaunch = firstLaunch;
 			_previousLaunch = previousLaunch;
 			_launches = launches;
+			_reportAsDeveloper = reportAsDeveloper;
 
 
 			//I don't acutally know how this is used by google... we don't have a way of giving a sequence order across
@@ -97,9 +99,15 @@ namespace Palaso.Reporting
 				pagePath = "application/"+pagePath;
 			}
 
-#if DEBUG
-			pagePath = "dev/"+pagePath;
-#endif
+			//nb: Normally this is true for DEBUG builds. We use this variable rather than a #if DEBUG because
+			//sometimes a developer uses a Release build of this dll; he would still want hi activities
+			//logged as a developer.
+
+			if(_reportAsDeveloper)
+			{
+				pagePath = "dev/"+pagePath;
+			}
+
 			return pagePath;
 		}
 

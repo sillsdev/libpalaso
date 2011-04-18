@@ -17,13 +17,40 @@ namespace Palaso.Reporting
 
 		private static UsageReporter s_singleton;
 
+		[Obsolete("Better to use the version which explicitly sets the reportAsDeveloper flag")]
 		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode)
+		{
+#if DEBUG
+			Init(settings,domain,googleAnalyticsAccountCode, true);
+#else
+			Init(settings,domain,googleAnalyticsAccountCode, false);
+#endif
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <example>
+		/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
+		///#if DEBUG
+		///                true
+		///#else
+		///                false
+		///#endif
+		///                );
+		/// </example>
+		/// <param name="settings"></param>
+		/// <param name="domain"></param>
+		/// <param name="googleAnalyticsAccountCode"></param>
+		/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
+		/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
+		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
 			s_singleton = new UsageReporter();
 			s_singleton._settings = settings;
 			s_singleton._realPreviousVersion = settings.PreviousVersion;
 			s_singleton._settings.Launches++;
-			s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode);
+			s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
 			settings.PreviousVersion = ErrorReport.VersionNumberString;
 		}
 
@@ -419,14 +446,14 @@ namespace Palaso.Reporting
 		///  Reports upgrades, launches, etc., and allows for later calls to notify analytics of navigation and events
 		/// </summary>
 
-		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode)
+		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
 			if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
 				_settings.Launches++;
 			}
 
-			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches);
+			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper);
 
 			 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
