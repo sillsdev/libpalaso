@@ -170,6 +170,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			else
 			{
 				var winPaths = new[] {@"c:\art of reading\images", @"c:/ArtOfReading/images"};
+
 				foreach (var path in winPaths)
 				{
 					if (Directory.Exists(path))

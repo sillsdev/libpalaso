@@ -22,10 +22,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				label1.Visible= _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
 				_messageLabel.Visible = true;
 				_messageLabel.Text = "The Art Of Reading collection was not found on this computer.";
+				_messageLabel.Text=@"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet. If you can find a copy of it, you can freely copy the images to this comptuer, according to its license. But you must only copy the images (which SIL owns), not the software (which is commercial). To do this, follow these steps:
+1) Create a folder named 'Art of Reading' at the root of your 'C:\' drive.
+2) Copy the 'Images' folder from the Art of Reading DVD into that folder.
+
+If you can't get a copy of Art Of Reading locally, you can purchase the DVD from www.ethnologue.com.";
 			}
 			else
 			{
-				_searchTermsBox.Text = "flower";
+#if DEBUG
+				_searchTermsBox.Text = @"flower";
+#endif
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
 			}
 		}

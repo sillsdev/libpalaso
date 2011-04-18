@@ -35,6 +35,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
+
+#if !DEBUG
+			_imageMetadataControl.Visible = false;  // until it actuall works
+#endif
 		}
 
 		/// <summary>
