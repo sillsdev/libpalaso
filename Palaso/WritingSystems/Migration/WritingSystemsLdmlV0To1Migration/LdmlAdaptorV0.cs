@@ -10,7 +10,7 @@ using Palaso.Xml;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	internal class LdmlAdaptorV0
+	public class LdmlAdaptorV0
 	{
 		private XmlNamespaceManager _nameSpaceManager;
 
