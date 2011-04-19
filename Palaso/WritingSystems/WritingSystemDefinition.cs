@@ -505,9 +505,9 @@ namespace Palaso.WritingSystems
 			get
 			{
 				string n = string.Empty;
-				if (!String.IsNullOrEmpty(_languageName))
+				if (!String.IsNullOrEmpty(LanguageName))
 				{
-					n=_languageName;
+					n = LanguageName;
 				}
 				else
 				{

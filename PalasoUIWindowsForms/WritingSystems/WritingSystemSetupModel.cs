@@ -404,6 +404,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// populate the rest of the list with all languages from the OS
 				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures))
 				{
+					if(prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
 					yield return
 						new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
 				}
@@ -759,6 +763,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public enum SelectionsForSpecialCombo
 		{
+			//Note this list is a bit restrictive in that you may want to change the region for a given audio writing system i.e. en-Zxxx-GB-x-audio vs en-Zxxx-US-x-audio
 			None=0,
 			Ipa=1,
 			Voice=2,

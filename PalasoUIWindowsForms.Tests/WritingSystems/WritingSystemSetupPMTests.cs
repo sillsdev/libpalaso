@@ -373,7 +373,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SortLanuageOptions_DoesNotIncludeCurrnt()
+		public void SortLanguageOptions_DoesNotIncludeCurrnt()
 		{
 			_model.AddNew();
 			_model.CurrentISO = "pt";
@@ -383,9 +383,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			}
 		}
 
-		[Test, Ignore("Not implemented")]
+		[Test]
 		public void SortLanuageOptions_DoesIncludeOtherWritingSystems()
 		{
+			Assert.Fail("This tests wether ldml writing systems are listed as possible sortlanguages. That feature is not implemented. Previously this test was ignored (back in 2008). Should the feature be implmented now?");
 			_model.AddNew();
 			_model.CurrentISO = "pt";
 			string key = _model.CurrentRFC4646;
@@ -680,15 +681,16 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void SelectionForSpecialCombo_HasUnknownScript_GivesCustom()
 		{
+			Assert.Fail("This test is no longer valid. Due to RfcTag restrictions you may not set an invalid script tag. If the script is indeed a custom script you would choose one of the well defined private use script codes ie Qaaa. thus the expected result should now indeed be WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant or Qaaa should change the SelectionForCombo to Custom. Furthermore the UI does not actually allow 'Custom' as an option");
 			_model.AddNew();
-			_model.CurrentScriptCode = "Arab";
+			_model.CurrentScriptCode = "";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
 		}
 
 		[Test]
 		public void VerboseDescriptionWhenNoSubtagsSet()
 		{
-			_model.CurrentDefinition = new WritingSystemDefinition("", "", "", "", "", false);
+			_model.CurrentDefinition = new WritingSystemDefinition();
 			Assert.AreEqual("Unknown Language. (qaa)", _model.VerboseDescription(_model.CurrentDefinition));
 		}
 
@@ -707,13 +709,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void VerboseDescriptionWhenOnlyScript()
-		{
-			_model.CurrentDefinition = new WritingSystemDefinition("", "Kore", "", "", "", false);
-			Assert.AreEqual("Unknown language written in Korean script. (qaa-Kore)", _model.VerboseDescription(_model.CurrentDefinition));
-		}
-
-		[Test]
 		public void VerboseDescriptionWhenIsoAndRegion()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition("en", "", "US", "", "", false);
@@ -721,18 +716,24 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void VerboseDescriptionWhenIsoScriptRegionVariant()
+		public void VerboseDescriptionWhenIsoScriptRegionVariantPrivateUse()
 		{
-			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "US", "1901", "", false);
-			Assert.AreEqual("English in US written in Korean script. (en-Kore-US-1901)", _model.VerboseDescription(_model.CurrentDefinition));
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "US", "1901-x-bogus", "", false);
+			Assert.AreEqual("English in US written in Korean script. (en-Kore-US-1901-x-bogus)", _model.VerboseDescription(_model.CurrentDefinition));
 		}
 
 		[Test]
-		public void VerboseDescriptionWhenIsoIsUnsetButLanguageNameIs()
+		public void VerboseDescriptionWhenIsoAndVariant()
 		{
-			_model.CurrentDefinition = new WritingSystemDefinition("", "Kore", "US", "1901", "", false);
-			_model.CurrentDefinition.LanguageName = "Eastern lawa";
-			Assert.AreEqual("Eastern lawa in US written in Korean script. (qaa-Kore-US-1901)", _model.VerboseDescription(_model.CurrentDefinition));
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "", "", "1901", "", false);
+			Assert.AreEqual("English. (en-1901)", _model.VerboseDescription(_model.CurrentDefinition));
+		}
+
+		[Test]
+		public void VerboseDescriptionWhenIsoAndPrivateUse()
+		{
+			_model.CurrentDefinition = new WritingSystemDefinition("en", "", "", "x-bogus", "", false);
+			Assert.AreEqual("English. (en-x-bogus)", _model.VerboseDescription(_model.CurrentDefinition));
 		}
 
 		[Test]
