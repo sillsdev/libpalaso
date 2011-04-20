@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -101,5 +102,7 @@ namespace Palaso.WritingSystems
 		/// Event Handler that updates the store when a writing system id has changed
 		/// </summary>
 		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId);
+
+		IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter);
 	}
 }

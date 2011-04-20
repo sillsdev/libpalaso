@@ -223,5 +223,10 @@ namespace Palaso.WritingSystems
 			_writingSystems[ws.Id] = ws;
 			_writingSystems.Remove(oldId);
 		}
+
+		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
+		{
+			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
+		}
 	}
 }

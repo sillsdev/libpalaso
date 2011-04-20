@@ -440,5 +440,51 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(new WritingSystemDefinition("es"));
 			Assert.IsTrue(RepositoryUnderTest.TextWritingSystems.Count() == 2);
 		}
+
+		[Test]
+		public void TextWritingSystems_IdIsNotText_ReturnsEmpty()
+		{
+			var ws = WritingSystemDefinition.FromLanguage("en");
+			ws.IsVoice = true;
+			RepositoryUnderTest.Set(ws);
+			var wsIdsToFilter = new List<string> {ws.Id};
+			var textIds = new List<string> (RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
+			Assert.IsEmpty(textIds);
+		}
+
+		[Test]
+		public void TextWritingSystems_IdIsText_ReturnsId()
+		{
+			var ws = WritingSystemDefinition.FromLanguage("en");
+			RepositoryUnderTest.Set(ws);
+			var wsIdsToFilter = new List<string> { ws.Id };
+			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
+			Assert.AreEqual(1, textIds.Count);
+			Assert.AreEqual("en", textIds[0]);
+		}
+
+		[Test]
+		public void TextWritingSystems_IdsAreMixOfTextAndNotText_ReturnsOnlyTextIds()
+		{
+			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws1 = WritingSystemDefinition.FromLanguage("de");
+			var ws2 = WritingSystemDefinition.FromLanguage("th");
+			ws2.IsVoice = true;
+			var ws3 = WritingSystemDefinition.FromLanguage("pt");
+			ws3.IsVoice = true;
+
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Set(ws1);
+			RepositoryUnderTest.Set(ws2);
+			RepositoryUnderTest.Set(ws3);
+
+			var wsIdsToFilter = RepositoryUnderTest.AllWritingSystems.Select(wsinRepo => wsinRepo.Id);
+
+			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
+
+			Assert.AreEqual(2, textIds.Count);
+			Assert.AreEqual("en", textIds[0]);
+			Assert.AreEqual("de", textIds[1]);
+		}
 	}
 }
