@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using NUnit.Framework;
 using Palaso.IO;
-using Palaso.TestUtilities;
 
 namespace Palaso.Tests.IO
 {
@@ -123,11 +118,21 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		public void CopyFolderToTempFolder_SourceFolderExists_ReturnsCorrectFolderPath()
+		{
+			var returnPath = FolderUtils.CopyFolderToTempFolder(_srcFolder);
+			Assert.IsNotNull(returnPath);
+			var foldername = Path.GetFileName(_srcFolder);
+			Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_MakesCopyInTempFolder()
 		{
-			Assert.IsTrue(FolderUtils.CopyFolderToTempFolder(_srcFolder));
-			var foldername = Path.GetFileName(_srcFolder);
-			Assert.IsTrue(Directory.Exists(Path.Combine(Path.GetTempPath(), foldername)));
+			var returnPath = FolderUtils.CopyFolderToTempFolder(_srcFolder);
+			Assert.IsNotNull(returnPath);
+			Assert.IsTrue(Directory.Exists(returnPath));
 		}
 
 		/// ------------------------------------------------------------------------------------

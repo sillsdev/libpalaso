@@ -15,12 +15,13 @@ namespace Palaso.IO
 		/// problem and an attempt is made to remove the destination folder if the failure
 		/// happened part way through the process.
 		/// </summary>
-		/// <param name="srcFolder">Folder to copy.</param>
-		/// <returns>true if successful, otherwise, false.</returns>
+		/// <param name="srcFolder">Folder to copy</param>
+		/// <returns>Null if the copy was unsuccessful, otherwise the path to the copied folder</returns>
 		/// ------------------------------------------------------------------------------------
-		public static bool CopyFolderToTempFolder(string srcFolder)
+		public static string CopyFolderToTempFolder(string srcFolder)
 		{
-			return CopyFolder(srcFolder, Path.GetTempPath());
+			string dstFolder;
+			return (CopyFolder(srcFolder, Path.GetTempPath(), out dstFolder) ? dstFolder : null);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -38,6 +39,16 @@ namespace Palaso.IO
 		/// ------------------------------------------------------------------------------------
 		public static bool CopyFolder(string srcFolder, string dstFolderParent)
 		{
+			string dstFolder;
+			return CopyFolder(srcFolder, dstFolderParent, out dstFolder);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private static bool CopyFolder(string srcFolder, string dstFolderParent, out string dstFolder)
+		{
+			dstFolder = Path.GetFileName(srcFolder);
+			dstFolder = Path.Combine(dstFolderParent, dstFolder);
+
 			if (!Directory.Exists(dstFolderParent))
 			{
 				ReportFailedCopyAndCleanUp(
@@ -47,8 +58,7 @@ namespace Palaso.IO
 				return false;
 			}
 
-			var foldername = Path.GetFileName(srcFolder);
-			return CopyFolderContents(srcFolder, Path.Combine(dstFolderParent, foldername));
+			return CopyFolderContents(srcFolder, dstFolder);
 		}
 
 		/// ------------------------------------------------------------------------------------
