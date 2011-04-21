@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Palaso.Code;
 
 namespace Palaso.Xml
 {
@@ -25,6 +26,7 @@ namespace Palaso.Xml
 		/// </summary>
 		public static XmlNodeList SafeSelectNodes(this XmlNode node, string path)
 		{
+			Guard.AgainstNull(node, "SafeSelectNodes(node,"+path+"): node was null");
 			//REVIEW JH(jh): this will put pfx in front of every element in the path, but in html, that actually makes the queries fail.
 			const string prefix = "pfx";
 			XmlNamespaceManager nsmgr = GetNsmgr(node, prefix);
@@ -76,21 +78,32 @@ namespace Palaso.Xml
 
 		private static XmlNamespaceManager GetNsmgr(XmlNode node, string prefix)
 		{
+			Guard.AgainstNull(node, "GetNsmgr(node, prefix): node was null");
 			string namespaceUri;
 			XmlNameTable nameTable;
-			if (node is XmlDocument)
+			try
 			{
-				nameTable = ((XmlDocument)node).NameTable;
-				namespaceUri = ((XmlDocument)node).DocumentElement.NamespaceURI;
+				if (node is XmlDocument)
+				{
+					nameTable = ((XmlDocument) node).NameTable;
+					Guard.AgainstNull(((XmlDocument) node).DocumentElement, "((XmlDocument) node).DocumentElement");
+					namespaceUri = ((XmlDocument) node).DocumentElement.NamespaceURI;
+				}
+				else
+				{
+					Guard.AgainstNull(node.OwnerDocument, "node.OwnerDocument");
+					nameTable = node.OwnerDocument.NameTable;
+					namespaceUri = node.NamespaceURI;
+				}
+				XmlNamespaceManager nsmgr = new XmlNamespaceManager(nameTable);
+				nsmgr.AddNamespace(prefix, namespaceUri);
+				return nsmgr;
+
 			}
-			else
+			catch (Exception error)
 			{
-				nameTable = node.OwnerDocument.NameTable;
-				namespaceUri = node.NamespaceURI;
+				throw new ApplicationException("Could not create a namespace manager for the following node:\r\n"+node.OuterXml,error);
 			}
-			XmlNamespaceManager nsmgr = new XmlNamespaceManager(nameTable);
-			nsmgr.AddNamespace(prefix, namespaceUri);
-			return nsmgr;
 		}
 
 		private static string GetPrefixedPath(string xPath, string prefix)
