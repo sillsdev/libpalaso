@@ -668,6 +668,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Constructor_LanguageIsEmptyAndPrivateUseIsSet_CompleteTagConsistsOnlyOfPrivateUse()
+		{
+			var tag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, "audio");
+			Assert.AreEqual("x-audio", tag.CompleteTag);
+		}
+
+		[Test]
 		public void Constructor_LanguageIsEmptyAndPrivateUseIsSet_SetsPrivateUse()
 		{
 			var tag = new RFC5646Tag(String.Empty, String.Empty, String.Empty,String.Empty, "audio");
@@ -770,6 +777,13 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var tag = new RFC5646Tag("en", "Latn", "US", "1901", "audio");
 			Assert.AreEqual("en-Latn-US-1901-x-audio", tag.CompleteTag);
+		}
+
+		[Test]
+		public void CompleteTag_OnlyPrivateUseSet_OnlyPrivateUseIsReturned()
+		{
+			var tag = new RFC5646Tag("", "", "", "", "private");
+			Assert.AreEqual("x-private", tag.CompleteTag);
 		}
 
 		[Test]
@@ -919,14 +933,14 @@ namespace Palaso.Tests.WritingSystems
 		public void Parse_HasOnlyPrivateUse_RFC5646TagHasExpectedFields()
 		{
 			var tag = RFC5646Tag.Parse("x-privuse");
-			AssertTag(tag, "qaa", string.Empty, string.Empty, string.Empty, "x-privuse");
+			AssertTag(tag, string.Empty, string.Empty, string.Empty, string.Empty, "x-privuse");
 		}
 
 		[Test]
 		public void Parse_HasMultiplePrivateUse_RFC5646TagHasExpectedFields()
 		{
 			var tag = RFC5646Tag.Parse("x-private-use");
-			AssertTag(tag, "qaa", string.Empty, string.Empty, string.Empty, "x-private-use");
+			AssertTag(tag, string.Empty, string.Empty, string.Empty, string.Empty, "x-private-use");
 		}
 
 		[Test]

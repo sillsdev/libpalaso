@@ -185,21 +185,28 @@ namespace Palaso.WritingSystems
 			get
 			{
 				string id = String.IsNullOrEmpty(Language) ? string.Empty : Language;
-				if (!String.IsNullOrEmpty(Script))
+				if (!String.IsNullOrEmpty(id))
 				{
-					id += "-" + Script;
+					if (!String.IsNullOrEmpty(Script))
+					{
+						id += "-" + Script;
+					}
+					if (!String.IsNullOrEmpty(Region))
+					{
+						id += "-" + Region;
+					}
+					if (!String.IsNullOrEmpty(Variant))
+					{
+						id += "-" + Variant;
+					}
+					if (!String.IsNullOrEmpty(PrivateUse))
+					{
+						id += "-" + PrivateUse;
+					}
 				}
-				if (!String.IsNullOrEmpty(Region))
+				else
 				{
-					id += "-" + Region;
-				}
-				if (!String.IsNullOrEmpty(Variant))
-				{
-					id += "-" + Variant;
-				}
-				if (!String.IsNullOrEmpty(PrivateUse))
-				{
-					id += "-" + PrivateUse;
+					id = PrivateUse;
 				}
 				return id;
 			}
@@ -400,6 +407,12 @@ namespace Palaso.WritingSystems
 				}
 				if (haveX)
 				{
+					//This is the case for RfcTags consisting only of a private use subtag
+					if(position==1)
+					{
+						rfc5646Tag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, token);
+						continue;
+					}
 					rfc5646Tag.AddToPrivateUse(token);
 					continue;
 				}

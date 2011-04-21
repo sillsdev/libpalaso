@@ -33,14 +33,14 @@ namespace Palaso.Tests.WritingSystems
 		public void Parse_HasOnlyPrivateUse_WritingSystemHasExpectedFields()
 		{
 			var tag = WritingSystemDefinition.Parse("x-privuse");
-			AssertWritingSystem(tag, "qaa", string.Empty, string.Empty, "x-privuse");
+			AssertWritingSystem(tag, string.Empty, string.Empty, string.Empty, "x-privuse");
 		}
 
 		[Test]
 		public void Parse_HasMultiplePrivateUse_WritingSystemHasExpectedFields()
 		{
 			var tag = WritingSystemDefinition.Parse("x-private-use");
-			AssertWritingSystem(tag, "qaa", string.Empty, string.Empty, "x-private-use");
+			AssertWritingSystem(tag, string.Empty, string.Empty, string.Empty, "x-private-use");
 		}
 
 		[Test]
@@ -286,6 +286,33 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition("en", "Zxxx", "US", "1901", "", false);
 			Assert.AreEqual("en-Zxxx-US-1901", ws.RFC5646);
+		}
+
+		[Test]
+		public void Constructor_OnlyVariantContainingOnlyPrivateUseisPassedIn_RfcTagConsistsOfOnlyPrivateUse()
+		{
+			var ws = new WritingSystemDefinition("", "", "", "x-private", "", false);
+			Assert.AreEqual("x-private", ws.RFC5646);
+		}
+
+		[Test]
+		public void Parse_OnlyPrivateUseIsPassedIn_RfcTagConsistsOfOnlyPrivateUse()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.AreEqual("x-private", ws.RFC5646);
+		}
+
+		[Test]
+		public void FromRFC5646Subtags_OnlyVariantContainingOnlyPrivateUseisPassedIn_RfcTagConsistsOfOnlyPrivateUse()
+		{
+			var ws = WritingSystemDefinition.FromRFC5646Subtags("", "", "", "x-private");
+			Assert.AreEqual("x-private", ws.RFC5646);
+		}
+
+		[Test]
+		public void Constructor_OnlyVariantIsPassedIn_Throws()
+		{
+			Assert.Throws<ValidationException>(()=>new WritingSystemDefinition("", "", "", "bogus", "", false));
 		}
 
 		[Test]
