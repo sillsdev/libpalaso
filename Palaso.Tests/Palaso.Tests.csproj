@@ -97,6 +97,7 @@
 	<Compile Include="i18n\StringCatalogTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
+	<Compile Include="IO\FolderUtilsTests.cs" />
 	<Compile Include="Migration\MigratorTests.cs" />
 	<Compile Include="Migration\XmlReaderWriterMigratorTests.cs" />
 	<Compile Include="Migration\XPathVersionTests.cs" />

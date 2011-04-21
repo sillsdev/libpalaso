@@ -156,6 +156,7 @@
 	<Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
+	<Compile Include="IO\FolderUtils.cs" />
 	<Compile Include="IO\TempFile.cs" />
 	<Compile Include="Linq\MiscOperators.cs" />
 	<Compile Include="Code\Detect.cs" />
