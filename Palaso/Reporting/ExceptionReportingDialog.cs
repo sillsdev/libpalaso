@@ -23,6 +23,7 @@ namespace Palaso.Reporting
 		 private LinkLabel _dontSendEmailLink;
 		 private TextBox _notificationText;
 		 private TextBox textBox1;
+		 private ComboBox _methodCombo;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -107,6 +108,7 @@ namespace Palaso.Reporting
 			this._dontSendEmailLink = new System.Windows.Forms.LinkLabel();
 			this._notificationText = new System.Windows.Forms.TextBox();
 			this.textBox1 = new System.Windows.Forms.TextBox();
+			this._methodCombo = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			//
 			// m_reproduce
@@ -165,6 +167,7 @@ namespace Palaso.Reporting
 			this._notificationText.ForeColor = System.Drawing.Color.Black;
 			this._notificationText.Name = "_notificationText";
 			this._notificationText.ReadOnly = true;
+			this._notificationText.TextChanged += new System.EventHandler(this._notificationText_TextChanged);
 			//
 			// textBox1
 			//
@@ -175,6 +178,14 @@ namespace Palaso.Reporting
 			this.textBox1.Name = "textBox1";
 			this.textBox1.ReadOnly = true;
 			//
+			// _methodCombo
+			//
+			resources.ApplyResources(this._methodCombo, "_methodCombo");
+			this._methodCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._methodCombo.FormattingEnabled = true;
+			this._methodCombo.Name = "_methodCombo";
+			this._methodCombo.SelectedIndexChanged += new System.EventHandler(this._methodCombo_SelectedIndexChanged);
+			//
 			// ExceptionReportingDialog
 			//
 			this.AcceptButton = this._sendAndCloseButton;
@@ -183,6 +194,7 @@ namespace Palaso.Reporting
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.CancelButton = this._sendAndCloseButton;
 			this.ControlBox = false;
+			this.Controls.Add(this._methodCombo);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this._dontSendEmailLink);
 			this.Controls.Add(this.m_reproduce);
@@ -202,6 +214,32 @@ namespace Palaso.Reporting
 
 		}
 
+		 private void SetupMethodCombo()
+		 {
+			 _methodCombo.Items.Clear();
+			 _methodCombo.Items.Add(new ReportingMethod("Send using my email program", "&Email", "mapiWithPopup", SendViaEmail));
+			 _methodCombo.Items.Add(new ReportingMethod("Copy to clipboard", "&Copy", "clipboard", PutOnClipboard));
+		 }
+
+		 class ReportingMethod
+		 {
+			 private readonly string _label;
+			 public readonly string CloseButtonLabel;
+			 public readonly string Id;
+			 public readonly Func<bool> Method;
+
+			 public ReportingMethod(string label, string closeButtonLabel, string id, Func<bool> method)
+			 {
+				 _label = label;
+				 CloseButtonLabel = closeButtonLabel;
+				 Id = id;
+				 Method = method;
+			 }
+			 public override string ToString()
+			 {
+				 return _label;
+			 }
+		 }
 		#endregion
 
 
@@ -405,15 +443,26 @@ namespace Palaso.Reporting
 			 //
 			 InitializeComponent();
 
+			 SetupMethodCombo();
+
+			 foreach (ReportingMethod  method in _methodCombo.Items)
+			 {
+				 if (ErrorReportSettings.Default.ReportingMethod == method.Id)
+				 {
+					SelectedMethod = method;
+					break;
+				 }
+			 }
+
 			 if (!_isLethal)
 			 {
-				 _sendAndCloseButton.Text = "&Send Email";
 				 BackColor = Color.FromArgb(255, 255, 192); //yellow
 				 _notificationText.BackColor = BackColor;
 				 _pleaseHelpText.BackColor = BackColor;
 				 textBox1.BackColor = BackColor;
-				 _dontSendEmailLink.Text = "Don't Send Email";
 			 }
+
+			 SetupCloseButtonText();
 		 }
 
 		 private void ShowReportDialogIfAppropriate(Form owningForm)
@@ -444,70 +493,91 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		private void btnClose_Click(object sender, EventArgs e)
 		{
+			 ErrorReportSettings.Default.ReportingMethod = ((ReportingMethod) (_methodCombo.SelectedItem)).Id;
+			 ErrorReportSettings.Default.Save();
+
 			if (ModifierKeys.Equals(Keys.Shift))
 			{
 				return;
 			}
 			GatherData();
 
-			Clipboard.SetDataObject(_details.Text, true);
+		   // Clipboard.SetDataObject(_details.Text, true);
 
-			try
+			if (SelectedMethod.Method())
 			{
-				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
-				var emailMessage = emailProvider.CreateMessage();
-				emailMessage.To.Add(ErrorReport.EmailAddress);
-				emailMessage.Subject = ErrorReport.EmailSubject;
-				emailMessage.Body = _details.Text;
-				if (emailMessage.Send(emailProvider))
-				{
-					CloseUp();
-					return;
-				}
+				CloseUp();
 			}
-			catch (Exception)
+			else
 			{
-				//swallow it and go to the alternate method
+				PutOnClipboard();
+				CloseUp();
 			}
+		}
 
-			try
-			{
-				//EmailMessage msg = new EmailMessage();
-				// This currently does not work. The main issue seems to be the length of the error report. mailto
-				// apparently has some limit on the length of the message, and we are exceeding that.
-				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
-				var emailMessage = emailProvider.CreateMessage();
-				emailMessage.To.Add(ErrorReport.EmailAddress);
-				emailMessage.Subject = ErrorReport.EmailSubject;
-				if (Environment.OSVersion.Platform == PlatformID.Unix)
-				{
-					emailMessage.Body = _details.Text;
-				}
-				else
-				{
-					emailMessage.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
-				}
-				if (emailMessage.Send(emailProvider))
-				{
-					CloseUp();
-					return;
-				}
-			}
-			catch (Exception)
-			{
-				//swallow it and go to the clipboard method
-			}
-
+		 private bool PutOnClipboard()
+		 {
 			if (ErrorReport.EmailAddress != null)
 			{
 				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
 			}
 			Clipboard.SetDataObject(_details.Text, true);
+			 return true;
+		 }
 
-			CloseUp();
-		}
+		 private bool SendViaEmail()
+		 {
+			 try
+			 {
+				 var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				 var emailMessage = emailProvider.CreateMessage();
+				 emailMessage.To.Add(ErrorReport.EmailAddress);
+				 emailMessage.Subject = ErrorReport.EmailSubject;
+				 emailMessage.Body = _details.Text;
+				 if (emailMessage.Send(emailProvider))
+				 {
+					 CloseUp();
+					 return true;
+				 }
+			 }
+			 catch (Exception)
+			 {
+				 //swallow it and go to the alternate method
+			 }
 
-		private void CloseUp()
+			 try
+			 {
+				 //EmailMessage msg = new EmailMessage();
+				 // This currently does not work. The main issue seems to be the length of the error report. mailto
+				 // apparently has some limit on the length of the message, and we are exceeding that.
+				 var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				 var emailMessage = emailProvider.CreateMessage();
+				 emailMessage.To.Add(ErrorReport.EmailAddress);
+				 emailMessage.Subject = ErrorReport.EmailSubject;
+				 if (Environment.OSVersion.Platform == PlatformID.Unix)
+				 {
+					 emailMessage.Body = _details.Text;
+				 }
+				 else
+				 {
+					 emailMessage.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
+				 }
+				 if (emailMessage.Send(emailProvider))
+				 {
+					 CloseUp();
+					 return true;
+				 }
+			 }
+			 catch (Exception error)
+			 {
+				 ErrorReport.NotifyUserOfProblem(
+					 "This program wasn't able to get your email program, if you have one, to send the error message.");
+				 return false;
+			 }
+			 return false;
+		 }
+
+		 private void CloseUp()
 		{
 			if (!_isLethal || ModifierKeys.Equals(Keys.Shift))
 			{
@@ -574,5 +644,33 @@ namespace Palaso.Reporting
 
 		 }
 
+		 private void _notificationText_TextChanged(object sender, EventArgs e)
+		 {
+
+		 }
+
+		 private void _methodCombo_SelectedIndexChanged(object sender, EventArgs e)
+		 {
+			 SetupCloseButtonText();
+		 }
+
+		 private void SetupCloseButtonText()
+		 {
+			_sendAndCloseButton.Text = SelectedMethod.CloseButtonLabel;
+			 if (!_isLethal)
+			 {
+				 _dontSendEmailLink.Text = "Don't Send Email";
+			 }
+			 else
+			 {
+				 _sendAndCloseButton.Text += "&& Exit";
+			 }
+		 }
+
+		 private ReportingMethod SelectedMethod
+		 {
+			 get { return ((ReportingMethod) _methodCombo.SelectedItem); }
+			 set { _methodCombo.SelectedItem = value; }
+		 }
 	}
 }
