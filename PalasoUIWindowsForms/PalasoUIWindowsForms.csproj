@@ -277,8 +277,26 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\CustomDropDown.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Widgets\Flying\Animator.cs" />
 	<Compile Include="Widgets\Flying\FlyingLabel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterGrid\CellCustomDropDownList.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterGrid\CheckBoxColumnHeaderHandler.cs" />
+	<Compile Include="Widgets\BetterGrid\GridSettings.cs" />
+	<Compile Include="Widgets\BetterGrid\PushButtonCell.cs" />
+	<Compile Include="Widgets\BetterGrid\PushButtonColumn.cs" />
+	<Compile Include="Widgets\BetterGrid\CalendarCell.cs" />
+	<Compile Include="Widgets\BetterGrid\CalendarColumn.cs" />
+	<Compile Include="Widgets\BetterGrid\CalendarEditingControl.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterGrid\BetterGrid.cs">
 	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
@@ -629,6 +647,10 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\Information.png" />
+	<None Include="Resources\RemoveGridRowHot.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\RemoveGridRowNormal.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
