@@ -134,6 +134,9 @@
 	<Compile Include="ClearShare\Role.cs" />
 	<Compile Include="ClearShare\Work.cs" />
 	<Compile Include="ControlExtensions.cs" />
+	<Compile Include="CustomDropDown.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="FileSystem\ConfirmRecycleDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -265,6 +268,21 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\BetterGrid\BetterGrid.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterGrid\CalendarCell.cs" />
+	<Compile Include="Widgets\BetterGrid\CalendarColumn.cs" />
+	<Compile Include="Widgets\BetterGrid\CalendarEditingControl.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterGrid\CellCustomDropDownList.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\BetterGrid\CheckBoxColumnHeaderHandler.cs" />
+	<Compile Include="Widgets\BetterGrid\GridSettings.cs" />
+	<Compile Include="Widgets\BetterGrid\PushButtonCell.cs" />
+	<Compile Include="Widgets\BetterGrid\PushButtonColumn.cs" />
 	<Compile Include="Widgets\BetterLabel.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -638,6 +656,7 @@
   <ItemGroup>
 	<None Include="Resources\RemoveGridRowNormal.png" />
   </ItemGroup>
+
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
