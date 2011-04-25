@@ -649,6 +649,7 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\RemoveGridRowNormal.png" />
+	<None Include="Resources\Information.png" />
   </ItemGroup>
 	<None Include="Resources\Information.png" />
 	<None Include="Resources\RemoveGridRowHot.png" />
