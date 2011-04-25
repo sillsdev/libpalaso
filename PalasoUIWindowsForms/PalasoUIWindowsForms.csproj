@@ -100,6 +100,9 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
 	</Reference>
+	<Reference Include="SilUtils">
+	  <HintPath>..\lib\SilUtils.dll</HintPath>
+	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
@@ -110,6 +113,26 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
+	<Compile Include="ClearShare\Contribution.cs" />
+	<Compile Include="ClearShare\ContributionCollection.cs" />
+	<Compile Include="ClearShare\ContributorsListControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ClearShare\ContributorsListControl.designer.cs">
+	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ClearShare\ContributorsListControlViewModel.cs" />
+	<Compile Include="ClearShare\FadingMessageForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ClearShare\FadingMessageForm.designer.cs">
+	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ClearShare\License.cs" />
+	<Compile Include="ClearShare\OlacSystem.cs" />
+	<Compile Include="ClearShare\Role.cs" />
+	<Compile Include="ClearShare\Work.cs" />
 	<Compile Include="ControlExtensions.cs" />
 	<Compile Include="CustomDropDown.cs">
 	  <SubType>Component</SubType>
@@ -404,6 +427,13 @@
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="ClearShare\ClearShareResources.resx" />
+	<EmbeddedResource Include="ClearShare\ContributorsListControl.resx">
+	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ClearShare\FadingMessageForm.resx">
+	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
 	</EmbeddedResource>
