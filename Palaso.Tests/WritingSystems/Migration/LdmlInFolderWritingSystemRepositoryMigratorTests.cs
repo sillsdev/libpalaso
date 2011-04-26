@@ -1186,6 +1186,33 @@ namespace Palaso.Tests.WritingSystems.Migration
 			}
 		}
 
+		[Test]
+		public void Migrate_NoFiles_DoesNotAddFilesOrDirectories()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				Assert.AreEqual(0, Directory.GetFiles(environment.LdmlPath).Length);
+				Assert.AreEqual(0, Directory.GetDirectories(environment.LdmlPath).Length);
+			}
+		}
+
+		[Test]
+		public void Migrate_FolderContainsFiles_FolderContainsOnlyMigratedFiles()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				Assert.AreEqual(1, Directory.GetFiles(environment.LdmlPath).Length);
+				Assert.AreEqual(0, Directory.GetDirectories(environment.LdmlPath).Length);
+			}
+		}
+
 		#endregion
 
 	}

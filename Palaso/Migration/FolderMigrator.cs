@@ -58,6 +58,11 @@ namespace Palaso.Migration
 			int lowestVersoinInFolder1 = -1;
 			while ((lowestVersionInFolder = GetLowestVersionInFolder(currentPath)) != ToVersion)
 			{
+				//This guards against an empty Folder
+				if(lowestVersionInFolder == int.MaxValue)
+				{
+					break;
+				}
 				if (lowestVersionInFolder == lowestVersoinInFolder1)
 				{
 					throw new ApplicationException(
@@ -115,7 +120,7 @@ namespace Palaso.Migration
 
 			// Copy the migration results into SourcePath
 			CopyDirectory(currentPath, SourcePath, "");
-
+			DeleteFolderAvoidingDeletionBug(MigrationPath);
 		}
 
 		internal IEnumerable<string> GetFilesOfVersion(int currentVersion, string path)
