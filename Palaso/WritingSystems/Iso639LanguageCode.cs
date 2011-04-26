@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems
 {
@@ -12,6 +13,12 @@ namespace Palaso.WritingSystems
 			Code = code;
 			Name = name;
 			ISO3Code = iso3Code;
+		}
+
+		private string NameForSorting {
+			get {
+				return Regex.Replace(Name, @"[^\w]", "");
+			}
 		}
 
 
@@ -42,7 +49,7 @@ namespace Palaso.WritingSystems
 				}
 				else
 				{
-					return x.Name.CompareTo(y.Name);
+					return x.NameForSorting.CompareTo(y.NameForSorting);
 				}
 			}
 		}
