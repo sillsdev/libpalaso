@@ -7,7 +7,8 @@ using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using Palaso.Code;
-using SilUtils;
+using Palaso.UI.WindowsForms.Widgets.Grid;
+
 
 namespace Palaso.ClearShare
 {
@@ -46,19 +47,19 @@ namespace Palaso.ClearShare
 
 			// TODO: Localize column headings
 
-			DataGridViewColumn col = SilGrid.CreateTextBoxColumn("name", "Name");
+			DataGridViewColumn col = BetterGrid.CreateTextBoxColumn("name", "Name");
 			col.Width = 150;
 			_grid.Columns.Add(col);
 
-			col = SilGrid.CreateDropDownListComboBoxColumn("role",
+			col = BetterGrid.CreateDropDownListComboBoxColumn("role",
 				_model.OlacRoles.Select(r => r.ToString()));
 			col.HeaderText = "Role";
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
-			_grid.Columns.Add(SilGrid.CreateCalendarControlColumn("date", "Date"));
+			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date"));
 
-			col = SilGrid.CreateTextBoxColumn("comments", "Comments");
+			col = BetterGrid.CreateTextBoxColumn("comments", "Comments");
 			col.Width = 200;
 			_grid.Columns.Add(col);
 

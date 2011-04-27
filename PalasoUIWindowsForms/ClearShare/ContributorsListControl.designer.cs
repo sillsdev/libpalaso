@@ -1,4 +1,6 @@
-﻿namespace Palaso.ClearShare
+﻿using Palaso.UI.WindowsForms.Widgets.Grid;
+
+namespace Palaso.ClearShare
 {
 	partial class ContributorsListControl
 	{
@@ -32,7 +34,7 @@
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			this._tableLayout = new System.Windows.Forms.TableLayoutPanel();
 			this._panelGrid = new SilUtils.Controls.SilPanel();
-			this._grid = new SilUtils.SilGrid();
+			this._grid = new BetterGrid();
 			this._buttonDelete = new System.Windows.Forms.Button();
 			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this._tableLayout.SuspendLayout();
@@ -146,7 +148,7 @@
 
 		private SilUtils.Controls.SilPanel _panelGrid;
 		private System.Windows.Forms.TableLayoutPanel _tableLayout;
-		private SilUtils.SilGrid _grid;
+		private BetterGrid _grid;
 		private System.Windows.Forms.Button _buttonDelete;
 		private System.Windows.Forms.ToolTip _toolTip;
 	}

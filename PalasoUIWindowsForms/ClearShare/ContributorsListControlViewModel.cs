@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Widgets.Grid;
 
 namespace Palaso.ClearShare
 {
@@ -30,7 +31,7 @@ namespace Palaso.ClearShare
 			get { return _olacSystem.GetRoles(); }
 		}
 
-		public SilUtils.GridSettings ContributorsGridSettings
+		public GridSettings ContributorsGridSettings
 		{
 			get;
 
