@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems
 {
@@ -37,6 +38,15 @@ namespace Palaso.WritingSystems
 				return 1;
 			}
 			return x.Label.CompareTo(y.Label);
+		}
+
+		public string ShortLabel()
+		{
+			if (!Label.Contains(" ("))
+			{
+				return Label;
+			}
+			return Label.Substring(0, Label.IndexOf(" ("));
 		}
 	}
 }

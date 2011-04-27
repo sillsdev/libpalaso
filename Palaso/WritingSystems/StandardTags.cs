@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems
 {
@@ -84,8 +85,21 @@ namespace Palaso.WritingSystems
 
 				string type = subTagComponents[0].Split(' ')[1];
 				string subtag = subTagComponents[1].Split(' ')[1];
-				string description = subTagComponents[2].Split(' ')[1];
+				string description = SubTagComponentDescription(subTagComponents[2]);
 
+				/* Note: currently we are only using the first "Description:" line in each entry.
+				 * A few script entries contain multiple Description: lines, as in the example below:
+				 *
+				 * Type: script
+				 * Subtag: Deva
+				 * Description: Devanagari
+				 * Description: Nagari
+				 * Added: 2005-10-16
+				 *
+				 * In the future it may be necessary to build a separate iana script entry collection
+				 * that contains duplicate script codes, for the purposes of including all possible
+				 * script Descriptions.
+				 */
 				switch (type)
 				{
 					case "language":
@@ -114,6 +128,19 @@ namespace Palaso.WritingSystems
 			ValidIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
 			ValidIso3166Regions.Sort(IanaSubtag.CompareByDescription);
 			ValidRegisteredVariants.Sort(IanaSubtag.CompareByDescription);
+		}
+
+		internal static string SubTagComponentDescription(string component)
+		{
+			string description = component.Substring(component.IndexOf(" ") + 1);
+			description = Regex.Replace(description, @"\(alias for ", "(");
+			if (description[0] == '(')
+			{
+				// remove parens if the description begins with an open parenthesis
+				description = Regex.Replace(description, @"[\(\)]", "");
+			}
+			description = Regex.Replace(description, @"/", "|");
+			return description;
 		}
 
 		private static void CheckIfIanaSubtagFromFileHasExpectedForm(string[] subTagComponents)

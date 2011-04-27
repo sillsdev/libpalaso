@@ -22,8 +22,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			{
 				model.SelectionChanged += UpdateDisplayFromModel;
 			}
-			_scriptCombo.Items.AddRange(WritingSystemDefinition.ScriptOptions.ToArray());
+			_scriptCombo.Items.AddRange(StandardTags.ValidIso15924Scripts.ToArray());
 			_scriptCombo.DisplayMember = "Label";
+			_regionCombo.Items.AddRange(StandardTags.ValidIso3166Regions.ToArray());
+			_regionCombo.DisplayMember = "Description";
 		}
 
 		private void UpdateDisplayFromModel(object sender, EventArgs e)
@@ -31,7 +33,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			if (_model.CurrentDefinition != null)
 			{
 				_updatingFromModel = true;
-				_region.Text= _model.CurrentRegion;
+				_regionCombo.SelectedItem = _model.CurrentRegion;
 				_variant.Text=_model.CurrentVariant;
 				_scriptCombo.SelectedItem = _model.CurrentIso15924Script;
 				_updatingFromModel = false;
@@ -55,14 +57,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			_model.CurrentVariant=_variant.Text;
 		}
 
-		private void _region_TextChanged(object sender, EventArgs e)
-		{
-			if (_updatingFromModel)
-				return;
-			_model.CurrentRegion = _region.Text;
-		}
-
-		private void _scriptCombo_SelectedIndexChanged(object sender, EventArgs e)
+		private void ScriptCombo_OnSelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (_updatingFromModel)
 				return;
@@ -73,6 +68,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			else
 			{
 				_model.CurrentScriptCode = ((Iso15924Script) _scriptCombo.SelectedItem).Code;
+			}
+		}
+
+		private void RegionCombo_OnSelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_updatingFromModel)
+				return;
+			if (_regionCombo.SelectedItem == null)
+			{
+				_model.CurrentRegion = string.Empty;
+			}
+			else
+			{
+				_model.CurrentRegion = ((StandardTags.IanaSubtag)_regionCombo.SelectedItem).Subtag;
 			}
 		}
 

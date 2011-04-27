@@ -740,7 +740,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void CurrentScriptOptionReturnCorrectScript()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "", "", "", false);
-			Assert.AreEqual("Korean", _model.CurrentIso15924Script.Label);
+			Assert.AreEqual("Korean", _model.CurrentIso15924Script.ShortLabel());
 		}
 
 

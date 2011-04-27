@@ -15,12 +15,10 @@ namespace Palaso.WritingSystems
 			ISO3Code = iso3Code;
 		}
 
-		private string NameForSorting {
-			get {
-				return Regex.Replace(Name, @"[^\w]", "");
-			}
+		internal static string GetNameForSorting(string name)
+		{
+			return Regex.Replace(name, @"[^\w]", "");
 		}
-
 
 		public string Name { get; set; }
 
@@ -49,7 +47,7 @@ namespace Palaso.WritingSystems
 				}
 				else
 				{
-					return x.NameForSorting.CompareTo(y.NameForSorting);
+					return GetNameForSorting(x.Name).CompareTo(GetNameForSorting(y.Name));
 				}
 			}
 		}

@@ -656,7 +656,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if (!String.IsNullOrEmpty(writingSystem.Script))
 			{
-				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.Label);
+				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortLabel());
 			}
 
 			summary.AppendFormat(". ({0})", writingSystem.RFC5646);

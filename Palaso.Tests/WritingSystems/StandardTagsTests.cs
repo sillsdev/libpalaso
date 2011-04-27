@@ -32,6 +32,55 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void ValidIso15924Scripts_HasOldItalic_True()
+		{
+			var codes = StandardTags.ValidIso15924Scripts;
+			Assert.IsTrue(codes.Any(code => code.Label == "Old Italic (Etruscan, Oscan, etc.)"));
+		}
+
+		[Test]
+		public void SubTagComponentDescription_HasBeginningParenthesis_RemovesParens()
+		{
+			Assert.AreEqual(
+				"Hiragana + Katakana",
+				StandardTags.SubTagComponentDescription("Description: (Hiragana + Katakana)")
+			);
+		}
+
+		[Test]
+		public void SubTagComponentDescription_HasForwardSlash_ReplacesWithPipe()
+		{
+			Assert.AreEqual(
+				"=|Kx'au||'ein",
+				StandardTags.SubTagComponentDescription("Description: =/Kx'au//'ein")
+			);
+		}
+
+
+		[Test]
+		public void SubTagComponentDescription_HasAliasFor_RemovesAliasFor()
+		{
+			Assert.AreEqual(
+				"Japanese (Han + Hiragana + Katakana)",
+				StandardTags.SubTagComponentDescription("Description: Japanese (alias for Han + Hiragana + Katakana)")
+			);
+		}
+
+		[Test]
+		public void ValidIso15924Scripts_HasLatinFraktur_True()
+		{
+			var codes = StandardTags.ValidIso15924Scripts;
+			Assert.IsTrue(codes.Any(code => code.Label == "Latin (Fraktur variant)"));
+		}
+
+		[Test]
+		public void ValidIso15924Scripts_HasHiraganaKatakana_True()
+		{
+			var codes = StandardTags.ValidIso15924Scripts;
+			Assert.IsTrue(codes.Any(code => code.Label == "Hiragana + Katakana"));
+		}
+
+		[Test]
 		public void ValidIso15924Scripts_HasFonipa_False()
 		{
 			var codes = StandardTags.ValidIso15924Scripts;
