@@ -111,6 +111,7 @@
 	<Reference Include="System.Drawing.Design" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
+	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
