@@ -37,20 +37,21 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		}
 
 		/// ------------------------------------------------------------------------------------
-//		[Test]
-//		public void GetAutoCompleteNames_HasGatherer_ReturnsNames()
-//		{
-//			var gatherer = new Mock<AutoCompleteValueGatherer>(null, null, null);
-//			var lists = new Dictionary<string, IEnumerable<string>>();
-//			lists["person"] = new[] { "jimmy", "tommy" };
-//			gatherer.Setup(g => g.GetValueLists(false)).Returns(lists);
-//			_model = new ContributorsListControlViewModel(gatherer.Object, null);
-//
-//			var names = _model.GetAutoCompleteNames();
-//			Assert.AreEqual(2, names.Count);
-//			Assert.IsTrue(names.Contains("jimmy"));
-//			Assert.IsTrue(names.Contains("tommy"));
-//		}
+/* TODO fix (broke compilation on move from SayMore)
+  [Test]
+		public void GetAutoCompleteNames_HasGatherer_ReturnsNames()
+		{
+			var gatherer = new Mock<IAutoCompleteValueProvider>(null, null, null);
+			var lists = new Dictionary<string, IEnumerable<string>>();
+			lists["person"] = new[] { "jimmy", "tommy" };
+			gatherer.Setup(g => g.GetValueLists(false)).Returns(lists);
+			_model = new ContributorsListControlViewModel(gatherer.Object, null);
+
+			var names = _model.GetAutoCompleteNames();
+			Assert.AreEqual(2, names.Count);
+			Assert.IsTrue(names.Contains("jimmy"));
+			Assert.IsTrue(names.Contains("tommy"));
+		}*/
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
