@@ -463,6 +463,20 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SortUsingOtherLanguage_NullRules_DoesNotThrow()
+		{
+			// This is the current policy for 'OtherLanguage' which currently returns a SystemCollator.
+			// If SystemCollator can't determine the other langauge it uses Invariant very quietly.
+			// review: Is this the behaviour we want? CP 2011-04
+			var ws = new WritingSystemDefinition();
+			ws.SortUsingOtherLanguage("NotAValidLanguageCode");
+			var collator = ws.Collator;
+			int result1 = collator.Compare("b", "A");
+			int result2 = collator.Compare("b", "a");
+			Assert.AreEqual(result1, result2);
+		}
+
+		[Test]
 		public void SetIsVoice_SetToTrue_SetsScriptRegionAndVariantCorrectly()
 		{
 			var ws = new WritingSystemDefinition
