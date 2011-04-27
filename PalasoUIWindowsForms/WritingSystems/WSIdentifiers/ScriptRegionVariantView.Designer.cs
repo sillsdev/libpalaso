@@ -72,7 +72,7 @@
 			this._variant.Name = "_variant";
 			this._variant.Size = new System.Drawing.Size(161, 20);
 			this._variant.TabIndex = 7;
-			this._variant.TextChanged += new System.EventHandler(this._variant_TextChanged);
+			this._variant.Leave += new System.EventHandler(this.Variant_OnTextChanged);
 			//
 			// betterLabel3
 			//

@@ -48,6 +48,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return _model.WritingSystemSuggestor; }
 		}
 
+		public int LeftColumnWidth
+		{
+			get { return splitContainer2.SplitterDistance; }
+			set { splitContainer2.SplitterDistance = value; }
+		}
+
 		private void UpdateHeaders(object sender, EventArgs e)
 		{
 			if(_model.CurrentDefinition ==null)

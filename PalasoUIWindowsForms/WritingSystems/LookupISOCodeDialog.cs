@@ -46,7 +46,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void LookupISOCodeDialog_Load(object sender, EventArgs e)
 		{
-			_searchTimer.Enabled = true;
+			_searchTimer.Start();
 		}
 
 		private void listView1_DoubleClick(object sender, EventArgs e)
@@ -72,6 +72,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void _aboutLink639_1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			System.Diagnostics.Process.Start("http://www.infoterm.info/standardization/iso_639_1_2002.php");
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			_searchTimer.Stop();
+			base.OnClosed(e);
 		}
 
 		private void _searchTimer_Tick(object sender, EventArgs e)

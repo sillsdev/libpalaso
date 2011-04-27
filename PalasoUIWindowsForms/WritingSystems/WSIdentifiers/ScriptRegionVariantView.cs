@@ -47,14 +47,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public string ChoiceName
 		{
-			get { return "Script/Variant/Region"; }
+			get { return "Script/Region/Variant"; }
 		}
 
-		private void _variant_TextChanged(object sender, EventArgs e)
+		private void Variant_OnTextChanged(object sender, EventArgs e)
 		{
 			if (_updatingFromModel)
 				return;
 			_model.CurrentVariant=_variant.Text;
+			// update the display, since we may have changed the variant text
+			UpdateDisplayFromModel(null, null);
 		}
 
 		private void ScriptCombo_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -89,6 +91,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
+			if (_model != null && _model.CurrentDefinition != null)
+			{
+				_model.CurrentVariant = _model.CurrentDefinition.Variant;
+				_model.CurrentRegion = _model.CurrentDefinition.Region;
+				_model.CurrentScriptCode = _model.CurrentDefinition.Script;
+				_model.CurrentIsVoice = _model.CurrentDefinition.IsVoice;
+				_model.CurrentIpaStatus = _model.CurrentDefinition.IpaStatus;
+			}
 			UpdateDisplayFromModel(null, null);
 		}
 

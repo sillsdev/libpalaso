@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
@@ -21,6 +22,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_model.CurrentRegion = string.Empty;
 				_model.CurrentScriptCode = string.Empty;
 				_model.CurrentIsVoice = true;
+				_model.CurrentIpaStatus = IpaStatusChoices.NotIpa;
 			}
 		}
 		public string ChoiceName

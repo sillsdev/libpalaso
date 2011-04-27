@@ -6,9 +6,10 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Palaso.Code;
+using Palaso.Data;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
@@ -87,6 +88,49 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
 		}
+
+		internal static string ValidVariantString(string unknownString)
+		{
+			// var1-var2-var3
+			// var1-privateUse1-x-privateUse2
+			unknownString = unknownString.Trim();
+			unknownString = Regex.Replace(unknownString, @"[ ,.]", "-");
+			unknownString = Regex.Replace(unknownString, @"-+", "-");
+			var tokens = unknownString.Split('-');
+			var variants = new List<string>();
+			var privateUse = new List<string>();
+			bool haveSeenX = false;
+
+			foreach (var token in tokens)
+			{
+				if (token == "x")
+				{
+					haveSeenX = true;
+					continue;
+				}
+				if (!haveSeenX && StandardTags.IsValidRegisteredVariant(token))
+				{
+					variants.Add(token);
+				}
+				else
+				{
+					privateUse.Add(token);
+				}
+			}
+			string combinedVariant = String.Join("-", variants.ToArray());
+			string combinedPrivateUse = String.Join("-", privateUse.ToArray());
+			string variantString = combinedVariant;
+			if (!String.IsNullOrEmpty(combinedPrivateUse))
+			{
+				variantString = "x-" + combinedPrivateUse;
+				if (!String.IsNullOrEmpty(combinedVariant))
+				{
+					variantString = combinedVariant + "-" + variantString;
+				}
+			}
+			return variantString;
+		}
+
 
 		#region Properties
 		/// <summary>
@@ -630,13 +674,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return CurrentDefinition.Variant ?? string.Empty; }
 			set
 			{
+				string original = CurrentDefinition.Variant;
 				if (CurrentDefinition.Variant != value)
 				{
-					CurrentDefinition.Variant = value;
-					OnCurrentItemUpdated();
+					try
+					{
+						CurrentDefinition.Variant = ValidVariantString(value);
+						OnCurrentItemUpdated();
+					}
+					catch (Exception e)
+					{
+						CurrentDefinition.Variant = original;
+						MessageBox.Show(e.Message);
+					}
+
 				}
 			}
 		}
+
 
 		public string CurrentVerboseDescription
 		{
