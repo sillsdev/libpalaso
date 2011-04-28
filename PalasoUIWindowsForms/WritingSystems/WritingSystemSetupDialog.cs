@@ -12,7 +12,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public WritingSystemSetupDialog()
 		{
 			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore());
+			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository());
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
@@ -40,10 +40,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		public WritingSystemSetupDialog(string writingSystemStorePath)
+		public WritingSystemSetupDialog(string writingSystemRepositoryPath)
 		{
 			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
+			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository(writingSystemRepositoryPath));
 			_writingSystemSetupView.BindToModel(_model);
 		}
 

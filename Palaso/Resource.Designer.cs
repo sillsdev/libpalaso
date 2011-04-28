@@ -92,7 +92,7 @@ namespace Palaso {
 
 		/// <summary>
 		///   Looks up a localized string similar to #
-		///# ISO 15924 - Codes for the representation of names of scripts
+		///# ISO639 15924 - Codes for the representation of names of scripts
 		///#             Codes pour la représentation des noms d’écritures
 		///# Format:
 		///#             Code;N°;English Name;Nom français;PVA;Date
@@ -110,6 +110,34 @@ namespace Palaso {
 		internal static string scriptNames {
 			get {
 				return ResourceManager.GetString("scriptNames", resourceCulture);
+			}
+		}
+
+		/// <summary>
+		///   Looks up language subtags
+		///
+		/// Type: language
+		///Subtag: aa
+		///Description: Afar
+		///Added: 2005-10-16
+		///%%
+		///Type: language
+		///Subtag: ab
+		///Description: Abkhazian
+		///Added: 2005-10-16
+		///Suppress-Script: Cyrl
+		///%%
+		///Type: language
+		///Subtag: ae
+		///Description: Avestan
+		///Added: 2005-10-16
+		///%%
+		/// </summary>
+		internal static string IanaSubtags
+		{
+			get
+			{
+				return ResourceManager.GetString("ianaSubtagRegistry", resourceCulture);
 			}
 		}
 	}

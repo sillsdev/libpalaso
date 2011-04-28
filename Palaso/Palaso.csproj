@@ -121,9 +121,7 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
 	</None>
-	<None Include="Resources\scriptNames.txt" />
 	<None Include="Reporting\app.config" />
-	<None Include="Resources\languageCodes.txt" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Base32\Base32Convert.cs" />
@@ -143,6 +141,7 @@
 	<Compile Include="Data\ResultSet.cs" />
 	<Compile Include="Data\ResultSetCache.cs" />
 	<Compile Include="Data\ResultSetCacheManager.cs" />
+	<Compile Include="Data\ValidationException.cs" />
 	<Compile Include="Email\EmailMessage.cs" />
 	<Compile Include="Email\EmailProviderFactory.cs" />
 	<Compile Include="Email\IEmailMessage.cs" />
@@ -167,11 +166,14 @@
 	<Compile Include="Code\Guard.cs" />
 	<Compile Include="IO\FileLocator.cs" />
 	<Compile Include="Code\GuardAgainstReentry.cs" />
+	<Compile Include="Migration\DefaultVersion.cs" />
 	<Compile Include="Migration\DelegateMigrationStrategy.cs" />
+	<Compile Include="Migration\FolderMigrator.cs" />
 	<Compile Include="Migration\IMigrationStrategy.cs" />
 	<Compile Include="Migration\IFileVersion.cs" />
 	<Compile Include="Migration\MigrationStrategyBase.cs" />
-	<Compile Include="Migration\Migrator.cs" />
+	<Compile Include="Migration\FileMigrator.cs" />
+	<Compile Include="Migration\MigratorBase.cs" />
 	<Compile Include="Migration\XmlReaderWriterMigrationStrategy.cs" />
 	<Compile Include="Migration\XPathVersion.cs" />
 	<Compile Include="Migration\XslMigrationStrategy.cs" />
@@ -308,17 +310,31 @@
 	<Compile Include="WritingSystems\Collation\IcuRulesParser.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParser.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollator.cs" />
-	<Compile Include="WritingSystems\IWritingSystemStore.cs" />
+	<Compile Include="WritingSystems\Iso15924Script.cs" />
+	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
+	<Compile Include="WritingSystems\IWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\LdmlAdaptor.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollator.cs" />
-	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.cs" />
-	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.cs" />
+	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\LdmlInXmlWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
-	<Compile Include="WritingSystems\LdmlSharedWritingSystemCollection.cs" />
+	<Compile Include="WritingSystems\LdmlSharedWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV1.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlNodeComparerV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlVersion0MigrationStrategy.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetter.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
+	<Compile Include="WritingSystems\StandardTags.cs" />
+	<Compile Include="WritingSystems\StringContainsExtension.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
-	<Compile Include="WritingSystems\WritingSystemStoreBase.cs" />
+	<Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />
 	<Compile Include="Xml\CanonicalXmlSettings.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
@@ -368,6 +384,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
+	<Content Include="Resources\ianaSubtagRegistry.txt" />
 	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>

@@ -109,13 +109,13 @@ namespace Palaso.DictionaryServices.Tests.Merging
 			MergeTwoAndTest(
 				@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
 					<lexical-unit>
-						  <form lang='less'><text>fooLess</text></form>
-						   <form lang='more'><text>fooMore</text></form>
+						  <form lang='de'><text>fooLess</text></form>
+						   <form lang='pt'><text>fooMore</text></form>
 					</lexical-unit>
 				</entry>",
 				@"<entry GUID2 dateModified='2009-10-02T01:42:57Z'>
 					<lexical-unit>
-						   <form lang='more'><text>fooMore</text></form>
+						   <form lang='pt'><text>fooMore</text></form>
 					</lexical-unit>
 				</entry>",
 				() =>

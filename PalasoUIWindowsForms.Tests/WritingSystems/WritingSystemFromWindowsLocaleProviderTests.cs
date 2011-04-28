@@ -54,7 +54,7 @@ namespace PalasoUIWindowsForms.Tests
 //                new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
 //            foreach (WritingSystemDefinition language in provider.WritingSystems)
 //            {
-////                if (language.ISO == "eng")
+////                if (language.ISO639 == "eng")
 ////                {
 ////                    Assert.AreEqual("Latn",language.Script);
 ////                    Assert.AreEqual("en-Latn", language.RFC5646);

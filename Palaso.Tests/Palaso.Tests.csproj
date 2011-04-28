@@ -78,6 +78,7 @@
 	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -98,7 +99,8 @@
 	<Compile Include="IO\FileLocatorTests.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
 	<Compile Include="IO\FolderUtilsTests.cs" />
-	<Compile Include="Migration\MigratorTests.cs" />
+	<Compile Include="Migration\DefaultVersionTests.cs" />
+	<Compile Include="Migration\FileMigratorTests.cs" />
 	<Compile Include="Migration\XmlReaderWriterMigratorTests.cs" />
 	<Compile Include="Migration\XPathVersionTests.cs" />
 	<Compile Include="Migration\XslMigratorTests.cs" />
@@ -136,14 +138,19 @@
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\Collation\SortingTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
+	<Compile Include="WritingSystems\Migration\LdmlContentForTests.cs" />
+	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
-	<Compile Include="WritingSystems\WritingSystemDefinition.Variant.Tests.cs" />
-	<Compile Include="WritingSystems\IWritingSystemStore.Tests.cs" />
+	<Compile Include="WritingSystems\StandardTagsTests.cs" />
+	<Compile Include="WritingSystems\SubTagTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionVariantTests.cs" />
+	<Compile Include="WritingSystems\IWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlAdaptorTests.cs" />
-	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.Tests.cs" />
-	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.Tests.cs" />
+	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepositoryTests.cs" />
+	<Compile Include="WritingSystems\LdmlInStreamWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
-	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
   </ItemGroup>

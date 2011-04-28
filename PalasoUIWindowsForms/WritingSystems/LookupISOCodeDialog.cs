@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class LookupISOCodeDialog : Form
 	{
-		private WritingSystemDefinition.LanguageCode _selectedWritingSystem;
+		private Iso639LanguageCode _selectedWritingSystem;
 		private string _lastSearchedForText;
 		private LookupIsoCodeModel _model;
 		public LookupISOCodeDialog()
@@ -22,7 +22,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Close();
 		}
 
-		public WritingSystemDefinition.LanguageCode ISOCodeAndName
+		public Iso639LanguageCode ISOCodeAndName
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void LookupISOCodeDialog_Load(object sender, EventArgs e)
 		{
-			_searchTimer.Enabled = true;
+			_searchTimer.Start();
 		}
 
 		private void listView1_DoubleClick(object sender, EventArgs e)
@@ -65,13 +65,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (listView1.SelectedIndices != null && listView1.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = listView1.Items[listView1.SelectedIndices[0]];
-				_selectedWritingSystem = item.Tag as WritingSystemDefinition.LanguageCode;
+				_selectedWritingSystem = item.Tag as Iso639LanguageCode;
 			}
 		}
 
 		private void _aboutLink639_1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			System.Diagnostics.Process.Start("http://www.infoterm.info/standardization/iso_639_1_2002.php");
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			_searchTimer.Stop();
+			base.OnClosed(e);
 		}
 
 		private void _searchTimer_Tick(object sender, EventArgs e)
@@ -88,7 +94,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			listView1.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
 
-			foreach(WritingSystemDefinition.LanguageCode lang in _model.GetMatchingWritingSystems(typedText))
+			foreach(Iso639LanguageCode lang in _model.GetMatchingWritingSystems(typedText))
 			{
 					ListViewItem item = new ListViewItem(lang.Name);
 					item.SubItems.Add(lang.Code);

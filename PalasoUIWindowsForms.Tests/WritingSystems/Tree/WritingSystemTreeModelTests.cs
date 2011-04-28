@@ -14,15 +14,15 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 	[TestFixture]
 	public class WritingSystemTreeModelTests
 	{
-		private IWritingSystemStore _writingSystemStore;
+		private IWritingSystemRepository _writingSystemRepository;
 		private WritingSystemTreeModel _model;
 		private Mock<WritingSystemSetupModel> _mockSetupModel;
 
 		[SetUp]
 		public void Setup()
 		{
-			_writingSystemStore = new WritingSystemStoreBase();
-			_mockSetupModel = new Mock<WritingSystemSetupModel>(_writingSystemStore);
+			_writingSystemRepository = new WritingSystemRepositoryBase();
+			_mockSetupModel = new Mock<WritingSystemSetupModel>(_writingSystemRepository);
 			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model = new WritingSystemTreeModel(_mockSetupModel.Object);
 			_model.Suggestor = new WritingSystemSuggestor
@@ -48,8 +48,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		public void GetTopLevelItems_StoreIsEmptyButOtherLanguagesAreAvailable_GivesOtherLanguageChoiceHeader()
 		{
 			SetDefinitionsInStore(new WritingSystemDefinition[]{});
-			_model.Suggestor.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { new WritingSystemDefinition("xyz") });
-			AssertTreeNodeLabels("Add Language", "", "Other Languages", "+Add xyz");
+			_model.Suggestor.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { new WritingSystemDefinition("en") });
+			AssertTreeNodeLabels("Add Language", "", "Other Languages", "+Add English");
 		}
 
 		/// <summary>
@@ -58,13 +58,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotOfferToCreateItAgain()
 		{
-			var red = new WritingSystemDefinition("red");
-			var blue = new WritingSystemDefinition("blue");
-			var osBlue = blue.Clone();
-			var green = new WritingSystemDefinition("green");
-			_model.Suggestor.OtherKnownWritingSystems = new[]{blue, green};
-			SetDefinitionsInStore(new[] { red, blue });
-			AssertTreeNodeLabels("red", "blue","", "Add Language","", "Other Languages", "+Add green" /*notice, no blue*/);
+			var en = new WritingSystemDefinition("en");
+			var de = new WritingSystemDefinition("de");
+			var green = new WritingSystemDefinition("fr");
+			_model.Suggestor.OtherKnownWritingSystems = new[]{de, green};
+			SetDefinitionsInStore(new[] { en, de });
+			AssertTreeNodeLabels("English", "German","", "Add Language","", "Other Languages", "+Add French" /*notice, no de*/);
 
 	  }
 
@@ -72,11 +71,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotGiveLanguageChoiceHeader()
 		{
-			var red = new WritingSystemDefinition("red");
-			var blue = new WritingSystemDefinition("blue");
-			_model.Suggestor.OtherKnownWritingSystems = new[] { blue };
-			SetDefinitionsInStore(new[] { red, blue });
-			AssertTreeNodeLabels("red", "blue", "", "Add Language");
+			var en = new WritingSystemDefinition("en");
+			var de = new WritingSystemDefinition("de");
+			_model.Suggestor.OtherKnownWritingSystems = new[] { de };
+			SetDefinitionsInStore(new[] { en, de });
+			AssertTreeNodeLabels("English", "German", "", "Add Language");
 
 		}
 
@@ -133,10 +132,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_TwoLanguagesInStore_GivesBoth()
 		{
-			var xyz = new WritingSystemDefinition("xyz");
-			var abc = new WritingSystemDefinition("abc");
+			var xyz = new WritingSystemDefinition("en");
+			var abc = new WritingSystemDefinition("de");
 			SetDefinitionsInStore(new[] { abc, xyz });
-			AssertTreeNodeLabels( "abc", "xyz","", "Add Language");
+			AssertTreeNodeLabels( "German", "English","", "Add Language");
 		}
 
 		private void SetDefinitionsInStore(IEnumerable<WritingSystemDefinition> defs)
@@ -147,8 +146,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_OneLanguageIsChildOfAnother_GivesParentOnly()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,"fonipa",  "Edolo", "edo", false);
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,"fonipa", "edo", false);
 			SetDefinitionsInStore(new[] { etr,etrIpa });
 			_model.Suggestor.SuggestIpa=true;
 			AssertTreeNodeLabels("Edolo", "+Edolo (IPA)", "", "Add Language");
@@ -161,9 +160,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_ThreeVariantsAreSyblings_ListsAllUnderGroupHeading()
 		{
-			var thai = new WritingSystemDefinition("bii", "Thai", string.Empty, string.Empty, "Bisu", "bt", false);
-			var my = new WritingSystemDefinition("bii", "Mymr", string.Empty, string.Empty, "Bisu", "bm", false);
-			var latin = new WritingSystemDefinition("bii", "Latn", string.Empty, string.Empty, "Bisu", "bl", false);
+			var thai = new WritingSystemDefinition("bzi", "Thai", string.Empty, string.Empty, "bt", false);
+			var my = new WritingSystemDefinition("bzi", "Mymr", string.Empty, string.Empty, "bm", false);
+			var latin = new WritingSystemDefinition("bzi", "Latn", string.Empty, string.Empty, "bl", false);
 			SetDefinitionsInStore(new[] { thai, my, latin });
 			AssertTreeNodeLabels("Bisu", "+Bisu (Thai)", "+Bisu (Mymr)", "+Bisu (Latn)", "", "Add Language");
 		}
@@ -174,7 +173,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test]
 		public void GetTopLevelItems_UsesSuggestor()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
 			SetDefinitionsInStore(new WritingSystemDefinition[] {etr });
 			_model.Suggestor.SuggestIpa = true;
 			AssertTreeNodeLabels("Edolo", "+Add IPA writing system for Edolo", "", "Add Language");
@@ -201,7 +200,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 				  Add xyz     <-- we're clicking this one
 			 */
 
-			var def = new WritingSystemDefinition("xyz");
+			var def = new WritingSystemDefinition("en");
 			_model.Suggestor.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] { def });
 			var items = _model.GetTreeItems();
 			_mockSetupModel.Setup(m => m.AddPredefinedDefinition(def));
@@ -219,7 +218,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 				Add Language
 			 */
 
-			var def = new WritingSystemDefinition("xyz");
+			var def = new WritingSystemDefinition("en");
 			SetDefinitionsInStore(new WritingSystemDefinition[] { def });
 			var items = _model.GetTreeItems();
 			_mockSetupModel.Setup(m => m.SetCurrentDefinition(def));
