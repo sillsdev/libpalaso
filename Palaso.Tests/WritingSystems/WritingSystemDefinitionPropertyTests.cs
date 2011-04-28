@@ -212,8 +212,8 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ConsistsOnlyOfRfc5646PrivateUse_VariantIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variant = "x-etic";
-			Assert.AreEqual("x-etic", ws.Variant);
+			ws.Variant = "x-test";
+			Assert.AreEqual("x-test", ws.Variant);
 		}
 
 		[Test]
@@ -761,24 +761,56 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsXDashAudioAndFonipa_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
+		}
+
+		[Test]
+		public void Variant_ContainsXDashEticAndNotFonipaInVariant_Throws()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+		}
+
+		[Test]
+		public void Variant_ContainsXDashEmicAndNotFonipaInVariant_Throws()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
+		}
+
+		[Test]
+		public void Variant_ContainsXDashEticAndFonipaInPrivateUse_Throws()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
+		}
+
+		[Test]
+		public void Variant_ContainsXDashEmicAndAndFonipaInPrivateUse_Throws()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
 		}
 
 		[Test]
 		public void Variant_ContainsXDashAudioAndPhoneticMarker_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "etic"));
 		}
 
 		[Test]
 		public void Variant_ContainsXDashAudioAndPhonemicMarker_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.SetAllRfc5646LanguageTagComponents("", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
+			Assert.Throws<ArgumentException>(
+				() => ws.SetAllRfc5646LanguageTagComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "emic"));
 		}
 
 		[Test]

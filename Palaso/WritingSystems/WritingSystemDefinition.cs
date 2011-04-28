@@ -320,10 +320,18 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");
 			}
-			bool rfcTagHasAnyIpa = VariantSubTagIsIpaConform || Rfc5646TagIsPhonemicConform || Rfc5646TagIsPhoneticConform;
+			bool rfcTagHasAnyIpa = VariantSubTagIsIpaConform ||
+									_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag) ||
+									_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
 			if (VariantSubTagIsAudio && rfcTagHasAnyIpa)
 			{
 				throw new ArgumentException("A writing system may not be marked as audio and ipa at the same time.");
+			}
+			if((_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag)  ||
+				_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag)) &&
+				!VariantSubTagIsIpaConform)
+			{
+				throw new ArgumentException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
 			}
 		}
 
