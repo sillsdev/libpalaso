@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Palaso.Code;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -256,7 +257,11 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == null || value == Variant) { return; }
+				Guard.AgainstNull(value, "VariantValue");
+				if (value == Variant)
+				{
+					return;
+				}
 				// Note that the WritingSystemDefinition provides no direct support for private use except via Variant set.
 				string variant;
 				string privateUse;
@@ -365,7 +370,11 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == Region) { return; }
+				Guard.AgainstNull(value, "RegionValue");
+				if (value == Region)
+				{
+					return;
+				}
 				_rfcTag.Region = value;
 				Modified = true;
 			}
@@ -392,7 +401,11 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == ISO639) { return; }
+				Guard.AgainstNull(value, "LanguageISO639Value");
+				if (value == ISO639)
+				{
+					return;
+				}
 				_rfcTag.Language = value;
 				Modified = true;
 			}
@@ -418,6 +431,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				Guard.AgainstNull(value, "ScriptValue");
 				if (value == Script)
 				{
 					return;

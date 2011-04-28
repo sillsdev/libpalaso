@@ -643,9 +643,39 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Script_ScriptNull_Throws()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentNullException>(
+				() => ws.Script = null
+			);
+		}
+
+		[Test]
+		public void Variant_VariantNull_Throws()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.Throws<ArgumentNullException>(
+				() => ws.Variant = null
+			);
+		}
+
+		[Test]
+		public void Variant_ResetToEmptyString_ClearsVariant()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Variant = "Biske";
+			Assert.AreEqual("Biske", ws.Variant);
+			ws.Variant = "";
+			Assert.AreEqual("", ws.Variant);
+		}
+
+		[Test]
 		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
 		{
-			Assert.Throws<ArgumentException>(()=>new WritingSystemDefinition(){Variant = "duplicate-duplicate"});
+			Assert.Throws<ArgumentException>(
+				() => new WritingSystemDefinition {Variant = "duplicate-duplicate"}
+			);
 		}
 
 		[Test]
