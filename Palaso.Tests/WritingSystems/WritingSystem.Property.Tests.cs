@@ -37,6 +37,20 @@ namespace Palaso.Tests.WritingSystems
 //        }
 
 		[Test]
+		public void SettingFieldsToNullMakesEmpty()
+		{
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.Rfc5646Tag = new RFC5646Tag("en", "x-script", "x-region", "x-var");
+			Assert.AreEqual("x-var", ws.Variant);
+			ws.Script = null;
+			Assert.AreEqual("", ws.Script);
+			ws.Region = null;
+			Assert.AreEqual("", ws.Region);
+			ws.Variant = null;
+			Assert.AreEqual("", ws.Variant);
+		}
+
+		[Test]
 		public void DisplayLabel_OnlyHasLanguageName_UsesFirstPartOfLanguageName()
 		{
 			WritingSystemDefinition ws = new WritingSystemDefinition();

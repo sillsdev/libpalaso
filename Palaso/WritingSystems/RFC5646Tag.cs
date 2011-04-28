@@ -11,10 +11,10 @@ namespace Palaso.WritingSystems
 
 		public RFC5646Tag(string language, string script, string region, string variant)
 		{
-			_language = language;
-			_script = script;
-			_region = region;
-			_variant = variant;
+			Language = language;
+			Script = script;
+			Region = region;
+			Variant = variant;
 		}
 
 		///<summary>
@@ -53,25 +53,25 @@ namespace Palaso.WritingSystems
 		public string Language
 		{
 			get { return _language; }
-			set { _language = value; }
+			set { _language = value ?? ""; }
 		}
 
 		public string Script
 		{
 			get { return _script; }
-			set { _script = value; }
+			set { _script = value ?? ""; }
 		}
 
 		public string Region
 		{
 			get { return _region; }
-			set { _region = value; }
+			set { _region = value ?? ""; }
 		}
 
 		public string Variant
 		{
 			get { return _variant; }
-			set { _variant = value; }
+			set { _variant = value ?? ""; }
 		}
 
 		///<summary>

@@ -25,6 +25,24 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(invalidTag, RFC5646Tag.GetValidTag(validTag));
 		}
 
+		[Test]
+		public void RFCTagFieldsAreNeverNull()
+		{
+			RFC5646Tag emptyTag = new RFC5646Tag(null, null, null, null);
+			Assert.AreEqual("", emptyTag.Language);
+			Assert.AreEqual("", emptyTag.Script);
+			Assert.AreEqual("", emptyTag.Region);
+			Assert.AreEqual("", emptyTag.Variant);
+			emptyTag.Language = null;
+			emptyTag.Script = null;
+			emptyTag.Region = null;
+			emptyTag.Variant = null;
+			Assert.AreEqual("", emptyTag.Language);
+			Assert.AreEqual("", emptyTag.Script);
+			Assert.AreEqual("", emptyTag.Region);
+			Assert.AreEqual("", emptyTag.Variant);
+		}
+
 
 		[Test]
 		public void IsValid_LanguageCodeContainsxDashaudio_ReturnsFalse()

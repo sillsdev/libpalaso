@@ -330,7 +330,8 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == null || value == Variant)
+				value = value ?? "";
+				if (value == Variant)
 				{
 					return;
 				}
