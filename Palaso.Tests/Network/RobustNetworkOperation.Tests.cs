@@ -18,7 +18,7 @@ namespace Palaso.Tests.reporting
 		public void DoHttpGetAndGetProxyInfo()
 		{
 			string host, userName, password;
-			bool gotProxy = RobustNetworkOperation.DoHttpGetAndGetProxyInfo("http://hg.palaso.org/", out host, out userName, out password);
+			bool gotProxy = RobustNetworkOperation.DoHttpGetAndGetProxyInfo("http://hg.palaso.org/", out host, out userName, out password, s=>Debug.WriteLine(s));
 		}
 
 	}

@@ -94,6 +94,7 @@
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxTests.cs" />
+	<Compile Include="ImageToolbox\PalasoImageTests.cs" />
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />

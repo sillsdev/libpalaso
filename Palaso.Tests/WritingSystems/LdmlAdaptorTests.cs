@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Xml;
 using System.IO;
 using NUnit.Framework;
+using Palaso.IO;
 using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 using Palaso.Xml;

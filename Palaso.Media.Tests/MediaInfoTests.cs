@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Palaso.IO;
 using Palaso.Media.Tests.Properties;
-using Palaso.TestUtilities;
-
 
 namespace Palaso.Media.Tests
 {
@@ -111,7 +108,17 @@ namespace Palaso.Media.Tests
 			}
 		}
 
-		[Test]
+			[Test]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
+		public void AudioInfo_H4N24BitStereoBitDepth_Correct()
+		{
+			using (var file = TempFile.FromResource(Resources._24bitH4NSample, ".wav"))
+			{
+				var info = MediaInfo.GetInfo(file.Path);
+				Assert.AreEqual(24, info.Audio.BitDepth);
+			}
+		}
+	[Test]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void GetMediaInfo_AudioFile_VideoInfoAndImageInfoAreNull()
 		{

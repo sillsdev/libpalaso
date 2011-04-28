@@ -384,9 +384,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
+		[Ignore("This tests wether ldml writing systems are listed as possible sortlanguages. That feature is not implemented. Previously this test was ignored (back in 2008). Should the feature be implmented now?")]
 		public void SortLanuageOptions_DoesIncludeOtherWritingSystems()
 		{
-			Assert.Fail("This tests wether ldml writing systems are listed as possible sortlanguages. That feature is not implemented. Previously this test was ignored (back in 2008). Should the feature be implmented now?");
 			_model.AddNew();
 			_model.CurrentISO = "pt";
 			string key = _model.CurrentRFC4646;
@@ -676,15 +676,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.AddNew();
 			_model.CurrentScriptCode = "Cyrl";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
-		}
-
-		[Test]
-		public void SelectionForSpecialCombo_HasUnknownScript_GivesCustom()
-		{
-			Assert.Fail("This test is no longer valid. Due to RfcTag restrictions you may not set an invalid script tag. If the script is indeed a custom script you would choose one of the well defined private use script codes ie Qaaa. thus the expected result should now indeed be WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant or Qaaa should change the SelectionForCombo to Custom. Furthermore the UI does not actually allow 'Custom' as an option");
-			_model.AddNew();
-			_model.CurrentScriptCode = "";
-			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Custom, _model.SelectionForSpecialCombo);
 		}
 
 		[Test]

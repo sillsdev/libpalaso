@@ -111,6 +111,12 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ControlExtensions.cs" />
+	<Compile Include="FileSystem\ConfirmRecycleDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
+	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="HotSpot\HotSpot.cs" />
 	<Compile Include="HotSpot\HotSpotProvider.cs" />
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
@@ -136,6 +142,12 @@
 	<Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
 	  <DependentUpon>ThumbnailViewer.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\AcquireImageControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\AcquireImageControl.Designer.cs">
+	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
+	</Compile>
 	<Compile Include="ImageToolbox\ArtOfReadingChooser.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -149,29 +161,16 @@
 	<Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\GetImageFromFileSystemControl.Designer.cs">
-	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageCreditsControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageCreditsControl.Designer.cs">
-	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageLicenseControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageLicenseControl.Designer.cs">
-	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
-	</Compile>
 	<Compile Include="ImageToolbox\ImageMetadataControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageMetadataControl.Designer.cs">
 	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>ImageToolbox.settings</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
 	  <SubType>UserControl</SubType>
@@ -201,13 +200,7 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>SampleImages.resx</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\Scanner\DeviceAcquire.Designer.cs">
-	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\Scanner\ImageAcquisitionService.cs" />
+	<Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
 	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
 	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
@@ -260,6 +253,10 @@
 	</Compile>
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Widgets\Flying\Animator.cs" />
+	<Compile Include="Widgets\Flying\FlyingLabel.cs">
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs" />
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
@@ -389,9 +386,15 @@
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
+	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\AcquireImageControl.resx">
+	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
 	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
@@ -399,18 +402,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\GetImageFromFileSystemControl.resx">
-	  <DependentUpon>GetImageFromFileSystemControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageCreditsControl.resx">
-	  <DependentUpon>ImageCreditsControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageLicenseControl.resx">
-	  <DependentUpon>ImageLicenseControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
@@ -438,10 +429,6 @@
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\Scanner\DeviceAcquire.resx">
-	  <DependentUpon>DeviceAcquire.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
@@ -575,6 +562,11 @@
 	</BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+	<None Include="app.config" />
+	<None Include="ImageToolbox\ImageToolbox.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>ImageToolbox.Designer.cs</LastGenOutput>
+	</None>
 	<None Include="Resources\credits.png" />
   </ItemGroup>
   <ItemGroup>
@@ -612,6 +604,15 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\camera64x64.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\RecycleBin.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\DeleteMessageBoxButtonImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\DeleteMessageBoxImage.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

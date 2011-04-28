@@ -43,8 +43,6 @@
 	<DocumentationFile>..\output\Debug\Palaso.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
-	<NoWarn>
-	</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -119,9 +117,9 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
 	</None>
-	<None Include="Reporting\UsageMemory.settings">
+	<None Include="Reporting\ErrorReportSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>UsageMemory.Designer.cs</LastGenOutput>
+	  <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Reporting\app.config" />
   </ItemGroup>
@@ -161,6 +159,8 @@
 	<Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
 	<Compile Include="IO\FileUtils.cs" />
 	<Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
+	<Compile Include="IO\FolderUtils.cs" />
+	<Compile Include="IO\TempFile.cs" />
 	<Compile Include="Linq\MiscOperators.cs" />
 	<Compile Include="Code\Detect.cs" />
 	<Compile Include="Code\Guard.cs" />
@@ -210,8 +210,14 @@
 	<Compile Include="Progress\NullProgressState.cs" />
 	<Compile Include="Progress\ProgressState.cs" />
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
+	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
+	<Compile Include="Reporting\ErrorReportSettings.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>ErrorReportSettings.settings</DependentUpon>
+	</Compile>
 	<Compile Include="Reporting\ErrorReportTests.cs" />
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
@@ -231,11 +237,6 @@
 	</Compile>
 	<Compile Include="Reporting\UsageEmailDialog.cs">
 	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Reporting\UsageMemory.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>UsageMemory.settings</DependentUpon>
 	</Compile>
 	<Compile Include="Reporting\UsageReporter.cs" />
 	<Compile Include="Reporting\UserRegistrationDialog.cs">
