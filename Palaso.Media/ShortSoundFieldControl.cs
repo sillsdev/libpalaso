@@ -28,6 +28,25 @@ namespace Palaso.Media
 			get; set;
 		}
 
+		protected override void DestroyHandle()
+		{
+			base.DestroyHandle();
+			Shutdown();
+		}
+
+		private void Shutdown()
+		{
+			_timer.Tick -= new System.EventHandler(timer1_Tick);
+			_timer.Stop();
+		}
+
+		protected override void OnParentChanged(EventArgs e)
+		{
+			base.OnParentChanged(e);
+			if (Parent == null)
+				Shutdown();
+		}
+
 		public string Path
 		{
 			get { return _path; }
@@ -43,6 +62,8 @@ namespace Palaso.Media
 		private void UpdateScreen()
 		{
 			bool exists = File.Exists(Path);
+			if (Parent == null)
+				return; // somehow the timer is still ticking, though we are gone and done away with; don't crash
 			bool mouseIsWithin = Parent.RectangleToScreen(Bounds).Contains(MousePosition);
 
 			if(mouseIsWithin)
