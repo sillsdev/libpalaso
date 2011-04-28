@@ -12,7 +12,7 @@
 	<PropertyGroup>
 		<Solution>Palaso.sln</Solution>
 		<ApplicationName>PalasoLibrary</ApplicationName>
-		<Configuration>ReleaseMono</Configuration>
+		<Configuration>Release</Configuration>
 	</PropertyGroup>
 
 	<Import Project="$(RootDir)/build/build.common.proj" />

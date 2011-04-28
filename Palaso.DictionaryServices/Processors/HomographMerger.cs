@@ -16,12 +16,12 @@ namespace Palaso.DictionaryServices.Processors
 	{
 		public static void Merge(LiftLexEntryRepository repo, string writingSystemIdForMatching, IProgress progress)
 		{
-		   var alreadyProcessed = new List<RepositoryId>();
+			var alreadyProcessed = new List<RepositoryId>();
 
 			var ids = new List<RepositoryId>(repo.GetAllItems());
 			for (int i = 0; i < ids.Count; i++)
 			{
-				if(progress.CancelRequested)
+				if (progress.CancelRequested)
 				{
 					throw new OperationCanceledException("User cancelled");
 				}
@@ -30,12 +30,14 @@ namespace Palaso.DictionaryServices.Processors
 				alreadyProcessed.Add(ids[i]);
 				var entry = repo.GetItem(ids[i]);
 				var writingSystemForMatching = new WritingSystemDefinition(writingSystemIdForMatching);
-				var matches = repo.GetEntriesWithMatchingLexicalForm(entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching);
+				var matches =
+					repo.GetEntriesWithMatchingLexicalForm(
+						entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching);
 
 				//at this point we have entries which match along a single ws axis. We may or may not be able to merge them...
 
-				 var lexicalForm = entry.LexicalForm.GetExactAlternative(writingSystemForMatching.Id);
-				if(matches.Count > 1) //>1 becuase each will match itself
+				var lexicalForm = entry.LexicalForm.GetExactAlternative(writingSystemForMatching.Id);
+				if (matches.Count > 1) //>1 becuase each will match itself
 				{
 					progress.WriteMessageWithColor("gray", "Found {0} homograph(s) for {1}", matches.Count, lexicalForm);
 				}
@@ -43,7 +45,7 @@ namespace Palaso.DictionaryServices.Processors
 				foreach (RecordToken<LexEntry> incomingMatch in matches)
 				{
 					if (alreadyProcessed.Contains(incomingMatch.Id))
-						continue;//we'll be here at least as each element matches itself
+						continue; //we'll be here at least as each element matches itself
 
 					alreadyProcessed.Add(incomingMatch.Id);
 					if (EntryMerger.TryMergeEntries(entry, incomingMatch.RealObject, progress))
@@ -61,13 +63,51 @@ namespace Palaso.DictionaryServices.Processors
 					}
 					else
 					{
-						progress.WriteMessageWithColor("black", "Merged {0} homographs of {1}.", 1+mergeCount, lexicalForm);
+						progress.WriteMessageWithColor("black", "Merged {0} homographs of {1}.", 1 + mergeCount,
+													   lexicalForm);
 					}
-					progress.WriteMessage("");//blank line
+					progress.WriteMessage(""); //blank line
 				}
 
 			}
-		 }
+
+			MergeSensesWithinEntries(repo, progress);
+		}
+
+		/// <summary>
+		/// it can happen that within a single entry, you can have mergable senses.
+		///
+		/// NB!!!! this only thinks about merging the first 2 senses. (this was written as an emergency cleanup for a FLEx bug).
+		/// </summary>
+		private static void MergeSensesWithinEntries(LiftLexEntryRepository repo, IProgress progress)
+		{
+			var ids = new List<RepositoryId>(repo.GetAllItems());
+			for (int i = 0; i < ids.Count; i++)
+			{
+				if (progress.CancelRequested)
+				{
+					throw new OperationCanceledException("User cancelled");
+				}
+				var entry = repo.GetItem(ids[i]);
+				var senses = entry.Senses.ToArray();
+				if(senses.Length < 2)
+				{
+					continue;
+				}
+				var targetSense = senses[0];
+				var sense2 = senses[1];
+
+				{
+					if(SenseMerger.TryMergeSenseWithSomeExistingSense(targetSense, sense2, progress))
+					{
+						entry.Senses.Remove(sense2);
+						entry.IsDirty = true;
+						repo.SaveItem(entry);
+					}
+				}
+			}
+		}
+
 
 		private class Counter
 		{

@@ -66,5 +66,19 @@ namespace Palaso.UI.WindowsForms.Properties {
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
+
+		internal static System.Drawing.Bitmap DeleteMessageBoxButtonImage {
+			get {
+				object obj = ResourceManager.GetObject("DeleteMessageBoxButtonImage", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap RecycleBin {
+			get {
+				object obj = ResourceManager.GetObject("RecycleBin", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
 	}
 }

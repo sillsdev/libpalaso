@@ -153,7 +153,23 @@ namespace Palaso.Media
 
 			private void ExtractBitDepth(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, @", s(\d+),");
+
+				var match = Regex.Match(ffmpegOutput, @"pcm_s(\d+)");
+				if (match.Groups.Count == 2)
+				{
+					var value = match.Groups[1].Value;
+
+					//todo: find out if we will really get s16, s24, s96, etc.
+					int depth;
+					if (int.TryParse(value, out depth))
+					{
+						BitDepth = depth;
+						return;
+					}
+				}
+				//no pcm found, use the myserious "s24, s32" stuff, which may be misleading
+
+				 match = Regex.Match(ffmpegOutput, @", s(\d+),");
 				if (match.Groups.Count == 2)
 				{
 					var value = match.Groups[1].Value;

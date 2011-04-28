@@ -10,16 +10,33 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public partial class ArtOfReadingChooser : UserControl, IImageToolboxControl
 	{
-				private readonly IImageCollection _images;
+		private readonly IImageCollection _imageCollection;
 		private PalasoImage _previousImage;
 
-		public ArtOfReadingChooser(string searchWords)
+		public ArtOfReadingChooser()
 		{
-			_images =  ArtOfReadingImageCollection.FromStandardLocations();
 			InitializeComponent();
-			_searchTermsBox.Text = searchWords;
-			_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
+			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
+			if (_imageCollection == null)
+			{
+				label1.Visible= _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
+				_messageLabel.Visible = true;
+				_messageLabel.Text = "The Art Of Reading collection was not found on this computer.";
+				_messageLabel.Text=@"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet. If you can find a copy of it, you can freely copy the images to this comptuer, according to its license. But you must only copy the images (which SIL owns), not the software (which is commercial). To do this, follow these steps:
+1) Create a folder named 'Art of Reading' at the root of your 'C:\' drive.
+2) Copy the 'Images' folder from the Art of Reading DVD into that folder.
+
+If you can't get a copy of Art Of Reading locally, you can purchase the DVD from www.ethnologue.com.";
+			}
+			else
+			{
+#if DEBUG
+				_searchTermsBox.Text = @"flower";
+#endif
+				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
+			}
 		}
+
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -38,15 +55,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				_thumbnailViewer.Clear();
 				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
 				{
-					IEnumerable<object> results = _images.GetMatchingPictures(_searchTermsBox.Text);
+					IEnumerable<object> results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text);
 					if (results.Count() == 0)
 					{
-						_notFoundLabel.Visible = true;
+						_messageLabel.Visible = true;
 					}
 					else
 					{
-						_notFoundLabel.Visible = false;
-						_thumbnailViewer.LoadItems(_images.GetPathsFromResults(results, true));
+						_messageLabel.Visible = false;
+						_thumbnailViewer.LoadItems(_imageCollection.GetPathsFromResults(results, true));
 					}
 				}
 
@@ -62,12 +79,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void PictureChooser_Load(object sender, EventArgs e)
 		{
-			_thumbnailViewer.CaptionMethod = _images.CaptionMethod;
+			_thumbnailViewer.CaptionMethod = _imageCollection.CaptionMethod;
 
 			if (_searchTermsBox.Text.Length > 0)
 				_searchButton_Click(this, null);
 		}
 		public string ChosenPath { get { return _thumbnailViewer.SelectedPath; } }
+
+		public bool HaveImageCollectionOnThisComputer
+		{
+			get { return _imageCollection != null; }
+		}
 
 
 		private void OnFormClosing(object sender, FormClosingEventArgs e)
@@ -88,9 +110,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				try
 				{
-					var pi = new PalasoImage();
-					pi.Image = Image.FromFile(ChosenPath);
-					return pi;
+					return PalasoImage.FromFile(ChosenPath);
 				}
 				catch (Exception error)
 				{
@@ -109,6 +129,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				_searchButton_Click(sender, null);
 			}
+		}
+
+		private void ArtOfReadingChooser_Load(object sender, EventArgs e)
+		{
+#if DEBUG
+			if (!HaveImageCollectionOnThisComputer)
+				return;
+			//when just testing, I just want to see some choices.
+			_searchTermsBox.Text = @"flower";
+			_searchButton_Click(this,null);
+#endif
+
 		}
 	}
 }

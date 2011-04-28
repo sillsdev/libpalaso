@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Processors;
+using Palaso.IO;
 using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 
@@ -17,7 +17,7 @@ namespace Palaso.DictionaryServices.Tests.Merging
 		[SetUp]
 		public void Setup()
 		{
-			_outputLift = new Palaso.TestUtilities.TempFile();
+			_outputLift = new TempFile();
 			_progress = new StringBuilderProgress();
 			_resultDom = new XmlDocument();
 		}
@@ -587,6 +587,61 @@ namespace Palaso.DictionaryServices.Tests.Merging
 						AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath(
 							"//entry[lexical-unit/form/text[text()='foo']]/sense[@id='senseId2']/gloss", 2);
 					});
+		}
+
+
+		/// <summary>
+		/// this one comes from the time that flex 7 had a bug where it duplicated your senses
+		/// </summary>
+		[Test]
+		public void Run_AlmostDuplicateSensesInSameEntry_Merged()
+		{
+			var contents =
+				@"<entry
+		dateCreated='2011-03-29T12:01:18Z'
+		dateModified='2011-04-01T03:35:57Z'
+		guid='6da9c2b4-165c-45cb-8779-4ae7a21598e0'
+		id='patintiyan_6da9c2b4-165c-45cb-8779-4ae7a21598e0'>
+		<lexical-unit>
+			<form
+				lang='bto'>
+				<text>patintiyan</text>
+			</form>
+		</lexical-unit>
+		<sense
+			id='5f137e66-238f-4bec-9cc5-3681f2487fc8'>
+			<grammatical-info
+				value='noun' />
+			<definition>
+				<form
+					lang='en'>
+					<text>wicker lamp</text>
+				</form>
+			</definition>
+			<trait
+				name='semantic-domain-ddp4'
+				value='5.1 Household equipment' />
+		</sense>
+		<trait
+			name='morph-type'
+			value='stem'></trait>
+		<sense
+			id='5f137e66-238f-4bec-9cc5-3681f2487fc8_5f137e66-238f-4bec-9cc5-3681f2487fc8'>
+			<definition>
+				<form
+					lang='en'>
+					<text>wicker lamp</text>
+				</form>
+			</definition>
+			<trait
+				name='semantic-domain-ddp4'
+				value='5.1 Household equipment'></trait>
+		</sense>
+	</entry>";
+
+			Run(contents);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/grammatical-info[@value='noun']", 1);
 		}
 
 		private void Run(string contents)

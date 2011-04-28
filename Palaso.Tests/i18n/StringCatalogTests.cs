@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using NUnit.Framework;
 using Palaso.i18n;
-using Palaso.TestUtilities;
+using Palaso.IO;
 
 namespace Palaso.Tests.i18n
 {

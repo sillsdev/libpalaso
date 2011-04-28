@@ -26,7 +26,11 @@ namespace Palaso.Email
 			{
 				mapi.AddAttachment(attachmentFilePath);
 			}
-			return mapi.SendMailDirect(message.Subject, message.Body);
+			//this one is better if it works (and it does for Microsoft emailers), but
+			//return mapi.SendMailDirect(message.Subject, message.Body);
+
+			//this one works for thunderbird, too. It opens a window rather than just sending:
+			return mapi.SendMailPopup(message.Subject, message.Body);
 		}
 	}
 }

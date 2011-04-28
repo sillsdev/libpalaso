@@ -112,6 +112,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 //            }
 
 		}
+
+		private void _abbreviation_TextChanged(object sender, EventArgs e)
+		{
+			var s = _abbreviation.Text.Trim();
+			if(s.Length > 0  && s!= _model.CurrentAbbreviation)
+			{
+				_model.CurrentAbbreviation = s;
+			}
+		}
 	}
 
 	public interface ISelectableIdentifierOptions

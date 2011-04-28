@@ -31,9 +31,10 @@ namespace Palaso.WritingSystems
 		string GetNewStoreIDWhenSet(WritingSystemDefinition ws);
 
 		/// <summary>
-		/// Obsolete: use Contains(id) instead
+		/// Returns true if a writing system with the given Store ID exists in the store
+		/// Contains is preferred
 		/// </summary>
-		[Obsolete("Deprecated: use Contains instead")]
+		[Obsolete("Use Contains instead")]
 		bool Exists(string identifier);
 
 		/// <summary>
