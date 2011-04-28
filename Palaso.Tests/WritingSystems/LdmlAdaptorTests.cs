@@ -153,5 +153,29 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
 			Assert.AreEqual("x-audio", ws.Rfc5646TagOnLoad.Variant.ToLower());
 		}
+
+		[Test]
+		//WS-33992
+		public void Read_LdmlContainsEmptyCollationElement_SortUsingIsSetToSameAsIfNoCollationElementExisted()
+		{
+			string ldmlWithEmptyCollationElement =
+				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations><collation></collation></collations><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
+			string ldmlwithNoCollationElement =
+				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
+
+			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
+			File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithEmptyCollationElement);
+			string pathToLdmlWithNoCollationElement = Path.GetTempFileName();
+			File.WriteAllText(pathToLdmlWithNoCollationElement, ldmlwithNoCollationElement);
+
+
+			var adaptor = new LdmlAdaptor();
+			var wsFromEmptyCollationElement = new WritingSystemDefinition();
+			adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromEmptyCollationElement);
+			var wsFromNoCollationElement = new WritingSystemDefinition();
+			adaptor.Read(pathToLdmlWithNoCollationElement, wsFromNoCollationElement);
+
+			Assert.AreEqual(wsFromNoCollationElement.SortUsing, wsFromEmptyCollationElement.SortUsing);
+		}
 	}
 }
