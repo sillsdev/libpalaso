@@ -104,6 +104,7 @@
 			this.Controls.Add(this.betterLabel4);
 			this.Name = "WSIdentifierView";
 			this.Size = new System.Drawing.Size(381, 229);
+			this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

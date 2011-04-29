@@ -122,6 +122,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 						parent.Children.Add(treeItem);
 					}
 				}
+
+				if (itemToUseForSuggestions.ISO639 == "qaa")
+				{
+					var treeItem = new WritingSystemRenameUnlistedLanguageTreeItem(item => _setupModel.RenameIsoCode(itemToUseForSuggestions));
+					parent.Children.Add(treeItem);
+				}
+
 				items.Add(parent);
 			}
 		}

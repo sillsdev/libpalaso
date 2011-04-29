@@ -10,6 +10,17 @@ namespace Palaso.Tests.WritingSystems
 	[TestFixture]
 	public class StandardTagsTests
 	{
+		private class TestEvironment : IDisposable
+		{
+			public TestEvironment()
+			{
+				// I guess we don't need this right now
+			}
+			public void Dispose()
+			{
+			}
+		}
+
 		[Test]
 		public void ValidIso639LanguageCodes_HasEnglish_True()
 		{
@@ -191,6 +202,18 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValidRegisteredVariant_en_ReturnsFalse()
 		{
 			Assert.IsFalse(StandardTags.IsValidRegisteredVariant("en"));
+		}
+
+		[Test]
+		public void IsValidIso639LanguageCode_qaa_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsValidIso639LanguageCode("qaa"));
+		}
+
+		[Test]
+		public void ValidIso639LanguageCodes_DoesNotContainCodeRanges()
+		{
+			Assert.AreEqual(0, StandardTags.ValidIso639LanguageCodes.Where(iso639 => iso639.Code.Contains("..")).Count());
 		}
 	}
 }

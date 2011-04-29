@@ -64,7 +64,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			var dlg = new GetDialectNameDialog();
 			if (DialogResult.OK != dlg.ShowDialog())
 				return null;
-			TemplateDefinition.Variant += "-" + dlg.DialectName;
+			TemplateDefinition.Variant = WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName);
 			return TemplateDefinition;
 		}
 	}

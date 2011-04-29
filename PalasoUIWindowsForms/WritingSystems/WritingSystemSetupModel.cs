@@ -6,11 +6,11 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Palaso.Code;
 using Palaso.Data;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
@@ -89,47 +89,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_usingRepository = false;
 		}
 
-		internal static string ValidVariantString(string unknownString)
-		{
-			// var1-var2-var3
-			// var1-privateUse1-x-privateUse2
-			unknownString = unknownString.Trim();
-			unknownString = Regex.Replace(unknownString, @"[ ,.]", "-");
-			unknownString = Regex.Replace(unknownString, @"-+", "-");
-			var tokens = unknownString.Split('-');
-			var variants = new List<string>();
-			var privateUse = new List<string>();
-			bool haveSeenX = false;
 
-			foreach (var token in tokens)
-			{
-				if (token == "x")
-				{
-					haveSeenX = true;
-					continue;
-				}
-				if (!haveSeenX && StandardTags.IsValidRegisteredVariant(token))
-				{
-					variants.Add(token);
-				}
-				else
-				{
-					privateUse.Add(token);
-				}
-			}
-			string combinedVariant = String.Join("-", variants.ToArray());
-			string combinedPrivateUse = String.Join("-", privateUse.ToArray());
-			string variantString = combinedVariant;
-			if (!String.IsNullOrEmpty(combinedPrivateUse))
-			{
-				variantString = "x-" + combinedPrivateUse;
-				if (!String.IsNullOrEmpty(combinedVariant))
-				{
-					variantString = combinedVariant + "-" + variantString;
-				}
-			}
-			return variantString;
-		}
 
 
 		#region Properties
@@ -679,10 +639,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					try
 					{
-						CurrentDefinition.Variant = ValidVariantString(value);
+						CurrentDefinition.Variant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
 						OnCurrentItemUpdated();
 					}
-					catch (Exception e)
+					catch (ArgumentException e)
 					{
 						CurrentDefinition.Variant = original;
 						MessageBox.Show(e.Message);
@@ -1006,6 +966,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if(ws==null)//cancelled
 				return;
+
+			if (ws.Abbreviation == "qaa") // special case for Unlisted Language
+			{
+				ws.Abbreviation = UnlistedLanguageView.DefaultAbbreviation;
+			}
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1212,6 +1177,26 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			WritingSystemDefinitions.Add(definition);
 			OnAddOrDelete();
 			CurrentDefinition = definition;
+		}
+
+		internal void RenameIsoCode(WritingSystemDefinition ws)
+		{
+			WritingSystemDefinition newWs = null;
+			if (!_usingRepository)
+			{
+				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+			}
+			if (MethodToShowUiToBootstrapNewDefinition != null)
+			{
+				 newWs = MethodToShowUiToBootstrapNewDefinition();
+			}
+			if (newWs == null) //cancelled
+				return;
+
+			ws.ISO639 = newWs.ISO639;
+			ws.LanguageName = newWs.LanguageName;
+			OnCurrentItemUpdated();
+			//CurrentDefinition.ISO639 = newWs.ISO639;
 		}
 	}
 }

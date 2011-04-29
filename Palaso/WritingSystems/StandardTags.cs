@@ -68,9 +68,6 @@ namespace Palaso.WritingSystems
 
 		private static void LoadIanaSubtags()
 		{
-			// To help people find Latin as a script tag
-			ValidIso15924Scripts.Add(new Iso15924Script("Roman (Latin)", "Latn"));
-
 			string[] ianaSubtagsAsStrings = Resource.IanaSubtags.Split(new[] { "%%" }, StringSplitOptions.None);
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
@@ -86,6 +83,11 @@ namespace Palaso.WritingSystems
 				string type = subTagComponents[0].Split(' ')[1];
 				string subtag = subTagComponents[1].Split(' ')[1];
 				string description = SubTagComponentDescription(subTagComponents[2]);
+
+				if (subtag.Contains("..")) // do not add private use subtags to the list
+				{
+					continue;
+				}
 
 				/* Note: currently we are only using the first "Description:" line in each entry.
 				 * A few script entries contain multiple Description: lines, as in the example below:
@@ -103,6 +105,7 @@ namespace Palaso.WritingSystems
 				switch (type)
 				{
 					case "language":
+
 						ValidIso639LanguageCodes.Add(
 							new Iso639LanguageCode(subtag, description, String.Empty)
 							);
@@ -124,10 +127,17 @@ namespace Palaso.WritingSystems
 						break;
 				}
 			}
+
+			// Add Unlisted Language
+			ValidIso639LanguageCodes.Add(new Iso639LanguageCode("qaa", "Unlisted Language", String.Empty));
+
 			ValidIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
 			ValidIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
 			ValidIso3166Regions.Sort(IanaSubtag.CompareByDescription);
 			ValidRegisteredVariants.Sort(IanaSubtag.CompareByDescription);
+
+			// To help people find Latin as a script tag
+			ValidIso15924Scripts.Insert(0, new Iso15924Script("Roman (Latin)", "Latn"));
 		}
 
 		internal static string SubTagComponentDescription(string component)

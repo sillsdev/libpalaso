@@ -69,7 +69,26 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			}
 			else
 			{
-				_model.CurrentScriptCode = ((Iso15924Script) _scriptCombo.SelectedItem).Code;
+				string originalCode = _model.CurrentScriptCode;
+				string originalLabel = ((Iso15924Script) _scriptCombo.SelectedItem).Label;
+				try
+				{
+					_model.CurrentScriptCode = ((Iso15924Script)_scriptCombo.SelectedItem).Code;
+				}
+				catch (ArgumentException error)
+				{
+					if (originalCode == "Zxxx")
+					{
+						MessageBox.Show("This Voice writing system's script cannot be changed.");
+					}
+					else
+					{
+						MessageBox.Show(error.Message);
+					}
+					_model.CurrentScriptCode = originalCode;
+					UpdateDisplayFromModel(null, null);
+				}
+
 			}
 		}
 
