@@ -273,16 +273,17 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			XmlReaderSettings readerSettings = new XmlReaderSettings();
 			readerSettings.CloseInput = true;
 			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
-			string rulesTypeAsString = string.Empty;
-			WritingSystemDefinitionV0.SortRulesType rulesType = WritingSystemDefinitionV0.SortRulesType.OtherLanguage;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
 				if (FindElement(collationReader, "special"))
 				{
 					collationReader.Read();
-					rulesTypeAsString = GetSpecialValue(collationReader, "palaso", "sortRulesType");
+					string rulesTypeAsString = GetSpecialValue(collationReader, "palaso", "sortRulesType");
+					if (!String.IsNullOrEmpty(rulesTypeAsString))
+					{
+						ws.SortUsing = (WritingSystemDefinitionV0.SortRulesType)Enum.Parse(typeof(WritingSystemDefinitionV0.SortRulesType), rulesTypeAsString);
+					}
 				}
-				ws.SortUsing = (WritingSystemDefinitionV0.SortRulesType)Enum.Parse(typeof(WritingSystemDefinitionV0.SortRulesType), rulesTypeAsString);
 			}
 			switch (ws.SortUsing)
 			{
@@ -294,6 +295,8 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					break;
 				case WritingSystemDefinitionV0.SortRulesType.CustomICU:
 					ReadCollationRulesForCustomICU(collationXml, ws);
+					break;
+				case WritingSystemDefinitionV0.SortRulesType.DefaultOrdering:
 					break;
 				default:
 					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
