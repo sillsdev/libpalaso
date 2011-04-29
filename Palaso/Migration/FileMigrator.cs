@@ -4,63 +4,24 @@ using System.IO;
 
 namespace Palaso.Migration
 {
-	public class Migrator
+	public class FileMigrator : MigratorBase
 	{
-		private readonly List<IMigrationStrategy> _migrationStrategies;
-		private readonly List<IFileVersion> _versionStrategies;
-		private readonly int _codeVersion;
-		private IEnumerable<IMigrationStrategy> MigrationStrategies { get { return _migrationStrategies; } }
-
-		private class VersionComparerDescending : IComparer<IFileVersion>
-		{
-			public int Compare(IFileVersion x, IFileVersion y)
-			{
-				if (x.StrategyGoodToVersion == y.StrategyGoodToVersion)
-					return 0;
-				if (x.StrategyGoodToVersion < y.StrategyGoodToVersion)
-					return 1;
-				return -1;
-			}
-		}
-
-		public Migrator(int codeVersion, string sourceFilePath)
+		public FileMigrator(int versionToMigrateTo, string sourceFilePath) :
+			base(versionToMigrateTo)
 		{
 			SourceFilePath = sourceFilePath;
-			_codeVersion = codeVersion;
-			_migrationStrategies = new List<IMigrationStrategy>();
-			_versionStrategies = new List<IFileVersion>();
 		}
 
 		public string SourceFilePath { get; private set; }
 
-		public void AddVersionStrategy(IFileVersion strategy)
-		{
-			_versionStrategies.Add(strategy);
-		}
-
-		public void AddMigrationStrategy(IMigrationStrategy strategy)
-		{
-			_migrationStrategies.Add(strategy);
-		}
-
 		public int GetFileVersion()
 		{
-			int result = -1;
-			_versionStrategies.Sort(new VersionComparerDescending());
-			foreach (IFileVersion strategy in _versionStrategies)
-			{
-				result = strategy.GetFileVersion(SourceFilePath);
-				if (result >= 0)
-				{
-					break;
-				}
-			}
-			return result;
+			return GetFileVersion(SourceFilePath);
 		}
 
 		public bool NeedsMigration()
 		{
-			return GetFileVersion() != _codeVersion;
+			return NeedsMigration(SourceFilePath);
 		}
 
 		public string BackupFilePath
@@ -80,7 +41,7 @@ namespace Palaso.Migration
 			int currentVersion = GetFileVersion();
 			string sourceFilePath = SourceFilePath;
 			string destinationFilePath = "";
-			while (currentVersion != _codeVersion)
+			while (currentVersion != ToVersion)
 			{
 				IMigrationStrategy strategy = _migrationStrategies.Find(s => s.FromVersion == currentVersion);
 				if (strategy == null)
@@ -105,6 +66,5 @@ namespace Palaso.Migration
 				}
 			}
 		}
-
 	}
 }

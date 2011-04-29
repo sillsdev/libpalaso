@@ -67,8 +67,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				WritingSystemDefinition def =
 
-					new WritingSystemDefinition(language.Culture.TwoLetterISOLanguageName, "", region, "",
-												name, language.Culture.ThreeLetterISOLanguageName,
+					new WritingSystemDefinition(language.Culture.TwoLetterISOLanguageName, "", region, "", language.Culture.ThreeLetterISOLanguageName,
 												language.Culture.TextInfo.IsRightToLeft);
 				def.NativeName = language.Culture.NativeName;
 				def.Keyboard = language.LayoutName;

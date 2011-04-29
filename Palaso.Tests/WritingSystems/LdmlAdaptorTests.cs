@@ -19,7 +19,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetUp()
 		{
 			_adaptor = new LdmlAdaptor();
-			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "English", "eng", false);
+			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false);
 		}
 
 		[Test]
@@ -90,14 +90,11 @@ namespace Palaso.Tests.WritingSystems
 		public void ExistingUnusedLdml_Write_PreservesData()
 		{
 			var sw = new StringWriter();
-			var ws = new WritingSystemDefinition("xxx");
+			var ws = new WritingSystemDefinition("en");
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
 			_adaptor.Write(writer, ws, XmlReader.Create(new StringReader("<ldml><!--Comment--><dates/><special>hey</special></ldml>")));
 			writer.Close();
-			string s = CanonicalXml.ToCanonicalString(
-				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"xxx\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special>hey</special></ldml>"
-			);
-			Assert.AreEqual(s, sw.ToString());
+			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
 		[Test]
@@ -120,46 +117,15 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
 		}
 
-		[Test]
-		public void Read_LdmlContainsWellDefinedFaultyIsoThatDescribesAudioWritingSystem_RFC5646FieldsAreCorrected()
-		{
-			string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"tpi-Zxxx-x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
-			string pathToLdmlFile = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlFile, ldml);
-
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Read(pathToLdmlFile,ws);
-			Assert.AreEqual("tpi", ws.ISO639);
-			Assert.AreEqual("Zxxx", ws.Script);
-			Assert.AreEqual("x-audio", ws.Variant.ToLower());
-		}
-
-		[Test]
-		public void Read_LdmlContainsWellDefinedFaultyIsoThatDescribesAudioWritingSystem_OldRfcTagFieldIsSetCorrectly()
-		{
-			string ldml = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"lwl-east\" /><script type=\"Script\" /><territory type=\"overtherainbow\" /><variant type=\"x-audio\" /></identity><dates /><collations /><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
-			string pathToLdmlFile = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlFile, ldml);
-
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			LdmlAdaptor adaptor = new LdmlAdaptor();
-			adaptor.Read(pathToLdmlFile, ws);
-			Assert.AreEqual("lwl-Zxxx-overtherainbow-x-AUDIO", ws.RFC5646);
-			Assert.AreEqual("lwl-east", ws.Rfc5646TagOnLoad.Language);
-			Assert.AreEqual("Script", ws.Rfc5646TagOnLoad.Script);
-			Assert.AreEqual("overtherainbow", ws.Rfc5646TagOnLoad.Region);
-			Assert.AreEqual("x-audio", ws.Rfc5646TagOnLoad.Variant.ToLower());
-		}
 
 		[Test]
 		//WS-33992
 		public void Read_LdmlContainsEmptyCollationElement_SortUsingIsSetToSameAsIfNoCollationElementExisted()
 		{
 			string ldmlWithEmptyCollationElement =
-				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations><collation></collation></collations><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
+				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations><collation></collation></collations><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"1\" /></special></ldml>";
 			string ldmlwithNoCollationElement =
-				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" /><special></special></ldml>";
+				"<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"1\" /></special></ldml>";
 
 			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
 			File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithEmptyCollationElement);

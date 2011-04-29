@@ -48,6 +48,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return _model.WritingSystemSuggestor; }
 		}
 
+		public int LeftColumnWidth
+		{
+			get { return splitContainer2.SplitterDistance; }
+			set { splitContainer2.SplitterDistance = value; }
+		}
+
 		private void UpdateHeaders(object sender, EventArgs e)
 		{
 			if(_model.CurrentDefinition ==null)
@@ -68,7 +74,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			dlg.ShowDialog();
 			if(dlg.DialogResult!=DialogResult.OK)
 				return null;
-			return new WritingSystemDefinition(dlg.ISOCode, string.Empty,string.Empty,string.Empty, dlg.ISOCodeAndName.Name, dlg.ISOCode,false);
+			return new WritingSystemDefinition(dlg.ISOCode, string.Empty,string.Empty,string.Empty, dlg.ISOCode,false);
 		}
 
 		private void _propertiesTabControl_Load(object sender, EventArgs e)

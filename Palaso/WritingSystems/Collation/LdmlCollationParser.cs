@@ -28,20 +28,20 @@ namespace Palaso.WritingSystems.Collation
 			int variableTopPositionIfNotUsed = 0;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
-				if (XmlHelpers.FindElement(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuSettingsFromSettingsNode(collationReader, out variableTop);
 					variableTopPositionIfNotUsed = icuRules.Length;
 				}
-				if (XmlHelpers.FindElement(collationReader, "suppress_contractions", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "suppress_contractions", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuOptionFromNode(collationReader);
 				}
-				if (XmlHelpers.FindElement(collationReader, "optimize", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "optimize", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuOptionFromNode(collationReader);
 				}
-				if (XmlHelpers.FindElement(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuRulesFromRulesNode(collationReader, ref variableTop);
 				}
@@ -78,11 +78,11 @@ namespace Palaso.WritingSystems.Collation
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
 				// simple rules can't deal with any non-default settings
-				if (XmlHelpers.FindElement(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
 				{
 					return false;
 				}
-				if (!XmlHelpers.FindElement(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
+				if (!XmlHelpers.FindNextElementInSequence(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
 				{
 					rules = string.Empty;
 					return true;

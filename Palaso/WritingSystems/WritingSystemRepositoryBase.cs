@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Palaso.Code;
 
 namespace Palaso.WritingSystems
 {
-	public class WritingSystemStoreBase : IWritingSystemStore
+	public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
@@ -12,19 +13,17 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		public WritingSystemStoreBase()
+		public WritingSystemRepositoryBase()
 		{
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-			//_sharedStore = LdmlSharedWritingSystemCollection.Singleton;
+			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
 		}
 
+		[Obsolete("Deprecated: use AllWritingSystems instead")]
 		public IEnumerable<WritingSystemDefinition> WritingSystemDefinitions
 		{
-			get
-			{
-				return _writingSystems.Values;
-			}
+			get { return AllWritingSystems; }
 		}
 
 		protected IDictionary<string, DateTime> WritingSystemsToIgnore
@@ -38,9 +37,6 @@ namespace Palaso.WritingSystems
 		virtual public WritingSystemDefinition CreateNew()
 		{
 			var retval = new WritingSystemDefinition();
-
-			//!!! TODO: Add to shared
-
 			return retval;
 		}
 
@@ -93,15 +89,15 @@ namespace Palaso.WritingSystems
 			return definition.Clone();
 		}
 
-		public bool Contains(string identifier)
-		{
-			return _writingSystems.ContainsKey(identifier);
-		}
-
-		[Obsolete("Use Contains instead")]
+		[Obsolete("Deprecated: use Contains instead")]
 		public bool Exists(string identifier)
 		{
 			return Contains(identifier);
+		}
+
+		public bool Contains(string identifier)
+		{
+			return _writingSystems.ContainsKey(identifier);
 		}
 
 		public virtual void Set(WritingSystemDefinition ws)
@@ -204,5 +200,33 @@ namespace Palaso.WritingSystems
 			return newerWritingSystems;
 		}
 
+		public IEnumerable<WritingSystemDefinition> AllWritingSystems
+		{
+			get
+			{
+				return _writingSystems.Values;
+			}
+		}
+
+		public IEnumerable<WritingSystemDefinition> TextWritingSystems
+		{
+			get { return _writingSystems.Values.Where(ws => !ws.IsVoice); }
+		}
+
+		public IEnumerable<WritingSystemDefinition> VoiceWritingSystems
+		{
+			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
+		}
+
+		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		{
+			_writingSystems[ws.Id] = ws;
+			_writingSystems.Remove(oldId);
+		}
+
+		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
+		{
+			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
+		}
 	}
 }

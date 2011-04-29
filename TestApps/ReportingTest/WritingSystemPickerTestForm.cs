@@ -13,13 +13,13 @@ namespace TestApp
 	public partial class WritingSystemPickerTestForm : Form
 	{
 		private WritingSystemSetupModel _wsModel;
-		private IWritingSystemStore _store;
+		private IWritingSystemRepository _repository;
 		public WritingSystemPickerTestForm()
 		{
 			InitializeComponent();
 
-			_store = new LdmlInFolderWritingSystemStore();
-			_wsModel = new WritingSystemSetupModel(_store);
+			_repository = new LdmlInFolderWritingSystemRepository();
+			_wsModel = new WritingSystemSetupModel(_repository);
 			_wsModel.SelectionChanged += new EventHandler(_wsModel_SelectionChanged);
 			this.wsPickerUsingListView1.BindToModel(_wsModel);
 			this.pickerUsingComboBox1.BindToModel(_wsModel);

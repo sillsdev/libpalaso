@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Palaso.WritingSystems
 {
-	public interface IWritingSystemStore
+	public interface IWritingSystemRepository
 	{
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about
@@ -31,15 +32,15 @@ namespace Palaso.WritingSystems
 
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
-		/// </summary>
-		bool Contains(string identifier);
-
-		/// <summary>
-		/// Returns true if a writing system with the given Store ID exists in the store
 		/// Contains is preferred
 		/// </summary>
 		[Obsolete("Use Contains instead")]
 		bool Exists(string identifier);
+
+		/// <summary>
+		/// Returns true if a writing system with the given Store ID exists in the store
+		/// </summary>
+		bool Contains(string identifier);
 
 		/// <summary>
 		/// Gives the total number of writing systems in the store
@@ -60,8 +61,23 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Returns a list of all writing system definitions in the store.
 		/// </summary>
+		[Obsolete("Deprecated: use AllWritingSystems instead")]
 		IEnumerable<WritingSystemDefinition> WritingSystemDefinitions { get; }
 
+		/// <summary>
+		/// Returns a list of all writing system definitions in the store.
+		/// </summary>
+		IEnumerable<WritingSystemDefinition> AllWritingSystems { get; }
+
+		/// <summary>
+		/// Returns a list of *text* writing systems in the store
+		/// </summary>
+		IEnumerable<WritingSystemDefinition> TextWritingSystems { get; }
+
+		/// <summary>
+		/// Returns a list of *audio* writing systems in the store
+		/// </summary>
+		IEnumerable<WritingSystemDefinition> VoiceWritingSystems { get; }
 		/// <summary>
 		/// Makes a duplicate of an existing writing system definition.  Set will need
 		/// to be called with this new duplicate once identifying information has been changed
@@ -81,5 +97,13 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		// TODO: Maybe this should be IEnumerable<string> .... which returns the identifiers.
 		IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs);
+
+
+		/// <summary>
+		/// Event Handler that updates the store when a writing system id has changed
+		/// </summary>
+		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId);
+
+		IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter);
 	}
 }

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
+using System.Linq;
+using Palaso.Code;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -35,12 +36,17 @@ namespace Palaso.WritingSystems
 			OtherLanguage
 		}
 
-		private RFC5646Tag _rfcTag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty);
+		//This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
+		//This should not be confused with the version of the locale data contained in this writing system.
+		//That information is stored in the "VersionNumber" property.
+		public const int LatestWritingSystemDefinitionVersion = 1;
+
+		private RFC5646Tag _rfcTag;
 
 		private string _languageName;
 
 		private string _abbreviation;
-		private bool _isLegacyEncoded;
+		private bool _isUnicodeEncoded;
 
 		private string _versionNumber;
 		private string _versionDescription;
@@ -58,46 +64,30 @@ namespace Palaso.WritingSystems
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
-		private RFC5646Tag _rfcTagOnLoad;
-
-		/// <summary>
-		/// singleton
-		/// </summary>
-		private static List<ScriptOption> _scriptOptions = new List<ScriptOption>();
-	   /// <summary>
-		/// singleton
-		/// </summary>
-		private static List<LanguageCode> _languageCodes;
-
-		/// <summary>
-		/// For overriding the other identifier fields, to specify a custom RFC5646
-		/// </summary>
-		//private string _customLanguageTag;
-
 
 		public WritingSystemDefinition()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
-			_isLegacyEncoded = false;
-		   // _defaultFontSize = 10; //arbitrary
+			_isUnicodeEncoded = true;
+			_rfcTag = new RFC5646Tag();
 		}
 
-		public WritingSystemDefinition(string iso)
+		public WritingSystemDefinition(string language)
 			: this()
 		{
-			_rfcTag.Language = iso;
+			_rfcTag.Language = language;
 			_abbreviation = _rfcTag.Script = _languageName = _rfcTag.Variant = _rfcTag.Region = _nativeName = string.Empty;
 		}
 
-		public WritingSystemDefinition(string iso, string script, string region, string variant, string languageName, string abbreviation, bool rightToLeftScript)
+		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
-			_rfcTag.Language = iso;
-			_rfcTag.Script = script;
-			_rfcTag.Region = region;
-			_rfcTag.Variant = variant;
+			string variantPart;
+			string privateUsePart;
+			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
+
 			_abbreviation = abbreviation;
-			_languageName = languageName;
 			_rightToLeftScript = rightToLeftScript;
 		}
 
@@ -106,7 +96,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		/// <param name="ws">The ws.</param>
 		public WritingSystemDefinition(WritingSystemDefinition ws)
-			: this(ws._rfcTag.Language, ws._rfcTag.Script, ws._rfcTag.Region, ws._rfcTag.Variant, ws._languageName, ws._abbreviation, ws._rightToLeftScript)
+			: this(ws._rfcTag.Language, ws._rfcTag.Script, ws._rfcTag.Region, ws._rfcTag.Variant, ws._abbreviation, ws._rightToLeftScript)
 		{
 			_defaultFontName = ws._defaultFontName;
 			_defaultFontSize = ws._defaultFontSize;
@@ -118,118 +108,26 @@ namespace Palaso.WritingSystems
 			_sortRules = ws._sortRules;
 			_spellCheckingId = ws._spellCheckingId;
 			_dateModified = ws._dateModified;
-			_isLegacyEncoded = ws._isLegacyEncoded;
-			_rfcTagOnLoad = ws._rfcTagOnLoad;
+			_isUnicodeEncoded = ws._isUnicodeEncoded;
+			_rfcTag = new RFC5646Tag(ws._rfcTag);
+			_languageName = ws._languageName;
 		}
 
 		/// <summary>
-		/// parse in the text of the script registry we get from http://unicode.org/iso15924/iso15924-text.html
+		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
 		/// </summary>
-		private static void LoadScriptOptionsIfNeeded()
-		{
-		  if (_scriptOptions.Count > 0)
-			  return;
-
-		  //this one isn't an official script: REVIEW: we're not using fonipa, whichis a VARIANT, not a script
-		  _scriptOptions.Add(new ScriptOption("IPA", "Zipa"));
-			//to help people find Latin
-		  _scriptOptions.Add(new ScriptOption("Roman (Latin)", "Latn"));
-
-			string[] scripts = Resource.scriptNames.Split('\n');
-			foreach (string line in scripts)
-			{
-				string tline = line.Trim();
-				if (tline.Length==0 || (tline.Length > 0 && tline[0]=='#'))
-					continue;
-				string[] fields = tline.Split(';');
-				string label = fields[2];
-
-				//these looks awful: "Korean (alias for Hangul + Han)"
-				// and "Japanese (alias for Han + Hiragana + Katakana"
-				if (label.IndexOf(" (alias") > -1)
-				{
-					label = label.Substring(0, fields[2].IndexOf(" (alias "));
-				}
-				_scriptOptions.Add(new ScriptOption(label, fields[0]));
-
-			}
-
-			_scriptOptions.Sort(ScriptOption.CompareScriptOptions);
-		}
-
-		/// <summary>
-		/// Provides a list of ISO language codes.  Uses ISO 639-1 and 639-3 where ISO 639-1 is not available.
-		/// </summary>
-		public static IList<LanguageCode> LanguageCodes
+		// TODO Move this to some other class that provides WritingSystemResources? Info?
+		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
 			get
 			{
-				if (_languageCodes != null)
-				{
-					return _languageCodes;
-				}
-				_languageCodes = new List<LanguageCode>();
-				string[] languages = Resource.languageCodes.Split('\n');
-				foreach (string line in languages)
-				{
-					if(line.Contains("Ref_Name"))//skip first line
-						continue;
-					string tline = line.Trim();
-					if (tline.Length == 0)
-						continue;
-					string[] fields = tline.Split('\t');
-					// use ISO 639-1 code where available, otherwise use ISO 639-3 code
-					_languageCodes.Add(new LanguageCode(String.IsNullOrEmpty(fields[3]) ? fields[0] : fields[3], fields[6], fields[0]));
-				}
-				_languageCodes.Sort(LanguageCode.CompareByName);
-				return _languageCodes;
+				return StandardTags.ValidIso639LanguageCodes;
 			}
 		}
 
-		public class LanguageCode
-		{
-			public LanguageCode(string code, string name, string iso3Code)
-			{
-				Code = code;
-				Name = name;
-				ISO3Code = iso3Code;
-			}
-
-
-			public string Name { get; set; }
-
-			public string Code { get; set; }
-
-			public string ISO3Code { get; set; }
-
-			public static int CompareByName(LanguageCode x, LanguageCode y)
-			{
-				if (x == null)
-				{
-					if (y == null)
-					{
-						return 0;
-					}
-					else
-					{
-						return -1;
-					}
-				}
-				else
-				{
-					if (y == null)
-					{
-						return 1;
-					}
-					else
-					{
-						return x.Name.CompareTo(y.Name);
-					}
-				}
-			}
-
-		}
-
+		//This is the version of the locale data contained in this writing system.
+		//This should not be confused with the version of our writingsystemDefinition implementation which is mostly used for migration purposes.
+		//That information is stored in the "LatestWritingSystemDefinitionVersion" property.
 		virtual public string VersionNumber
 		{
 			get { return _versionNumber; }
@@ -258,15 +156,15 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				if( _rfcTag.Variant.Contains("fonipa-x-emic"))
+				if (Rfc5646TagIsPhonemicConform)
 				{
 					return IpaStatusChoices.IpaPhonemic;
 				}
-				if (_rfcTag.Variant.Contains("fonipa-x-etic"))
+				if (Rfc5646TagIsPhoneticConform)
 				{
 					return IpaStatusChoices.IpaPhonetic;
 				}
-				if (_rfcTag.Variant.Contains("fonipa"))
+				if (VariantSubTagIsIpaConform)
 				{
 					return IpaStatusChoices.Ipa;
 				}
@@ -275,48 +173,76 @@ namespace Palaso.WritingSystems
 
 			set
 			{
+				if (IpaStatus == value)
+				{
+					return;
+				}
+				_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 				/* "There are some variant subtags that have no prefix field,
 				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 				 * should appear after any other variant subtags with prefix information."
 				 */
-				Variant = _rfcTag.Variant.Replace("-x-etic", "");
-				Variant = _rfcTag.Variant.Replace("-x-emic", "");
-				Variant = _rfcTag.Variant.Replace("fonipa", "");
+				_rfcTag.RemoveFromPrivateUse("x-etic");
+				_rfcTag.RemoveFromPrivateUse("x-emic");
+				_rfcTag.RemoveFromVariant("fonipa");
+
 				switch (value)
 				{
 					default:
 						break;
 					case IpaStatusChoices.Ipa:
-						Variant = _rfcTag.Variant + "-fonipa";
+						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
 						break;
 					case IpaStatusChoices.IpaPhonemic:
-						Variant = _rfcTag.Variant + "-fonipa-x-emic";
+						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+						_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
 						break;
 					case IpaStatusChoices.IpaPhonetic:
-						Variant = _rfcTag.Variant + "-fonipa-x-etic";
+						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+						_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
 						break;
 				}
+				Modified = true;
 			}
 		}
 
 		virtual public bool IsVoice
 		{
-			get { return RFC5646Tag.IsRFC5646TagForVoiceWritingSystem(_rfcTag); }
+			get
+			{
+				return ScriptSubTagIsAudio && VariantSubTagIsAudio;
+			}
 			set
 			{
+				if (IsVoice == value) { return; }
 				if (value)
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					ISO639 = ISO639.Split('-')[0];
-					_rfcTag = RFC5646Tag.RFC5646TagForVoiceWritingSystem(ISO639, Region);
+					Script = WellKnownSubTags.Audio.Script;
+					_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 				}
-				else if (IsVoice == true)
+				else
 				{
-					_rfcTag = new RFC5646Tag(ISO639, "", "", "");
+					_rfcTag.Script = String.Empty;
+					_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 				}
 				Modified = true;
+				CheckVariantAndScriptRules();
 			}
+		}
+
+		private bool VariantSubTagIsAudio
+		{
+			get
+			{
+				return _rfcTag.PrivateUseContains(WellKnownSubTags.Audio.PrivateUseSubtag);
+			}
+		}
+
+		private bool ScriptSubTagIsAudio
+		{
+			get { return _rfcTag.Script.Equals(WellKnownSubTags.Audio.Script,StringComparison.OrdinalIgnoreCase); }
 		}
 
 		/// <summary>
@@ -326,7 +252,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.Variant;
+				string variantToReturn = ConcatenateVariantAndPrivateUse(_rfcTag);
+				return variantToReturn;
 			}
 			set
 			{
@@ -335,14 +262,112 @@ namespace Palaso.WritingSystems
 				{
 					return;
 				}
-				value = value.Trim(new[] { '-' }).Replace("--","-");//cleanup
-				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, _rfcTag.Region, value);
-				if (!_rfcTag.IsValid())
-				{
-					throw new InvalidOperationException(String.Format("Changing the variant subtag to {0} results in an invalid RFC5646 tag.", value));
-				}
+				// Note that the WritingSystemDefinition provides no direct support for private use except via Variant set.
+				string variant;
+				string privateUse;
+				SplitVariantAndPrivateUse(value, out variant, out privateUse);
+				_rfcTag.Variant = variant;
+				_rfcTag.PrivateUse = privateUse;
+
 				Modified = true;
+				CheckVariantAndScriptRules();
 			}
+		}
+
+		private static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
+		{
+			// x- starts a private use marker. See RFC5646
+			if (variantAndPrivateUse.EndsWith("-x") || variantAndPrivateUse.EndsWith("-x-"))
+			{
+				throw new ArgumentException("The variant may not end in '-x' or '-x-'");
+			}
+			if (variantAndPrivateUse.StartsWith("x-")) // Private Use at the beginning
+			{
+				variantAndPrivateUse = variantAndPrivateUse.Substring(2); // Strip the leading x-
+				variant = "";
+				privateUse = variantAndPrivateUse;
+			}
+			else if (variantAndPrivateUse.Contains("-x-")) // Private Use from the middle
+			{
+				string[] partsOfVariant = variantAndPrivateUse.Split(new[] { "-x-" }, StringSplitOptions.None);
+				variant = partsOfVariant[0];
+				privateUse = partsOfVariant[1];
+			}
+			else // No Private Use, it's contains variants only
+			{
+				variant = variantAndPrivateUse;
+				privateUse = "";
+			}
+		}
+
+		private static string ConcatenateVariantAndPrivateUse(RFC5646Tag tag)
+		{
+			string variantToReturn = tag.Variant;
+			if (tag.HasPrivateUse)
+			{
+				if (!String.IsNullOrEmpty(variantToReturn))
+				{
+					variantToReturn += "-";
+				}
+				variantToReturn += tag.PrivateUse;
+			}
+			return variantToReturn;
+		}
+
+		private void CheckVariantAndScriptRules()
+		{
+			if (VariantSubTagIsAudio && !ScriptSubTagIsAudio)
+			{
+				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");
+			}
+			bool rfcTagHasAnyIpa = VariantSubTagIsIpaConform ||
+									_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag) ||
+									_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+			if (VariantSubTagIsAudio && rfcTagHasAnyIpa)
+			{
+				throw new ArgumentException("A writing system may not be marked as audio and ipa at the same time.");
+			}
+			if((_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag)  ||
+				_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag)) &&
+				!VariantSubTagIsIpaConform)
+			{
+				throw new ArgumentException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
+			}
+		}
+
+		private bool VariantSubTagIsIpaConform
+		{
+			get
+			{
+				return _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag);
+			}
+		}
+
+		private bool Rfc5646TagIsPhoneticConform
+		{
+			get
+			{
+				return  _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag) &&
+					_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+			}
+		}
+
+		private bool Rfc5646TagIsPhonemicConform
+		{
+			get
+			{
+				return _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag) &&
+					_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
+			}
+		}
+
+		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
+		{
+			string variantPart;
+			string privateUsePart;
+			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
+			CheckVariantAndScriptRules();
 		}
 
 		virtual public string Region
@@ -353,44 +378,18 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == Region) { return; }
-				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, _rfcTag.Script, value, _rfcTag.Variant);
-				if (!_rfcTag.IsValid())
+				value = value ?? "";
+				if (value == Region)
 				{
-					throw new InvalidOperationException(String.Format("Changing the region subtag to {0} results in an invalid RFC5646 tag.", value));
+					return;
 				}
+				_rfcTag.Region = value;
 				Modified = true;
 			}
-		}
-
-		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
-		//This method is preferable to setting the individual components independantly, as the order
-		//in which they are set can lead to invalid interim Rfc5646 tags
-		public RFC5646Tag Rfc5646Tag
-		{
-			get{ return _rfcTag;}
-			set
-			{
-				if(!value.IsValid())
-				{
-					value = RFC5646Tag.GetValidTag(value);
-				}
-				_rfcTag = value;
-				Modified = true;
-			}
-		}
-
-		//Set all the parts of the Rfc5646 tag, which include language (iso), script, region and subtags.
-		//This method is preferable to setting the individual components independantly, as the order
-		//in which they are set can lead to invalid interim Rfc5646 tags
-		public RFC5646Tag Rfc5646TagOnLoad
-		{
-			get { return _rfcTagOnLoad; }
-			set { _rfcTagOnLoad = value; }
 		}
 
 		/// <summary>
-		/// The ISO-639 code which is also the Ethnologue code.
+		/// The ISO639-639 code which is also the Ethnologue code.
 		/// </summary>
 		[Obsolete("Please use ISO639")]
 		virtual public string ISO
@@ -410,12 +409,12 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == ISO639) { return; }
-				Rfc5646Tag = new RFC5646Tag(value, _rfcTag.Script, _rfcTag.Region, _rfcTag.Variant);
-				if (!_rfcTag.IsValid())
+				value = value ?? "";
+				if (value == ISO639)
 				{
-					throw new InvalidOperationException(String.Format("Changing the language subtag to {0} results in an invalid RFC5646 tag.", value));
+					return;
 				}
+				_rfcTag.Language = value;
 				Modified = true;
 			}
 		}
@@ -424,7 +423,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _abbreviation;
+				return String.IsNullOrEmpty(_abbreviation) ? ISO639 : _abbreviation;
 			}
 			set
 			{
@@ -440,13 +439,14 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				if (value == Script) { return; }
-				Rfc5646Tag = new RFC5646Tag(_rfcTag.Language, value, _rfcTag.Region, _rfcTag.Variant);
-				if (!_rfcTag.IsValid())
+				value = value ?? "";
+				if (value == Script)
 				{
-					throw new InvalidOperationException(String.Format("Changing the script subtag to {0} results in an invalid RFC5646 tag.", value));
+					return;
 				}
+				_rfcTag.Script = value;
 				Modified = true;
+				CheckVariantAndScriptRules();
 			}
 		}
 
@@ -454,10 +454,23 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return _languageName;
+				if (!String.IsNullOrEmpty(_languageName))
+				{
+					return _languageName;
+				}
+				var code = ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(ISO639));
+				if (code != null)
+				{
+					return code.Name;
+				}
+				return "Unknown Language";
+
+				// TODO Make the below work.
+				//return StandardTags.LanguageName(ISO639) ?? "Unknown Language";
 			}
 			set
 			{
+				value = value ?? "";
 				UpdateString(ref _languageName, value);
 			}
 		}
@@ -489,22 +502,22 @@ namespace Palaso.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				if (!String.IsNullOrEmpty(RFC5646))
+				bool languageIsUnknown = RFC5646.Equals("qaa", StringComparison.OrdinalIgnoreCase);
+				if (!String.IsNullOrEmpty(RFC5646) && !languageIsUnknown)
 				{
 					return RFC5646;
 				}
-				if (!String.IsNullOrEmpty(_abbreviation))
+				if (languageIsUnknown)
 				{
-					return _abbreviation;
-				}
-				if (!String.IsNullOrEmpty(_rfcTag.Language))
-				{
-					return _rfcTag.Language;
-				}
-				if (!String.IsNullOrEmpty(_languageName))
-				{
-					string n = _languageName;
-					return n.Substring(0, n.Length > 4 ? 4 : n.Length);
+					if (!String.IsNullOrEmpty(_abbreviation))
+					{
+						return _abbreviation;
+					}
+					if (!String.IsNullOrEmpty(_languageName))
+					{
+						string n = _languageName;
+						return n.Substring(0, n.Length > 4 ? 4 : n.Length);
+					}
 				}
 				return "???";
 			}
@@ -515,9 +528,9 @@ namespace Palaso.WritingSystems
 			get
 			{
 				string n = string.Empty;
-				if (!String.IsNullOrEmpty(_languageName))
+				if (!String.IsNullOrEmpty(LanguageName))
 				{
-					n=_languageName;
+					n = LanguageName;
 				}
 				else
 				{
@@ -570,16 +583,8 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-//                if(!string.IsNullOrEmpty(_customLanguageTag))
-//                {
-//                    return _customLanguageTag;
-//                }
 				return _rfcTag.CompleteTag;
 			}
-//            set
-//            {
-//                _customLanguageTag=value;
-//            }
 		}
 
 		public string Id
@@ -590,68 +595,13 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		virtual public string VerboseDescription
+
+		[Obsolete("Use StandardTags directly")]
+		public static List<Iso15924Script> ScriptOptions
 		{
 			get
 			{
-				var summary = new StringBuilder();
-				if (!String.IsNullOrEmpty(_rfcTag.Variant))
-				{
-					summary.AppendFormat("{0}", _rfcTag.Variant);
-				}
-				summary.AppendFormat(" {0}", string.IsNullOrEmpty(_languageName)?"???":_languageName);
-				if (!String.IsNullOrEmpty(_rfcTag.Region))
-				{
-					summary.AppendFormat(" in {0}", _rfcTag.Region);
-				}
-				if (!String.IsNullOrEmpty(_rfcTag.Script))
-				{
-					summary.AppendFormat(" written in {0} script", CurrentScriptOptionLabel);
-				}
-
-				summary.AppendFormat(". ({0})", RFC5646);
-				return summary.ToString().Trim();
-			}
-		}
-
-		private string CurrentScriptOptionLabel
-		{
-			get
-			{
-				ScriptOption option = ScriptOption;
-				return option == null ? _rfcTag.Script : option.Label;
-			}
-		}
-
-		/// <summary>
-		/// If we don't have an option for the current script, returns null
-		/// </summary>
-		virtual public ScriptOption ScriptOption
-		{
-			get
-			{
-				string script = Script;
-				if (String.IsNullOrEmpty(script))
-				{
-					script = "latn";
-				}
-				foreach (var option in ScriptOptions)
-				{
-					if (option.Code == script)
-					{
-						return option;
-					}
-				}
-				return null;
-			}
-		}
-
-		public static List<ScriptOption> ScriptOptions
-		{
-			get
-			{
-				LoadScriptOptionsIfNeeded();
-				return _scriptOptions;
+				return StandardTags.ValidIso15924Scripts;
 			}
 		}
 
@@ -739,7 +689,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
 		virtual public SortRulesType SortUsing
 		{
 			get { return _sortUsing; }
@@ -762,6 +711,24 @@ namespace Palaso.WritingSystems
 				_collator = null;
 				UpdateString(ref _sortRules, value);
 			}
+		}
+
+		public void SortUsingOtherLanguage(string sortRules)
+		{
+			SortUsing = SortRulesType.OtherLanguage;
+			SortRules = sortRules;
+		}
+
+		public void SortUsingCustomICU(string sortRules)
+		{
+			SortUsing = SortRulesType.CustomICU;
+			SortRules = sortRules;
+		}
+
+		public void SortUsingCustomSimple(string sortRules)
+		{
+			SortUsing = SortRulesType.CustomSimple;
+			SortRules = sortRules;
 		}
 
 		virtual public string SpellCheckingId
@@ -807,19 +774,16 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		[Obsolete("Use IsUnicodeEncoded instead - which is the inverse of IsLegacyEncoded")]
 		virtual public bool IsLegacyEncoded
 		{
 			get
 			{
-				return _isLegacyEncoded;
+				return !IsUnicodeEncoded;
 			}
 			set
 			{
-				if(value != _isLegacyEncoded)
-				{
-					Modified = true;
-					_isLegacyEncoded = value;
-				}
+				IsUnicodeEncoded = !value;
 			}
 		}
 
@@ -865,48 +829,73 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
-	}
-
-	public class ScriptOption
-	{
-		public ScriptOption(string label, string code)
+		public bool IsUnicodeEncoded
 		{
-			Label = label;
-			Code = code;
-		}
-
-		public string Code { get; private set; }
-
-		public string Label { get; private set; }
-
-		public override string ToString()
-		{
-			return Label;
-		}
-
-		public static int CompareScriptOptions(ScriptOption x, ScriptOption y)
-		{
-			if (x == null)
+			get
 			{
-				if (y == null)
+				return _isUnicodeEncoded;
+			}
+			set
+			{
+				if (value != _isUnicodeEncoded)
 				{
-					return 0;
+					Modified = true;
+					_isUnicodeEncoded = value;
 				}
-				return -1;
 			}
-			if (y == null)
-			{
-				return 1;
-			}
-			return x.Label.CompareTo(y.Label);
 		}
+
+		public void SetRfc5646FromString(string completeTag)
+		{
+			_rfcTag = RFC5646Tag.Parse(completeTag);
+			Modified = true;
+		}
+
+		public static WritingSystemDefinition Parse(string completeTag)
+		{
+			var writingSystemDefinition = new WritingSystemDefinition();
+			writingSystemDefinition.SetRfc5646FromString(completeTag);
+			return writingSystemDefinition;
+		}
+
+		public static WritingSystemDefinition FromLanguage(string language)
+		{
+			return new WritingSystemDefinition(language);
+		}
+
+		public static WritingSystemDefinition FromRFC5646Subtags(string language, string script, string region, string variantAndPrivateUse)
+		{
+			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
+		}
+
 	}
 
 	public enum IpaStatusChoices
+	{
+		NotIpa,
+		Ipa,
+		IpaPhonetic,
+		IpaPhonemic
+	}
+
+	public class WellKnownSubTags
+	{
+		public class Unwritten
 		{
-			NotIpa,
-			Ipa,
-			IpaPhonetic,
-			IpaPhonemic
+			public const string Script = "Zxxx";
 		}
+
+		public class Audio
+		{
+			public const string PrivateUseSubtag = "x-audio";
+			public const string Script= Unwritten.Script;
+		}
+
+		public class Ipa
+		{
+			public const string VariantSubtag = "fonipa";
+			public const string PhonemicPrivateUseSubtag = "x-emic";
+			public const string PhoneticPrivateUseSubtag = "x-etic";
+		}
+	}
 }
