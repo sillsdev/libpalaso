@@ -236,7 +236,7 @@ namespace Palaso.Tests.WritingSystems
 		public void LanguageName_Default_ReturnsUnknownLanguage()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.AreEqual("Unknown Language", ws.LanguageName);
+			Assert.AreEqual("Unlisted Language", ws.LanguageName);
 		}
 
 		[Test]
