@@ -146,11 +146,11 @@ namespace Palaso.WritingSystems
 
 		public RFC5646Tag(string language, string script, string region, string variant, string privateUse)
 		{
-			_language = language;
-			_script = script;
-			_region = region;
-			_variant.AddToSubtag(variant);
-			_privateUse.AddToSubtag(privateUse);
+			_language = language ?? "";
+			_script = script ?? "";
+			_region = region ?? "";
+			_variant.AddToSubtag(variant ?? "");
+			_privateUse.AddToSubtag(privateUse ?? "");
 			Validate();
 		}
 
@@ -217,7 +217,7 @@ namespace Palaso.WritingSystems
 			get { return _language; }
 			set
 			{
-				_language = value;
+				_language = value ?? "";
 				Validate();
 			}
 		}
@@ -246,7 +246,7 @@ namespace Palaso.WritingSystems
 			get { return _script; }
 			set
 			{
-				_script = value;
+				_script = value ?? "";
 				Validate();
 			}
 		}
@@ -305,7 +305,7 @@ namespace Palaso.WritingSystems
 			get { return _region; }
 			set
 			{
-				_region = value;
+				_region = value ?? "";
 				Validate();
 			}
 		}
@@ -475,6 +475,7 @@ namespace Palaso.WritingSystems
 
 		public void AddToPrivateUse(string tagsToAdd)
 		{
+			tagsToAdd = tagsToAdd ?? "";
 			tagsToAdd = StripLeadingPrivateUseMarker(tagsToAdd);
 			_privateUse.AddToSubtag(tagsToAdd);
 
@@ -506,6 +507,7 @@ namespace Palaso.WritingSystems
 
 		public void AddToVariant(string tagsToAdd)
 		{
+			tagsToAdd = tagsToAdd ?? "";
 			_variant.AddToSubtag(tagsToAdd);
 			Validate();
 		}

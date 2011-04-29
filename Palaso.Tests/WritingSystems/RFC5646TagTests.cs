@@ -31,6 +31,60 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Constructor_LanguageQaaOthersNull_PropertiesAreEmptyString()
+		{
+			var tag = new RFC5646Tag("qaa", null, null, null, null);
+			Assert.AreEqual("qaa", tag.Language);
+			Assert.AreEqual("", tag.Script);
+			Assert.AreEqual("", tag.Region);
+			Assert.AreEqual("", tag.Variant);
+			Assert.AreEqual("", tag.PrivateUse);
+		}
+
+		[Test]
+		public void Constructor_LanguageNullWithPrivateUse_PropertiesAreEmptyString()
+		{
+			var tag = new RFC5646Tag(null, null, null, null, "any");
+			Assert.AreEqual("", tag.Language);
+			Assert.AreEqual("", tag.Script);
+			Assert.AreEqual("", tag.Region);
+			Assert.AreEqual("", tag.Variant);
+			Assert.AreEqual("x-any", tag.PrivateUse);
+		}
+
+		[Test]
+		public void PropertiesSetNull_AllExceptPrivateUse_PropertiesAreEmptyString()
+		{
+			var tag = new RFC5646Tag("qaa", "Latn", "NZ", "1901", "any");
+			tag.Script = null;
+			tag.Region = null;
+			tag.Variant = null;
+			tag.Language = null; // Note the order is important here as validate is called after each property set.
+			tag.PrivateUse = "any";
+			Assert.AreEqual("", tag.Language);
+			Assert.AreEqual("", tag.Script);
+			Assert.AreEqual("", tag.Region);
+			Assert.AreEqual("", tag.Variant);
+			Assert.AreEqual("x-any", tag.PrivateUse);
+		}
+
+		[Test]
+		public void PropertiesSetNull_AllExceptLanguage_PropertiesAreEmptyString()
+		{
+			var tag = new RFC5646Tag("qaa", "Latn", "NZ", "1901", "any");
+			tag.Language = "qaa";
+			tag.Script = null;
+			tag.Region = null;
+			tag.Variant = null;
+			tag.PrivateUse = null;
+			Assert.AreEqual("qaa", tag.Language);
+			Assert.AreEqual("", tag.Script);
+			Assert.AreEqual("", tag.Region);
+			Assert.AreEqual("", tag.Variant);
+			Assert.AreEqual("", tag.PrivateUse);
+		}
+
+		[Test]
 		public void AddToPrivateUse_StringToAddContainsIllegalCharacters_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);

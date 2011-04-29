@@ -228,11 +228,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-etic", "", "", ""));
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-fonipa-x-etic", "", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-etic']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='fonipa-x-etic']");
 			}
 		}
 
@@ -254,13 +254,13 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-emic", "", "", ""));
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-fonipa-x-emic", "", "", ""));
 
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-emic']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='fonipa-x-emic']");
 			}
 		}
 

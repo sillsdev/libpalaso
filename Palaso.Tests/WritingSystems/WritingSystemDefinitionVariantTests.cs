@@ -251,22 +251,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void IpaStatus_VariantIsSetToXDashEtic_ReturnsNotIpa()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.Variant = "x-etic";
-			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
-		}
-
-		[Test]
-		public void IpaStatus_VariantIsSetToXDashEmic_ReturnsNotIpa()
-		{
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.Variant = "x-emic";
-			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
-		}
-
-		[Test]
 		[Ignore("Flex doesn't seem to mind if you set Arabic or some other script for ipa.")]
 		public void IpaStatus_SetToAnyThingButNotIpaWhileScriptIsNotDontKnowWhatScriptItShouldBe_Throws()
 		{

@@ -257,7 +257,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				Guard.AgainstNull(value, "VariantValue");
+				value = value ?? "";
 				if (value == Variant)
 				{
 					return;
@@ -378,7 +378,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				Guard.AgainstNull(value, "RegionValue");
+				value = value ?? "";
 				if (value == Region)
 				{
 					return;
@@ -409,7 +409,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				Guard.AgainstNull(value, "LanguageISO639Value");
+				value = value ?? "";
 				if (value == ISO639)
 				{
 					return;
@@ -439,7 +439,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
-				Guard.AgainstNull(value, "ScriptValue");
+				value = value ?? "";
 				if (value == Script)
 				{
 					return;
@@ -470,6 +470,7 @@ namespace Palaso.WritingSystems
 			}
 			set
 			{
+				value = value ?? "";
 				UpdateString(ref _languageName, value);
 			}
 		}

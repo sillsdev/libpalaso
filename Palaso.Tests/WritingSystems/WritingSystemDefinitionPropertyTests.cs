@@ -643,21 +643,37 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Script_ScriptNull_Throws()
+		public void Script_ScriptNull_EmptyString()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentNullException>(
-				() => ws.Script = null
-			);
+			ws.Script = null;
+			Assert.That("", Is.EqualTo(ws.Script));
 		}
 
 		[Test]
-		public void Variant_VariantNull_Throws()
+		public void Variant_VariantNull_EmptyString()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentNullException>(
-				() => ws.Variant = null
-			);
+			ws.Variant = null;
+			Assert.That("", Is.EqualTo(ws.Variant));
+		}
+
+		[Test]
+		public void Region_RegionNull_EmptyString()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.Region = null;
+			Assert.That("", Is.EqualTo(ws.Region));
+		}
+
+		[Test]
+		public void Language_LangaugeNull_EmptyString()
+		{
+			var ws = new WritingSystemDefinition();
+			// Set private use so that we can legally set the language to null
+			ws.Variant = "x-any";
+			ws.ISO639 = null;
+			Assert.That("", Is.EqualTo(ws.ISO639));
 		}
 
 		[Test]
