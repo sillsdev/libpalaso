@@ -682,7 +682,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void VerboseDescriptionWhenNoSubtagsSet()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition();
-			Assert.AreEqual("Unknown Language. (qaa)", _model.VerboseDescription(_model.CurrentDefinition));
+			Assert.AreEqual("Unlisted Language. (qaa)", _model.VerboseDescription(_model.CurrentDefinition));
 		}
 
 		[Test]
