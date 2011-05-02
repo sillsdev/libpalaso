@@ -76,8 +76,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
-			//field_OnLeave(null, null);
-			//UpdateDisplayFromModel(null, null);
+			UpdateDisplayFromModel(null, null);
 		}
 
 		private void betterLabel1_TextChanged(object sender, EventArgs e)
