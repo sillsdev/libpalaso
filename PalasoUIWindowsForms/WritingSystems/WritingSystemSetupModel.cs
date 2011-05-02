@@ -1170,7 +1170,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			CurrentDefinition = definition;
 		}
 
-		internal void RenameIsoCode(WritingSystemDefinition ws)
+		internal void RenameIsoCode(WritingSystemDefinition existingWs)
 		{
 			WritingSystemDefinition newWs = null;
 			if (!_usingRepository)
@@ -1184,10 +1184,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (newWs == null) //cancelled
 				return;
 
-			ws.ISO639 = newWs.ISO639;
-			ws.LanguageName = newWs.LanguageName;
+			existingWs.ISO639 = newWs.ISO639;
+			existingWs.LanguageName = newWs.LanguageName;
+
+			// Remove First Not WellKnownPrivateUseTag
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+			WritingSystemDefinition.SplitVariantAndPrivateUse(existingWs.Variant, out rfcVariant, out rfcPrivateUse);
+			List<string> privateUseTokens = new List<string>(rfcPrivateUse.Split('-'));
+			string oldIsoCode = WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens).FirstOrDefault();
+			if (!String.IsNullOrEmpty(oldIsoCode))
+			{
+				privateUseTokens.Remove(oldIsoCode);
+			}
+			string newPrivateUse = "x-" + String.Join("-", privateUseTokens.ToArray()); //would be nice if writingsystemdefintion.ConcatenateVariantAndPrivateUse would add the x for us
+			existingWs.Variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, newPrivateUse);
+
+			OnSelectionChanged();
 			OnCurrentItemUpdated();
-			//CurrentDefinition.ISO639 = newWs.ISO639;
 		}
 
 		internal string CodeFromPrivateUseInVariant()
