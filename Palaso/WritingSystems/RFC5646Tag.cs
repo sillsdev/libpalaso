@@ -495,9 +495,9 @@ namespace Palaso.WritingSystems
 			return _privateUse.Contains(tagToFind);
 		}
 
-		private string StripLeadingPrivateUseMarker(string tag)
+		public static string StripLeadingPrivateUseMarker(string tag)
 		{
-			if (tag.StartsWith("x-"))
+			if (tag.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 			{
 				tag = tag.Substring(2); // strip the leading x-. Ideally we would throw if WritingSystemDefinition exposed the Private Use tags.
 				// throw new ArgumentException("RFC Private Use tags may not start with 'x-', try giving the tag only");

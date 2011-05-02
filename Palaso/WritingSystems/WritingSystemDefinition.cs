@@ -252,7 +252,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				string variantToReturn = ConcatenateVariantAndPrivateUse(_rfcTag);
+				string variantToReturn = ConcatenateVariantAndPrivateUse(_rfcTag.Variant, _rfcTag.PrivateUse);
 				return variantToReturn;
 			}
 			set
@@ -274,7 +274,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
+		public static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
 		{
 			// x- starts a private use marker. See RFC5646
 			if (variantAndPrivateUse.EndsWith("-x") || variantAndPrivateUse.EndsWith("-x-"))
@@ -300,16 +300,16 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private static string ConcatenateVariantAndPrivateUse(RFC5646Tag tag)
+		public static string ConcatenateVariantAndPrivateUse(string variant, string privateUse)
 		{
-			string variantToReturn = tag.Variant;
-			if (tag.HasPrivateUse)
+			string variantToReturn = variant;
+			if (!String.IsNullOrEmpty(privateUse))
 			{
 				if (!String.IsNullOrEmpty(variantToReturn))
 				{
 					variantToReturn += "-";
 				}
-				variantToReturn += tag.PrivateUse;
+				variantToReturn += privateUse;
 			}
 			return variantToReturn;
 		}
@@ -868,6 +868,19 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
 		}
 
+
+		public static IEnumerable<string> FilterWellKnownPrivateUseTags(IEnumerable<string> privateUseTokens)
+		{
+			foreach (var privateUseToken in privateUseTokens)
+			{
+				string strippedToken = RFC5646Tag.StripLeadingPrivateUseMarker(privateUseToken);
+				if (strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Audio.PrivateUseSubtag), StringComparison.OrdinalIgnoreCase) ||
+					strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag), StringComparison.OrdinalIgnoreCase) ||
+					strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag), StringComparison.OrdinalIgnoreCase))
+					continue;
+				yield return privateUseToken;
+			}
+		}
 	}
 
 	public enum IpaStatusChoices
@@ -885,6 +898,8 @@ namespace Palaso.WritingSystems
 			public const string Script = "Zxxx";
 		}
 
+		//The "x-" is required before each of the strings below, since WritingSystemDefinition needs "x-" to distinguish RFC5646 private use from variant
+		//Without the "x-"  a consumer who wanted to set a writing ystem as audio would have to write: ws.Variant = "x-" + WellKnownSubtags.Audio.PrivateUseSubtag
 		public class Audio
 		{
 			public const string PrivateUseSubtag = "x-audio";
