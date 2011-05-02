@@ -4,6 +4,7 @@ using System.Reflection;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.WritingSystems;
+using System.Linq;
 
 namespace Palaso.Tests.WritingSystems
 {
@@ -262,6 +263,55 @@ namespace Palaso.Tests.WritingSystems
 		public void Script_SetToIDontKnowWhatScriptItShouldBewhileIpaStatusIsSetToAnyThingButNotIpa_Throws()
 		{
 			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasOnlyWellKnownTags_EmptyList()
+		{
+			string[] listToFilter = {WellKnownSubTags.Audio.PrivateUseSubtag,
+										WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag,
+										WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag
+									};
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Is.Empty);
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasWellKnownTagsAndUnknownTags_ListWithUnknownTags()
+		{
+			string[] listToFilter = { "v", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag, WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag };
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Has.Member("v"));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasUpperCaseWellKnownTagsAndUnknownTags_ListWithUnknownTags()
+		{
+			string[] listToFilter = { "v", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.ToUpper(), WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.ToUpper() };
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Has.Member("v"));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.ToUpper()));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.ToUpper()));
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_EmptyList_EmptyList()
+		{
+			string[] listToFilter = {};
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Is.Empty);
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasOnlyUnknownTags_ListWithUnknownTags()
+		{
+			string[] listToFilter = { "v", "puu", "yuu" };
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Has.Member("v"));
+			Assert.That(result, Has.Member("puu"));
+			Assert.That(result, Has.Member("yuu"));
 		}
 	}
 }

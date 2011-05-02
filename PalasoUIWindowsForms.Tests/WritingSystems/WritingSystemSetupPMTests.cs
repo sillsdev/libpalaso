@@ -22,6 +22,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_testFilePath = Path.GetTempFileName();
 			IWritingSystemRepository writingSystemRepository = new LdmlInXmlWritingSystemRepository();
 			_model = new WritingSystemSetupModel(writingSystemRepository);
+			Palaso.Reporting.ErrorReport.IsOkToInteractWithUser = false;
 		}
 
 		[TearDown]
@@ -654,18 +655,20 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesScriptRegionVariant()
+		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesIPA()
 		{
 			_model.AddNew();
+			_model.CurrentISO = "en";
 			_model.CurrentRegion = "BR";
 			_model.CurrentVariant = "fonipa";
-			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
 		}
 
 		[Test]
 		public void SelectionForSpecialCombo_HasRegion_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
+			_model.CurrentISO = "en";
 			_model.CurrentRegion = "BR";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
@@ -674,6 +677,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void SelectionForSpecialCombo_HasKnownScript_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
+			_model.CurrentISO = "en";
 			_model.CurrentScriptCode = "Cyrl";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
@@ -735,69 +739,97 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void ValidVariant_RegisteredVariant_NoChange()
+		public void CodeFromPrivateUseInVariant_Empty_Empty()
 		{
-			Assert.AreEqual("1901", WritingSystemDefinitionVariantHelper.ValidVariantString("1901"));
+			_model.AddNew();
+			_model.CurrentVariant = "";
+			Assert.AreEqual("", _model.CodeFromPrivateUseInVariant());
 		}
 
 		[Test]
-		public void ValidVariant_HasSpace_RemovesSpace()
+		public void CodeFromPrivateUseInVariant_NoX_Empty()
 		{
-			Assert.AreEqual("1901", WritingSystemDefinitionVariantHelper.ValidVariantString("1901    "));
+			_model.AddNew();
+			_model.CurrentVariant = "1901";
+			Assert.AreEqual("", _model.CodeFromPrivateUseInVariant());
 		}
 
 		[Test]
-		public void ValidVariant_RegisteredVariantAndPrivateUse_AddsX()
+		public void CodeFromPrivateUseInVariant_HasXWith1Token_FirstToken()
 		{
-			Assert.AreEqual("1901-x-English", WritingSystemDefinitionVariantHelper.ValidVariantString("1901-English"));
+			_model.AddNew();
+			_model.CurrentVariant = "1901-x-puu";
+			Assert.AreEqual("puu", _model.CodeFromPrivateUseInVariant());
 		}
 
 		[Test]
-		public void ValidVariant_PrivateUseWithX_NoChange()
+		public void CodeFromPrivateUseInVariant_HasXWith2Tokens_FirstNotWellKnownToken()
 		{
-			Assert.AreEqual("x-English", WritingSystemDefinitionVariantHelper.ValidVariantString("x-English"));
+			_model.AddNew();
+			_model.CurrentScriptCode = "Zxxx";
+			_model.CurrentVariant = "x-audio-puu-bogus";
+			Assert.AreEqual("puu", _model.CodeFromPrivateUseInVariant());
 		}
 
 		[Test]
-		public void ValidVariant_HasXRegisteredVariant_NoChange()
+		public void SetCurrentVariantFromUnlistedLanguageCode_Empty_Empty()
 		{
-			Assert.AreEqual("x-1901", WritingSystemDefinitionVariantHelper.ValidVariantString("x-1901"));
+			_model.AddNew();
+			_model.SetCurrentVariantFromUnlistedLanguageCode("");
+			Assert.That(_model.CurrentVariant, Is.Empty);
 		}
 
 		[Test]
-		public void ValidVariant_2RegisteredVariants_NoChange()
+		public void SetCurrentVariantFromUnlistedLanguageCode_NoPrivateUse_SetsPrivateUseToLanguageCode()
 		{
-			Assert.AreEqual("1901-Biske", WritingSystemDefinitionVariantHelper.ValidVariantString("1901-Biske"));
+			_model.AddNew();
+			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-ecc"));
 		}
 
 		[Test]
-		public void ValidVariant_RegisteredVariantAndPrivateUseOutOfOrder_ReOrdersAddsX()
+		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingPrivateUse_InsertsLanguageCodeProperly()
 		{
-			Assert.AreEqual("1901-x-English", WritingSystemDefinitionVariantHelper.ValidVariantString("English-1901"));
+			_model.AddNew();
+			_model.CurrentVariant = "x-whatever";
+			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-ecc-whatever"));
 		}
 
 		[Test]
-		public void ValidVariant_HasSpacesInMiddle_ConvertsToDash()
+		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingVariantAndPrivateUse_InsertsLanguageCodeProperly()
 		{
-			Assert.AreEqual("x-English-French", WritingSystemDefinitionVariantHelper.ValidVariantString("English   French"));
+			_model.AddNew();
+			_model.CurrentVariant = "1901-x-whatever";
+			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-ecc-whatever"));
 		}
 
 		[Test]
-		public void ValidVariant_HasCommaInMiddle_ConvertsToDash()
+		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingVariant_InsertsLanguageCodeProperly()
 		{
-			Assert.AreEqual("1901-x-English", WritingSystemDefinitionVariantHelper.ValidVariantString("English, 1901"));
+			_model.AddNew();
+			_model.CurrentVariant = "1901";
+			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-ecc"));
 		}
 
 		[Test]
-		public void ValidVariant_HasMultipleX_KeepsOneX()
+		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingPrivateUse_DoesNotSetDuplicatePrivateUse()
 		{
-			Assert.AreEqual("x-English-French", WritingSystemDefinitionVariantHelper.ValidVariantString("x-English-x-French"));
+			_model.AddNew();
+			_model.CurrentVariant = "x-aaa";
+			_model.SetCurrentVariantFromUnlistedLanguageCode("aaa");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-aaa"));
 		}
 
 		[Test]
-		public void ValidVariant_HasPeriodInMiddle_ConvertsToDash()
+		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingCasedPrivateUse_CaseInsensitiveDoesNotDuplicatePrivateUse()
 		{
-			Assert.AreEqual("1901-x-ThaiSpecial", WritingSystemDefinitionVariantHelper.ValidVariantString("1901. x-ThaiSpecial"));
+			_model.AddNew();
+			_model.CurrentVariant = "x-AAA";
+			_model.SetCurrentVariantFromUnlistedLanguageCode("aAa");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-AAA"));
 		}
 
 	}
