@@ -56,8 +56,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_abbreviation.Text = _model.CurrentAbbreviation;
 //                _name.Text = _model.CurrentLanguageName;
 				//_code.Text=_model.CurrentISO;
-				comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
 				UpdateSpecialComboBox();
+				comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
 			}
 			else
 			{

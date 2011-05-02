@@ -70,7 +70,6 @@
 			this.betterLabel1.TabIndex = 0;
 			this.betterLabel1.TabStop = false;
 			this.betterLabel1.Text = "Language Code:";
-			this.betterLabel1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.betterLabel1.TextChanged += new System.EventHandler(this.betterLabel1_TextChanged);
 			//
 			// nonStandardLanguageName
@@ -89,7 +88,7 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel2.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel2.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel2.Location = new System.Drawing.Point(1, 44);
+			this.betterLabel2.Location = new System.Drawing.Point(7, 44);
 			this.betterLabel2.Multiline = true;
 			this.betterLabel2.Name = "betterLabel2";
 			this.betterLabel2.ReadOnly = true;
@@ -97,7 +96,6 @@
 			this.betterLabel2.TabIndex = 3;
 			this.betterLabel2.TabStop = false;
 			this.betterLabel2.Text = "Language Name:";
-			this.betterLabel2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			//
 			// UnlistedLanguageView
 			//

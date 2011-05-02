@@ -79,5 +79,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			Assert.AreEqual("1901-x-ThaiSpecial", WritingSystemDefinitionVariantHelper.ValidVariantString("1901. x-ThaiSpecial"));
 		}
 
+		[Test]
+		public void ValidVariant_HasxDash_Empty()
+		{
+			Assert.AreEqual("", WritingSystemDefinitionVariantHelper.ValidVariantString("x-"));
+		}
+
 	}
 }

@@ -261,7 +261,9 @@
 	<Compile Include="Widgets\Prompt.cs" />
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionVariantHelper.cs" />
-	<Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.cs" />
+	<Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
 	<Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.Designer.cs">
 	  <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
 	</Compile>

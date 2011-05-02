@@ -645,7 +645,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					catch (ArgumentException e)
 					{
 						CurrentDefinition.Variant = original;
-						MessageBox.Show(e.Message);
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e.Message);
 					}
 
 				}
@@ -783,44 +783,35 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Ipa=1,
 			Voice=2,
 			ScriptRegionVariant=3,
-			Custom=4
+			UnlistedLanguageDetails=4
 		}
+
 		public SelectionsForSpecialCombo SelectionForSpecialCombo
 		{
 			get
 			{
-				//TODO: this is really too simplistic
-
+				// TODO: this is really too simplistic
+				// Changed 2011-04 CP, seems ok to me.
 
 				if (_currentWritingSystem.IsVoice)
 				{
 					return SelectionsForSpecialCombo.Voice;
 				}
-//                if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
-//                {
-//                    return SelectionsForSpecialCombo.Custom;
-//                }
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Script))
-				{
-					if(WritingSystemDefinition.ScriptOptions.Any(s=>s.Code==_currentWritingSystem.Script))
-					{
-						return SelectionsForSpecialCombo.ScriptRegionVariant;
-					}
-					return SelectionsForSpecialCombo.Custom;
-				}
-
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Region))
-				{
-					return SelectionsForSpecialCombo.ScriptRegionVariant;
-				}
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
-				{
-					if(!_currentWritingSystem.Variant.StartsWith("fonipa"))
-						return SelectionsForSpecialCombo.ScriptRegionVariant;
-				}
 				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
 				{
 					return SelectionsForSpecialCombo.Ipa;
+				}
+				if (_currentWritingSystem.ISO639 == "qaa")
+				{
+					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
+
+				}
+				if (!string.IsNullOrEmpty(_currentWritingSystem.Script) ||
+					!string.IsNullOrEmpty(_currentWritingSystem.Region) ||
+					!string.IsNullOrEmpty(_currentWritingSystem.Variant)
+				)
+				{
+					return SelectionsForSpecialCombo.ScriptRegionVariant;
 				}
 				return SelectionsForSpecialCombo.None;
 			}
@@ -969,7 +960,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			if (ws.Abbreviation == "qaa") // special case for Unlisted Language
 			{
-				ws.Abbreviation = UnlistedLanguageView.DefaultAbbreviation;
+				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
 			}
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
@@ -1197,6 +1188,41 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			ws.LanguageName = newWs.LanguageName;
 			OnCurrentItemUpdated();
 			//CurrentDefinition.ISO639 = newWs.ISO639;
+		}
+
+		internal string CodeFromPrivateUseInVariant()
+		{
+			string code = ""; // DefaultCode;
+			if (CurrentVariant.Contains("x-"))
+			{
+				string[] privateUseTokens = CurrentVariant.Substring(CurrentVariant.IndexOf("x-") + 2).Split('-');
+				if (privateUseTokens.Length > 0)
+				{
+					foreach (var notWellKnownTag in WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens))
+					{
+						code = notWellKnownTag;
+						break;
+					}
+				}
+			}
+			return code;
+		}
+
+		internal void SetCurrentVariantFromUnlistedLanguageCode(string code)
+		{
+			if (String.IsNullOrEmpty(code))
+				return;
+
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+			WritingSystemDefinition.SplitVariantAndPrivateUse(CurrentVariant, out rfcVariant, out rfcPrivateUse);
+			if (rfcPrivateUse.Split('-').Contains(code, StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+
+			rfcPrivateUse = code + "-" + rfcPrivateUse;
+			CurrentVariant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, rfcPrivateUse);
 		}
 	}
 }

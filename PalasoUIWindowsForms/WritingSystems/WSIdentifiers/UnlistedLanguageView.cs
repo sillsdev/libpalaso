@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
@@ -8,10 +7,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 	{
 		private readonly WritingSystemSetupModel _model;
 		private bool _updatingFromModel;
-		private bool _resettingFields;
-		public const string DefaultName = "Unlisted Language";
-		public const string DefaultCode = "v";
-		public const string DefaultAbbreviation = DefaultCode;
+		//public const string DefaultName = "~Unlisted Language";
+		//public const string DefaultCode = "v";
+		//public const string DefaultAbbreviation = DefaultCode;
 
 		public UnlistedLanguageView(WritingSystemSetupModel model)
 		{
@@ -21,6 +19,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			{
 				model.SelectionChanged += UpdateDisplayFromModel;
 			}
+			UpdateDisplayFromModel(null, null);
 			//Selected();
 		}
 
@@ -28,27 +27,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			if (_model.CurrentDefinition != null)
 			{
-				string name;
 				_updatingFromModel = true;
-				nonStandardLanguageCode.Text = CodeFromPrivateUse();
+				nonStandardLanguageCode.Text = _model.CodeFromPrivateUseInVariant();
 				nonStandardLanguageName.Text = _model.CurrentLanguageName;
 				_updatingFromModel = false;
 			}
 		}
 
-		private string CodeFromPrivateUse()
-		{
-			string code = DefaultCode;
-			if (_model.CurrentVariant.Contains("x-"))
-			{
-				string[] tokens = _model.CurrentVariant.Substring(_model.CurrentVariant.IndexOf("x-") + 2).Split('-');
-				if (tokens.Length > 0)
-				{
-					code = tokens[0];
-				}
-			}
-			return code;
-		}
 
 
 		//private void MakeFieldsFromPrivateUse(out string code, out string name)
@@ -81,32 +66,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		private void field_OnLeave(object sender, EventArgs e)
 		{
-			if(_updatingFromModel || _resettingFields)
+			if(_updatingFromModel)
 				return;
-			ResetFieldsIfNecessary();
-			_model.CurrentVariant = "x-" + nonStandardLanguageCode.Text;
+			//ResetFieldsIfNecessary();
+			//_model.SetCurrentVariant = "x-" + nonStandardLanguageCode.Text;
+			_model.SetCurrentVariantFromUnlistedLanguageCode(nonStandardLanguageCode.Text);
 			_model.CurrentLanguageName = nonStandardLanguageName.Text;
-		}
-
-		private void ResetFieldsIfNecessary()
-		{
-			_resettingFields = true;
-			string code = nonStandardLanguageCode.Text;
-			if (string.IsNullOrEmpty(nonStandardLanguageName.Text))
-			{
-				nonStandardLanguageName.Text = DefaultName;
-			}
-			if (string.IsNullOrEmpty(code) || code == "audio" || code == "etic" || code == "emic")
-			{
-				nonStandardLanguageCode.Text = DefaultCode;
-			}
-			_resettingFields = false;
 		}
 
 		public void Selected()
 		{
-			field_OnLeave(null, null);
-			UpdateDisplayFromModel(null, null);
+			//field_OnLeave(null, null);
+			//UpdateDisplayFromModel(null, null);
 		}
 
 		private void betterLabel1_TextChanged(object sender, EventArgs e)
