@@ -963,8 +963,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
 			}
 			WritingSystemDefinitions.Add(ws);
-			OnAddOrDelete();
 			CurrentDefinition = ws;
+			OnAddOrDelete();
 		}
 
 		private void OnAddOrDelete()
