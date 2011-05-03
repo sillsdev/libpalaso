@@ -34,6 +34,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		private ProgressState _progressState;
 		private TableLayoutPanel tableLayout;
 		private bool _workerStarted;
+		private bool _appUsingWaitCursor;
 
 		/// <summary>
 		/// Standard constructor
@@ -57,6 +58,18 @@ namespace Palaso.UI.WindowsForms.Progress
 			_statusLabel.Text = string.Empty;
 			_progressLabel.Text = string.Empty;
 			_overviewLabel.Text = string.Empty;
+
+			_cancelButton.MouseEnter += delegate
+			{
+				_appUsingWaitCursor = Application.UseWaitCursor;
+				_cancelButton.Cursor = Cursor = Cursors.Arrow;
+				Application.UseWaitCursor = false;
+			};
+
+			_cancelButton.MouseLeave += delegate
+			{
+				Application.UseWaitCursor = _appUsingWaitCursor;
+			};
 
 			//avoids the client getting null errors if he checks this when there
 			//has yet to be a callback from the worker
@@ -506,13 +519,15 @@ namespace Palaso.UI.WindowsForms.Progress
 			//
 			// _progressLabel
 			//
-			this._progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+			this._progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._progressLabel.AutoEllipsis = true;
+			this._progressLabel.AutoSize = true;
 			this._progressLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this._progressLabel.Location = new System.Drawing.Point(0, 89);
-			this._progressLabel.Margin = new System.Windows.Forms.Padding(0);
+			this._progressLabel.Location = new System.Drawing.Point(0, 90);
+			this._progressLabel.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
 			this._progressLabel.Name = "_progressLabel";
-			this._progressLabel.Size = new System.Drawing.Size(272, 14);
+			this._progressLabel.Size = new System.Drawing.Size(272, 13);
 			this._progressLabel.TabIndex = 9;
 			this._progressLabel.Text = "#";
 			//
