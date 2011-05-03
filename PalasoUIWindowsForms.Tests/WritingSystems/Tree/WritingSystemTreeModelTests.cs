@@ -21,8 +21,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[SetUp]
 		public void Setup()
 		{
+			ErrorReport.IsOkToInteractWithUser = false;
+			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
 			_writingSystemRepository = new WritingSystemRepositoryBase();
 			_mockSetupModel = new Mock<WritingSystemSetupModel>(_writingSystemRepository);
+
 			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model = new WritingSystemTreeModel(_mockSetupModel.Object);
 			_model.Suggestor = new WritingSystemSuggestor

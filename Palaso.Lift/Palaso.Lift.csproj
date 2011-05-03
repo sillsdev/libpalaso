@@ -59,7 +59,6 @@
 	<DocumentationFile>..\output\Debug\Palaso.Lift.XML</DocumentationFile>
 	<DebugType>full</DebugType>
 	<PlatformTarget>x86</PlatformTarget>
-	<LangVersion>default</LangVersion>
 	<ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
@@ -73,7 +72,7 @@
   <ItemGroup>
 	<Reference Include="LiftIO, Version=1.1.32.0, Culture=neutral, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\LiftIO.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\LiftIO.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core">

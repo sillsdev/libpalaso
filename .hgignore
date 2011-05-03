@@ -17,4 +17,5 @@ config
 *.usertasks
 *~
 *.resources
+$(Configuration)
 nant.resx.bak

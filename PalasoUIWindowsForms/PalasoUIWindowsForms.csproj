@@ -74,18 +74,21 @@
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\Keyman7Interop.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
 	</Reference>
 	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\KeymanLink.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\mono\NDesk.DBus.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
 	</Reference>
+	<None Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
   <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
@@ -100,6 +103,9 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
 	</Reference>
+	<None Include="..\lib\common\Enchant.Net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
@@ -380,8 +386,6 @@
 	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Keyboarding\ScimAdaptor.cs" />
-	<Compile Include="Keyboarding\ScimPanelController.cs" />
 	<Compile Include="Keyboarding\IBusAdaptor.cs" />
 	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
