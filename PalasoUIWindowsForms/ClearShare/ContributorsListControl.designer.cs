@@ -1,4 +1,5 @@
-﻿using Palaso.UI.WindowsForms.Widgets.Grid;
+﻿using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Widgets.Grid;
 
 namespace Palaso.ClearShare
 {
@@ -31,10 +32,10 @@ namespace Palaso.ClearShare
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			this._tableLayout = new System.Windows.Forms.TableLayoutPanel();
-			this._panelGrid = new SilUtils.Controls.SilPanel();
-			this._grid = new BetterGrid();
+			this._panelGrid = new System.Windows.Forms.Panel();
+			this._grid = new Palaso.UI.WindowsForms.Widgets.Grid.BetterGrid();
 			this._buttonDelete = new System.Windows.Forms.Button();
 			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this._tableLayout.SuspendLayout();
@@ -61,19 +62,13 @@ namespace Palaso.ClearShare
 			//
 			// _panelGrid
 			//
-			this._panelGrid.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(171)))), ((int)(((byte)(173)))), ((int)(((byte)(179)))));
-			this._panelGrid.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this._panelGrid.ClipTextForChildControls = true;
-			this._panelGrid.ControlReceivingFocusOnMnemonic = null;
+			this._panelGrid.BackColor = System.Drawing.SystemColors.ControlDark;
 			this._panelGrid.Controls.Add(this._grid);
 			this._panelGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._panelGrid.DoubleBuffered = true;
-			this._panelGrid.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World);
 			this._panelGrid.Location = new System.Drawing.Point(0, 0);
 			this._panelGrid.Margin = new System.Windows.Forms.Padding(0);
-			this._panelGrid.MnemonicGeneratesClick = false;
 			this._panelGrid.Name = "_panelGrid";
-			this._panelGrid.PaintExplorerBarBackground = false;
+			this._panelGrid.Padding = new System.Windows.Forms.Padding(1);
 			this._panelGrid.Size = new System.Drawing.Size(453, 225);
 			this._panelGrid.TabIndex = 0;
 			//
@@ -87,34 +82,37 @@ namespace Palaso.ClearShare
 			this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
 			this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-			dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
-			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-			dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-			dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-			this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+			dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
+			dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+			dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+			dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+			dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+			this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
 			this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._grid.DrawTextBoxEditControlBorder = false;
 			this._grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
 			this._grid.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._grid.FullRowFocusRectangleColor = System.Drawing.SystemColors.ControlDark;
 			this._grid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(225)))), ((int)(((byte)(225)))));
-			this._grid.IsDirty = false;
-			this._grid.Location = new System.Drawing.Point(0, 0);
+			this._grid.Location = new System.Drawing.Point(1, 1);
 			this._grid.MultiSelect = false;
 			this._grid.Name = "_grid";
 			this._grid.PaintHeaderAcrossFullGridWidth = true;
 			this._grid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
 			this._grid.RowHeadersWidth = 24;
 			this._grid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+			this._grid.SelectedCellBackColor = System.Drawing.Color.Empty;
+			this._grid.SelectedCellForeColor = System.Drawing.Color.Empty;
+			this._grid.SelectedRowBackColor = System.Drawing.Color.Empty;
+			this._grid.SelectedRowForeColor = System.Drawing.Color.Empty;
 			this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this._grid.ShowWaterMarkWhenDirty = false;
 			this._grid.Size = new System.Drawing.Size(451, 223);
 			this._grid.TabIndex = 0;
+			this._grid.TextBoxEditControlBorderColor = System.Drawing.Color.Silver;
 			this._grid.VirtualMode = true;
-			this._grid.WaterMark = "!";
 			//
 			// _buttonDelete
 			//
@@ -146,7 +144,7 @@ namespace Palaso.ClearShare
 
 		#endregion
 
-		private SilUtils.Controls.SilPanel _panelGrid;
+		private Panel _panelGrid;
 		private System.Windows.Forms.TableLayoutPanel _tableLayout;
 		private BetterGrid _grid;
 		private System.Windows.Forms.Button _buttonDelete;

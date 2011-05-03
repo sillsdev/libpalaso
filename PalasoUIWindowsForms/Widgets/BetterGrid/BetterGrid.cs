@@ -214,18 +214,6 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 			get { return Controls.OfType<HScrollBar>().Select(ctrl => ctrl).FirstOrDefault(); }
 		}
 
-		public bool ShowWaterMarkWhenDirty
-		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
-		}
-
-		public string WaterMark
-		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
-		}
-
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Update the water mark when the grid scrolls.

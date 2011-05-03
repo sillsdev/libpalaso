@@ -74,6 +74,28 @@ namespace Palaso.UI.WindowsForms.Properties {
 			}
 		}
 
+		/// <summary>
+		///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+		///&lt;?xml-stylesheet href=&quot;../OLAC_doc.xsl&quot; type=&quot;text/xsl&quot;?&gt;
+		///&lt;!DOCTYPE OLAC_doc SYSTEM &quot;../OLAC_doc.dtd&quot;&gt;
+		///&lt;OLAC_doc&gt;
+		///  &lt;header&gt;
+		///     &lt;status code=&quot;adopted&quot; type=&quot;recommendation&quot;/&gt;
+		///     &lt;!-- Promoted to Adopted on 2008-12-19 --&gt;
+		///    &lt;title&gt;OLAC Role Vocabulary&lt;/title&gt;
+		///    &lt;baseName&gt;role&lt;/baseName&gt;
+		///    &lt;issued&gt;20060406&lt;/issued&gt;
+		///    &lt;previousIssued&gt;20031010&lt;/previousIssued&gt;
+		///    &lt;abstract&gt;
+		///      &lt;p&gt;Role is an attribute of both the Creator and Contributor elements. (Please note that Dublin
+		///    [rest of string was truncated]&quot;;.
+		/// </summary>
+		internal static string OlacRoles {
+			get {
+				return ResourceManager.GetString("OlacRoles", resourceCulture);
+			}
+		}
+
 		internal static System.Drawing.Bitmap RecycleBin {
 			get {
 				object obj = ResourceManager.GetObject("RecycleBin", resourceCulture);

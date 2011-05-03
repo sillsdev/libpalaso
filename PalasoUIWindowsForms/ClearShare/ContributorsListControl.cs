@@ -100,6 +100,13 @@ namespace Palaso.ClearShare
 		}
 
 		/// ------------------------------------------------------------------------------------
+		public virtual Color BorderColor
+		{
+			get { return _panelGrid.BackColor; }
+			set { _panelGrid.BackColor = value; }
+		}
+
+		/// ------------------------------------------------------------------------------------
 		public bool InEditMode
 		{
 			get { return _grid.IsCurrentRowDirty; }

@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Palaso.Code;
 using Palaso.IO;
+using Palaso.UI.WindowsForms.Properties;
 
 namespace Palaso.ClearShare
 {
@@ -100,8 +101,9 @@ namespace Palaso.ClearShare
 		{
 			if (_roles == null)
 			{
-				var path = FileLocator.GetFileDistributedWithApplication("olac", "roles.xml");
-				var doc = XDocument.Load(path);
+				// TODO: Provide a way for user-specified roles to be read from a roles.xml
+				// file in a folder somewhere related to the application.
+				var doc = XDocument.Parse(Resources.OlacRoles);
 
 				// This is a bit confusing because the role heading node is at the same level
 				// (i.e. a sibling of) as all the associated term nodes. Therefore, the first

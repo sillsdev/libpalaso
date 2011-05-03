@@ -7,10 +7,15 @@ namespace Palaso.ClearShare
 	{
 		string GetValueForKey(string key);
 	}
+
+	/// ----------------------------------------------------------------------------------------
 	public interface IAutoCompleteValueProvider
 	{
 		/// ------------------------------------------------------------------------------------
 		IEnumerable<string> GetValuesForKey(string key);
+
+		/// <summary>Gives [key, (list of unique values)]</summary>
+		Dictionary<string, IEnumerable<string>> GetValueLists();
 	}
 
 	/// ----------------------------------------------------------------------------------------
