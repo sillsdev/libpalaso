@@ -80,6 +80,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		{
 			_templateDefinition = new WritingSystemDefinition(primary.ISO639, string.Empty, primary.Region, string.Empty, "ipa", false)
 									  {
+										  LanguageName = primary.LanguageName,
 										  DefaultFontSize = primary.DefaultFontSize,
 										  DefaultFontName = _fontsForIpa.FirstOrDefault(FontExists),
 										  IpaStatus = IpaStatusChoices.Ipa,
