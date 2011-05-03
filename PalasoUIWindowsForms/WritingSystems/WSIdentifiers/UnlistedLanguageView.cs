@@ -28,7 +28,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			if (_model.CurrentDefinition != null)
 			{
 				_updatingFromModel = true;
-				nonStandardLanguageCode.Text = _model.CodeFromPrivateUseInVariant();
 				nonStandardLanguageName.Text = _model.CurrentLanguageName;
 				_updatingFromModel = false;
 			}
@@ -70,7 +69,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				return;
 			//ResetFieldsIfNecessary();
 			//_model.SetCurrentVariant = "x-" + nonStandardLanguageCode.Text;
-			_model.SetCurrentVariantFromUnlistedLanguageCode(nonStandardLanguageCode.Text);
+			_model.SetCurrentVariantFromUnlistedLanguageName(nonStandardLanguageName.Text);
 			_model.CurrentLanguageName = nonStandardLanguageName.Text;
 		}
 
