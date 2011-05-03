@@ -128,13 +128,13 @@ namespace Palaso.WritingSystems
 				}
 			}
 
-			// Add Unlisted Language
-			ValidIso639LanguageCodes.Add(new Iso639LanguageCode("qaa", "Unlisted Language", String.Empty));
-
 			ValidIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
 			ValidIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
 			ValidIso3166Regions.Sort(IanaSubtag.CompareByDescription);
 			ValidRegisteredVariants.Sort(IanaSubtag.CompareByDescription);
+
+			// Add Unlisted Language
+			ValidIso639LanguageCodes.Insert(0, new Iso639LanguageCode("qaa", "Language Not Listed", String.Empty));
 
 			// To help people find Latin as a script tag
 			ValidIso15924Scripts.Insert(0, new Iso15924Script("Roman (Latin)", "Latn"));

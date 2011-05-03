@@ -686,7 +686,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void VerboseDescriptionWhenNoSubtagsSet()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition();
-			Assert.AreEqual("Unlisted Language. (qaa)", _model.VerboseDescription(_model.CurrentDefinition));
+			Assert.AreEqual("Language Not Listed. (qaa)", _model.VerboseDescription(_model.CurrentDefinition));
 		}
 
 		[Test]
@@ -739,97 +739,109 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void CodeFromPrivateUseInVariant_Empty_Empty()
+		public void SetCurrentVariantFromUnlistedLanguageName_Empty_Empty()
 		{
 			_model.AddNew();
-			_model.CurrentVariant = "";
-			Assert.AreEqual("", _model.CodeFromPrivateUseInVariant());
-		}
-
-		[Test]
-		public void CodeFromPrivateUseInVariant_NoX_Empty()
-		{
-			_model.AddNew();
-			_model.CurrentVariant = "1901";
-			Assert.AreEqual("", _model.CodeFromPrivateUseInVariant());
-		}
-
-		[Test]
-		public void CodeFromPrivateUseInVariant_HasXWith1Token_FirstToken()
-		{
-			_model.AddNew();
-			_model.CurrentVariant = "1901-x-puu";
-			Assert.AreEqual("puu", _model.CodeFromPrivateUseInVariant());
-		}
-
-		[Test]
-		public void CodeFromPrivateUseInVariant_HasXWith2Tokens_FirstNotWellKnownToken()
-		{
-			_model.AddNew();
-			_model.CurrentScriptCode = "Zxxx";
-			_model.CurrentVariant = "x-audio-puu-bogus";
-			Assert.AreEqual("puu", _model.CodeFromPrivateUseInVariant());
-		}
-
-		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_Empty_Empty()
-		{
-			_model.AddNew();
-			_model.SetCurrentVariantFromUnlistedLanguageCode("");
+			_model.CurrentVariant = "x-whatever";
+			_model.SetCurrentVariantFromUnlistedLanguageName("");
 			Assert.That(_model.CurrentVariant, Is.Empty);
 		}
 
 		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_NoPrivateUse_SetsPrivateUseToLanguageCode()
+		public void SetCurrentVariantFromUnlistedLanguageName_NoPrivateUse_SetsPrivateUseToLanguageName()
 		{
 			_model.AddNew();
-			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
-			Assert.That(_model.CurrentVariant, Is.EqualTo("x-ecc"));
+			_model.SetCurrentVariantFromUnlistedLanguageName("language");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-language"));
 		}
 
 		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingPrivateUse_InsertsLanguageCodeProperly()
+		public void SetCurrentVariantFromUnlistedLanguageName_ExistingPrivateUseCode_ReplacesLanguageCodeProperly()
 		{
 			_model.AddNew();
 			_model.CurrentVariant = "x-whatever";
-			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
-			Assert.That(_model.CurrentVariant, Is.EqualTo("x-ecc-whatever"));
+			_model.SetCurrentVariantFromUnlistedLanguageName("language");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-language"));
 		}
 
 		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingVariantAndPrivateUse_InsertsLanguageCodeProperly()
+		public void SetCurrentVariantFromUnlistedLanguageName_ExistingVariantAndWellKnownPrivateUse_InsertsLanguageCodeProperly()
+		{
+			_model.AddNew();
+			_model.CurrentScriptCode = "Zxxx";
+			_model.CurrentVariant = "1901-x-audio";
+			_model.SetCurrentVariantFromUnlistedLanguageName("language");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-language-audio"));
+		}
+
+		[Test]
+		public void SetCurrentVariantFromUnlistedLanguageName_ExistingVariantAndNotWellKnownPrivateUse_ReplacesPrivateUseWithLanguageCode()
 		{
 			_model.AddNew();
 			_model.CurrentVariant = "1901-x-whatever";
-			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
-			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-ecc-whatever"));
+			_model.SetCurrentVariantFromUnlistedLanguageName("language");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-language"));
 		}
 
 		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingVariant_InsertsLanguageCodeProperly()
+		public void SetCurrentVariantFromUnlistedLanguageName_ExistingVariant_InsertsLanguageCodeProperly()
 		{
 			_model.AddNew();
 			_model.CurrentVariant = "1901";
-			_model.SetCurrentVariantFromUnlistedLanguageCode("ecc");
-			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-ecc"));
+			_model.SetCurrentVariantFromUnlistedLanguageName("language");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("1901-x-language"));
 		}
 
 		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingPrivateUse_DoesNotSetDuplicatePrivateUse()
+		public void SetCurrentVariantFromUnlistedLanguageName_ExistingPrivateUse_DoesNotSetDuplicatePrivateUse()
 		{
 			_model.AddNew();
-			_model.CurrentVariant = "x-aaa";
-			_model.SetCurrentVariantFromUnlistedLanguageCode("aaa");
-			Assert.That(_model.CurrentVariant, Is.EqualTo("x-aaa"));
+			_model.CurrentVariant = "x-language";
+			_model.SetCurrentVariantFromUnlistedLanguageName("language");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-language"));
 		}
 
 		[Test]
-		public void SetCurrentVariantFromUnlistedLanguageCode_ExistingCasedPrivateUse_CaseInsensitiveDoesNotDuplicatePrivateUse()
+		public void SetCurrentVariantFromUnlistedLanguageName_ExistingCasedPrivateUse_CaseInsensitiveDoesNotDuplicatePrivateUse()
 		{
 			_model.AddNew();
-			_model.CurrentVariant = "x-AAA";
-			_model.SetCurrentVariantFromUnlistedLanguageCode("aAa");
-			Assert.That(_model.CurrentVariant, Is.EqualTo("x-AAA"));
+			_model.CurrentVariant = "x-LANGUAGE";
+			_model.SetCurrentVariantFromUnlistedLanguageName("laNgUAge");
+			Assert.That(_model.CurrentVariant, Is.EqualTo("x-LANGUAGE"));
+		}
+
+		[Test]
+		public void SetCurrentVariantFromUnlistedLanguageName_DefaultLanguageName_Empty()
+		{
+			_model.AddNew();
+			_model.CurrentVariant = "x-whatever";
+			_model.SetCurrentVariantFromUnlistedLanguageName("Language Not Listed"); // default unlisted language name
+			Assert.That(_model.CurrentVariant, Is.EqualTo(""));
+		}
+
+
+		[Test]
+		public void TrimLanguageNameForPrivateUse_Empty_Empty()
+		{
+			Assert.That(WritingSystemSetupModel.TrimLanguageNameForPrivateUse(""), Is.EqualTo(""));
+		}
+
+		[Test]
+		public void TrimLanguageNameForPrivateUse_LongerThan8Characters_8Characters()
+		{
+			Assert.That(WritingSystemSetupModel.TrimLanguageNameForPrivateUse("AVeryLongLanguageName"), Is.EqualTo("AVeryLon"));
+		}
+
+		[Test]
+		public void TrimLanguageNameForPrivateUse_NameHasNonLetters_RemovesNonLetters()
+		{
+			Assert.That(WritingSystemSetupModel.TrimLanguageNameForPrivateUse("Lang. 2"), Is.EqualTo("Lang"));
+		}
+
+		[Test]
+		public void TrimLanguageNameForPrivateUse_NormalName_NoChange()
+		{
+			Assert.That(WritingSystemSetupModel.TrimLanguageNameForPrivateUse("unlisted"), Is.EqualTo("unlisted"));
 		}
 
 	}
