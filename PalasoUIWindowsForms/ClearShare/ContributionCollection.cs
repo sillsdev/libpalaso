@@ -5,6 +5,7 @@ namespace Palaso.ClearShare
 {	/// ----------------------------------------------------------------------------------------
 	public interface IAutoCompleteValueProviderWeird
 	{
+		/// ------------------------------------------------------------------------------------
 		string GetValueForKey(string key);
 	}
 
@@ -13,9 +14,6 @@ namespace Palaso.ClearShare
 	{
 		/// ------------------------------------------------------------------------------------
 		IEnumerable<string> GetValuesForKey(string key);
-
-		/// <summary>Gives [key, (list of unique values)]</summary>
-		Dictionary<string, IEnumerable<string>> GetValueLists();
 	}
 
 	/// ----------------------------------------------------------------------------------------
