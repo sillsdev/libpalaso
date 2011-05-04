@@ -84,11 +84,11 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		{
 			try
 			{
-			   #if MONO
+#if MONO
 					// TODO: Find a way in Mono to send something to the recycle bin.
-									Directory.Delete(item.FolderPath);
-									return true;
-				#else
+					Directory.Delete(path);
+					return true;
+#else
 
 				//alternative using visual basic dll:  FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
 
