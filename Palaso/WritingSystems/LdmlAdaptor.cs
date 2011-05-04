@@ -206,10 +206,12 @@ namespace Palaso.WritingSystems
 				}
 
 				ws.DateModified = modified;
-				ws.ISO639 = GetSubNodeAttributeValue(identityReader, "language", "type");
-				ws.Script = GetSubNodeAttributeValue(identityReader, "script", "type");
-				ws.Region = GetSubNodeAttributeValue(identityReader, "territory", "type");
-				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
+				ws.SetAllRfc5646LanguageTagComponents(
+					GetSubNodeAttributeValue(identityReader, "language", "type"),
+					GetSubNodeAttributeValue(identityReader, "script", "type"),
+					GetSubNodeAttributeValue(identityReader, "territory", "type"),
+					GetSubNodeAttributeValue(identityReader, "variant", "type")
+					);
 
 				// move to end of identity node
 				while (identityReader.Read()) ;
