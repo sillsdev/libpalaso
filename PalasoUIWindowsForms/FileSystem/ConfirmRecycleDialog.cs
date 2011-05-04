@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -84,9 +85,22 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			try
 			{
 			   #if MONO
-					// TODO: Find a way in Mono to send something to the recycle bin.
-									Directory.Delete(item.FolderPath);
-									return true;
+			   // TODO: Find a way in Mono to send something to the recycle bin.
+				try
+				{
+					File.Delete(path);
+				}
+				catch
+				{
+					try
+					{
+						Directory.Delete(path);
+					}
+					catch
+					{
+					}
+				}
+				return true;
 				#else
 
 				//alternative using visual basic dll:  FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
