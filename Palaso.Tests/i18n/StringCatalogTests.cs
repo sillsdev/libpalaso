@@ -68,6 +68,11 @@ msgstr 'first={0}'
 msgid 'noParams'
 msgstr 'first'
 
+#: id on multiple lines
+msgid ''
+'Semantic Domains'
+msgstr 'translated'
+
 ";
 
 			contents = contents.Replace('\'', '"');
@@ -207,6 +212,13 @@ msgstr 'aa'
 			}
 
 
+		}
+
+		[Test]
+		public void MultiLines_EmtpyMsgId_Concatenated()
+		{
+			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
+			Assert.AreEqual("translated", catalog["Semantic Domains"]);
 		}
 	}
 }
