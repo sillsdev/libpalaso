@@ -13,7 +13,7 @@ namespace Palaso.WritingSystems
 {
 	public class LdmlAdaptor
 	{
-		private XmlNamespaceManager _nameSpaceManager;
+		private readonly XmlNamespaceManager _nameSpaceManager;
 
 		public LdmlAdaptor()
 		{
@@ -30,7 +30,7 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlReaderSettings settings = new XmlReaderSettings();
+			var settings = new XmlReaderSettings();
 			settings.NameTable = _nameSpaceManager.NameTable;
 			settings.ValidationType = ValidationType.None;
 			settings.XmlResolver = null;
@@ -65,12 +65,12 @@ namespace Palaso.WritingSystems
 
 		private static bool FindElement(XmlReader reader, string name)
 		{
-			return XmlHelpers.FindElement(reader, name, LdmlNodeComparer.CompareElementNames);
+			return XmlHelpers.FindNextElementInSequence(reader, name, LdmlNodeComparer.CompareElementNames);
 		}
 
 		private static bool FindElement(XmlReader reader, string name, string nameSpace)
 		{
-			return XmlHelpers.FindElement(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
+			return XmlHelpers.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
 		}
 
 		public static void WriteLdmlText(XmlWriter writer, string text)
@@ -135,7 +135,7 @@ namespace Palaso.WritingSystems
 				ReadTopLevelSpecialElement(reader, ws);
 			}
 			ws.StoreID = "";
-			// ws.Modified = false; // Note: This unfortunately is no longer true. The RFC5646 tag may have been auto modified above. CP 2010-12
+			ws.Modified = false;
 		}
 
 		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinition ws)
@@ -158,6 +158,15 @@ namespace Palaso.WritingSystems
 				}
 				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
+				int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
+				if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+				{
+					throw new ApplicationException(String.Format(
+						"Cannot read LDML expecting version {0} but got {1}",
+						WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
+						version
+					));
+				}
 
 				while (reader.NodeType != XmlNodeType.EndElement)
 				{
@@ -195,13 +204,14 @@ namespace Palaso.WritingSystems
 					modified = DateTime.ParseExact(dateTime, "'$Date: 'yyyy/MM/dd HH:mm:ss $", null,
 												   DateTimeStyles.AssumeUniversal);
 				}
+
 				ws.DateModified = modified;
-				RFC5646Tag rfcTag = new RFC5646Tag(GetSubNodeAttributeValue(identityReader, "language", "type"),
-													GetSubNodeAttributeValue(identityReader, "script", "type"),
-													GetSubNodeAttributeValue(identityReader, "territory", "type"),
-													GetSubNodeAttributeValue(identityReader, "variant", "type"));
-				ws.Rfc5646TagOnLoad = rfcTag;
-				ws.Rfc5646Tag = new RFC5646Tag(rfcTag);
+				ws.SetAllRfc5646LanguageTagComponents(
+					GetSubNodeAttributeValue(identityReader, "language", "type"),
+					GetSubNodeAttributeValue(identityReader, "script", "type"),
+					GetSubNodeAttributeValue(identityReader, "territory", "type"),
+					GetSubNodeAttributeValue(identityReader, "variant", "type")
+					);
 
 				// move to end of identity node
 				while (identityReader.Read()) ;
@@ -557,7 +567,7 @@ namespace Palaso.WritingSystems
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindElement(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
+			if (!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
 			{
 				return string.Empty;
 			}
@@ -694,6 +704,7 @@ namespace Palaso.WritingSystems
 
 		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemDefinition ws)
 		{
+			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
@@ -711,6 +722,7 @@ namespace Palaso.WritingSystems
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
+			WriteSpecialValue(writer, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
 		}
 
@@ -925,5 +937,6 @@ namespace Palaso.WritingSystems
 			}
 			parser.WriteIcuRules(writer, icu);
 		}
+
 	}
 }

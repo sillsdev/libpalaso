@@ -12,12 +12,12 @@ namespace Palaso.DictionaryServices.Processors
 		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, IProgress progress)
 		{
 			//can we unify the properites?
-			if (!TryMergeProperties(targetSense, incomingSense, "senses", progress))
+			if (!TryMergeProperties(targetSense, incomingSense, "senses of " + targetSense.Parent.ToString(), progress))
 			{
 				return false;
 			}
 
-			progress.WriteMessageWithColor("blue", "Merged 2 senses together.");
+			progress.WriteMessageWithColor("blue", "Merged two senses of {0} together: {1} into {2}", targetSense.Parent.ToString(), incomingSense.Id, targetSense.Id);
 
 			//at this point, we're committed);
 

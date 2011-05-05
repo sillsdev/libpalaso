@@ -28,7 +28,14 @@ namespace PalasoUIWindowsForms.TestApp
 //#if  TESTING_WS
 			string tempPath = Path.GetTempPath() + "WS-Test";
 			Directory.CreateDirectory(tempPath);
-			Application.Run(new WritingSystemSetupDialog(tempPath));
+			try
+			{
+				Application.Run(new WritingSystemSetupDialog(tempPath));
+			}
+			catch (Exception)
+			{
+				throw;
+			}
 //#endif
 #if TESTING_ARTOFREADING
 			var images = new ArtOfReadingImageCollection();

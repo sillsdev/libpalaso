@@ -28,6 +28,12 @@ namespace Palaso.Reporting
 		private static string s_previousNonFatalMessage;
 		private static Exception s_previousNonFatalException;
 
+		public static void Init(string emailAddress)
+		{
+			s_emailAddress = emailAddress;
+			ErrorReport.AddStandardProperties();
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
@@ -131,12 +137,15 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				object attr = GetAssemblyAttribute(typeof (AssemblyFileVersionAttribute));
+/*                object attr = GetAssemblyAttribute(typeof (AssemblyFileVersionAttribute));
 				if (attr != null)
 				{
 					return ((AssemblyFileVersionAttribute) attr).Version;
 				}
 				return Application.ProductVersion;
+ */
+				var ver = Assembly.GetExecutingAssembly().GetName().Version;
+				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
 			}
 		}
 
@@ -144,17 +153,14 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				string v = VersionNumberString;
-				string build = v.Substring(v.LastIndexOf('.') + 1);
-				string label = "";
-				object attr = GetAssemblyAttribute(typeof (AssemblyProductAttribute));
-				if (attr != null)
-				{
-					label = ((AssemblyProductAttribute) attr).Product + ", ";
-				}
+				var asm = Assembly.GetExecutingAssembly();
+				var ver = asm.GetName().Version;
+				var file = asm.CodeBase.Replace("file:", string.Empty);
+				file = file.TrimStart('/');
+				var fi = new FileInfo(file);
 
-				//return "Version 1 Preview, build " + build;
-				return label + "build " + build;
+				return string.Format("Version {0}.{1}.{2} Built on {3}", ver.Major, ver.Minor,
+					ver.Revision, fi.CreationTime.ToString("dd-MMM-yyyy"));
 			}
 		}
 

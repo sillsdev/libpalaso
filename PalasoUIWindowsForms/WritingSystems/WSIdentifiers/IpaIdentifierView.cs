@@ -55,8 +55,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			if (_model != null && _model.CurrentDefinition != null)
 			{
-				_model.CurrentRegion = string.Empty;
 				_model.CurrentScriptCode = string.Empty;
+
 				//if we're here, the user wants some kind of ipa
 				if (_model.CurrentIpaStatus == IpaStatusChoices.NotIpa)
 				{

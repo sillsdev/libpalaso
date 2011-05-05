@@ -89,11 +89,18 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ClearShare\ClearShareUsage.cs" />
+	<Compile Include="ClearShare\ContributionTests.cs" />
+	<Compile Include="ClearShare\ContributorsListControlViewModelTests.cs" />
+	<Compile Include="ClearShare\LicenseTests.cs" />
+	<Compile Include="ClearShare\OlacSystemTests.cs" />
+	<Compile Include="ClearShare\RoleTests.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTests.cs" />
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxTests.cs" />
+	<Compile Include="ImageToolbox\PalasoImageTests.cs" />
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
@@ -115,6 +122,7 @@
 	<Compile Include="WritingSystems\UITests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeItemTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestorTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionVariantHelperTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
 	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />

@@ -9,7 +9,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
-	public partial class WSIdentifierView : UserControl
+	public partial class WSIdentifierView : UserControl, ISelectableIdentifierOptions
 	{
 		private WritingSystemSetupModel _model;
 
@@ -56,6 +56,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_abbreviation.Text = _model.CurrentAbbreviation;
 //                _name.Text = _model.CurrentLanguageName;
 				//_code.Text=_model.CurrentISO;
+				UpdateSpecialComboBox();
 				comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
 			}
 			else
@@ -65,6 +66,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
   //              _name.Text = string.Empty;
 			   // _code.Text = string.Empty;
 				comboBox1.SelectedIndex = 0;
+			}
+		}
+
+		private void UpdateSpecialComboBox()
+		{
+			if (_model.CurrentISO == "qaa")
+			{
+				if (comboBox1.Items.Count == 4)
+				{
+					AddDetailsControl(new UnlistedLanguageView(_model));
+				}
+			}
+			else
+			{
+				if (comboBox1.Items.Count == 5)
+				{
+					comboBox1.Items.RemoveAt(4);
+				}
 			}
 		}
 
@@ -111,6 +130,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 //                _model.CurrentIsVoice = comboBox1.SelectedItem is VoiceIdentifierView;
 //            }
 
+		}
+
+		private void OnVisibleChanged(object sender, EventArgs e)
+		{
+			//UpdateSpecialComboBox();
+
+		}
+
+		public void Selected()
+		{
+			comboBox1_SelectedIndexChanged(null, null);
 		}
 
 		private void _abbreviation_TextChanged(object sender, EventArgs e)

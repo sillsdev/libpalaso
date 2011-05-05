@@ -64,7 +64,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			var dlg = new GetDialectNameDialog();
 			if (DialogResult.OK != dlg.ShowDialog())
 				return null;
-			TemplateDefinition.Variant += "-" + dlg.DialectName;
+			TemplateDefinition.Variant = WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName);
 			return TemplateDefinition;
 		}
 	}
@@ -78,8 +78,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public IpaSuggestion(WritingSystemDefinition primary)
 		{
-			_templateDefinition = new WritingSystemDefinition(primary.ISO639, string.Empty, primary.Region, string.Empty, primary.LanguageName, "ipa", false)
+			_templateDefinition = new WritingSystemDefinition(primary.ISO639, string.Empty, primary.Region, string.Empty, "ipa", false)
 									  {
+										  LanguageName = primary.LanguageName,
 										  DefaultFontSize = primary.DefaultFontSize,
 										  DefaultFontName = _fontsForIpa.FirstOrDefault(FontExists),
 										  IpaStatus = IpaStatusChoices.Ipa,

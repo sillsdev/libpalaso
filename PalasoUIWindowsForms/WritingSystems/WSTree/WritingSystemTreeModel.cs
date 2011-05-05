@@ -89,7 +89,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		{
 			var x = new List<WritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
 
-			var systemsOfSameLanguage = x.GroupBy(def=>def.ISO639);
+			var systemsOfSameLanguage = x.GroupBy(def=>def.LanguageName);
 
 			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{
@@ -122,6 +122,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 						parent.Children.Add(treeItem);
 					}
 				}
+
+				if (itemToUseForSuggestions.ISO639 == "qaa")
+				{
+					var treeItem = new WritingSystemRenameUnlistedLanguageTreeItem(item => _setupModel.RenameIsoCode(itemToUseForSuggestions));
+					parent.Children.Add(treeItem);
+				}
+
 				items.Add(parent);
 			}
 		}

@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
@@ -17,9 +18,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			if (_model != null && _model.CurrentDefinition != null)
 			{
-				_model.CurrentVariant = string.Empty;
-				_model.CurrentRegion = string.Empty;
-				_model.CurrentScriptCode = string.Empty;
 				_model.CurrentIsVoice = true;
 			}
 		}

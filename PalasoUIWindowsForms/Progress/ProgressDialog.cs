@@ -32,7 +32,9 @@ namespace Palaso.UI.WindowsForms.Progress
 		private BackgroundWorker _backgroundWorker;
 //        private ProgressState _lastHeardFromProgressState;
 		private ProgressState _progressState;
+		private TableLayoutPanel tableLayout;
 		private bool _workerStarted;
+		private bool _appUsingWaitCursor;
 
 		/// <summary>
 		/// Standard constructor
@@ -43,15 +45,46 @@ namespace Palaso.UI.WindowsForms.Progress
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			_statusLabel.BackColor = SystemColors.Control;
-			_progressLabel.BackColor = SystemColors.Control;
-			_overviewLabel.BackColor = SystemColors.Control;
+			_statusLabel.BackColor = Color.Transparent;
+			_progressLabel.BackColor = Color.Transparent;
+			_overviewLabel.BackColor = Color.Transparent;
 			_startTime = default(DateTime);
 			Text = Reporting.UsageReporter.AppNameToUseInDialogs;
+
+			_statusLabel.Font = SystemFonts.MessageBoxFont;
+			_progressLabel.Font = SystemFonts.MessageBoxFont;
+			_overviewLabel.Font = SystemFonts.MessageBoxFont;
+
+			_statusLabel.Text = string.Empty;
+			_progressLabel.Text = string.Empty;
+			_overviewLabel.Text = string.Empty;
+
+			_cancelButton.MouseEnter += delegate
+			{
+				_appUsingWaitCursor = Application.UseWaitCursor;
+				_cancelButton.Cursor = Cursor = Cursors.Arrow;
+				Application.UseWaitCursor = false;
+			};
+
+			_cancelButton.MouseLeave += delegate
+			{
+				Application.UseWaitCursor = _appUsingWaitCursor;
+			};
 
 			//avoids the client getting null errors if he checks this when there
 			//has yet to be a callback from the worker
 //            _lastHeardFromProgressState = new NullProgressState();
+		}
+
+		private void HandleTableLayoutSizeChanged(object sender, EventArgs e)
+		{
+			if (!IsHandleCreated)
+				CreateHandle();
+
+			var desiredHeight = tableLayout.Height + Padding.Top + Padding.Bottom + (Height - ClientSize.Height);
+			var scn = Screen.FromControl(this);
+			Height = Math.Min(desiredHeight, scn.WorkingArea.Height - 20);
+			AutoScroll = (desiredHeight > scn.WorkingArea.Height - 20);
 		}
 
 		/// <summary>
@@ -439,37 +472,47 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._showWindowIfTakingLongTimeTimer = new System.Windows.Forms.Timer(this.components);
 			this._progressTimer = new System.Windows.Forms.Timer(this.components);
 			this._overviewLabel = new System.Windows.Forms.Label();
+			this.tableLayout = new System.Windows.Forms.TableLayoutPanel();
+			this.tableLayout.SuspendLayout();
 			this.SuspendLayout();
 			//
 			// _statusLabel
 			//
 			this._statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._statusLabel.AutoSize = true;
 			this._statusLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+			this.tableLayout.SetColumnSpan(this._statusLabel, 2);
 			this._statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._statusLabel.Location = new System.Drawing.Point(9, 52);
+			this._statusLabel.Location = new System.Drawing.Point(0, 35);
+			this._statusLabel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 5);
 			this._statusLabel.Name = "_statusLabel";
-			this._statusLabel.Size = new System.Drawing.Size(277, 23);
+			this._statusLabel.Size = new System.Drawing.Size(355, 15);
 			this._statusLabel.TabIndex = 12;
+			this._statusLabel.Text = "#";
 			//
 			// _progressBar
 			//
 			this._progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this._progressBar.Location = new System.Drawing.Point(9, 78);
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.tableLayout.SetColumnSpan(this._progressBar, 2);
+			this._progressBar.Location = new System.Drawing.Point(0, 55);
+			this._progressBar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
 			this._progressBar.Name = "_progressBar";
-			this._progressBar.Size = new System.Drawing.Size(279, 18);
+			this._progressBar.Size = new System.Drawing.Size(355, 18);
 			this._progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
 			this._progressBar.TabIndex = 11;
 			this._progressBar.Value = 1;
 			//
 			// _cancelButton
 			//
+			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._cancelButton.AutoSize = true;
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._cancelButton.Location = new System.Drawing.Point(234, 99);
+			this._cancelButton.Location = new System.Drawing.Point(280, 85);
+			this._cancelButton.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
 			this._cancelButton.Name = "_cancelButton";
-			this._cancelButton.Size = new System.Drawing.Size(54, 23);
+			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 10;
 			this._cancelButton.Text = "&Cancel";
 			this._cancelButton.Click += new System.EventHandler(this.OnCancelButton_Click);
@@ -477,12 +520,16 @@ namespace Palaso.UI.WindowsForms.Progress
 			// _progressLabel
 			//
 			this._progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._progressLabel.AutoEllipsis = true;
+			this._progressLabel.AutoSize = true;
 			this._progressLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this._progressLabel.Location = new System.Drawing.Point(9, 104);
+			this._progressLabel.Location = new System.Drawing.Point(0, 90);
+			this._progressLabel.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
 			this._progressLabel.Name = "_progressLabel";
-			this._progressLabel.Size = new System.Drawing.Size(216, 14);
+			this._progressLabel.Size = new System.Drawing.Size(272, 13);
 			this._progressLabel.TabIndex = 9;
+			this._progressLabel.Text = "#";
 			//
 			// _showWindowIfTakingLongTimeTimer
 			//
@@ -498,32 +545,62 @@ namespace Palaso.UI.WindowsForms.Progress
 			// _overviewLabel
 			//
 			this._overviewLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._overviewLabel.AutoSize = true;
 			this._overviewLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+			this.tableLayout.SetColumnSpan(this._overviewLabel, 2);
 			this._overviewLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._overviewLabel.Location = new System.Drawing.Point(9, 7);
+			this._overviewLabel.Location = new System.Drawing.Point(0, 0);
+			this._overviewLabel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 20);
 			this._overviewLabel.Name = "_overviewLabel";
-			this._overviewLabel.Size = new System.Drawing.Size(277, 42);
+			this._overviewLabel.Size = new System.Drawing.Size(355, 15);
 			this._overviewLabel.TabIndex = 8;
+			this._overviewLabel.Text = "#";
+			//
+			// tableLayout
+			//
+			this.tableLayout.AutoSize = true;
+			this.tableLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.tableLayout.BackColor = System.Drawing.Color.Transparent;
+			this.tableLayout.ColumnCount = 2;
+			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayout.Controls.Add(this._cancelButton, 1, 3);
+			this.tableLayout.Controls.Add(this._overviewLabel, 0, 0);
+			this.tableLayout.Controls.Add(this._progressLabel, 0, 3);
+			this.tableLayout.Controls.Add(this._progressBar, 0, 2);
+			this.tableLayout.Controls.Add(this._statusLabel, 0, 1);
+			this.tableLayout.Dock = System.Windows.Forms.DockStyle.Top;
+			this.tableLayout.Location = new System.Drawing.Point(12, 12);
+			this.tableLayout.Name = "tableLayout";
+			this.tableLayout.RowCount = 4;
+			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayout.Size = new System.Drawing.Size(355, 108);
+			this.tableLayout.TabIndex = 13;
+			this.tableLayout.SizeChanged += new System.EventHandler(this.HandleTableLayoutSizeChanged);
 			//
 			// ProgressDialog
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AutoSize = true;
-			this.ClientSize = new System.Drawing.Size(298, 130);
+			this.ClientSize = new System.Drawing.Size(379, 150);
 			this.ControlBox = false;
-			this.Controls.Add(this._overviewLabel);
-			this.Controls.Add(this._progressLabel);
-			this.Controls.Add(this._cancelButton);
-			this.Controls.Add(this._progressBar);
-			this.Controls.Add(this._statusLabel);
+			this.Controls.Add(this.tableLayout);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ProgressDialog";
+			this.Padding = new System.Windows.Forms.Padding(12);
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Palaso";
 			this.Load += new System.EventHandler(this.ProgressDialog_Load);
 			this.Shown += new System.EventHandler(this.ProgressDialog_Shown);
+			this.tableLayout.ResumeLayout(false);
+			this.tableLayout.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

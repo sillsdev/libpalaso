@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="../OLAC_doc.xsl" type="text/xsl"?>
+<!DOCTYPE OLAC_doc SYSTEM "../OLAC_doc.dtd">
+<OLAC_doc>
+  <header>
+	 <status code="adopted" type="recommendation"/>
+	 <!-- Promoted to Adopted on 2008-12-19 -->
+	<title>OLAC Role Vocabulary</title>
+	<baseName>role</baseName>
+	<issued>20060406</issued>
+	<previousIssued>20031010</previousIssued>
+	<abstract>
+	  <p>Role is an attribute of both the Creator and Contributor elements. (Please note that Dublin
+	  Core now discourages the use of the Creator element, recommending that all Role information be
+	  associated with Contributor elements.) This document specifies the controlled vocabulary of the
+	  Role attribute used by OLAC. This attribute specifies the functional role of the entity named
+	  in the creation of a given resource.</p>
+	</abstract>
+	<editors>
+		  Heidi Johnson (<url>mailto:ailla@ailla.org</url>)
+		</editors>
+	<copyright>
+		  Heidi Johnson (University of Texas at Austin)
+		</copyright>
+	<changes>
+	  <p>Promoted to candidate status, with a call for review by
+		those who have put the document into practice.</p>
+	</changes>
+  </header>
+  <body>
+	<section>
+	  <heading>Introduction</heading>
+	  <p>Key points: multiple choices are allowed for a single participant.</p>
+	</section>
+	<section>
+	  <heading>Role</heading>
+	  <p>Each term of the controlled vocabulary is described in one of the
+		following subsections. The heading gives the encoded value for the term that is
+		to be used as the value of the <i>code</i> attribute of the <i>Contributor</i> metadata
+		element <cit>OLAC-Metadata</cit>. Under the heading, the term is described in four ways.
+		<i>Name</i> gives a descriptive label for the term. <i>Definition</i> is a one-line summary
+		of what the term means.
+		<i>Comments</i>  offers more details on what the term represents, and may also include
+		 examples given to illustrate how the term is meant to be applied.</p>
+		<p>Additional roles may be found in the MARC Relator set <cit>MARC-RELATOR</cit>. Any MARC
+		 term that does not appear in the OLAC Roles set defined below may be used in the sense
+		 defined in the MARC document. The roles defined here are either very commonly used to
+		 characterize the creators of linguistic resources, or have been re-defined to reflect
+		 specifically linguistic practice. Some examples of MARC Relator terms that may be used
+		 without modification are 'copyright_holder','artist', 'metadata_contact', 'director',
+		 and 'calligrapher'.</p>
+	  <term>
+		<code>annotator</code>
+		<name>Annotator</name>
+		<definition>The participant produced an annotation of this or a related
+		 resource.</definition>
+	  </term>
+	  <term>
+		<code>author</code>
+		<name>Author</name>
+		<definition>The participant contributed original writings to the resource.</definition>
+	  </term>
+	  <term>
+		<code>compiler</code>
+		<name>Compiler</name>
+		<definition>The participant is responsible for collecting the sub-parts of the
+		resource together.</definition>
+		<comment>
+		  <p>This refers to someone who creates a <i>single</i> resource with multiple
+					parts, such as a book of short stories, or a person who
+					produces a corpus of resources, which may be archived separately.</p>
+		</comment>
+		<examples><p>A compiler of a book of short stories or a CD with several songs on it;
+		  a collector of a corpus of recordings in some language or on a given topic;
+		  a person who assembles a suite of software tools.</p>
+		</examples>
+	  </term>
+	  <term>
+		<code>consultant</code>
+		<name>Consultant</name>
+		<definition>The participant contributes expertise to the creation of a work.</definition>
+		<comment>
+		  <p>This term is commonly used by field linguists for the native speakers who work with
+		  them in describing and analyzing a language.  They contribute their expertise in their
+		  native language to the resource, although their speech, sign, or writing may not appear
+		  directly in  the resource. In some parts of the world the preferred term for this role is
+		  "informant".</p>
+		</comment>
+	  </term>
+	  <term>
+		<code>data_inputter</code>
+		<name>Data Inputter</name>
+		<definition>The participant was responsible for entering, re-typing, and/or structuring the data
+			  contained in the resource.</definition>
+	  </term>
+	  <term>
+		<code>depositor</code>
+		<name>Depositor</name>
+		<definition>The participant was responsible for depositing the resource in an archive.</definition>
+	  </term>
+	  <term>
+		<code>developer</code>
+		<name>Developer</name>
+		<definition>The participant developed the methodology or tools that constitute the resource,
+		or that were used to create the resource.</definition>
+		<examples><p>A software programmer, designer, or analyst; a designer of a questionnaire
+		or research task.
+		</p></examples>
+	  </term>
+	  <term>
+		<code>editor</code>
+		<name>Editor</name>
+		<definition>The participant reviewed, corrected, and/or tested the resource.</definition>
+		<comment>
+		  <p>This role includes anyone whose role was editorial in nature, such as proof-readers,
+					debuggers, testers, etc.  It may overlap the Compiler role in some cases.</p>
+		</comment>
+	  </term>
+	  <term>
+		<code>illustrator</code>
+		<name>Illustrator</name>
+		<definition>The participant contributed drawings or other illustrations to the resource.</definition>
+	  </term>
+	  <term>
+		<code>interpreter</code>
+		<name>Interpreter</name>
+		<definition>The participant translates in real-time or explains the discourse recorded in the resource.</definition>
+		<comment>
+			<p> The choice between 'interpreter' and 'translator' may depend on the dynamics of the resource creation
+		  event or process. Generally, if the participant is translating 'live'; that is, while the speaker or signer is
+		  speaking or signing, she or he should be identified as an interpreter. Also, some discourse genres include a
+		  participant who interprets or explains a performance of some kind.</p></comment>
+		<examples><p>A person translating from English to ASL during a speech; a Kuna chief who interprets a chant that
+		  another chief has just performed, thus completing the ceremony.</p></examples>
+	  </term>
+	  <term>
+		<code>interviewer</code>
+		<name>Interviewer</name>
+		<definition>The participant conducted an interview that forms part of the resource.</definition>
+	  </term>
+	  <term>
+		<code>participant</code>
+		<name>Participant</name>
+		<definition>The participant was present during the creation of the resource, but did not
+		contribute substantially to its content.</definition>
+		<comment>
+		  <p>This role is intended for minor participants such as audience members or other peripherally-involved
+		  participants in the event.  These interlocutors need not have been physically present.  They could be
+		  participants in some form of long-distance communication, such as lurkers in an online discussion, or they
+		  may have participated in general sense of having allowed the creation event to take place, such as the
+		  mayor of an indigenous community.</p>
+		</comment>
+	  </term>
+	  <term>
+		<code>performer</code>
+		<name>Performer</name>
+		<definition>The participant performed some portion of a recorded, filmed, or transcribed resource.</definition>
+		<comment>
+		  <p>It is recommended that this term be used only for creative participants whose role is not better
+		  indicated by a more specific term, such as 'speaker', 'signer', or 'singer'. </p></comment>
+		<examples><p>A person performing a ceremony or delivering an oration or a sermon; native speakers
+		  re-enacting a traditional genre of speech, such as ritual greetings or insults; an actor or musician.</p>
+		</examples>
+	  </term>
+	  <term>
+		<code>photographer</code>
+		<name>Photographer</name>
+		<definition>The participant took the photograph, or shot the film, that appears in or
+				constitutes the resource.</definition>
+	  </term>
+	  <term>
+		<code>recorder</code>
+		<name>Recorder</name>
+		<definition>The participant operated the recording machinery used to create the resource.</definition>
+	  </term>
+	  <term>
+		<code>researcher</code>
+		<name>Researcher</name>
+		<definition>The resource was created as part of the participant's research, or the research
+		presents interim or final results from the participant's research.</definition>
+	  </term>
+	  <term>
+		<code>research_participant</code>
+		<name>Research Participant</name>
+		<definition>The participant acted as a research subject or responded to a questionnaire, the
+				results of which study form the basis of the resource.</definition>
+	  </term>
+	  <term>
+		<code>responder</code>
+		<name>Responder</name>
+		<definition>The participant was an interlocutor in some sort of discourse event.
+		</definition>
+		<comment><p>This person's voice can be  heard (or their words can be read)
+		  in the resource, typically saying the
+		  language-appropriate equivalent of "uh-huh", "amen", "you don't say", etc.
+		  This role is sometimes referred
+		  to as a "yes-sayer", "backchanneler, or "co-conversant".
+		</p></comment>
+	  </term>
+	  <term>
+		<code>signer</code>
+		<name>Signer</name>
+		<definition>The participant was a principal signer in a resource that consists of a
+				recording, a film, or a transcription of a recorded resource.</definition>
+		<comment>
+		  <p>Signers are those whose gestures predominate in a recorded or filmed
+		  resource. (This resource may be a transcription of that recording.)</p></comment>
+		<examples><p>Participants in a recorded conversation, elicitation session, or informal
+		  narration would be termed Signers.  Audience members who do not participate
+		  beyond the occasional backchannel would be termed Responders.
+		</p></examples>
+	  </term>
+	  <term>
+		<code>singer</code>
+		<name>Singer</name>
+		<definition>The participant sang, either individually or as part of a group, in
+			a resource that consists of a recording, a film, or a transcription of a recorded
+			resource.
+		</definition>
+	  </term>
+	  <term>
+		<code>speaker</code>
+		<name>Speaker</name>
+		<definition>The participant was a principal speaker in a resource that consists of a
+				recording, a film, or a  transcription of a recorded resource.</definition>
+		<comment>
+		  <p>Speakers are those whose voices predominate in a recorded or filmed
+		  resource. (This resource may be a transcription of that recording.) </p>
+		  <p>Examples: Participants in a recorded conversation, elicitation session, or informal
+		  narration would be termed Speakers.  Audience members who do not participate
+		  beyond the occasional backchannel would be termed Responders.</p>
+		</comment>
+	  </term>
+	  <term>
+		<code>sponsor</code>
+		<name>Sponsor</name>
+		<definition>The participant contributed financial support to the creation of the resource.</definition>
+	  </term>
+	  <term>
+		<code>transcriber</code>
+		<name>Transcriber</name>
+		<definition>The participant produced a transcription of this or a related resource.</definition>
+	  </term>
+	  <term>
+		<code>translator</code>
+		<name>Translator</name>
+		<definition>The participant produced a translation of this or a related resource.</definition>
+	  </term>
+	</section>
+  </body>
+
+  <todo>
+	<p>
+	  Elicit roles from language researchers other than documentary linguists.
+	</p>
+  </todo>
+
+  <references>
+	<ref abbrev="OLAC-Metadata">OLAC Metadata<br/>
+	  &lt;<url>http://www.language-archives.org/OLAC/metadata.html</url>></ref>
+	<ref abbrev="MARC-RELATOR">MARC Relator Terms.<br/>
+	  &lt;<url>http://www.loc.gov/marc/relators/relators.html</url>></ref>
+  </references>
+</OLAC_doc>

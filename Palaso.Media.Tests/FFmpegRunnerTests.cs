@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
-using Palaso.CommandLineProcessing;
+using Palaso.IO;
 using Palaso.Media.Tests.Properties;
 using Palaso.Progress.LogBox;
-using Palaso.TestUtilities;
-
 
 namespace Palaso.Media.Tests
 {

@@ -19,7 +19,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		public void BindToModel(WritingSystemTreeModel model)
 		{
 			  _model = model;
-			_model.UpdateDisplay += new EventHandler(OnUpdateDisplay);
+			_model.UpdateDisplay += OnUpdateDisplay;
 		}
 		public WritingSystemTreeView(WritingSystemTreeModel model)
 		{

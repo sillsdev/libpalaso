@@ -182,4 +182,26 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			get { return true; }
 		}
 	}
+
+	public class WritingSystemRenameUnlistedLanguageTreeItem : WritingSystemTreeItem
+	{
+		public WritingSystemRenameUnlistedLanguageTreeItem(Action<WritingSystemTreeItem> clickAction)
+			: base("Change to Listed Language", clickAction)
+		{
+		}
+
+		protected override Color ForeColor
+		{
+			get { return System.Drawing.Color.DarkBlue; }
+		}
+
+		protected override Font Font
+		{
+			get { return kLabelFont; }
+		}
+		public override bool CanSelect
+		{
+			get { return true; }
+		}
+	}
 }

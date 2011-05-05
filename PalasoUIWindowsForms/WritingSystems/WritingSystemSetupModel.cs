@@ -6,10 +6,12 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Palaso.Code;
+using Palaso.Data;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
@@ -23,16 +25,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// WritingSystemSetupDialog provides its own WritingSystemSetupModel object and can be used by itself.
 	/// </summary>
 	/// <example><code>
-	/// WritingSystemSetupModel model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore();
+	/// WritingSystemSetupModel model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository();
 	/// WritingSystemSetupView panel = new WritingSystemSetupView();
 	/// panel.BindToModel(model);
 	/// </code></example>
 	public class WritingSystemSetupModel
 	{
-		private readonly bool _usingStore;
+		private readonly bool _usingRepository;
 		private WritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
-		private readonly IWritingSystemStore _writingSystemStore;
+		private readonly IWritingSystemRepository _writingSystemRepository;
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
@@ -51,19 +53,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <summary>
 		/// Creates the presentation model object based off of a writing system store of some sort.
 		/// </summary>
-		public WritingSystemSetupModel(IWritingSystemStore writingSystemStore)
+		public WritingSystemSetupModel(IWritingSystemRepository writingSystemRepository)
 		{
-			if (writingSystemStore == null)
+			if (writingSystemRepository == null)
 			{
-				throw new ArgumentNullException("writingSystemStore");
+				throw new ArgumentNullException("writingSystemRepository");
 			}
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
-			_writingSystemStore = writingSystemStore;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemStore.WritingSystemDefinitions);
+			_writingSystemRepository = writingSystemRepository;
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
 			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
 			_currentIndex = -1;
-			_usingStore = true;
+			_usingRepository = true;
 		}
 
 		/// <summary>
@@ -81,12 +83,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
-			_writingSystemStore = null;
+			_writingSystemRepository = null;
 			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
 			WritingSystemDefinitions.Add(ws);
 			_deletedWritingSystemDefinitions = null;
-			_usingStore = false;
+			_usingRepository = false;
 		}
+
+
+
 
 		#region Properties
 		/// <summary>
@@ -135,7 +140,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					throw new InvalidOperationException("Unable to change selection without writing system store.");
 				}
@@ -186,7 +191,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					throw new InvalidOperationException("Unable to change selection without writing system store.");
 				}
@@ -262,7 +267,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					return new bool[] {false};
 				}
@@ -270,7 +275,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = _writingSystemStore.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
+					string id = _writingSystemRepository.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -316,7 +321,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				if (!_usingStore)
+				if (!_usingRepository)
 				{
 					return false;
 				}
@@ -404,6 +409,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// populate the rest of the list with all languages from the OS
 				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures))
 				{
+					if(prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
 					yield return
 						new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
 				}
@@ -414,9 +423,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// True if the model has an underlying writing system store,
 		/// false if it is operating on only a single WritingSystemDefinition.
 		/// </summary>
-		public bool UsingWritingSystemStore
+		public bool UsingWritingSystemRepository
 		{
-			get { return _usingStore; }
+			get { return _usingRepository; }
 		}
 
 		#endregion
@@ -424,8 +433,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		#region CurrentWritingSystemProperties
 
 // Properties not (yet) mirrored:
-//                Current.ScriptOption; // ro - ScriptOption
-//                Current.ScriptOptions; // ro - List<ScriptOption>
+//                Current.Iso15924Script; // ro - Iso15924Script
+//                Current.ScriptOptions; // ro - List<Iso15924Script>
 //                Current.MarkedForDeletion; // bool
 //                Current.Modified; // bool
 //                Current.StoreID; // string
@@ -626,17 +635,72 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return CurrentDefinition.Variant ?? string.Empty; }
 			set
 			{
+				string original = CurrentDefinition.Variant;
 				if (CurrentDefinition.Variant != value)
 				{
-					CurrentDefinition.Variant = value;
-					OnCurrentItemUpdated();
+					try
+					{
+						CurrentDefinition.Variant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
+						OnCurrentItemUpdated();
+					}
+					catch (ArgumentException e)
+					{
+						CurrentDefinition.Variant = original;
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e.Message);
+					}
+
 				}
 			}
 		}
 
+
 		public string CurrentVerboseDescription
 		{
-			get { return CurrentDefinition!=null ? CurrentDefinition.VerboseDescription : string.Empty; }
+			get
+			{
+				return CurrentDefinition != null ? VerboseDescription(CurrentDefinition) : String.Empty;
+			}
+		}
+
+		virtual public string VerboseDescription(WritingSystemDefinition writingSystem)
+		{
+			var summary = new StringBuilder();
+			summary.AppendFormat(" {0}", writingSystem.LanguageName);
+			if (!String.IsNullOrEmpty(writingSystem.Region))
+			{
+				summary.AppendFormat(" in {0}", writingSystem.Region);
+			}
+			if (!String.IsNullOrEmpty(writingSystem.Script))
+			{
+				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortLabel());
+			}
+
+			summary.AppendFormat(". ({0})", writingSystem.RFC5646);
+			return summary.ToString().Trim();
+		}
+
+		public Iso15924Script CurrentIso15924Script
+		{
+			get
+			{
+				if (_currentWritingSystem == null)
+					return null;
+
+				string script = String.IsNullOrEmpty(_currentWritingSystem.Script) ? "latn" : _currentWritingSystem.Script;
+				return StandardTags.ValidIso15924Scripts.FirstOrDefault(scriptInfo => scriptInfo.Code == script);
+				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
+			}
+			set
+			{
+				if (value == null)
+				{
+					CurrentScriptCode = string.Empty;
+				}
+				else
+				{
+					CurrentScriptCode = value.Code;
+				}
+			}
 		}
 
 		public string CurrentVersionDescription
@@ -715,48 +779,40 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public enum SelectionsForSpecialCombo
 		{
+			//Note this list is a bit restrictive in that you may want to change the region for a given audio writing system i.e. en-Zxxx-GB-x-audio vs en-Zxxx-US-x-audio
 			None=0,
 			Ipa=1,
 			Voice=2,
 			ScriptRegionVariant=3,
-			Custom=4
+			UnlistedLanguageDetails=4
 		}
+
 		public SelectionsForSpecialCombo SelectionForSpecialCombo
 		{
 			get
 			{
-				//TODO: this is really too simplistic
-
+				// TODO: this is really too simplistic
+				// Changed 2011-04 CP, seems ok to me.
 
 				if (_currentWritingSystem.IsVoice)
 				{
 					return SelectionsForSpecialCombo.Voice;
 				}
-//                if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
-//                {
-//                    return SelectionsForSpecialCombo.Custom;
-//                }
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Script))
-				{
-					if(WritingSystemDefinition.ScriptOptions.Any(s=>s.Code==_currentWritingSystem.Script))
-					{
-						return SelectionsForSpecialCombo.ScriptRegionVariant;
-					}
-					return SelectionsForSpecialCombo.Custom;
-				}
-
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Region))
-				{
-					return SelectionsForSpecialCombo.ScriptRegionVariant;
-				}
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
-				{
-					if(!_currentWritingSystem.Variant.StartsWith("fonipa"))
-						return SelectionsForSpecialCombo.ScriptRegionVariant;
-				}
 				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
 				{
 					return SelectionsForSpecialCombo.Ipa;
+				}
+				if (_currentWritingSystem.ISO639 == "qaa")
+				{
+					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
+
+				}
+				if (!string.IsNullOrEmpty(_currentWritingSystem.Script) ||
+					!string.IsNullOrEmpty(_currentWritingSystem.Region) ||
+					!string.IsNullOrEmpty(_currentWritingSystem.Variant)
+				)
+				{
+					return SelectionsForSpecialCombo.ScriptRegionVariant;
 				}
 				return SelectionsForSpecialCombo.None;
 			}
@@ -777,29 +833,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
-				}
-			}
-		}
-
-		public ScriptOption CurrentScriptOption
-		{
-			get
-			{
-				if(_currentWritingSystem==null  )
-					return null;
-
-				return _currentWritingSystem.ScriptOption;
-				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
-			}
-			set
-			{
-				if(value==null)
-				{
-					CurrentScriptCode=string.Empty;
-				}
-				else
-				{
-					CurrentScriptCode = value.Code;
 				}
 			}
 		}
@@ -861,7 +894,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void DeleteCurrent()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to delete current selection when there is no writing system store.");
 			}
@@ -879,7 +912,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// if it doesn't have a store ID, it shouldn't be in the store
 			if (!string.IsNullOrEmpty(idToDelete))
 			{
-				_writingSystemStore.Remove(idToDelete);
+				_writingSystemRepository.Remove(idToDelete);
 			}
 			OnAddOrDelete();
 		}
@@ -889,7 +922,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void DuplicateCurrent()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no writing system store.");
 			}
@@ -897,7 +930,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			WritingSystemDefinition ws = _writingSystemStore.MakeDuplicate(CurrentDefinition);
+			WritingSystemDefinition ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -909,14 +942,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns></returns>
 		public virtual void AddNew()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
 			WritingSystemDefinition ws=null;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
 			{
-				ws = _writingSystemStore.CreateNew();
+				ws = _writingSystemRepository.CreateNew();
 				ws.Abbreviation = "New";
 			}
 			else
@@ -925,9 +958,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if(ws==null)//cancelled
 				return;
+
+			if (ws.Abbreviation == "qaa") // special case for Unlisted Language
+			{
+				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
+			}
 			WritingSystemDefinitions.Add(ws);
-			OnAddOrDelete();
 			CurrentDefinition = ws;
+			OnAddOrDelete();
 		}
 
 		private void OnAddOrDelete()
@@ -967,12 +1005,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void Save()
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to save when there is no writing system store.");
 			}
 			SetAllPossibleAndRemoveOthers();
-			_writingSystemStore.Save();
+			_writingSystemRepository.Save();
 		}
 
 		/// <summary>
@@ -988,7 +1026,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			adaptor.Write (filePath, _currentWritingSystem, null);
 		}
 
-		private void SetAllPossibleAndRemoveOthers()
+		// TODO: needs to be tested cjh
+		public void SetAllPossibleAndRemoveOthers()
 		{
 			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
 			// The reason to do this is to solve problems with cycles that could prevent saving.
@@ -1001,9 +1040,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Dictionary<WritingSystemDefinition, string> cantSet = new Dictionary<WritingSystemDefinition, string>();
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				if (_writingSystemStore.CanSet(ws))
+				if (_writingSystemRepository.CanSet(ws))
 				{
-					_writingSystemStore.Set(ws);
+					_writingSystemRepository.Set(ws);
 				}
 				else
 				{
@@ -1012,22 +1051,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
-				while (!_writingSystemStore.CanSet(kvp.Key))
+				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
-					kvp.Key.ISO639 += "X";
+					kvp.Key.AddToPrivateUse("dup");
+					//kvp.Key.ISO639 += "X";
 				}
-				_writingSystemStore.Set(kvp.Key);
+				_writingSystemRepository.Set(kvp.Key);
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
 				kvp.Key.ISO639 = kvp.Value;
-				if (_writingSystemStore.CanSet(kvp.Key))
+				if (_writingSystemRepository.CanSet(kvp.Key))
 				{
-					_writingSystemStore.Set(kvp.Key);
+					_writingSystemRepository.Set(kvp.Key);
 				}
 				else
 				{
-					_writingSystemStore.Remove(kvp.Key.StoreID);
+					_writingSystemRepository.Remove(kvp.Key.StoreID);
 				}
 			}
 		}
@@ -1094,7 +1134,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <param name="fileName">Full path of file to import</param>
 		public void ImportFile(string fileName)
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to import file when not using writing system store.");
 			}
@@ -1107,7 +1147,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new ArgumentException("File does not exist.", "fileName");
 			}
 			LdmlAdaptor _adaptor = new LdmlAdaptor();
-			WritingSystemDefinition ws = _writingSystemStore.CreateNew();
+			WritingSystemDefinition ws = _writingSystemRepository.CreateNew();
 			_adaptor.Read(fileName, ws);
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
@@ -1124,13 +1164,95 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        }
 		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
 		{
-			if (!_usingStore)
+			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
 			WritingSystemDefinitions.Add(definition);
 			OnAddOrDelete();
 			CurrentDefinition = definition;
+		}
+
+		internal void RenameIsoCode(WritingSystemDefinition existingWs)
+		{
+			WritingSystemDefinition newWs = null;
+			if (!_usingRepository)
+			{
+				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+			}
+			if (MethodToShowUiToBootstrapNewDefinition != null)
+			{
+				 newWs = MethodToShowUiToBootstrapNewDefinition();
+			}
+			if (newWs == null) //cancelled
+				return;
+
+			existingWs.ISO639 = newWs.ISO639;
+			existingWs.LanguageName = newWs.LanguageName;
+
+			// Remove First Not WellKnownPrivateUseTag
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+			WritingSystemDefinition.SplitVariantAndPrivateUse(existingWs.Variant, out rfcVariant, out rfcPrivateUse);
+			List<string> privateUseTokens = new List<string>(rfcPrivateUse.Split('-'));
+			string oldIsoCode = WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens).FirstOrDefault();
+			if (!String.IsNullOrEmpty(oldIsoCode))
+			{
+				privateUseTokens.Remove(oldIsoCode);
+			}
+			string newPrivateUse = "x-" + String.Join("-", privateUseTokens.ToArray()); //would be nice if writingsystemdefintion.ConcatenateVariantAndPrivateUse would add the x for us
+			existingWs.Variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, newPrivateUse);
+
+			OnSelectionChanged();
+			OnCurrentItemUpdated();
+		}
+
+		internal void SetCurrentVariantFromUnlistedLanguageName(string languageName)
+		{
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+
+			string trimmedLanguageName = TrimLanguageNameForPrivateUse(languageName);
+
+			WritingSystemDefinition.SplitVariantAndPrivateUse(CurrentVariant, out rfcVariant, out rfcPrivateUse);
+			List<string> privateUseTokens = rfcPrivateUse.Split('-').ToList();
+			if (privateUseTokens.Contains(trimmedLanguageName, StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+
+			// check if there is already a code in private use
+			string previousPrivateUseCode = "";
+			foreach (var notWellKnownTag in WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens))
+			{
+				previousPrivateUseCode = notWellKnownTag;
+				break;
+			}
+
+			// remove previous private use code if present
+			if (!string.IsNullOrEmpty(previousPrivateUseCode))
+			{
+				privateUseTokens.Remove(previousPrivateUseCode);
+			}
+
+			if (languageName != "Language Not Listed" && !string.IsNullOrEmpty(languageName))
+			{
+				privateUseTokens.Insert(0, trimmedLanguageName);
+			}
+
+			rfcPrivateUse = string.Join("-", privateUseTokens.ToArray());
+			CurrentVariant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, rfcPrivateUse);
+		}
+
+
+		internal static string TrimLanguageNameForPrivateUse(string languageName)
+		{
+			languageName = Regex.Replace(languageName, @"[^a-zA-Z]", "");
+			if (languageName.Length > 8)
+			{
+				languageName = languageName.Substring(0, 8);
+			}
+			return languageName;
 		}
 	}
 }
