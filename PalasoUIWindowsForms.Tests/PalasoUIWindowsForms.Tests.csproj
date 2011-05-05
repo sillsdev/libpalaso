@@ -121,7 +121,6 @@
 	<Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestorTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionVariantHelperTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
-	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
 	<Compile Include="Keyboarding\LinuxKeyboardControllerTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeModelTests.cs" />

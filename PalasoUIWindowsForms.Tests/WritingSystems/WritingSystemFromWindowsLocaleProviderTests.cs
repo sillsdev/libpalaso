@@ -1,33 +1,18 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 
-namespace PalasoUIWindowsForms.Tests
+namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
 	[TestFixture]
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
-		[SetUp]
-		public void Setup()
-		{
-
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-
-		}
 		[Test]
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
-			IEnumerable<WritingSystemDefinition> provider =
-				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
 			Assert.IsNotNull(provider.First());
 		}
 
@@ -38,8 +23,7 @@ namespace PalasoUIWindowsForms.Tests
 		[Test]
 		public void GetEnumerator_IfHaveMultipleSystemKeyboardsForSameLanguage_OnlyReturnsOneForEachLanguage()
 		{
-			IEnumerable<WritingSystemDefinition> provider =
-				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
 			Assert.IsNotNull(provider.First());
 			foreach (var group in provider.GroupBy(d=>d.RFC5646))
 			{
