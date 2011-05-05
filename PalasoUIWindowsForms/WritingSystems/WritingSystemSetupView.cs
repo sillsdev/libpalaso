@@ -54,6 +54,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			set { splitContainer2.SplitterDistance = value; }
 		}
 
+		public void SetWritingSystemsInRepo()
+		{
+			_model.SetAllPossibleAndRemoveOthers();
+		}
+
 		private void UpdateHeaders(object sender, EventArgs e)
 		{
 			if(_model.CurrentDefinition ==null)

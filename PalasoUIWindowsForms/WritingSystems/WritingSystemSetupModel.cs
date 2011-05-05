@@ -62,7 +62,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
 			_writingSystemRepository = writingSystemRepository;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.WritingSystemDefinitions);
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
 			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
 			_currentIndex = -1;
 			_usingRepository = true;
@@ -1026,7 +1026,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			adaptor.Write (filePath, _currentWritingSystem, null);
 		}
 
-		private void SetAllPossibleAndRemoveOthers()
+		// TODO: needs to be tested cjh
+		public void SetAllPossibleAndRemoveOthers()
 		{
 			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
 			// The reason to do this is to solve problems with cycles that could prevent saving.

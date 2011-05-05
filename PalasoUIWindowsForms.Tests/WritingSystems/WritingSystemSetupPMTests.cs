@@ -14,14 +14,15 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	public class WritingSystemSetupPMTests
 	{
 		WritingSystemSetupModel _model;
+		IWritingSystemRepository _writingSystemRepository;
 		string _testFilePath;
 
 		[SetUp]
 		public void Setup()
 		{
 			_testFilePath = Path.GetTempFileName();
-			IWritingSystemRepository writingSystemRepository = new LdmlInXmlWritingSystemRepository();
-			_model = new WritingSystemSetupModel(writingSystemRepository);
+			_writingSystemRepository = new LdmlInXmlWritingSystemRepository();
+			_model = new WritingSystemSetupModel(_writingSystemRepository);
 			Palaso.Reporting.ErrorReport.IsOkToInteractWithUser = false;
 		}
 
@@ -842,6 +843,17 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void TrimLanguageNameForPrivateUse_NormalName_NoChange()
 		{
 			Assert.That(WritingSystemSetupModel.TrimLanguageNameForPrivateUse("unlisted"), Is.EqualTo("unlisted"));
+		}
+
+		[Test]
+		public void SetAllPossibleAndRemoveOthers_HasWritingSystems_SetsToRepo()
+		{
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("de"));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
+			_model.SetAllPossibleAndRemoveOthers();
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(3));
 		}
 
 	}
