@@ -274,6 +274,25 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public void AddToVariant(string tag)
+		{
+			if (StandardTags.IsValidRegisteredVariant(tag))
+			{
+				_rfcTag.AddToVariant(tag);
+			}
+			else
+			{
+				_rfcTag.AddToPrivateUse(tag);
+			}
+			CheckVariantAndScriptRules();
+		}
+
+		public void AddToPrivateUse(string tag)
+		{
+			_rfcTag.AddToPrivateUse(tag);
+			CheckVariantAndScriptRules();
+		}
+
 		public static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
 		{
 			if (variantAndPrivateUse.StartsWith("x-",StringComparison.OrdinalIgnoreCase)) // Private Use at the beginning
@@ -321,6 +340,8 @@ namespace Palaso.WritingSystems
 			}
 			return variantToReturn;
 		}
+
+
 
 		private void CheckVariantAndScriptRules()
 		{

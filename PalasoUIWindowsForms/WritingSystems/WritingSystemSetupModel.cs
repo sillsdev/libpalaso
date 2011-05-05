@@ -1053,7 +1053,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
-					kvp.Key.ISO639 += "X";
+					kvp.Key.AddToPrivateUse("dup");
+					//kvp.Key.ISO639 += "X";
 				}
 				_writingSystemRepository.Set(kvp.Key);
 			}

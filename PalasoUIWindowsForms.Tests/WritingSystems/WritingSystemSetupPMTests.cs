@@ -856,5 +856,17 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			Assert.That(_writingSystemRepository.Count, Is.EqualTo(3));
 		}
 
+		[Test]
+		public void SetAllPossibleAndRemoveOthers_HasDuplicateWritingSystems_SetsToRepo()
+		{
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("de"));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
+			_model.SetAllPossibleAndRemoveOthers();
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(4));
+		}
+
 	}
 }
