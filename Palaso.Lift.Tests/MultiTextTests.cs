@@ -1,12 +1,12 @@
 using System;
 using System.ComponentModel;
-using LiftIO.Parsing;
 using Palaso.Lift;
-
+using Palaso.Lift.Parsing;
 using NUnit.Framework;
 
 namespace WeSay.LexicalModel.Tests.Foundation
 {
+	// ReSharper disable InconsistentNaming
 	[TestFixture]
 	public class MultiTextTests
 	{
@@ -243,4 +243,5 @@ MultiText.StripMarkers(null));
 		}
 
 	}
+	// ReSharper restore InconsistentNaming
 }
