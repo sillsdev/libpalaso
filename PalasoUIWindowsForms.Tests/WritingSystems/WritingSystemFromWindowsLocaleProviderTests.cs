@@ -10,6 +10,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
 		[Test]
+#if MONO
+		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
+#endif
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
 			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
@@ -21,6 +24,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		/// keyboards set up for a language.
 		/// </summary>
 		[Test]
+#if MONO
+		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
+#endif
 		public void GetEnumerator_IfHaveMultipleSystemKeyboardsForSameLanguage_OnlyReturnsOneForEachLanguage()
 		{
 			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
