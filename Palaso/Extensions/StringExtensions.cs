@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -26,6 +27,27 @@ namespace Palaso.Extensions
 			return r;
 		}
 
+		/// <summary>
+		/// normal string.format will throw if it can't do the format; this is dangerous if you're, for example
+		/// just logging stuff that might contain messed up strings (myWorkSafe paths)
+		/// </summary>
+		public static string FormatWithErrorStringInsteadOfException(this string format, params object[] args)
+		{
+			try
+			{
+				return string.Format(format, args);
+			}
+			catch (Exception e)
+			{
+				string argList = "";
+				foreach (var arg in args)
+				{
+					argList = argList + arg + ",";
+				}
+				argList = argList.Trim(new char[] {','});
+				return "FormatWithErrorStringInsteadOfException(" + format + "," + argList + ") Exception: " + e.Message;
+			}
+		}
 
 		private static XmlNode _xmlNodeUsedForEscaping;
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)

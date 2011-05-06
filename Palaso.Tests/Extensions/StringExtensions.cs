@@ -81,5 +81,18 @@ namespace Palaso.Tests.Extensions
 //
 //            writer.WriteNode(z);
 		 }
+
+		[Test]
+		public void Format_NormalSafeString_GivesSameAsStringFormat()
+		{
+			Assert.That("1={0}".FormatWithErrorStringInsteadOfException("1").Equals("1=1"));
+		}
+
+
+		[Test]
+		public void Format_UnSafeString_GivesErrorString()
+		{
+			Assert.That("{".FormatWithErrorStringInsteadOfException().Contains("Error"));
+		}
 	}
 }

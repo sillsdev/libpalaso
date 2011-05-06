@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.Extensions;
 
 namespace Palaso.Progress.LogBox
 {
@@ -209,10 +210,10 @@ namespace Palaso.Progress.LogBox
 		{
 #if MONO
 			Console.Write("                          ".Substring(0, indent*2));
-			Console.WriteLine(string.Format(message, args));
+			Console.WriteLine(GenericProgress.SafeFormat(message, args));
 #else
 			Debug.Write("                          ".Substring(0, indent * 2));
-			Debug.WriteLine(string.Format(message, args));
+			Debug.WriteLine(GenericProgress.SafeFormat(message, args));
 #endif
 		}
 
@@ -260,7 +261,7 @@ namespace Palaso.Progress.LogBox
 		{
 			if(!_verbose)
 				return;
-			var lines = String.Format(message, args);
+			var lines = GenericProgress.SafeFormat(message, args);
 			foreach (var line in lines.Split('\n'))
 			{
 				WriteStatus("    " + line);
@@ -316,7 +317,7 @@ namespace Palaso.Progress.LogBox
 			{
 				_box.Invoke(new Action(() =>
 				{
-					_box.Text = String.Format(message + Environment.NewLine, args);
+					_box.Text = GenericProgress.SafeFormat(message + Environment.NewLine, args);
 				}));
 			}
 			catch (Exception)
@@ -377,7 +378,7 @@ namespace Palaso.Progress.LogBox
 				_box.Invoke(new Action( ()=>
 				{
 					_box.Text += "                          ".Substring(0, indent * 2);
-					_box.Text += String.Format(message + Environment.NewLine, args);
+					_box.Text += GenericProgress.SafeFormat(message + Environment.NewLine, args);
 				}));
 			}
 			catch (Exception)
@@ -387,7 +388,7 @@ namespace Palaso.Progress.LogBox
 //            _box.Invoke(new Action<TextBox, int>((box, indentX) =>
 //            {
 //                box.Text += "                          ".Substring(0, indentX * 2);
-//                box.Text += String.Format(message + Environment.NewLine, args);
+//                box.Text += GenericProgress.SafeFormat(message + Environment.NewLine, args);
 //            }), _box, indent);
 		}
 
@@ -456,7 +457,7 @@ namespace Palaso.Progress.LogBox
 
 	   public  void WriteStatus(string message, params object[] args)
 		{
-			LastStatus = string.Format(message, args);
+			LastStatus = GenericProgress.SafeFormat(message, args);
 		}
 
 		public void WriteMessageWithColor(string colorName, string message, params object[] args)
@@ -466,7 +467,7 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteWarning(string message, params object[] args)
 		{
-			LastWarning = string.Format(message, args);
+			LastWarning = GenericProgress.SafeFormat(message, args);
 			LastStatus = LastWarning;
 		}
 
@@ -477,7 +478,7 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteError(string message, params object[] args)
 		{
-			LastError = string.Format(message, args);
+			LastError = GenericProgress.SafeFormat(message, args);
 			LastStatus = LastError;
 		}
 
@@ -526,6 +527,12 @@ namespace Palaso.Progress.LogBox
 		public GenericProgress()
 		{
 		}
+
+		public static string SafeFormat(string format, params object[] args)
+		{
+			return format.FormatWithErrorStringInsteadOfException(args);
+		}
+
 		public bool CancelRequested { get; set; }
 		public abstract void WriteMessage(string message, params object[] args);
 		public abstract void WriteMessageWithColor(string colorName, string message, params object[] args);
@@ -559,7 +566,7 @@ namespace Palaso.Progress.LogBox
 		{
 			if(!_verbose)
 				return;
-			var lines = String.Format(message, args);
+			var lines = GenericProgress.SafeFormat(message, args);
 			foreach (var line in lines.Split('\n'))
 			{
 
@@ -590,7 +597,7 @@ namespace Palaso.Progress.LogBox
 
 		public override void WriteMessage(string message, params object[] args)
 		{
-			File.AppendAllText(_path, string.Format(message + Environment.NewLine, args));
+			File.AppendAllText(_path, GenericProgress.SafeFormat(message + Environment.NewLine, args));
 		}
 		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
 		{

@@ -78,14 +78,14 @@ namespace Palaso.Progress.LogBox
 									  {
 								_box.SelectionStart = _box.Text.Length;
 								_box.SelectionColor = color;
-								_box.AppendText(String.Format(message + Environment.NewLine, args));
+								_box.AppendText(GenericProgress.SafeFormat(message + Environment.NewLine, args));
 									   }));
 
 				SafeInvoke(_verboseBox, new Action(() =>
 				{
 					_verboseBox.SelectionStart = _verboseBox.Text.Length;
 					_verboseBox.SelectionColor = color;
-					_verboseBox.AppendText(String.Format(message + Environment.NewLine, args));
+					_verboseBox.AppendText(GenericProgress.SafeFormat(message + Environment.NewLine, args));
 				}));
 #if !DEBUG
 
@@ -152,7 +152,7 @@ namespace Palaso.Progress.LogBox
 			{
 				_verboseBox.SelectionStart = _verboseBox.Text.Length;
 				_verboseBox.SelectionColor = Color.DarkGray;
-				_verboseBox.AppendText(String.Format(message + Environment.NewLine, args));
+				_verboseBox.AppendText(GenericProgress.SafeFormat(message + Environment.NewLine, args));
 			}));
 		}
 
