@@ -7,8 +7,11 @@ namespace Palaso.WritingSystems
 {
 	public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
+
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
+
+		public event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
 
 		/// <summary>
 		/// Use the default repository
@@ -118,6 +121,13 @@ namespace Palaso.WritingSystems
 			{
 				_writingSystems.Remove(ws.StoreID);
 			}
+			if (WritingSystemIdChanged != null)
+			{
+				WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(ws.StoreID, newID));
+			}
+
+
+
 			ws.StoreID = newID;
 			_writingSystems[ws.StoreID] = ws;
 		}
@@ -228,5 +238,16 @@ namespace Palaso.WritingSystems
 		{
 			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
 		}
+	}
+
+	public class WritingSystemIdChangedEventArgs : EventArgs
+	{
+		public WritingSystemIdChangedEventArgs(string oldId, string newId)
+		{
+			OldId = oldId;
+			NewId = newId;
+		}
+		public string OldId { get; private set; }
+		public string NewId { get; private set; }
 	}
 }

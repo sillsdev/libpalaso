@@ -11,6 +11,7 @@ namespace Palaso.Tests.WritingSystems
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
 		private WritingSystemDefinition _writingSystem;
+		private WritingSystemIdChangedEventArgs _eventargs;
 
 		public IWritingSystemRepository RepositoryUnderTest
 		{
@@ -32,6 +33,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_writingSystem = new WritingSystemDefinition();
 			RepositoryUnderTest = CreateNewStore();
+			_eventargs = null;
 		}
 
 		[TearDown]
@@ -485,6 +487,23 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(2, textIds.Count);
 			Assert.AreEqual("en", textIds[0]);
 			Assert.AreEqual("de", textIds[1]);
+		}
+
+		private void OnWritingSystemIdChanged(object sender, WritingSystemIdChangedEventArgs e)
+		{
+			_eventargs = e;
+		}
+
+		[Test]
+		public void Set_IdOfWritingSystemChanged_EventArgsAreCorrect()
+		{
+			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
+			var ws = WritingSystemDefinition.FromLanguage("en");
+			RepositoryUnderTest.Set(ws);
+			ws.ISO639 = "de";
+			RepositoryUnderTest.Set(ws);
+			Assert.That(_eventargs.OldId, Is.EqualTo("en"));
+			Assert.That(_eventargs.NewId, Is.EqualTo("de"));
 		}
 	}
 }
