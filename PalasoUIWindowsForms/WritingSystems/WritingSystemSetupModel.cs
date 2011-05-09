@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Palaso.Code;
 using Palaso.Data;
@@ -61,7 +62,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
 			_writingSystemRepository = writingSystemRepository;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.WritingSystemDefinitions);
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
 			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
 			_currentIndex = -1;
 			_usingRepository = true;
@@ -1025,7 +1026,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			adaptor.Write (filePath, _currentWritingSystem, null);
 		}
 
-		private void SetAllPossibleAndRemoveOthers()
+		// TODO: needs to be tested cjh
+		public void SetAllPossibleAndRemoveOthers()
 		{
 			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
 			// The reason to do this is to solve problems with cycles that could prevent saving.
@@ -1051,7 +1053,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
-					kvp.Key.ISO639 += "X";
+					kvp.Key.AddToPrivateUse("dup");
+					//kvp.Key.ISO639 += "X";
 				}
 				_writingSystemRepository.Set(kvp.Key);
 			}
@@ -1204,39 +1207,52 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			OnCurrentItemUpdated();
 		}
 
-		internal string CodeFromPrivateUseInVariant()
+		internal void SetCurrentVariantFromUnlistedLanguageName(string languageName)
 		{
-			string code = ""; // DefaultCode;
-			if (CurrentVariant.Contains("x-"))
-			{
-				string[] privateUseTokens = CurrentVariant.Substring(CurrentVariant.IndexOf("x-") + 2).Split('-');
-				if (privateUseTokens.Length > 0)
-				{
-					foreach (var notWellKnownTag in WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens))
-					{
-						code = notWellKnownTag;
-						break;
-					}
-				}
-			}
-			return code;
-		}
-
-		internal void SetCurrentVariantFromUnlistedLanguageCode(string code)
-		{
-			if (String.IsNullOrEmpty(code))
-				return;
-
 			string rfcVariant = "";
 			string rfcPrivateUse = "";
+
+			string trimmedLanguageName = TrimLanguageNameForPrivateUse(languageName);
+
 			WritingSystemDefinition.SplitVariantAndPrivateUse(CurrentVariant, out rfcVariant, out rfcPrivateUse);
-			if (rfcPrivateUse.Split('-').Contains(code, StringComparison.OrdinalIgnoreCase))
+			List<string> privateUseTokens = rfcPrivateUse.Split('-').ToList();
+			if (privateUseTokens.Contains(trimmedLanguageName, StringComparison.OrdinalIgnoreCase))
 			{
 				return;
 			}
 
-			rfcPrivateUse = code + "-" + rfcPrivateUse;
+			// check if there is already a code in private use
+			string previousPrivateUseCode = "";
+			foreach (var notWellKnownTag in WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens))
+			{
+				previousPrivateUseCode = notWellKnownTag;
+				break;
+			}
+
+			// remove previous private use code if present
+			if (!string.IsNullOrEmpty(previousPrivateUseCode))
+			{
+				privateUseTokens.Remove(previousPrivateUseCode);
+			}
+
+			if (languageName != "Language Not Listed" && !string.IsNullOrEmpty(languageName))
+			{
+				privateUseTokens.Insert(0, trimmedLanguageName);
+			}
+
+			rfcPrivateUse = string.Join("-", privateUseTokens.ToArray());
 			CurrentVariant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, rfcPrivateUse);
+		}
+
+
+		internal static string TrimLanguageNameForPrivateUse(string languageName)
+		{
+			languageName = Regex.Replace(languageName, @"[^a-zA-Z]", "");
+			if (languageName.Length > 8)
+			{
+				languageName = languageName.Substring(0, 8);
+			}
+			return languageName;
 		}
 	}
 }

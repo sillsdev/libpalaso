@@ -141,5 +141,27 @@ namespace Palaso.Tests.WritingSystems
 
 			Assert.AreEqual(wsFromNoCollationElement.SortUsing, wsFromEmptyCollationElement.SortUsing);
 		}
+
+
+		[Test]
+		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
+		{
+			string ldmlWithOnlyPrivateUse =
+				"<ldml><identity><version number=\"\" /><language type=\"\" /><variant type=\"x-private-use\" /></identity><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"1\" /></special></ldml>";
+
+
+			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
+			File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithOnlyPrivateUse);
+
+			var adaptor = new LdmlAdaptor();
+			var wsFromLdml = new WritingSystemDefinition();
+			adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
+			var Ldml = new WritingSystemDefinition();
+			adaptor.Read(pathToLdmlWithEmptyCollationElement, Ldml);
+			Assert.That(wsFromLdml.ISO639, Is.EqualTo(String.Empty));
+			Assert.That(wsFromLdml.Variant, Is.EqualTo("x-private-use"));
+		}
+
+
 	}
 }

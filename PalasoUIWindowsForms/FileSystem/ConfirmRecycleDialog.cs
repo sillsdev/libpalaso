@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -84,7 +84,7 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		{
 			try
 			{
-			   #if MONO
+#if MONO
 			   // TODO: Find a way in Mono to send something to the recycle bin.
 				try
 				{

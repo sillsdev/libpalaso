@@ -274,22 +274,40 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public void AddToVariant(string tag)
+		{
+			if (StandardTags.IsValidRegisteredVariant(tag))
+			{
+				_rfcTag.AddToVariant(tag);
+			}
+			else
+			{
+				_rfcTag.AddToPrivateUse(tag);
+			}
+			CheckVariantAndScriptRules();
+		}
+
+		public void AddToPrivateUse(string tag)
+		{
+			_rfcTag.AddToPrivateUse(tag);
+			CheckVariantAndScriptRules();
+		}
+
 		public static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
 		{
-			// x- starts a private use marker. See RFC5646
-			if (variantAndPrivateUse.EndsWith("-x") || variantAndPrivateUse.EndsWith("-x-"))
-			{
-				throw new ArgumentException("The variant may not end in '-x' or '-x-'");
-			}
-			if (variantAndPrivateUse.StartsWith("x-")) // Private Use at the beginning
+			if (variantAndPrivateUse.StartsWith("x-",StringComparison.OrdinalIgnoreCase)) // Private Use at the beginning
 			{
 				variantAndPrivateUse = variantAndPrivateUse.Substring(2); // Strip the leading x-
 				variant = "";
 				privateUse = variantAndPrivateUse;
 			}
-			else if (variantAndPrivateUse.Contains("-x-")) // Private Use from the middle
+			else if (variantAndPrivateUse.Contains("-x-", StringComparison.OrdinalIgnoreCase)) // Private Use from the middle
 			{
 				string[] partsOfVariant = variantAndPrivateUse.Split(new[] { "-x-" }, StringSplitOptions.None);
+				if(partsOfVariant.Length == 1)  //Must have been a capital X
+				{
+					partsOfVariant = variantAndPrivateUse.Split(new[] { "-X-" }, StringSplitOptions.None);
+				}
 				variant = partsOfVariant[0];
 				privateUse = partsOfVariant[1];
 			}
@@ -302,6 +320,15 @@ namespace Palaso.WritingSystems
 
 		public static string ConcatenateVariantAndPrivateUse(string variant, string privateUse)
 		{
+			if(String.IsNullOrEmpty(privateUse))
+			{
+				return variant;
+			}
+			if(!privateUse.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+			{
+				privateUse = String.Concat("x-", privateUse);
+			}
+
 			string variantToReturn = variant;
 			if (!String.IsNullOrEmpty(privateUse))
 			{
@@ -313,6 +340,8 @@ namespace Palaso.WritingSystems
 			}
 			return variantToReturn;
 		}
+
+
 
 		private void CheckVariantAndScriptRules()
 		{
