@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Palaso.WritingSystems
 {
 	public delegate void WritingSystemIdChangedEventHandler(object sender, WritingSystemIdChangedEventArgs e);
+	public delegate void WritingSystemDeleted(object sender, WritingSystemDeletedEventArgs e);
 
 	public interface IWritingSystemRepository
 	{
@@ -13,6 +12,11 @@ namespace Palaso.WritingSystems
 		/// Notifies a consuming class of a changed writing system id on Set()
 		/// </summary>
 		event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
+
+		/// <summary>
+		/// Notifies a consuming class of a changed writing system id on Set()
+		/// </summary>
+		event WritingSystemDeleted WritingSystemDeleted;
 
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about

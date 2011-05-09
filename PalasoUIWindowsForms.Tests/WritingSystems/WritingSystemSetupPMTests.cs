@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using NUnit.Framework;
-
+using Palaso.Reporting;
 using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
@@ -17,9 +17,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		WritingSystemSetupModel _model;
 		string _testFilePath;
 
+		private bool EventFired { get; set; }
+
 		[SetUp]
 		public void Setup()
 		{
+			EventFired = false;
 			ErrorReport.IsOkToInteractWithUser = false;
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
 
@@ -868,6 +871,39 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
 			_model.SetAllPossibleAndRemoveOthers();
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(4));
+		}
+
+		[Test]
+		public void BeforeDeleted_EventFires_HandlerIsRun()
+		{
+			_model.BeforeDeleted += OnBeforeDeleted_CanDelete;
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			Assert.That(EventFired, Is.False);
+			_model.DeleteCurrent();
+			Assert.That(EventFired, Is.True);
+		}
+
+		void OnBeforeDeleted_CanDelete(object sender, BeforeDeletedEventArgs args)
+		{
+			EventFired = true;
+			args.CanDelete = true;
+		}
+
+		void OnBeforeDeleted_CannotDelete(object sender, BeforeDeletedEventArgs args)
+		{
+			args.CanDelete = false;
+		}
+
+		[Test]
+		public void BeforeDeleted_CannotDelete_ThrowsUserException()
+		{
+			_model.BeforeDeleted += OnBeforeDeleted_CannotDelete;
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			Assert.That(EventFired, Is.False);
+
+			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+				() => _model.DeleteCurrent()
+			);
 		}
 
 	}
