@@ -8,11 +8,6 @@ using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Linq;
 
-#if MONO
-// FIXME: Would prefer that LinqBridge didn't implement ForEach as per standard
-using Palaso.Linq;
-#endif
-
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	public class ArtOfReadingImageCollection :IImageCollection

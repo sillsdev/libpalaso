@@ -92,7 +92,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 				{
 					if(existing.parts[i] == "*")
 					{
-						SafeLog("StampAssemblies: existing.parts[i] == '*'");
+						//SafeLog("StampAssemblies: existing.parts[i] == '*'");
 						result += "0.";
 					}
 					else

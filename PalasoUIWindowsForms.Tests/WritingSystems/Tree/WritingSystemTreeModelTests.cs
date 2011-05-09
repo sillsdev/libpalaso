@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Moq;
 using NUnit.Framework;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
@@ -21,8 +20,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[SetUp]
 		public void Setup()
 		{
+			ErrorReport.IsOkToInteractWithUser = false;
+			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
 			_writingSystemRepository = new WritingSystemRepositoryBase();
 			_mockSetupModel = new Mock<WritingSystemSetupModel>(_writingSystemRepository);
+
 			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model = new WritingSystemTreeModel(_mockSetupModel.Object);
 			_model.Suggestor = new WritingSystemSuggestor

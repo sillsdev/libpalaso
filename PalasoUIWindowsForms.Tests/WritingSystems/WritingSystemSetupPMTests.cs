@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using NUnit.Framework;
 
+using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
 
@@ -14,15 +15,17 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	public class WritingSystemSetupPMTests
 	{
 		WritingSystemSetupModel _model;
-		IWritingSystemRepository _writingSystemRepository;
 		string _testFilePath;
 
 		[SetUp]
 		public void Setup()
 		{
+			ErrorReport.IsOkToInteractWithUser = false;
+			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
+
 			_testFilePath = Path.GetTempFileName();
-			_writingSystemRepository = new LdmlInXmlWritingSystemRepository();
-			_model = new WritingSystemSetupModel(_writingSystemRepository);
+			IWritingSystemRepository writingSystemRepository = new LdmlInXmlWritingSystemRepository();
+			_model = new WritingSystemSetupModel(writingSystemRepository);
 			Palaso.Reporting.ErrorReport.IsOkToInteractWithUser = false;
 		}
 
