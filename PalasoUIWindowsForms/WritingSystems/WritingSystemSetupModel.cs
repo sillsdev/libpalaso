@@ -867,6 +867,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public event EventHandler CurrentItemUpdated;
 
+		/// <summary>
+		/// Fired when the user clicks "Delete" but before the WS is deleted in the repo.
+		/// Used to notify the consuming application of a deletion, and process a boolean response
+		/// from the app as to whether it can delete the WS or not (i.e. the WS is in use)
+		/// </summary>
+		public event BeforeDeletedEventHandler BeforeDeleted;
+
 		#endregion
 
 		public InputLanguage FindInputLanguage(string name)
@@ -902,6 +909,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to delete current selection when there is no current selection.");
 			}
+
+			var beforeDeletedEventArgs = new BeforeDeletedEventArgs(CurrentDefinition.Id);
+			BeforeDeleted(this, beforeDeletedEventArgs);
+			if (!beforeDeletedEventArgs.CanDelete)
+			{
+				Reporting.ErrorReport.NotifyUserOfProblem(String.Format("The writing system with id '{0}' is still in use and may not be deleted.", CurrentDefinition.Id));
+				return;
+			}
+
 			// new index will be next writing system or previous if this was the last in the list
 			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
 			string idToDelete = CurrentDefinition.StoreID;
@@ -1254,5 +1270,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			return languageName;
 		}
+	}
+
+	public delegate void BeforeDeletedEventHandler(object sender, BeforeDeletedEventArgs args);
+
+	public class BeforeDeletedEventArgs : EventArgs
+	{
+		public BeforeDeletedEventArgs(string writingSystemid)
+		{
+			WritingSystemId = writingSystemid;
+		}
+		public string WritingSystemId{get; private set;}
+		public bool CanDelete;
 	}
 }
