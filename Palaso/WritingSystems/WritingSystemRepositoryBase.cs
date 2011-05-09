@@ -5,6 +5,7 @@ using Palaso.Code;
 
 namespace Palaso.WritingSystems
 {
+
 	public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 
@@ -12,6 +13,7 @@ namespace Palaso.WritingSystems
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
 		public event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
+		public event WritingSystemDeleted WritingSystemDeleted;
 
 		/// <summary>
 		/// Use the default repository
@@ -62,6 +64,10 @@ namespace Palaso.WritingSystems
 			//??? Do we really delete or just mark for deletion?
 			_writingSystems.Remove(identifier);
 			_writingSystemsToIgnore.Remove(identifier);
+			if (WritingSystemDeleted != null)
+			{
+				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(identifier));
+			}
 			//TODO: Could call the shared store to advise that one has been removed.
 			//TODO: This may be useful if writing systems were reference counted.
 		}
@@ -249,5 +255,14 @@ namespace Palaso.WritingSystems
 		}
 		public string OldId { get; private set; }
 		public string NewId { get; private set; }
+	}
+
+	public class WritingSystemDeletedEventArgs : EventArgs
+	{
+		public WritingSystemDeletedEventArgs(string id)
+		{
+			Id = id;
+		}
+		public string Id { get; private set; }
 	}
 }
