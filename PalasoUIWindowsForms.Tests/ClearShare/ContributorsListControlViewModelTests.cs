@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using Palaso.ClearShare;
 using System.Linq;
+using Palaso.UI.WindowsForms.ClearShare;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {

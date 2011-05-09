@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Widgets.Grid;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	public class ContributorsListControlViewModel
 	{

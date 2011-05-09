@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Widgets.Grid;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	partial class ContributorsListControl
 	{
