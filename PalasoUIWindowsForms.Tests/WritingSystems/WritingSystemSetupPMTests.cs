@@ -26,7 +26,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_testFilePath = Path.GetTempFileName();
 			IWritingSystemRepository writingSystemRepository = new LdmlInXmlWritingSystemRepository();
 			_model = new WritingSystemSetupModel(writingSystemRepository);
-			Palaso.Reporting.ErrorReport.IsOkToInteractWithUser = false;
 		}
 
 		[TearDown]
@@ -851,24 +850,24 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void SetAllPossibleAndRemoveOthers_HasWritingSystems_SetsToRepo()
 		{
-			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("de"));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
 			_model.SetAllPossibleAndRemoveOthers();
-			Assert.That(_writingSystemRepository.Count, Is.EqualTo(3));
+			Assert.That(_model.WritingSystemCount, Is.EqualTo(3));
 		}
 
 		[Test]
 		public void SetAllPossibleAndRemoveOthers_HasDuplicateWritingSystems_SetsToRepo()
 		{
-			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("de"));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
 			_model.SetAllPossibleAndRemoveOthers();
-			Assert.That(_writingSystemRepository.Count, Is.EqualTo(4));
+			Assert.That(_model.WritingSystemCount, Is.EqualTo(4));
 		}
 
 	}
