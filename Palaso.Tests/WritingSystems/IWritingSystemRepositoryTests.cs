@@ -11,7 +11,8 @@ namespace Palaso.Tests.WritingSystems
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
 		private WritingSystemDefinition _writingSystem;
-		private WritingSystemIdChangedEventArgs _eventargs;
+		private WritingSystemIdChangedEventArgs _writingSystemIdChangedEventArgs;
+		private WritingSystemDeletedEventArgs _writingSystemDeletedEventArgs;
 
 		public IWritingSystemRepository RepositoryUnderTest
 		{
@@ -33,7 +34,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_writingSystem = new WritingSystemDefinition();
 			RepositoryUnderTest = CreateNewStore();
-			_eventargs = null;
+			_writingSystemIdChangedEventArgs = null;
+			_writingSystemDeletedEventArgs = null;
 		}
 
 		[TearDown]
@@ -491,7 +493,7 @@ namespace Palaso.Tests.WritingSystems
 
 		private void OnWritingSystemIdChanged(object sender, WritingSystemIdChangedEventArgs e)
 		{
-			_eventargs = e;
+			_writingSystemIdChangedEventArgs = e;
 		}
 
 		[Test]
@@ -502,8 +504,28 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws);
 			ws.ISO639 = "de";
 			RepositoryUnderTest.Set(ws);
-			Assert.That(_eventargs.OldId, Is.EqualTo("en"));
-			Assert.That(_eventargs.NewId, Is.EqualTo("de"));
+			Assert.That(_writingSystemIdChangedEventArgs.OldId, Is.EqualTo("en"));
+			Assert.That(_writingSystemIdChangedEventArgs.NewId, Is.EqualTo("de"));
+		}
+
+		public WritingSystemDeletedEventArgs WritingSystemDeletedEventArgs
+		{
+			get { return _writingSystemDeletedEventArgs; }
+		}
+
+		public void OnWritingsystemDeleted(object sender, WritingSystemDeletedEventArgs args)
+		{
+			_writingSystemDeletedEventArgs = args;
+		}
+
+		[Test]
+		public void Remove_WritingsystemIdExists_FiresEventAndEventArgIsSetToIdOfDeletedWritingSystem()
+		{
+			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
+			var ws = WritingSystemDefinition.FromLanguage("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Remove(ws.Id);
+			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.Id));
 		}
 	}
 }

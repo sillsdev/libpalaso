@@ -41,6 +41,24 @@ namespace Palaso.IO
 			ReplaceFileWithUserInteractionIfNeeded(tempPath, inputPath, backupPath);
 		}
 
+		public static bool GrepFile(string inputPath, string pattern)
+		{
+			Regex regex = new Regex(pattern, RegexOptions.Compiled);
+
+			using (StreamReader reader = File.OpenText(inputPath))
+			{
+				while (!reader.EndOfStream)
+				{
+					if(regex.IsMatch(reader.ReadLine()))
+					{
+						return true;
+					}
+				}
+				reader.Close();
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// If there is a problem doing the replace, a dialog is shown which tells the user
 		/// what happened, and lets them try to fix it.  It also lets them "Give up", in
