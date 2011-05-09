@@ -209,7 +209,13 @@
 	</Compile>
 	<Compile Include="Progress\NullProgressState.cs" />
 	<Compile Include="Progress\ProgressState.cs" />
+	<Compile Include="Progress\WaitCursor.cs" />
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
+	<Compile Include="Properties\Resources.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>Resources.resx</DependentUpon>
+	</Compile>
 	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
@@ -355,6 +361,10 @@
 	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="Properties\Resources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -385,6 +395,7 @@
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
 	<Content Include="Resources\ianaSubtagRegistry.txt" />
+	<None Include="Resources\MenuButtonArrow.png" />
 	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>

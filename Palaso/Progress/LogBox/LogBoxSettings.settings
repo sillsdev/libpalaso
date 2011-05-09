@@ -6,7 +6,7 @@
 	  <Value Profile="(Default)" />
 	</Setting>
 	<Setting Name="FontSize" Type="System.Single" Scope="User">
-	  <Value Profile="(Default)">9</Value>
+	  <Value Profile="(Default)">0</Value>
 	</Setting>
   </Settings>
 </SettingsFile>

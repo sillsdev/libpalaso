@@ -49,6 +49,51 @@ namespace Palaso.Tests.IO
 			Assert.IsEmpty(locator.LocateFile("foo.txt"));
 		}
 
+		[Test]
+		public void GetFromRegistryProgramThatOpensFileType_SendInvalidType_ReturnsNull()
+		{
+			Assert.IsNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".blah"));
+		}
+
+		[Test]
+		public void GetFromRegistryProgramThatOpensFileType_SendValidType_ReturnsProgramPath()
+		{
+			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".txt"));
+		}
+
+		[Test]
+		public void GetFromRegistryProgramThatOpensFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
+		{
+			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
+		}
+
+		[Test]
+		public void LocateInProgramFiles_SendInvalidProgramNoDeepSearch_ReturnsNull()
+		{
+			Assert.IsNull(FileLocator.LocateInProgramFiles("blah.exe", false));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void LocateInProgramFiles_SendValidProgramNoDeepSearch_ReturnsNull()
+		{
+			Assert.IsNull(FileLocator.LocateInProgramFiles("msinfo32.exe", false));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
+		{
+			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
+		{
+			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true, "Common Files"));
+		}
+
 		//TODO: this could use lots more tests
 	}
 }
