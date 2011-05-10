@@ -910,14 +910,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new InvalidOperationException("Unable to delete current selection when there is no current selection.");
 			}
 
-			bool canDelete = true;
+			var beforeDeletedEventArgs = new BeforeDeletedEventArgs(CurrentDefinition.Id);
 			if (BeforeDeleted != null)
 			{
-				var beforeDeletedEventArgs = new BeforeDeletedEventArgs(CurrentDefinition.Id);
 				BeforeDeleted(this, beforeDeletedEventArgs);
-				canDelete = beforeDeletedEventArgs.CanDelete;
 			}
-			if (!canDelete)
+			if (!beforeDeletedEventArgs.CanDelete)
 			{
 				Reporting.ErrorReport.NotifyUserOfProblem(String.Format("The writing system with id '{0}' is still in use and may not be deleted.", CurrentDefinition.Id));
 				return;

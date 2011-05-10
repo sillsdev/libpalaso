@@ -80,6 +80,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentISO = "de";
 			_model.AddNew();
 			_model.CurrentISO = "th";
+			_model.BeforeDeleted += OnBeforeDeleted_CanDelete;
 			var writingSystems = new List<string>();
 			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
 			{
@@ -179,6 +180,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.CurrentISO = "pt";
 			bool eventTriggered = false;
 			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
+			_model.BeforeDeleted += OnBeforeDeleted_CanDelete;
 			_model.DeleteCurrent();
 			Assert.IsTrue(eventTriggered);
 		}
