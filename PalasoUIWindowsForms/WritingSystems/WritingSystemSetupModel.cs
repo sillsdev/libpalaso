@@ -444,11 +444,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return CurrentDefinition.LanguageName ?? string.Empty; }
 			set
 			{
-				if (CurrentDefinition.LanguageName != value)
+				var valueBeforeSet = CurrentDefinition.LanguageName;
+				CurrentDefinition.LanguageName = value;
+				if (CurrentDefinition.LanguageName != valueBeforeSet)
 				{
-					CurrentDefinition.LanguageName = value;
 					OnCurrentItemUpdated();
 				}
+				//if (CurrentDefinition.LanguageName != value)
+				//{
+				//    var languageNameBeforeSet = CurrentDefinition.LanguageName;
+				//    CurrentDefinition.LanguageName = value;
+				//    //When we set the LanguageName on a writingSystem to Empty and call get it returns the
+				//    //ianasubtag registry default. So if the result
+				//    if (languageNameBeforeSet == CurrentDefinition.LanguageName)
+				//    {
+				//        return;
+				//    }
+				//    OnCurrentItemUpdated();
+				//}
 			}
 		}
 
