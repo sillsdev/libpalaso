@@ -1284,6 +1284,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			WritingSystemId = writingSystemid;
 		}
 		public string WritingSystemId{get; private set;}
-		public bool CanDelete;
+		public bool CanDelete = true;
 	}
 }

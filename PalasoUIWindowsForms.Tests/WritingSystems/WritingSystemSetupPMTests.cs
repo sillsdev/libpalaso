@@ -906,5 +906,15 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			);
 		}
 
+		[Test]
+		public void BeforeDeleted_BeforeDeleteisUnhandled_DeleteIsNotInterrupted()
+		{
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			Assert.That(_model.WritingSystemCount, Is.EqualTo(1));
+			Assert.That("pt", Is.EqualTo(_model.CurrentDefinition.Id));
+			_model.DeleteCurrent();
+			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
+		}
+
 	}
 }
