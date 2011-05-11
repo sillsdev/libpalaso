@@ -1188,8 +1188,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
 			WritingSystemDefinitions.Add(definition);
-			OnAddOrDelete();
 			CurrentDefinition = definition;
+			OnAddOrDelete();
 		}
 
 		internal void RenameIsoCode(WritingSystemDefinition existingWs)

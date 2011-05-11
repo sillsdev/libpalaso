@@ -51,12 +51,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			if (currentDefinition == null)
 				return null;
 
-//            System.Func<WritingSystemTreeItem, IEnumerable<WritingSystemTreeItem>> getAll =
-//                item => item.Children.Concat(new[] {item});
-
-			IEnumerable<WritingSystemTreeItem> parentsAndChildren = (from item in items
-								  where item is WritingSystemDefinitionTreeItem
-								   select item.Children.Concat(new[] { item })).SelectMany(i => i);
+			IEnumerable<WritingSystemTreeItem> parentsAndChildren = items.SelectMany(i => i.Children).Concat(items);
 
 			return (from item in parentsAndChildren
 				   where item is WritingSystemDefinitionTreeItem
