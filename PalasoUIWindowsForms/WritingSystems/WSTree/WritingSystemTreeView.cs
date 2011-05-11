@@ -31,6 +31,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		{
 			treeView1.AfterSelect -= treeView1_AfterSelect;
 			treeView1.BeginUpdate();
+			treeView1.SuspendLayout();
 			treeView1.Nodes.Clear();
 			var items = _model.GetTreeItems();
 			foreach (var item in items)
@@ -65,6 +66,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 				treeView1.SelectedNode =  treeView1.Nodes.Add(string.Empty);
 			}
 
+			treeView1.ResumeLayout(false);
 			treeView1.EndUpdate();
 			 treeView1.AfterSelect += treeView1_AfterSelect;
 		}
