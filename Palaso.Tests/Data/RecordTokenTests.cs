@@ -145,6 +145,7 @@ namespace Palaso.Tests.Data
 	{
 		private MemoryDataMapper<PalasoTestItem> dataMapper;
 
+
 		[SetUp]
 		public void Setup()
 		{
@@ -179,6 +180,28 @@ namespace Palaso.Tests.Data
 		{
 			dataMapper.Dispose();
 		}
+
+		[Test]
+		public void RecordTokensAddedToSortedDictionary_RecordTokensDifferOnlyInForm_DoesNotThrow()
+		{
+			var results1 = new Dictionary<string, object>();
+			results1.Add("Form", "សង្ឃនៃអំបូរអឺរ៉ុន");
+			//results1.Add("Form", "form1");
+			results1.Add("Sense", 0);
+			var results2 = new Dictionary<string, object>();
+			results2.Add("Form", "បូជាចារ្យនៃអំបូរអឺរ៉ុន");
+			//results2.Add("Form", "form2");
+			results2.Add("Sense", 0);
+			var rt1 = new RecordToken<PalasoTestItem>(dataMapper, results1, new TestRepositoryId(8));
+			var rt2 = new RecordToken<PalasoTestItem>(dataMapper, results2, new TestRepositoryId(8));
+			var sortedDictionary = new SortedDictionary<RecordToken<PalasoTestItem>, object>();
+			sortedDictionary.Add(rt1, null);
+			sortedDictionary.Add(rt2, null);
+			Console.WriteLine("");
+		}
+
+
+
 
 		[Test]
 		public void GetIndexer_ExistingFieldName_ConstructedValue()

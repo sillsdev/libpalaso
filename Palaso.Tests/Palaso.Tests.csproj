@@ -85,6 +85,7 @@
 	<Compile Include="Base32Tests\Base32HexTests.cs" />
 	<Compile Include="Base32Tests\Base32Tests.cs" />
 	<Compile Include="Base32Tests\Permuter.cs" />
+	<Compile Include="Data\RecordTokenComparerTests.cs" />
 	<Compile Include="Data\DictionaryContentAsserter.cs" />
 	<Compile Include="Data\DictionaryEqualityComparerTests.cs" />
 	<Compile Include="Data\IRepositoryTests.cs" />
