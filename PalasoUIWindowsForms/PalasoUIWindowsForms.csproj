@@ -435,15 +435,20 @@
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="ClearShare\ClearShareResources.resx" />
+	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\ContributorsListControl.resx">
 	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\FadingMessageForm.resx">
 	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
 	  <DependentUpon>PictureChooser.cs</DependentUpon>
@@ -451,6 +456,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\AcquireImageControl.resx">
 	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
 	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
@@ -514,6 +520,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.resx">
 	  <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
 	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
