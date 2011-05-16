@@ -25,6 +25,7 @@ namespace Palaso.ClearShare
 		private Contribution _preValidatedContribution;
 		private readonly ContributorsListControlViewModel _model;
 		private int _indexOfIncompleteRowToDelete = -1;
+		private bool _deleteButtonVisible = true;
 
 		/// ------------------------------------------------------------------------------------
 		public ContributorsListControl()
@@ -96,6 +97,24 @@ namespace Palaso.ClearShare
 			{
 				return (base.DesignMode || GetService(typeof(IDesignerHost)) != null) ||
 					(LicenseManager.UsageMode == LicenseUsageMode.Designtime);
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <remarks>
+		/// Don't just get and set the visible property for _buttonDelete because that doesn't
+		/// serialize/deserialize correctly when this control is dropped on a form in the
+		/// designer.
+		/// </remarks>
+		/// ------------------------------------------------------------------------------------
+		[DefaultValue(true)]
+		public bool DeleteButtonVisible
+		{
+			get { return _deleteButtonVisible; }
+			set
+			{
+				_deleteButtonVisible = value;
+				_buttonDelete.Visible = value;
 			}
 		}
 
@@ -344,6 +363,12 @@ namespace Palaso.ClearShare
 
 		/// ------------------------------------------------------------------------------------
 		private void HandleDeleteButtonClicked(object sender, EventArgs e)
+		{
+			DeleteCurrentContributor();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public void DeleteCurrentContributor()
 		{
 			DeleteRow(_grid.CurrentCellAddress.Y);
 		}

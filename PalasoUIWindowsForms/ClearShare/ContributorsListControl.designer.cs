@@ -130,6 +130,7 @@ namespace Palaso.ClearShare
 			// ContributorsListControl
 			//
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.BackColor = System.Drawing.Color.Transparent;
 			this.Controls.Add(this._tableLayout);
 			this.DoubleBuffered = true;
 			this.Name = "ContributorsListControl";
