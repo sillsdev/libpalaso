@@ -24,7 +24,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public WritingSystemSuggestor()
 		{
-			OtherKnownWritingSystems = new WritingSystemFromWindowsLocaleProvider();
+			OtherKnownWritingSystems =
+				new WritingSystemFromWindowsLocaleProvider().Union(new List<WritingSystemDefinition>
+																	   {WritingSystemDefinition.FromLanguage("tpi")});
 			SuppressSuggestionsForMajorWorldLanguages=true;
 			SuggestIpa=true;
 			SuggestDialects=true;

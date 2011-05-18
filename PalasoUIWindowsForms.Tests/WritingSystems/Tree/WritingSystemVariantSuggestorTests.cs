@@ -46,6 +46,24 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			Assert.IsFalse(suggestions.Any(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Variant == "fonipa"));
 		}
 
+		[Test]
+		public void OtherKnownWritingSystems_TokPisinDoesNotAlreadyExist_HasTokPisin()
+		{
+			var suggestor = new WritingSystemSuggestor();
+
+			var existingWritingSystems = new List<WritingSystemDefinition>();
+			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws=>ws.Label == "Tok Pisin"), Is.True);
+		}
+
+		[Test]
+		public void OtherKnownWritingSystems_TokPisinAlreadyExists_DoesNotHaveTokPisin()
+		{
+			var suggestor = new WritingSystemSuggestor();
+
+			var existingWritingSystems = new List<WritingSystemDefinition>{WritingSystemDefinition.FromLanguage("tpi")};
+			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws => ws.Label == "Tok Pisin"), Is.False);
+		}
+
 
 		/// <summary>
 		/// For English, it's very unlikely that they'll want to add IPA, in a app like wesay
