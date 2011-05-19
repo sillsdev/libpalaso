@@ -407,7 +407,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					yield return new KeyValuePair<string, string>(string.Empty, "-----");
 				}
 				// populate the rest of the list with all languages from the OS
-				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures))
+				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(info => info.IetfLanguageTag))
 				{
 					if(prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
 					{
