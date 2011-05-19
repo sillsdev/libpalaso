@@ -75,6 +75,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
+			_model.IdentifierUnlistedLanguageSelected();
 			UpdateDisplayFromModel(null, null);
 		}
 

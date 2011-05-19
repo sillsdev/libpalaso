@@ -16,9 +16,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		}
 		public void Selected()
 		{
-			if (_model != null && _model.CurrentDefinition != null)
+			if (_model != null)
 			{
-				_model.CurrentIsVoice = true;
+				_model.IdentifierVoiceSelected();
 			}
 		}
 		public string ChoiceName

@@ -22,12 +22,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
-			if (_model != null && _model.CurrentDefinition != null)
+			if (_model != null)
 			{
-				_model.CurrentLanguageName = string.Empty;
-				_model.CurrentVariant = string.Empty;
-				_model.CurrentRegion = string.Empty;
-				_model.CurrentScriptCode = string.Empty;
+				_model.IdentifierNothingSelected();
 			}
 		}
 

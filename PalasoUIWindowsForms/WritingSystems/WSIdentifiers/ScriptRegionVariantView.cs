@@ -110,13 +110,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
-			if (_model != null && _model.CurrentDefinition != null)
+			if (_model != null)
 			{
-				_model.CurrentVariant = _model.CurrentDefinition.Variant;
-				_model.CurrentRegion = _model.CurrentDefinition.Region;
-				_model.CurrentScriptCode = _model.CurrentDefinition.Script;
-				_model.CurrentIsVoice = _model.CurrentDefinition.IsVoice;
-				_model.CurrentIpaStatus = _model.CurrentDefinition.IpaStatus;
+				_model.IdentifierScriptRegionVariantSelected();
 			}
 			UpdateDisplayFromModel(null, null);
 		}

@@ -1286,6 +1286,48 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			return languageName;
 		}
+
+		public void IdentifierVoiceSelected()
+		{
+			CurrentIsVoice = true;
+		}
+
+		public void IdentifierNothingSelected()
+		{
+			CurrentLanguageName = string.Empty;
+			CurrentVariant = string.Empty;
+			CurrentRegion = string.Empty;
+			CurrentScriptCode = string.Empty;
+		}
+
+		public void IdentifierIpaSelected()
+		{
+			CurrentIsVoice = false;
+			CurrentScriptCode = string.Empty;
+
+			//if we're here, the user wants some kind of ipa
+			if (CurrentIpaStatus == IpaStatusChoices.NotIpa)
+			{
+				CurrentIpaStatus = IpaStatusChoices.Ipa;
+			}
+		}
+
+		public void IdentifierScriptRegionVariantSelected()
+		{
+			if (CurrentDefinition != null)
+			{
+				CurrentVariant = CurrentDefinition.Variant;
+				CurrentRegion = CurrentDefinition.Region;
+				CurrentScriptCode = CurrentDefinition.Script;
+				CurrentIsVoice = CurrentDefinition.IsVoice;
+				CurrentIpaStatus = CurrentDefinition.IpaStatus;
+			}
+		}
+
+		public void IdentifierUnlistedLanguageSelected()
+		{
+			// doesn't do anything at the moment
+		}
 	}
 
 	public delegate void BeforeDeletedEventHandler(object sender, BeforeDeletedEventArgs args);

@@ -916,5 +916,21 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
 		}
 
+		[Test]
+		public void IdentifierComboBox_SelectBasicOptionsAFewTimes_DoesNotThrow()
+		{
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			_model.IdentifierNothingSelected();
+			_model.IdentifierIpaSelected();
+			_model.IdentifierVoiceSelected();
+			_model.IdentifierScriptRegionVariantSelected();
+			_model.IdentifierNothingSelected();
+			_model.IdentifierVoiceSelected();
+			_model.IdentifierIpaSelected();
+			_model.IdentifierScriptRegionVariantSelected();
+			_model.IdentifierNothingSelected();
+			_model.IdentifierIpaSelected();
+		}
+
 	}
 }
