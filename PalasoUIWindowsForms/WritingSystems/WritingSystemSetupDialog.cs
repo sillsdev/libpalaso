@@ -9,12 +9,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	{
 		private readonly WritingSystemSetupModel _model;
 
-		public WritingSystemSetupDialog()
-		{
-			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository());
-			_writingSystemSetupView.BindToModel(_model);
-		}
+		//public WritingSystemSetupDialog()
+		//{
+		//    InitializeComponent();
+		//    _model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository());
+		//    _writingSystemSetupView.BindToModel(_model);
+		//}
 
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your

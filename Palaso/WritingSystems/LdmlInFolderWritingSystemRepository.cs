@@ -13,23 +13,12 @@ namespace Palaso.WritingSystems
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 
-		public static int LatestVersion
-		{
-			get{ return 1;}
-		}
+		public const int LatestVersion = 1;
 
 		/// <summary>
-		/// Use the default repository
 		/// </summary>
-		public LdmlInFolderWritingSystemRepository()
+		protected LdmlInFolderWritingSystemRepository()
 		{
-			string p =
-				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
-			Directory.CreateDirectory(p);
-			p = Path.Combine(p, "WritingSystemRepository");
-			Directory.CreateDirectory(p);
-			PathToWritingSystems = p;
-			LoadAllDefinitions();
 		}
 
 		/// <summary>
@@ -90,7 +79,7 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
-		private void LoadAllDefinitions()
+		protected void LoadAllDefinitions()
 		{
 			Clear();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
