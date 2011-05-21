@@ -7,6 +7,7 @@ using System.Linq;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Linq;
+using Palaso.Extensions;
 
 #if MONO
 // FIXME: Would prefer that LinqBridge didn't implement ForEach as per standard
@@ -169,7 +170,9 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 			else
 			{
-				var winPaths = new[] {@"c:\art of reading\images", @"c:/ArtOfReading/images"};
+				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading","images");
+				var appDataNoSpace = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("ArtOfReading", "images");
+				var winPaths = new[] { @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
 
 				foreach (var path in winPaths)
 				{
