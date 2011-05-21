@@ -144,7 +144,7 @@ namespace Palaso.Reporting
 				}
 				return Application.ProductVersion;
  */
-				var ver = Assembly.GetExecutingAssembly().GetName().Version;
+				var ver = Assembly.GetEntryAssembly().GetName().Version;
 				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
 			}
 		}
@@ -290,12 +290,48 @@ namespace Palaso.Reporting
 			AddProperty("CommandLine", Environment.CommandLine);
 			AddProperty("CurrentDirectory", Environment.CurrentDirectory);
 			AddProperty("MachineName", Environment.MachineName);
-			AddProperty("OSVersion", Environment.OSVersion.ToString());
+			AddProperty("OSVersion", GetOperatingSystemLabel());
 			AddProperty("DotNetVersion", Environment.Version.ToString());
 			AddProperty("WorkingSet", Environment.WorkingSet.ToString());
 			AddProperty("UserDomainName", Environment.UserDomainName);
 			AddProperty("UserName", Environment.UserName);
 			AddProperty("Culture", CultureInfo.CurrentCulture.ToString());
+		}
+
+		class Version
+		{
+			private readonly PlatformID _platform;
+			private readonly int _major;
+			private readonly int _minor;
+			public string Label { get; private set; }
+
+			public Version(PlatformID platform, int minor, int major,  string label)
+			{
+				_platform = platform;
+				_major = major;
+				_minor = minor;
+				Label = label;
+			}
+			public bool Match(OperatingSystem os)
+			{
+				return os.Version.Minor == _minor &&
+					   os.Version.Major == _major &&
+					   os.Platform == _platform;
+			}
+		}
+		private static string GetOperatingSystemLabel()
+		{
+			var list = new List<Version>();
+			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
+			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
+			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
+			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
+			foreach (var version in list)
+			{
+				if(version.Match(System.Environment.OSVersion))
+					return version.Label + " " + Environment.OSVersion.ServicePack;
+			}
+			return System.Environment.OSVersion.VersionString;
 		}
 
 		/// ------------------------------------------------------------------------------------
