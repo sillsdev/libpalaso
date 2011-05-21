@@ -187,8 +187,9 @@ namespace Palaso.Migration
 			CopyDirectory(new DirectoryInfo(sourcePath), new DirectoryInfo(targetPath), excludePath);
 		}
 
+
 		// Gleaned from http://xneuron.wordpress.com/2007/04/12/copy-directory-and-its-content-to-another-directory-in-c/
-		private static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, string excludePath)
+		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, string excludePath)
 		{
 			// Check if the target directory exists, if not, create it.
 			if (Directory.Exists(target.FullName) == false)
@@ -196,7 +197,7 @@ namespace Palaso.Migration
 				Directory.CreateDirectory(target.FullName);
 			}
 
-			// Copy each file into it’s new directory.
+			// Copy each file into its new directory.
 			foreach (FileInfo fi in source.GetFiles())
 			{
 				fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
