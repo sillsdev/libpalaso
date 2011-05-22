@@ -44,6 +44,7 @@
 	<RootNamespace>TestApp</RootNamespace>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<LangVersion>default</LangVersion>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>

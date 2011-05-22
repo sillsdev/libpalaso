@@ -25,6 +25,7 @@ namespace TestApp
 			ErrorReport.EmailAddress = "nowhere@palaso.org";
 			ErrorReport.AddStandardProperties();
 			ExceptionHandler.Init();
+			UsageReporter.Init(new ReportingSettings(), "nowhere.palaso.org", "bogusAccountCode", true );
 		}
 
 	}

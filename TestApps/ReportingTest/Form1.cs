@@ -83,24 +83,16 @@ namespace TestApp
 
 		private void button7_Click(object sender, EventArgs e)
 		{
-			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"
-			x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-xx
-x
-x
-x
+			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"Should see 11 lines or a scroll following:
+2
+3
+4
+5
+6
+7
+8
+9
+10
 the end.");
 		}
 
@@ -108,6 +100,12 @@ the end.");
 		{
 			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Foobar", DialogResult.No,
 															 "Notice, you can click Foobar.");
+		}
+
+		private void button8_Click(object sender, EventArgs e)
+		{
+			ErrorReport.NotifyUserOfProblem(new ApplicationException("testing"),
+											"Bloom was appalled by the irony of that text.");
 		}
 	}
 }
