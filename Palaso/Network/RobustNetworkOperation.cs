@@ -3,6 +3,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Palaso.CommandLineProcessing;
+using Palaso.Reporting;
 
 
 namespace Palaso.Network
@@ -20,8 +21,16 @@ namespace Palaso.Network
 			if (verboseLog != null)
 				verboseLog.Invoke("RobustNetworkOperation.Do()");
 
-			IWebProxy proxy = WebRequest.GetSystemWebProxy();
-
+			IWebProxy proxy;
+			try
+			{
+				proxy = WebRequest.GetSystemWebProxy();
+			}
+			catch (Exception e)
+			{
+				Logger.WriteEvent("RobustNetworkOperation:GetSystemWebProxy() gave exception: ", e.Message);
+				proxy = null;
+			}
 
 			try
 			{

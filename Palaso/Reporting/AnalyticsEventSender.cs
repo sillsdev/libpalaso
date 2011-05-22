@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
 using Palaso.Network;
 
 namespace Palaso.Reporting
@@ -114,12 +116,25 @@ namespace Palaso.Reporting
 		private void SendUrlRequest(Dictionary<string, string> parameters)
 		{
 			string requestUriString = GetUrl(parameters);
-			RobustNetworkOperation.Do(proxy =>
-										  {
-											  var request = WebRequest.Create(requestUriString);
-											  request.Proxy = proxy;
-											  request.BeginGetResponse(new AsyncCallback(RespCallback), null);
-										  }, null);
+
+			var bw = new BackgroundWorker();
+			bw.DoWork += (o, args) =>
+				RobustNetworkOperation.Do(proxy =>
+											  {
+												  Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",requestUriString);
+												  var request = WebRequest.Create(requestUriString);
+												  request.Proxy = proxy;
+												  /* there were two users who were hanging when Bloom was showing the splash screen and phoning home.
+													 It's possible that this was to blame, becaue "Web service calls are invoked on the UI thread."
+
+												   //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
+
+												   So this is an experiment to see if a non-synchronous call will help them.
+												   After all, this whole thing has its own background thread anyhow.
+												   */
+												  request.GetResponse();
+											  }, null);
+			 bw.RunWorkerAsync();
 		}
 
 		private static void RespCallback(IAsyncResult ar)
