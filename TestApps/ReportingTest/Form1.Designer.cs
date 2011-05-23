@@ -42,6 +42,7 @@ namespace TestApp
 			this.button7 = new System.Windows.Forms.Button();
 			this._probWithExitButton = new System.Windows.Forms.Button();
 			this.button8 = new System.Windows.Forms.Button();
+			this.button9 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// button1
@@ -178,11 +179,22 @@ namespace TestApp
 			this.button8.UseVisualStyleBackColor = true;
 			this.button8.Click += new System.EventHandler(this.button8_Click);
 			//
+			// button9
+			//
+			this.button9.Location = new System.Drawing.Point(266, 67);
+			this.button9.Name = "button9";
+			this.button9.Size = new System.Drawing.Size(226, 23);
+			this.button9.TabIndex = 5;
+			this.button9.Text = "Notification tool long to fit screen height";
+			this.button9.UseVisualStyleBackColor = true;
+			this.button9.Click += new System.EventHandler(this.button9_Click);
+			//
 			// Form1
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(505, 480);
+			this.Controls.Add(this.button9);
 			this.Controls.Add(this.button8);
 			this.Controls.Add(this.WritingSystemPickerButton);
 			this.Controls.Add(this.label2);
@@ -220,5 +232,6 @@ namespace TestApp
 		private System.Windows.Forms.Button button7;
 		private System.Windows.Forms.Button _probWithExitButton;
 		private System.Windows.Forms.Button button8;
+		private System.Windows.Forms.Button button9;
 	}
 }

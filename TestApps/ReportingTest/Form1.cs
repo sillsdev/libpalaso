@@ -84,6 +84,7 @@ namespace TestApp
 		private void button7_Click(object sender, EventArgs e)
 		{
 			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"Should see 11 lines or a scroll following:
+1
 2
 3
 4
@@ -95,6 +96,17 @@ namespace TestApp
 10
 the end.");
 		}
+
+		private void button9_Click(object sender, EventArgs e)
+		{
+			var bldr = new StringBuilder("Should be 100 lines with VScrollbar." + Environment.NewLine);
+
+			for (int i = 1; i <= 100; i++)
+				bldr.AppendLine("Line " + i);
+
+			ErrorReport.NotifyUserOfProblem(bldr.ToString());
+		}
+
 
 		private void _probWithExitButton_Click(object sender, EventArgs e)
 		{

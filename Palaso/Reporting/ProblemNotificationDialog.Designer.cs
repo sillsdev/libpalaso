@@ -53,7 +53,7 @@ namespace Palaso.Reporting
 			this._acceptButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._acceptButton.AutoSize = true;
 			this._acceptButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._acceptButton.Location = new System.Drawing.Point(334, 108);
+			this._acceptButton.Location = new System.Drawing.Point(328, 59);
 			this._acceptButton.Margin = new System.Windows.Forms.Padding(4, 0, 0, 15);
 			this._acceptButton.Name = "_acceptButton";
 			this._acceptButton.Size = new System.Drawing.Size(75, 26);
@@ -68,7 +68,7 @@ namespace Palaso.Reporting
 			this._alternateButton1.AutoSize = true;
 			this._alternateButton1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._alternateButton1.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._alternateButton1.Location = new System.Drawing.Point(243, 108);
+			this._alternateButton1.Location = new System.Drawing.Point(237, 59);
 			this._alternateButton1.Margin = new System.Windows.Forms.Padding(6, 0, 4, 15);
 			this._alternateButton1.MinimumSize = new System.Drawing.Size(75, 26);
 			this._alternateButton1.Name = "_alternateButton1";
@@ -83,6 +83,7 @@ namespace Palaso.Reporting
 			//
 			this.tableLayout.AutoSize = true;
 			this.tableLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.tableLayout.BackColor = System.Drawing.Color.Transparent;
 			this.tableLayout.ColumnCount = 4;
 			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -93,15 +94,13 @@ namespace Palaso.Reporting
 			this.tableLayout.Controls.Add(this._acceptButton, 3, 1);
 			this.tableLayout.Controls.Add(this._alternateButton1, 2, 1);
 			this.tableLayout.Controls.Add(this._message, 1, 0);
-			this.tableLayout.Dock = System.Windows.Forms.DockStyle.Top;
 			this.tableLayout.Location = new System.Drawing.Point(20, 22);
 			this.tableLayout.Name = "tableLayout";
 			this.tableLayout.RowCount = 2;
 			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayout.Size = new System.Drawing.Size(409, 149);
+			this.tableLayout.Size = new System.Drawing.Size(403, 100);
 			this.tableLayout.TabIndex = 5;
-			this.tableLayout.SizeChanged += new System.EventHandler(this.HandleTableLayoutSizeChanged);
 			//
 			// _reoccurenceMessage
 			//
@@ -109,27 +108,29 @@ namespace Palaso.Reporting
 			this._reoccurenceMessage.AutoSize = true;
 			this.tableLayout.SetColumnSpan(this._reoccurenceMessage, 2);
 			this._reoccurenceMessage.ForeColor = System.Drawing.Color.Gray;
-			this._reoccurenceMessage.Location = new System.Drawing.Point(0, 120);
+			this._reoccurenceMessage.Location = new System.Drawing.Point(0, 71);
 			this._reoccurenceMessage.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
 			this._reoccurenceMessage.Name = "_reoccurenceMessage";
-			this._reoccurenceMessage.Size = new System.Drawing.Size(237, 13);
+			this._reoccurenceMessage.Size = new System.Drawing.Size(231, 13);
 			this._reoccurenceMessage.TabIndex = 6;
 			this._reoccurenceMessage.Text = "Re-occurence message";
 			//
 			// _message
 			//
-			this._message.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this._message.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._message.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.tableLayout.SetColumnSpan(this._message, 3);
 			this._message.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._message.Location = new System.Drawing.Point(63, 3);
+			this._message.Location = new System.Drawing.Point(60, 0);
+			this._message.Margin = new System.Windows.Forms.Padding(0, 0, 0, 23);
 			this._message.Multiline = true;
 			this._message.Name = "_message";
 			this._message.ReadOnly = true;
-			this._message.Size = new System.Drawing.Size(171, 102);
+			this._message.Size = new System.Drawing.Size(343, 36);
 			this._message.TabIndex = 0;
 			this._message.Text = "Blah blah";
+			this._message.TextChanged += new System.EventHandler(this.HandleMessageTextChanged);
 			//
 			// ProblemNotificationDialog
 			//
@@ -138,7 +139,7 @@ namespace Palaso.Reporting
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.CancelButton = this._acceptButton;
-			this.ClientSize = new System.Drawing.Size(444, 168);
+			this.ClientSize = new System.Drawing.Size(444, 189);
 			this.ControlBox = false;
 			this.Controls.Add(this.tableLayout);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;

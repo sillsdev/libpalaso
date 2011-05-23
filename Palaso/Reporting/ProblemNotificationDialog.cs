@@ -53,6 +53,8 @@ namespace Palaso.Reporting
 		{
 			InitializeComponent();
 			_message.Font = SystemFonts.MessageBoxFont;
+			_message.BackColor = BackColor;
+			_message.ForeColor = ForeColor;
 			_reoccurenceMessage.Font = SystemFonts.MessageBoxFont;
 			_icon.Image = SystemIcons.Warning.ToBitmap();
 		}
@@ -71,28 +73,11 @@ namespace Palaso.Reporting
 		/// </summary>
 		public ProblemNotificationDialog(string message, string dialogTitle, Image icon) : this()
 		{
-			Text = dialogTitle;
-			_message.Text = message;
-
 			if (icon != null)
 				_icon.Image = icon;
 
-			// Sometimes, setting the text in the previous line will force the table layout control
-			// to resize itself accordingly, which will fire its SizeChanged event. However,
-			// sometimes the text is not long enough to force the table layout to be resized,
-			// therefore, we need to call it manually, just to be sure the form gets sized correctly.
-			HandleTableLayoutSizeChanged(null, null);
-		}
-
-		private void HandleTableLayoutSizeChanged(object sender, EventArgs e)
-		{
-			if (!IsHandleCreated)
-				CreateHandle();
-
-			var desiredHeight = tableLayout.Height + Padding.Top + Padding.Bottom + (Height - ClientSize.Height);
-			var scn = Screen.FromControl(this);
-			Height = Math.Min(desiredHeight, scn.WorkingArea.Height - 20);
-			AutoScroll = (desiredHeight > scn.WorkingArea.Height - 20);
+		   Text = dialogTitle;
+			_message.Text = message;
 		}
 
 		private void _acceptButton_Click(object sender, EventArgs e)
@@ -115,20 +100,43 @@ namespace Palaso.Reporting
 			_alternateButton1.Enabled = true;
 		}
 
-		//private void _message_TextChanged(object sender, EventArgs e)
-		//{
-		//    using(var g = this.CreateGraphics())
-		//    {
-		//        int textHeight = (int) Math.Ceiling(g.MeasureString(_message.Text, _message.Font, _message.Width).Height);
-		//        if (textHeight > _message.Height)
-		//        {
-		//            Height += (textHeight - _message.Height) + _message.Font.Height*2/*fudge*/;
+		private void HandleMessageTextChanged(object sender, EventArgs e)
+		{
+			AdjustHeights();
+		}
 
-		//            //hack... I would just like to get it to not grow larger than the screen
-		//            if (Height > 600)
-		//                Height = 600;
-		//        }
-		//    }
-		//}
+		private void AdjustHeights()
+		{
+			_message.Height = GetDesiredTextBoxHeight();
+
+			var desiredWindowHeight = tableLayout.Height + Padding.Top +
+				Padding.Bottom + (Height - ClientSize.Height);
+
+			var scn = Screen.FromControl(this);
+			int maxWindowHeight = scn.WorkingArea.Height - 25;
+
+			if (desiredWindowHeight > maxWindowHeight)
+			{
+				_message.Height -= (desiredWindowHeight - maxWindowHeight);
+				_message.ScrollBars = ScrollBars.Vertical;
+			}
+
+			Height = Math.Min(desiredWindowHeight, maxWindowHeight);
+		}
+
+		private int GetDesiredTextBoxHeight()
+		{
+			if (!IsHandleCreated)
+				CreateHandle();
+
+			using (var g = _message.CreateGraphics())
+			{
+				const TextFormatFlags flags = TextFormatFlags.NoClipping | TextFormatFlags.NoPadding |
+					TextFormatFlags.TextBoxControl | TextFormatFlags.WordBreak;
+
+				return TextRenderer.MeasureText(g, _message.Text, _message.Font,
+					new Size(_message.ClientSize.Width, 0), flags).Height;
+			}
+		}
 	}
 }
