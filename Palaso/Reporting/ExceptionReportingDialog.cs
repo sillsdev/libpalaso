@@ -560,6 +560,7 @@ namespace Palaso.Reporting
 				 }
 				 else
 				 {
+					 PutOnClipboard();
 					 emailMessage.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
 				 }
 				 if (emailMessage.Send(emailProvider))
