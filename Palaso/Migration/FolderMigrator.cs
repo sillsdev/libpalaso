@@ -178,6 +178,14 @@ namespace Palaso.Migration
 		private static void DeleteFolderAvoidingDeletionBug(string folderToDelete)
 		{
 			string deletionPath = folderToDelete + "ToBeDeleted";
+
+			//since this temp folder doesn't have a unique name, it, too, could already exist
+			DeleteFolderThatMayBeInUse(deletionPath);
+			if(Directory.Exists(deletionPath))
+			{
+				return; //ah well
+			}
+
 			Directory.Move(folderToDelete, deletionPath);
 			DeleteFolderThatMayBeInUse(deletionPath);
 		}
