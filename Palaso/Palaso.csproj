@@ -326,6 +326,7 @@
 	<Compile Include="WritingSystems\LdmlInXmlWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\Migration\Rfc5646TagCleaner.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV1.cs" />
