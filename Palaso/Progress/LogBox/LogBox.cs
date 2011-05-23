@@ -164,13 +164,26 @@ namespace Palaso.Progress.LogBox
 		/// </summary>
 		public void SafeInvoke(Control box, Action action)
 		{
-			if (!box.IsHandleCreated)
+			try
 			{
-				//Debug.Fail("In release build, would have given up writing this message, because the destination control isn't built yet.");
-				return;
+				if (!box.IsHandleCreated)
+				{
+					//Debug.Fail("In release build, would have given up writing this message, because the destination control isn't built yet.");
+					return;
+				}
+				box.Invoke(action);
+			}
+			catch (Exception)
+			{
+#if DEBUG
+				throw;
+#else
+				//WS-34006
+				// better to swallow the message than raise a stink
+#endif
 			}
 
-			box.Invoke(action);
+
 		}
 
 		private void Write(Color color, FontStyle style, string msg, params object[] args)
