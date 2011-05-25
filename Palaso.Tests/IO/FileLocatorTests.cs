@@ -94,6 +94,13 @@ namespace Palaso.Tests.IO
 			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true, "Common Files"));
 		}
 
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
+		{
+			Assert.DoesNotThrow(() => FileLocator.LocateInProgramFiles("msinfo32.exe", true, "!~@blah"));
+		}
+
 		//TODO: this could use lots more tests
 	}
 }

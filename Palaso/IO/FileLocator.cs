@@ -248,12 +248,9 @@ namespace Palaso.IO
 			if (subFoldersToSearch.Length == 0)
 				subFoldersToSearch = new[] { string.Empty };
 
-			foreach (var progFolder in GetPossibleProgramFilesFolders())
+			foreach (var progFolder in GetPossibleProgramFilesFolders().Where(Directory.Exists))
 			{
-				if (!Directory.Exists(progFolder))
-					continue;
-
-				foreach (var path in subFoldersToSearch.Select(sf => Path.Combine(progFolder, sf)))
+				foreach (var path in subFoldersToSearch.Select(sf => Path.Combine(progFolder, sf)).Where(Directory.Exists))
 				{
 					var tgtPath = Directory.GetFiles(path, exeName, srcOption).FirstOrDefault();
 					if (tgtPath != null)
