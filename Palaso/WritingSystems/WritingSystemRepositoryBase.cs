@@ -127,7 +127,7 @@ namespace Palaso.WritingSystems
 			{
 				_writingSystems.Remove(ws.StoreID);
 			}
-			if (WritingSystemIdChanged != null && !String.IsNullOrEmpty(ws.StoreID))
+			if (WritingSystemIdChanged != null && !String.IsNullOrEmpty(ws.StoreID) && (ws.StoreID != newID ))
 			{
 				WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(ws.StoreID, newID));
 			}

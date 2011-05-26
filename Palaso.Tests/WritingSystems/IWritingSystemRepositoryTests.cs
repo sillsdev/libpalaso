@@ -509,6 +509,17 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
+		{
+			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
+			var ws = WritingSystemDefinition.FromLanguage("en");
+			RepositoryUnderTest.Set(ws);
+			ws.ISO639 = "en";
+			RepositoryUnderTest.Set(ws);
+			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);
+		}
+
+		[Test]
 		public void Set_NewWritingSystem_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
