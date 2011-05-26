@@ -758,5 +758,14 @@ namespace Palaso.UI.WindowsForms.Progress
 				OnStartWorker(this, null);
 			}
 		}
+
+		public DialogResult ShowDialog()
+		{
+			if(Palaso.Reporting.ErrorReport.IsOkToInteractWithUser)
+			{
+				return base.ShowDialog();
+			}
+			return System.Windows.Forms.DialogResult.None;
+		}
 	}
 }
