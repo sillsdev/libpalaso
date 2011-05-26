@@ -124,14 +124,11 @@ namespace Palaso.Reporting
 												  Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",requestUriString);
 												  var request = WebRequest.Create(requestUriString);
 												  request.Proxy = proxy;
-												  /* there were two users who were hanging when Bloom was showing the splash screen and phoning home.
-													 It's possible that this was to blame, becaue "Web service calls are invoked on the UI thread."
 
-												   //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
-
-												   So this is an experiment to see if a non-synchronous call will help them.
-												   After all, this whole thing has its own background thread anyhow.
-												   */
+												   //warning, this uses the ui thread:
+												  //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
+													//since we're in the background anyway...
+												  //review but on a single core machine, might this still hang us up, or does it sleep, internally?
 												  request.GetResponse();
 											  }, null);
 			 bw.RunWorkerAsync();
