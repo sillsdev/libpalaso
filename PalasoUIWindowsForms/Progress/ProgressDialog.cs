@@ -765,7 +765,8 @@ namespace Palaso.UI.WindowsForms.Progress
 			{
 				return base.ShowDialog();
 			}
-			return System.Windows.Forms.DialogResult.None;
+			OnStartWorker(this, null);
+			return DialogResult;
 		}
 	}
 }
