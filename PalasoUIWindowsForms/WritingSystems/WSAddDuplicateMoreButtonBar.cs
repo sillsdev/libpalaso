@@ -21,18 +21,28 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_model != null)
 			{
 				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= OnCurrentItemUpdated;
 			}
 			_model = model;
 			SetButtonStatus();
 			_model.SelectionChanged += ModelSelectionChanged;
+			_model.CurrentItemUpdated += OnCurrentItemUpdated;
 
 			Disposed += OnDisposed;
+		}
+
+		private void OnCurrentItemUpdated(object sender, EventArgs e)
+		{
+			SetButtonStatus();
 		}
 
 		void OnDisposed(object sender, EventArgs e)
 		{
 			if (_model != null)
+			{
 				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= OnCurrentItemUpdated;
+			}
 		}
 
 		private void CreateMoreButtonImage()
@@ -58,9 +68,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_duplicateMenuItem.Enabled = enabled;
 			if(enabled)
 			{
-				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", _model.CurrentLanguageName);
-				_deleteMenuItem.Text = string.Format("Delete {0}", _model.CurrentLanguageName);
-				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", _model.CurrentLanguageName);
+				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", _model.CurrentDefinition.ListLabel);
+				_deleteMenuItem.Text = string.Format("Delete {0}", _model.CurrentDefinition.ListLabel);
+				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", _model.CurrentDefinition.ListLabel);
 			}
 			_deleteMenuItem.Enabled = enabled;
 		}
