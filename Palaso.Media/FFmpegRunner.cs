@@ -22,7 +22,7 @@ namespace Palaso.Media
 		/// <returns></returns>
 		static internal string LocateAndRememberFFmpeg()
 		{
-			if (string.Empty == _sFFmpegLocation) //NO! string.empty means we looked and didn't find: string.IsNullOrEmpty(s_ffmpegLocation))
+			if (null != _sFFmpegLocation) //NO! string.empty means we looked and didn't find: string.IsNullOrEmpty(s_ffmpegLocation))
 				return _sFFmpegLocation;
 			_sFFmpegLocation = LocateFFmpeg();
 			return _sFFmpegLocation;
