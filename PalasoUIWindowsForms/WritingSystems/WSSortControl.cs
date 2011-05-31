@@ -79,8 +79,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_rulesValidationTimer.Enabled = false;
 			if (!_model.HasCurrentSelection)
 			{
-				_sortPanelCustomText.Visible = false;
-				_sortPanelOtherLanguage.Visible = false;
+				_sortrules_panel.Visible = false;
+				_languagecombo_panel.Visible = false;
 				Enabled = false;
 				return;
 			}
@@ -127,8 +127,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _sortUsingComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_sortPanelCustomText.Visible = false;
-			_sortPanelOtherLanguage.Visible = false;
+			_sortrules_panel.Visible = false;
+			_languagecombo_panel.Visible = false;
 			if (_sortUsingComboBox.SelectedIndex == -1)
 			{
 				return;
@@ -136,16 +136,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			string newValue = (string) _sortUsingValueMap[_sortUsingComboBox.SelectedIndex];
 			if (newValue == "OtherLanguage")
 			{
-				_sortPanelOtherLanguage.Visible = true;
+				_languagecombo_panel.Visible = true;
 				_rulesValidationTimer.Enabled = false;
 				if (_languageOptionMap.ContainsKey(_model.CurrentSortRules))
 				{
 					_languageComboBox.SelectedIndex = (int)_languageOptionMap[_model.CurrentSortRules];
 				}
 			}
-			else
+			else if (newValue == "CustomSimple" || newValue == "CustomICU")
 			{
-				_sortPanelCustomText.Visible = true;
+				_sortrules_panel.Visible = true;
 				_sortRulesTextBox.Text = _model.CurrentSortRules;
 			}
 			_changingModel = true;
@@ -255,6 +255,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_testSortResult.Text = String.Empty;
 			_testSortResult.ForeColor = Color.Black;
 			return true;
+		}
+
+		private void label1_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
