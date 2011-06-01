@@ -114,6 +114,12 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Parse_HasBadSubtag_Throws()
+		{
+			Assert.Throws<ValidationException>(() => WritingSystemDefinition.Parse("qaa-dupl1"));
+		}
+
+		[Test]
 		public void Parse_HasLanguageAndMultipleVariants_WritingSystemHasExpectedFields()
 		{
 			var tag = WritingSystemDefinition.Parse("en-alalc97-aluku");

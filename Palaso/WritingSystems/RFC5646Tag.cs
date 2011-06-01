@@ -436,6 +436,7 @@ namespace Palaso.WritingSystems
 					rfc5646Tag.AddToVariant(token);
 					continue;
 				}
+				throw new ValidationException(String.Format("The RFC tag '{0}' could not be parsed.", inputString));
 			}
 			return rfc5646Tag;
 		}
