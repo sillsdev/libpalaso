@@ -253,14 +253,18 @@ peach";
 		private bool ValidateSortRules()
 		{
 			string message;
+			const string prefixToMessage = "SORT RULES WILL NOT BE SAVED\r\n";
 			if (!_model.ValidateCurrentSortRules(out message))
 			{
-				_testSortResult.Text = "SORT RULES WILL NOT BE SAVED\r\n" + (message ?? String.Empty);
+				_testSortResult.Text = prefixToMessage + (message ?? String.Empty);
 				_testSortResult.ForeColor = Color.Red;
 				return false;
 			}
-			_testSortResult.Text = String.Empty;
-			_testSortResult.ForeColor = Color.Black;
+			if (_testSortResult.Text.StartsWith(prefixToMessage))
+			{
+				_testSortResult.Text = String.Empty;
+				_testSortResult.ForeColor = Color.Black;
+			}
 			return true;
 		}
 

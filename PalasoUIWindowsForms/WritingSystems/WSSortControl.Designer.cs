@@ -95,6 +95,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._testSortText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
+			this._testSortText.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._testSortText.Location = new System.Drawing.Point(3, 45);
 			this._testSortText.Multiline = true;
 			this._testSortText.Name = "_testSortText";
@@ -110,6 +111,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._testSortResult.BackColor = System.Drawing.SystemColors.Window;
+			this._testSortResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._testSortResult.Location = new System.Drawing.Point(3, 222);
 			this._testSortResult.Multiline = true;
 			this._testSortResult.Name = "_testSortResult";
@@ -254,13 +256,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._sortRulesTextBox.AcceptsReturn = true;
 			this._sortRulesTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._sortRulesTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._sortRulesTextBox.Location = new System.Drawing.Point(0, 0);
 			this._sortRulesTextBox.Multiline = true;
 			this._sortRulesTextBox.Name = "_sortRulesTextBox";
 			this._sortRulesTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this._sortRulesTextBox.Size = new System.Drawing.Size(236, 318);
 			this._sortRulesTextBox.TabIndex = 0;
-			this._sortRulesTextBox.TextChanged += new System.EventHandler(this._sortRulesTextBox_TextChanged);
+			this._sortRulesTextBox.Leave += new System.EventHandler(this._sortRulesTextBox_TextChanged);
 			//
 			// tableLayoutPanel2
 			//
