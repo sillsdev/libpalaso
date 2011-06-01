@@ -32,6 +32,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			_defaultFontName = _sortRulesTextBox.Font.Name;
 			_defaultFontSize = _sortRulesTextBox.Font.SizeInPoints;
+
+			// default text for testing the sort rules
+			_testSortText.Text = @"pear
+apple
+orange
+mango
+peach";
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)

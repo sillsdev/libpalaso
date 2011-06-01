@@ -39,23 +39,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._testSortButton = new System.Windows.Forms.Button();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.switcher_panel = new System.Windows.Forms.Panel();
-			this._sortrules_panel = new System.Windows.Forms.Panel();
 			this._languagecombo_panel = new System.Windows.Forms.TableLayoutPanel();
 			this.label2 = new System.Windows.Forms.Label();
 			this._languageComboBox = new System.Windows.Forms.ComboBox();
+			this._sortrules_panel = new System.Windows.Forms.Panel();
 			this._sortRulesTextBox = new System.Windows.Forms.TextBox();
+			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
-			this.tableLayoutPanel2.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
 			this.switcher_panel.SuspendLayout();
-			this._sortrules_panel.SuspendLayout();
 			this._languagecombo_panel.SuspendLayout();
+			this._sortrules_panel.SuspendLayout();
+			this.tableLayoutPanel2.SuspendLayout();
 			this.SuspendLayout();
 			//
 			// _sortUsingComboBox
@@ -179,29 +179,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(242, 384);
 			this.tableLayoutPanel1.TabIndex = 0;
 			//
-			// tableLayoutPanel2
-			//
-			this.tableLayoutPanel2.AutoSize = true;
-			this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel2.ColumnCount = 1;
-			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel2.Controls.Add(this._testSortButton, 0, 0);
-			this.tableLayoutPanel2.Controls.Add(this._testSortResult, 0, 4);
-			this.tableLayoutPanel2.Controls.Add(this.label4, 0, 3);
-			this.tableLayoutPanel2.Controls.Add(this.label3, 0, 1);
-			this.tableLayoutPanel2.Controls.Add(this._testSortText, 0, 2);
-			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-			this.tableLayoutPanel2.RowCount = 5;
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel2.Size = new System.Drawing.Size(256, 384);
-			this.tableLayoutPanel2.TabIndex = 0;
-			//
 			// tableLayoutPanel3
 			//
 			this.tableLayoutPanel3.ColumnCount = 2;
@@ -226,15 +203,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.switcher_panel.Name = "switcher_panel";
 			this.switcher_panel.Size = new System.Drawing.Size(236, 318);
 			this.switcher_panel.TabIndex = 1;
-			//
-			// _sortrules_panel
-			//
-			this._sortrules_panel.Controls.Add(this._sortRulesTextBox);
-			this._sortrules_panel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._sortrules_panel.Location = new System.Drawing.Point(0, 0);
-			this._sortrules_panel.Name = "_sortrules_panel";
-			this._sortrules_panel.Size = new System.Drawing.Size(236, 318);
-			this._sortrules_panel.TabIndex = 3;
 			//
 			// _languagecombo_panel
 			//
@@ -273,6 +241,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._languageComboBox.Size = new System.Drawing.Size(230, 21);
 			this._languageComboBox.TabIndex = 1;
 			//
+			// _sortrules_panel
+			//
+			this._sortrules_panel.Controls.Add(this._sortRulesTextBox);
+			this._sortrules_panel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._sortrules_panel.Location = new System.Drawing.Point(0, 0);
+			this._sortrules_panel.Name = "_sortrules_panel";
+			this._sortrules_panel.Size = new System.Drawing.Size(236, 318);
+			this._sortrules_panel.TabIndex = 3;
+			//
 			// _sortRulesTextBox
 			//
 			this._sortRulesTextBox.AcceptsReturn = true;
@@ -284,6 +261,29 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._sortRulesTextBox.Size = new System.Drawing.Size(236, 318);
 			this._sortRulesTextBox.TabIndex = 0;
 			this._sortRulesTextBox.TextChanged += new System.EventHandler(this._sortRulesTextBox_TextChanged);
+			//
+			// tableLayoutPanel2
+			//
+			this.tableLayoutPanel2.AutoSize = true;
+			this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.tableLayoutPanel2.ColumnCount = 1;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel2.Controls.Add(this._testSortButton, 0, 0);
+			this.tableLayoutPanel2.Controls.Add(this._testSortResult, 0, 4);
+			this.tableLayoutPanel2.Controls.Add(this.label4, 0, 3);
+			this.tableLayoutPanel2.Controls.Add(this.label3, 0, 1);
+			this.tableLayoutPanel2.Controls.Add(this._testSortText, 0, 2);
+			this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+			this.tableLayoutPanel2.RowCount = 5;
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel2.Size = new System.Drawing.Size(256, 384);
+			this.tableLayoutPanel2.TabIndex = 0;
 			//
 			// WSSortControl
 			//
@@ -298,16 +298,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer1.Panel2.PerformLayout();
 			this.splitContainer1.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
-			this.tableLayoutPanel2.ResumeLayout(false);
-			this.tableLayoutPanel2.PerformLayout();
 			this.tableLayoutPanel3.ResumeLayout(false);
 			this.tableLayoutPanel3.PerformLayout();
 			this.switcher_panel.ResumeLayout(false);
 			this.switcher_panel.PerformLayout();
-			this._sortrules_panel.ResumeLayout(false);
-			this._sortrules_panel.PerformLayout();
 			this._languagecombo_panel.ResumeLayout(false);
 			this._languagecombo_panel.PerformLayout();
+			this._sortrules_panel.ResumeLayout(false);
+			this._sortrules_panel.PerformLayout();
+			this.tableLayoutPanel2.ResumeLayout(false);
+			this.tableLayoutPanel2.PerformLayout();
 			this.ResumeLayout(false);
 
 		}

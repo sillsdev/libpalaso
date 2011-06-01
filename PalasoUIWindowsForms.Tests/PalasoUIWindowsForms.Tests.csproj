@@ -146,6 +146,7 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
+	<None Include="ClassDiagram1.cd" />
 	<None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
