@@ -115,27 +115,25 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
+			var oldId = ws.StoreID;
 			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
-			if (_writingSystems.ContainsKey(newID) && newID != ws.StoreID)
+			if (_writingSystems.ContainsKey(newID) && newID != oldId)
 			{
 				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", newID));
 			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
-			if (!String.IsNullOrEmpty(ws.StoreID) && _writingSystems.ContainsKey(ws.StoreID))
+			if (!String.IsNullOrEmpty(oldId) && _writingSystems.ContainsKey(oldId))
 			{
-				_writingSystems.Remove(ws.StoreID);
+				_writingSystems.Remove(oldId);
 			}
-			if (WritingSystemIdChanged != null && !String.IsNullOrEmpty(ws.StoreID) && (ws.StoreID != newID ))
-			{
-				WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(ws.StoreID, newID));
-			}
-
-
-
+			_writingSystems[newID] = ws;
 			ws.StoreID = newID;
-			_writingSystems[ws.StoreID] = ws;
+			if (WritingSystemIdChanged != null && !String.IsNullOrEmpty(oldId) && (oldId != newID))
+			{
+				WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, newID));
+			}
 		}
 
 		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
