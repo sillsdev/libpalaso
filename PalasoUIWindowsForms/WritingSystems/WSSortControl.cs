@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Data;
 using System.Text;
@@ -140,9 +141,10 @@ peach";
 			{
 				return;
 			}
-			string newValue = (string) _sortUsingValueMap[_sortUsingComboBox.SelectedIndex];
+			string newValue = (string)_sortUsingValueMap[_sortUsingComboBox.SelectedIndex];
 			if (newValue == "OtherLanguage")
 			{
+				_sortrules_panel.Visible = true;
 				_languagecombo_panel.Visible = true;
 				_rulesValidationTimer.Enabled = false;
 				if (_languageOptionMap.ContainsKey(_model.CurrentSortRules))
@@ -268,9 +270,9 @@ peach";
 			return true;
 		}
 
-		private void label1_Click(object sender, EventArgs e)
+		private void OnHelpLabelClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-
+			Process.Start("http://wesay.org/wiki/How_to_sort_using_a_custom_sort_sequence");
 		}
 	}
 }
