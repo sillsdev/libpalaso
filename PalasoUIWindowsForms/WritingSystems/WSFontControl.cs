@@ -21,6 +21,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 			_defaultFontName = _testArea.Font.Name;
 			_defaultFontSize = _testArea.Font.SizeInPoints;
+			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)

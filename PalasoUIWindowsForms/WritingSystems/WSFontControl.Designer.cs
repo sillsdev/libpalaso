@@ -37,6 +37,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this._rightToLeftCheckBox = new System.Windows.Forms.CheckBox();
+			this._promptForFontTestArea = new Palaso.UI.WindowsForms.Widgets.Prompt();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -133,9 +134,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._testArea.Name = "_testArea";
 			this._testArea.Size = new System.Drawing.Size(478, 95);
 			this._testArea.TabIndex = 2;
-			this._testArea.Text = "Use this area to type something to test out your font.";
-			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
+			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			//
 			// splitContainer1
 			//
@@ -219,5 +219,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.SplitContainer splitContainer2;
 		private System.Windows.Forms.CheckBox _rightToLeftCheckBox;
+		private Widgets.Prompt _promptForFontTestArea;
 	}
 }

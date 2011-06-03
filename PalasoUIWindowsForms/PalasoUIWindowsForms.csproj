@@ -300,7 +300,9 @@
 	<Compile Include="Widgets\Flying\FlyingLabel.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Widgets\Prompt.cs" />
+	<Compile Include="Widgets\Prompt.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionVariantHelper.cs" />
 	<Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.cs">
