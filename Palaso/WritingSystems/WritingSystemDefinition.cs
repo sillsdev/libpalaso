@@ -72,11 +72,11 @@ namespace Palaso.WritingSystems
 			_rfcTag = new RFC5646Tag();
 		}
 
-		public WritingSystemDefinition(string language)
+		public WritingSystemDefinition(string rfctag)
 			: this()
 		{
-			_rfcTag.Language = language;
-			_abbreviation = _rfcTag.Script = _languageName = _rfcTag.Variant = _rfcTag.Region = _nativeName = string.Empty;
+			_rfcTag = RFC5646Tag.Parse(rfctag);
+			_abbreviation = _languageName = _nativeName = string.Empty;
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
