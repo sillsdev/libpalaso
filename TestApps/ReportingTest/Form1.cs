@@ -37,7 +37,7 @@ namespace TestApp
 
 		private void _keyman7TestBox_Enter(object sender, EventArgs e)
 		{
-			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].Name;
+			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].ShortName;
 			KeyboardController.ActivateKeyboard(name);
 		}
 
@@ -45,7 +45,7 @@ namespace TestApp
 		{
 			if(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6))
 			{
-				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].Name;
+				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].ShortName;
 				KeyboardController.ActivateKeyboard(name);
 			}
 			MessageBox.Show("keyman 6 not available");

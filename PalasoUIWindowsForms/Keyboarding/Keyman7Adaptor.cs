@@ -125,15 +125,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
         {
             get
             {
-                List<KeyboardController.KeyboardDescriptor> keyboards =
-                    new List<KeyboardController.KeyboardDescriptor>();
+				var keyboards = new List<KeyboardController.KeyboardDescriptor>();
 
 #if !MONO
-                Keyman7Interop.TavultesoftKeymanClass keyman = new Keyman7Interop.TavultesoftKeymanClass();
-                foreach (Keyman7Interop.IKeymanKeyboard keyboard in keyman.Keyboards)
+				var keyman = new TavultesoftKeymanClass();
+				foreach (IKeymanKeyboard keyboard in keyman.Keyboards)
                 {
-                    KeyboardController.KeyboardDescriptor descriptor = new KeyboardController.KeyboardDescriptor();
-                    descriptor.Name = keyboard.Name;
+					var descriptor = new KeyboardController.KeyboardDescriptor();
+					descriptor.ShortName = keyboard.Name;
+					descriptor.Id = keyboard.Name;
+					descriptor.LongName = keyboard.Name;
                     descriptor.engine = KeyboardController.Engines.Keyman7;
                     keyboards.Add(descriptor);
                 }

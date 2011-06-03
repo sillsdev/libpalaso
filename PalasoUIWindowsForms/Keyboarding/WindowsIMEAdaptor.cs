@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Linq;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -57,15 +58,25 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			get
 			{
-				List<KeyboardController.KeyboardDescriptor> descriptors = new List<KeyboardController.KeyboardDescriptor>();
+				var descriptors = new List<KeyboardController.KeyboardDescriptor>();
 				try
 				{
 					foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 					{
-						KeyboardController.KeyboardDescriptor d = new KeyboardController.KeyboardDescriptor();
-						d.Name = lang.LayoutName;
-						d.engine = KeyboardController.Engines.Windows;
-						descriptors.Add(d);
+						var descriptor = new KeyboardController.KeyboardDescriptor();
+						descriptor.ShortName = lang.LayoutName;
+						// The below might be better, but really the layout is the thing, and we can't select a
+						// particular layout from a locale which has multiple layouts.  Also, different users
+						// may have the layout, but under a different locale, so just recording the layoutname as the
+						// Id allows us to work with that.
+						//descriptor.Id = String.Format("{0}-{1}", lang.Culture.IetfLanguageTag, lang.LayoutName);
+						descriptor.Id = lang.LayoutName;
+						descriptor.LongName = String.Format("{0} - {1}", lang.Culture.DisplayName, lang.LayoutName);
+						descriptor.engine = KeyboardController.Engines.Windows;
+						if (descriptors.Find(a => a.Id == descriptor.Id) == null)
+						{
+							descriptors.Add(descriptor);
+						}
 					}
 				}
 				catch (Exception err)

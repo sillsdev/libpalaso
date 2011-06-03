@@ -38,8 +38,8 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void KeyboardNames_HasAtLeastOneKeyboard()
 		{
-			IEnumerable<string> keyboard = WritingSystemSetupModel.KeyboardNames;
-			IEnumerator<string> it = keyboard.GetEnumerator();
+			var keyboard = WritingSystemSetupModel.KeyboardNames;
+			var it = keyboard.GetEnumerator();
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current keyboard {0}", it.Current));
 			Assert.IsNotNull(it.Current);

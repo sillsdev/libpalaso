@@ -147,13 +147,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		private List<KeyboardController.KeyboardDescriptor> CopyKeyboardPropertiesListIntoKeyBoardDescriptorList(List<ScimPanelControllerWrapper.KeyboardProperties> keyboardProperties)
 		{
-			List<KeyboardController.KeyboardDescriptor> keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
-			foreach(ScimPanelControllerWrapper.KeyboardProperties keyboard in keyboardProperties)
+			var keyboardDescriptors = new List<KeyboardController.KeyboardDescriptor>();
+			foreach(var keyboard in keyboardProperties)
 			{
-				KeyboardController.KeyboardDescriptor keyboardDescriptor = new KeyboardController.KeyboardDescriptor();
-				keyboardDescriptor.Name= keyboard.name;
-				keyboardDescriptor.engine = KeyboardController.Engines.Scim;
-				keyboardDescriptors.Add(keyboardDescriptor);
+				var descriptor = new KeyboardController.KeyboardDescriptor();
+				descriptor.ShortName = keyboard.name;
+				descriptor.Id = keyboard.name;
+				descriptor.LongName = keyboard.name;
+				descriptor.engine = KeyboardController.Engines.Scim;
+				keyboardDescriptors.Add(descriptor);
 			}
 			return keyboardDescriptors;
 		}

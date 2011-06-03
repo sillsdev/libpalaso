@@ -83,8 +83,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
 			Assert.Greater(keyboards.Count, 0, "This test requires that the Windows IME has at least one language installed.");
 			KeyboardController.KeyboardDescriptor d = keyboards[0];
-			KeyboardController.ActivateKeyboard(d.Name);
-			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
+			KeyboardController.ActivateKeyboard(d.ShortName);
+			Assert.AreEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
@@ -95,9 +95,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
 			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
 			KeyboardController.KeyboardDescriptor d = keyboards[1];
-			KeyboardController.ActivateKeyboard(d.Name);
+			KeyboardController.ActivateKeyboard(d.ShortName);
 			KeyboardController.DeactivateKeyboard();
-			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
+			Assert.AreNotEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 		[Test]
 		[Category("Windows IME")]
@@ -142,9 +142,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			RequiresWindow();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
 			Application.DoEvents(); //required
-			KeyboardController.ActivateKeyboard(d.Name);
+			KeyboardController.ActivateKeyboard(d.ShortName);
 			Application.DoEvents(); //required
-			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
+			Assert.AreEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
@@ -158,11 +158,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			RequiresKeyman6();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
-			KeyboardController.ActivateKeyboard(d.Name);
+			KeyboardController.ActivateKeyboard(d.ShortName);
 			Application.DoEvents();//required
 			KeyboardController.DeactivateKeyboard();
 			Application.DoEvents();//required
-			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
+			Assert.AreNotEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
@@ -175,9 +175,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 			RequiresKeyman7();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
-			KeyboardController.ActivateKeyboard(d.Name);
+			KeyboardController.ActivateKeyboard(d.ShortName);
 			Application.DoEvents();//required
-			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
+			Assert.AreEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 
@@ -191,11 +191,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 			RequiresKeyman7();
 			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
-			KeyboardController.ActivateKeyboard(d.Name);
+			KeyboardController.ActivateKeyboard(d.ShortName);
 			Application.DoEvents();//required
 			KeyboardController.DeactivateKeyboard();
 			Application.DoEvents();//required
-			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
+			Assert.AreNotEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]

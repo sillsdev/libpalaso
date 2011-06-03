@@ -99,18 +99,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <summary>
 		/// Provides a list of all possible installed keyboards.
 		/// </summary>
-		public static IEnumerable<String> KeyboardNames
+		public static IEnumerable<KeyboardController.KeyboardDescriptor> KeyboardNames
 		{
 			get
 			{
-				List<String> keyboards = new List<string>();
-				keyboards.Add("(default)");
-				foreach (KeyboardController.KeyboardDescriptor keyboard in
-					KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
+				var defaultKeyboard = new KeyboardController.KeyboardDescriptor
+					{
+						LongName = "(default)",
+						ShortName = "(default)",
+						Id = "(default)"
+					};
+				yield return defaultKeyboard;
+				foreach (var keyboard in KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
 				{
-					keyboards.Add(keyboard.Name);
+					yield return keyboard;
 				}
-				return keyboards;
 			}
 		}
 

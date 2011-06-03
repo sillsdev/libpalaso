@@ -72,7 +72,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._keyboardComboBox.Name = "_keyboardComboBox";
 			this._keyboardComboBox.Size = new System.Drawing.Size(460, 166);
 			this._keyboardComboBox.TabIndex = 1;
-			this._keyboardComboBox.TextChanged += new System.EventHandler(this._keyboardComboBox_TextChanged);
+			this._keyboardComboBox.SelectedIndexChanged += new System.EventHandler(this._keyboardComboBox_SelectedIndexChanged);
 			//
 			// label2
 			//

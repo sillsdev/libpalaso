@@ -24,9 +24,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public class KeyboardDescriptor
 		{
-			public string Name;
+			public string ShortName;
 			public Engines engine;
 			public string Id;
+			public string LongName;
 		}
 		public static List<KeyboardDescriptor> GetAvailableKeyboards(Engines engineKinds)
 		{
@@ -167,10 +168,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		//returns the first keyboard that looks like it handles ipa, or string.empty
 		public static string GetIpaKeyboardIfAvailable()
 		{
-			var keyboard = GetAvailableKeyboards(Engines.All).FirstOrDefault(k => k.Name.ToLower().Contains("ipa"));
+			var keyboard = GetAvailableKeyboards(Engines.All).FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (keyboard == null)
 				return string.Empty;
-			return keyboard.Name;
+			return keyboard.Id;
 		}
 	}
 }

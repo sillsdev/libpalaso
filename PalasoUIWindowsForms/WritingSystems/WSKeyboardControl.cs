@@ -11,6 +11,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSKeyboardControl : UserControl
 	{
+
+		private class KeyboardAdapter
+		{
+			private KeyboardController.KeyboardDescriptor _descriptor;
+
+			public KeyboardAdapter(KeyboardController.KeyboardDescriptor descriptor)
+			{
+				_descriptor = descriptor;
+			}
+
+			public string Id { get { return _descriptor.Id; } }
+
+			public override string ToString()
+			{
+				return _descriptor.ShortName;
+			}
+		}
+
 		private WritingSystemSetupModel _model;
 		private string _defaultKeyboard;
 		private string _defaultFontName;
@@ -56,9 +74,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			Rectangle originalBounds = _keyboardComboBox.Bounds;
 			_keyboardComboBox.Items.Clear();
-			foreach (string keyboardName in WritingSystemSetupModel.KeyboardNames)
+			foreach (var keyboard in WritingSystemSetupModel.KeyboardNames)
 			{
-				_keyboardComboBox.Items.Add(keyboardName);
+				_keyboardComboBox.Items.Add(new KeyboardAdapter(keyboard));
 			}
 			_keyboardComboBox.Bounds = originalBounds;
 		}
@@ -104,16 +122,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_testArea.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
 		}
 
-		private void _keyboardComboBox_TextChanged(object sender, EventArgs e)
+		private void _keyboardComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (_model == null)
 			{
 				return;
 			}
-			if (_model.CurrentKeyboard != _keyboardComboBox.Text)
+			var currentKeyboard = _keyboardComboBox.SelectedItem as KeyboardAdapter;
+			if (_model.CurrentKeyboard != currentKeyboard.Id)
 			{
-				_model.CurrentKeyboard = _keyboardComboBox.Text;
+				_model.CurrentKeyboard = currentKeyboard.Id;
 			}
+
 		}
 
 		private void _testArea_Enter(object sender, EventArgs e)
@@ -134,5 +154,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
 		}
+
 	}
 }
