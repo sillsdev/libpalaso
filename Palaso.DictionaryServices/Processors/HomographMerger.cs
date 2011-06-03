@@ -29,7 +29,7 @@ namespace Palaso.DictionaryServices.Processors
 					continue;
 				alreadyProcessed.Add(ids[i]);
 				var entry = repo.GetItem(ids[i]);
-				var writingSystemForMatching = new WritingSystemDefinition(writingSystemIdForMatching);
+				var writingSystemForMatching = WritingSystemDefinition.Parse(writingSystemIdForMatching);
 				var matches =
 					repo.GetEntriesWithMatchingLexicalForm(
 						entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching);
