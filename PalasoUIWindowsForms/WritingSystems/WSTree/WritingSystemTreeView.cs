@@ -54,6 +54,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 				{
 					if (node.Tag == selectedItem)
 					{
+						//This will not actually work under a number of circumstances
+						//and caused a crash in WeSay and some really wierd behavior in the palaso writing systems UI test app
+						//see http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/4843bab1-a7fb-48d6-a66a-80b2e7232e73
 						treeView1.SelectedNode = node;
 						break;
 					}
@@ -67,8 +70,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			}
 			treeView1.ResumeLayout(false);
 			treeView1.EndUpdate();
-			treeView1.SelectedNode.EnsureVisible();
-			 treeView1.AfterSelect += treeView1_AfterSelect;
+			if (treeView1.SelectedNode != null)
+			{
+				treeView1.SelectedNode.EnsureVisible();
+			}
+			treeView1.AfterSelect += treeView1_AfterSelect;
 		}
 
 		private void WritingSystemTreeView_Load(object sender, EventArgs e)
