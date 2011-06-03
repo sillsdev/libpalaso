@@ -242,6 +242,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._languageComboBox.Name = "_languageComboBox";
 			this._languageComboBox.Size = new System.Drawing.Size(230, 21);
 			this._languageComboBox.TabIndex = 1;
+			this._languageComboBox.SelectedIndexChanged += new System.EventHandler(this._languageComboBox_SelectedIndexChanged);
 			//
 			// _sortrules_panel
 			//

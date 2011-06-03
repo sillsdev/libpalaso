@@ -38,6 +38,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
+		internal string DefaultCustomSimpleSortRules = "A a-B b-C c-D d-E e-F f-G g-H h-I i-J j-K k-L l-M m-N n-O o-P p-Q q-R r-S s-T t-U u-V v-W w-X x-Y y-Z z".Replace("-", "\r\n");
+
 
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your
@@ -774,7 +776,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSortRules
 		{
-			get { return CurrentDefinition.SortRules ?? string.Empty; }
+			get
+			{
+				if (String.IsNullOrEmpty(CurrentDefinition.SortRules) && CurrentSortUsing == "CustomSimple")
+				{
+					return DefaultCustomSimpleSortRules;
+				}
+				else
+				{
+					return CurrentDefinition.SortRules ?? string.Empty;
+				}
+			}
 			set
 			{
 				if (CurrentDefinition.SortRules != value)

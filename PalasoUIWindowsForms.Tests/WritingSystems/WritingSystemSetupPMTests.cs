@@ -932,5 +932,34 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.IdentifierIpaSelected();
 		}
 
+		[Test]
+		public void SortRules_RulesAreEmptyAndSortTypeIsCustomSimple_DefaultSortRules()
+		{
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			Assert.That(_model.CurrentDefinition.SortRules, Is.Empty);
+			_model.CurrentSortUsing = "CustomSimple";
+			Assert.That(_model.CurrentSortRules, Is.EqualTo(_model.DefaultCustomSimpleSortRules));
+		}
+
+		[Test]
+		public void SortRules_HasExistingRules_RulesAreNotReplacedWithDefault()
+		{
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			_model.CurrentSortRules = "1 2 3 4 5 a b c d e";
+			_model.CurrentSortUsing = "CustomSimple";
+			Assert.That(_model.CurrentSortRules, Is.Not.EqualTo(_model.DefaultCustomSimpleSortRules));
+			_model.CurrentSortUsing = "CustomICU";
+			Assert.That(_model.CurrentSortRules, Is.Not.EqualTo(_model.DefaultCustomSimpleSortRules));
+		}
+
+		[Test]
+		public void SortRules_RulesAreEmptyAndSortTypeIsCustomICU_StillEmpty()
+		{
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			Assert.That(_model.CurrentDefinition.SortRules, Is.Empty);
+			_model.CurrentSortUsing = "CustomICU";
+			Assert.That(_model.CurrentSortRules, Is.Empty);
+		}
+
 	}
 }
