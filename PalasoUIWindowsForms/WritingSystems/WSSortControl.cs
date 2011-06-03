@@ -142,6 +142,14 @@ peach";
 				return;
 			}
 			string newValue = (string)_sortUsingValueMap[_sortUsingComboBox.SelectedIndex];
+			try
+			{
+				_model.CurrentSortUsing = newValue;
+			}
+			finally
+			{
+				_changingModel = false;
+			}
 			if (newValue == "OtherLanguage")
 			{
 				_sortrules_panel.Visible = true;
@@ -158,14 +166,6 @@ peach";
 				_sortRulesTextBox.Text = _model.CurrentSortRules;
 			}
 			_changingModel = true;
-			try
-			{
-				_model.CurrentSortUsing = newValue;
-			}
-			finally
-			{
-				_changingModel = false;
-			}
 		}
 
 		private void _languageComboBox_SelectedIndexChanged(object sender, EventArgs e)
