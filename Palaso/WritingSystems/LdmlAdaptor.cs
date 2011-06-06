@@ -382,6 +382,7 @@ namespace Palaso.WritingSystems
 				{
 					var readerSettings = new XmlReaderSettings();
 					readerSettings.NameTable = _nameSpaceManager.NameTable;
+					readerSettings.IgnoreWhitespace = true;
 					readerSettings.ConformanceLevel = ConformanceLevel.Auto;
 					readerSettings.ValidationType = ValidationType.None;
 					readerSettings.XmlResolver = null;

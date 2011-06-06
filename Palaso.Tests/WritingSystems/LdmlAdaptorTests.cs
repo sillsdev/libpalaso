@@ -163,5 +163,53 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 
+		[Test]
+		public void Write_LdmlIsNicelyFormatted()
+		{
+			string expectedFileContent =
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version
+			number='' />
+		<generation
+			date='0001-01-01T00:00:00' />
+		<language
+			type='en' />
+		<script
+			type='Zxxx' />
+		<territory
+			type='US' />
+		<variant
+			type='x-audio' />
+	</identity>
+	<collations />
+	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+		<palaso:abbreviation
+			value='en' />
+		<palaso:languageName
+			value='English' />
+		<palaso:version
+			value='1' />
+	</special>
+</ldml>".Replace("'", "\"");
+#endregion
+			using (var file = new TempFile())
+			{
+				var adaptor = new LdmlAdaptor();
+				var ws = WritingSystemDefinition.Parse("en-Zxxx-x-audio");
+				adaptor.Write(file.Path, ws, null);
+
+				var ws2 = new WritingSystemDefinition();
+				adaptor.Read(file.Path, ws2);
+				ws2.Region = "US";
+				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
+
+				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(expectedFileContent));
+			}
+		}
+
+
 	}
 }
