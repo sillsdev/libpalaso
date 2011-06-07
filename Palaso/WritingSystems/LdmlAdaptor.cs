@@ -657,7 +657,7 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "identity";
+			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "layout";
 			// if we're left-to-right, we don't need to write out default values
 			bool needLayoutElement = ws.RightToLeftScript;
 

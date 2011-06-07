@@ -162,7 +162,6 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(wsFromLdml.Variant, Is.EqualTo("x-private-use"));
 		}
 
-
 		[Test]
 		public void Write_LdmlIsNicelyFormatted()
 		{
@@ -197,16 +196,38 @@ namespace Palaso.Tests.WritingSystems
 #endregion
 			using (var file = new TempFile())
 			{
+				//Create an ldml fiel to read
 				var adaptor = new LdmlAdaptor();
 				var ws = WritingSystemDefinition.Parse("en-Zxxx-x-audio");
 				adaptor.Write(file.Path, ws, null);
 
+				//change the read writing system and write it out again
 				var ws2 = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws2);
 				ws2.Region = "US";
 				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
 
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(expectedFileContent));
+			}
+		}
+
+		[Test]
+		public void Write_WritingSystemWasloadedFromLdmlThatContainedLayoutInfo_LayoutInfoIsOnlyWrittenOnce()
+		{
+			using (var file = new TempFile())
+			{
+				//create an ldml file to read that contains layout info
+				var adaptor = new LdmlAdaptor();
+				var ws = WritingSystemDefinition.Parse("en-Zxxx-x-audio");
+				ws.RightToLeftScript = true;
+				adaptor.Write(file.Path, ws, null);
+
+				//read the file and write it out unchanged
+				var ws2 = new WritingSystemDefinition();
+				adaptor.Read(file.Path, ws2);
+				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
+
+				AssertThatXmlIn.File(file.Path).HasNoMatchForXpath("/ldml/layout[2]");
 			}
 		}
 
