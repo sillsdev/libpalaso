@@ -43,7 +43,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			it.MoveNext();
 			//Console.WriteLine(String.Format("Current keyboard {0}", it.Current));
 			Assert.IsNotNull(it.Current);
-			Assert.AreEqual("(default)", it.Current);
+			Assert.AreEqual("(default)", it.Current.Id);
 		}
 
 		[Test]
