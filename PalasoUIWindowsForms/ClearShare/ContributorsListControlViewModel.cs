@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Widgets.Grid;
+using Palaso.Extensions;
 
 namespace Palaso.ClearShare
 {
@@ -142,7 +144,7 @@ namespace Palaso.ClearShare
 					break;
 
 				case "date":
-					return contribution.Date;
+					return contribution.Date.ToString(CultureInfo.CurrentCulture);
 					break;
 			}
 
