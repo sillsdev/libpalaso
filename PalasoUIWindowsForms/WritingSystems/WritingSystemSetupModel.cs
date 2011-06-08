@@ -945,7 +945,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if (!beforeDeletedEventArgs.CanDelete)
 			{
-				Reporting.ErrorReport.NotifyUserOfProblem(String.Format("The writing system with id '{0}' is still in use and may not be deleted.", CurrentDefinition.Id));
+				string message = beforeDeletedEventArgs.ErrorMessage ?? "The Writing System is in use.";
+				Reporting.ErrorReport.NotifyUserOfProblem(String.Format("The '{0}' writing system cannot be deleted. Reason: {1}", CurrentDefinition.Id, message));
 				return;
 			}
 
@@ -1355,5 +1356,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 		public string WritingSystemId{get; private set;}
 		public bool CanDelete = true;
+		public string ErrorMessage { get; set; }
 	}
 }
