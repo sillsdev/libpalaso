@@ -142,9 +142,7 @@ namespace Palaso.ClearShare
 					break;
 
 				case "date":
-					DateTime date;
-					if (DateTime.TryParse(contribution.Date, out date))
-						return date;
+					return contribution.Date;
 					break;
 			}
 
@@ -182,7 +180,7 @@ namespace Palaso.ClearShare
 
 				case "date":
 					if (value != null && value.GetType() == typeof(DateTime))
-						contribution.Date = ((DateTime)value).ToShortDateString();
+						contribution.Date = ((DateTime)value);
 					break;
 			}
 		}

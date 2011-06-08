@@ -152,6 +152,7 @@
 	<Compile Include="Email\ThunderbirdEmailProvider.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
+	<Compile Include="Extensions\DateTimeExtensions.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
 	<Compile Include="Extensions\IEnumberableExtensions.cs" />
 	<Compile Include="Extensions\StringExtensions.cs" />
