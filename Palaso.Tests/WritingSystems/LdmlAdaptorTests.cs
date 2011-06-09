@@ -261,7 +261,7 @@ namespace Palaso.Tests.WritingSystems
 				WriteFlexLdml("x-en", "", "US", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en-audio");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en");
 			}
 		}
 
@@ -297,7 +297,7 @@ namespace Palaso.Tests.WritingSystems
 				WriteFlexLdml("x-en", "", "", "x-private", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "x-en-private");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en-private");
 			}
 		}
 

@@ -14,6 +14,7 @@ namespace Palaso.WritingSystems
 	public class LdmlAdaptor
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
+		private bool _wsIsFlexPrivateUse;
 
 		public LdmlAdaptor()
 		{
@@ -158,14 +159,17 @@ namespace Palaso.WritingSystems
 				}
 				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
-				int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
-				if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+				if (!_wsIsFlexPrivateUse)
 				{
-					throw new ApplicationException(String.Format(
-						"Cannot read LDML expecting version {0} but got {1}",
-						WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
-						version
-					));
+					int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
+					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+					{
+						throw new ApplicationException(String.Format(
+														   "Cannot read LDML expecting version {0} but got {1}",
+														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
+														   version
+														   ));
+					}
 				}
 
 				while (reader.NodeType != XmlNodeType.EndElement)
@@ -206,19 +210,85 @@ namespace Palaso.WritingSystems
 				}
 
 				ws.DateModified = modified;
-				ws.SetAllRfc5646LanguageTagComponents(
-					GetSubNodeAttributeValue(identityReader, "language", "type"),
-					GetSubNodeAttributeValue(identityReader, "script", "type"),
-					GetSubNodeAttributeValue(identityReader, "territory", "type"),
-					GetSubNodeAttributeValue(identityReader, "variant", "type")
-					);
 
+				string language = GetSubNodeAttributeValue(identityReader, "language", "type");
+				string script = GetSubNodeAttributeValue(identityReader, "script", "type");
+				string region = GetSubNodeAttributeValue(identityReader, "territory", "type");
+				string variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
+
+				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+				{
+					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
+					ws.SetAllRfc5646LanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+
+					_wsIsFlexPrivateUse = true;
+				}
+				else
+				{
+					ws.SetAllRfc5646LanguageTagComponents(language, script, region, variant);
+
+					_wsIsFlexPrivateUse = false;
+				}
 				// move to end of identity node
 				while (identityReader.Read()) ;
 			}
 			if (!reader.IsEmptyElement)
 			{
 				reader.ReadEndElement();
+			}
+		}
+
+		private class FlexConformPrivateUseRfc5646TagInterpreter
+		{
+			private string _language;
+			private string _script;
+			private string _region;
+			private string _variant;
+
+			public void ConvertToPalasoConformPrivateUseRfc5646Tag(string language, string script, string region, string variant)
+			{
+				string newVariant = "";
+				string newPrivateUse = "";
+
+				_script = script;
+				_region = region;
+
+				if(!String.IsNullOrEmpty(variant))
+				{
+					WritingSystemDefinition.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
+				}
+				newPrivateUse = String.Join("-", new [] {language, newPrivateUse});
+
+				_variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
+
+				if(!(String.IsNullOrEmpty(script) &&
+					  String.IsNullOrEmpty(region) &&
+					  String.IsNullOrEmpty(newVariant))
+					)
+				{
+					_language = "qaa";
+				}
+			}
+
+			public string Language
+			{
+				get { return _language; }
+			}
+
+			public string Script
+			{
+				get { return _script; }
+			}
+
+			public string Region
+			{
+				get { return _region; }
+			}
+
+			public string Variant
+			{
+				get { return _variant; }
 			}
 		}
 
@@ -422,6 +492,7 @@ namespace Palaso.WritingSystems
 				{
 					XmlReaderSettings settings = new XmlReaderSettings();
 					settings.NameTable = _nameSpaceManager.NameTable;
+					settings.IgnoreWhitespace = true;
 					settings.ConformanceLevel = ConformanceLevel.Auto;
 					settings.ValidationType = ValidationType.None;
 					settings.XmlResolver = null;
