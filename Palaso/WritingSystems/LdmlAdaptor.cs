@@ -518,6 +518,7 @@ namespace Palaso.WritingSystems
 
 		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
+			_wsIsFlexPrivateUse = false;
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
 			writer.WriteStartElement("ldml");
@@ -875,10 +876,9 @@ namespace Palaso.WritingSystems
 
 		private void CopyOldFlexNode(XmlReader reader, XmlWriter writer, string nameSpaceName, string nodeName)
 		{
-			var subtreeReader = reader.ReadSubtree();
-			if(subtreeReader.ReadToDescendant(nodeName, _nameSpaceManager.LookupNamespace(nameSpaceName)))
+			if(reader != null && reader.ReadToDescendant(nodeName, _nameSpaceManager.LookupNamespace(nameSpaceName)))
 			{
-				writer.WriteNode(subtreeReader, true);
+				writer.WriteNode(reader, true);
 			}
 		}
 

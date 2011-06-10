@@ -234,7 +234,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "", file);
+				WriteVersion0Ldml("x-en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en");
@@ -246,7 +246,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "Zxxx", "", "", file);
+				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "", "x-en");
@@ -258,7 +258,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "US", "", file);
+				WriteVersion0Ldml("x-en", "", "US", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en");
@@ -270,7 +270,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "fonipa", file);
+				WriteVersion0Ldml("x-en", "", "", "fonipa", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "fonipa-x-en");
@@ -282,7 +282,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "Zxxx", "US", "1901-x-audio", file);
+				WriteVersion0Ldml("x-en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "US", "1901-x-en-audio");
@@ -294,7 +294,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "x-private", file);
+				WriteVersion0Ldml("x-en", "", "", "x-private", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlAdaptor().Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en-private");
@@ -306,7 +306,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "", file);
+				WriteVersion0Ldml("x-en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				string originalLdml = File.ReadAllText(file.Path);
 				var adaptor = new LdmlAdaptor();
@@ -322,7 +322,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "Zxxx", "", "", file);
+				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
 				var ws = new WritingSystemDefinition();
 				string originalLdml = File.ReadAllText(file.Path);
 				var adaptor = new LdmlAdaptor();
@@ -338,7 +338,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "US", "", file);
+				WriteVersion0Ldml("x-en", "", "US", "", file);
 				var ws = new WritingSystemDefinition();
 				string originalLdml = File.ReadAllText(file.Path);
 				var adaptor = new LdmlAdaptor();
@@ -354,7 +354,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "fonipa", file);
+				WriteVersion0Ldml("x-en", "", "", "fonipa", file);
 				var ws = new WritingSystemDefinition();
 				string originalLdml = File.ReadAllText(file.Path);
 				var adaptor = new LdmlAdaptor();
@@ -370,7 +370,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "Zxxx", "US", "1901-x-audio", file);
+				WriteVersion0Ldml("x-en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				string originalLdml = File.ReadAllText(file.Path);
 				var adaptor = new LdmlAdaptor();
@@ -386,7 +386,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "x-private", file);
+				WriteVersion0Ldml("x-en", "", "", "x-private", file);
 				var ws = new WritingSystemDefinition();
 				string originalLdml = File.ReadAllText(file.Path);
 				var adaptor = new LdmlAdaptor();
@@ -402,7 +402,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "", file);
+				WriteVersion0Ldml("x-en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
@@ -418,7 +418,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "Zxxx", "", "", file);
+				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
@@ -434,7 +434,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "US", "", file);
+				WriteVersion0Ldml("x-en", "", "US", "", file);
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
@@ -450,7 +450,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "fonipa", file);
+				WriteVersion0Ldml("x-en", "", "", "fonipa", file);
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
@@ -466,7 +466,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "x-private", file);
+				WriteVersion0Ldml("x-en", "", "", "x-private", file);
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
@@ -480,74 +480,40 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Read_ReadPrivateUseWsFromFieldWorksLdmlThenNormalLdmlMissingVersion1Element_Throws()
 		{
-			using (var file = new TempFile())
+			using (var badFlexLdml = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "x-private", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlAdaptor();
-				adaptor.Read(file.Path, ws);
-				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("", "", "", "x-en-private", file);
+				using (var version1Ldml = new TempFile())
+				{
+					WriteVersion0Ldml("x-en", "", "", "x-private", badFlexLdml);
+					WriteVersion0Ldml("en", "", "", "", version1Ldml);
+					var wsV1 = new WritingSystemDefinition();
+					var wsV0 = new WritingSystemDefinition();
+					var adaptor = new LdmlAdaptor();
+					adaptor.Read(badFlexLdml.Path, wsV0);
+					Assert.Throws<FormatException>(()=>adaptor.Read(version1Ldml.Path, wsV1));
+				}
 			}
-			throw new NotImplementedException();
 		}
 
 		[Test]
-		public void Read_WritePrivateUseWsFromFieldWorksLdmlThenNormalLdml_ContainsVersion1()
+		public void Write_WritePrivateUseWsFromFieldWorksLdmlThenNormalLdml_ContainsVersion1()
 		{
-			using (var file = new TempFile())
+			using (var badFlexLdml = new TempFile())
 			{
-				WriteFlexLdml("x-en", "", "", "x-private", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlAdaptor();
-				adaptor.Read(file.Path, ws);
-				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("", "", "", "x-en-private", file);
+				using (var version1Ldml = new TempFile())
+				{
+					var namespaceManager = new XmlNamespaceManager(new NameTable());
+					namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+					WriteVersion0Ldml("x-en", "", "", "x-private", badFlexLdml);
+					var wsV0 = new WritingSystemDefinition();
+					var adaptor = new LdmlAdaptor();
+					adaptor.Read(badFlexLdml.Path, wsV0);
+					adaptor.Write(badFlexLdml.Path, wsV0, new MemoryStream(File.ReadAllBytes(badFlexLdml.Path)));
+					var wsV1 = new WritingSystemDefinition();
+					adaptor.Write(version1Ldml.Path, wsV1, null);
+					AssertThatXmlIn.File(version1Ldml.Path).HasAtLeastOneMatchForXpath("/ldml/special/palaso:version[@value='1']", namespaceManager);
+				}
 			}
-			throw new NotImplementedException();
-		}
-
-		[Test]
-		public void RoundTrip_FlexLdmlContainsNoPalasoNameSpace_InfoIsAdded()
-		{
-		string noPalasoNamespace =
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
-	<identity>
-		<version
-			number='' />
-		<generation
-			date='0001-01-01T00:00:00' />
-		<language
-			type='x-en' />
-		<variant
-			type='fonipa' />
-	</identity>
-	<identity>
-		<version
-			number='' />
-		<generation
-			date='0001-01-01T00:00:00' />
-		<language
-			type='x-en' />
-	</identity>
-	<collations />
-</ldml>".Replace('\'', '"');
-#endregion
-
-			using (var file = new TempFile(noPalasoNamespace))
-			{
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlAdaptor();
-				adaptor.Read(file.Path, ws);
-				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("", "", "", "x-en-private", file);
-			}
-			throw new NotImplementedException();
 		}
 
 		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
@@ -558,7 +524,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(ws.Variant, Is.EqualTo(variant));
 		}
 
-		private static void WriteFlexLdml(string language, string script, string territory, string variant, TempFile file)
+		private static void WriteVersion0Ldml(string language, string script, string territory, string variant, TempFile file)
 		{
 			//using a writing system V0 here because the real writing system can't cope with the way
 			//flex encodes private-use language and shouldn't. But using a writing system + ldml adaptor
