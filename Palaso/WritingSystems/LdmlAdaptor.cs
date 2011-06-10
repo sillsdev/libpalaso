@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -258,7 +259,7 @@ namespace Palaso.WritingSystems
 				{
 					WritingSystemDefinition.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 				}
-				newPrivateUse = String.Join("-", new [] {language, newPrivateUse});
+				newPrivateUse = String.Join("-", new[] { language, newPrivateUse }.Select(t => t).Where(str => !String.IsNullOrEmpty(str)).ToArray());
 
 				_variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
@@ -269,6 +270,11 @@ namespace Palaso.WritingSystems
 				{
 					_language = "qaa";
 				}
+			}
+
+			public string RFC5646Tag
+			{
+				get { return string.Join("-", new string[] {Language, Script, Region, Variant}.Select(t=>t).Where(str => !String.IsNullOrEmpty(str)).ToArray()); }
 			}
 
 			public string Language
@@ -693,67 +699,92 @@ namespace Palaso.WritingSystems
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
 
 			bool copyFlexFormat = false;
+			string language = String.Empty;
+			string script = String.Empty;
+			string territory = String.Empty;
+			string variant = String.Empty;
 			bool readerIsOnIdentityElement = IsReaderOnElementNodeNamed(reader, "identity");
 			if(readerIsOnIdentityElement && !reader.IsEmptyElement)
 			{
-				reader.Read();
-					FindElement(reader, "language");
-					if(reader.GetAttribute("type").StartsWith("x", StringComparison.OrdinalIgnoreCase))
+				reader.ReadToDescendant("language");
+				while(!IsReaderOnElementNodeNamed(reader, "special") && !IsReaderOnEndElementNodeNamed(reader, "identity"))
+				{
+					switch(reader.Name)
 					{
-						copyFlexFormat = true;
+						case "language":
+							language = reader.GetAttribute("type");
+							break;
+						case "script":
+							script = reader.GetAttribute("type");
+							break;
+						case "territory":
+							territory = reader.GetAttribute("type");
+							break;
+						case "variant":
+							variant = reader.GetAttribute("type");
+							break;
 					}
+					reader.Read();
+				}
+				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
+				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase) && interpreter.RFC5646Tag == ws.RFC5646)
+				{
+					copyFlexFormat = true;
+					_wsIsFlexPrivateUse = true;
+				}
 			}
 			if (copyFlexFormat)
 			{
-				while(reader.Name == "language" || reader.Name == "script" || reader.Name == "territory" || reader.Name =="variant")
-				{
-					CopyToEndElement(writer, reader);
-				}
+				WriteRFC5646TagElements(writer, language, script, territory, variant);
 			}
 			else
 			{
-				WriteElementWithAttribute(writer, "language", "type", ws.ISO639);
-				if (!String.IsNullOrEmpty(ws.Script))
-				{
-					WriteElementWithAttribute(writer, "script", "type", ws.Script);
-				}
-				if (!String.IsNullOrEmpty(ws.Region))
-				{
-					WriteElementWithAttribute(writer, "territory", "type", ws.Region);
-				}
-				if (!String.IsNullOrEmpty(ws.Variant))
-				{
-					WriteElementWithAttribute(writer, "variant", "type", ws.Variant);
-				}
+				WriteRFC5646TagElements(writer, ws.ISO639, ws.Script, ws.Region, ws.Variant);
 			}
-			bool copySpecialElement = false;
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
 				if (reader.IsEmptyElement)
 				{
 					reader.Skip();
 				}
-				else
-				{
-					reader.Read();
-					copySpecialElement = true;
-				}
 			}
-			if (IsReaderOnElementNodeNamed(reader, "language"))
+			if (IsReaderOnElementNodeNamed(reader, "special"))
 			{
-				copySpecialElement = true;
-			}
-			if(copySpecialElement)
-			{
-				FindElement(reader, "special");
 				CopyToEndElement(writer, reader);
 			}
+			if(IsReaderOnEndElementNodeNamed(reader, "identity"))
+			{
+				reader.Read();
+			}
 			writer.WriteEndElement();
+		}
+
+		private void WriteRFC5646TagElements(XmlWriter writer, string language, string script, string region, string variant)
+		{
+			WriteElementWithAttribute(writer, "language", "type", language);
+			if (!String.IsNullOrEmpty(script))
+			{
+				WriteElementWithAttribute(writer, "script", "type", script);
+			}
+			if (!String.IsNullOrEmpty(region))
+			{
+				WriteElementWithAttribute(writer, "territory", "type", region);
+			}
+			if (!String.IsNullOrEmpty(variant))
+			{
+				WriteElementWithAttribute(writer, "variant", "type", variant);
+			}
 		}
 
 		private bool IsReaderOnElementNodeNamed(XmlReader reader, string name)
 		{
 			return reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == name;
+		}
+
+		private bool IsReaderOnEndElementNodeNamed(XmlReader reader, string name)
+		{
+			return reader != null && reader.NodeType == XmlNodeType.EndElement && reader.Name == name;
 		}
 
 		private void WriteLayoutElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
@@ -821,7 +852,7 @@ namespace Palaso.WritingSystems
 			{
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
-			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.Abbreviation);
+			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
 			if (ws.SpellCheckingId != ws.ISO639)
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);

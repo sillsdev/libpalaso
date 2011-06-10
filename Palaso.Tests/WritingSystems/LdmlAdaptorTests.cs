@@ -425,7 +425,7 @@ namespace Palaso.Tests.WritingSystems
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "", "x-en");
 				ws.Script = "Latn";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "latn", "", "x-en", file);
+				AssertThatLdmlMatches("qaa", "Latn", "", "x-en", file);
 			}
 		}
 
@@ -439,9 +439,9 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en");
-				ws.Region = "UK";
+				ws.Region = "GB";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "", "UK", "x-en", file);
+				AssertThatLdmlMatches("qaa", "", "GB", "x-en", file);
 			}
 		}
 
@@ -455,7 +455,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "fonipa-x-en");
-				ws.Variant = "1901";
+				ws.Variant = "1901-x-en";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
 				AssertThatLdmlMatches("qaa", "", "", "1901-x-en", file);
 			}
@@ -471,24 +471,9 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en-private");
-				ws.Variant = "x-en-private";
+				ws.Variant = "x-en-changed";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "", "", "x-en-private", file);
-			}
-		}
-
-		[Test]
-		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedPrivateUseandDeletedLanguage_IdentityElementChangedToPalasoWay()
-		{
-			using (var file = new TempFile())
-			{
-				WriteFlexLdml("x-en", "", "", "x-private", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlAdaptor();
-				adaptor.Read(file.Path, ws);
-				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("", "", "", "x-en-private", file);
+				AssertThatLdmlMatches("", "", "", "x-en-changed", file);
 			}
 		}
 
@@ -514,6 +499,47 @@ namespace Palaso.Tests.WritingSystems
 			using (var file = new TempFile())
 			{
 				WriteFlexLdml("x-en", "", "", "x-private", file);
+				var ws = new WritingSystemDefinition();
+				var adaptor = new LdmlAdaptor();
+				adaptor.Read(file.Path, ws);
+				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				AssertThatLdmlMatches("", "", "", "x-en-private", file);
+			}
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void RoundTrip_FlexLdmlContainsNoPalasoNameSpace_InfoIsAdded()
+		{
+		string noPalasoNamespace =
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version
+			number='' />
+		<generation
+			date='0001-01-01T00:00:00' />
+		<language
+			type='x-en' />
+		<variant
+			type='fonipa' />
+	</identity>
+	<identity>
+		<version
+			number='' />
+		<generation
+			date='0001-01-01T00:00:00' />
+		<language
+			type='x-en' />
+	</identity>
+	<collations />
+</ldml>".Replace('\'', '"');
+#endregion
+
+			using (var file = new TempFile(noPalasoNamespace))
+			{
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlAdaptor();
 				adaptor.Read(file.Path, ws);
@@ -552,12 +578,12 @@ namespace Palaso.Tests.WritingSystems
 
 		private void AssertthatIdentityElementisCorrectForContent(string element, string content, TempFile file)
 		{
-			if (String.IsNullOrEmpty(content))
+			if (String.IsNullOrEmpty(content) && element != "language")
 			{
 				AssertThatXmlIn.File(file.Path).HasNoMatchForXpath(String.Format("/ldml/identity/{0}", element));
 				return;
 			}
-			AssertThatXmlIn.File(file.Path).HasAtLeastOneMatchForXpath(String.Format("/ldml/identity/{0}[type='{1}'", element, content));
+			AssertThatXmlIn.File(file.Path).HasAtLeastOneMatchForXpath(String.Format("/ldml/identity/{0}[@type='{1}']", element, content));
 		}
 	}
 }
