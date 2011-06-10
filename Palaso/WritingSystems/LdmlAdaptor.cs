@@ -536,7 +536,7 @@ namespace Palaso.WritingSystems
 			{
 				CopyUntilElement(writer, reader, "special");
 			}
-			WriteTopLevelSpecialElements(writer, ws);
+			WriteTopLevelSpecialElements(writer, reader, ws);
 			if (reader != null)
 			{
 				CopyOtherSpecialElements(writer, reader);
@@ -685,28 +685,49 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "identity";
-
 			writer.WriteStartElement("identity");
 			writer.WriteStartElement("version");
 			writer.WriteAttributeString("number", ws.VersionNumber);
 			writer.WriteString(ws.VersionDescription);
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
-			WriteElementWithAttribute(writer, "language", "type", ws.ISO639);
-			if (!String.IsNullOrEmpty(ws.Script))
+
+			bool copyFlexFormat = false;
+			bool readerIsOnIdentityElement = IsReaderOnElementNodeNamed(reader, "identity");
+			if(readerIsOnIdentityElement && !reader.IsEmptyElement)
 			{
-				WriteElementWithAttribute(writer, "script", "type", ws.Script);
+				reader.Read();
+					FindElement(reader, "language");
+					if(reader.GetAttribute("type").StartsWith("x", StringComparison.OrdinalIgnoreCase))
+					{
+						copyFlexFormat = true;
+					}
 			}
-			if (!String.IsNullOrEmpty(ws.Region))
+			if (copyFlexFormat)
 			{
-				WriteElementWithAttribute(writer, "territory", "type", ws.Region);
+				while(reader.Name == "language" || reader.Name == "script" || reader.Name == "territory" || reader.Name =="variant")
+				{
+					CopyToEndElement(writer, reader);
+				}
 			}
-			if (!String.IsNullOrEmpty(ws.Variant))
+			else
 			{
-				WriteElementWithAttribute(writer, "variant", "type", ws.Variant);
+				WriteElementWithAttribute(writer, "language", "type", ws.ISO639);
+				if (!String.IsNullOrEmpty(ws.Script))
+				{
+					WriteElementWithAttribute(writer, "script", "type", ws.Script);
+				}
+				if (!String.IsNullOrEmpty(ws.Region))
+				{
+					WriteElementWithAttribute(writer, "territory", "type", ws.Region);
+				}
+				if (!String.IsNullOrEmpty(ws.Variant))
+				{
+					WriteElementWithAttribute(writer, "variant", "type", ws.Variant);
+				}
 			}
-			if (needToCopy)
+			bool copySpecialElement = false;
+			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
 				if (reader.IsEmptyElement)
 				{
@@ -714,14 +735,25 @@ namespace Palaso.WritingSystems
 				}
 				else
 				{
-					reader.Read(); // move past "identity" element}
-
-					// <special> is the only node we possibly left out and need to copy
-					FindElement(reader, "special");
-					CopyToEndElement(writer, reader);
+					reader.Read();
+					copySpecialElement = true;
 				}
 			}
+			if (IsReaderOnElementNodeNamed(reader, "language"))
+			{
+				copySpecialElement = true;
+			}
+			if(copySpecialElement)
+			{
+				FindElement(reader, "special");
+				CopyToEndElement(writer, reader);
+			}
 			writer.WriteEndElement();
+		}
+
+		private bool IsReaderOnElementNodeNamed(XmlReader reader, string name)
+		{
+			return reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == name;
 		}
 
 		private void WriteLayoutElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
@@ -774,11 +806,11 @@ namespace Palaso.WritingSystems
 			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
 		}
 
-		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, WritingSystemDefinition ws)
+		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
 			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
 			WriteBeginSpecialElement(writer, "palaso");
-			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
+			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
 			if (ws.DefaultFontSize != 0)
 			{
@@ -789,13 +821,34 @@ namespace Palaso.WritingSystems
 			{
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
-			WriteSpecialValue(writer, "palaso", "languageName", ws.LanguageName);
+			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.Abbreviation);
 			if (ws.SpellCheckingId != ws.ISO639)
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
-			WriteSpecialValue(writer, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
+			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
+		}
+
+		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)
+		{
+			if(_wsIsFlexPrivateUse)
+			{
+				CopyOldFlexNode(reader, writer, nameSpaceName, nodeName);
+			}
+			else
+			{
+				WriteSpecialValue(writer, nameSpaceName, nodeName, value);
+			}
+		}
+
+		private void CopyOldFlexNode(XmlReader reader, XmlWriter writer, string nameSpaceName, string nodeName)
+		{
+			var subtreeReader = reader.ReadSubtree();
+			if(subtreeReader.ReadToDescendant(nodeName, _nameSpaceManager.LookupNamespace(nameSpaceName)))
+			{
+				writer.WriteNode(subtreeReader, true);
+			}
 		}
 
 		private void WriteCollationsElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)

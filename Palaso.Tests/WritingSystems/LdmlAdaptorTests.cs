@@ -492,6 +492,38 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		public void Read_ReadPrivateUseWsFromFieldWorksLdmlThenNormalLdmlMissingVersion1Element_Throws()
+		{
+			using (var file = new TempFile())
+			{
+				WriteFlexLdml("x-en", "", "", "x-private", file);
+				var ws = new WritingSystemDefinition();
+				var adaptor = new LdmlAdaptor();
+				adaptor.Read(file.Path, ws);
+				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				AssertThatLdmlMatches("", "", "", "x-en-private", file);
+			}
+			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void Read_WritePrivateUseWsFromFieldWorksLdmlThenNormalLdml_ContainsVersion1()
+		{
+			using (var file = new TempFile())
+			{
+				WriteFlexLdml("x-en", "", "", "x-private", file);
+				var ws = new WritingSystemDefinition();
+				var adaptor = new LdmlAdaptor();
+				adaptor.Read(file.Path, ws);
+				ws.SetAllRfc5646LanguageTagComponents("", "", "", "x-en-private");
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				AssertThatLdmlMatches("", "", "", "x-en-private", file);
+			}
+			throw new NotImplementedException();
+		}
+
 		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
 		{
 			Assert.That(ws.ISO639, Is.EqualTo(language));
