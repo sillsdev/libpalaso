@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 
@@ -71,6 +72,82 @@ namespace Palaso.LexicalModel.Tests
 			string other = "";
 			Assert.Throws<ArgumentException>(() =>
 reference.CompareTo(other));
+		}
+
+
+		[Test]
+		public void Merge_BothEmpty_Empty()
+		{
+			OptionRefCollection a = new OptionRefCollection(this);
+			OptionRefCollection b = new OptionRefCollection(this);
+			a.MergeByKey(b);
+			Assert.AreEqual(0, a.Count);
+		}
+		[Test]
+		public void Merge_OtherEmpty_Unchanged()
+		{
+			OptionRefCollection a = new OptionRefCollection(this);
+			a.Add("1");
+			OptionRefCollection b = new OptionRefCollection(this);
+			a.MergeByKey(b);
+			Assert.AreEqual(1, a.Count);
+		}
+		[Test]
+		public void Merge_TargetEmptyOtherNot_GetsOther()
+		{
+			OptionRefCollection a = new OptionRefCollection(this);
+			OptionRefCollection b = new OptionRefCollection(this);
+			b.Add("1");
+			b.Add("2");
+			a.MergeByKey(b);
+			Assert.AreEqual(2, a.Count);
+			Assert.AreEqual(2, b.Count);
+		}
+
+		[Test]
+		public void Merge_OneOverlap_NoDuplicates()
+		{
+			OptionRefCollection a = new OptionRefCollection(this);
+			a.Add("1");
+			a.Add("2");
+			OptionRefCollection b = new OptionRefCollection(this);
+			b.Add("1");
+			b.Add("3");
+			a.MergeByKey(b);
+			Assert.AreEqual(3, a.Count);
+			Assert.Contains("1", a.Keys.ToArray());
+			Assert.Contains("2", a.Keys.ToArray());
+			Assert.Contains("3", a.Keys.ToArray());
+		}
+
+		[Test]
+		public void Merge_SourceHasEmbeddedXml_Copied()
+		{
+			OptionRefCollection a = new OptionRefCollection(this);
+			a.Add("1");
+			OptionRefCollection b = new OptionRefCollection(this);
+			b.Add("1");
+			((OptionRef)(b.Members[0])).EmbeddedXmlElements.Add("line1");
+			((OptionRef)(b.Members[0])).EmbeddedXmlElements.Add("line2");
+			a.MergeByKey(b);
+			Assert.AreEqual(1, a.Count);
+			Assert.AreEqual(2, ((OptionRef)(a.Members[0])).EmbeddedXmlElements.Count);
+		}
+
+		[Test]
+		public void Merge_SourceAndTargetBothEmbeddedXml_ReturnsFalseWithTargetUnchanged()
+		{
+				OptionRefCollection a = new OptionRefCollection(this);
+
+				a.Add("1");
+				((OptionRef) (a.Members[0])).EmbeddedXmlElements.Add("line1");
+				OptionRefCollection b = new OptionRefCollection(this);
+				b.Add("1");
+				b.Add("2");
+				((OptionRef) (b.Members[0])).EmbeddedXmlElements.Add("line1");
+				var result =  a.MergeByKey(b);
+				Assert.IsFalse(result);
+				Assert.AreEqual(1, a.Members.Count);
 		}
 
 		public void NotifyPropertyChanged(string property)

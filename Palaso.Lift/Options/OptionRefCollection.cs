@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Linq;
 
 namespace Palaso.Lift.Options
 {
@@ -323,7 +324,7 @@ namespace Palaso.Lift.Options
 			}
 			if (!(obj is OptionRefCollection))
 			{
-				throw new ArgumentException("Can not compare to anythiong but OptionRefs.");
+				throw new ArgumentException("Can not compare to anything but OptionRefs.");
 			}
 			OptionRefCollection other = (OptionRefCollection) obj;
 			int order = _members.Count.CompareTo(other.Members.Count);
@@ -350,6 +351,34 @@ namespace Palaso.Lift.Options
 				builder.Append(optionRef.ToString()+", ");
 			}
 			return builder.ToString().TrimEnd(new char[] {',', ' '});
+		}
+
+		public bool MergeByKey(OptionRefCollection incoming)
+		{
+			List<OptionRef> combined = new List<OptionRef>(_members);
+			foreach (OptionRef optionRef in incoming.Members)
+			{
+				var match = this.FindByKey(optionRef.Key);
+				if(match == null)
+				{
+					combined.Add(optionRef);
+				}
+				else
+				{   //now, if we don't have embedded xml and they do, take on theirs
+					if (match.EmbeddedXmlElements == null || match.EmbeddedXmlElements.Count == 0)
+						match.EmbeddedXmlElements = optionRef.EmbeddedXmlElements;
+					else if(optionRef.EmbeddedXmlElements.Count>0)
+					{
+						return false; //we don't know how to combine these
+					}
+				}
+			}
+			_members.Clear();
+			foreach (var optionRef in combined)
+			{
+				_members.Add(optionRef);
+			}
+			return true;
 		}
 	}
 }

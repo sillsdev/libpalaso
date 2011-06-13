@@ -37,7 +37,7 @@ namespace Palaso.DictionaryServices.Tests.Merging
 
 		}
 
-		[Test, Ignore("Waiting for LIFT version which supports metada")]
+		[Test, Ignore("Waiting for LIFT version which supports metadata")]
 		public void Run_NoEntries_MetadataInAnotherNameSpacePreserved()
 		{
 			Run(@"<header>
