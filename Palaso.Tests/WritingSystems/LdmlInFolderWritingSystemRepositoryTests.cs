@@ -583,9 +583,9 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				File.WriteAllText(Path.Combine(environment.TestPath, "de-Zxxx-x-audio.ldml"),
-								  GetLdmlFileContent("de-Zxxx-x-audio", "", "", ""));
+								  GetLdmlV0FileContent("de-Zxxx-x-audio", "", "", ""));
 				File.WriteAllText(Path.Combine(environment.TestPath, "inconsistent-filename.ldml"),
-								  GetLdmlFileContent("de", WellKnownSubTags.Audio.Script, "",
+								  GetLdmlV0FileContent("de", WellKnownSubTags.Audio.Script, "",
 													 WellKnownSubTags.Audio.PrivateUseSubtag));
 
 				Assert.Throws<ApplicationException>(
@@ -600,12 +600,69 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				File.WriteAllText(Path.Combine(environment.TestPath, "tpi-Zxxx-x-audio.ldml"),
-								  GetLdmlFileContent("de", "latn", "ch", "1901"));
+								  GetLdmlV0FileContent("de", "latn", "ch", "1901"));
 				Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
 			}
 		}
 
-		private string GetLdmlFileContent(string language, string script, string region, string variant)
+		[Test]
+		public void Set_WritingSystemWasLoadedFromFlexPrivateUseLdmlAndRearranged_DoesNotChangeFileName()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
+				File.WriteAllText(pathToFlexprivateUseLdml,
+								  GetLdmlV0FileContent("x-en", "Zxxx", "", "x-audio"));
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
+				environment.Collection.Set(ws);
+				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
+			}
+		}
+
+		[Test]
+		public void LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_Throws()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Make the filepath inconsistant
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				environment.WritingSystem.ISO639 = "en";
+				environment.Collection.SaveDefinition(environment.WritingSystem);
+				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
+
+				// Now try to load up.
+				Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
+			}
+		}
+
+		[Test]
+		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_DoesNotThrow()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
+				File.WriteAllText(ldmlPath, GetLdmlV0FileContent("x-en", "Zxxx", "", ""));
+				var repo = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+
+				// Now try to load up.
+				Assert.That(repo.Get("x-en-Zxxx").ISO639, Is.EqualTo("qaa"));
+			}
+		}
+
+		[Test]
+		public void Set_NewWritingSystem_StoreContainsWritingSystem()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				environment.Collection.Set(ws);
+				Assert.That(environment.Collection.Get("en").RFC5646, Is.EqualTo("en"));
+			}
+		}
+
+		private string GetLdmlV0FileContent(string language, string script, string region, string variant)
 		{
 			string ldml = "<ldml><!--Comment--><identity><version number='' /><generation date='0001-01-01T00:00:00' />".Replace("'","\"");
 			ldml += String.Format("<language type='{0}' />",language).Replace("'","\"");

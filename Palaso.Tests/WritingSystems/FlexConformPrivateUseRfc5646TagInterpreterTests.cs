@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using NUnit.Framework;
+using Palaso.WritingSystems;
+
+namespace Palaso.Tests.WritingSystems
+{
+	[TestFixture]
+	public class FlexConformPrivateUseRfc5646TagInterpreterTests
+	{
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_Language_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en");
+			AssertThatPropertiesAreSet("", "", "", "x-en", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguageScript_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-Zxxx");
+			AssertThatPropertiesAreSet("qaa", "Zxxx", "", "x-en", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguageRegion_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-US");
+			AssertThatPropertiesAreSet("qaa", "", "US", "x-en", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguageVariant_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-fonipa");
+			AssertThatPropertiesAreSet("qaa", "", "", "fonipa-x-en", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_NoLanguageScriptPrivateUse_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-Zxxx-x-audio");
+			AssertThatPropertiesAreSet("qaa", "Zxxx", "", "x-audio", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguagePrivateUse_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-x-private");
+			AssertThatPropertiesAreSet("", "", "", "x-en-private", interpreter);
+		}
+
+		private void AssertThatPropertiesAreSet(string language, string script, string region, string variant, FlexConformPrivateUseRfc5646TagInterpreter interpreter)
+		{
+			Assert.That(interpreter.Language, Is.EqualTo(language));
+			Assert.That(interpreter.Script, Is.EqualTo(script));
+			Assert.That(interpreter.Region, Is.EqualTo(region));
+			Assert.That(interpreter.Variant, Is.EqualTo(variant));
+		}
+	}
+}

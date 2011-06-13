@@ -116,7 +116,22 @@ namespace Palaso.WritingSystems
 				throw new ArgumentNullException("ws");
 			}
 			var oldId = ws.StoreID;
+
 			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
+
+			if (oldId != null && oldId.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+			{
+				//Flex writes out their private use ldml a little differently than we do. Our ldml adaptor reads in this ldml
+				//and maps it to a valid palaso writing system. The problem is that the rfc5646 tag in some cases will not
+				//line up with the StoreID (i.e. the filename), but we want to round trip it.
+				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(oldId);
+				if (interpreter.RFC5646Tag.Equals(ws.RFC5646, StringComparison.OrdinalIgnoreCase))
+				{
+					newID = oldId;
+				}
+			}
+
 			if (_writingSystems.ContainsKey(newID) && newID != oldId)
 			{
 				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", newID));

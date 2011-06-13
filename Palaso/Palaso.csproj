@@ -317,6 +317,7 @@
 	<Compile Include="WritingSystems\Collation\IcuRulesParser.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParser.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollator.cs" />
+	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
 	<Compile Include="WritingSystems\Iso15924Script.cs" />
 	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.cs" />

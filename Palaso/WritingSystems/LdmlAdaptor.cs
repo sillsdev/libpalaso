@@ -240,64 +240,6 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private class FlexConformPrivateUseRfc5646TagInterpreter
-		{
-			private string _language;
-			private string _script;
-			private string _region;
-			private string _variant;
-
-			public void ConvertToPalasoConformPrivateUseRfc5646Tag(string language, string script, string region, string variant)
-			{
-				string newVariant = "";
-				string newPrivateUse = "";
-
-				_script = script;
-				_region = region;
-
-				if(!String.IsNullOrEmpty(variant))
-				{
-					WritingSystemDefinition.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
-				}
-				newPrivateUse = String.Join("-", new[] { language, newPrivateUse }.Select(t => t).Where(str => !String.IsNullOrEmpty(str)).ToArray());
-
-				_variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
-
-				if(!(String.IsNullOrEmpty(script) &&
-					  String.IsNullOrEmpty(region) &&
-					  String.IsNullOrEmpty(newVariant))
-					)
-				{
-					_language = "qaa";
-				}
-			}
-
-			public string RFC5646Tag
-			{
-				get { return string.Join("-", new string[] {Language, Script, Region, Variant}.Select(t=>t).Where(str => !String.IsNullOrEmpty(str)).ToArray()); }
-			}
-
-			public string Language
-			{
-				get { return _language; }
-			}
-
-			public string Script
-			{
-				get { return _script; }
-			}
-
-			public string Region
-			{
-				get { return _region; }
-			}
-
-			public string Variant
-			{
-				get { return _variant; }
-			}
-		}
-
 		private void ReadLayoutElement(XmlReader reader, WritingSystemDefinition ws)
 		{
 			// The orientation node has two attributes, "lines" and "characters" which define direction of writing.

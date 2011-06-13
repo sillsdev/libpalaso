@@ -106,9 +106,25 @@ namespace Palaso.WritingSystems
 						String.Format("Unfortunately we were not able to load all of your writing systems. the problem occurred in file {0}. The exact error message was: ", filePath) +
 						e.Message);
 				}
-				if(wsFromFile.StoreID != wsFromFile.RFC5646)
+				if (wsFromFile.StoreID != wsFromFile.RFC5646)
 				{
-					throw new ApplicationException(String.Format("The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.", filePath));
+					bool badFileName = true;
+					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+					{
+						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
+						if (interpreter.RFC5646Tag.Equals(wsFromFile.RFC5646, StringComparison.OrdinalIgnoreCase))
+						{
+							badFileName = false;
+						}
+					}
+					if(badFileName)
+					{
+						throw new ApplicationException(
+								String.Format(
+									"The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.",
+									filePath));
+					}
 				}
 				Set(wsFromFile);
 			}
