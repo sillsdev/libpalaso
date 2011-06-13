@@ -534,15 +534,15 @@ namespace Palaso.Tests.WritingSystems
 			new LdmlAdaptorV0().Write(file.Path, ws, null);
 		}
 
-		private void AssertThatLdmlMatches(string language, string script, string territory, string variant, TempFile file)
+		private static void AssertThatLdmlMatches(string language, string script, string territory, string variant, TempFile file)
 		{
-			AssertthatIdentityElementisCorrectForContent("language", language, file);
-			AssertthatIdentityElementisCorrectForContent("script", script, file);
-			AssertthatIdentityElementisCorrectForContent("territory", territory, file);
-			AssertthatIdentityElementisCorrectForContent("variant", variant, file);
+			AssertThatIdentityElementIsCorrectForContent("language", language, file);
+			AssertThatIdentityElementIsCorrectForContent("script", script, file);
+			AssertThatIdentityElementIsCorrectForContent("territory", territory, file);
+			AssertThatIdentityElementIsCorrectForContent("variant", variant, file);
 		}
 
-		private void AssertthatIdentityElementisCorrectForContent(string element, string content, TempFile file)
+		private static void AssertThatIdentityElementIsCorrectForContent(string element, string content, TempFile file)
 		{
 			if (String.IsNullOrEmpty(content) && element != "language")
 			{

@@ -1,4 +1,5 @@
-﻿using Palaso.Migration;
+﻿using System;
+using Palaso.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.WritingSystems.Migration
@@ -10,12 +11,15 @@ namespace Palaso.WritingSystems.Migration
 		{
 			SearchPattern = "*.ldml";
 
-			var xPathVersion = new XPathVersion(1, "/ldml/special/palaso:version/@value");
-			xPathVersion.NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
-			AddVersionStrategy(xPathVersion);
+			AddVersionStrategy(new WritingSystemLdmlVersionGetter());
 			AddVersionStrategy(new DefaultVersion(0, 0));
 
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback));
+		}
+
+		public void Migrate()
+		{
+			base.Migrate();
 		}
 	}
 }
