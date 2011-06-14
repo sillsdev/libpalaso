@@ -19,6 +19,12 @@ namespace Palaso.WritingSystems
 		//          <From>aaa</from>
 		//          <To>ccc</to>
 		//      </Change>
+		//      <Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
+		//          <Deleted>bbb</Deleted>
+		//      </Change>
+		//      <Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
+		//          <Added>ddd</Added>
+		//      </Change>
 		//  </Changes>
 		//  </WritingSystemsChangeLog>
 
@@ -97,6 +103,7 @@ namespace Palaso.WritingSystems
 			string datetime = reader.GetAttribute("TimeStamp") ?? string.Empty;
 			string from = "";
 			string to = "";
+			var type = WritingSystemChange.ChangeType.Change;
 			while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == "Change"))
 			{
 				if (reader.IsStartElement())
@@ -111,10 +118,20 @@ namespace Palaso.WritingSystems
 							reader.Read(); // get to the text node
 							to = reader.Value;
 							break;
+						case "Deleted":
+							reader.Read(); // get to the text node
+							from = reader.Value;
+							type = WritingSystemChange.ChangeType.Delete;
+							break;
+						case "Added":
+							reader.Read(); // get to the text node
+							from = reader.Value;
+							type = WritingSystemChange.ChangeType.Add;
+							break;
 					}
 				}
 			}
-			log.Set(from, to, producer, producerVersion, datetime);
+			log.Set(from, to, producer, producerVersion, type, datetime);
 		}
 
 		public static void Write(string filePath, WritingSystemChangeLog log)
@@ -155,8 +172,22 @@ namespace Palaso.WritingSystems
 				writer.WriteAttributeString("Producer", change.Producer);
 				writer.WriteAttributeString("ProducerVersion", change.ProducerVersion);
 				writer.WriteAttributeString("TimeStamp", change.DateTime);
-				writer.WriteElementString("From", change.From);
-				writer.WriteElementString("To", change.To);
+				switch (change.Type)
+				{
+					case WritingSystemChange.ChangeType.Change:
+						writer.WriteElementString("From", change.From);
+						writer.WriteElementString("To", change.To);
+						break;
+
+					case WritingSystemChange.ChangeType.Add:
+						writer.WriteElementString("Added", change.From);
+						break;
+
+					case WritingSystemChange.ChangeType.Delete:
+						writer.WriteElementString("Deleted", change.From);
+						break;
+				}
+
 				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();

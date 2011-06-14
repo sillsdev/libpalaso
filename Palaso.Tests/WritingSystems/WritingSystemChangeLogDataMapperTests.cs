@@ -55,6 +55,9 @@ namespace Palaso.Tests.WritingSystems
 				WritingSystemChangeLog log = WritingSystemChangeLogDataMapper.Read(e.GetSampleLogFilePath());
 				Assert.That(log.HasChangeFor("aaa"));
 				Assert.That(log.GetChangeFor("aaa"), Is.EqualTo("ccc"));
+				Assert.That(log.Items.Where(item => item.Type == WritingSystemChange.ChangeType.Add).Count(), Is.EqualTo(1));
+				Assert.That(log.Items.Where(item => item.Type == WritingSystemChange.ChangeType.Delete).Count(), Is.EqualTo(1));
+				Assert.That(log.Items.Where(item => item.Type == WritingSystemChange.ChangeType.Change).Count(), Is.EqualTo(2));
 			}
 		}
 
@@ -87,6 +90,12 @@ namespace Palaso.Tests.WritingSystems
 	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
 		<From>bbb</From>
 		<To>ddd</To>
+	</Change>
+	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
+		<Deleted>eee</Deleted>
+	</Change>
+	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
+		<Added>fff</Added>
 	</Change>
 </Changes>
 </WritingSystemChangeLog>

@@ -280,16 +280,6 @@ namespace Palaso.WritingSystems
 			string logPath = Path.Combine(PathToWritingSystems, "idchangelog.xml");
 			var changeLog = WritingSystemChangeLogDataMapper.ReadOrNew(logPath);
 
-			// Get Producer and ProducerVersion
-			string producer = "???";
-			string version = "???";
-			var assembly = Assembly.GetEntryAssembly();
-			if (assembly != null)
-			{
-				producer = assembly.FullName;
-				var ver = assembly.GetName().Version;
-				version = string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
-			}
 
 			foreach (var pair in _idChangeMap)
 			{
