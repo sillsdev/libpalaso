@@ -1,9 +1,9 @@
 ﻿using System;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace Palaso.Tests.WritingSystems.Migration
+namespace Palaso.TestUtilities
 {
-	internal class LdmlContentForTests
+	public class LdmlContentForTests
 	{
 		public static string Version0English()
 		{
@@ -18,7 +18,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		static public string Version0(string language, string script, string region, string variant)
 		{
 			return String.Format(
-@"<?xml version='1.0' encoding='utf-8'?>
+				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -39,7 +39,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		static public string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)
 		{
 			return String.Format(
-@"<?xml version='1.0' encoding='utf-8'?>
+				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -58,7 +58,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		static public string Version99Default()
 		{
 			return
-@"<?xml version='1.0' encoding='utf-8'?>
+				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -77,7 +77,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		static public string Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
 		{
 			return String.Format(
-@"<?xml version='1.0' encoding='utf-8'?>
+				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -117,7 +117,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 			string collationelement = GetCollationElementXml(sortType);
 
 			return String.Format(
-@"<?xml version='1.0' encoding='utf-8'?>
+				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -145,7 +145,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		static public string Version0WithLdmlInfoWeDontCareAbout(string language, string script, string region, string variant)
 		{
 			return String.Format(
-@"<?xml version='1.0' encoding='utf-8'?>
+				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -235,7 +235,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		static private string Version1(string language, string script, string region, string variant)
 		{
 			return
-String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />

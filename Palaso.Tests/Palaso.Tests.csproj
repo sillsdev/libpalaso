@@ -142,7 +142,6 @@
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
-	<Compile Include="WritingSystems\Migration\LdmlContentForTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
