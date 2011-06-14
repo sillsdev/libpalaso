@@ -78,7 +78,7 @@ namespace Palaso.WritingSystems
 
 		public string GetFileName(WritingSystemDefinition ws)
 		{
-			return GetFileNameFromIdentifier(ws.RFC5646);
+			return GetFileNameFromIdentifier(ws.StoreID);
 		}
 
 		private static string GetFileNameFromIdentifier(string identifier)

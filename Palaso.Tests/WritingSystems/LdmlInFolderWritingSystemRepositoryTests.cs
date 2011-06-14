@@ -143,35 +143,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void FileNameWhenNothingKnown()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				Assert.AreEqual("qaa.ldml", environment.Collection.GetFileName(environment.WritingSystem));
-			}
-		}
-
-		[Test]
-		public void FileNameWhenOnlyHaveIso()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.ISO639 = "en";
-				Assert.AreEqual("en.ldml", environment.Collection.GetFileName(environment.WritingSystem));
-			}
-		}
-		[Test]
-		public void FileNameWhenHaveIsoAndRegion()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.ISO639 = "en";
-				environment.WritingSystem.Region = "us";
-				Assert.AreEqual("en-us.ldml", environment.Collection.GetFileName(environment.WritingSystem));
-			}
-		}
-
-		[Test]
 		public void SavesWhenPreexisting()
 		{
 			using (var environment = new TestEnvironment())
