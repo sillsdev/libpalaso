@@ -583,9 +583,9 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				File.WriteAllText(Path.Combine(environment.TestPath, "de-Zxxx-x-audio.ldml"),
-								  GetLdmlV0FileContent("de-Zxxx-x-audio", "", "", ""));
+								  LdmlContentForTests.Version0("de-Zxxx-x-audio", "", "", ""));
 				File.WriteAllText(Path.Combine(environment.TestPath, "inconsistent-filename.ldml"),
-								  GetLdmlV0FileContent("de", WellKnownSubTags.Audio.Script, "",
+								  LdmlContentForTests.Version0("de", WellKnownSubTags.Audio.Script, "",
 													 WellKnownSubTags.Audio.PrivateUseSubtag));
 
 				Assert.Throws<ApplicationException>(
@@ -600,7 +600,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				File.WriteAllText(Path.Combine(environment.TestPath, "tpi-Zxxx-x-audio.ldml"),
-								  GetLdmlV0FileContent("de", "latn", "ch", "1901"));
+								  LdmlContentForTests.Version0("de", "latn", "ch", "1901"));
 				Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
 			}
 		}
@@ -612,7 +612,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml,
-								  GetLdmlV0FileContent("x-en", "Zxxx", "", "x-audio"));
+								  LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
 				environment.Collection.Set(ws);
@@ -642,7 +642,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
-				File.WriteAllText(ldmlPath, GetLdmlV0FileContent("x-en", "Zxxx", "", ""));
+				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
 				var repo = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 
 				// Now try to load up.
@@ -662,24 +662,18 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
-		private string GetLdmlV0FileContent(string language, string script, string region, string variant)
+		[Test]
+		public void SaveDefinition_WritingSystemCameFromFlexPrivateUseLdml_FileNameIsRetained()
 		{
-			string ldml = "<ldml><!--Comment--><identity><version number='' /><generation date='0001-01-01T00:00:00' />".Replace("'","\"");
-			ldml += String.Format("<language type='{0}' />",language).Replace("'","\"");
-			if(script!=String.Empty)
+			using (var environment = new TestEnvironment())
 			{
-			   ldml += String.Format("<script type='{0}' />", script).Replace("'","\"");
+				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
+				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("x", "Zxxx", "", "x-audio"));
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws = environment.Collection.Get("x-Zxxx-x-audio");
+				environment.Collection.SaveDefinition(ws);
+				Assert.That(File.Exists(pathToFlexprivateUseLdml));
 			}
-			if(region!=String.Empty)
-			{
-				ldml += String.Format("<territory type='{0}' />",region).Replace("'", "\"");
-			}
-			if(variant!=String.Empty)
-			{
-				ldml += String.Format("<variant type='{0}' />", variant).Replace("'", "\"");
-			}
-			ldml += "</identity><dates /><collations /><special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1' /><special></special></ldml>".Replace("'","\"");
-			return ldml;
 		}
 
 		private bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
