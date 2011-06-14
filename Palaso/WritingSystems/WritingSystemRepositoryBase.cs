@@ -12,6 +12,8 @@ namespace Palaso.WritingSystems
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
+		protected Dictionary<string, string> _idChangeMap;
+
 		public event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
 		public event WritingSystemDeleted WritingSystemDeleted;
 
@@ -22,6 +24,7 @@ namespace Palaso.WritingSystems
 		{
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+			_idChangeMap = new Dictionary<string, string>();
 			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
 		}
 
@@ -145,9 +148,37 @@ namespace Palaso.WritingSystems
 			}
 			_writingSystems[newID] = ws;
 			ws.StoreID = newID;
-			if (WritingSystemIdChanged != null && !String.IsNullOrEmpty(oldId) && (oldId != newID))
+			if (!String.IsNullOrEmpty(oldId) && (oldId != newID))
 			{
-				WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, newID));
+				UpdateIdChangeMap(oldId, newID);
+				if (WritingSystemIdChanged != null)
+				{
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, newID));
+				}
+			}
+		}
+
+		protected void UpdateIdChangeMap(string oldId, string newId)
+		{
+			if (_idChangeMap.ContainsValue(oldId))
+			{
+				// if the oldid is in the value of key/value, then we can update the cooresponding key with the newId
+				string keyToChange = _idChangeMap.Where(pair => pair.Value == oldId).First().Key;
+				_idChangeMap[keyToChange] = newId;
+			}
+			else if (_idChangeMap.ContainsKey(oldId))
+			{
+				// if oldId is already in the dictionary, set the result to be newId
+				_idChangeMap[oldId] = newId;
+			}
+		}
+
+		protected void LoadIdChangeMapFromExistingWritingSystems()
+		{
+			_idChangeMap.Clear();
+			foreach (var pair in _writingSystems)
+			{
+				_idChangeMap[pair.Key] = pair.Key;
 			}
 		}
 

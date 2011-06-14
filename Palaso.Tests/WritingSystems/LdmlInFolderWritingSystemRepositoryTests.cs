@@ -183,6 +183,35 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Save_WritingSystemIdChanged_ChangeLogUpdated()
+		{
+			using (var e = new TestEnvironment())
+			{
+				var repo = new LdmlInFolderWritingSystemRepository(Path.Combine(e.TestPath, "idchangedtest1"));
+				var ws = WritingSystemDefinition.FromLanguage("en");
+				repo.Set(ws);
+				repo.Save();
+
+				ws.Script = "Latn";
+				repo.Set(ws);
+				ws.Script = "Thai";
+				repo.Set(ws);
+
+				var ws2 = WritingSystemDefinition.FromLanguage("de");
+				repo.Set(ws2);
+				ws2.Script = "Latn";
+				repo.Save();
+
+				string logFilePath = Path.Combine(repo.PathToWritingSystems, "idchangelog.xml");
+				AssertThatXmlIn.File(logFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change/From[text()='en']");
+				AssertThatXmlIn.File(logFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change/To[text()='en-Thai']");
+
+				// writing systems added for the first time shouldn't be in the log as a change
+				AssertThatXmlIn.File(logFilePath).HasNoMatchForXpath("/WritingSystemChangeLog/Changes/Change/From[text()='de']");
+			}
+		}
+
+		[Test]
 		public void StoreIDAfterSave_SameAsFileNameWithoutExtension()
 		{
 			using (var environment = new TestEnvironment())

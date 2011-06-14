@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using Palaso.WritingSystems;
 
@@ -95,6 +96,7 @@ namespace Palaso.WritingSystems
 				{
 					bool badFileName = true;
 					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+			LoadIdChangeMapFromExistingWritingSystems();
 					{
 						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
@@ -273,6 +275,28 @@ namespace Palaso.WritingSystems
 					OnChangeNotifySharedStore(ws);
 				}
 			}
+
+			// log all id changes to the writing system change log
+			string logPath = Path.Combine(PathToWritingSystems, "idchangelog.xml");
+			var changeLog = WritingSystemChangeLogDataMapper.ReadOrNew(logPath);
+
+			// Get Producer and ProducerVersion
+			string producer = "???";
+			string version = "???";
+			var assembly = Assembly.GetEntryAssembly();
+			if (assembly != null)
+			{
+				producer = assembly.FullName;
+				var ver = assembly.GetName().Version;
+				version = string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
+			}
+
+			foreach (var pair in _idChangeMap)
+			{
+				changeLog.Set(pair.Key, pair.Value, producer, version);
+			}
+			WritingSystemChangeLogDataMapper.Write(logPath, changeLog);
+			LoadIdChangeMapFromExistingWritingSystems();
 		}
 
 		public override void Set(WritingSystemDefinition ws)

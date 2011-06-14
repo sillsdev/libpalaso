@@ -55,6 +55,16 @@ namespace Palaso.WritingSystems
 			return log;
 		}
 
+		public static WritingSystemChangeLog ReadOrNew(string filePath)
+		{
+			if (File.Exists(filePath))
+			{
+				return Read(filePath);
+			}
+			return new WritingSystemChangeLog();
+
+		}
+
 		private static void ReadLog(XmlReader reader, WritingSystemChangeLog log)
 		{
 			Debug.Assert(reader != null);
