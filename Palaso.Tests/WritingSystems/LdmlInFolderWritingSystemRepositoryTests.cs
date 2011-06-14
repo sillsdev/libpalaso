@@ -88,17 +88,17 @@ namespace Palaso.Tests.WritingSystems
 			}
 
 			public XmlNamespaceManager NamespaceManager { get; private set; }
-		}
 
-		private void AssertWritingSystemFileExists(TestEnvironment environment)
-		{
-			AssertWritingSystemFileExists(environment.WritingSystem, environment.Collection);
-		}
+			public string GetPathForWsId(string id)
+			{
+				var path = Path.Combine(TestPath, id + ".ldml");
+				return path;
+			}
 
-		private void AssertWritingSystemFileExists(WritingSystemDefinition writingSystem, LdmlInFolderWritingSystemRepository collection)
-		{
-			string path = collection.FilePathToWritingSystem(writingSystem);
-			Assert.IsTrue(File.Exists(path));
+			public void AssertWritingSystemFileExists(string id)
+			{
+				Assert.IsTrue(File.Exists(GetPathForWsId(id)));
+			}
 		}
 
 		[Test]
@@ -138,7 +138,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertWritingSystemFileExists(environment);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.RFC5646);
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
 				environment.Collection.SaveDefinition(ws2);
-				AssertWritingSystemFileExists(environment);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.RFC5646);
 			}
 		}
 
@@ -175,10 +175,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				LdmlInFolderWritingSystemRepository newRepository =
-					new LdmlInFolderWritingSystemRepository(Path.Combine(environment.TestPath, "newguy"));
+				var newRepoPath = Path.Combine(environment.TestPath, "newguy");
+				var newRepository = new LdmlInFolderWritingSystemRepository(newRepoPath);
 				newRepository.SaveDefinition(environment.WritingSystem);
-				AssertWritingSystemFileExists(environment.WritingSystem, newRepository);
+				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.RFC5646 + ".ldml")));
 			}
 		}
 
@@ -236,7 +236,7 @@ namespace Palaso.Tests.WritingSystems
 
 				environment.WritingSystem.ISO639 = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(PathToWS(environment)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
 			}
 		}
 
@@ -248,7 +248,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				environment.WritingSystem.Variant = "1901";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(PathToWS(environment)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace Palaso.Tests.WritingSystems
 				ws2.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(ws2);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.Collection.GetFileName(ws2));
+										   environment.GetPathForWsId(ws2.RFC5646));
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='x-piglatin']");
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation[@value='bl']",
 																	  environment.NamespaceManager);
@@ -376,12 +376,12 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.ISO639 = "en";
 				environment.WritingSystem.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				string path = environment.Collection.FilePathToWritingSystem(environment.WritingSystem);
+				string path = environment.GetPathForWsId(environment.WritingSystem.RFC5646);
 
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant");
 				environment.WritingSystem.Variant = string.Empty;
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(PathToWS(environment)).HasNoMatchForXpath("ldml/identity/variant");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasNoMatchForXpath("ldml/identity/variant");
 			}
 		}
 
@@ -394,7 +394,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.ISO639 = "en";
 				environment.WritingSystem.Abbreviation = "abbrev";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				string path = environment.Collection.FilePathToWritingSystem(environment.WritingSystem);
+				string path = environment.GetPathForWsId(environment.WritingSystem.RFC5646);
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath(
 					"ldml/special/palaso:abbreviation[@value='abbrev']",
 					environment.NamespaceManager
@@ -417,14 +417,9 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.ISO639 = "en";
 				environment.WritingSystem.Abbreviation = "bl";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(PathToWS(environment)).HasAtLeastOneMatchForXpath(
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath(
 					"ldml/special/palaso:abbreviation[@value='bl']", environment.NamespaceManager);
 			}
-		}
-
-		private string PathToWS(TestEnvironment environment)
-		{
-			return environment.Collection.FilePathToWritingSystem(environment.WritingSystem);
 		}
 
 		[Test]
@@ -435,7 +430,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.ISO639 = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.Collection.GetFileName(environment.WritingSystem));
+										   environment.GetPathForWsId(environment.WritingSystem.RFC5646));
 				Assert.IsTrue(File.Exists(path));
 				environment.Collection.Remove(environment.WritingSystem.ISO639);
 				Assert.IsFalse(File.Exists(path));
@@ -446,7 +441,7 @@ namespace Palaso.Tests.WritingSystems
 		private void AssertFileIsInTrash(TestEnvironment environment)
 		{
 			string path = Path.Combine(environment.Collection.PathToWritingSystems, "trash");
-			path = Path.Combine(path,environment.Collection.GetFileName(environment.WritingSystem));
+			path = Path.Combine(path,environment.WritingSystem.RFC5646 + ".ldml");
 			Assert.IsTrue(File.Exists(path));
 		}
 
@@ -463,7 +458,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(ws2);
 				environment.Collection.Remove(ws2.StoreID);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.Collection.GetFileName(environment.WritingSystem));
+										   environment.GetPathForWsId(environment.WritingSystem.RFC5646));
 				Assert.IsFalse(File.Exists(path));
 				AssertFileIsInTrash(environment);
 			}

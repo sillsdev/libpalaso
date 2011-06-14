@@ -66,27 +66,13 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetFilePath(WritingSystemDefinition ws)
-		{
-			return Path.Combine(PathToWritingSystems, GetFileName(ws));
-		}
-
 		private string GetFilePathFromIdentifier(string identifier)
 		{
 			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(identifier));
 		}
 
-		public string GetFileName(WritingSystemDefinition ws)
-		{
-			return GetFileNameFromIdentifier(ws.StoreID);
-		}
-
 		private static string GetFileNameFromIdentifier(string identifier)
 		{
-			if (string.IsNullOrEmpty(identifier))
-			{
-				return "unknown"+_kExtension;
-			}
 			return identifier + _kExtension;
 		}
 
@@ -128,104 +114,6 @@ namespace Palaso.WritingSystems
 				}
 				Set(wsFromFile);
 			}
-		}
-
-		private List<WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
-		{
-			List<WritingSystemDefinition> loadedWritingSystems = new List<WritingSystemDefinition>();
-			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
-			{
-				//WritingSystemDefinition wsFromFile;
-				//wsFromFile = GetWritingSystemFromLdml(filePath);
-				//WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
-				//    loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
-
-				//if (writingSystemWithIdenticalRfc5646Tag != null)
-				//{
-				//    throw new ArgumentException
-				//        (
-				//      String.Format("Ldml files {0} and {1} contain writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
-				//        GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
-				//        );
-				//}
-				//wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
-				//MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
-				//loadedWritingSystems.Add(wsFromFile);
-			}
-			return loadedWritingSystems;
-		}
-
-		private void SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(List<WritingSystemDefinition> loadedWritingSystems)
-		{
-			string pathToFolderForSafeFileRenaming = CreateFolderForSafeFileRenaming();
-			MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(loadedWritingSystems, pathToFolderForSafeFileRenaming);
-			MoveFilesToFinalDestination(loadedWritingSystems, pathToFolderForSafeFileRenaming);
-			Directory.Delete(pathToFolderForSafeFileRenaming);
-		}
-
-		private void MoveFilesToFinalDestination(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
-		{
-			throw new NotImplementedException("broken for now");
-			//foreach (WritingSystemDefinition ws in loadedWritingSystems)
-			//{
-			//    if (!ws.Rfc5646TagOnLoad.IsValid) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
-			//    {
-			//        string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
-			//                                                              GetFileName(ws));
-			//        File.Move(pathInFolderForSafeFileRenaming, GetFilePathFromIdentifier(ws.RFC5646));
-			//        ws.StoreID = ws.RFC5646;
-			//    }
-			//}
-			//        }
-			//        else
-			//        {
-			//            File.Move(sourceFilePath, targetFilePath);
-			//        }
-		}
-
-		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
-		{
-			throw new NotImplementedException("broken for now");
-			//foreach (WritingSystemDefinition ws in loadedWritingSystems)
-			//{
-			//    if (!ws.Rfc5646TagOnLoad.IsValid) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
-			//    {
-			//        string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
-			//                                                              GetFileName(ws));
-			//        File.Move(GetFilePathFromIdentifier(ws.StoreID), pathInFolderForSafeFileRenaming);
-			//    }
-			//}
-		}
-
-		private string CreateFolderForSafeFileRenaming()
-		{
-			string pathToFolderForSafeFileRenaming = Path.Combine(_path, "TemporaryFolderForSafeLoad");
-			if(Directory.Exists(pathToFolderForSafeFileRenaming))
-			{
-				Directory.Delete(pathToFolderForSafeFileRenaming, true);
-			}
-			Directory.CreateDirectory(pathToFolderForSafeFileRenaming);
-			return pathToFolderForSafeFileRenaming;
-		}
-
-		private static void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
-		{
-			throw new NotImplementedException("broken for now");
-			//var existingWritingSystem = listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646); //.ContainsKey(wsFromFile.RFC5646))
-			//if (existingWritingSystem == null)
-			//{
-			//    return;
-			//}
-			//var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid) ? wsFromFile : existingWritingSystem;
-			//var newTag = new RFC5646Tag(wsToMakeUnique.ISO639, wsToMakeUnique.Script, wsToMakeUnique.Region, wsToMakeUnique.Variant);
-			//do
-			//{
-			//    newTag.Variant += "-x-dupl";
-			//} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
-			//wsToMakeUnique.ISO639 = newTag.Language;
-			//wsToMakeUnique.Script = newTag.Script;
-			//wsToMakeUnique.Region = newTag.Region;
-			//wsToMakeUnique.Variant = newTag.Variant;
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
@@ -299,8 +187,7 @@ namespace Palaso.WritingSystems
 		{
 			string incomingFileName = GetFileNameFromIdentifier(ws.StoreID);
 			Set(ws);
-			string writingSystemFileName = GetFileName(ws);
-			string writingSystemFilePath = GetFilePath(ws);
+			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			MemoryStream oldData = null;
 			if (!ws.Modified && File.Exists(writingSystemFilePath))
 			{
@@ -317,22 +204,14 @@ namespace Palaso.WritingSystems
 						oldData = new MemoryStream(File.ReadAllBytes(previousFilePath), false);
 					}
 					catch {}
-					if (writingSystemFileName != incomingFileName)
-					{
-						// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-						File.Delete(previousFilePath); //!!! Should this be move to trash?
-					}
+					// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
+					File.Delete(previousFilePath); //!!! Should this be move to trash?
 				}
 			}
 			LdmlAdaptor adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;
-		}
-
-		public string FilePathToWritingSystem(WritingSystemDefinition ws)
-		{
-			return Path.Combine(PathToWritingSystems, GetFileName(ws));
 		}
 
 		override public void Remove(string identifier)
@@ -420,7 +299,7 @@ namespace Palaso.WritingSystems
 			{
 				return;
 			}
-			string writingSystemFilePath = GetFilePath(ws);
+			string writingSystemFilePath = GetFileNameFromIdentifier(ws.StoreID);
 			File.Move(oldFilePath, writingSystemFilePath);
 		}
 	}
