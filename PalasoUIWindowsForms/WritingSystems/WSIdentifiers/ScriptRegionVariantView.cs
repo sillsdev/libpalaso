@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Data;
 using System.Text;
@@ -42,7 +43,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-
+			Process.Start("http://www.w3.org/International/questions/qa-choosing-language-tags");
 		}
 
 		public string ChoiceName
