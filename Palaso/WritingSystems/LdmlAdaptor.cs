@@ -162,7 +162,10 @@ namespace Palaso.WritingSystems
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
 				if (!_wsIsFlexPrivateUse)
 				{
-					int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
+					int version;
+					if (!int.TryParse(GetSpecialValue(reader, "palaso", "version"), out version))
+						version = 1; //older files had version=""
+
 					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
 					{
 						throw new ApplicationException(String.Format(
