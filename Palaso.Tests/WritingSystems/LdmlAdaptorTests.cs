@@ -477,7 +477,7 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
-		[Test]
+		[Test, Ignore("Please review: now is not a throwable offense because previous versions didn't have this, and we don't migrate, so seems unfair to break on people")]
 		public void Read_ReadPrivateUseWsFromFieldWorksLdmlThenNormalLdmlMissingVersion1Element_Throws()
 		{
 			using (var badFlexLdml = new TempFile())
