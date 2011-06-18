@@ -176,7 +176,7 @@ namespace Palaso.WritingSystems
 			ValidatePrivateUse();
 			if (!(HasLanguage || (!HasLanguage && !HasScript && !HasRegion && !HasVariant && HasPrivateUse)))
 			{
-				throw new ValidationException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
+				throw new ValidationException(string.Format("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags (Language={0}  Script={1} Region={2} Variant={3} Private={4})", Language,Script,Region,Variant,PrivateUse));
 			}
 		}
 
