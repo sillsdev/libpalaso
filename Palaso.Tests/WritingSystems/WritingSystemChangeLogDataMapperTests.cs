@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -13,37 +14,11 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemChangeLogDataMapperTests
 	{
 		[Test]
-		public void Read_NullFileName_Throws()
-		{
-			string emptyFilePath = null;
-			Assert.Throws<ArgumentNullException>(
-				() => WritingSystemChangeLogDataMapper.Read(emptyFilePath)
-			);
-		}
-
-		[Test]
-		public void Read_NonExistentFile_Throws()
-		{
-			string nonexistentFilePath = "tempfiledoesntexist1432";
-			Assert.Throws<System.IO.FileNotFoundException>(
-				() => WritingSystemChangeLogDataMapper.Read(nonexistentFilePath)
-			);
-		}
-
-		[Test]
-		public void Write_NullFileName_Throws()
-		{
-			var log = new WritingSystemChangeLog();
-			Assert.Throws<ArgumentNullException>(
-				() => WritingSystemChangeLogDataMapper.Write(null, log)
-			);
-		}
-
-		[Test]
 		public void Write_NullChangeLog_Throws()
 		{
+			var dataMapper = new WritingSystemChangeLogDataMapper("whatever");
 			Assert.Throws<ArgumentNullException>(
-				() => WritingSystemChangeLogDataMapper.Write("a file path", null)
+				() => dataMapper.Write(null)
 			);
 		}
 
@@ -52,28 +27,32 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var e = new TestEnvironment())
 			{
-				WritingSystemChangeLog log = WritingSystemChangeLogDataMapper.Read(e.GetSampleLogFilePath());
+				var log = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(e.GetSampleLogFilePath()));
 				Assert.That(log.HasChangeFor("aaa"));
 				Assert.That(log.GetChangeFor("aaa"), Is.EqualTo("ccc"));
-				Assert.That(log.Items.Where(item => item.Type == WritingSystemChange.ChangeType.Add).Count(), Is.EqualTo(1));
-				Assert.That(log.Items.Where(item => item.Type == WritingSystemChange.ChangeType.Delete).Count(), Is.EqualTo(1));
-				Assert.That(log.Items.Where(item => item.Type == WritingSystemChange.ChangeType.Change).Count(), Is.EqualTo(2));
 			}
 		}
 
 		[Test]
-		public void Write_Model_WritesToLogFile()
+		public void Write_NewEmptyFile_WritesModelToLogFile()
 		{
 			using (var e = new TestEnvironment())
 			{
-				var tempFile = new TempFile();
-				WritingSystemChangeLogDataMapper.Write(tempFile.Path, e.GetSampleWritingSystemChangeLog());
-				AssertThatXmlIn.File(tempFile.Path).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change/From[text()='aab']");
+				string tempFilePath = Path.Combine(e.tempFolder.Path, "testchangelog.xml");
+				var log = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(tempFilePath));
+				log.LogChange("aab", "bba");
+				log.LogAdd("aab");
+				log.LogDelete("aab");
+				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change/From[text()='aab']");
+				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Add/Id[text()='aab']");
+				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Delete/Id[text()='aab']");
 			}
 		}
 
 		public class TestEnvironment : IDisposable
 		{
+			public TemporaryFolder tempFolder = new TemporaryFolder("writingSystemChangeLogTests");
+
 			public TestEnvironment()
 			{
 				TempFile file = new TempFile();
@@ -92,10 +71,10 @@ namespace Palaso.Tests.WritingSystems
 		<To>ddd</To>
 	</Change>
 	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
-		<Deleted>eee</Deleted>
+		<Delete>eee</Delete>
 	</Change>
 	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
-		<Added>fff</Added>
+		<Add>fff</Add>
 	</Change>
 </Changes>
 </WritingSystemChangeLog>
@@ -112,8 +91,8 @@ namespace Palaso.Tests.WritingSystems
 			public WritingSystemChangeLog GetSampleWritingSystemChangeLog()
 			{
 				var log = new WritingSystemChangeLog();
-				log.Set("aab", "bba", "WeSay", "1.1");
-				log.Set("ccc", "ddd", "FLEx", "7.1");
+				log.LogChange("aab", "bba");
+				log.LogChange("ccc", "ddd");
 				return log;
 			}
 		}

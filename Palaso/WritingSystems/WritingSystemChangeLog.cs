@@ -1,49 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Linq;
 
 namespace Palaso.WritingSystems
 {
 	public class WritingSystemChangeLog
 	{
-		private List<WritingSystemChange>_changes = new List<WritingSystemChange>();
-		private string _producer;
-		private string _producerVersion;
-		public WritingSystemChangeLog(string version)
+		private List<WritingSystemLogEvent> _logEvents;
+		private IWritingSystemChangeLogDataMapper _dataMapper;
+
+		public WritingSystemChangeLog(IWritingSystemChangeLogDataMapper dataMapper)
 		{
-			Version = version;
-			_producer = _getProducer();
-			_producerVersion = _getProducerVersion();
+			_logEvents = new List<WritingSystemLogEvent>();
+			_dataMapper = dataMapper ?? new NullDataMapper();
+
+			_dataMapper.Read(this);
+			Version = "1";
 		}
 
-		private string _getProducer()
+		public WritingSystemChangeLog() : this(null)
 		{
-			var assembly = Assembly.GetEntryAssembly();
-			if (assembly != null)
-			{
-				return assembly.FullName;
-			}
-			return "???";
 		}
 
-		private string _getProducerVersion()
-		{
-			var assembly = Assembly.GetEntryAssembly();
-			if (assembly != null)
-			{
-				var ver = assembly.GetName().Version;
-				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
-			}
-			return "???";
-		}
-
-		public WritingSystemChangeLog() : this("1.0") {}
-
-		public string Version { get; set; }
+		public string Version { get; internal set; }
 
 		public bool HasChangeFor(string id)
 		{
-			if (GetChangeFor(id) == null)
+			if (GetChangeFor(id) == id)
 			{
 				return false;
 			}
@@ -53,45 +38,75 @@ namespace Palaso.WritingSystems
 		public string GetChangeFor(string id)
 		{
 			string result = id;
-			foreach (var change in _changes)
+			foreach (WritingSystemLogChangeEvent change in _logEvents.Where(c => c.Type == "Change"))
 			{
 				if (result == change.From)
 				{
 					result = change.To;
 				}
 			}
-			if (result == id)
-			{
-				return null;
-			}
 			return result;
 		}
 
-		public void Set(string from, string to)
+		public void LogChange(string from, string to)
 		{
-			_changes.Add(new WritingSystemChange(from, to, _producer, _producerVersion));
+			_WriteToLog(new WritingSystemLogChangeEvent(from, to));
 		}
 
-		public void Set(string from, string to, WritingSystemChange.ChangeType type, string iso8601datetime)
+		public void LogAdd(string added)
 		{
-			_changes.Add(new WritingSystemChange(from, to, _producer, _producerVersion, type, iso8601datetime));
+			_WriteToLog(new WritingSystemLogAddEvent(added));
 		}
 
-		public void Set(string from, string to, string iso8601datetime)
+		public void LogDelete(string deleted)
 		{
-			_changes.Add(new WritingSystemChange(from, to, _producer, _producerVersion, iso8601datetime));
+			_WriteToLog(new WritingSystemLogDeleteEvent(deleted));
 		}
 
-		public void Set(string from, string to, WritingSystemChange.ChangeType type)
+		private void _WriteToLog(WritingSystemLogEvent logEvent)
 		{
-			_changes.Add(new WritingSystemChange(from, to, _producer, _producerVersion, type));
+			//_logEvents.Clear();
+			_logEvents.Add(logEvent);
+			if (File.Exists(_dataMapper.FilePath))
+			{
+				_dataMapper.AppendEvent(logEvent);
+			}
+			else
+			{
+				_dataMapper.Write(this);
+			}
+
+			//_dataMapper.Read(this);
 		}
 
-		public List<WritingSystemChange> Items
+		// only intended for use by the datamapper
+		internal List<WritingSystemLogEvent> Events
 		{
 			get {
-				return _changes;
+				return _logEvents;
 			}
 		}
+
+		// only intended for use by the datamapper
+		internal void AddEvent(WritingSystemLogEvent logEvent)
+		{
+			_logEvents.Add(logEvent);
+		}
+	}
+
+	public class NullDataMapper : IWritingSystemChangeLogDataMapper
+	{
+		public void Read(WritingSystemChangeLog log) {}
+		public void Write(WritingSystemChangeLog log) {}
+		public void AppendEvent(WritingSystemLogEvent logEvent) {}
+		public string FilePath { get; set; }
+	}
+
+	public interface IWritingSystemChangeLogDataMapper
+	{
+		void Read(WritingSystemChangeLog log);
+		void Write(WritingSystemChangeLog log);
+		void AppendEvent(WritingSystemLogEvent logEvent);
+		string FilePath { get; set; }
 	}
 }

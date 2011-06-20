@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Palaso.WritingSystems;
@@ -207,6 +208,15 @@ namespace Palaso.WritingSystems
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;
+
+			if (_idChangeMap.Any(p => p.Value == ws.StoreID))
+			{
+				// log this id change to the writing system change log
+				var pair = _idChangeMap.First(p => p.Value == ws.StoreID);
+				string logPath = Path.Combine(PathToWritingSystems, "idchangelog.xml");
+				var changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(logPath));
+				changeLog.LogChange(pair.Key, pair.Value);
+			}
 		}
 
 		override public void Remove(string identifier)
@@ -240,7 +250,7 @@ namespace Palaso.WritingSystems
 
 		override public void Save()
 		{
-			//delete anything we're going to delete first, to prevent loosing
+			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
 			List<string> idsToRemove = new List<string>();
@@ -276,16 +286,7 @@ namespace Palaso.WritingSystems
 				}
 			}
 
-			// log all id changes to the writing system change log
-			string logPath = Path.Combine(PathToWritingSystems, "idchangelog.xml");
-			var changeLog = WritingSystemChangeLogDataMapper.ReadOrNew(logPath);
 
-
-			foreach (var pair in _idChangeMap)
-			{
-				changeLog.Set(pair.Key, pair.Value, producer, version);
-			}
-			WritingSystemChangeLogDataMapper.Write(logPath, changeLog);
 			LoadIdChangeMapFromExistingWritingSystems();
 		}
 
