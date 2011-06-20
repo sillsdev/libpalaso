@@ -22,7 +22,7 @@ namespace Palaso.WritingSystems
 			var assembly = Assembly.GetEntryAssembly();
 			if (assembly != null)
 			{
-				return assembly.FullName;
+				return assembly.GetName().Name;
 			}
 			return "???";
 		}

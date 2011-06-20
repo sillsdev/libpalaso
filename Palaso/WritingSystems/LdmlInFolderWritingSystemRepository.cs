@@ -14,6 +14,7 @@ namespace Palaso.WritingSystems
 		private const string _kExtension = ".ldml";
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
+		private WritingSystemChangeLog _changeLog;
 
 		public static int LatestVersion
 		{
@@ -32,6 +33,7 @@ namespace Palaso.WritingSystems
 			Directory.CreateDirectory(p);
 			PathToWritingSystems = p;
 			LoadAllDefinitions();
+			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
 		}
 
 		/// <summary>
@@ -42,6 +44,7 @@ namespace Palaso.WritingSystems
 		{
 			PathToWritingSystems = path;
 			LoadAllDefinitions();
+			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
 		}
 
 		public string PathToWritingSystems
@@ -213,9 +216,11 @@ namespace Palaso.WritingSystems
 			{
 				// log this id change to the writing system change log
 				var pair = _idChangeMap.First(p => p.Value == ws.StoreID);
-				string logPath = Path.Combine(PathToWritingSystems, "idchangelog.xml");
-				var changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(logPath));
-				changeLog.LogChange(pair.Key, pair.Value);
+				_changeLog.LogChange(pair.Key, pair.Value);
+			} else
+			{
+				// log this addition
+				_changeLog.LogAdd(ws.StoreID);
 			}
 		}
 
@@ -241,6 +246,8 @@ namespace Palaso.WritingSystems
 				File.Move(GetFilePathFromIdentifier(identifier), destination);
 			}
 			base.Remove(identifier);
+			_changeLog.LogDelete(identifier);
+
 		}
 
 		private string PathToWritingSystemTrash()
