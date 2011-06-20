@@ -577,7 +577,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRegion
 		{
-			get { return  CurrentDefinition==null? string.Empty : (CurrentDefinition.Region ?? string.Empty); }
+			get { return  CurrentDefinition==null ? string.Empty : (CurrentDefinition.Region ?? string.Empty); }
 			set
 			{
 				if (CurrentDefinition.Region != value)
@@ -863,6 +863,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					OnCurrentItemUpdated();
 				}
 			}
+		}
+
+		// This is currently only useful for setting the region combobox, since it is expecting an IANASubtag
+		public StandardTags.IanaSubtag CurrentRegionTag
+		{
+			get
+			{
+				if (CurrentDefinition == null)
+				{
+					return null;
+				}
+				return StandardTags.ValidIso3166Regions.FirstOrDefault(regionInfo => regionInfo.Subtag == CurrentRegion);
+			}
+			set { throw new NotImplementedException(); }
 		}
 
 		#endregion

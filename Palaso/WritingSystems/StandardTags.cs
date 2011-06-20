@@ -16,6 +16,11 @@ namespace Palaso.WritingSystems
 				Description = description;
 			}
 
+			public override string ToString()
+			{
+				return Description;
+			}
+
 			public string Type { get; private set; }
 
 			public string Subtag { get; private set; }

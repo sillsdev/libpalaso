@@ -60,8 +60,6 @@
 			this._scriptCombo.Name = "_scriptCombo";
 			this._scriptCombo.Size = new System.Drawing.Size(161, 21);
 			this._scriptCombo.TabIndex = 6;
-			this.toolTip1.SetToolTip(this._scriptCombo, "If your script isn\'t listed here, you can quit this application and modify the LD" +
-					"ML file directly.");
 			this._scriptCombo.SelectedIndexChanged += new System.EventHandler(this.ScriptCombo_OnSelectedIndexChanged);
 			//
 			// _variant
@@ -129,8 +127,6 @@
 			this._regionCombo.Name = "_regionCombo";
 			this._regionCombo.Size = new System.Drawing.Size(161, 21);
 			this._regionCombo.TabIndex = 9;
-			this.toolTip1.SetToolTip(this._regionCombo, "If your script isn\'t listed here, you can quit this application and modify the LD" +
-					"ML file directly.");
 			this._regionCombo.SelectedIndexChanged += new System.EventHandler(this.RegionCombo_OnSelectedIndexChanged);
 			//
 			// ScriptRegionVariantView
