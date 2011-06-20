@@ -97,7 +97,6 @@ namespace Palaso.WritingSystems
 				{
 					bool badFileName = true;
 					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x", StringComparison.OrdinalIgnoreCase))
-			LoadIdChangeMapFromExistingWritingSystems();
 					{
 						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
@@ -116,6 +115,7 @@ namespace Palaso.WritingSystems
 				}
 				Set(wsFromFile);
 			}
+			LoadIdChangeMapFromExistingWritingSystems();
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
