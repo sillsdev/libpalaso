@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
 
@@ -25,7 +21,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			public override string ToString()
 			{
-				return _descriptor.ShortName;
+				return _descriptor.LongName;
 			}
 		}
 
@@ -99,9 +95,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			}
 			Enabled = true;
-			if (_model.CurrentKeyboard != _keyboardComboBox.Text)
+			var currentKeyboard = _keyboardComboBox.SelectedItem as KeyboardAdapter;
+
+			if (currentKeyboard == null || _model.CurrentKeyboard != currentKeyboard.Id)
 			{
-				_keyboardComboBox.Text = _model.CurrentKeyboard;
+				foreach(var item in _keyboardComboBox.Items)
+				{
+					var keyboard = item as KeyboardAdapter;
+					if (keyboard.Id == _model.CurrentKeyboard)
+					{
+						_keyboardComboBox.SelectedItem = keyboard;
+						break;
+					}
+				}
 			}
 			SetTestAreaFont();
 		}

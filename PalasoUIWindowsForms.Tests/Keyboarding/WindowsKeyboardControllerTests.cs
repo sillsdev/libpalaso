@@ -77,14 +77,26 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
+		public void WindowsIME_ActivateKeyboardUsingId_ReportsItWasActivated()
+		{
+			RequiresWindowsIME();
+			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
+			Assert.Greater(keyboards.Count, 0, "This test requires that the Windows IME has at least one language installed.");
+			KeyboardController.KeyboardDescriptor d = keyboards[0];
+			KeyboardController.ActivateKeyboard(d.Id);
+			Assert.AreEqual(d.Id, KeyboardController.GetActiveKeyboard());
+		}
+
+		[Test]
+		[Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboardUsingShortName_ReportsItWasActivated()
 		{
 			RequiresWindowsIME();
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
 			Assert.Greater(keyboards.Count, 0, "This test requires that the Windows IME has at least one language installed.");
 			KeyboardController.KeyboardDescriptor d = keyboards[0];
 			KeyboardController.ActivateKeyboard(d.ShortName);
-			Assert.AreEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
+			Assert.AreEqual(d.Id, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]

@@ -41,15 +41,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		static private InputLanguage FindInputLanguage(string name)
 		{
+			var split = name.Split(new[]{'-'}, 2);
+			string layoutName = split[0];
+			string localeName = split.Length >= 2 ? split[1] : String.Empty;
+			var possibles = new List<InputLanguage>();
 			if (InputLanguage.InstalledInputLanguages != null) // as is the case on Linux
 			{
 				foreach (InputLanguage l in InputLanguage.InstalledInputLanguages)
 				{
-					if (l.LayoutName == name)
+					if (l.LayoutName == layoutName)
 					{
-						return l;
+						if (l.Culture.IetfLanguageTag == localeName)
+						{
+							return l;
+						}
+						possibles.Add(l);
 					}
 				}
+			}
+			if (possibles.Count > 0)
+			{
+				return possibles[0];
 			}
 			return null;
 		}
@@ -69,9 +81,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 						// particular layout from a locale which has multiple layouts.  Also, different users
 						// may have the layout, but under a different locale, so just recording the layoutname as the
 						// Id allows us to work with that.
-						//descriptor.Id = String.Format("{0}-{1}", lang.Culture.IetfLanguageTag, lang.LayoutName);
-						descriptor.Id = lang.LayoutName;
-						descriptor.LongName = String.Format("{0} - {1}", lang.Culture.DisplayName, lang.LayoutName);
+						//descriptor.Id = lang.LayoutName;
+						descriptor.Id = MakeDescriptorId(lang);
+						descriptor.LongName = String.Format("{0} - {1}", lang.LayoutName, lang.Culture.DisplayName);
 						descriptor.engine = KeyboardController.Engines.Windows;
 						if (descriptors.Find(a => a.Id == descriptor.Id) == null)
 						{
@@ -85,6 +97,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				return descriptors;
 			}
+		}
+
+		private static string MakeDescriptorId(InputLanguage lang)
+		{
+			return String.Format("{0}-{1}", lang.LayoutName, lang.Culture.IetfLanguageTag);
 		}
 
 		public static bool EngineAvailable
@@ -103,7 +120,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
+				Reporting.ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
 			}
 		}
 
@@ -113,14 +130,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				InputLanguage lang = InputLanguage.CurrentInputLanguage;
 				if (null == lang)
+				{
 					return null;
-				else
-					return lang.LayoutName;
+				}
+				return MakeDescriptorId(lang);
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show(
-					"There was a problem retrieving the active keyboard in from windows ime.");
+				Reporting.ProblemNotificationDialog.Show(
+					"There was a problem retrieving the active keyboard in from windows ime."
+				);
 			}
 			return null;
 		}
