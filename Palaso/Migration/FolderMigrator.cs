@@ -88,7 +88,7 @@ namespace Palaso.Migration
 				);
 				Directory.CreateDirectory(destinationPath);
 				// Migrate all the files of the current version
-				foreach (var filePath in Directory.GetFiles(currentPath))
+				foreach (var filePath in Directory.GetFiles(currentPath, SearchPattern))
 				{
 					string fileName = Path.GetFileName(filePath);
 					if (fileName == null)

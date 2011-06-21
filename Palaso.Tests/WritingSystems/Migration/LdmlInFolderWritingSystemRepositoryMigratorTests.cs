@@ -112,6 +112,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 			}
 		}
 
+
 		[Test]
 		public void Migrate_WritingSystemRepositoryContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWs_DuplicateWsAreDisambiguated()
 		{
@@ -1236,6 +1237,40 @@ namespace Palaso.Tests.WritingSystems.Migration
 			}
 		}
 		#endregion
+
+		#region ChangeLog Tests
+
+		[Test]
+		public void Migrate_WritingSystemRepositoryNeedsMigrating_WSChangeLogUpdated()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("en-bogus.ldml",
+										  LdmlContentForTests.Version0("en-bogus", "", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath,
+																			   environment.OnMigrateCallback);
+				migrator.Migrate();
+				string idChangeLogFilePath = Path.Combine(environment.LdmlPath, "idchangelog.xml");
+				AssertThatXmlIn.File(idChangeLogFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change[From/text()='en-bogus' and To/text()='en-x-bogus']");
+			}
+		}
+
+		[Test]
+		public void Migrate_WritingSystemRepositoryNoNeedForMigration_WSChangeLogDoesntExist()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("en.ldml",
+										  LdmlContentForTests.Version0("en", "", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath,
+																			   environment.OnMigrateCallback);
+				migrator.Migrate();
+				string idChangeLogFilePath = Path.Combine(environment.LdmlPath, "idchangelog.xml");
+				Assert.IsFalse(File.Exists(idChangeLogFilePath));
+			}
+		}
+
+		# endregion
 
 		private void AssertThatLdmlMatches(string language, string script, string territory, string variant, string filePath)
 		{

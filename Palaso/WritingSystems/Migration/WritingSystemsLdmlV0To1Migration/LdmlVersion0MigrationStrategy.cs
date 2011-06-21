@@ -35,13 +35,15 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private readonly List<MigrationInfo> _migrationInfo;
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
 		private readonly OnMigrationFn _onMigrationCallback;
+		private IAuditTrail _auditLog;
 
-		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback) :
+		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog) :
 			base(0, 1)
 		{
 			_migrationInfo = new List<MigrationInfo>();
 			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();
 			_onMigrationCallback = onMigrationCallback;
+			_auditLog = auditLog;
 		}
 
 		public override void Migrate(string sourceFilePath, string destinationFilePath)
@@ -126,6 +128,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				var writingSystemDefinitionV1 = _writingSystemsV1[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
 				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.RfcTagAfterMigration + ".ldml");
+				if (migrationInfo.RfcTagBeforeMigration != migrationInfo.RfcTagAfterMigration)
+				{
+					_auditLog.LogChange(migrationInfo.RfcTagBeforeMigration, migrationInfo.RfcTagAfterMigration);
+				}
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
 			_onMigrationCallback(_migrationInfo);

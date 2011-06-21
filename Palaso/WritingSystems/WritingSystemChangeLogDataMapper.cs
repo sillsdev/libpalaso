@@ -213,6 +213,13 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("log");
 			}
+			if (!File.Exists(FilePath))
+			{
+				string logDirectory = Path.GetDirectoryName(FilePath);
+				Directory.CreateDirectory(logDirectory);
+			}
+
+
 			using (var streamWriter = new StreamWriter(FilePath))
 			{
 				using (var writer = XmlWriter.Create(streamWriter, CanonicalXmlSettings.CreateXmlWriterSettings()))

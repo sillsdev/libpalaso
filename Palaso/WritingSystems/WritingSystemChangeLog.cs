@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Palaso.WritingSystems
 {
-	public class WritingSystemChangeLog
+	public class WritingSystemChangeLog : IAuditTrail
 	{
 		private List<WritingSystemLogEvent> _logEvents;
 		private IWritingSystemChangeLogDataMapper _dataMapper;
@@ -92,6 +92,15 @@ namespace Palaso.WritingSystems
 		{
 			_logEvents.Add(logEvent);
 		}
+	}
+
+	public interface IAuditTrail
+	{
+		void LogChange(string from, string to);
+		void LogAdd(string id);
+		void LogDelete(string id);
+		string GetChangeFor(string id);
+		bool HasChangeFor(string id);
 	}
 
 	public class NullDataMapper : IWritingSystemChangeLogDataMapper

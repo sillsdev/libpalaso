@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Palaso.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -14,7 +15,10 @@ namespace Palaso.WritingSystems.Migration
 			AddVersionStrategy(new WritingSystemLdmlVersionGetter());
 			AddVersionStrategy(new DefaultVersion(0, 0));
 
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback));
+			var auditLog =
+				new WritingSystemChangeLog(
+					new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml")));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog));
 		}
 
 		public void Migrate()
