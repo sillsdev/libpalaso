@@ -582,6 +582,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (CurrentDefinition.Region != value)
 				{
+					if (String.IsNullOrEmpty(CurrentDefinition.ISO639))
+					{
+						CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+					}
 					CurrentDefinition.Region = value;
 					OnCurrentItemUpdated();
 				}
@@ -628,6 +632,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (CurrentDefinition.Script != value)
 				{
+					if(String.IsNullOrEmpty(CurrentDefinition.ISO639))
+					{
+						CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+					}
 					CurrentDefinition.Script = value;
 					OnCurrentItemUpdated();
 				}
@@ -642,6 +650,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				Guard.AgainstNull(CurrentDefinition,"CurrentDefinition");
 				if (CurrentDefinition.IsVoice != value)
 				{
+					if(String.IsNullOrEmpty(CurrentDefinition.ISO639))
+					{
+						CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+					}
 					CurrentDefinition.IsVoice = value;
 					OnCurrentItemUpdated();
 				}
@@ -658,7 +670,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					try
 					{
-						CurrentDefinition.Variant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
+						var fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
+						if (String.IsNullOrEmpty(CurrentDefinition.ISO639) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+						{
+							CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+						}
+						CurrentDefinition.Variant = fixedVariant;
 						OnCurrentItemUpdated();
 					}
 					catch (ArgumentException e)
@@ -830,7 +847,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					return SelectionsForSpecialCombo.Ipa;
 				}
-				if (_currentWritingSystem.ISO639 == "qaa")
+				if (_currentWritingSystem.ISO639 == WellKnownSubTags.Unlisted.Language)
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
 
@@ -859,6 +876,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				Guard.AgainstNull(_currentWritingSystem, "CurrentWritingSystem");
 				if (_currentWritingSystem.IpaStatus != value)
 				{
+					if(String.IsNullOrEmpty(_currentWritingSystem.ISO639))
+					{
+						_currentWritingSystem.ISO639 = WellKnownSubTags.Unlisted.Language;
+					}
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
 				}
@@ -1021,7 +1042,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if(ws==null)//cancelled
 				return;
 
-			if (ws.Abbreviation == "qaa") // special case for Unlisted Language
+			if (ws.Abbreviation == WellKnownSubTags.Unlisted.Language) // special case for Unlisted Language
 			{
 				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
 			}

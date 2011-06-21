@@ -531,7 +531,7 @@ namespace Palaso.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = RFC5646.Equals("qaa", StringComparison.OrdinalIgnoreCase);
+				bool languageIsUnknown = RFC5646.Equals(WellKnownSubTags.Unlisted.Language, StringComparison.OrdinalIgnoreCase);
 				if (!String.IsNullOrEmpty(RFC5646) && !languageIsUnknown)
 				{
 					return RFC5646;
@@ -922,6 +922,11 @@ namespace Palaso.WritingSystems
 
 	public class WellKnownSubTags
 	{
+		public class Unlisted
+		{
+			public const string Language = "qaa";
+		}
+
 		public class Unwritten
 		{
 			public const string Script = "Zxxx";
