@@ -71,9 +71,9 @@
 	<ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="LiftIO, Version=1.1.32.0, Culture=neutral, processorArchitecture=MSIL">
+	<Reference Include="Commons.Xml.Relaxng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\LiftIO.dll</HintPath>
+	  <HintPath>..\lib\common\Commons.Xml.Relaxng.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core">
@@ -91,20 +91,56 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="CommonEnumerations.cs" />
+	<Compile Include="Exceptions.cs" />
 	<Compile Include="FlagState.cs" />
 	<Compile Include="ILiftReader.cs" />
 	<Compile Include="ILiftReaderWriterProvider.cs" />
 	<Compile Include="ILiftWriter.cs" />
 	<Compile Include="LiftDataMapper.cs" />
+	<Compile Include="Merging\LiftChangeDetector.cs" />
+	<Compile Include="Merging\SynchronicMerger.cs" />
 	<Compile Include="Migration\LiftPreparer.cs" />
+	<Compile Include="Migration\Migrator.cs" />
 	<Compile Include="MultiText.cs" />
 	<Compile Include="Options\Option.cs" />
 	<Compile Include="Options\OptionRef.cs" />
 	<Compile Include="Options\OptionRefCollection.cs" />
 	<Compile Include="Options\OptionsList.cs" />
 	<Compile Include="PalasoDataObject.cs" />
+	<Compile Include="Parsing\Annotation.cs" />
+	<Compile Include="Parsing\Extensible.cs" />
+	<Compile Include="Parsing\ILexiconMerger.cs" />
+	<Compile Include="Parsing\ILiftMergerTestSuite.cs" />
+	<Compile Include="Parsing\Objects\LiftAnnotation.cs" />
+	<Compile Include="Parsing\Objects\LiftEntry.cs" />
+	<Compile Include="Parsing\Objects\LiftEtymology.cs" />
+	<Compile Include="Parsing\Objects\LiftExample.cs" />
+	<Compile Include="Parsing\Objects\LiftField.cs" />
+	<Compile Include="Parsing\LiftMultiText.cs" />
+	<Compile Include="Parsing\Objects\LiftGrammaticalInfo.cs" />
+	<Compile Include="Parsing\Objects\LiftNote.cs" />
+	<Compile Include="Parsing\Objects\LiftObject.cs" />
+	<Compile Include="Parsing\LiftParser.cs" />
+	<Compile Include="Parsing\Objects\LiftPhonetic.cs" />
+	<Compile Include="Parsing\Objects\LiftRelation.cs" />
+	<Compile Include="Parsing\Objects\LiftReversal.cs" />
+	<Compile Include="Parsing\Objects\LiftSense.cs" />
+	<Compile Include="Parsing\Objects\LiftTrait.cs" />
+	<Compile Include="Parsing\Objects\LiftTranslation.cs" />
+	<Compile Include="Parsing\Objects\LiftUrlRef.cs" />
+	<Compile Include="Parsing\Objects\LiftVariant.cs" />
+	<Compile Include="Parsing\Trait.cs" />
 	<Compile Include="PictureRef.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="Utilities.cs" />
+	<Compile Include="Validation\Validator.cs" />
+	<Compile Include="Merging\xmldiff\DiffConfiguration.cs" />
+	<Compile Include="Merging\xmldiff\Difference.cs" />
+	<Compile Include="Merging\xmldiff\Differences.cs" />
+	<Compile Include="Merging\xmldiff\DifferenceType.cs" />
+	<Compile Include="Merging\xmldiff\DiffResult.cs" />
+	<Compile Include="Merging\xmldiff\XmlDiff.cs" />
+	<Compile Include="Merging\xmldiff\XmlInput.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
@@ -128,6 +164,18 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl" />
+	<EmbeddedResource Include="Migration\LIFT-0.11-0.12.xsl" />
+	<EmbeddedResource Include="Migration\LIFT-0.12-0.13.xsl" />
+	<EmbeddedResource Include="Migration\ReverseLIFT-0.13-0.12.xsl" />
+  </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="Validation\lift-0.10.rng" />
+	<EmbeddedResource Include="Validation\lift-0.11.rng" />
+	<EmbeddedResource Include="Validation\lift-0.12.rng" />
+	<EmbeddedResource Include="Validation\lift.rng" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

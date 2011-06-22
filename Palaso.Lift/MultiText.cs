@@ -4,13 +4,10 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using LiftIO;
+using Palaso.Lift.Parsing;
 using Palaso.Text;
 using Palaso.Extensions;
-using LiftIO.Parsing;
 using System.Linq;
-using LiftIO.Parsing;
-using Palaso.Text;
 
 //using Exortech.NetReflector;
 //using Exortech.NetReflector.Util;
