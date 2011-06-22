@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using LiftIO;
-using LiftIO.Validation;
 using Palaso.DictionaryServices.Lift;
+using Palaso.Lift;
 using Palaso.Lift.Migration;
+using Palaso.Lift.Validation;
 using Palaso.Progress;
 using Palaso.Reporting;
 

@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using LiftIO.Parsing;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Lift.Parsing;
 using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Lift
@@ -302,7 +302,8 @@ namespace Palaso.DictionaryServices.Lift
 										string parent,
 										LiftMultiText description,
 										LiftMultiText label,
-										LiftMultiText abbrev) {}
+										LiftMultiText abbrev,
+										string rawXml) {}
 
 		public void ProcessFieldDefinition(string tag, LiftMultiText description) {}
 

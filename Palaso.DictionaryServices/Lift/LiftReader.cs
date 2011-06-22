@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using LiftIO.Parsing;
-using LiftIO.Validation;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Lift.Parsing;
+using Palaso.Lift.Validation;
 using Palaso.Progress;
 using Palaso.Reporting;
 
@@ -95,7 +95,7 @@ namespace Palaso.DictionaryServices.Lift
 		private void parser_ParsingWarning(object sender,
 										   LiftParser
 												   <PalasoDataObject, LexEntry, LexSense,
-												   LexExampleSentence>.ErrorArgs e)
+											   LexExampleSentence>.ErrorArgs e)
 		{
 			_progressState.ExceptionThatWasEncountered = e.Exception;
 		}

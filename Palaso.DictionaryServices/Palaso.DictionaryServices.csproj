@@ -74,10 +74,6 @@
 	<Reference Include="Commons.Xml.Relaxng">
 	  <HintPath>..\lib\common\Commons.Xml.Relaxng.dll</HintPath>
 	</Reference>
-	<Reference Include="LiftIO, Version=1.1.32.0, Culture=neutral, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\LiftIO.dll</HintPath>
-	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using LiftIO.Parsing;
 using Palaso.Lift;
 using Palaso.Reporting;
 
