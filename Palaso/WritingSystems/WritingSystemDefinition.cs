@@ -96,8 +96,9 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		/// <param name="ws">The ws.</param>
 		public WritingSystemDefinition(WritingSystemDefinition ws)
-			: this(ws._rfcTag.Language, ws._rfcTag.Script, ws._rfcTag.Region, ws._rfcTag.Variant, ws._abbreviation, ws._rightToLeftScript)
 		{
+			_abbreviation = ws._abbreviation;
+			_rightToLeftScript = ws._rightToLeftScript;
 			_defaultFontName = ws._defaultFontName;
 			_defaultFontSize = ws._defaultFontSize;
 			_keyboard = ws._keyboard;
@@ -176,6 +177,11 @@ namespace Palaso.WritingSystems
 				if (IpaStatus == value)
 				{
 					return;
+				}
+				//We need this to make sure that our language tag won't start with the variant "fonipa"
+				if(_rfcTag.Language == "")
+				{
+					_rfcTag.Language = WellKnownSubTags.Unlisted.Language;
 				}
 				_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 				/* "There are some variant subtags that have no prefix field,

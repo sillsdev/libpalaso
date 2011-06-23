@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.WritingSystems;
@@ -42,7 +43,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
-			if(string.IsNullOrEmpty(primary.ISO639))
+			if(string.IsNullOrEmpty(primary.ISO639) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				yield break;
 
 			if(SuppressSuggestionsForMajorWorldLanguages

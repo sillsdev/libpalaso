@@ -1084,5 +1084,39 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("en", writingSystem.Abbreviation);
 		}
 
+		[Test]
+		public void IpaStatus_SetToIpaRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
+		{
+			var writingSystem = new WritingSystemDefinition("x-bogus");
+			writingSystem.IpaStatus = IpaStatusChoices.Ipa;
+			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.ISO639);
+			Assert.AreEqual("qaa-fonipa-x-bogus", writingSystem.RFC5646);
+		}
+
+		[Test]
+		public void IpaStatus_SetToPhoneticRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
+		{
+			var writingSystem = new WritingSystemDefinition("x-bogus");
+			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.ISO639);
+			Assert.AreEqual("qaa-fonipa-x-bogus-etic", writingSystem.RFC5646);
+		}
+
+		[Test]
+		public void IpaStatus_SetToPhonemicRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
+		{
+			var writingSystem = new WritingSystemDefinition("x-bogus");
+			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.ISO639);
+			Assert.AreEqual("qaa-fonipa-x-bogus-emic", writingSystem.RFC5646);
+		}
+
+
+		[Test]
+		public void CloneContructor_VariantStartsWithxDash_VariantIsCopied()
+		{
+			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("x-bogus"));
+			Assert.AreEqual("x-bogus", writingSystem.RFC5646);
+		}
 	}
 }

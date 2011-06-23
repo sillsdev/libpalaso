@@ -56,7 +56,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		public DialectSuggestion(WritingSystemDefinition primary)
 		{
 			_templateDefinition = primary.Clone();
-			_templateDefinition.Variant = string.Empty;
 			this.Label = string.Format("new dialect of {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
@@ -78,7 +77,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public IpaSuggestion(WritingSystemDefinition primary)
 		{
-			_templateDefinition = new WritingSystemDefinition(primary.ISO639, string.Empty, primary.Region, string.Empty, "ipa", false)
+			_templateDefinition = new WritingSystemDefinition(primary.ISO639, "", primary.Region, primary.Variant, "ipa", false)
 									  {
 										  LanguageName = primary.LanguageName,
 										  DefaultFontSize = primary.DefaultFontSize,
