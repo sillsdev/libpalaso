@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 using System.Linq;
+using Palaso.WritingSystems.Migration;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -37,7 +38,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 #else
 			System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
 			b.LoadDataFromCultureInfo(language.Culture);
-			return b.TwoLetterISORegionName;
+			return b.TwoLetterISORegionName ?? String.Empty;
 #endif
 		}
 
@@ -65,15 +66,25 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				var name = TrimOffCountryNameOfMajorLanguage(language);
 
-				WritingSystemDefinition def =
+				var cleaner = new Rfc5646TagCleaner(language.Culture.TwoLetterISOLanguageName, "", region, "", "");
+				cleaner.Clean();
 
-					new WritingSystemDefinition(language.Culture.TwoLetterISOLanguageName, "", region, "", language.Culture.ThreeLetterISOLanguageName,
-												language.Culture.TextInfo.IsRightToLeft);
+				var def = new WritingSystemDefinition(
+					cleaner.Language,
+					cleaner.Script,
+					cleaner.Region,
+					WritingSystemDefinition.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
+					language.Culture.ThreeLetterISOLanguageName,
+					language.Culture.TextInfo.IsRightToLeft);
 				def.NativeName = language.Culture.NativeName;
 				def.Keyboard = language.LayoutName;
 				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
 				def.SortRules = language.Culture.IetfLanguageTag;
 				def.DefaultFontSize = 12;
+				if(def.LanguageName == "Unknown Language")
+				{
+					def.LanguageName = language.Culture.DisplayName;
+				}
 				yield return def;
 			}
 		}
