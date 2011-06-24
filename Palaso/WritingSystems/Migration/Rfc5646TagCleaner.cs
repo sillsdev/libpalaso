@@ -222,6 +222,12 @@ namespace Palaso.WritingSystems.Migration
 				_privateUseSubTag.AddToSubtag(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 
+			// If the language tag starts with x- , then move then entire tag to private use
+			if (Language.StartsWith("x-"))
+			{
+				MoveTagsMatching(_languageSubTag, _privateUseSubTag, (s) => true);
+			}
+
 			// Move script, region, and variant present in the langauge tag to their proper subtag.
 			MoveTagsMatching(_languageSubTag, _scriptSubTag, StandardTags.IsValidIso15924ScriptCode, StandardTags.IsValidIso639LanguageCode);
 			MoveTagsMatching(_languageSubTag, _regionSubTag, StandardTags.IsValidIso3166Region, StandardTags.IsValidIso639LanguageCode);

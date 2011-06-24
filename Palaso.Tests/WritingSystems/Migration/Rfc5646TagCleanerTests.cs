@@ -44,5 +44,29 @@ namespace Palaso.Tests.WritingSystems.Migration
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Latn-x-wee"));
 		}
+
+		[Test]
+		public void CompleteTagConstructor_XDashBeforeValidLanguageName_NoChange()
+		{
+			var cleaner = new Rfc5646TagCleaner("x-de");
+			cleaner.Clean();
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("x-de"));
+		}
+
+		[Test]
+		public void CompleteTagConstructor_XDashBeforeString_NoChange()
+		{
+			var cleaner = new Rfc5646TagCleaner("x-blah");
+			cleaner.Clean();
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("x-blah"));
+		}
+
+		[Test]
+		public void CompleteTagConstructor_QaaWithXDashBeforeValidLanguageName_NoChange()
+		{
+			var cleaner = new Rfc5646TagCleaner("qaa-x-th");
+			cleaner.Clean();
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-x-th"));
+		}
 	}
 }
