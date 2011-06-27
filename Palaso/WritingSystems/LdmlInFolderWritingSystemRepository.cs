@@ -110,10 +110,11 @@ namespace Palaso.WritingSystems
 					}
 					if(badFileName)
 					{
-						throw new ApplicationException(
-								String.Format(
-									"The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.",
-									filePath));
+						//Sometimes Flex produces bad filenames (particularly for x-Zxxx-x-audio) so we're letting this slide
+						//throw new ApplicationException(
+						//        String.Format(
+						//            "The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.",
+						//            filePath));
 					}
 				}
 				Set(wsFromFile);

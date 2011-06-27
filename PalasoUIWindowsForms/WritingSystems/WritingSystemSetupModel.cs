@@ -650,10 +650,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				Guard.AgainstNull(CurrentDefinition,"CurrentDefinition");
 				if (CurrentDefinition.IsVoice != value)
 				{
-					if(String.IsNullOrEmpty(CurrentDefinition.ISO639))
-					{
-						CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
-					}
 					CurrentDefinition.IsVoice = value;
 					OnCurrentItemUpdated();
 				}

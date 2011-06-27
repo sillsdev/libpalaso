@@ -44,6 +44,45 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual("1901-biske-fonipa", ws.Variant);
 		}
 
+
+		[Test]
+		public void IpaStatus_SetToPhoneticOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-etic"));
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToIpaOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private"));
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToPhonemicOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-emic"));
+		}
+
 		[Test]
 		public void IpaStatus_VariantSetWithNumerousVariantIpaWasAlreadyIpa_VariantIsSet()
 		{

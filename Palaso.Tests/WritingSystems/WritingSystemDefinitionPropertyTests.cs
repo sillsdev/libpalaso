@@ -863,6 +863,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void IsVoice_SetToTrueOnEntirelyPrivateUseLanguageTag_markerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IsVoice = true;
+			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(WellKnownSubTags.Unwritten.Script));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("x-private-audio"));
+		}
+
+		[Test]
 		public void IsVoice_SetToFalseWhileIpaStatusIsIpa_IpaStatusIsIpa()
 		{
 			var ws = new WritingSystemDefinition();
