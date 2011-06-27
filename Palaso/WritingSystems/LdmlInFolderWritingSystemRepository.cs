@@ -76,7 +76,7 @@ namespace Palaso.WritingSystems
 			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(identifier));
 		}
 
-		private static string GetFileNameFromIdentifier(string identifier)
+		protected static string GetFileNameFromIdentifier(string identifier)
 		{
 			return identifier + _kExtension;
 		}
