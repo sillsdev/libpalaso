@@ -19,6 +19,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_PrivateUseContainsMultipleXs_RemovesExtraXs()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("","","","x-x-x-audio");
+			AssertThatPropertiesAreSet("", "", "", "x-audio", interpreter);
+		}
+
+		[Test]
 		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguageScript_IsConvertedCorrectly()
 		{
 			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
@@ -56,6 +64,38 @@ namespace Palaso.Tests.WritingSystems
 			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-x-private");
 			AssertThatPropertiesAreSet("", "", "", "x-en-private", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_xDashZxxxDashXDashAudio_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-Zxxx-x-AUDIO");
+			AssertThatPropertiesAreSet("qaa", "Zxxx", "", "x-AUDIO", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_PrivateUseContainsDuplicates_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-x-private-private");
+			AssertThatPropertiesAreSet("", "", "", "x-en-private", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguageSubtagTogetherWithPrivateUseContainsDuplicates_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en-x-en");
+			AssertThatPropertiesAreSet("", "", "", "x-en", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_xDashXDashZxxxDashAudio_IsConvertedCorrectly()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-x-Zxxx-AUDIO");
+			AssertThatPropertiesAreSet("qaa", "Zxxx", "", "x-AUDIO", interpreter);
 		}
 
 		private void AssertThatPropertiesAreSet(string language, string script, string region, string variant, FlexConformPrivateUseRfc5646TagInterpreter interpreter)

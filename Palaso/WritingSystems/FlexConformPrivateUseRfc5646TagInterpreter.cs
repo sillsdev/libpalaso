@@ -30,7 +30,9 @@ namespace Palaso.WritingSystems
 			{
 				WritingSystemDefinition.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 			}
-			newPrivateUse = String.Join("-", new[] { language, newPrivateUse }.Select(t => t).Where(str => !String.IsNullOrEmpty(str)).ToArray());
+			var privateUseSubtagsWithoutXs = StripXs(newPrivateUse);
+			var languageSubtagsWithoutXs = StripXs(language);
+			newPrivateUse = String.Join("-", (languageSubtagsWithoutXs.Union(privateUseSubtagsWithoutXs)).Where(str=>!String.IsNullOrEmpty(str)).ToArray());
 
 			_variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
@@ -41,6 +43,11 @@ namespace Palaso.WritingSystems
 			{
 				_language = "qaa";
 			}
+		}
+
+		private string[] StripXs(string newPrivateUse)
+		{
+			return newPrivateUse.Split('-').Where(str => !str.Equals("x", StringComparison.OrdinalIgnoreCase)).ToArray();
 		}
 
 		public void ConvertToPalasoConformPrivateUseRfc5646Tag(string flexConformPrivateUseRfc5646Tag)
@@ -95,13 +102,9 @@ namespace Palaso.WritingSystems
 				{
 					variant = variant + currentToken;
 				}
-				else if (currentToken.Equals("x", StringComparison.OrdinalIgnoreCase))
+				else
 				{
-					privateUse = currentToken;
-				}
-				else if (!String.IsNullOrEmpty(privateUse))
-				{
-					privateUse = privateUse + '-' + currentToken;
+					privateUse = String.IsNullOrEmpty(privateUse) ? currentToken : privateUse + '-' + currentToken;
 				}
 			}
 			variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(variant, privateUse);
