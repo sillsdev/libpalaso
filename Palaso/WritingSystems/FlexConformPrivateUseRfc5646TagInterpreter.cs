@@ -6,6 +6,11 @@ using Palaso.Data;
 
 namespace Palaso.WritingSystems
 {
+	//This is different from the algorithm used by the RfcTagCleaner because Flex puts Wellknown Scripts, Regions and Properties behind
+	//the private use "x-" marker and expects them to be treated as if non-private use. So while the Rfc5646TagCleaner would simply move
+	//"x-en-Zxxx-US-fonipa-private" to private use, this class converts it to "qaa-Zxxx-US-fonipa-x-private-en".
+	//Also this class tries to move any private use language subtag (starts with "x-" as per flex) to be the first private use tag when
+	//rearranged
 	public class FlexConformPrivateUseRfc5646TagInterpreter
 	{
 		private string _language = String.Empty;
