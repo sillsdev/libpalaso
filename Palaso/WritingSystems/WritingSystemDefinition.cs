@@ -225,6 +225,10 @@ namespace Palaso.WritingSystems
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
+					if(ISO639 == "")
+					{
+						ISO639 = WellKnownSubTags.Unlisted.Language;
+					}
 					Script = WellKnownSubTags.Audio.Script;
 					_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 				}

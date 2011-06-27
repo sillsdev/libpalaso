@@ -616,7 +616,8 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_Throws()
+		//this used to throw
+		public void LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_NoProblem()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -627,7 +628,26 @@ namespace Palaso.Tests.WritingSystems
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
 				// Now try to load up.
-				Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				Assert.That(environment.Collection.Contains("en"));
+			}
+		}
+
+		[Test]
+		public void Get_WritingSystemContainedInFileWithfilenameThatDoesNotMatchRfc5646Tag_ReturnsWritingSystem()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Make the filepath inconsistant
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				environment.WritingSystem.ISO639 = "en";
+				environment.Collection.SaveDefinition(environment.WritingSystem);
+				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
+
+				// Now try to load up.
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws = environment.Collection.Get("en");
+				Assert.That(ws.RFC5646, Is.EqualTo("en"));
 			}
 		}
 
