@@ -125,7 +125,7 @@ namespace Palaso.WritingSystems
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
 		{
 			WritingSystemDefinition ws = CreateNew();
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
+			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			if (File.Exists(filePath))
 			{
 				adaptor.Read(filePath, ws);
@@ -208,7 +208,7 @@ namespace Palaso.WritingSystems
 					File.Delete(previousFilePath); //!!! Should this be move to trash?
 				}
 			}
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
+			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;

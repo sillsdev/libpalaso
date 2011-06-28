@@ -473,7 +473,7 @@ namespace Palaso.WritingSystems.Collation
 						writer.WriteAttributeString(_name, _value);
 						break;
 					case XmlNodeType.Text:
-						LdmlAdaptor.WriteLdmlText(writer, _value);
+						LdmlDataMapper.WriteLdmlText(writer, _value);
 						break;
 					default:
 						Debug.Assert(false, "Unhandled Icu Data Object type");

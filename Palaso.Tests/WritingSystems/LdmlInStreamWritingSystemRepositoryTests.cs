@@ -46,7 +46,7 @@ namespace Palaso.Tests.WritingSystems
 
 			xmlWriter.WriteStartElement("someroot");
 			xmlWriter.WriteStartElement("writingsystems");
-			LdmlAdaptor adaptor = new LdmlAdaptor();
+			LdmlDataMapper adaptor = new LdmlDataMapper();
 			foreach (WritingSystemDefinition ws in writingSystems)
 			{
 				adaptor.Write(xmlWriter, ws, null);

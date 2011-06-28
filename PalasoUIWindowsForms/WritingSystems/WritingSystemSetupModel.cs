@@ -1101,7 +1101,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (!HasCurrentSelection) {
 				throw new InvalidOperationException ("Unable to export current selection when there is no current selection.");
 			}
-			LdmlAdaptor adaptor = new LdmlAdaptor ();
+			LdmlDataMapper adaptor = new LdmlDataMapper ();
 			adaptor.Write (filePath, _currentWritingSystem, null);
 		}
 
@@ -1225,7 +1225,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new ArgumentException("File does not exist.", "fileName");
 			}
-			LdmlAdaptor _adaptor = new LdmlAdaptor();
+			LdmlDataMapper _adaptor = new LdmlDataMapper();
 			WritingSystemDefinition ws = _writingSystemRepository.CreateNew();
 			_adaptor.Read(fileName, ws);
 			WritingSystemDefinitions.Add(ws);

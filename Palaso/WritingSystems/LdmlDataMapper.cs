@@ -12,12 +12,12 @@ using Palaso.Xml;
 
 namespace Palaso.WritingSystems
 {
-	public class LdmlAdaptor
+	public class LdmlDataMapper
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
 		private bool _wsIsFlexPrivateUse;
 
-		public LdmlAdaptor()
+		public LdmlDataMapper()
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
 		}

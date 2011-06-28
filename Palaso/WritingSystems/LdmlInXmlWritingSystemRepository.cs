@@ -23,7 +23,7 @@ namespace Palaso.WritingSystems
 			xmlWriter.WriteStartElement("writingsystems");
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				LdmlAdaptor adaptor = CreateLdmlAdaptor();
+				LdmlDataMapper adaptor = CreateLdmlAdaptor();
 				adaptor.Write(xmlWriter, ws, null);
 			}
 			xmlWriter.WriteEndElement();
@@ -37,7 +37,7 @@ namespace Palaso.WritingSystems
 			XPathDocument xpDoc = new XPathDocument(new StreamReader(filePath));
 			XPathNavigator xpNav = xpDoc.CreateNavigator();
 			XPathNodeIterator nodes = xpNav.Select("//writingsystems/ldml");
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
+			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			foreach (XPathNavigator nav in nodes)
 			{
 				WritingSystemDefinition ws = CreateNew();
@@ -50,7 +50,7 @@ namespace Palaso.WritingSystems
 
 		public void LoadAllDefinitions(XmlReader xmlReader)
 		{
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
+			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			// Check the current node, it should be 'writingsystems'
 			if ("writingsystems" == xmlReader.Name)
 			{

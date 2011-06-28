@@ -321,7 +321,7 @@
 	<Compile Include="WritingSystems\Iso15924Script.cs" />
 	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.cs" />
-	<Compile Include="WritingSystems\LdmlAdaptor.cs" />
+	<Compile Include="WritingSystems\LdmlDataMapper.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollator.cs" />
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepository.cs" />

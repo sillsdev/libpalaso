@@ -153,7 +153,7 @@
 	<Compile Include="WritingSystems\WritingSystemChangeTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionVariantTests.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepositoryTests.cs" />
-	<Compile Include="WritingSystems\LdmlAdaptorTests.cs" />
+	<Compile Include="WritingSystems\LdmlDataMapperTests.cs" />
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlInStreamWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />

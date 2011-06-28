@@ -48,9 +48,9 @@ namespace Palaso.WritingSystems
 			return retval;
 		}
 
-		virtual protected LdmlAdaptor CreateLdmlAdaptor()
+		virtual protected LdmlDataMapper CreateLdmlAdaptor()
 		{
-			return new LdmlAdaptor();
+			return new LdmlDataMapper();
 		}
 
 		virtual public void Remove(string identifier)
