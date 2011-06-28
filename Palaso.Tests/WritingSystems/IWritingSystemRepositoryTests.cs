@@ -44,10 +44,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetTwoDefinitions_CountEquals2()
 		{
-			_writingSystem.ISO639 = "one";
+			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO639 = "two";
+			ws2.Language = "two";
 			RepositoryUnderTest.Set(ws2);
 
 			Assert.AreEqual(2, RepositoryUnderTest.Count);
@@ -70,7 +70,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetDefinitionTwice_OnlySetOnce()
 		{
-			_writingSystem.ISO639 = "one";
+			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			WritingSystemDefinition ws = new WritingSystemDefinition();
@@ -82,12 +82,12 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetDefinitionTwice_UpdatesStore()
 		{
-			_writingSystem.ISO639 = "one";
+			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "one";
+			ws1.Language = "one";
 			ws1.DefaultFontName = "one font";
 			ws1.StoreID = _writingSystem.StoreID;
 			RepositoryUnderTest.Set(ws1);
@@ -102,7 +102,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Get_StoredWithUpperCaseButRequestedUsingLowerCase_Finds()
 		{
-			_writingSystem.ISO639 = "sr";
+			_writingSystem.Language = "sr";
 			_writingSystem.Script = "Latn";
 			_writingSystem.Variant = "x-RS";
 			RepositoryUnderTest.Set(_writingSystem);
@@ -116,7 +116,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
 		{
 
-			_writingSystem.ISO639 = "sR";
+			_writingSystem.Language = "sR";
 			_writingSystem.Script = "LaTn";
 			_writingSystem.Variant = "x-rs";
 			RepositoryUnderTest.Set(_writingSystem);
@@ -127,7 +127,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Contains_FalseThenTrue()
 		{
 			Assert.IsFalse(RepositoryUnderTest.Contains("one"));
-			_writingSystem.ISO639 = "one";
+			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.IsTrue(RepositoryUnderTest.Contains("one"));
 		}
@@ -135,7 +135,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Remove_CountDecreases()
 		{
-			_writingSystem.ISO639 = "one";
+			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			RepositoryUnderTest.Remove(_writingSystem.StoreID);
@@ -146,7 +146,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanEmpty_ReturnsNoneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
@@ -162,7 +162,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanOlder_ReturnsOneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			RepositoryUnderTest.Set(ws1);
 
@@ -183,7 +183,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanNewer_ReturnsNoneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			RepositoryUnderTest.Set(ws1);
 
@@ -204,7 +204,7 @@ namespace Palaso.Tests.WritingSystems
 		public void NewerThanCheckedAlready_ReturnsNoneNewer()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			ws1.DateModified = new DateTime(2008, 1, 15);
 			RepositoryUnderTest.Set(ws1);
 
@@ -226,7 +226,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CanStoreVariants_CountTwo()
 		{
 			var ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			Assert.AreEqual("en", ws1.RFC5646);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variant = "1901";
@@ -273,7 +273,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void CanSetUnchangedDuplicate_False()
 		{
-			_writingSystem.ISO639 = "one";
+			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.IsFalse(RepositoryUnderTest.CanSet(RepositoryUnderTest.MakeDuplicate(_writingSystem)));
 		}
@@ -304,7 +304,7 @@ namespace Palaso.Tests.WritingSystems
 			ws1.VersionNumber = "1.0";
 			RepositoryUnderTest.Set(ws1);
 			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
-			Assert.AreEqual(ws1.ISO639, ws2.ISO639);
+			Assert.AreEqual(ws1.Language, ws2.Language);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
 			Assert.AreEqual(ws1.Variant, ws2.Variant);
@@ -406,7 +406,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(ws);
 			Assert.IsTrue(RepositoryUnderTest.Contains("fr"));
-			ws.ISO639 = "th";
+			ws.Language = "th";
 			RepositoryUnderTest.OnWritingSystemIDChange(ws, "fr");
 			Assert.IsFalse(RepositoryUnderTest.Contains("fr"));
 			Assert.IsTrue(RepositoryUnderTest.Contains("th"));
@@ -502,7 +502,7 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
 			var ws = WritingSystemDefinition.FromLanguage("en");
 			RepositoryUnderTest.Set(ws);
-			ws.ISO639 = "de";
+			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs.OldId, Is.EqualTo("en"));
 			Assert.That(_writingSystemIdChangedEventArgs.NewId, Is.EqualTo("de"));
@@ -514,7 +514,7 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
 			var ws = WritingSystemDefinition.FromLanguage("en");
 			RepositoryUnderTest.Set(ws);
-			ws.ISO639 = "en";
+			ws.Language = "en";
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);
 		}

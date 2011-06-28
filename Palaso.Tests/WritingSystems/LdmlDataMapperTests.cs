@@ -156,7 +156,7 @@ namespace Palaso.Tests.WritingSystems
 			adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
 			var ws = new WritingSystemDefinition();
 			adaptor.Read(pathToLdmlWithEmptyCollationElement, ws);
-			Assert.That(wsFromLdml.ISO639, Is.EqualTo(String.Empty));
+			Assert.That(wsFromLdml.Language, Is.EqualTo(String.Empty));
 			Assert.That(wsFromLdml.Variant, Is.EqualTo("x-private-use"));
 		}
 
@@ -407,7 +407,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en");
-				ws.ISO639 = "de";
+				ws.Language = "de";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
 				AssertThatLdmlMatches("de", "", "", "x-en", file);
 			}
@@ -518,7 +518,7 @@ namespace Palaso.Tests.WritingSystems
 
 		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
 		{
-			Assert.That(ws.ISO639, Is.EqualTo(language));
+			Assert.That(ws.Language, Is.EqualTo(language));
 			Assert.That(ws.Script, Is.EqualTo(script));
 			Assert.That(ws.Region, Is.EqualTo(territory));
 			Assert.That(ws.Variant, Is.EqualTo(variant));

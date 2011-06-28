@@ -77,7 +77,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public IpaSuggestion(WritingSystemDefinition primary)
 		{
-			_templateDefinition = new WritingSystemDefinition(primary.ISO639, "", primary.Region, primary.Variant, "ipa", false)
+			_templateDefinition = new WritingSystemDefinition(primary.Language, "", primary.Region, primary.Variant, "ipa", false)
 									  {
 										  LanguageName = primary.LanguageName,
 										  DefaultFontSize = primary.DefaultFontSize,

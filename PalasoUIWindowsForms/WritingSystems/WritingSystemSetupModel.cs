@@ -529,12 +529,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentISO
 		{
-			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.ISO639 ?? string.Empty); }
+			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.Language ?? string.Empty); }
 			set
 			{
-				if (CurrentDefinition.ISO639 != value)
+				if (CurrentDefinition.Language != value)
 				{
-					CurrentDefinition.ISO639 = value;
+					CurrentDefinition.Language = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -582,9 +582,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (CurrentDefinition.Region != value)
 				{
-					if (String.IsNullOrEmpty(CurrentDefinition.ISO639))
+					if (String.IsNullOrEmpty(CurrentDefinition.Language))
 					{
-						CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+						CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
 					}
 					CurrentDefinition.Region = value;
 					OnCurrentItemUpdated();
@@ -632,9 +632,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (CurrentDefinition.Script != value)
 				{
-					if(String.IsNullOrEmpty(CurrentDefinition.ISO639))
+					if(String.IsNullOrEmpty(CurrentDefinition.Language))
 					{
-						CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+						CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
 					}
 					CurrentDefinition.Script = value;
 					OnCurrentItemUpdated();
@@ -667,9 +667,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					try
 					{
 						var fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
-						if (String.IsNullOrEmpty(CurrentDefinition.ISO639) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+						if (String.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 						{
-							CurrentDefinition.ISO639 = WellKnownSubTags.Unlisted.Language;
+							CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
 						}
 						CurrentDefinition.Variant = fixedVariant;
 						OnCurrentItemUpdated();
@@ -843,7 +843,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					return SelectionsForSpecialCombo.Ipa;
 				}
-				if (_currentWritingSystem.ISO639 == WellKnownSubTags.Unlisted.Language)
+				if (_currentWritingSystem.Language == WellKnownSubTags.Unlisted.Language)
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
 
@@ -872,9 +872,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				Guard.AgainstNull(_currentWritingSystem, "CurrentWritingSystem");
 				if (_currentWritingSystem.IpaStatus != value)
 				{
-					if(String.IsNullOrEmpty(_currentWritingSystem.ISO639))
+					if(String.IsNullOrEmpty(_currentWritingSystem.Language))
 					{
-						_currentWritingSystem.ISO639 = WellKnownSubTags.Unlisted.Language;
+						_currentWritingSystem.Language = WellKnownSubTags.Unlisted.Language;
 					}
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
@@ -1125,7 +1125,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					cantSet.Add(ws, ws.ISO639);
+					cantSet.Add(ws, ws.Language);
 				}
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
@@ -1133,13 +1133,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
 					kvp.Key.AddToPrivateUse("dup");
-					//kvp.Key.ISO639 += "X";
 				}
 				_writingSystemRepository.Set(kvp.Key);
 			}
 			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
 			{
-				kvp.Key.ISO639 = kvp.Value;
+				kvp.Key.Language = kvp.Value;
 				if (_writingSystemRepository.CanSet(kvp.Key))
 				{
 					_writingSystemRepository.Set(kvp.Key);
@@ -1266,7 +1265,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (newWs == null) //cancelled
 				return;
 
-			existingWs.ISO639 = newWs.ISO639;
+			existingWs.Language = newWs.Language;
 			existingWs.LanguageName = newWs.LanguageName;
 
 			// Remove First Not WellKnownPrivateUseTag

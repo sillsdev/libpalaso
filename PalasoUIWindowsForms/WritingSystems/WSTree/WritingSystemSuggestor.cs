@@ -43,11 +43,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
-			if(string.IsNullOrEmpty(primary.ISO639) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+			if(string.IsNullOrEmpty(primary.Language) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				yield break;
 
 			if(SuppressSuggestionsForMajorWorldLanguages
-			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.ISO639))
+			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.Language))
 				yield break;
 
 			if (SuggestIpa && IpaSuggestion.ShouldSuggest(existingWritingSystemsForLanguage))

@@ -115,7 +115,7 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Provides a list of ISO639 language codes.  Uses ISO639 639-1 and 639-3 where ISO639 639-1 is not available.
+		/// Provides a list of Language language codes.  Uses Language 639-1 and 639-3 where Language 639-1 is not available.
 		/// </summary>
 		// TODO Move this to some other class that provides WritingSystemResources? Info?
 		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
@@ -225,9 +225,9 @@ namespace Palaso.WritingSystems
 				{
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					if(ISO639 == "")
+					if(Language == "")
 					{
-						ISO639 = WellKnownSubTags.Unlisted.Language;
+						Language = WellKnownSubTags.Unlisted.Language;
 					}
 					Script = WellKnownSubTags.Audio.Script;
 					_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
@@ -428,19 +428,19 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// The ISO639-639 code which is also the Ethnologue code.
+		/// The Language-639 code which is also the Ethnologue code.
 		/// </summary>
-		[Obsolete("Please use ISO639")]
+		[Obsolete("Please use Language")]
 		virtual public string ISO
 		{
-			get { return ISO639; }
-			set { ISO639 = value; }
+			get { return Language; }
+			set { Language = value; }
 		}
 
 		/// <summary>
 		/// The ISO-639 code which is also the Ethnologue code.
 		/// </summary>
-		virtual public string ISO639
+		virtual public string Language
 		{
 			get
 			{
@@ -449,7 +449,7 @@ namespace Palaso.WritingSystems
 			set
 			{
 				value = value ?? "";
-				if (value == ISO639)
+				if (value == Language)
 				{
 					return;
 				}
@@ -462,7 +462,7 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return String.IsNullOrEmpty(_abbreviation) ? ISO639 : _abbreviation;
+				return String.IsNullOrEmpty(_abbreviation) ? Language : _abbreviation;
 			}
 			set
 			{
@@ -497,7 +497,7 @@ namespace Palaso.WritingSystems
 				{
 					return _languageName;
 				}
-				var code = ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(ISO639));
+				var code = ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
 				if (code != null)
 				{
 					return code.Name;
@@ -505,7 +505,7 @@ namespace Palaso.WritingSystems
 				return "Unknown Language";
 
 				// TODO Make the below work.
-				//return StandardTags.LanguageName(ISO639) ?? "Unknown Language";
+				//return StandardTags.LanguageName(Language) ?? "Unknown Language";
 			}
 			set
 			{

@@ -576,7 +576,7 @@ namespace Palaso.WritingSystems
 			switch (id)
 			{
 				case "en-latn":
-					ws.ISO639 = "en";
+					ws.Language = "en";
 					ws.LanguageName = "English";
 					ws.Abbreviation = "eng";
 					ws.Script = "Latn";
@@ -684,7 +684,7 @@ namespace Palaso.WritingSystems
 			}
 			else
 			{
-				WriteRFC5646TagElements(writer, ws.ISO639, ws.Script, ws.Region, ws.Variant);
+				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			}
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
@@ -797,7 +797,7 @@ namespace Palaso.WritingSystems
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
-			if (ws.SpellCheckingId != ws.ISO639)
+			if (ws.SpellCheckingId != ws.Language)
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}

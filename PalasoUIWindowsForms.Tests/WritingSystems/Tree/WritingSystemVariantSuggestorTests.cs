@@ -23,7 +23,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
 
-			Assert.AreEqual("etr", ipa.ISO639);
+			Assert.AreEqual("etr", ipa.Language);
 			Assert.AreEqual("fonipa", ipa.Variant);
 			Assert.AreEqual("Edolo", ipa.LanguageName);
 			Assert.IsTrue(string.IsNullOrEmpty(ipa.NativeName));

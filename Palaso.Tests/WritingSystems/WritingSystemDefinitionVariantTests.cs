@@ -51,7 +51,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
 			Assert.That(ws.Script, Is.EqualTo(""));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-etic"));
@@ -64,7 +64,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
 			Assert.That(ws.Script, Is.EqualTo(""));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private"));
@@ -77,7 +77,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
-			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
 			Assert.That(ws.Script, Is.EqualTo(""));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-emic"));

@@ -118,7 +118,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 					}
 				}
 
-				if (itemToUseForSuggestions.ISO639 == "qaa")
+				if (itemToUseForSuggestions.Language == "qaa")
 				{
 					var treeItem = new WritingSystemRenameUnlistedLanguageTreeItem(item => _setupModel.RenameIsoCode(itemToUseForSuggestions));
 					parent.Children.Add(treeItem);

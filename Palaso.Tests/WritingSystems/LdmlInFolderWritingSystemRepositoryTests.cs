@@ -121,10 +121,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "one";
+				environment.WritingSystem.Language = "one";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				WritingSystemDefinition ws2 = new WritingSystemDefinition();
-				ws2.ISO639 = "two";
+				ws2.Language = "two";
 				environment.Collection.SaveDefinition(ws2);
 				var newStore = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 
@@ -147,12 +147,12 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
 				WritingSystemDefinition ws2 = new WritingSystemDefinition();
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(ws2);
 			}
 		}
@@ -162,7 +162,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "qaa";
+				environment.WritingSystem.Language = "qaa";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
 				environment.Collection.SaveDefinition(ws2);
@@ -216,7 +216,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				Assert.AreEqual("en", environment.WritingSystem.StoreID);
 			}
@@ -227,7 +227,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				Assert.AreNotEqual(0, Directory.GetFiles(environment.TestPath, "*.ldml"));
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				var newStore = new LdmlInFolderWritingSystemRepository(environment.TestPath);
@@ -242,12 +242,12 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems, "en.ldml");
 				Assert.IsTrue(File.Exists(path));
 				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
-				ws2.ISO639 = "de";
+				ws2.Language = "de";
 				Assert.AreEqual("en", ws2.StoreID);
 				environment.Collection.SaveDefinition(ws2);
 				Assert.AreEqual("de", ws2.StoreID);
@@ -263,7 +263,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
 			}
@@ -287,7 +287,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Abbreviation = "bl";
 					//crucially, abbreviation isn't part of the name of the file
 				environment.Collection.SaveDefinition(environment.WritingSystem);
@@ -309,7 +309,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
@@ -324,7 +324,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.DefaultFontName = "Courier";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
@@ -339,7 +339,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Keyboard = "Thai";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
@@ -354,7 +354,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				Assert.IsFalse(environment.WritingSystem.RightToLeftScript);
 				environment.WritingSystem.RightToLeftScript = true;
 				Assert.IsTrue(environment.WritingSystem.RightToLeftScript);
@@ -371,7 +371,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				Assert.IsFalse(environment.WritingSystem.IsLegacyEncoded);
 				environment.WritingSystem.IsLegacyEncoded = true;
 				Assert.IsTrue(environment.WritingSystem.IsLegacyEncoded);
@@ -388,7 +388,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
 				var newCollection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
@@ -402,7 +402,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = environment.GetPathForWsId(environment.WritingSystem.RFC5646);
@@ -420,7 +420,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Abbreviation = "abbrev";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = environment.GetPathForWsId(environment.WritingSystem.RFC5646);
@@ -443,7 +443,7 @@ namespace Palaso.Tests.WritingSystems
 
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Abbreviation = "bl";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath(
@@ -456,12 +456,12 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
 										   environment.GetPathForWsId(environment.WritingSystem.RFC5646));
 				Assert.IsTrue(File.Exists(path));
-				environment.Collection.Remove(environment.WritingSystem.ISO639);
+				environment.Collection.Remove(environment.WritingSystem.Language);
 				Assert.IsFalse(File.Exists(path));
 				AssertFileIsInTrash(environment);
 			}
@@ -479,11 +479,11 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				environment.Collection.Remove(environment.WritingSystem.StoreID);
 				AssertFileIsInTrash(environment);
-				WritingSystemDefinition ws2 = new WritingSystemDefinition {ISO639 = "en"};
+				WritingSystemDefinition ws2 = new WritingSystemDefinition {Language = "en"};
 				environment.Collection.SaveDefinition(ws2);
 				environment.Collection.Remove(ws2.StoreID);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
@@ -508,7 +508,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				Assert.IsTrue(environment.WritingSystem.Modified);
 			}
 		}
@@ -518,7 +518,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				var newCollection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				WritingSystemDefinition ws2 = newCollection.Get(environment.WritingSystem.StoreID);
@@ -531,11 +531,11 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				Assert.IsTrue(environment.WritingSystem.Modified);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				Assert.IsFalse(environment.WritingSystem.Modified);
-				environment.WritingSystem.ISO639 = "de";
+				environment.WritingSystem.Language = "de";
 				Assert.IsTrue(environment.WritingSystem.Modified);
 			}
 		}
@@ -562,7 +562,7 @@ namespace Palaso.Tests.WritingSystems
 				IList<WritingSystemDefinition> list2 =
 					new List<WritingSystemDefinition>(environment.Collection.WritingSystemDefinitions);
 				WritingSystemDefinition ws2 = list2[0];
-				environment.Collection.Remove(ws2.ISO639);
+				environment.Collection.Remove(ws2.Language);
 
 				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				//  repository.DontAddDefaultDefinitions = false;
@@ -623,7 +623,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				//Make the filepath inconsistant
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
@@ -640,7 +640,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				//Make the filepath inconsistant
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
-				environment.WritingSystem.ISO639 = "en";
+				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
@@ -661,7 +661,7 @@ namespace Palaso.Tests.WritingSystems
 				var repo = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 
 				// Now try to load up.
-				Assert.That(repo.Get("x-en-Zxxx").ISO639, Is.EqualTo("qaa"));
+				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo("qaa"));
 			}
 		}
 

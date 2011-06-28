@@ -86,7 +86,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._aboutLink.Size = new System.Drawing.Size(196, 14);
 			this._aboutLink.TabIndex = 2;
 			this._aboutLink.TabStop = true;
-			this._aboutLink.Text = "About ISO639 639-3 Codes";
+			this._aboutLink.Text = "About Language 639-3 Codes";
 			this._aboutLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._aboutLink_LinkClicked);
 			//
 			// _aboutLink639_1
@@ -97,7 +97,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._aboutLink639_1.Size = new System.Drawing.Size(196, 14);
 			this._aboutLink639_1.TabIndex = 3;
 			this._aboutLink639_1.TabStop = true;
-			this._aboutLink639_1.Text = "About ISO639 639-1 Codes";
+			this._aboutLink639_1.Text = "About Language 639-1 Codes";
 			this._aboutLink639_1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._aboutLink639_1_LinkClicked);
 			//
 			// _searchText
@@ -137,7 +137,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Name = "LookupISOCodeDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.Text = "Lookup ISO639 Code...";
+			this.Text = "Lookup Language Code...";
 			this.Load += new System.EventHandler(this.LookupISOCodeDialog_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();

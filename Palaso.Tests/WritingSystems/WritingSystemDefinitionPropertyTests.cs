@@ -15,7 +15,7 @@ namespace Palaso.Tests.WritingSystems
 		public void FromRFC5646Subtags_AllArgs_SetsOk()
 		{
 			var ws = WritingSystemDefinition.FromRFC5646Subtags("en", "Latn", "US", "x-whatever");
-			Assert.AreEqual(ws.ISO639, "en");
+			Assert.AreEqual(ws.Language, "en");
 			Assert.AreEqual(ws.Script, "Latn");
 			Assert.AreEqual(ws.Region, "US");
 			Assert.AreEqual(ws.Variant, "x-whatever");
@@ -23,7 +23,7 @@ namespace Palaso.Tests.WritingSystems
 
 		private void AssertWritingSystem(WritingSystemDefinition wsDef, string language, string script, string region, string variant)
 		{
-			Assert.AreEqual(language, wsDef.ISO639);
+			Assert.AreEqual(language, wsDef.Language);
 			Assert.AreEqual(script, wsDef.Script);
 			Assert.AreEqual(region, wsDef.Region);
 			Assert.AreEqual(variant, wsDef.Variant);
@@ -193,7 +193,7 @@ namespace Palaso.Tests.WritingSystems
 		public void DisplayLabel_NoAbbreviation_UsesRFC5646()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "en";
+			ws.Language = "en";
 			ws.Variant = "1901";
 			Assert.AreEqual("en-1901", ws.DisplayLabel);
 		}
@@ -249,7 +249,7 @@ namespace Palaso.Tests.WritingSystems
 		public void LanguageName_SetLanguageEn_ReturnsEnglish()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "en";
+			ws.Language = "en";
 			Assert.AreEqual("English", ws.LanguageName);
 		}
 
@@ -341,6 +341,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueSpecial.Add("Region", "GB");
 			firstValueSpecial.Add("ISO639", "en");
 			secondValueSpecial.Add("ISO639", "de");
+			firstValueSpecial.Add("Language", "en");
+			secondValueSpecial.Add("Language", "de");
 			firstValueSpecial.Add("ISO", "en");
 			secondValueSpecial.Add("ISO", "de");
 			firstValueSpecial.Add("Script", "Zxxx");
@@ -503,10 +505,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition
 					 {
-						 ISO639 = "en",
+						 Language = "en",
 						 IsVoice = true
 					 };
-			Assert.AreEqual("en", ws.ISO639);
+			Assert.AreEqual("en", ws.Language);
 		}
 
 		[Test]
@@ -570,15 +572,15 @@ namespace Palaso.Tests.WritingSystems
 		public void Iso639_SetValidLanguage_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "th";
-			Assert.AreEqual("th", ws.ISO639);
+			ws.Language = "th";
+			Assert.AreEqual("th", ws.Language);
 		}
 
 		[Test]
 		public void Iso639_SetInvalidLanguage_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "xyz");
+			Assert.Throws<ValidationException>(() => ws.Language = "xyz");
 		}
 
 		[Test]
@@ -678,8 +680,8 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition();
 			// Set private use so that we can legally set the language to null
 			ws.Variant = "x-any";
-			ws.ISO639 = null;
-			Assert.That("", Is.EqualTo(ws.ISO639));
+			ws.Language = null;
+			Assert.That("", Is.EqualTo(ws.Language));
 		}
 
 		[Test]
@@ -868,7 +870,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IsVoice = true;
-			Assert.That(ws.ISO639, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
 			Assert.That(ws.Script, Is.EqualTo(WellKnownSubTags.Unwritten.Script));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("x-private-audio"));
@@ -923,14 +925,14 @@ namespace Palaso.Tests.WritingSystems
 		public void Iso639_SetEmpty_ThrowsValidationException()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(()=>ws.ISO639 = String.Empty);
+			Assert.Throws<ValidationException>(()=>ws.Language = String.Empty);
 		}
 
 		[Test]
 		public void Variant_ContainsUnderscore_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "de";
+			ws.Language = "de";
 			Assert.Throws<ArgumentException>(() => ws.Variant = "x_audio");
 		}
 
@@ -938,7 +940,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsxDashCapitalAUDIOAndScriptIsNotZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "de";
+			ws.Language = "de";
 			ws.Script = "Latn";
 			Assert.Throws<ArgumentException>(() => ws.Variant = "x-AUDIO");
 		}
@@ -947,7 +949,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_IndicatesThatWsIsAudioAndScriptIsCapitalZXXX_ReturnsTrue()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "de";
+			ws.Language = "de";
 			ws.Script = "ZXXX";
 			ws.Variant = WellKnownSubTags.Audio.PrivateUseSubtag;
 			Assert.IsTrue(ws.IsVoice);
@@ -957,7 +959,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValidWritingSystem_VariantIndicatesThatWsIsAudioButContainsotherThanJustTheNecassaryXDashAudioTagAndScriptIsNotZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.ISO639 = "de";
+			ws.Language = "de";
 			ws.Script = "latn";
 			Assert.Throws<ArgumentException>(()=>ws.Variant = "x-private-audio");
 		}
@@ -966,35 +968,35 @@ namespace Palaso.Tests.WritingSystems
 		public void LanguageSubtag_ContainsXDashAudio_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "de-x-audio");
+			Assert.Throws<ValidationException>(() => ws.Language = "de-x-audio");
 		}
 
 		[Test]
 		public void Language_ContainsZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "de-Zxxx");
+			Assert.Throws<ValidationException>(() => ws.Language = "de-Zxxx");
 		}
 
 		[Test]
 		public void LanguageSubtag_ContainsCapitalXDashAudio_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "de-X-AuDiO");
+			Assert.Throws<ValidationException>(() => ws.Language = "de-X-AuDiO");
 		}
 
 		[Test]
 		public void Language_SetWithInvalidLanguageTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "bogus");
+			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
 		}
 
 		[Test]
 		public void Script_SetWithInvalidScriptTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "bogus");
+			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
 		}
 
 		[Test]
@@ -1002,7 +1004,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.ISO639 = "bogus");
+			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
 		}
 
 		[Test]
@@ -1018,7 +1020,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetAllRfc5646LanguageTagComponents("th", "", "", "");
-			Assert.AreEqual("th", ws.ISO639);
+			Assert.AreEqual("th", ws.Language);
 		}
 
 		[Test]
@@ -1101,7 +1103,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.ISO639);
+			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.Language);
 			Assert.AreEqual("qaa-fonipa-x-bogus", writingSystem.RFC5646);
 		}
 
@@ -1110,7 +1112,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.ISO639);
+			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.Language);
 			Assert.AreEqual("qaa-fonipa-x-bogus-etic", writingSystem.RFC5646);
 		}
 
@@ -1119,7 +1121,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonemic;
-			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.ISO639);
+			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.Language);
 			Assert.AreEqual("qaa-fonipa-x-bogus-emic", writingSystem.RFC5646);
 		}
 
