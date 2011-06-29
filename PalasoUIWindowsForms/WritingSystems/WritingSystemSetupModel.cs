@@ -8,8 +8,11 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Enchant;
 using Palaso.Code;
 using Palaso.Data;
+using Palaso.i18n;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
@@ -51,6 +54,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// UI layer can set this to something which shows a dialog to get the basic info
 		/// </summary>
 		public Func<WritingSystemDefinition> MethodToShowUiToBootstrapNewDefinition;
+
+		private List<SpellCheckInfo> _spellCheckerItems = new List<SpellCheckInfo>();
 
 		/// <summary>
 		/// Creates the presentation model object based off of a writing system store of some sort.
@@ -760,19 +765,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public string CurrentSpellCheckingId
-		{
-			get { return CurrentDefinition.SpellCheckingId ?? string.Empty; }
-			set
-			{
-				if (CurrentDefinition.SpellCheckingId != value)
-				{
-					CurrentDefinition.SpellCheckingId = value;
-					OnCurrentItemUpdated();
-				}
-			}
-		}
-
 		public string CurrentSortUsing
 		{
 			get { return CurrentDefinition.SortUsing.ToString(); }
@@ -846,7 +838,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (_currentWritingSystem.Language == WellKnownSubTags.Unlisted.Language)
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
-
 				}
 				if (!string.IsNullOrEmpty(_currentWritingSystem.Script) ||
 					!string.IsNullOrEmpty(_currentWritingSystem.Region) ||
@@ -895,7 +886,131 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set { throw new NotImplementedException(); }
 		}
+		#endregion
 
+		#region Spellcheck methods and SpellCheckInfo class
+
+		public string CurrentSpellCheckingId
+		{
+			get { return CurrentDefinition.SpellCheckingId ?? string.Empty; }
+			set
+			{
+				if (CurrentDefinition.SpellCheckingId != value)
+				{
+					CurrentDefinition.SpellCheckingId = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public SpellCheckInfo CurrentSpellChecker
+		{
+			get
+			{
+				return _spellCheckerItems.First(item => item.GetSpellCheckingId() == CurrentSpellCheckingId);
+			}
+			set
+			{
+				CurrentSpellCheckingId = value.GetSpellCheckingId();
+			}
+		}
+
+		public List<SpellCheckInfo> GetSpellCheckComboBoxItems()
+		{
+			_spellCheckerItems.Clear();
+
+			// add None option
+			_spellCheckerItems.Add(new SpellCheckInfo(""));
+
+			try
+			{
+				using (Broker broker = new Broker())
+				{
+					// add installed dictionaries
+					_spellCheckerItems.AddRange(broker.Dictionaries.Select(dictionaryInfo => new SpellCheckInfo(dictionaryInfo)));
+
+					// add current dictionary, if not installed
+					if (!broker.DictionaryExists(CurrentSpellCheckingId))
+					{
+						_spellCheckerItems.Add(new SpellCheckInfo(CurrentSpellCheckingId));
+					}
+				}
+			}
+			catch (DllNotFoundException)
+			{
+				//If Enchant is not installed we expect an exception.
+			}
+			catch (Exception e)//there are other errors we can get from the enchange binding
+			{
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+												"The Enchant Spelling engine encountered an error: " + e.Message);
+			}
+
+			return _spellCheckerItems;
+		}
+
+		public class SpellCheckInfo
+		{
+			private DictionaryInfo _info = null;
+			private string _id = "";
+
+			public SpellCheckInfo(DictionaryInfo info)
+			{
+				_info = info;
+			}
+
+			public SpellCheckInfo(string notInstalledId)
+			{
+				_id = notInstalledId;
+			}
+
+			public bool HasDictionaryInfo()
+			{
+				if (_info != null)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			public DictionaryInfo GetDictionaryInfo()
+			{
+				return _info;
+			}
+
+			public override string ToString()
+			{
+				if (_info != null)
+				{
+					try
+					{
+						string id = _info.Language.Replace('_', '-');
+						CultureInfo cultureInfo = CultureInfo.GetCultureInfoByIetfLanguageTag(id);
+						return _info.Language + " (" + cultureInfo.NativeName + ")";
+					}
+					catch
+					{
+						// don't care if this fails it was just to add a little more info to user.
+						//mono doesn't support this now
+						return _info.Language;
+					}
+				}
+				if (!String.IsNullOrEmpty(_id))
+				{
+					return _id + " (" + StringCatalog.Get("Not installed") + ")";
+				}
+				return "None";
+			}
+
+			public string GetSpellCheckingId()
+			{
+				if (HasDictionaryInfo())
+				{
+					return GetDictionaryInfo().Language;
+				}
+				return _id;
+			}
+		}
 		#endregion
 
 
