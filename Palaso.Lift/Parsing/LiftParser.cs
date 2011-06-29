@@ -802,6 +802,7 @@ namespace Palaso.Lift.Parsing
 		private static XmlNode GetNodeFromString(string xml)
 		{
 			XmlDocument document = new XmlDocument();
+			document.PreserveWhitespace = true;	// needed to preserve newlines in "multiparagraph" forms.
 			document.LoadXml(xml);
 			return document.FirstChild;
 		}
