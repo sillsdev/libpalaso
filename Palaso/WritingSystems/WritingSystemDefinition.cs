@@ -774,10 +774,6 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_spellCheckingId))
-				{
-					return _rfcTag.Language;
-				}
 				return _spellCheckingId;
 			}
 			set { UpdateString(ref _spellCheckingId, value); }
