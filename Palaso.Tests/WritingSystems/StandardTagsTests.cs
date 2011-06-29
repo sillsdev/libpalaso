@@ -29,6 +29,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void ValidIso639LanguageCodes_HasISO3CodeForEnglish()
+		{
+			var codes = StandardTags.ValidIso639LanguageCodes;
+			var english = codes.Where(code => code.Code == "en").First();
+			Assert.That(english.ISO3Code, Is.EqualTo("eng"));
+		}
+
+		[Test]
 		public void ValidIso639LanguageCodes_HasFonipa_False()
 		{
 			var codes = StandardTags.ValidIso639LanguageCodes;

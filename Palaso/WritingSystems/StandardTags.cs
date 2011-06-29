@@ -73,6 +73,23 @@ namespace Palaso.WritingSystems
 
 		private static void LoadIanaSubtags()
 		{
+			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
+			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
+			// ethnologue codes) and the fourth (two-letter IANA codes), and all the rows where the fourth column is empty.
+			// I then swapped the columns. So, in this resource, the string before the tab in each line is a 2-letter
+			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
+			// The following block of code assembles these lines into a map we can use to fill this slot properly
+			// when building the main table.
+			var TwoToThreeMap = new Dictionary<string, string>();
+			string[] encodingPairs = Resource.TwoToThreeCodes.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string pair in encodingPairs)
+			{
+				var items = pair.Split('\t');
+				if (items.Length != 2)
+					continue;
+				TwoToThreeMap[items[0]] = items[1];
+			}
+
 			string[] ianaSubtagsAsStrings = Resource.IanaSubtags.Split(new[] { "%%" }, StringSplitOptions.None);
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
@@ -111,8 +128,11 @@ namespace Palaso.WritingSystems
 				{
 					case "language":
 
+						string iso3Code;
+						if (!TwoToThreeMap.TryGetValue(subtag, out iso3Code))
+							iso3Code = String.Empty;
 						ValidIso639LanguageCodes.Add(
-							new Iso639LanguageCode(subtag, description, String.Empty)
+							new Iso639LanguageCode(subtag, description, iso3Code)
 							);
 						break;
 					case "script":

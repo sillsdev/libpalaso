@@ -140,5 +140,15 @@ namespace Palaso {
 				return ResourceManager.GetString("ianaSubtagRegistry", resourceCulture);
 			}
 		}
+		/// <summary>
+		///   Looks up file containing mappings from two to (old) three letter codes
+		/// </summary>
+		internal static string TwoToThreeCodes
+		{
+			get
+			{
+				return ResourceManager.GetString("TwoToThreeCodes", resourceCulture);
+			}
+		}
 	}
 }
