@@ -130,23 +130,31 @@ namespace Palaso.Lift.Tests.Parsing
 			Assert.AreEqual(4, t["x"].Spans[1].Length);
 		}
 
-		[Test, Ignore("Nested spans are not yet implemented.")]
+		[Test]
 		public void MultiTextWithNestedSpan()
 		{
 			_doc.LoadXml("<foobar><form lang='x'><text>one <span class='emphasis'>inner <span class='vernacular' lang='y'>text</span></span> node</text></form></foobar>");
-			LiftMultiText t = _parser.ReadMultiText(_doc.FirstChild);
-			Assert.AreEqual("one inner text node", t["x"].Text);
-			Assert.AreEqual(2, t["x"].Spans.Count);
-			Assert.AreEqual("emphasis", t["x"].Spans[0].Class);
-			Assert.AreEqual(null, t["x"].Spans[0].Lang);
-			Assert.AreEqual(null, t["x"].Spans[0].LinkURL);
-			Assert.AreEqual(4, t["x"].Spans[0].Index);
-			Assert.AreEqual(10, t["x"].Spans[0].Length);
-			Assert.AreEqual("vernacular", t["x"].Spans[1].Class);
-			Assert.AreEqual("y", t["x"].Spans[1].Lang);
-			Assert.AreEqual(null, t["x"].Spans[1].LinkURL);
-			Assert.AreEqual(10, t["x"].Spans[1].Index);
-			Assert.AreEqual(4, t["x"].Spans[1].Length);
+			var t = _parser.ReadMultiText(_doc.FirstChild);
+			var tx = t["x"];
+			Assert.IsNotNull(tx);
+			Assert.AreEqual("one inner text node", tx.Text);
+			Assert.AreEqual(1, tx.Spans.Count);
+			var span = tx.Spans[0];
+			Assert.IsNotNull(span);
+			Assert.AreEqual("emphasis", span.Class);
+			Assert.AreEqual(null, span.Lang);
+			Assert.AreEqual(null, span.LinkURL);
+			Assert.AreEqual(4, span.Index);
+			Assert.AreEqual(10, span.Length);
+			Assert.AreEqual(1, span.Spans.Count);
+			var subspan = span.Spans[0];
+			Assert.IsNotNull(subspan);
+			Assert.AreEqual("vernacular", subspan.Class);
+			Assert.AreEqual("y", subspan.Lang);
+			Assert.AreEqual(null, subspan.LinkURL);
+			Assert.AreEqual(10, subspan.Index);
+			Assert.AreEqual(4, subspan.Length);
+			Assert.AreEqual(0, subspan.Spans.Count);
 		}
 
 		[Test]

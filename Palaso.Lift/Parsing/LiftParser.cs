@@ -614,13 +614,17 @@ namespace Palaso.Lift.Parsing
 						{
 							if (node.Name == "span")
 							{
-								text.AddSpan(lang,
+								var span = text.AddSpan(lang,
 											 Utilities.GetOptionalAttributeString(node, "lang"),
 											 Utilities.GetOptionalAttributeString(node, "class"),
 											 Utilities.GetOptionalAttributeString(node, "href"),
 											 node.InnerText.Length);
+								ReadSpanContent(text, lang, span, node);
 							}
-							text.AddOrAppend(lang, node.InnerText, "");
+							else
+							{
+								text.AddOrAppend(lang, node.InnerText, "");
+							}
 						}
 					}
 					var nodelist = formNode.SelectNodes("annotation");
@@ -639,6 +643,32 @@ namespace Palaso.Lift.Parsing
 					// not a fatal error
 					NotifyFormatError(e);
 				}
+			}
+		}
+
+		private void ReadSpanContent(LiftMultiText text, string lang, LiftSpan span, XmlNode node)
+		{
+			Debug.Assert(node.Name == "span");
+			foreach (XmlNode xn in node.ChildNodes)
+			{
+				if (xn.Name == "span")
+				{
+					var spanLang = Utilities.GetOptionalAttributeString(xn, "lang");
+					if (spanLang == lang)
+						spanLang = null;
+					var spanInner = new LiftSpan(text.LengthOfAlternative(lang),
+						xn.InnerText.Length,
+						spanLang,
+						Utilities.GetOptionalAttributeString(xn, "class"),
+						Utilities.GetOptionalAttributeString(xn, "href"));
+					span.Spans.Add(spanInner);
+					ReadSpanContent(text, lang, spanInner, xn);
+				}
+				else
+				{
+					text.AddOrAppend(lang, xn.InnerText, "");
+				}
+
 			}
 		}
 
