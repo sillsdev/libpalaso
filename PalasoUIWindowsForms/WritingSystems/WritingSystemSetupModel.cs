@@ -285,7 +285,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = _writingSystemRepository.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
+					string id = WritingSystemDefinitions[i].Id;
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -1098,7 +1098,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			// new index will be next writing system or previous if this was the last in the list
 			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
-			string idToDelete = CurrentDefinition.StoreID;
+			string idToDelete = CurrentDefinition.Id;
 			CurrentDefinition.MarkedForDeletion = true;
 			_deletedWritingSystemDefinitions.Add(CurrentDefinition);
 			WritingSystemDefinitions.RemoveAt(CurrentIndex);
@@ -1260,7 +1260,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					_writingSystemRepository.Remove(kvp.Key.StoreID);
+					_writingSystemRepository.Remove(kvp.Key.Id);
 				}
 			}
 		}

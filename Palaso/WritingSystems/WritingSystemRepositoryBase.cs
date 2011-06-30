@@ -112,32 +112,18 @@ namespace Palaso.WritingSystems
 			return _writingSystems.ContainsKey(identifier);
 		}
 
-		public virtual void Set(WritingSystemDefinition ws)
+		public virtual void  Set(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
 				throw new ArgumentNullException("ws");
 			}
-			var oldId = ws.StoreID;
+			var oldId = _writingSystems.Where(kvp => kvp.Value == ws).Select(kvp => kvp.Key).FirstOrDefault();
 
-			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
-
-			if (oldId != null && oldId.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+			//Check if this is a new writing system with a conflicting id
+			if (_writingSystems.ContainsKey(ws.Id) && ws.Id != oldId)
 			{
-				//Flex writes out their private use ldml a little differently than we do. Our ldml adaptor reads in this ldml
-				//and maps it to a valid palaso writing system. The problem is that the rfc5646 tag in some cases will not
-				//line up with the StoreID (i.e. the filename), but we want to round trip it.
-				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(oldId);
-				if (interpreter.RFC5646Tag.Equals(ws.RFC5646, StringComparison.OrdinalIgnoreCase))
-				{
-					newID = oldId;
-				}
-			}
-
-			if (_writingSystems.ContainsKey(newID) && newID != oldId)
-			{
-				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", newID));
+				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", ws.Id));
 			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
@@ -146,14 +132,13 @@ namespace Palaso.WritingSystems
 			{
 				_writingSystems.Remove(oldId);
 			}
-			_writingSystems[newID] = ws;
-			ws.StoreID = newID;
-			if (!String.IsNullOrEmpty(oldId) && (oldId != newID))
+			_writingSystems[ws.Id] = ws;
+			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
-				UpdateIdChangeMap(oldId, newID);
+				UpdateIdChangeMap(oldId, ws.Id);
 				if (WritingSystemIdChanged != null)
 				{
-					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, newID));
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
 				}
 			}
 		}
@@ -197,8 +182,7 @@ namespace Palaso.WritingSystems
 			{
 				return false;
 			}
-			string newID = (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
-			return newID == ws.StoreID || !_writingSystems.ContainsKey(newID);
+			return _writingSystems.Values.Contains(ws) || !_writingSystems.Keys.Contains(ws.Id);
 		}
 
 		public WritingSystemDefinition Get(string identifier)

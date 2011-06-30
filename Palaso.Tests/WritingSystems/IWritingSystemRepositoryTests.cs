@@ -68,29 +68,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SetDefinitionTwice_OnlySetOnce()
-		{
-			_writingSystem.Language = "one";
-			RepositoryUnderTest.Set(_writingSystem);
-			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			WritingSystemDefinition ws = new WritingSystemDefinition();
-			ws.StoreID = _writingSystem.StoreID;
-			RepositoryUnderTest.Set(ws);
-			Assert.AreEqual(1, RepositoryUnderTest.Count);
-		}
-
-		[Test]
 		public void SetDefinitionTwice_UpdatesStore()
 		{
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.Language = "one";
-			ws1.DefaultFontName = "one font";
-			ws1.StoreID = _writingSystem.StoreID;
-			RepositoryUnderTest.Set(ws1);
+			_writingSystem.DefaultFontName = "one font";
+			RepositoryUnderTest.Set(_writingSystem);
 			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
 			Assert.AreEqual("one font", ws2.DefaultFontName);
 		}
@@ -138,7 +123,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			RepositoryUnderTest.Remove(_writingSystem.StoreID);
+			RepositoryUnderTest.Remove(_writingSystem.Id);
 			Assert.AreEqual(0, RepositoryUnderTest.Count);
 		}
 
@@ -381,23 +366,6 @@ namespace Palaso.Tests.WritingSystems
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() => RepositoryUnderTest.Remove("This isn't in the store!")
 			);
-		}
-
-		[Test]
-		public void GetNewStoreIDWhenSet_Null_Throws()
-		{
-			Assert.Throws<ArgumentNullException>(
-				() => RepositoryUnderTest.GetNewStoreIDWhenSet(null)
-			);
-		}
-
-		[Test]
-		public void GetNewStoreIDWhenSet_ReturnsSameStoreIDAsSet()
-		{
-			var ws = new WritingSystemDefinition("de");
-			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
-			RepositoryUnderTest.Set(ws);
-			Assert.AreEqual(ws.StoreID, newID);
 		}
 
 		[Test]

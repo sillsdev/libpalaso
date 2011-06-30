@@ -185,31 +185,29 @@ namespace Palaso.WritingSystems
 
 		public void SaveDefinition(WritingSystemDefinition ws)
 		{
-			string incomingFileName = GetFileNameFromIdentifier(ws.StoreID);
 			Set(ws);
-			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
+			string oldWritingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			MemoryStream oldData = null;
-			if (!ws.Modified && File.Exists(writingSystemFilePath))
+			if (!ws.Modified && File.Exists(oldWritingSystemFilePath))
 			{
 				return; // no need to save (better to preserve the modified date)
 			}
-			if (!String.IsNullOrEmpty(incomingFileName))
+			if (File.Exists(oldWritingSystemFilePath))
 			{
-				string previousFilePath = Path.Combine(PathToWritingSystems, incomingFileName);
-				if (File.Exists(previousFilePath))
+				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
+				try
 				{
-					// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
-					try
-					{
-						oldData = new MemoryStream(File.ReadAllBytes(previousFilePath), false);
-					}
-					catch {}
-					// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-					File.Delete(previousFilePath); //!!! Should this be move to trash?
+					oldData = new MemoryStream(File.ReadAllBytes(oldWritingSystemFilePath), false);
 				}
+				catch {}
+				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
+				File.Delete(oldWritingSystemFilePath); //!!! Should this be move to trash?
 			}
+
+			ws.StoreID = ws.Id;
+			string newWritingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
-			adaptor.Write(writingSystemFilePath, ws, oldData);
+			adaptor.Write(newWritingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;
 
@@ -304,19 +302,7 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			// Renaming files on Set keeps the file names consistent with StoreID which is changed in the base.
-			// This allows us to avoid creating duplicate files and to preserve LDML data which is not used
-			// in palaso.
-			string oldFileName = GetFileNameFromIdentifier(ws.StoreID);
-			string oldFilePath = string.IsNullOrEmpty(oldFileName) ? string.Empty : Path.Combine(PathToWritingSystems, oldFileName);
-			string oldID = ws.StoreID;
 			base.Set(ws);
-			if (oldID == ws.StoreID || string.IsNullOrEmpty(oldFileName) || !File.Exists(oldFilePath))
-			{
-				return;
-			}
-			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
-			File.Move(oldFilePath, writingSystemFilePath);
 		}
 	}
 }
