@@ -227,9 +227,30 @@ namespace Palaso.WritingSystems
 
 		public static bool IsValidIso3166Region(string regionCodeToCheck)
 		{
+			return IsStandardIso3166Region(regionCodeToCheck) || IsPrivateUseRegionCode(regionCodeToCheck);
+		}
+
+		public static bool IsStandardIso3166Region(string regionCodeToCheck)
+		{
 			return ValidIso3166Regions.Any(
 				code => regionCodeToCheck.Equals(code.Subtag, StringComparison.OrdinalIgnoreCase)
 				);
+		}
+
+		/// <summary>
+		/// Determines whether the specified region code is private use. These are considered valid region codes,
+		/// but not predefined ones with a known meaning.
+		/// </summary>
+		/// <param name="regionCode">The region code.</param>
+		/// <returns>
+		/// 	<c>true</c> if the region code is private use.
+		/// </returns>
+		public static bool IsPrivateUseRegionCode(string regionCode)
+		{
+			var regionCodeU = regionCode.ToUpperInvariant();
+			return regionCodeU == "AA" || regionCodeU == "ZZ"
+				|| (regionCodeU.CompareTo("QM") >= 0 && regionCodeU.CompareTo("QZ") <= 0)
+				|| (regionCodeU.CompareTo("XA") >= 0 && regionCodeU.CompareTo("XZ") <= 0);
 		}
 
 		public static bool IsValidRegisteredVariant(string variantToCheck)

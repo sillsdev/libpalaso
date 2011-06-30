@@ -196,6 +196,25 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void IsStandardIso3166Region_US_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsStandardIso3166Region("US"));
+		}
+
+		[Test]
+		public void IsValidIso3166Region_QM_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsValidIso3166Region("QM"));
+			Assert.IsTrue(StandardTags.IsValidIso3166Region("qm"));
+		}
+
+		[Test]
+		public void IsStandardIso3166Region_QM_ReturnsFalse()
+		{
+			Assert.IsFalse(StandardTags.IsStandardIso3166Region("QM"));
+		}
+
+		[Test]
 		public void IsValidIso3166Region_fonipa_ReturnsFalse()
 		{
 			Assert.IsFalse(StandardTags.IsValidIso3166Region("fonipa"));
