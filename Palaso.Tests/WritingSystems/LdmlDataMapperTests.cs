@@ -516,6 +516,66 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsRfc5646Tag()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion1Ldml("en", "Zxxx", "US", "1901-x-audio", file);
+				var ws = new WritingSystemDefinition();
+				new LdmlDataMapper().Read(file.Path, ws);
+				Assert.That(ws.Id, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
+			}
+		}
+
+		[Test]
+		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageScriptRegionVariant_WritingSystemIdIsConcatOfLanguageScriptRegionVariant()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "Zxxx", "US", "1901-x-audio", file);
+				var ws = new WritingSystemDefinition();
+				new LdmlDataMapper().Read(file.Path, ws);
+				Assert.That(ws.Id, Is.EqualTo("x-en-Zxxx-US-1901-x-audio"));
+			}
+		}
+
+		[Test]
+		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguage_WritingSystemIdIsLanguage()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "", "", "", file);
+				var ws = new WritingSystemDefinition();
+				new LdmlDataMapper().Read(file.Path, ws);
+				Assert.That(ws.Id, Is.EqualTo("x-en"));
+			}
+		}
+
+		[Test]
+		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageScript_WritingSystemIdIsConcatOfLanguageScript()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
+				var ws = new WritingSystemDefinition();
+				new LdmlDataMapper().Read(file.Path, ws);
+				Assert.That(ws.Id, Is.EqualTo("x-en-Zxxx"));
+			}
+		}
+
+		[Test]
+		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageRegion_WritingSystemIdIsConcatOfLanguageRegion()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "", "US", "", file);
+				var ws = new WritingSystemDefinition();
+				new LdmlDataMapper().Read(file.Path, ws);
+				Assert.That(ws.Id, Is.EqualTo("x-en-US"));
+			}
+		}
+
 		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
 		{
 			Assert.That(ws.Language, Is.EqualTo(language));
@@ -532,6 +592,15 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinitionV0
 						 {ISO639 = language, Script = script, Region = territory, Variant = variant};
 			new LdmlAdaptorV0().Write(file.Path, ws, null);
+		}
+
+		private static void WriteVersion1Ldml(string language, string script, string territory, string variant, TempFile file)
+		{
+			//using a writing system V0 here because the real writing system can't cope with the way
+			//flex encodes private-use language and shouldn't. But using a writing system + ldml adaptor
+			//is the quickest way to generate ldml so I'm using it here.
+			var ws = new WritingSystemDefinition { Language = language, Script = script, Region = territory, Variant = variant };
+			new LdmlDataMapper().Write(file.Path, ws, null);
 		}
 
 		private static void AssertThatLdmlMatches(string language, string script, string territory, string variant, TempFile file)

@@ -232,6 +232,8 @@ namespace Palaso.WritingSystems
 
 					_wsIsFlexPrivateUse = false;
 				}
+				//Set the id simply as the concatenation of whatever was in the ldml file.
+				ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
 				// move to end of identity node
 				while (identityReader.Read()) ;
 			}

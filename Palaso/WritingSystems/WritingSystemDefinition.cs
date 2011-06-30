@@ -64,12 +64,14 @@ namespace Palaso.WritingSystems
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
+		private string _id;
 
 		public WritingSystemDefinition()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isUnicodeEncoded = true;
 			_rfcTag = new RFC5646Tag();
+			UpdateIdFromRfcTag();
 		}
 
 		public WritingSystemDefinition(string rfctag)
@@ -77,6 +79,7 @@ namespace Palaso.WritingSystems
 		{
 			_rfcTag = RFC5646Tag.Parse(rfctag);
 			_abbreviation = _languageName = _nativeName = string.Empty;
+			UpdateIdFromRfcTag();
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
@@ -89,6 +92,7 @@ namespace Palaso.WritingSystems
 
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
+			UpdateIdFromRfcTag();
 		}
 
 		/// <summary>
@@ -112,6 +116,7 @@ namespace Palaso.WritingSystems
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
+			_id = ws._id;
 		}
 
 		/// <summary>
@@ -209,6 +214,7 @@ namespace Palaso.WritingSystems
 						break;
 				}
 				Modified = true;
+				UpdateIdFromRfcTag();
 			}
 		}
 
@@ -238,6 +244,7 @@ namespace Palaso.WritingSystems
 					_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
 				}
 				Modified = true;
+				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
 		}
@@ -280,6 +287,7 @@ namespace Palaso.WritingSystems
 				_rfcTag.PrivateUse = privateUse;
 
 				Modified = true;
+				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
 		}
@@ -294,12 +302,14 @@ namespace Palaso.WritingSystems
 			{
 				_rfcTag.AddToPrivateUse(tag);
 			}
+			UpdateIdFromRfcTag();
 			CheckVariantAndScriptRules();
 		}
 
 		public void AddToPrivateUse(string tag)
 		{
 			_rfcTag.AddToPrivateUse(tag);
+			UpdateIdFromRfcTag();
 			CheckVariantAndScriptRules();
 		}
 
@@ -406,6 +416,7 @@ namespace Palaso.WritingSystems
 			string privateUsePart;
 			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
 			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
+			UpdateIdFromRfcTag();
 			CheckVariantAndScriptRules();
 		}
 
@@ -423,6 +434,7 @@ namespace Palaso.WritingSystems
 					return;
 				}
 				_rfcTag.Region = value;
+				UpdateIdFromRfcTag();
 				Modified = true;
 			}
 		}
@@ -438,6 +450,16 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
+		/// The Language-639 code which is also the Ethnologue code.
+		/// </summary>
+		[Obsolete("Please use Language")]
+		virtual public string ISO639
+		{
+			get { return Language; }
+			set { Language = value; }
+		}
+
+			/// <summary>
 		/// The ISO-639 code which is also the Ethnologue code.
 		/// </summary>
 		virtual public string Language
@@ -454,6 +476,7 @@ namespace Palaso.WritingSystems
 					return;
 				}
 				_rfcTag.Language = value;
+				UpdateIdFromRfcTag();
 				Modified = true;
 			}
 		}
@@ -485,6 +508,7 @@ namespace Palaso.WritingSystems
 				}
 				_rfcTag.Script = value;
 				Modified = true;
+				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
 		}
@@ -630,7 +654,13 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return RFC5646;
+				return _id;
+			}
+			internal set
+			{
+				value = value ?? "";
+				_id = value;
+				Modified = true;
 			}
 		}
 
@@ -864,6 +894,11 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
+		private void UpdateIdFromRfcTag()
+		{
+			_id = RFC5646;
+		}
+
 		public bool IsUnicodeEncoded
 		{
 			get
@@ -883,6 +918,7 @@ namespace Palaso.WritingSystems
 		public void SetRfc5646FromString(string completeTag)
 		{
 			_rfcTag = RFC5646Tag.Parse(completeTag);
+			UpdateIdFromRfcTag();
 			Modified = true;
 		}
 

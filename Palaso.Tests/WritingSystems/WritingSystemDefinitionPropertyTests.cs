@@ -1132,5 +1132,134 @@ namespace Palaso.Tests.WritingSystems
 			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("x-bogus"));
 			Assert.AreEqual("x-bogus", writingSystem.RFC5646);
 		}
+
+		[Test]
+		public void Language_Set_Idchanged()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.Language = "de";
+			Assert.AreEqual("de-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void Script_Set_Idchanged()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-bogus");
+			writingSystem.Script = "Latn";
+			Assert.AreEqual("en-Latn-1901-x-bogus", writingSystem.Id);
+		}
+
+		[Test]
+		public void Region_Set_Idchanged()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-bogus");
+			writingSystem.Region = "US";
+			Assert.AreEqual("en-Zxxx-US-1901-x-bogus", writingSystem.Id);
+		}
+
+		[Test]
+		public void Variant_Set_Idchanged()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-bogus");
+			writingSystem.Variant = "x-audio";
+			Assert.AreEqual("en-Zxxx-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void Ctor1_IdIsSet()
+		{
+			var writingSystem = new WritingSystemDefinition();
+			Assert.AreEqual("qaa", writingSystem.Id);
+		}
+
+		[Test]
+		public void Ctor2_IdIsSet()
+		{
+			var writingSystem = new WritingSystemDefinition("en","Zxxx","","1901-x-audio","abb",true);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void Ctor3_IdIsSet()
+		{
+			var writingSystem = new WritingSystemDefinition("en-Zxxx-1901-x-audio");
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void Ctor4_IdIsSet()
+		{
+			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("en-Zxxx-1901-x-audio"));
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void Parse_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.Parse("en-Zxxx-1901-x-audio");
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void FromLanguage_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromLanguage("en-Zxxx-1901-x-audio");
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void FromRfc5646Subtags_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void IpaStatus_Set_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.AreEqual("en-Zxxx-1901-fonipa-x-etic", writingSystem.Id);
+		}
+
+		[Test]
+		public void IsVoice_Set_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.IsVoice = false;
+			Assert.AreEqual("en-1901", writingSystem.Id);
+		}
+
+		[Test]
+		public void AddToVariant_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.AddToVariant("bauddha");
+			Assert.AreEqual("en-Zxxx-1901-bauddha-x-audio", writingSystem.Id);
+		}
+
+		[Test]
+		public void AddToPrivateUse_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.AddToPrivateUse("bogus");
+			Assert.AreEqual("en-Zxxx-1901-x-audio-bogus", writingSystem.Id);
+		}
+
+		[Test]
+		public void SetAllRfc5646LanguageTagComponents_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.SetAllRfc5646LanguageTagComponents("de","Latn","US","fonipa-x-etic");
+			Assert.AreEqual("de-Latn-US-fonipa-x-etic", writingSystem.Id);
+		}
+
+		[Test]
+		public void SetRfc5646FromString_IdIsSet()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.SetRfc5646FromString("de-Latn-US-fonipa-x-etic");
+			Assert.AreEqual("de-Latn-US-fonipa-x-etic", writingSystem.Id);
+		}
 	}
 }
