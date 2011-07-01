@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Palaso.Reporting;
 
@@ -141,6 +143,20 @@ namespace Palaso.IO
 				Directory.Delete(dstFolder, true);
 			}
 			catch { }
+		}
+
+		/// <summary>
+		/// Return subfolders of <paramref name="path"/> that are not system or hidden.
+		/// </summary>
+		/// <param name="path">Directory path to look in.</param>
+		/// <returns>Zero or more directory names that are not system or hidden.</returns>
+		public static string[] GetSafeDirectories(string path)
+		{
+			return (from folderName in Directory.GetDirectories(path)
+						   let dirInfo = new DirectoryInfo(folderName)
+						   where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
+						   where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
+						   select folderName).ToArray();
 		}
 	}
 }

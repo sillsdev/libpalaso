@@ -1,6 +1,8 @@
 ﻿using System.IO;
+using System.Security.AccessControl;
 using NUnit.Framework;
 using Palaso.IO;
+using Palaso.TestUtilities;
 
 namespace Palaso.Tests.IO
 {
@@ -151,6 +153,29 @@ namespace Palaso.Tests.IO
 			Assert.IsTrue(FolderUtils.CopyFolder(_srcFolder, _dstFolder));
 			var foldername = Path.GetFileName(_srcFolder);
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
+		}
+
+		[Test]
+		public void SafeFoldersOmitSystemAndHiddenFolders()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			{
+				var sysDir = Directory.CreateDirectory(Path.Combine(tempDir.Path, "SysDir"));
+				sysDir.Attributes |= FileAttributes.System;
+				var hiddenDir = Directory.CreateDirectory(Path.Combine(tempDir.Path, "HiddenDir"));
+				hiddenDir.Attributes |= FileAttributes.Hidden;
+				var hiddenSysDir = Directory.CreateDirectory(Path.Combine(tempDir.Path, "HiddenSysDir"));
+				hiddenSysDir.Attributes |= FileAttributes.System;
+				hiddenSysDir.Attributes |= FileAttributes.Hidden;
+				var ordinaryDir = Directory.CreateDirectory(Path.Combine(tempDir.Path, "OrdinaryDir"));
+
+				Assert.AreEqual(4, Directory.GetDirectories(tempDir.Path).Length);
+
+				var safeDirectories = FolderUtils.GetSafeDirectories(tempDir.Path);
+
+				Assert.AreEqual(1, safeDirectories.Length);
+				Assert.AreEqual(ordinaryDir.FullName, safeDirectories[0]);
+			}
 		}
 	}
 }
