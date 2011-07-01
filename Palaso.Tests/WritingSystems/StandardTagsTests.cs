@@ -184,6 +184,23 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void IsValidIso15924ScriptCode_Qaaa_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsValidIso15924ScriptCode("Qaaa"));
+		}
+		[Test]
+		public void IsStandardIso15924ScriptCode_Qaaa_ReturnsFalse()
+		{
+			Assert.IsFalse(StandardTags.IsStandardIso15924ScriptCode("Qaaa"));
+		}
+
+		[Test]
+		public void IsStandardIso15924ScriptCode_Latn_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsStandardIso15924ScriptCode("Latn"));
+		}
+
+		[Test]
 		public void IsValidIso15924ScriptCode_fonipa_ReturnsFalse()
 		{
 			Assert.IsFalse(StandardTags.IsValidIso15924ScriptCode("fonipa"));

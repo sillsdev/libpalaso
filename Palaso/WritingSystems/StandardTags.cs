@@ -217,8 +217,18 @@ namespace Palaso.WritingSystems
 						languageCodeToCheck.Equals(code.ISO3Code, StringComparison.OrdinalIgnoreCase)
 				);
 		}
-
 		public static bool IsValidIso15924ScriptCode(string scriptTagToCheck)
+		{
+			return IsStandardIso15924ScriptCode(scriptTagToCheck) || IsPrivateUseScriptCode(scriptTagToCheck);
+		}
+
+		public static bool IsPrivateUseScriptCode(string scriptCode)
+		{
+			var scriptCodeU = scriptCode.ToUpperInvariant();
+			return (scriptCodeU.CompareTo("QAAA") >= 0 && scriptCodeU.CompareTo("QABX") <= 0);
+		}
+
+		public static bool IsStandardIso15924ScriptCode(string scriptTagToCheck)
 		{
 			return ValidIso15924Scripts.Any(
 				code => scriptTagToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase)
