@@ -222,11 +222,12 @@ namespace Palaso.WritingSystems.Migration
 				_privateUseSubTag.AddToSubtag(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 
-			// If the language tag starts with x- , then move then entire tag to private use
-			if (Language.StartsWith("x-"))
-			{
-				MoveTagsMatching(_languageSubTag, _privateUseSubTag, (s) => true);
-			}
+			//if (Language.StartsWith("x-"))
+			//{
+			//    MoveTagsMatching(_languageSubTag, _privateUseSubTag, s => true);
+			//}
+			// If the language tag contains an x- , then move the string behind the x- to private use
+			MovePartsToPrivateUseIfNecessary(_languageSubTag);
 
 			// Move script, region, and variant present in the langauge tag to their proper subtag.
 			MoveTagsMatching(_languageSubTag, _scriptSubTag, StandardTags.IsValidIso15924ScriptCode, StandardTags.IsValidIso639LanguageCode);
@@ -279,6 +280,18 @@ namespace Palaso.WritingSystems.Migration
 				(_languageSubTag.IsEmpty && _scriptSubTag.IsEmpty && _regionSubTag.IsEmpty && _variantSubTag.IsEmpty && _privateUseSubTag.IsEmpty))
 			{
 				_languageSubTag.AddToSubtag("qaa");
+			}
+		}
+
+		private void MovePartsToPrivateUseIfNecessary(SubTag from)
+		{
+			string completeTag = from.CompleteTag;
+			if (completeTag.Contains("x-"))
+			{
+				string privateUseParts = completeTag.Substring(completeTag.IndexOf("x-") + 2);
+				from.RemoveParts("x");
+				from.RemoveParts(privateUseParts);
+				_privateUseSubTag.AddToSubtag(privateUseParts);
 			}
 		}
 

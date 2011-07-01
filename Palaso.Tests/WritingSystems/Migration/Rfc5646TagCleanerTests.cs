@@ -93,5 +93,13 @@ namespace Palaso.Tests.WritingSystems.Migration
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Zxxx-x-en-Zxxx-audio"));
 		}
 
+		[Test]
+		public void CompleteTagConstructor_ValidRfctagWithPrivateUseElements_NoChange()
+		{
+			var cleaner = new Rfc5646TagCleaner("qaa-Zxxx-x-Zxxx-AUDIO");
+			cleaner.Clean();
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Zxxx-x-Zxxx-AUDIO"));
+		}
+
 	}
 }
