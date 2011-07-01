@@ -797,7 +797,7 @@ namespace Palaso.WritingSystems
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
-			if (ws.SpellCheckingId != ws.Language)
+			if (!String.IsNullOrEmpty(ws.SpellCheckingId))
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
