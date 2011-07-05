@@ -411,7 +411,7 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesAllNeededMembers()
 		{
 			// Put any fields to ignore in this string surrounded by "|"
-			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|";
+			const string ignoreFields = "|Modified|MarkedForDeletion|_collator|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{

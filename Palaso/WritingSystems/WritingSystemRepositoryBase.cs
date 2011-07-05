@@ -112,19 +112,34 @@ namespace Palaso.WritingSystems
 			return _writingSystems.ContainsKey(identifier);
 		}
 
+		public bool CanSet(WritingSystemDefinition ws)
+		{
+			if (ws == null)
+			{
+				return false;
+			}
+			return !(_writingSystems.Keys.Any(id => id.Equals(ws.Id, StringComparison.OrdinalIgnoreCase)) &&
+				ws.StoreID != _writingSystems[ws.Id].StoreID);
+		}
+
 		public virtual void  Set(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
 				throw new ArgumentNullException("ws");
 			}
-			var oldId = _writingSystems.Where(kvp => kvp.Value == ws).Select(kvp => kvp.Key).FirstOrDefault();
 
 			//Check if this is a new writing system with a conflicting id
-			if (_writingSystems.ContainsKey(ws.Id) && ws.Id != oldId)
+			if (!CanSet(ws))
 			{
 				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", ws.Id));
 			}
+
+			if (String.IsNullOrEmpty(ws.StoreID))
+			{
+				ws.StoreID = ws.Id;
+			}
+			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreID == ws.StoreID).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
@@ -173,16 +188,7 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			return (!String.IsNullOrEmpty(ws.RFC5646)) ? ws.RFC5646 : "unknown";
-		}
-
-		public bool CanSet(WritingSystemDefinition ws)
-		{
-			if (ws == null)
-			{
-				return false;
-			}
-			return _writingSystems.Values.Contains(ws) || !_writingSystems.Keys.Contains(ws.Id);
+			return String.IsNullOrEmpty(ws.StoreID) ? ws.Id : ws.StoreID;
 		}
 
 		public WritingSystemDefinition Get(string identifier)

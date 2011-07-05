@@ -1098,15 +1098,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			// new index will be next writing system or previous if this was the last in the list
 			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
-			string idToDelete = CurrentDefinition.Id;
 			CurrentDefinition.MarkedForDeletion = true;
 			_deletedWritingSystemDefinitions.Add(CurrentDefinition);
 			WritingSystemDefinitions.RemoveAt(CurrentIndex);
 			CurrentIndex = newIndex;
-			// if it doesn't have a store ID, it shouldn't be in the store
-			if (!string.IsNullOrEmpty(idToDelete))
+			if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
 			{
-				_writingSystemRepository.Remove(idToDelete);
+				_writingSystemRepository.Remove(CurrentDefinition.Id);
 			}
 			OnAddOrDelete();
 		}

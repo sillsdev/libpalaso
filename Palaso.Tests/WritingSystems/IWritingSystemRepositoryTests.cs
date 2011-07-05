@@ -61,6 +61,47 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SetDefinitionTwice_OnlySetOnce()
+		{
+			_writingSystem.Language = "one";
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			WritingSystemDefinition ws = new WritingSystemDefinition();
+			ws.StoreID = _writingSystem.StoreID;
+			RepositoryUnderTest.Set(ws);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+		}
+
+		[Test]
+		public void Set_ClonedWritingSystemWithChangedId_CanGetWithNewId()
+		{
+			_writingSystem.Language = "one";
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			var ws = new WritingSystemDefinition(_writingSystem);
+			ws.Language = "de";
+			RepositoryUnderTest.Set(ws);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			Assert.AreEqual("de", ws.Id);
+		}
+
+		[Test]
+		public void SetDefinitionTwice_UpdatesStore()
+		{
+			_writingSystem.Language = "one";
+			RepositoryUnderTest.Set(_writingSystem);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
+			WritingSystemDefinition ws1 = new WritingSystemDefinition();
+			ws1.Language = "one";
+			ws1.DefaultFontName = "one font";
+			ws1.StoreID = _writingSystem.StoreID;
+			RepositoryUnderTest.Set(ws1);
+			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
+			Assert.AreEqual("one font", ws2.DefaultFontName);
+		}
+
+		[Test]
 		public void CreateNewDefinitionThenSet_CountEquals1()
 		{
 			RepositoryUnderTest.Set(RepositoryUnderTest.CreateNew());
@@ -68,7 +109,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SetDefinitionTwice_UpdatesStore()
+		public void SetSameDefinitionTwice_UpdatesStore()
 		{
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
@@ -234,6 +275,33 @@ namespace Palaso.Tests.WritingSystems
 			);
 		}
 
+		 [Test]
+		public void GetNewStoreIDWhenSet_Null_Throws()
+		{
+			Assert.Throws<ArgumentNullException>(
+				() => RepositoryUnderTest.GetNewStoreIDWhenSet(null)
+			);
+		}
+
+		[Test]
+		public void GetNewStoreIDWhenSet_NewWritingSystem_ReturnsSameStoreIDAsSet()
+		{
+			var ws = new WritingSystemDefinition("de");
+			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
+			RepositoryUnderTest.Set(ws);
+			Assert.AreEqual(ws.StoreID, newID);
+		}
+
+		[Test]
+		public void GetNewStoreIDWhenSet_WritingSystemIsAlreadyRegisteredWithRepo_ReturnsSameStoreIDAsSet()
+		{
+			var ws = new WritingSystemDefinition("de");
+			RepositoryUnderTest.Set(ws);
+			ws.Language = "en";
+			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
+			Assert.AreEqual(ws.StoreID, newID);
+		}
+
 		[Test]
 		public void CanSetAfterSetting_True()
 		{
@@ -253,14 +321,6 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(_writingSystem);
 			_writingSystem = RepositoryUnderTest.CreateNew();
 			Assert.IsFalse(RepositoryUnderTest.CanSet(_writingSystem));
-		}
-
-		[Test]
-		public void CanSetUnchangedDuplicate_False()
-		{
-			_writingSystem.Language = "one";
-			RepositoryUnderTest.Set(_writingSystem);
-			Assert.IsFalse(RepositoryUnderTest.CanSet(RepositoryUnderTest.MakeDuplicate(_writingSystem)));
 		}
 
 		[Test]
