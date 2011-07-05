@@ -12,6 +12,16 @@ using Palaso.Xml;
 
 namespace Palaso.WritingSystems
 {
+	/// <summary>
+	/// The LdmlDatamapper Reads and Writes WritingSystemDefinitions to LDML files. A typical consuming application should not
+	/// need to use the LdmlDataMapper directly but should rather use an IWritingSystemRepository (such as the
+	/// LdmlInfolderWritingSystemRepository) to manage it's writing systems.
+	/// The LdmlDatamapper is tightly tied to a particular (palaso) version of LDML. If the LdmlDatamapper refuses to Read a
+	/// particular Ldml file it may need to be migrated to the latest version. Please use the
+	/// LdmlInFolderWritingSystemRepository class for this purpose.
+	/// Be aware that as of Jul-5-2011 an exception was made for certain well defined Fieldworks LDML files whose contained
+	/// Rfc5646 tag begin with "x-". These will load correctly, albeit in a transformed state, in spite of being "Version 0".
+	/// </summary>
 	public class LdmlDataMapper
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;

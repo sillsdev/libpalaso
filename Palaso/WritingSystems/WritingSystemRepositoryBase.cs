@@ -5,7 +5,17 @@ using Palaso.Code;
 
 namespace Palaso.WritingSystems
 {
-
+	/// <summary>
+	/// This class forms the bases for managing collections of WritingSystemDefinitions. WritingSystemDefinitions
+	/// can be registered and then retrieved and deleted by Id. The preferred use when editting a WritingSystemDefinition stored
+	/// in the WritingSystemRepository is to Get the WritingSystemDefinition in question and then to clone it either via the
+	/// Clone method on WritingSystemDefinition or via the MakeDuplicate method on the WritingSystemRepository. This allows
+	/// changes made to a WritingSystemDefinition to be registered back with the WritingSystemRepository via the Set method,
+	/// or to be discarded by simply discarding the object.
+	/// Internally the WritingSystemRepository uses the WritingSystemDefinition's StoreId property to establish the identity of
+	/// a WritingSystemDefinition. This allows the user to change the Rfc646Tag components and thereby the Id of a
+	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
+	/// </summary>
 	public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 

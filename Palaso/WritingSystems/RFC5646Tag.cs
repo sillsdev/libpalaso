@@ -5,6 +5,13 @@ using Palaso.Data;
 
 namespace Palaso.WritingSystems
 {
+	/// <summary>
+	/// The RFC5646Tag class represents a language tag that conforms to Rfc5646. It relies heavily on the StandardTags class for
+	/// valid Language, Script, Region and Variant subtags. The RFC5646 class enforces strict adherence to the Rfc5646 spec.
+	/// Exceptions are:
+	/// - does not support singletons other than "x-"
+	/// - does not support grandfathered, regular or irregular tags
+	/// </summary>
 	internal class RFC5646Tag : Object
 	{
 		internal class SubTag

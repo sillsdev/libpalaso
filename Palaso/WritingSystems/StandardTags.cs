@@ -5,6 +5,10 @@ using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems
 {
+	/// <summary>
+	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
+	/// for use by the Rfc5646Tag and other classes.
+	/// </summary>
 	public class StandardTags
 	{
 		public class IanaSubtag

@@ -8,7 +8,17 @@ using Palaso.WritingSystems.Collation;
 namespace Palaso.WritingSystems
 {
 	/// <summary>
-	/// This class stores the information used to define various writing system properties.
+	/// This class stores the information used to define various writing system properties. The Language, Script, Region and Variant
+	/// properties conform to the subtags of the same name defined in Rfc5646 and are enforced by the Rfc5646Tag class. it is worth
+	/// noting that for historical reasons this class does not provide seperate fields for variant and private use components as
+	/// defined in Rfc5646. Instead the ConcatenateVariantAndPrivateUse and SplitVariantAndPrivateUse methods are provided for consumers
+	/// to generate a sinlge variant subtag that contains both fields seperated by "-x-".
+	/// Furthermore the WritingSystemDefinition.WellknownSubtags class provides certain well defined Subtags that carry special meaning
+	/// apart from the IANA subtag registry. In particular this class defines "qaa" as the default "unlisted language" language subtag.
+	/// It should be used when there is no match for a language in the IANA subtag registry. Private use properties are "emic" and "etic"
+	/// which mark phonemic and phonetic writing systems respectively. These must always be used in conjunction with the "fonipa" variant.
+	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
+	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
 	public class WritingSystemDefinition
 	{
