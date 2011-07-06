@@ -79,7 +79,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			dlg.ShowDialog();
 			if(dlg.DialogResult!=DialogResult.OK)
 				return null;
-			return new WritingSystemDefinition(dlg.ISOCode, string.Empty,string.Empty,string.Empty, dlg.ISOCode,false);
+			var variant = String.Empty;
+			if(dlg.ISOCode == WellKnownSubTags.Unlisted.Language)
+			{
+				variant = "x-" + "Unlisted";
+			}
+			return new WritingSystemDefinition(dlg.ISOCode, string.Empty, string.Empty, variant, dlg.ISOCode, false);
 		}
 
 		private void _propertiesTabControl_Load(object sender, EventArgs e)
