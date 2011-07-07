@@ -21,6 +21,8 @@ namespace Palaso.WritingSystems
 	/// LdmlInFolderWritingSystemRepository class for this purpose.
 	/// Be aware that as of Jul-5-2011 an exception was made for certain well defined Fieldworks LDML files whose contained
 	/// Rfc5646 tag begin with "x-". These will load correctly, albeit in a transformed state, in spite of being "Version 0".
+	/// Furthermore writing systems containing RfcTags beginning with "x-" and that have a matching Fieldworks conform LDML file
+	/// in the repository will not be changed including no marking with "version 1".
 	/// </summary>
 	public class LdmlDataMapper
 	{

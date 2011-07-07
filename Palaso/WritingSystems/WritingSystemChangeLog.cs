@@ -7,9 +7,9 @@ using System.Linq;
 namespace Palaso.WritingSystems
 {
 	/// <summary>
-	/// This class is used byt the LdmlInFolderWritingsystemRepository to log any changes that an application makes to the repository.
+	/// This class is used by tthe LdmlInFolderWritingsystemRepository to log any changes that an application makes to the repository.
 	/// The idea is that consumers can query this class to learn of any changes made to contained writing systems by another program
-	/// and update other files accordingly.
+	/// and update its other files accordingly.
 	/// </summary>
 	public class WritingSystemChangeLog : IAuditTrail
 	{

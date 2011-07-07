@@ -6,7 +6,13 @@ using Palaso.Migration;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-
+	/// <summary>
+	/// This class is used to migrate an LdmlFile from LDML palaso version 0 to 1. It takes any LDML file and transforms
+	/// a non-conformant rfc5646 tag contained therein into a conformant one. Note that the constructor expects a callback
+	/// to help a consumer perform changes to its own files where necassary.
+	/// Also note that the files are not written until all writing systems have been migrated in order to deal correctly
+	/// with duplicate Rfc5646 tags that might result from migration.
+	/// </summary>
 	public class LdmlVersion0MigrationStrategy : MigrationStrategyBase
 	{
 		private static class WellKnownSubTags
@@ -86,7 +92,6 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			);
 			_writingSystemsV1[sourceFileName] = writingSystemDefinitionV1;
 			//_migratedWs.VerboseDescription //not written out by LdmlAdaptorV1 - flex?
-			//_migratedWs.StoreID = ??? //what to do?
 			//_migratedWs.NativeName //not written out by LdmlAdaptorV1 - flex?);
 
 			// Record the details for use in PostMigrate where we change the file name to match the rfc tag where we can.
