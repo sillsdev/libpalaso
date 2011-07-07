@@ -75,7 +75,6 @@ namespace Palaso.WritingSystems
 		private bool _rightToLeftScript;
 		private ICollator _collator;
 		private string _id;
-		private string _storeId;
 
 		public WritingSystemDefinition()
 		{
@@ -128,7 +127,6 @@ namespace Palaso.WritingSystems
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 			_id = ws._id;
-			_storeId = ws._storeId;
 		}
 
 		/// <summary>
@@ -569,7 +567,7 @@ namespace Palaso.WritingSystems
 		/// Other classes that persist this need to know when our id changed, so they can
 		/// clean up the old copy which is based on the old name.
 		/// </summary>
-		virtual public string StoreID { get { return _storeId; } set{ _storeId = value;} }
+		virtual public string StoreID { get; set; }
 
 		virtual public string DisplayLabel
 		{

@@ -81,7 +81,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition(_writingSystem);
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
-			Assert.AreEqual(1, RepositoryUnderTest.Count);
+			Assert.AreEqual(2, RepositoryUnderTest.Count);
 			Assert.AreEqual("de", ws.Id);
 		}
 
