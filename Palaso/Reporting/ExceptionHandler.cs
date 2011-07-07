@@ -197,6 +197,7 @@ namespace Palaso.Reporting
 						Debug.Fail(exception.Message);
 					}
 				}
+
 			}
 			catch(Exception)
 			{

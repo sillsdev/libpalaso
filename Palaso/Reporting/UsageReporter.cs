@@ -568,8 +568,26 @@ namespace Palaso.Reporting
 			string message = error.Message;
 			if (error.InnerException != null)
 				message += " Inner: " + error.InnerException.Message;
-			SendEvent(s_singleton._mostRecentArea, wasFatal ? "Fatal Error" : "Non-Fatal Error", theCommandOrOtherContext, message, 0);
+			SendEvent(s_singleton._mostRecentArea, "error", message, ErrorReport.VersionNumberString + (wasFatal ? "/Fatal Error/" : "/Non-Fatal Error/")+theCommandOrOtherContext, 0);
 		}
 
+		public static void ReportException(Exception error)
+		{
+			if (s_singleton == null)
+				return;
+
+			string message = error.Message;
+			if (error.InnerException != null)
+				message += " Inner: " + error.InnerException.Message;
+			SendEvent(s_singleton._mostRecentArea, "error", message,  ErrorReport.VersionNumberString , 0);
+		}
+
+		public static void ReportExceptionString(string errorMessage)
+		{
+			if (s_singleton == null)
+				return;
+
+			SendEvent(s_singleton._mostRecentArea, "error", errorMessage, ErrorReport.VersionNumberString, 0);
+		}
 	}
 }

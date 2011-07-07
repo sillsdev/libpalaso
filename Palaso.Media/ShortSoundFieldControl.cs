@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using Palaso.Reporting;
 
 namespace Palaso.Media
 {
@@ -110,6 +111,7 @@ namespace Palaso.Media
 				if (SoundDeleted != null)
 				{
 					SoundDeleted.Invoke(this, null);
+					UsageReporter.SendNavigationNotice("AudioDeleted");
 				}
 			}
 		}
@@ -165,6 +167,7 @@ namespace Palaso.Media
 			if(SoundRecorded!=null)
 			{
 				SoundRecorded.Invoke(this, null);
+				UsageReporter.SendNavigationNotice("AudioRecorded");
 			}
 		}
 
