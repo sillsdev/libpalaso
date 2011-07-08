@@ -19,6 +19,8 @@ namespace Palaso.WritingSystems
 	/// The LdmlDatamapper is tightly tied to a particular (palaso) version of LDML. If the LdmlDatamapper refuses to Read a
 	/// particular Ldml file it may need to be migrated to the latest version. Please use the
 	/// LdmlInFolderWritingSystemRepository class for this purpose.
+	/// Please note that the LdmlDataMapper.Write method can round trip data that it does not understand if passed an
+	/// appropriate stream or xmlreader produced from the old file.
 	/// Be aware that as of Jul-5-2011 an exception was made for certain well defined Fieldworks LDML files whose contained
 	/// Rfc5646 tag begin with "x-". These will load correctly, albeit in a transformed state, in spite of being "Version 0".
 	/// Furthermore writing systems containing RfcTags beginning with "x-" and that have a matching Fieldworks conform LDML file
@@ -398,6 +400,12 @@ namespace Palaso.WritingSystems
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
+		/// <summary>
+		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="ws"></param>
+		/// <param name="oldFile"></param>
 		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
 			if (filePath == null)
@@ -438,7 +446,15 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader xmlReader)
+
+
+		/// <summary>
+		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="ws"></param>
+		/// <param name="oldFile"></param>
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
 		{
 			if (xmlWriter == null)
 			{
@@ -451,7 +467,7 @@ namespace Palaso.WritingSystems
 			XmlReader reader = null;
 			try
 			{
-				if (xmlReader != null)
+				if (oldFileReader != null)
 				{
 					XmlReaderSettings settings = new XmlReaderSettings();
 					settings.NameTable = _nameSpaceManager.NameTable;
@@ -460,7 +476,7 @@ namespace Palaso.WritingSystems
 					settings.ValidationType = ValidationType.None;
 					settings.XmlResolver = null;
 					settings.ProhibitDtd = false;
-					reader = XmlReader.Create(xmlReader, settings);
+					reader = XmlReader.Create(oldFileReader, settings);
 				}
 				WriteLdml(xmlWriter, reader, ws);
 			}
