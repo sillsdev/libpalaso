@@ -1245,7 +1245,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
-					kvp.Key.AddToPrivateUse("dup");
+					kvp.Key.MakeUnique(_writingSystemRepository.AllWritingSystems.Select(ws=>ws.Id));
 				}
 				_writingSystemRepository.Set(kvp.Key);
 			}

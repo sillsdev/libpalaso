@@ -548,6 +548,29 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// This method will try to make the current writing system's Id
+		/// unique compared to the Ids passed in by appending dupl# where
+		/// # is a digit that increases with the number of duplicates found.
+		/// </summary>
+		/// <param name="otherWritingsystemIds"></param>
+		public void MakeUnique(IEnumerable<string> otherWritingsystemIds)
+		{
+			var lastAppended = String.Empty;
+			int duplicateNumber = 0;
+			while(otherWritingsystemIds.Any(id => id.Equals(Id, StringComparison.OrdinalIgnoreCase)))
+			{
+				_rfcTag.RemoveFromPrivateUse(lastAppended);
+				var currentToAppend = String.Format("dupl{0}", duplicateNumber);
+				if (!_rfcTag.PrivateUse.Contains(currentToAppend))
+				{
+					_rfcTag.AddToPrivateUse(currentToAppend);
+					UpdateIdFromRfcTag();
+					lastAppended = currentToAppend;
+				}
+				duplicateNumber++;
+			}
+		}
 
 		protected void UpdateString(ref string field, string value)
 		{

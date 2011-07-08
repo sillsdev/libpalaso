@@ -1261,5 +1261,50 @@ namespace Palaso.Tests.WritingSystems
 			writingSystem.SetRfc5646FromString("de-Latn-US-fonipa-x-etic");
 			Assert.AreEqual("de-Latn-US-fonipa-x-etic", writingSystem.Id);
 		}
+
+		[Test]
+		public void MakeUnique_IsAlreadyUnique_NothingChanges()
+		{
+			var existingTags = new[] {"en-Zxxx-x-audio"};
+			var ws = new WritingSystemDefinition("de");
+			ws.MakeUnique(existingTags);
+			Assert.That(ws.Id, Is.EqualTo("de"));
+		}
+
+		[Test]
+		public void MakeUnique_IsNotUnique_DuplicateMarkerIsAppended()
+		{
+			var existingTags = new[] { "en-Zxxx-x-audio" };
+			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+			ws.MakeUnique(existingTags);
+			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+		}
+
+		[Test]
+		public void MakeUnique_ADuplicateAlreadyExists_DuplicatemarkerWithHigherNumberIsAppended()
+		{
+			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl0" };
+			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+			ws.MakeUnique(existingTags);
+			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
+		}
+
+		[Test]
+		public void MakeUnique_ADuplicatewithHigherNumberAlreadyExists_DuplicateMarkerWithLowNumberIsAppended()
+		{
+			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl1" };
+			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+			ws.MakeUnique(existingTags);
+			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+		}
+
+		[Test]
+		public void MakeUnique_IdAlreadyContainsADuplicateMarker_DuplicateNumberIsMaintainedAndNewOneIsIntroduced()
+		{
+			var existingTags = new[] { "en-Zxxx-x-dupl0-audio", "en-Zxxx-x-audio-dupl1" };
+			var ws = new WritingSystemDefinition("en-Zxxx-x-dupl0-audio");
+			ws.MakeUnique(existingTags);
+			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
+		}
 	}
 }
