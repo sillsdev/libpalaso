@@ -317,7 +317,10 @@ namespace Palaso.Progress.LogBox
 //at least on Xubuntu, getting some rtf on the clipboard would mean that when you pasted, you'd see rtf
 			Clipboard.SetText(_verboseBox.Text);
 #else
-			Clipboard.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);
+			var data = new DataObject();
+			data.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);
+			data.SetText(_verboseBox.Text, TextDataFormat.UnicodeText);
+			Clipboard.SetDataObject(data);
 #endif
 		}
 
