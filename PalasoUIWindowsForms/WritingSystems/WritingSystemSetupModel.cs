@@ -1245,7 +1245,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				while (!_writingSystemRepository.CanSet(kvp.Key))
 				{
-					kvp.Key.MakeUnique(_writingSystemRepository.AllWritingSystems.Select(ws=>ws.Id));
+					//have to make a copy in case the id we are changing is in the repo
+					//otherwise we would constantly be checking for uniqueness with ourself => endless loop
+					var idsInUse = new List<string>(_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
+					kvp.Key.MakeUnique(idsInUse);
 				}
 				_writingSystemRepository.Set(kvp.Key);
 			}
