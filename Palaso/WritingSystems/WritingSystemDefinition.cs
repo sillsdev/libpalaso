@@ -549,27 +549,34 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// This method will try to make the current writing system's Id
-		/// unique compared to the Ids passed in by appending dupl# where
-		/// # is a digit that increases with the number of duplicates found.
+		/// This method will make a copy of the given writing system and
+		/// then make the Id unique compared to list of Ids passed in by
+		/// appending dupl# where # is a digit that increases with the
+		/// number of duplicates found.
 		/// </summary>
+		/// <param name="writingSystemToCopy"></param>
 		/// <param name="otherWritingsystemIds"></param>
-		public void MakeUnique(IEnumerable<string> otherWritingsystemIds)
+		/// <returns></returns>
+		public static WritingSystemDefinition CreateCopyWithUniqueId(
+			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
+			var newWs = writingSystemToCopy.Clone();
+			newWs.StoreID = writingSystemToCopy.StoreID;
 			var lastAppended = String.Empty;
 			int duplicateNumber = 0;
-			while(otherWritingsystemIds.Any(id => id.Equals(Id, StringComparison.OrdinalIgnoreCase)))
+			while (otherWritingsystemIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
 			{
-				_rfcTag.RemoveFromPrivateUse(lastAppended);
+				newWs._rfcTag.RemoveFromPrivateUse(lastAppended);
 				var currentToAppend = String.Format("dupl{0}", duplicateNumber);
-				if (!_rfcTag.PrivateUse.Contains(currentToAppend))
+				if (!newWs._rfcTag.PrivateUse.Contains(currentToAppend))
 				{
-					_rfcTag.AddToPrivateUse(currentToAppend);
-					UpdateIdFromRfcTag();
+					newWs._rfcTag.AddToPrivateUse(currentToAppend);
+					newWs.UpdateIdFromRfcTag();
 					lastAppended = currentToAppend;
 				}
 				duplicateNumber++;
 			}
+			return newWs;
 		}
 
 		protected void UpdateString(ref string field, string value)

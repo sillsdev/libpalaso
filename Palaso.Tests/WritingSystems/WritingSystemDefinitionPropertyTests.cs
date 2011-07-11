@@ -1267,8 +1267,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var existingTags = new[] {"en-Zxxx-x-audio"};
 			var ws = new WritingSystemDefinition("de");
-			ws.MakeUnique(existingTags);
-			Assert.That(ws.Id, Is.EqualTo("de"));
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
+			Assert.That(newWs.Id, Is.EqualTo("de"));
 		}
 
 		[Test]
@@ -1276,8 +1276,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-			ws.MakeUnique(existingTags);
-			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
 		}
 
 		[Test]
@@ -1285,8 +1285,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl0" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-			ws.MakeUnique(existingTags);
-			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
 		}
 
 		[Test]
@@ -1294,8 +1294,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl1" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-			ws.MakeUnique(existingTags);
-			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
 		}
 
 		[Test]
@@ -1303,8 +1303,8 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var existingTags = new[] { "en-Zxxx-x-dupl0-audio", "en-Zxxx-x-audio-dupl1" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-dupl0-audio");
-			ws.MakeUnique(existingTags);
-			Assert.That(ws.Id, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
 	}
 }

@@ -871,6 +871,59 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
 			_model.SetAllPossibleAndRemoveOthers();
 			Assert.That(_writingSystemRepository.Count, Is.EqualTo(4));
+			Assert.That(_writingSystemRepository.Contains("pt"));
+			Assert.That(_writingSystemRepository.Contains("de"));
+			Assert.That(_writingSystemRepository.Contains("en"));
+			Assert.That(_writingSystemRepository.Contains("en-x-dupl0"));
+		}
+
+		[Test]
+		public void SetAllPossibleAndRemoveOthers_NewDuplicateWs_SetsToRepo()
+		{
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			//reinitialize the model with a prepopulated repo
+			_writingSystemRepository.Set(new WritingSystemDefinition("en"));
+			_model = new WritingSystemSetupModel(_writingSystemRepository);
+			//add a new writing system definition with identical Id
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("en"));
+			_model.SetAllPossibleAndRemoveOthers();
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(2));
+			Assert.That(_writingSystemRepository.Contains("en"));
+			Assert.That(_writingSystemRepository.Contains("en-x-dupl0"));
+		}
+
+		[Test]
+		public void SetAllPossibleAndRemoveOthers_DuplicateIsCreatedFromWsAlreadyInRepo_OriginalWsIsUpdated()
+		{
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			var ws = new WritingSystemDefinition("en-x-yo");
+			//reinitialize the model with a prepopulated repo
+			_writingSystemRepository.Set(new WritingSystemDefinition("en"));
+			_writingSystemRepository.Set(ws);
+			_model = new WritingSystemSetupModel(_writingSystemRepository);
+			//Now change the Id so it's a duplicate of another ws already in the repo
+			ws.Variant = "";
+			_model.SetAllPossibleAndRemoveOthers();
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(2));
+			Assert.That(_writingSystemRepository.Contains("en"));
+			Assert.That(_writingSystemRepository.Contains("en-x-dupl0"));
+		}
+
+		[Test]
+		public void SetAllPossibleAndRemoveOthers_DuplicateIsCreatedFromWsAlreadyInRepoAndWouldBeRenamedToSelf_SetsToRepo()
+		{
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			var ws = new WritingSystemDefinition("en-x-dupl0");
+			//reinitialize the model with a prepopulated repo
+			_writingSystemRepository.Set(new WritingSystemDefinition("en"));
+			_writingSystemRepository.Set(ws);
+			_model = new WritingSystemSetupModel(_writingSystemRepository);
+			//Now change the Id so it's a duplicate of another ws already in the repo
+			ws.Variant = "";
+			_model.SetAllPossibleAndRemoveOthers();
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(2));
+			Assert.That(_writingSystemRepository.Contains("en"));
+			Assert.That(_writingSystemRepository.Contains("en-x-dupl0"));
 		}
 
 		[Test]

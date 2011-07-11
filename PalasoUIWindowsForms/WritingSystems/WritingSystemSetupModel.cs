@@ -1218,19 +1218,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			adaptor.Write (filePath, _currentWritingSystem, null);
 		}
 
-		// TODO: needs to be tested cjh
 		public void SetAllPossibleAndRemoveOthers()
 		{
-			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
-			// The reason to do this is to solve problems with cycles that could prevent saving.
-			// Example:
-			// ws1 has ID "a" and ws2 has ID "b"
-			// Set ws1 to ID "b" and ws2 to ID "a"
-			// The store will not allow you to set either of these because of the conflict
 			// NOTE: It is not a good idea to remove and then add all writing systems, even though it would
 			// NOTE: accomplish the same goal as any information in the LDML file not used by palaso would be lost.
-			Dictionary<WritingSystemDefinition, string> cantSet = new Dictionary<WritingSystemDefinition, string>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var unsettableWritingSystems = new List<WritingSystemDefinition>();
+			foreach (var ws in WritingSystemDefinitions)
 			{
 				if (_writingSystemRepository.CanSet(ws))
 				{
@@ -1238,31 +1231,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					cantSet.Add(ws, ws.Language);
+					unsettableWritingSystems.Add(ws);
 				}
 			}
-			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
+			foreach (var unsettableWs in unsettableWritingSystems)
 			{
-				while (!_writingSystemRepository.CanSet(kvp.Key))
-				{
-					//have to make a copy in case the id we are changing is in the repo
-					//otherwise we would constantly be checking for uniqueness with ourself => endless loop
-					var idsInUse = new List<string>(_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
-					kvp.Key.MakeUnique(idsInUse);
-				}
-				_writingSystemRepository.Set(kvp.Key);
-			}
-			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
-			{
-				kvp.Key.Language = kvp.Value;
-				if (_writingSystemRepository.CanSet(kvp.Key))
-				{
-					_writingSystemRepository.Set(kvp.Key);
-				}
-				else
-				{
-					_writingSystemRepository.Remove(kvp.Key.Id);
-				}
+				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
+						_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
+				_writingSystemRepository.Set(uniqueWs);
 			}
 		}
 
