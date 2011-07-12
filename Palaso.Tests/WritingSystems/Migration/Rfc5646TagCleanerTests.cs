@@ -139,9 +139,9 @@ namespace Palaso.Tests.WritingSystems.Migration
 		[Test]
 		public void AllPrivateComponents_InsertsStandardPrivateCodes()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-yyzz", "x-script", "x-RG", "fonipa-x-etic", "");
+			var cleaner = new Rfc5646TagCleaner("x-kal", "x-script", "x-RG", "fonipa-x-etic", "");
 			cleaner.Clean();
-			VerifyRfcCleaner(cleaner, "qaa", "Qaaa", "QM", "fonipa", "qaa-Qaaa-QM-fonipa-x-yyzz-script-RG-etic");
+			VerifyRfcCleaner(cleaner, "qaa", "Qaaa", "QM", "fonipa", "qaa-Qaaa-QM-fonipa-x-kal-script-RG-etic");
 		}
 
 		[Test]
@@ -256,21 +256,6 @@ namespace Palaso.Tests.WritingSystems.Migration
 			Assert.That(cleaner.Region, Is.EqualTo(region));
 			Assert.That(cleaner.Variant, Is.EqualTo(variant));
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo(completeTag));
-		}
-		[Test]
-		public void CompleteTagConstructor_ValidRfctagWithLegacyIso3Code_MigratesToRfc2LetterCode()
-		{
-			var cleaner = new Rfc5646TagCleaner("eng");
-			cleaner.Clean();
-			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en"));
-		}
-
-		[Test]
-		public void CompleteTagConstructor_ValidRfctagWithLegacyIso3CodeAndPrivateUse_MigratesToRfc2LetterCodeAndPrivateUse()
-		{
-			var cleaner = new Rfc5646TagCleaner("eng-bogus");
-			cleaner.Clean();
-			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en-x-bogus"));
 		}
 	}
 }

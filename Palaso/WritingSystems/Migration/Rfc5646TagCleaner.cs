@@ -220,7 +220,34 @@ namespace Palaso.WritingSystems.Migration
 
 		public void Clean()
 		{
-			// The very first thing, before anything else gets moved to private use, is to move the parts whose position we
+			// Migrate legacy ISO3 language codes to IANA 2 letter language codes, if there's a match.
+			// Do this before we look for valid codes, otherwise the 3-letter ones come up as invalid and
+			// get moved to private use. However, only do this to languages not identified as private-use.
+			if (!Language.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+			{
+				string migrateFrom = "";
+				string migrateTo = "";
+				foreach (string part in _languageSubTag.AllParts)
+				{
+					if (String.IsNullOrEmpty(migrateFrom))
+					{
+						foreach (var code in StandardTags.ValidIso639LanguageCodes)
+						{
+							if (String.IsNullOrEmpty(migrateFrom) && code.ISO3Code.Equals(part))
+							{
+								migrateFrom = part;
+								migrateTo = code.Code;
+							}
+						}
+					}
+				}
+				if (!String.IsNullOrEmpty(migrateFrom))
+				{
+					_languageSubTag.RemoveParts(migrateFrom);
+					_languageSubTag.AddToSubtag(migrateTo);
+				}
+			}
+			// The very next thing, before anything else gets moved to private use, is to move the parts whose position we
 			// care about to the appropriate position in the private use section.
 			// In the process we may remove anything non-alphanumeric, since otherwise we may move a marker that later
 			// disappears (pathologically).
@@ -250,29 +277,6 @@ namespace Palaso.WritingSystems.Migration
 			MoveTagsMatching(_languageSubTag, _scriptSubTag, StandardTags.IsValidIso15924ScriptCode, StandardTags.IsValidIso639LanguageCode);
 			MoveTagsMatching(_languageSubTag, _regionSubTag, StandardTags.IsValidIso3166Region, StandardTags.IsValidIso639LanguageCode);
 			MoveTagsMatching(_languageSubTag, _variantSubTag, StandardTags.IsValidRegisteredVariant, StandardTags.IsValidIso639LanguageCode);
-
-			// Migrate legacy ISO3 language codes to IANA 2 letter language codes, if there's a match
-			string migrateFrom = "";
-			string migrateTo = "";
-			foreach (string part in _languageSubTag.AllParts)
-			{
-				if (String.IsNullOrEmpty(migrateFrom))
-				{
-					foreach (var code in StandardTags.ValidIso639LanguageCodes)
-					{
-						if (String.IsNullOrEmpty(migrateFrom) && code.ISO3Code.Equals(part))
-						{
-							migrateFrom = part;
-							migrateTo = code.Code;
-						}
-					}
-				}
-			}
-			if (!String.IsNullOrEmpty(migrateFrom))
-			{
-				_languageSubTag.RemoveParts(migrateFrom);
-				_languageSubTag.AddToSubtag(migrateTo);
-			}
 
 			// This didn't really work out
 			//foreach (string part in _languageSubTag.AllParts.Where(languagecode => StandardTags.ValidIso639LanguageCodes.Any(code => code.ISO3Code.Equals(languagecode))))
