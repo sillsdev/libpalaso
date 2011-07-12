@@ -215,12 +215,9 @@ namespace Palaso.WritingSystems
 			{
 				return true;
 			}
-
-			return ValidIso639LanguageCodes.Any(
-				code => languageCodeToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase) ||
-						languageCodeToCheck.Equals(code.ISO3Code, StringComparison.OrdinalIgnoreCase)
-				);
+			return ValidIso639LanguageCodes.Any(code => languageCodeToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase));
 		}
+
 		public static bool IsValidIso15924ScriptCode(string scriptTagToCheck)
 		{
 			return IsStandardIso15924ScriptCode(scriptTagToCheck) || IsPrivateUseScriptCode(scriptTagToCheck);

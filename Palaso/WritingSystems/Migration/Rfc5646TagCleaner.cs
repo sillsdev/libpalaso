@@ -222,10 +222,6 @@ namespace Palaso.WritingSystems.Migration
 				_privateUseSubTag.AddToSubtag(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
 
-			//if (Language.StartsWith("x-"))
-			//{
-			//    MoveTagsMatching(_languageSubTag, _privateUseSubTag, s => true);
-			//}
 			// If the language tag contains an x- , then move the string behind the x- to private use
 			MovePartsToPrivateUseIfNecessary(_languageSubTag);
 
@@ -233,6 +229,36 @@ namespace Palaso.WritingSystems.Migration
 			MoveTagsMatching(_languageSubTag, _scriptSubTag, StandardTags.IsValidIso15924ScriptCode, StandardTags.IsValidIso639LanguageCode);
 			MoveTagsMatching(_languageSubTag, _regionSubTag, StandardTags.IsValidIso3166Region, StandardTags.IsValidIso639LanguageCode);
 			MoveTagsMatching(_languageSubTag, _variantSubTag, StandardTags.IsValidRegisteredVariant, StandardTags.IsValidIso639LanguageCode);
+
+			// Migrate legacy ISO3 language codes to IANA 2 letter language codes, if there's a match
+			string migrateFrom = "";
+			string migrateTo = "";
+			foreach (string part in _languageSubTag.AllParts)
+			{
+				if (String.IsNullOrEmpty(migrateFrom))
+				{
+					foreach (var code in StandardTags.ValidIso639LanguageCodes)
+					{
+						if (String.IsNullOrEmpty(migrateFrom) && code.ISO3Code.Equals(part))
+						{
+							migrateFrom = part;
+							migrateTo = code.Code;
+						}
+					}
+				}
+			}
+			if (!String.IsNullOrEmpty(migrateFrom))
+			{
+				_languageSubTag.RemoveParts(migrateFrom);
+				_languageSubTag.AddToSubtag(migrateTo);
+			}
+
+			// This didn't really work out
+			//foreach (string part in _languageSubTag.AllParts.Where(languagecode => StandardTags.ValidIso639LanguageCodes.Any(code => code.ISO3Code.Equals(languagecode))))
+			//{
+			//    _languageSubTag.AddToSubtag(StandardTags.ValidIso639LanguageCodes.First(code => code.ISO3Code.Equals(part)).Code);
+			//    _languageSubTag.RemoveParts(part);
+			//}
 
 			// Move all other tags that don't belong to the private use subtag.
 			MoveTagsMatching(
