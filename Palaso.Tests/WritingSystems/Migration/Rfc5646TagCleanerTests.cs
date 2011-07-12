@@ -59,11 +59,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void Language_XDashBeforeValidLanguageName_RemovesX()
+		public void ValidLanguageCodeMarkedPrivate_InsertsQaa()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-de");
+			var cleaner = new Rfc5646TagCleaner("x-de", "", "", "", "");
 			cleaner.Clean();
-			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("de"));
+			VerifyRfcCleaner(cleaner, "qaa", "", "", "", "qaa-x-de");
 		}
 
 		[Test]
@@ -105,7 +105,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			var cleaner = new Rfc5646TagCleaner("x-en-Zxxx-x-audio");
 			cleaner.Clean();
-			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en-Zxxx-x-Zxxx-audio"));
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Zxxx-x-en-Zxxx-audio"));
 		}
 
 		[Test]

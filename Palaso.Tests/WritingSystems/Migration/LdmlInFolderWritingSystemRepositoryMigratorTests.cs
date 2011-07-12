@@ -947,7 +947,8 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("x-en.ldml", LdmlContentForTests.Version0("x-en", "", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/variant[@type='x-en']");
 			}
 		}
 

@@ -251,9 +251,9 @@ namespace Palaso.WritingSystems.Migration
 			// care about to the appropriate position in the private use section.
 			// In the process we may remove anything non-alphanumeric, since otherwise we may move a marker that later
 			// disappears (pathologically).
-			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardTags.IsValidIso639LanguageCode, "qaa");
-			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardTags.IsValidIso15924ScriptCode, "Qaaa");
-			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardTags.IsValidIso3166Region, "QM");
+			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardTags.IsValidIso639LanguageCode, "qaa", true);
+			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardTags.IsValidIso15924ScriptCode, "Qaaa", false);
+			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardTags.IsValidIso3166Region, "QM", false);
 			//This fixes a bug where the LdmlAdaptorV1 was writing out Zxxx as part of the variant to mark an audio writing system
 			if (_variantSubTag.Contains(WellKnownSubTags.Audio.Script))
 			{
@@ -345,27 +345,21 @@ namespace Palaso.WritingSystems.Migration
 		/// <summary>
 		/// This is used to move one part if appropriate from the 'from' subtag to private use.
 		/// Alternatively, if any part is appropriate for the tag according to the test predicate,
-		/// it is moved to the first position.
+		/// it is moved to the first position (unless it follows an x- and keepStandardPartInPrivateUse is true).
 		/// If we didn't find a valid part, but did move something, insert standardPrivateCode at the START of "from".
 		/// As a side effect, this method may remove non-alphanumeric characters from the from tag.
 		/// (I don't like having such a side effect, but it seems necessary to produce the desired behavior).
 		/// </summary>
-		private void MoveFirstPartToPrivateUseIfNecessary(SubTag from, Func<bool, string> test, string standardPrivatePart)
+		private void MoveFirstPartToPrivateUseIfNecessary(SubTag from, Func<bool, string> test, string standardPrivatePart,
+			bool keepStandardPartInPrivateUse)
 		{
 			var part = from.AllParts.FirstOrDefault();
 			if (part == null)
 				return; // nothing to move.
 			if (test(part))
 				return; // no need to move, it is a valid code for its slot.
-			foreach (var goodPart in from.AllParts)
-			{
-				if (test(goodPart))
-				{
-					from.RemoveParts(goodPart);
-					from.InsertAtStartOfSubtag(goodPart);
-					return;
-				}
-			}
+			if (MoveStandardPartToStart(from, test, keepStandardPartInPrivateUse))
+				return;
 			// If we exit this loop we need to move the first part to private use.
 			// But first strip illegal characters since that may leave nothing to move,
 			// or at least nothing of the first part we would otherwise move.
@@ -375,15 +369,8 @@ namespace Palaso.WritingSystems.Migration
 			from.RemoveNonAlphaNumericCharacters();
 			// But, now we should scan again. If cleaning out bad characters resulted in a good code,
 			// let's put it in the main part of the tag rather than private-use.
-			foreach (var goodPart in from.AllParts)
-			{
-				if (test(goodPart))
-				{
-					from.RemoveParts(goodPart);
-					from.InsertAtStartOfSubtag(goodPart);
-					return;
-				}
-			}
+			if (MoveStandardPartToStart(from, test, keepStandardPartInPrivateUse))
+				return;
 			// OK, no good parts left. We will move the first part that is not an X.
 			part = FirstNonXPart(from.AllParts);
 			if (part == null)
@@ -391,6 +378,27 @@ namespace Palaso.WritingSystems.Migration
 			_privateUseSubTag.AddToSubtag(part);
 			from.RemoveParts(part);
 			from.InsertAtStartOfSubtag(standardPrivatePart);
+		}
+
+		/// <summary>
+		/// If there is a standard part (that passes test) in the parts of the subtag, move it to the start and return true.
+		/// If keepStandardPartInPrivateUse is true, only a part before the first 'x' may be moved.
+		/// Return true if an acceptable part was found.
+		/// </summary>
+		private bool MoveStandardPartToStart(SubTag from, Func<bool, string> test, bool keepStandardPartInPrivateUse)
+		{
+			foreach (var goodPart in from.AllParts)
+			{
+				if (keepStandardPartInPrivateUse && goodPart.Equals("x", StringComparison.OrdinalIgnoreCase))
+					return false;
+				if (test(goodPart))
+				{
+					from.RemoveParts(goodPart);
+					from.InsertAtStartOfSubtag(goodPart);
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void MovePartsToPrivateUseIfNecessary(SubTag from)
