@@ -12,9 +12,9 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemDefinitionVariantTests
 	{
 		[Test]
-		public void LatestVersion_IsOne()
+		public void LatestVersion_IsTwo()
 		{
-			Assert.AreEqual(1, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+			Assert.AreEqual(2, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		[Test]

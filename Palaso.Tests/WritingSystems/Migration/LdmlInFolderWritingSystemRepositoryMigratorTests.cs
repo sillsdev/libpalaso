@@ -86,7 +86,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(1, environment.GetFileVersion(fileName));
+				Assert.AreEqual(2, environment.GetFileVersion(fileName));
 			}
 		}
 
@@ -199,14 +199,17 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("bogus.ldml", LdmlContentForTests.Version0("en-x-audio", "", "", ""));
 				environment.WriteLdmlFile("bogus1.ldml", LdmlContentForTests.Version0("de", "bogus", "stuff", ""));
 				environment.WriteLdmlFile("bogus2.ldml", LdmlContentForTests.Version0("en", "Zxxx", "", "x-audio"));
+				environment.WriteLdmlFile("bogus3.ldml", LdmlContentForTests.Version0("zh", "", "CN", ""));
+				environment.WriteLdmlFile("bogus4.ldml", LdmlContentForTests.Version0("cmn", "", "", ""));
 
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				AssertMigrationInfoContains(environment.MigrationInfo, "de-bogus-stuff", "de-x-bogus-stuff");
+				AssertMigrationInfoContains(environment.MigrationInfo, "de-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
 				AssertMigrationInfoContains(environment.MigrationInfo, "en-Zxxx-x-audio", "en-Zxxx-x-audio");
 				AssertMigrationInfoContains(environment.MigrationInfo, "en-x-audio", "en-Zxxx-x-audio-dupl1");
-
+				AssertMigrationInfoContains(environment.MigrationInfo, "zh-CN", "zh-CN");
+				AssertMigrationInfoContains(environment.MigrationInfo, "cmn", "zh-CN-x-dupl1");
 			}
 		}
 
@@ -412,7 +415,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "bogus-stuff", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Qaaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
 		}
@@ -455,6 +458,14 @@ namespace Palaso.Tests.WritingSystems.Migration
 			}
 		}
 
+		/// <summary>
+		/// JohnT: the outcome here is perhaps not completely obvious. The input is an invalid LDML where language and script
+		/// are both specified with two part codes that are not valid. The first part of each comes to be treated as the
+		/// private-use language and script: thus, "bogus", from the language code, becomes the first private-use part,
+		/// and qaa is inserted as the LDML language code, and "more" from the invalid script code becomes the second
+		/// private-use part, corresponding to script = "Qaaa".
+		/// The remaining invalid components are moved to the end of the private-use, except that the duplicate 'bogus' is removed.
+		/// </summary>
 		[Test]
 		public void Migrate_LanguageAndScriptSubtagsContainInvalidData_AllInvalidDataIsMovedToPrivateUse()
 		{
@@ -463,9 +474,9 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus-stuff", "more-bogus", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='']");
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff-more']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Qaaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-more-stuff']");
 			}
 		}
 
@@ -477,7 +488,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("qaa", "", "bogus-stuff", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='QM']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
 		}
@@ -593,7 +604,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus-stuff", "", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
 		}
@@ -619,7 +630,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus", "", "", "x-bogus"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus']");
 			}
 		}
@@ -632,7 +643,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "bogus-stuff", "", "x-bogus"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Qaaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
 		}
@@ -645,7 +656,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "bogus-stuff", "x-bogus"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='QM']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
 		}
@@ -877,7 +888,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(1, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(2, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 
@@ -929,14 +940,14 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
-		public void Migrate_LanguageSubtagContainsValidSubtagWithPrecedingX_IsConsideredFlexPrivateUseAndLeftUntouched()
+		public void Migrate_LanguageSubtagContainsValidSubtagWithPrecedingX_IsChangedToNonPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("x-en.ldml", LdmlContentForTests.Version0("x-en", "", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/language[@type='x-en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/language[@type='en']");
 			}
 		}
 
@@ -1188,7 +1199,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(1, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(2, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 
@@ -1221,22 +1232,24 @@ namespace Palaso.Tests.WritingSystems.Migration
 
 		#endregion
 
-		#region BogusFlexPrivateUseLdml
-		[Test]
-		public void Migrate_LdmlIsFlexPrivateUseFormat_FileIsUntouched()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				string filePath = environment.FilePath("test.ldml");
-				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
-				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
-				migrator.Migrate();
-				AssertThatLdmlMatches("x-en", "Zxxx", "US", "1901-x-audio", filePath);
-				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
-			}
-		}
-		#endregion
+		// JohnT: this test is obsolete since we now DO migrate writing systems with this sort of ID.
+		// Not sure whether there is anything that should still be tested about this case. I think other tests cover it.
+		//#region BogusFlexPrivateUseLdml
+		//[Test]
+		//public void Migrate_LdmlIsFlexPrivateUseFormat_FileIsUntouched()
+		//{
+		//    using (var environment = new TestEnvironment())
+		//    {
+		//        string filePath = environment.FilePath("test.ldml");
+		//        var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
+		//        environment.WriteLdmlFile("test.ldml", originalFilecontent);
+		//        var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+		//        migrator.Migrate();
+		//        AssertThatLdmlMatches("x-en", "Zxxx", "US", "1901-x-audio", filePath);
+		//        Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
+		//    }
+		//}
+		//#endregion
 
 		#region ChangeLog Tests
 

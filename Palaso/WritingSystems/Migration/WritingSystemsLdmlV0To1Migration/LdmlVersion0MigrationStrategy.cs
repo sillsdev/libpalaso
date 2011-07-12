@@ -7,7 +7,7 @@ using Palaso.Migration;
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	/// <summary>
-	/// This class is used to migrate an LdmlFile from LDML palaso version 0 to 1. It takes any LDML file and transforms
+	/// This class is used to migrate an LdmlFile from LDML palaso version 0 (or 1) to 2. It takes any LDML file and transforms
 	/// a non-conformant rfc5646 tag contained therein into a conformant one. Note that the constructor expects a callback
 	/// to help a consumer perform changes to its own files where necassary.
 	/// Also note that the files are not written until all writing systems have been migrated in order to deal correctly
@@ -43,8 +43,8 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private readonly OnMigrationFn _onMigrationCallback;
 		private IAuditTrail _auditLog;
 
-		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog) :
-			base(0, 1)
+		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog, int fromVersion) :
+			base(fromVersion, 2)
 		{
 			_migrationInfo = new List<MigrationInfo>();
 			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();

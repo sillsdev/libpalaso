@@ -49,7 +49,7 @@ namespace Palaso.WritingSystems
 		//This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
 		//This should not be confused with the version of the locale data contained in this writing system.
 		//That information is stored in the "VersionNumber" property.
-		public const int LatestWritingSystemDefinitionVersion = 1;
+		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private RFC5646Tag _rfcTag;
 

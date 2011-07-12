@@ -20,7 +20,9 @@ namespace Palaso.WritingSystems.Migration
 			var auditLog =
 				new WritingSystemChangeLog(
 					new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml")));
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog, 0));
+			// Version 0 strategy has been enhanced to also migrate version 1.
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog, 1));
 		}
 
 		public void Migrate()

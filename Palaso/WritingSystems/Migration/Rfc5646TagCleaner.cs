@@ -163,6 +163,11 @@ namespace Palaso.WritingSystems.Migration
 				}
 			}
 
+			internal void InsertAtStartOfSubtag(string partToAdd)
+			{
+				_subTagParts.Insert(0, partToAdd);
+			}
+
 			public void RemoveParts(string partsToRemove)
 			{
 				List<string> partsOfStringToRemove = ParseSubtagForParts(partsToRemove);
@@ -215,12 +220,28 @@ namespace Palaso.WritingSystems.Migration
 
 		public void Clean()
 		{
+			// The very first thing, before anything else gets moved to private use, is to move the parts whose position we
+			// care about to the appropriate position in the private use section.
+			// In the process we may remove anything non-alphanumeric, since otherwise we may move a marker that later
+			// disappears (pathologically).
+			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardTags.IsValidIso639LanguageCode, "qaa");
+			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardTags.IsValidIso15924ScriptCode, "Qaaa");
+			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardTags.IsValidIso3166Region, "QM");
 			//This fixes a bug where the LdmlAdaptorV1 was writing out Zxxx as part of the variant to mark an audio writing system
 			if (_variantSubTag.Contains(WellKnownSubTags.Audio.Script))
 			{
 				MoveTagsMatching(_variantSubTag, _scriptSubTag, tag => tag.Equals(WellKnownSubTags.Audio.Script));
 				_privateUseSubTag.AddToSubtag(WellKnownSubTags.Audio.PrivateUseSubtag);
 			}
+			// Fixes various legacy problems.
+			if (Language.Equals("cmn", StringComparison.OrdinalIgnoreCase))
+				Language = "zh";
+			if (Language.Equals("pes", StringComparison.OrdinalIgnoreCase))
+				Language = "fa";
+			if (Language.Equals("arb", StringComparison.OrdinalIgnoreCase))
+				Language = "ar";
+			if (Language.Equals("zh", StringComparison.OrdinalIgnoreCase) && String.IsNullOrEmpty(Region))
+				Region = "CN";
 
 			// If the language tag contains an x- , then move the string behind the x- to private use
 			MovePartsToPrivateUseIfNecessary(_languageSubTag);
@@ -307,6 +328,65 @@ namespace Palaso.WritingSystems.Migration
 			{
 				_languageSubTag.AddToSubtag("qaa");
 			}
+		}
+
+		private string FirstNonXPart(IEnumerable<string> input)
+		{
+			foreach (var part in input)
+				if (!part.Equals("x", StringComparison.OrdinalIgnoreCase))
+					return part;
+			return null;
+		}
+
+		/// <summary>
+		/// This is used to move one part if appropriate from the 'from' subtag to private use.
+		/// Alternatively, if any part is appropriate for the tag according to the test predicate,
+		/// it is moved to the first position.
+		/// If we didn't find a valid part, but did move something, insert standardPrivateCode at the START of "from".
+		/// As a side effect, this method may remove non-alphanumeric characters from the from tag.
+		/// (I don't like having such a side effect, but it seems necessary to produce the desired behavior).
+		/// </summary>
+		private void MoveFirstPartToPrivateUseIfNecessary(SubTag from, Func<bool, string> test, string standardPrivatePart)
+		{
+			var part = from.AllParts.FirstOrDefault();
+			if (part == null)
+				return; // nothing to move.
+			if (test(part))
+				return; // no need to move, it is a valid code for its slot.
+			foreach (var goodPart in from.AllParts)
+			{
+				if (test(goodPart))
+				{
+					from.RemoveParts(goodPart);
+					from.InsertAtStartOfSubtag(goodPart);
+					return;
+				}
+			}
+			// If we exit this loop we need to move the first part to private use.
+			// But first strip illegal characters since that may leave nothing to move,
+			// or at least nothing of the first part we would otherwise move.
+			// We do NOT want to do this BEFORE looking for good parts, because (for example) if we have a
+			// region code like U!S-gb, we want to detect 'gb' as a good region code and keep that,
+			// rather than fixing U!S to US and then choosing to keep that.
+			from.RemoveNonAlphaNumericCharacters();
+			// But, now we should scan again. If cleaning out bad characters resulted in a good code,
+			// let's put it in the main part of the tag rather than private-use.
+			foreach (var goodPart in from.AllParts)
+			{
+				if (test(goodPart))
+				{
+					from.RemoveParts(goodPart);
+					from.InsertAtStartOfSubtag(goodPart);
+					return;
+				}
+			}
+			// OK, no good parts left. We will move the first part that is not an X.
+			part = FirstNonXPart(from.AllParts);
+			if (part == null)
+				return;
+			_privateUseSubTag.AddToSubtag(part);
+			from.RemoveParts(part);
+			from.InsertAtStartOfSubtag(standardPrivatePart);
 		}
 
 		private void MovePartsToPrivateUseIfNecessary(SubTag from)

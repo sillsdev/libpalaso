@@ -123,8 +123,8 @@ namespace Palaso.Tests.WritingSystems
 		//WS-33992
 		public void Read_LdmlContainsEmptyCollationElement_SortUsingIsSetToSameAsIfNoCollationElementExisted()
 		{
-			const string ldmlWithEmptyCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations><collation></collation></collations><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"1\" /></special></ldml>";
-			const string ldmlwithNoCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"1\" /></special></ldml>";
+			const string ldmlWithEmptyCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations><collation></collation></collations><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
+			const string ldmlwithNoCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
 
 			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
 			File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithEmptyCollationElement);
@@ -145,7 +145,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
 		{
-			const string ldmlWithOnlyPrivateUse = "<ldml><identity><version number=\"\" /><language type=\"\" /><variant type=\"x-private-use\" /></identity><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"1\" /></special></ldml>";
+			const string ldmlWithOnlyPrivateUse = "<ldml><identity><version number=\"\" /><language type=\"\" /><variant type=\"x-private-use\" /></identity><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
 
 
 			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
@@ -188,7 +188,7 @@ namespace Palaso.Tests.WritingSystems
 		<palaso:languageName
 			value='English' />
 		<palaso:version
-			value='1' />
+			value='2' />
 	</special>
 </ldml>".Replace("'", "\"");
 #endregion
@@ -511,7 +511,7 @@ namespace Palaso.Tests.WritingSystems
 					adaptor.Write(badFlexLdml.Path, wsV0, new MemoryStream(File.ReadAllBytes(badFlexLdml.Path)));
 					var wsV1 = new WritingSystemDefinition();
 					adaptor.Write(version1Ldml.Path, wsV1, null);
-					AssertThatXmlIn.File(version1Ldml.Path).HasAtLeastOneMatchForXpath("/ldml/special/palaso:version[@value='1']", namespaceManager);
+					AssertThatXmlIn.File(version1Ldml.Path).HasAtLeastOneMatchForXpath("/ldml/special/palaso:version[@value='2']", namespaceManager);
 				}
 			}
 		}
