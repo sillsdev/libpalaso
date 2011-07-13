@@ -813,6 +813,85 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		//This test checks that "old" ldml files are not overwritten on Save before they can be used to roundtrip unknown ldml (i.e. from flex)
+		public void Save_IdOfWsIsSameAsOldIdOfOtherWs_LdmlUnknownToRepoIsMaintained()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string germanFromFlex =
+#region fileContent
+ @"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='' />
+		<generation date='2010-12-02T23:05:33' />
+		<language type='de' />
+	</identity>
+	<collations />
+	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+		<palaso:abbreviation value='de' />
+		<palaso:defaultFontFamily value='FieldWorks Test SIL' />
+		<palaso:defaultKeyboard value='FwTest' />
+		<palaso:languageName value='German' />
+		<palaso:spellCheckingId value='de' />
+		<palaso:version value='1'/>
+	</special>
+	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled value='False' />
+		<fw:windowsLCID value='1058' />
+	</special>
+</ldml>".Replace("'", "\"");
+#endregion
+				var pathForFlexGerman = Path.Combine(environment.TestPath, "de.ldml");
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws1 = new WritingSystemDefinition("en");
+				var ws2 = new WritingSystemDefinition("de");
+				//Create repo with english and flex german
+				environment.Collection.Set(ws1);
+				environment.Collection.Set(ws2);
+				environment.Collection.Save();
+				//The content of the file is switched out here as opposed to loading from this content in the first place
+				//because order is extremely important for this test and if we loaded from this ldml "de" would be the
+				//first writing system in the repo rather than the second.
+				File.WriteAllText(pathForFlexGerman, germanFromFlex);
+				//rename the ws
+				ws1.Language = "de";
+				ws2.Language = "fr";
+				environment.Collection.Set(ws2);
+				environment.Collection.Set(ws1);
+				environment.Collection.Save();
+
+				pathForFlexGerman = Path.Combine(environment.TestPath, "fr.ldml");
+				var manager = new XmlNamespaceManager(new NameTable());
+				manager.AddNamespace("fw", "urn://fieldworks.sil.org/ldmlExtensions/v1");
+				AssertThatXmlIn.File(pathForFlexGerman).HasAtLeastOneMatchForXpath("/ldml/special/fw:graphiteEnabled", manager);
+			}
+		}
+
+		[Test]
+		public void Save_IdOfWsIsSameAsOldIdOfOtherWs_RepoHasCorrectNumberOfWritingSystemsOnLoad()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var pathForFlexGerman = Path.Combine(environment.TestPath, "de.ldml");
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws1 = new WritingSystemDefinition("en");
+				var ws2 = new WritingSystemDefinition("de");
+				environment.Collection.Set(ws1);
+				environment.Collection.Set(ws2);
+				environment.Collection.Save();
+				//rename the ws
+				ws1.Language = "de";
+				ws2.Language = "fr";
+				environment.Collection.Set(ws2);
+				environment.Collection.Set(ws1);
+				environment.Collection.Save();
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				Assert.That(environment.Collection.Count, Is.EqualTo(2));
+			}
+		}
+
 		private bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
 		{
 			foreach (WritingSystemDefinition definition in list)

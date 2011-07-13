@@ -523,6 +523,19 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Set_IdOfNewWritingSystemIsSetToOldStoreIdOfOtherWritingSystem_GetReturnsCorrectWritingSystems()
+		{
+			var ws = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Save();
+			ws.Variant = "x-orig";
+			RepositoryUnderTest.Set(ws);
+			var newWs = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(newWs);
+			Assert.That(RepositoryUnderTest.Get("en-x-orig"), Is.EqualTo(ws));
+		}
+
+		[Test]
 		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
