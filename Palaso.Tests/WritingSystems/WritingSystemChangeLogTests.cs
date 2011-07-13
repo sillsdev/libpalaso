@@ -40,11 +40,11 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void GetChangeFor_NotInLog_ReturnsSame()
+		public void GetChangeFor_NotInLog_ReturnsNull()
 		{
 			var log = new WritingSystemChangeLog();
 			log.LogChange("aab", "bba");
-			Assert.That(log.GetChangeFor("fff"), Is.EqualTo("fff"));
+			Assert.That(log.GetChangeFor("fff"), Is.EqualTo(null));
 		}
 
 		[Test]

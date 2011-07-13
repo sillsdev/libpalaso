@@ -691,6 +691,128 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdNeverExisted_ReturnsFalse()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.False);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdChanged_ReturnsTrue()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				//Now change the Id
+				ws.Variant = "x-bogus";
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.True);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdChangedToMultipleDifferentNewIds_ReturnsTrue()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var wsEn = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEn);
+				environment.Collection.Save();
+				//Now change the Id and create a duplicate of the original Id
+				wsEn.Variant = "x-bogus";
+				environment.Collection.Set(wsEn);
+				var wsEnDup = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				//Now change the duplicate's Id as well
+				wsEnDup.Variant = "x-bogus2";
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.True);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdExistsAndHasNeverChanged_ReturnsFalse()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.False);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdNeverExisted_ReturnsNull()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdChanged_ReturnsNewId()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				//Now change the Id
+				ws.Variant = "x-bogus";
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdChangedToMultipleDifferentNewIds_ReturnsNull()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var wsEn = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEn);
+				environment.Collection.Save();
+				//Now change the Id and create a duplicate of the original Id
+				wsEn.Variant = "x-bogus";
+				environment.Collection.Set(wsEn);
+				var wsEnDup = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				//Now change the duplicate's Id as well
+				wsEnDup.Variant = "x-bogus2";
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdExistsAndHasNeverChanged_ReturnsId()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
+			}
+		}
+
 		private bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
 		{
 			foreach (WritingSystemDefinition definition in list)

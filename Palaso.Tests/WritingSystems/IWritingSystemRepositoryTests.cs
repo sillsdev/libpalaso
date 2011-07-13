@@ -86,22 +86,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SetDefinitionTwice_UpdatesStore()
-		{
-			_writingSystem.Language = "one";
-			RepositoryUnderTest.Set(_writingSystem);
-			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.Language = "one";
-			ws1.DefaultFontName = "one font";
-			ws1.StoreID = _writingSystem.StoreID;
-			RepositoryUnderTest.Set(ws1);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
-			Assert.AreEqual("one font", ws2.DefaultFontName);
-		}
-
-		[Test]
 		public void CreateNewDefinitionThenSet_CountEquals1()
 		{
 			RepositoryUnderTest.Set(RepositoryUnderTest.CreateNew());
@@ -115,10 +99,12 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
+			_writingSystem.Language = "two";
 			_writingSystem.DefaultFontName = "one font";
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
+			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("two");
 			Assert.AreEqual("one font", ws2.DefaultFontName);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
 
