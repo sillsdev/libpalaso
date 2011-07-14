@@ -249,6 +249,21 @@ namespace Palaso.Tests.WritingSystems.Migration
 			VerifyRfcCleaner(cleaner, "zh", "", "NO", "", "zh-NO");
 		}
 
+		[Test]
+		public void EticWithoutFonipa_AddsFonipa()
+		{
+			var cleaner = new Rfc5646TagCleaner("en", "", "", "x-etic", "");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "en", "", "", "fonipa", "en-fonipa-x-etic");
+		}
+
+		[Test]
+		public void EmicWithoutFonipa_AddsFonipa()
+		{
+			var cleaner = new Rfc5646TagCleaner("en", "", "", "x-emic", "");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "en", "", "", "fonipa", "en-fonipa-x-emic");
+		}
 		void VerifyRfcCleaner(Rfc5646TagCleaner cleaner, string language, string script, string region, string variant, string completeTag)
 		{
 			Assert.That(cleaner.Language, Is.EqualTo(language));

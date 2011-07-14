@@ -332,6 +332,18 @@ namespace Palaso.WritingSystems.Migration
 			{
 				_languageSubTag.AddToSubtag("qaa");
 			}
+
+			// Two more legacy problems. We don't allow -etic or -emic without fonipa, so insert if needed.
+			// If it has some other standard variant we won't be able to fix it...not sure what the right answer would be.
+			// At least we catch the more common case.
+			foreach (var part in _privateUseSubTag.AllParts)
+			{
+				if (string.IsNullOrEmpty(Variant)
+					&& (part.Equals("etic",StringComparison.OrdinalIgnoreCase) || part.Equals("emic", StringComparison.OrdinalIgnoreCase)))
+				{
+					Variant = "fonipa";
+				}
+			}
 		}
 
 		private string FirstNonXPart(IEnumerable<string> input)
