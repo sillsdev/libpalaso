@@ -29,7 +29,6 @@ namespace Palaso.WritingSystems
 	public class LdmlDataMapper
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
-		private bool _wsIsFlexPrivateUse;
 
 		public LdmlDataMapper()
 		{
@@ -174,18 +173,15 @@ namespace Palaso.WritingSystems
 				}
 				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
-				if (!_wsIsFlexPrivateUse)
-				{
-					int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
+				int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
 
-					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
-					{
-						throw new ApplicationException(String.Format(
-														   "Cannot read LDML expecting version {0} but got {1}",
-														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
-														   version
-														   ));
-					}
+				if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+				{
+					throw new ApplicationException(String.Format(
+													   "Cannot read LDML expecting version {0} but got {1}",
+													   WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
+													   version
+													   ));
 				}
 
 				while (reader.NodeType != XmlNodeType.EndElement)
@@ -237,14 +233,10 @@ namespace Palaso.WritingSystems
 					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
 					ws.SetAllRfc5646LanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
-
-					_wsIsFlexPrivateUse = true;
 				}
 				else
 				{
 					ws.SetAllRfc5646LanguageTagComponents(language, script, region, variant);
-
-					_wsIsFlexPrivateUse = false;
 				}
 				//Set the id simply as the concatenation of whatever was in the ldml file.
 				ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
@@ -491,7 +483,6 @@ namespace Palaso.WritingSystems
 
 		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
-			_wsIsFlexPrivateUse = false;
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
 			writer.WriteStartElement("ldml");
@@ -672,7 +663,6 @@ namespace Palaso.WritingSystems
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
 
-			bool copyFlexFormat = false;
 			string language = String.Empty;
 			string script = String.Empty;
 			string territory = String.Empty;
@@ -702,20 +692,8 @@ namespace Palaso.WritingSystems
 				}
 				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
-				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase) && interpreter.RFC5646Tag == ws.RFC5646)
-				{
-					copyFlexFormat = true;
-					_wsIsFlexPrivateUse = true;
-				}
 			}
-			if (copyFlexFormat)
-			{
-				WriteRFC5646TagElements(writer, language, script, territory, variant);
-			}
-			else
-			{
-				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
-			}
+			WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
 				if (reader.IsEmptyElement)
@@ -837,14 +815,7 @@ namespace Palaso.WritingSystems
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)
 		{
-			if(_wsIsFlexPrivateUse)
-			{
-				CopyOldFlexNode(reader, writer, nameSpaceName, nodeName);
-			}
-			else
-			{
-				WriteSpecialValue(writer, nameSpaceName, nodeName, value);
-			}
+			WriteSpecialValue(writer, nameSpaceName, nodeName, value);
 		}
 
 		private void CopyOldFlexNode(XmlReader reader, XmlWriter writer, string nameSpaceName, string nodeName)

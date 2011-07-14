@@ -601,21 +601,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Set_WritingSystemWasLoadedFromFlexPrivateUseLdmlAndRearranged_DoesNotChangeFileName()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml,
-								  LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
-				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
-				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
-				environment.Collection.Set(ws);
-				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
-			}
-		}
-
-		[Test]
 		//this used to throw
 		public void LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_NoProblem()
 		{
@@ -652,20 +637,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_DoesNotThrow()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
-				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				var repo = new LdmlInFolderWritingSystemRepository(environment.TestPath);
-
-				// Now try to load up.
-				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo("qaa"));
-			}
-		}
-
-		[Test]
 		public void Set_NewWritingSystem_StoreContainsWritingSystem()
 		{
 			using (var environment = new TestEnvironment())
@@ -674,20 +645,6 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				environment.Collection.Set(ws);
 				Assert.That(environment.Collection.Get("en").RFC5646, Is.EqualTo("en"));
-			}
-		}
-
-		[Test]
-		public void SaveDefinition_WritingSystemCameFromFlexPrivateUseLdml_FileNameIsRetained()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("x", "Zxxx", "", "x-audio"));
-				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
-				var ws = environment.Collection.Get("x-Zxxx-x-audio");
-				environment.Collection.SaveDefinition(ws);
-				Assert.That(File.Exists(pathToFlexprivateUseLdml));
 			}
 		}
 
