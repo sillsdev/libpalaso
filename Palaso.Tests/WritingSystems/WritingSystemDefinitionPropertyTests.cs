@@ -1255,6 +1255,22 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SetAllRfc5646LanguageTagComponents_IdChanged_ModifiedisTrue()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.SetAllRfc5646LanguageTagComponents("de", "Latn", "US", "fonipa-x-etic");
+			Assert.AreEqual(writingSystem.Modified, true);
+		}
+
+		[Test]
+		public void SetAllRfc5646LanguageTagComponents_IdUnchanged_ModifiedisTrue()
+		{
+			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.SetAllRfc5646LanguageTagComponents("en", "Zxxx", "", "1901-x-audio");
+			Assert.AreEqual(writingSystem.Modified, false);
+		}
+
+		[Test]
 		public void SetRfc5646FromString_IdIsSet()
 		{
 			var writingSystem = WritingSystemDefinition.FromRFC5646Subtags("en", "Zxxx", "", "1901-x-audio");

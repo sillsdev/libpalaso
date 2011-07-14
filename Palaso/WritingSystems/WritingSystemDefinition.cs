@@ -422,11 +422,17 @@ namespace Palaso.WritingSystems
 
 		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
 		{
+			string oldId = _rfcTag.CompleteTag;
 			string variantPart;
 			string privateUsePart;
 			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
 			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
 			UpdateIdFromRfcTag();
+			if(oldId == _rfcTag.CompleteTag)
+			{
+				return;
+			}
+			Modified = true;
 			CheckVariantAndScriptRules();
 		}
 
