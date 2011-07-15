@@ -259,5 +259,18 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.AreEqual(0, StandardTags.ValidIso639LanguageCodes.Where(iso639 => iso639.Code.Contains("..")).Count());
 		}
+
+		[Test]
+		public void VariantTagPrefixes()
+		{
+			var monotonPrefixes = StandardTags.ValidRegisteredVariants.Where(variant => variant.Subtag == "monoton").First().Prefixes;
+			Assert.That(monotonPrefixes, Has.Length.EqualTo(1));
+			Assert.That(monotonPrefixes, Has.Member("el"));
+
+			var pinyinPrefixes = StandardTags.ValidRegisteredVariants.Where(variant => variant.Subtag == "pinyin").First().Prefixes;
+			Assert.That(pinyinPrefixes, Has.Length.EqualTo(2));
+			Assert.That(pinyinPrefixes, Has.Member("zh-Latn"));
+			Assert.That(pinyinPrefixes, Has.Member("bo-Latn"));
+		}
 	}
 }

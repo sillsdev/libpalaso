@@ -58,12 +58,28 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public class IanaVariantSubtag : IanaSubtag
+		{
+			/// <summary>
+			/// A Variant with no prefixes (prefixes will be null) may be applied to any language. One with one or more prefixes may only be
+			/// applied to those language tags which begin with that prefix. (This is currently not enforced, but the information is available
+			/// for use by dialogs which display variant choices.)
+			/// </summary>
+			public string[] Prefixes { get; private set; }
+
+			public IanaVariantSubtag(string type, string subtag, string description, IEnumerable<string> prefixes) : base(type, subtag, description)
+			{
+				if (prefixes != null)
+					Prefixes = prefixes.ToArray();
+			}
+		}
+
 		static StandardTags()
 		{
 			ValidIso15924Scripts = new List<Iso15924Script>();
 			ValidIso639LanguageCodes = new List<Iso639LanguageCode>();
 			ValidIso3166Regions = new List<IanaSubtag>();
-			ValidRegisteredVariants = new List<IanaSubtag>();
+			ValidRegisteredVariants = new List<IanaVariantSubtag>();
 			LoadIanaSubtags();
 		}
 
@@ -73,7 +89,7 @@ namespace Palaso.WritingSystems
 
 		public static List<IanaSubtag> ValidIso3166Regions { get; private set; }
 
-		public static List<IanaSubtag> ValidRegisteredVariants { get; private set; }
+		public static List<IanaVariantSubtag> ValidRegisteredVariants { get; private set; }
 
 		private static void LoadIanaSubtags()
 		{
@@ -151,7 +167,7 @@ namespace Palaso.WritingSystems
 						break;
 					case "variant":
 						ValidRegisteredVariants.Add(
-							new IanaSubtag(type, subtag, description)
+							new IanaVariantSubtag(type, subtag, description, GetVariantPrefixes(subTagComponents))
 							);
 						break;
 				}
@@ -167,6 +183,15 @@ namespace Palaso.WritingSystems
 
 			// To help people find Latin as a script tag
 			ValidIso15924Scripts.Insert(0, new Iso15924Script("Roman (Latin)", "Latn"));
+		}
+
+		private static IEnumerable<string> GetVariantPrefixes(string[] subTagComponents)
+		{
+			foreach (var line in subTagComponents)
+			{
+				if (line.StartsWith("Prefix: "))
+					yield return line.Substring("Prefix: ".Length).Trim();
+			}
 		}
 
 		internal static string SubTagComponentDescription(string component)
