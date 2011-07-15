@@ -18,7 +18,7 @@ namespace TestApp
 		{
 			InitializeComponent();
 
-			_repository = new LdmlInFolderWritingSystemRepository();
+			_repository = new SystemWritingSystemRepository();
 			_wsModel = new WritingSystemSetupModel(_repository);
 			_wsModel.SelectionChanged += new EventHandler(_wsModel_SelectionChanged);
 			this.wsPickerUsingListView1.BindToModel(_wsModel);

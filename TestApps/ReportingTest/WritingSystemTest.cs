@@ -20,7 +20,7 @@ namespace TestApp
 
 			InitializeComponent();
 
-			_repository = new LdmlInFolderWritingSystemRepository();
+			_repository = new SystemWritingSystemRepository();
 			_wsModel = new WritingSystemSetupModel(_repository);
 			this.wsPropertiesPanel1.BindToModel(_wsModel);
 		}
