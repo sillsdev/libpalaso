@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -328,6 +328,7 @@
 	<Compile Include="WritingSystems\LdmlInXmlWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
 	<Compile Include="WritingSystems\LdmlSharedWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigrator.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleaner.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
@@ -342,7 +343,7 @@
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StandardTags.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
-	<Compile Include="WritingSystems\SystemWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\GlobalWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\WritingSystemLogEvent.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeLog.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeLogDataMapper.cs" />

@@ -16,8 +16,6 @@ namespace Palaso.WritingSystems
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 		private WritingSystemChangeLog _changeLog;
 
-		public const int LatestVersion = 1;
-
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
