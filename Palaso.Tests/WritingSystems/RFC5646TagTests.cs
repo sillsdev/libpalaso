@@ -20,14 +20,14 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToPrivateUse_StringToAddContainsNonAlphaNumericCharacter_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("_audio"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToPrivateUse("_audio"));
 		}
 
 		[Test]
 		public void AddToPrivateUse_StringToAddContainsUnderScoreAfterx_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("x_audio"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToPrivateUse("x_audio"));
 		}
 
 		[Test]
@@ -88,7 +88,7 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToPrivateUse_StringToAddContainsIllegalCharacters_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("x-audio_test"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToPrivateUse("x-audio_test"));
 		}
 
 		[Test]
@@ -119,14 +119,14 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToPrivateUse_PrivateUseAlreadyContainsStringToAdd_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "test-audio");
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("audio"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToPrivateUse("audio"));
 		}
 
 		[Test]
 		public void AddToPrivateUse_PrivateUseAlreadyContainsPartsOfStringToAdd_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "audio-test");
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("smth-test"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToPrivateUse("smth-test"));
 		}
 
 		[Test]
@@ -149,7 +149,7 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToPrivateUse_PrivateUseAlreadyContainsStringToAddInDifferentCase_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "AUDIO");
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToPrivateUse("audio"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToPrivateUse("audio"));
 		}
 
 		[Test]
@@ -205,7 +205,7 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToVariant_StringToAddContainsInvalidCharacter_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("1901_bauddha"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToVariant("1901_bauddha"));
 		}
 
 		[Test]
@@ -228,21 +228,21 @@ namespace Palaso.Tests.WritingSystems
 		public void AddToVariant_VariantAlreadyContainsStringToAdd_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "1901", String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("1901"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToVariant("1901"));
 		}
 
 		[Test]
 		public void AddToVariant_VariantAlreadyContainsPartsOfStringToAdd_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "bauddha-biske", String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("1901-bauddha"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToVariant("1901-bauddha"));
 		}
 
 		[Test]
 		public void AddToVariant_VariantAlreadyContainsStringToAddInDifferentCase_Throws()
 		{
 			var rfcTag = new RFC5646Tag("en", String.Empty, String.Empty, "BisKe", String.Empty);
-			Assert.Throws<ArgumentException>(() => rfcTag.AddToVariant("biske"));
+			Assert.Throws<ValidationException>(() => rfcTag.AddToVariant("biske"));
 		}
 
 		[Test]
@@ -796,7 +796,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Constructor_PrivateuseSetWithTwoPrivateUseSubtagsBothPrefixedWithx_ThrowsArgumentException()
 		{
-			Assert.Throws<ArgumentException>(() => new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-private1-x-private2"));
+			Assert.Throws<ValidationException>(() => new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, "x-private1-x-private2"));
 		}
 
 		[Test]
@@ -816,7 +816,7 @@ namespace Palaso.Tests.WritingSystems
 		public void PrivateUse_SetWithTwoPrivateUseSubtagsBothPrefixedWithx_ThrowsArgumentException()
 		{
 			var tag = new RFC5646Tag("en", String.Empty, String.Empty, String.Empty, String.Empty);
-			Assert.Throws<ArgumentException>(() => tag.Variant = "x-private1-x-private2");
+			Assert.Throws<ValidationException>(() => tag.Variant = "x-private1-x-private2");
 		}
 
 		[Test]

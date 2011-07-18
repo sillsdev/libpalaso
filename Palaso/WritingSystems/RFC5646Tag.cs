@@ -72,14 +72,6 @@ namespace Palaso.WritingSystems
 				List<string> partsOfStringToAdd = ParseSubtagForParts(partsToAdd);
 				foreach (string part in partsOfStringToAdd)
 				{
-					if (StringContainsNonAlphaNumericCharacters(part))
-					{
-						throw new ArgumentException(String.Format("Rfc5646 tags may only contain alphanumeric characters. '{0}' can not be added to the Rfc5646 tag.", part));
-					}
-					if (Contains(part))
-					{
-						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.", part));
-					}
 					_subTagParts.Add(part);
 				}
 			}
@@ -402,6 +394,7 @@ namespace Palaso.WritingSystems
 					String.Format("'{0}' is not a valid registered variant code.", invalidPart)
 				);
 			}
+			_variant.ThrowIfSubtagContainsDuplicates();
 		}
 
 		public new string ToString()

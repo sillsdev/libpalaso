@@ -100,7 +100,11 @@ namespace Palaso.WritingSystems
 		public bool RequiresValidTag
 		{
 			get { return _rfcTag.RequiresValidTag; }
-			set { _rfcTag.RequiresValidTag = value; }
+			set
+			{
+				_rfcTag.RequiresValidTag = value;
+				CheckVariantAndScriptRules();
+			}
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
@@ -386,6 +390,8 @@ namespace Palaso.WritingSystems
 
 		private void CheckVariantAndScriptRules()
 		{
+			if (!RequiresValidTag)
+				return;
 			if (VariantSubTagIsAudio && !ScriptSubTagIsAudio)
 			{
 				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");

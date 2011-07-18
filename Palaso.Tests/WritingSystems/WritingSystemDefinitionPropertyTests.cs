@@ -224,12 +224,30 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void DuplicatePrivateUseOkWhenRequiresValidTagFalse()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.RequiresValidTag = false;
+			ws.Variant = "x-nong-nong";
+			Assert.That(ws.Variant, Is.EqualTo("x-nong-nong"));
+		}
+
+		[Test]
 		public void InvalidTagThrowsWhenRequiresValidTagSetToTrue()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.RequiresValidTag = false;
 			ws.Language = "Kalaba";
 			Assert.Throws(typeof (ValidationException), () => ws.RequiresValidTag = true);
+		}
+
+		[Test]
+		public void DuplicatePrivateUseThrowsWhenRequiresValidTagSetToTrue()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.RequiresValidTag = false;
+			ws.Variant = "x-nong-nong";
+			Assert.Throws(typeof(ValidationException), () => ws.RequiresValidTag = true);
 		}
 
 		[Test]
@@ -715,7 +733,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
 		{
-			Assert.Throws<ArgumentException>(
+			Assert.Throws<ValidationException>(
 				() => new WritingSystemDefinition {Variant = "duplicate-duplicate"}
 			);
 		}
@@ -951,7 +969,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
-			Assert.Throws<ArgumentException>(() => ws.Variant = "x_audio");
+			Assert.Throws<ValidationException>(() => ws.Variant = "x_audio");
 		}
 
 		[Test]
