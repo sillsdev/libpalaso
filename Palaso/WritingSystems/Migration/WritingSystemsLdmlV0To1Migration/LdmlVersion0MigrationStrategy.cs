@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Palaso.Code;
 using Palaso.Migration;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
@@ -46,6 +47,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog) :
 			base(0, 1)
 		{
+			Guard.AgainstNull(onMigrationCallback, "onMigrationCallback must be set");
 			_migrationInfo = new List<MigrationInfo>();
 			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();
 			_onMigrationCallback = onMigrationCallback;
@@ -139,7 +141,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				}
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
-			_onMigrationCallback(_migrationInfo);
+			if (_onMigrationCallback != null)
+			{
+				_onMigrationCallback(_migrationInfo);
+			}
 		}
 
 		private static void WriteLdml(WritingSystemDefinitionV1 writingSystemDefinitionV1, string sourceFilePath, string destinationFilePath)

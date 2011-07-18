@@ -1,17 +1,23 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryTests
 	{
+		private void OnMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		{
+		}
+
 		[Test]
 		public void DefaultInitializer_HasCorrectPath()
 		{
-			var repo = GlobalWritingSystemRepository.Initialize(null);
+			var repo = GlobalWritingSystemRepository.Initialize(OnMigration);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(".*SIL.WritingSystemRepository.1"));
 		}
 

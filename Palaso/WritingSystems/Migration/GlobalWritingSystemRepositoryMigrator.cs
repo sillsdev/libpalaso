@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Palaso.Code;
 using Palaso.IO;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -25,6 +26,7 @@ namespace Palaso.WritingSystems.Migration
 		///<param name="onMigrationCallback"></param>
 		public GlobalWritingSystemRepositoryMigrator(string basePath, LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback)
 		{
+			Guard.AgainstNull(onMigrationCallback, "onMigrationCallback must be set");
 			_migrationInfoCallback = onMigrationCallback;
 			BasePath = basePath;
 		}
