@@ -104,7 +104,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void LatestVersion_IsOne()
 		{
-			Assert.AreEqual(1, LdmlInFolderWritingSystemRepository.LatestVersion);
+			Assert.AreEqual(1, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		[Test]

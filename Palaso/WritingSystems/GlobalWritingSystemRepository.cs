@@ -40,9 +40,9 @@ namespace Palaso.WritingSystems
 		/// notifying of any changes of writing system id that occured during migration.
 		///</summary>
 		///<param name="onMigrationCallback"></param>
-		public static void Initialize(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback)
+		public static GlobalWritingSystemRepository Initialize(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback)
 		{
-			InitializeWithBasePath(onMigrationCallback, DefaultBasePath);
+			return InitializeWithBasePath(onMigrationCallback, DefaultBasePath);
 		}
 
 		///<summary>
@@ -50,33 +50,34 @@ namespace Palaso.WritingSystems
 		///</summary>
 		///<param name="onMigrationCallback">Callback if during the initialization any writing system id's are changed</param>
 		///<param name="basePath">base location of the global writing system repository</param>
-		internal static void InitializeWithBasePath(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, string basePath)
+		internal static GlobalWritingSystemRepository InitializeWithBasePath(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, string basePath)
 		{
 			lock (_padlock)
 			{
 				if (_instance == null)
 				{
-					_instance = new GlobalWritingSystemRepository(onMigrationCallback, basePath);
+					var migrator = new GlobalWritingSystemRepositoryMigrator(basePath, onMigrationCallback);
+					if (migrator.NeedsMigration())
+					{
+						migrator.Migrate();
+					}
+
+					_instance = new GlobalWritingSystemRepository(basePath);
+					_instance.LoadAllDefinitions();
 				}
 			}
+			return _instance;
 		}
 
 		///<summary>
 		/// Specify the location of the System Writing System repository explicitly.
 		/// This is mostly useful for tests.
 		///</summary>
-		///<param name="onMigrationCallback"></param>
 		///<param name="basePath"></param>
-		internal GlobalWritingSystemRepository(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, string basePath)
+		internal GlobalWritingSystemRepository(string basePath) :
+			base(CurrentVersionPath(basePath))
 		{
 			BasePath = basePath;
-			PathToWritingSystems = CurrentVersionPath;
-
-			var migrator = new GlobalWritingSystemRepositoryMigrator(basePath, onMigrationCallback);
-			migrator.Migrate();
-
-			Directory.CreateDirectory(CurrentVersionPath);
-			LoadAllDefinitions();
 		}
 
 		///<summary>
@@ -106,9 +107,9 @@ namespace Palaso.WritingSystems
 		/// The CurrentVersionPath is %CommonApplicationData%\SIL\WritingSystemRepository\LatestVersion
 		/// e.g. On Windows 7 this is \ProgramData\SIL\WritingSystemRepository\1
 		///</summary>
-		public string CurrentVersionPath
+		public static string CurrentVersionPath(string basePath)
 		{
-			get { return Path.Combine(BasePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString()); }
+			return Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 		}
 
 	}

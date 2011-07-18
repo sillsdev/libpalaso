@@ -9,9 +9,9 @@ namespace Palaso.Tests.WritingSystems
 	public class GlobalWritingSystemRepositoryTests
 	{
 		[Test]
-		public void DefaultConstructor_HasCorrectPath()
+		public void DefaultInitializer_HasCorrectPath()
 		{
-			var repo = new GlobalWritingSystemRepository();
+			var repo = GlobalWritingSystemRepository.Initialize(null);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(".*SIL.WritingSystemRepository.1"));
 		}
 
@@ -21,7 +21,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
-				Assert.That(repo.PathToWritingSystems, Is.StringMatching(".*WritingSystemRepository.1"));
+				Assert.That(repo.PathToWritingSystems, Is.StringMatching(".*GlobalWritingSystemRepositoryTests.1"));
 			}
 		}
 

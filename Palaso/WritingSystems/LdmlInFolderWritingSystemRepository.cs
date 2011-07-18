@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Xml;
-using Palaso.WritingSystems;
 
 namespace Palaso.WritingSystems
 {
@@ -14,15 +10,7 @@ namespace Palaso.WritingSystems
 		private const string _kExtension = ".ldml";
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
-		private WritingSystemChangeLog _changeLog;
-
-		/// <summary>
-		/// Use the default repository
-		/// </summary>
-		protected LdmlInFolderWritingSystemRepository()
-		{
-			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
-		}
+		private readonly WritingSystemChangeLog _changeLog;
 
 		/// <summary>
 		/// use a special path for the repository
@@ -163,12 +151,7 @@ namespace Palaso.WritingSystems
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
 		{
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
-			{
-				if(ws.RFC5646 == rfc4646 )
-					return ws;
-			}
-			return null;
+			return AllWritingSystems.FirstOrDefault(ws => ws.RFC5646 == rfc4646);
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)
@@ -189,7 +172,7 @@ namespace Palaso.WritingSystems
 				}
 				catch {}
 				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-				File.Delete(oldWritingSystemFilePath); //!!! Should this be move to trash?
+				File.Delete(oldWritingSystemFilePath);
 			}
 
 			ws.StoreID = ws.Id;
@@ -215,7 +198,7 @@ namespace Palaso.WritingSystems
 		{
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Exists(identifier))
+			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Contains(identifier))
 			{
 				WritingSystemDefinition ws = Get(identifier);
 				SaveDefinition(ws);
@@ -247,8 +230,8 @@ namespace Palaso.WritingSystems
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
-			List<string> idsToRemove = new List<string>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var idsToRemove = new List<string>();
+			foreach (var ws in AllWritingSystems)
 			{
 				if (ws.MarkedForDeletion)
 				{
@@ -263,15 +246,15 @@ namespace Palaso.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			List<WritingSystemDefinition> allDefs = new List<WritingSystemDefinition>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var allDefs = new List<WritingSystemDefinition>();
+			foreach (var ws in AllWritingSystems)
 			{
 				if (CanSet(ws))
 				{
 					allDefs.Add(ws);
 				}
 			}
-			foreach (WritingSystemDefinition ws in allDefs)
+			foreach (var ws in allDefs)
 			{
 				SaveDefinition(ws);
 				if (!ws.Modified)
