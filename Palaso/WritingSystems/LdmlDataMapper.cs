@@ -456,6 +456,8 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
+			// We don't want to run any risk of persisting an invalid writing system in an LDML.
+			ws.RequiresValidTag = true;
 			XmlReader reader = null;
 			try
 			{

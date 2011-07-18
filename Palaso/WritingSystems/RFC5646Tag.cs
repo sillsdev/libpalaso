@@ -145,6 +145,7 @@ namespace Palaso.WritingSystems
 		private string _region = "";
 		private SubTag _variant = new SubTag();
 		private SubTag _privateUse = new SubTag();
+		private bool _requiresValidTag = true;
 
 		public RFC5646Tag() :
 			this("qaa", String.Empty, String.Empty, String.Empty, String.Empty)
@@ -176,6 +177,8 @@ namespace Palaso.WritingSystems
 
 		private void Validate()
 		{
+			if (!RequiresValidTag)
+				return;
 			ValidateLanguage();
 			ValidateScript();
 			ValidateRegion();
@@ -184,6 +187,19 @@ namespace Palaso.WritingSystems
 			if (!(HasLanguage || (!HasLanguage && !HasScript && !HasRegion && !HasVariant && HasPrivateUse)))
 			{
 				throw new ValidationException(string.Format("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags (Language={0}  Script={1} Region={2} Variant={3} Private={4})", Language,Script,Region,Variant,PrivateUse));
+			}
+		}
+
+		/// <summary>
+		/// Setting this true will throw unless the tag has previously been put into a valid state.
+		/// </summary>
+		internal bool RequiresValidTag
+		{
+			get { return _requiresValidTag; }
+			set
+			{
+				_requiresValidTag = value;
+				Validate();
 			}
 		}
 

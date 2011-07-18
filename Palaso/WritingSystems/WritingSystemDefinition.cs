@@ -92,6 +92,17 @@ namespace Palaso.WritingSystems
 			UpdateIdFromRfcTag();
 		}
 
+		/// <summary>
+		/// True when the validity of the writing system defn's tag is being enforced. This is the normal and default state.
+		/// Setting this true will throw unless the tag has previously been put into a valid state.
+		/// Attempting to Save the writing system defn will set this true (and may throw).
+		/// </summary>
+		public bool RequiresValidTag
+		{
+			get { return _rfcTag.RequiresValidTag; }
+			set { _rfcTag.RequiresValidTag = value; }
+		}
+
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
 			: this()
 		{

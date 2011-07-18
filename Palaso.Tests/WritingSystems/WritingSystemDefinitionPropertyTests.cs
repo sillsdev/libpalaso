@@ -215,6 +215,24 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void InvalidTagOkWhenRequiresValidTagFalse()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.RequiresValidTag = false;
+			ws.Language = "Kalaba";
+			Assert.That(ws.Language, Is.EqualTo("Kalaba"));
+		}
+
+		[Test]
+		public void InvalidTagThrowsWhenRequiresValidTagSetToTrue()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.RequiresValidTag = false;
+			ws.Language = "Kalaba";
+			Assert.Throws(typeof (ValidationException), () => ws.RequiresValidTag = true);
+		}
+
+		[Test]
 		public void Variant_ConsistsOnlyOfRfc5646PrivateUse_VariantIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
@@ -331,7 +349,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ModifyingDefinitionSetsModifiedFlag()
 		{
 			// Put any properties to ignore in this string surrounded by "|"
-			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|";
+			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|";
 			// special test values to use for properties that are particular
 			Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
 			Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
