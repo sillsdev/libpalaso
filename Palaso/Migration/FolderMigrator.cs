@@ -192,12 +192,13 @@ namespace Palaso.Migration
 
 		private static void CopyDirectory(string sourcePath, string targetPath, string excludePath)
 		{
-			CopyDirectory(new DirectoryInfo(sourcePath), new DirectoryInfo(targetPath), excludePath);
+			CopyDirectory(new DirectoryInfo(sourcePath), new DirectoryInfo(targetPath),
+				string.IsNullOrEmpty(excludePath) ? null : new DirectoryInfo(excludePath));
 		}
 
 
 		// Gleaned from http://xneuron.wordpress.com/2007/04/12/copy-directory-and-its-content-to-another-directory-in-c/
-		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, string excludePath)
+		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, DirectoryInfo excludePath)
 		{
 			// Check if the target directory exists, if not, create it.
 			if (Directory.Exists(target.FullName) == false)
@@ -214,7 +215,7 @@ namespace Palaso.Migration
 			// Copy each subdirectory using recursion.
 			foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
 			{
-				if (diSourceSubDir.FullName == excludePath)
+				if (excludePath != null && diSourceSubDir.FullName == excludePath.FullName)
 				{
 					continue;
 				}
