@@ -4,7 +4,7 @@ using Palaso.WritingSystems.Migration;
 namespace Palaso.WritingSystems
 {
 	/// <summary>
-	/// The OrphanFinder class provides a uniform way for dealing with orphaned writing system ids.
+	/// The WritingSystemOrphanFinder class provides a uniform way for dealing with orphaned writing system ids.
 	/// Orphaned writing system ids are writing system ids found in a file that are not contained
 	/// in a given writing system repository.
 	/// The algorithm used:
@@ -18,18 +18,17 @@ namespace Palaso.WritingSystems
 	/// 5. Create a new writing system with "cleaned" id and set it in the repo.
 	/// 6. Complete
 	/// </summary>
-	public class OrphanFinder
+	public class WritingSystemOrphanFinder
 	{
 		public delegate void IdReplacementStrategy(string newId, string oldId);
-		public delegate IEnumerable<string> IdFindingStrategy();
 
 		public static void FindOrphans(
-			IdFindingStrategy idsInFile,
+			IEnumerable<string> idsInFile,
 			IdReplacementStrategy replaceIdsInFile,
 			LdmlInFolderWritingSystemRepository writingSystemRepository
 			)
 		{
-			foreach (var wsId in idsInFile())
+			foreach (var wsId in idsInFile)
 			{
 				// Check if it's in the repo
 				if (writingSystemRepository.Contains(wsId))
@@ -53,7 +52,7 @@ namespace Palaso.WritingSystems
 				// If it changed, then change
 				if (conformantWritingSystem.RFC5646 != wsId)
 				{
-					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, idsInFile());
+					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, idsInFile);
 					replaceIdsInFile(wsId, conformantWritingSystem.RFC5646);
 				}
 				// Check if it's in the repo

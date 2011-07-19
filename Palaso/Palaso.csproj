@@ -339,7 +339,7 @@
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
-	<Compile Include="WritingSystems\OrphanFinder.cs" />
+	<Compile Include="WritingSystems\WritingSystemOrphanFinder.cs" />
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StandardTags.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />

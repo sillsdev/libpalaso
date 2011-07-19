@@ -212,7 +212,7 @@ namespace Palaso.Lift.Tests.Options
 				environment.Helper = new WritingSystemsInOptionsListFileHelper(environment.WritingSystemsPath, environment.PathToOptionsListFile);
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
-				Assert.That(environment.Helper.WritingSystemsInUse().Count(), Is.EqualTo(0));
+				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
 				Assert.That(File.ReadAllText(environment.PathToOptionsListFile), Is.EqualTo("text"));
 			}
 		}
@@ -226,7 +226,7 @@ namespace Palaso.Lift.Tests.Options
 				environment.Helper = new WritingSystemsInOptionsListFileHelper(environment.WritingSystemsPath, environment.PathToOptionsListFile);
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
-				Assert.That(environment.Helper.WritingSystemsInUse().Count(), Is.EqualTo(0));
+				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
 				Assert.That(File.ReadAllText(environment.PathToOptionsListFile), Is.EqualTo("<?xml version='1.0' encoding='utf-8'?>\r\n<form>yo</form>".Replace("'", "\"")));
 			}
 		}

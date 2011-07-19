@@ -28,10 +28,15 @@ namespace Palaso.Lift.Options
 			}
 		}
 
-		public IEnumerable<string> WritingSystemsInUse()
+		public IEnumerable<string> WritingSystemsInUse
 		{
-			var nodes = _xmlDoc.SelectNodes("//form");
-			return nodes.Cast<XmlNode>().Where(node => node.Attributes != null && node.Attributes["lang"] != null).Select(node => node.Attributes["lang"].Value).Distinct();
+			get
+			{
+				var nodes = _xmlDoc.SelectNodes("//form");
+				return
+					nodes.Cast<XmlNode>().Where(node => node.Attributes != null && node.Attributes["lang"] != null).
+						Select(node => node.Attributes["lang"].Value).Distinct();
+			}
 		}
 
 		public void ReplaceWritingSystemId(string oldId, string newId)
@@ -60,7 +65,7 @@ namespace Palaso.Lift.Options
 		{
 			var writingSystemRepository =
 				new LdmlInFolderWritingSystemRepository(_writingSystemFolderPath);
-			OrphanFinder.FindOrphans(WritingSystemsInUse, ReplaceWritingSystemId, writingSystemRepository);
+			WritingSystemOrphanFinder.FindOrphans(WritingSystemsInUse, ReplaceWritingSystemId, writingSystemRepository);
 		}
 	}
 }

@@ -11,7 +11,7 @@ using Palaso.WritingSystems;
 namespace Palaso.Tests.WritingSystems
 {
 	[TestFixture]
-	public class OrphanFinderTests
+	public class WritingSystemOrphanFinderTests
 	{
 		private class TestEnvironment:IDisposable
 		{
@@ -36,10 +36,13 @@ namespace Palaso.Tests.WritingSystems
 				File.Delete(_file.Path);
 			}
 
-			public IEnumerable<string> GetIdsFromFile()
+			public IEnumerable<string> GetIdsFromFile
 			{
-				var fileContent = File.ReadAllText(_file.Path);
-				return fileContent.Split('|').Distinct();
+				get
+				{
+					var fileContent = File.ReadAllText(_file.Path);
+					return fileContent.Split('|').Distinct();
+				}
 			}
 
 			public void ReplaceIdInFile(string oldid, string newid)
@@ -65,7 +68,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var englishWs = new WritingSystemDefinition("en");
 				e.WritingSystemRepository.Set(englishWs);
-				OrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
+				WritingSystemOrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(1));
 				Assert.That(e.WritingSystemRepository.Get("en"), Is.EqualTo(englishWs));
 				Assert.That(e.FileContent, Is.EqualTo("en|en|en"));
@@ -79,7 +82,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var englishWs = new WritingSystemDefinition("en");
 				e.WritingSystemRepository.Set(englishWs);
-				OrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
+				WritingSystemOrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 				Assert.That(e.WritingSystemRepository.Get("en"), Is.EqualTo(englishWs));
 				Assert.That(e.WritingSystemRepository.Get("de"), Is.Not.Null);
@@ -94,7 +97,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var englishWs = new WritingSystemDefinition("en");
 				e.WritingSystemRepository.Set(englishWs);
-				OrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
+				WritingSystemOrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 				Assert.That(e.WritingSystemRepository.Get("en"), Is.EqualTo(englishWs));
 				Assert.That(e.WritingSystemRepository.Get("x-bogusws"), Is.Not.Null);
@@ -113,7 +116,7 @@ namespace Palaso.Tests.WritingSystems
 				englishWs.Variant = "x-new";
 				e.WritingSystemRepository.Set(englishWs);
 				e.WritingSystemRepository.Save();
-				OrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
+				WritingSystemOrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 				Assert.That(e.WritingSystemRepository.Get("en-x-new"), Is.EqualTo(englishWs));
 				Assert.That(e.WritingSystemRepository.Get("x-bogusws"), Is.Not.Null);
