@@ -144,11 +144,6 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", ws.Id));
 			}
-
-			if (String.IsNullOrEmpty(ws.StoreID))
-			{
-				ws.StoreID = ws.Id;
-			}
 			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreID == ws.StoreID).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
@@ -165,6 +160,10 @@ namespace Palaso.WritingSystems
 				{
 					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
 				}
+			}
+			if (ws.StoreID != ws.Id)
+			{
+				ws.StoreID = ws.Id;
 			}
 		}
 

@@ -246,7 +246,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems, "en.ldml");
 				Assert.IsTrue(File.Exists(path));
-				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
+				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.Id);
 				ws2.Language = "de";
 				Assert.AreEqual("en", ws2.StoreID);
 				environment.Collection.SaveDefinition(ws2);
@@ -796,6 +796,8 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.Save();
 				//Now change the duplicate's Id as well
 				wsEnDup.Variant = "x-bogus2";
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
 				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
 			}
 		}
