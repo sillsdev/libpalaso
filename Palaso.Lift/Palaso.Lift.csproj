@@ -106,6 +106,7 @@
 	<Compile Include="Options\OptionRef.cs" />
 	<Compile Include="Options\OptionRefCollection.cs" />
 	<Compile Include="Options\OptionsList.cs" />
+	<Compile Include="Options\WritingSystemsInOptionsListFileHelper.cs" />
 	<Compile Include="PalasoDataObject.cs" />
 	<Compile Include="Parsing\Annotation.cs" />
 	<Compile Include="Parsing\Extensible.cs" />
