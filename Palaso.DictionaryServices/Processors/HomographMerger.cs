@@ -122,11 +122,11 @@ namespace Palaso.DictionaryServices.Processors
 
 		public static string GuessPrimarLexicalFormWritingSystem(LiftLexEntryRepository repo, IProgress progress)
 		{
-			progress.WriteMessage("Looking at 1st 50 entries to determine which Writing System to use for matching...");
+			progress.WriteMessage("Looking at 1st 1000 entries to determine which Writing System to use for matching...");
 			var choices = new Dictionary<string, Counter>();
 
 			var ids = repo.GetAllItems();
-			for (int i = 0; i < 10 && i < ids.Length; i++)
+			for (int i = 0; i < 1000 && i < ids.Length; i++)
 			{
 				var entry = repo.GetItem(ids[i]);
 				foreach (var languageForm in entry.LexicalForm.Forms)

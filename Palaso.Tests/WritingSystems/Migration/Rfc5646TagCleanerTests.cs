@@ -101,5 +101,20 @@ namespace Palaso.Tests.WritingSystems.Migration
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Zxxx-x-Zxxx-AUDIO"));
 		}
 
+		[Test]
+		public void CompleteTagConstructor_ValidRfctagWithLegacyIso3Code_MigratesToRfc2LetterCode()
+		{
+			var cleaner = new Rfc5646TagCleaner("eng");
+			cleaner.Clean();
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en"));
+		}
+
+		[Test]
+		public void CompleteTagConstructor_ValidRfctagWithLegacyIso3CodeAndPrivateUse_MigratesToRfc2LetterCodeAndPrivateUse()
+		{
+			var cleaner = new Rfc5646TagCleaner("eng-bogus");
+			cleaner.Clean();
+			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en-x-bogus"));
+		}
 	}
 }
