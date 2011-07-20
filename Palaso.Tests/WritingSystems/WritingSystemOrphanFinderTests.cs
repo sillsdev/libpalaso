@@ -22,7 +22,7 @@ namespace Palaso.Tests.WritingSystems
 			public TestEnvironment(string id1, string id2)
 			{   _writingSystemsPath = new TemporaryFolder().Path;
 				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(_writingSystemsPath);
-				File.WriteAllText(_file.Path, String.Format("{0}|{0}|{1}", id1, id2));
+				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
 			}
 
 			public LdmlInFolderWritingSystemRepository WritingSystemRepository
@@ -41,14 +41,17 @@ namespace Palaso.Tests.WritingSystems
 				get
 				{
 					var fileContent = File.ReadAllText(_file.Path);
-					return fileContent.Split('|').Distinct();
+					foreach(var id in fileContent.Split(new []{'|'},StringSplitOptions.RemoveEmptyEntries).Distinct())
+					{
+						yield return id;
+					}
 				}
 			}
 
 			public void ReplaceIdInFile(string oldid, string newid)
 			{
 				var fileContent = File.ReadAllText(_file.Path);
-				fileContent = fileContent.Replace(oldid, newid);
+				fileContent = fileContent.Replace("|" + oldid + "|", "|" + newid + "|");
 				File.WriteAllText(_file.Path, fileContent);
 			}
 
@@ -71,7 +74,7 @@ namespace Palaso.Tests.WritingSystems
 				WritingSystemOrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(1));
 				Assert.That(e.WritingSystemRepository.Get("en"), Is.EqualTo(englishWs));
-				Assert.That(e.FileContent, Is.EqualTo("en|en|en"));
+				Assert.That(e.FileContent, Is.EqualTo("|en||en||en|"));
 			}
 		}
 
@@ -86,7 +89,7 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 				Assert.That(e.WritingSystemRepository.Get("en"), Is.EqualTo(englishWs));
 				Assert.That(e.WritingSystemRepository.Get("de"), Is.Not.Null);
-				Assert.That(e.FileContent, Is.EqualTo("en|en|de"));
+				Assert.That(e.FileContent, Is.EqualTo("|en||en||de|"));
 			}
 		}
 
@@ -101,7 +104,7 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 				Assert.That(e.WritingSystemRepository.Get("en"), Is.EqualTo(englishWs));
 				Assert.That(e.WritingSystemRepository.Get("x-bogusws"), Is.Not.Null);
-				Assert.That(e.FileContent, Is.EqualTo("en|en|x-bogusws"));
+				Assert.That(e.FileContent, Is.EqualTo("|en||en||x-bogusws|"));
 			}
 		}
 
@@ -120,7 +123,21 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 				Assert.That(e.WritingSystemRepository.Get("en-x-new"), Is.EqualTo(englishWs));
 				Assert.That(e.WritingSystemRepository.Get("x-bogusws"), Is.Not.Null);
-				Assert.That(e.FileContent, Is.EqualTo("en-x-new|en-x-new|x-bogusws"));
+				Assert.That(e.FileContent, Is.EqualTo("|en-x-new||en-x-new||x-bogusws|"));
+			}
+		}
+
+		[Test]
+		public void FindOrphans_StaticListOfIds_DuplicateIsCreated()
+		{
+			using (var e = new TestEnvironment("Zxxx-bogusws", "bogusws-Zxxx"))
+			{
+				var wss = new List<string>(e.GetIdsFromFile);
+				WritingSystemOrphanFinder.FindOrphans(wss, e.ReplaceIdInFile, e.WritingSystemRepository);
+				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
+				Assert.That(e.WritingSystemRepository.Get("qaa-Zxxx-x-bogusws"), Is.Not.Null);
+				Assert.That(e.WritingSystemRepository.Get("qaa-Zxxx-x-bogusws-dupl0"), Is.Not.Null);
+				Assert.That(e.FileContent, Is.EqualTo("|qaa-Zxxx-x-bogusws||qaa-Zxxx-x-bogusws||qaa-Zxxx-x-bogusws-dupl0|"));
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Palaso.WritingSystems.Migration;
 
 namespace Palaso.WritingSystems
@@ -28,7 +29,9 @@ namespace Palaso.WritingSystems
 			LdmlInFolderWritingSystemRepository writingSystemRepository
 			)
 		{
-			foreach (var wsId in idsInFile)
+			var originalIds = new List<string>(idsInFile);
+			var updatedIds = new List<string>(idsInFile);
+			foreach (var wsId in originalIds)
 			{
 				// Check if it's in the repo
 				if (writingSystemRepository.Contains(wsId))
@@ -52,8 +55,10 @@ namespace Palaso.WritingSystems
 				// If it changed, then change
 				if (conformantWritingSystem.RFC5646 != wsId)
 				{
-					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, idsInFile);
+					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, updatedIds);
 					replaceIdsInFile(wsId, conformantWritingSystem.RFC5646);
+					updatedIds.Remove(wsId);
+					updatedIds.Add(conformantWritingSystem.RFC5646);
 				}
 				// Check if it's in the repo
 				if (writingSystemRepository.Contains(conformantWritingSystem.RFC5646))
