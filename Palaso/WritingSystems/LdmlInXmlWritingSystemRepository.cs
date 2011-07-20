@@ -66,5 +66,14 @@ namespace Palaso.WritingSystems
 		}
 
 
+		public override bool WritingSystemIdHasChanged(string id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override string WritingSystemIdHasChangedTo(string id)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -311,38 +311,12 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
-		/// <summary>
-		/// If a consumer has a writingSystemId that is not contained in the
-		/// repository he can query the repository as to whether the id was once
-		/// contained and has since changed.
-		/// Note that changes are only logged on Save() i.e. changes made between
-		/// saves are not tracked
-		/// Use WritingSystemIdHasChangedTo to determine the new Id if there has
-		/// been a change
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		public bool WritingSystemIdHasChanged(string id)
+		public override bool WritingSystemIdHasChanged(string id)
 		{
 			return _changeLog.HasChangeFor(id);
 		}
 
-		/// <summary>
-		/// If a consumer has a writing system ID that was once contained in this
-		/// repository, but has since been changed, this method will return the
-		/// new ID. If there are multiple possibilities or if the ID was never
-		/// contained in the repo the method will return null. If the consumer
-		/// queries for an ID that has not changed and is still contained in the
-		/// repo it will return the ID.
-		/// Note that changes are only logged on Save() i.e. changes made between
-		/// saves are not tracked
-		/// Use WritingSystemIdHasChanged to determine whether an Id has changed
-		/// at all
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		public string WritingSystemIdHasChangedTo(string id)
+		public override string WritingSystemIdHasChangedTo(string id)
 		{
 			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}

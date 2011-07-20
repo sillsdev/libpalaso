@@ -21,7 +21,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[SetUp]
 		public void Setup()
 		{
-			_writingSystemRepository = new WritingSystemRepositoryBase();
+			_writingSystemRepository = new LdmlInFolderWritingSystemRepository();
 			_mockSetupModel = new Mock<WritingSystemSetupModel>(_writingSystemRepository);
 			SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			_model = new WritingSystemTreeModel(_mockSetupModel.Object);

@@ -16,7 +16,7 @@ namespace Palaso.WritingSystems
 	/// a WritingSystemDefinition. This allows the user to change the Rfc646Tag components and thereby the Id of a
 	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
 	/// </summary>
-	public class WritingSystemRepositoryBase : IWritingSystemRepository
+	abstract public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
@@ -85,6 +85,8 @@ namespace Palaso.WritingSystems
 			//TODO: This may be useful if writing systems were reference counted.
 		}
 
+		abstract public string WritingSystemIdHasChangedTo(string id);
+
 		virtual public void LastChecked(string identifier, DateTime dateModified)
 		{
 			if (_writingSystemsToIgnore.ContainsKey(identifier))
@@ -110,6 +112,8 @@ namespace Palaso.WritingSystems
 			}
 			return definition.Clone();
 		}
+
+		public abstract bool WritingSystemIdHasChanged(string id);
 
 		[Obsolete("Deprecated: use Contains instead")]
 		public bool Exists(string identifier)
