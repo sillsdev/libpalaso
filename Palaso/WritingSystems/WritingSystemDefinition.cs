@@ -144,17 +144,6 @@ namespace Palaso.WritingSystems
 			_id = ws._id;
 		}
 
-		/// <summary>
-		/// Provides a list of valid language subtags as defined by the IANA subtag registry.
-		/// </summary>
-		[Obsolete("Use StandardTags directly")]
-		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
-		{
-			get
-			{
-				return StandardTags.ValidIso639LanguageCodes;
-			}
-		}
 		///<summary>
 		///This is the version of the locale data contained in this writing system.
 		///This should not be confused with the version of our writingsystemDefinition implementation which is mostly used for migration purposes.
@@ -512,26 +501,6 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// The Language-639 code which is also the Ethnologue code.
-		/// </summary>
-		[Obsolete("Please use Language")]
-		virtual public string ISO
-		{
-			get { return Language; }
-			set { Language = value; }
-		}
-
-		/// <summary>
-		/// The Language-639 code which is also the Ethnologue code.
-		/// </summary>
-		[Obsolete("Please use Language")]
-		virtual public string ISO639
-		{
-			get { return Language; }
-			set { Language = value; }
-		}
-
-		/// <summary>
 		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
 		virtual public string Language
@@ -770,15 +739,6 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// The current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties.
-		/// </summary>
-	   [Obsolete("Please use the Bcp47Tag property")]
-		virtual public string Rfc5646
-		{
-			get { return Bcp47Tag; }
-		}
-
-		/// <summary>
 		/// The identifier for this writing syetm definition. Use this in files and as a key to the IWritingSystemRepository.
 		/// Note that this is usually identical to the Bcp47 tag and should rarely differ.
 		/// </summary>
@@ -793,18 +753,6 @@ namespace Palaso.WritingSystems
 				value = value ?? "";
 				_id = value;
 				Modified = true;
-			}
-		}
-
-		/// <summary>
-		/// Provides a list of valid script subtags as defined by the IANA subtag registry.
-		/// </summary>
-		[Obsolete("Use StandardTags directly")]
-		public static List<Iso15924Script> ScriptOptions
-		{
-			get
-			{
-				return StandardTags.ValidIso15924Scripts;
 			}
 		}
 
@@ -1013,23 +961,6 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Indicates whether this writing system is unicode encoded or legacy encoded
-		/// </summary>
-		[Obsolete("Use IsUnicodeEncoded instead - which is the inverse of IsLegacyEncoded")]
-		virtual public bool IsLegacyEncoded
-		{
-			get
-			{
-				return !IsUnicodeEncoded;
-			}
-			set
-			{
-				IsUnicodeEncoded = !value;
-			}
-		}
-
-
-		/// <summary>
 		/// Tests whether the current custom collation rules are valid.
 		/// </summary>
 		/// <param name="message">Used for an error message if rules do not validate.</param>
@@ -1120,16 +1051,6 @@ namespace Palaso.WritingSystems
 			var writingSystemDefinition = new WritingSystemDefinition();
 			writingSystemDefinition.SetTagFromString(completeTag);
 			return writingSystemDefinition;
-		}
-
-		/// <summary>
-		/// Parses the supplied BCP47 tag and return a new writing system definition with the correspnding Language, Script, Region and Variant properties
-		/// </summary>
-		/// <param name="bcp47Tag">A valid BCP47 tag</param>
-		[Obsolete("Use Parse instead.")]
-		public static WritingSystemDefinition FromLanguage(string bcp47Tag)
-		{
-			return new WritingSystemDefinition(bcp47Tag);
 		}
 
 		/// <summary>
