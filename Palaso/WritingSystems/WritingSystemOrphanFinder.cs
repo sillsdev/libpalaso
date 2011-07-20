@@ -53,15 +53,15 @@ namespace Palaso.WritingSystems
 				}
 				var conformantWritingSystem = WritingSystemDefinition.Parse(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.RFC5646 != wsId)
+				if (conformantWritingSystem.Bcp47Tag != wsId)
 				{
 					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, updatedIds);
-					replaceIdsInFile(wsId, conformantWritingSystem.RFC5646);
+					replaceIdsInFile(wsId, conformantWritingSystem.Bcp47Tag);
 					updatedIds.Remove(wsId);
-					updatedIds.Add(conformantWritingSystem.RFC5646);
+					updatedIds.Add(conformantWritingSystem.Bcp47Tag);
 				}
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(conformantWritingSystem.RFC5646))
+				if (writingSystemRepository.Contains(conformantWritingSystem.Bcp47Tag))
 				{
 					continue;
 				}

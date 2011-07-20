@@ -239,10 +239,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.RFC5646);
+			Assert.AreEqual("en", ws1.Bcp47Tag);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variant = "1901";
-			Assert.AreEqual("en-1901", ws2.RFC5646);
+			Assert.AreEqual("en-1901", ws2.Bcp47Tag);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
@@ -462,7 +462,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void TextWritingSystems_IdIsNotText_ReturnsEmpty()
 		{
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			ws.IsVoice = true;
 			RepositoryUnderTest.Set(ws);
 			var wsIdsToFilter = new List<string> {ws.Id};
@@ -473,7 +473,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void TextWritingSystems_IdIsText_ReturnsId()
 		{
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			var wsIdsToFilter = new List<string> { ws.Id };
 			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
@@ -484,11 +484,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void TextWritingSystems_IdsAreMixOfTextAndNotText_ReturnsOnlyTextIds()
 		{
-			var ws = WritingSystemDefinition.FromLanguage("en");
-			var ws1 = WritingSystemDefinition.FromLanguage("de");
-			var ws2 = WritingSystemDefinition.FromLanguage("th");
+			var ws = WritingSystemDefinition.Parse("en");
+			var ws1 = WritingSystemDefinition.Parse("de");
+			var ws2 = WritingSystemDefinition.Parse("th");
 			ws2.IsVoice = true;
-			var ws3 = WritingSystemDefinition.FromLanguage("pt");
+			var ws3 = WritingSystemDefinition.Parse("pt");
 			ws3.IsVoice = true;
 
 			RepositoryUnderTest.Set(ws);
@@ -514,7 +514,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Set_IdOfWritingSystemChanged_EventArgsAreCorrect()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
@@ -539,7 +539,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "en";
 			RepositoryUnderTest.Set(ws);
@@ -550,7 +550,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Set_NewWritingSystem_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);
 		}
@@ -569,7 +569,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Remove_WritingsystemIdExists_FiresEventAndEventArgIsSetToIdOfDeletedWritingSystem()
 		{
 			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Remove(ws.Id);
 			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.Id));

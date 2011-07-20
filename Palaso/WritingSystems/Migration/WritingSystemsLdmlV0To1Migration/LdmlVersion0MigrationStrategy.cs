@@ -73,7 +73,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					DefaultFontName = writingSystemDefinitionV0.DefaultFontName,
 					Abbreviation = writingSystemDefinitionV0.Abbreviation,
 					DefaultFontSize = writingSystemDefinitionV0.DefaultFontSize,
-					IsLegacyEncoded = writingSystemDefinitionV0.IsLegacyEncoded,
+					IsUnicodeEncoded = !writingSystemDefinitionV0.IsLegacyEncoded,
 					Keyboard = writingSystemDefinitionV0.Keyboard,
 					LanguageName = writingSystemDefinitionV0.LanguageName,
 					RightToLeftScript = writingSystemDefinitionV0.RightToLeftScript,
@@ -84,7 +84,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					DateModified = DateTime.Now
 				};
 
-			writingSystemDefinitionV1.SetAllRfc5646LanguageTagComponents(
+			writingSystemDefinitionV1.SetAllTagComponents(
 				rfcHelper.Language,
 				rfcHelper.Script,
 				rfcHelper.Region,
@@ -99,7 +99,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				{
 					FileName = sourceFileName,
 					RfcTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
-					RfcTagAfterMigration = writingSystemDefinitionV1.RFC5646
+					RfcTagAfterMigration = writingSystemDefinitionV1.Bcp47Tag
 				};
 			_migrationInfo.Add(migrationInfo);
 		}
@@ -169,14 +169,14 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 						otherInfo.RfcTagAfterMigration = UniqueTagForDuplicate(otherInfo.RfcTagAfterMigration, uniqueRfcTags);
 						uniqueRfcTags.Add(otherInfo.RfcTagAfterMigration);
 						var writingSystemV1 = _writingSystemsV1[otherInfo.FileName];
-						writingSystemV1.SetRfc5646FromString(otherInfo.RfcTagAfterMigration);
+						writingSystemV1.SetTagFromString(otherInfo.RfcTagAfterMigration);
 					}
 					else
 					{
 						currentInfo.RfcTagAfterMigration = UniqueTagForDuplicate(currentInfo.RfcTagAfterMigration, uniqueRfcTags);
 						uniqueRfcTags.Add(currentInfo.RfcTagAfterMigration);
 						var writingSystemV1 = _writingSystemsV1[currentInfo.FileName];
-						writingSystemV1.SetRfc5646FromString(currentInfo.RfcTagAfterMigration);
+						writingSystemV1.SetTagFromString(currentInfo.RfcTagAfterMigration);
 					}
 				}
 				else

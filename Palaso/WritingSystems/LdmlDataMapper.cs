@@ -170,7 +170,7 @@ namespace Palaso.WritingSystems
 				string isLegacyEncoded = GetSpecialValue(reader, "palaso", "isLegacyEncoded");
 				if (!String.IsNullOrEmpty(isLegacyEncoded))
 				{
-					ws.IsLegacyEncoded = Convert.ToBoolean(isLegacyEncoded);
+					ws.IsUnicodeEncoded = !Convert.ToBoolean(isLegacyEncoded);
 				}
 				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
@@ -236,13 +236,13 @@ namespace Palaso.WritingSystems
 				{
 					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-					ws.SetAllRfc5646LanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+					ws.SetAllTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
 
 					_wsIsFlexPrivateUse = true;
 				}
 				else
 				{
-					ws.SetAllRfc5646LanguageTagComponents(language, script, region, variant);
+					ws.SetAllTagComponents(language, script, region, variant);
 
 					_wsIsFlexPrivateUse = false;
 				}
@@ -702,7 +702,7 @@ namespace Palaso.WritingSystems
 				}
 				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
-				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase) && interpreter.RFC5646Tag == ws.RFC5646)
+				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase) && interpreter.RFC5646Tag == ws.Bcp47Tag)
 				{
 					copyFlexFormat = true;
 					_wsIsFlexPrivateUse = true;
@@ -822,9 +822,9 @@ namespace Palaso.WritingSystems
 				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
 			}
 			WriteSpecialValue(writer, "palaso", "defaultKeyboard", ws.Keyboard);
-			if (ws.IsLegacyEncoded)
+			if (!ws.IsUnicodeEncoded)
 			{
-				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
+				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", (!ws.IsUnicodeEncoded).ToString());
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
 			if (!String.IsNullOrEmpty(ws.SpellCheckingId))

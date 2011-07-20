@@ -43,7 +43,7 @@ namespace Palaso.WritingSystems
 				WritingSystemDefinition ws = CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
 				adaptor.Read(xmlReader, ws);
-				ws.StoreID = ws.RFC5646;
+				ws.StoreID = ws.Bcp47Tag;
 				Set(ws);
 			}
 		}
@@ -58,7 +58,7 @@ namespace Palaso.WritingSystems
 				{
 					WritingSystemDefinition ws = CreateNew();
 					adaptor.Read(xmlReader.ReadSubtree(), ws);
-					ws.StoreID = ws.RFC5646;
+					ws.StoreID = ws.Bcp47Tag;
 					Set(ws);
 				}
 

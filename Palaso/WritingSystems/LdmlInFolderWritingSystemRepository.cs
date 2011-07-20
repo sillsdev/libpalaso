@@ -96,14 +96,14 @@ namespace Palaso.WritingSystems
 					throw new ApplicationException(
 						String.Format("There was a problem loading one of your writing systems, found in file {0}. The exact error message was '{1}'.\r\nThe contents of the file are:\r\n{2}", filePath, e.Message, File.ReadAllText(filePath)), e);
 				}
-				if (wsFromFile.StoreID != wsFromFile.RFC5646)
+				if (wsFromFile.StoreID != wsFromFile.Bcp47Tag)
 				{
 					bool badFileName = true;
 					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x", StringComparison.OrdinalIgnoreCase))
 					{
 						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
-						if (interpreter.RFC5646Tag.Equals(wsFromFile.RFC5646, StringComparison.OrdinalIgnoreCase))
+						if (interpreter.RFC5646Tag.Equals(wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase))
 						{
 							badFileName = false;
 						}
@@ -145,9 +145,9 @@ namespace Palaso.WritingSystems
 		{
 				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 				{
-					if (null == FindAlreadyLoadedWritingSystem(ws.RFC5646))
+					if (null == FindAlreadyLoadedWritingSystem(ws.Bcp47Tag))
 					{
-						if (!HaveMatchingDefinitionInTrash(ws.RFC5646))
+						if (!HaveMatchingDefinitionInTrash(ws.Bcp47Tag))
 						{
 							Set(ws);
 						}
@@ -177,7 +177,7 @@ namespace Palaso.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				if(ws.RFC5646 == rfc4646 )
+				if(ws.Bcp47Tag == rfc4646 )
 					return ws;
 			}
 			return null;

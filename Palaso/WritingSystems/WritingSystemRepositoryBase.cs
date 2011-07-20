@@ -250,11 +250,11 @@ namespace Palaso.WritingSystems
 			foreach (var ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.RFC5646))
+				if (_writingSystems.ContainsKey(ws.Bcp47Tag))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.RFC5646, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.Bcp47Tag, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.Bcp47Tag].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}

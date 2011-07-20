@@ -12,7 +12,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public LookupIsoCodeModel()
 		{
-			_languageCodes = WritingSystemDefinition.ValidIso639LanguageCodes;
+			_languageCodes = StandardTags.ValidIso639LanguageCodes;
 		}
 
 		public IEnumerable<Iso639LanguageCode> GetMatchingWritingSystems(string typedText)
