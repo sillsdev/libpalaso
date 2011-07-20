@@ -84,7 +84,7 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					DateModified = DateTime.Now
 				};
 
-			writingSystemDefinitionV1.SetAllTagComponents(
+			writingSystemDefinitionV1.SetAllComponents(
 				rfcHelper.Language,
 				rfcHelper.Script,
 				rfcHelper.Region,

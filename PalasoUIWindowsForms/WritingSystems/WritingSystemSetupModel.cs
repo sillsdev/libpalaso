@@ -874,7 +874,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		// This is currently only useful for setting the region combobox, since it is expecting an IANASubtag
-		public StandardTags.IanaSubtag CurrentRegionTag
+		public IanaSubtag CurrentRegionTag
 		{
 			get
 			{

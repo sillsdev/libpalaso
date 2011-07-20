@@ -536,7 +536,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_ScriptSetToZxxxAndVariantSetToXDashAudio_SetsIsVoiceToTrue()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
 				"",
@@ -549,7 +549,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_ScriptSetToZxXxAndVariantSetToXDashAuDiO_SetsIsVoiceToTrue()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				"ZxXx",
 				"",
@@ -713,7 +713,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Script_SetToOtherThanZxxxWhileVariantIsXDashAudio_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
 				"",
@@ -726,7 +726,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_VariantSetToPrivateUseOnly_VariantIsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
 				"",
@@ -746,7 +746,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Script_SetToOtherThanZxxxWhileVariantIsxDashCapitalAUDIO_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
 				"",
@@ -759,7 +759,7 @@ namespace Palaso.Tests.WritingSystems
 		public void IsVoice_VariantIsxDashPrefixaudioPostFix_ReturnsFalse()
 		{
 			var ws = new WritingSystemDefinition ();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
 				"",
@@ -772,7 +772,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_ContainsXDashAudioDashFonipa_VariantIsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents(
+			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
 				"",
@@ -786,7 +786,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
+				() => ws.SetAllComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
 		}
 
 		[Test]
@@ -794,7 +794,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
 		}
 
 		[Test]
@@ -802,7 +802,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
 		}
 
 		[Test]
@@ -810,7 +810,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
 		}
 
 		[Test]
@@ -818,7 +818,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
 		}
 
 		[Test]
@@ -826,7 +826,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "etic"));
+				() => ws.SetAllComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "etic"));
 		}
 
 		[Test]
@@ -834,7 +834,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllTagComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "emic"));
+				() => ws.SetAllComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "emic"));
 		}
 
 		[Test]
@@ -1019,7 +1019,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_Language_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents("th", "", "", "");
+			ws.SetAllComponents("th", "", "", "");
 			Assert.AreEqual("th", ws.Language);
 		}
 
@@ -1028,7 +1028,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ValidationException>(
-				() => ws.SetAllTagComponents("BadLanguage", "", "", "")
+				() => ws.SetAllComponents("BadLanguage", "", "", "")
 			);
 		}
 
@@ -1036,7 +1036,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_Script_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents("th", "Thai", "", "");
+			ws.SetAllComponents("th", "Thai", "", "");
 			Assert.AreEqual("Thai", ws.Script);
 		}
 
@@ -1045,7 +1045,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ValidationException>(
-				() => ws.SetAllTagComponents("th", "BadScript", "", "")
+				() => ws.SetAllComponents("th", "BadScript", "", "")
 			);
 		}
 
@@ -1053,7 +1053,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_Region_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents("th", "Thai", "TH", "");
+			ws.SetAllComponents("th", "Thai", "TH", "");
 			Assert.AreEqual("TH", ws.Region);
 		}
 
@@ -1062,7 +1062,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ValidationException>(
-				() => ws.SetAllTagComponents("th", "Thai", "BadRegion", "")
+				() => ws.SetAllComponents("th", "Thai", "BadRegion", "")
 			);
 		}
 
@@ -1070,7 +1070,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetRfc5646LanguageTagComponents_Variant_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllTagComponents("th", "Thai", "TH", "1901");
+			ws.SetAllComponents("th", "Thai", "TH", "1901");
 			Assert.AreEqual("1901", ws.Variant);
 		}
 
@@ -1079,7 +1079,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ValidationException>(
-				() => ws.SetAllTagComponents("th", "Thai", "TH", "BadVariant")
+				() => ws.SetAllComponents("th", "Thai", "TH", "BadVariant")
 			);
 		}
 
@@ -1239,10 +1239,10 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void AddToPrivateUse_IdIsSet()
+		public void AddToVariant_NonRegisteredVariant_IdIsSet()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.AddToPrivateUse("bogus");
+			writingSystem.AddToVariant("bogus");
 			Assert.AreEqual("en-Zxxx-1901-x-audio-bogus", writingSystem.Id);
 		}
 
@@ -1250,7 +1250,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_IdIsSet()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.SetAllTagComponents("de","Latn","US","fonipa-x-etic");
+			writingSystem.SetAllComponents("de","Latn","US","fonipa-x-etic");
 			Assert.AreEqual("de-Latn-US-fonipa-x-etic", writingSystem.Id);
 		}
 
@@ -1258,7 +1258,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_IdChanged_ModifiedisTrue()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.SetAllTagComponents("de", "Latn", "US", "fonipa-x-etic");
+			writingSystem.SetAllComponents("de", "Latn", "US", "fonipa-x-etic");
 			Assert.AreEqual(writingSystem.Modified, true);
 		}
 
@@ -1266,7 +1266,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_IdUnchanged_ModifiedisTrue()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.SetAllTagComponents("en", "Zxxx", "", "1901-x-audio");
+			writingSystem.SetAllComponents("en", "Zxxx", "", "1901-x-audio");
 			Assert.AreEqual(writingSystem.Modified, false);
 		}
 

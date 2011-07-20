@@ -167,6 +167,37 @@ namespace Palaso.WritingSystems
 			set { _dateModified = value; }
 		}
 
+		public IEnumerable<Iso639LanguageCode> ValidLanguages
+		{
+			get
+			{
+				return StandardTags.ValidIso639LanguageCodes;
+			}
+		}
+
+		public IEnumerable<Iso15924Script> ValidScript
+		{
+			get
+			{
+				return StandardTags.ValidIso15924Scripts;
+			}
+		}
+
+		public IEnumerable<IanaSubtag> ValidRegions
+		{
+			get
+			{
+				return StandardTags.ValidIso3166Regions;
+			}
+		}
+
+		public IEnumerable<IanaSubtag> ValidVariants
+		{
+			get
+			{
+				return StandardTags.ValidRegisteredVariants;
+			}
+		}
 
 		/// <summary>
 		/// Adjusts the BCP47 tag to indicate the desired form of Ipa by inserting fonipa in the variant and emic or etic in private use where necessary.
@@ -331,17 +362,6 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Adds a given subtag to the private use section of the BCP47 subtag
-		/// </summary>
-		/// <param name="subtag"></param>
-		public void AddToPrivateUse(string subtag)
-		{
-			_rfcTag.AddToPrivateUse(subtag);
-			UpdateIdFromRfcTag();
-			CheckVariantAndScriptRules();
-		}
-
-		/// <summary>
 		/// A convenience method to help consumers deal with variant and private use subtags both being stored in the Variant property.
 		/// This method will search the Variant part of the BCP47 tag for an "x" extension marker and split the tag into variant and private use sections
 		/// Note the complementary method "ConcatenateVariantAndPrivateUse"
@@ -462,7 +482,7 @@ namespace Palaso.WritingSystems
 		/// <param name="script">A valid BCP47 script subtag.</param>
 		/// <param name="region">A valid BCP47 region subtag.</param>
 		/// <param name="variant">A valid BCP47 variant subtag.</param>
-		public void SetAllTagComponents(string language, string script, string region, string variant)
+		public void SetAllComponents(string language, string script, string region, string variant)
 		{
 			string oldId = _rfcTag.CompleteTag;
 			string variantPart;
@@ -1045,11 +1065,11 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Parses the supplied BCP47 tag and return a new writing system definition with the correspnding Language, Script, Region and Variant properties
 		/// </summary>
-		/// <param name="completeTag">A valid BCP47 tag</param>
-		public static WritingSystemDefinition Parse(string completeTag)
+		/// <param name="bcp47Tag">A valid BCP47 tag</param>
+		public static WritingSystemDefinition Parse(string bcp47Tag)
 		{
 			var writingSystemDefinition = new WritingSystemDefinition();
-			writingSystemDefinition.SetTagFromString(completeTag);
+			writingSystemDefinition.SetTagFromString(bcp47Tag);
 			return writingSystemDefinition;
 		}
 

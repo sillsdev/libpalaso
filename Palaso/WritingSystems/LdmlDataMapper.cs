@@ -236,13 +236,13 @@ namespace Palaso.WritingSystems
 				{
 					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-					ws.SetAllTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+					ws.SetAllComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
 
 					_wsIsFlexPrivateUse = true;
 				}
 				else
 				{
-					ws.SetAllTagComponents(language, script, region, variant);
+					ws.SetAllComponents(language, script, region, variant);
 
 					_wsIsFlexPrivateUse = false;
 				}
