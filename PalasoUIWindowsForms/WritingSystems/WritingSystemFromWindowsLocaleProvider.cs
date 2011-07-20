@@ -81,10 +81,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
 				def.SortRules = language.Culture.IetfLanguageTag;
 				def.DefaultFontSize = 12;
-				if(def.LanguageName == "Unknown Language")
-				{
-					def.LanguageName = language.Culture.DisplayName;
-				}
+				def.LanguageName = language.Culture.DisplayName;
+
 				yield return def;
 			}
 		}
