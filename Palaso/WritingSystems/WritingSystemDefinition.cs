@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Palaso.Code;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
 {
 	/// <summary>
 	/// This class stores the information used to define various writing system properties. The Language, Script, Region and Variant
-	/// properties conform to the subtags of the same name defined in Rfc5646 and are enforced by the Rfc5646Tag class. it is worth
+	/// properties conform to the subtags of the same name defined in BCP47 (Rfc5646) and are enforced by the Rfc5646Tag class. it is worth
 	/// noting that for historical reasons this class does not provide seperate fields for variant and private use components as
-	/// defined in Rfc5646. Instead the ConcatenateVariantAndPrivateUse and SplitVariantAndPrivateUse methods are provided for consumers
-	/// to generate a sinlge variant subtag that contains both fields seperated by "-x-".
+	/// defined in BCP47. Instead the ConcatenateVariantAndPrivateUse and SplitVariantAndPrivateUse methods are provided for consumers
+	/// to generate a single variant subtag that contains both fields seperated by "-x-".
 	/// Furthermore the WritingSystemDefinition.WellknownSubtags class provides certain well defined Subtags that carry special meaning
 	/// apart from the IANA subtag registry. In particular this class defines "qaa" as the default "unlisted language" language subtag.
 	/// It should be used when there is no match for a language in the IANA subtag registry. Private use properties are "emic" and "etic"
@@ -76,6 +75,9 @@ namespace Palaso.WritingSystems
 		private ICollator _collator;
 		private string _id;
 
+		/// <summary>
+		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
+		/// </summary>
 		public WritingSystemDefinition()
 		{
 			_sortUsing = SortRulesType.DefaultOrdering;
@@ -84,14 +86,27 @@ namespace Palaso.WritingSystems
 			UpdateIdFromRfcTag();
 		}
 
-		public WritingSystemDefinition(string rfctag)
+		/// <summary>
+		/// Creates a new WritingSystemDefinition by parsing a valid BCP47 tag
+		/// </summary>
+		/// <param name="bcp47Tag">A valid BCP47 tag</param>
+		public WritingSystemDefinition(string bcp47Tag)
 			: this()
 		{
-			_rfcTag = RFC5646Tag.Parse(rfctag);
+			_rfcTag = RFC5646Tag.Parse(bcp47Tag);
 			_abbreviation = _languageName = _nativeName = string.Empty;
 			UpdateIdFromRfcTag();
 		}
 
+		/// <summary>
+		/// Creates a new WritingSystemDefinition
+		/// </summary>
+		/// <param name="language">A valid BCP47 language subtag</param>
+		/// <param name="script">A valid BCP47 script subtag</param>
+		/// <param name="region">A valid BCP47 region subtag</param>
+		/// <param name="variant">A valid BCP47 variant subtag</param>
+		/// <param name="abbreviation">The desired abbreviation for this writing system definition</param>
+		/// <param name="rightToLeftScript">Indicates whether this writing system uses a right to left script</param>
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
 			: this()
 		{
@@ -130,9 +145,9 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Provides a list of Language language codes.  Uses Language 639-1 and 639-3 where Language 639-1 is not available.
+		/// Provides a list of valid language subtags as defined by the IANA subtag registry.
 		/// </summary>
-		// TODO Move this to some other class that provides WritingSystemResources? Info?
+		[Obsolete("Use StandardTags directly")]
 		public static IList<Iso639LanguageCode> ValidIso639LanguageCodes
 		{
 			get
@@ -140,10 +155,11 @@ namespace Palaso.WritingSystems
 				return StandardTags.ValidIso639LanguageCodes;
 			}
 		}
-
-		//This is the version of the locale data contained in this writing system.
-		//This should not be confused with the version of our writingsystemDefinition implementation which is mostly used for migration purposes.
-		//That information is stored in the "LatestWritingSystemDefinitionVersion" property.
+		///<summary>
+		///This is the version of the locale data contained in this writing system.
+		///This should not be confused with the version of our writingsystemDefinition implementation which is mostly used for migration purposes.
+		///That information is stored in the "LatestWritingSystemDefinitionVersion" property.
+		///</summary>
 		virtual public string VersionNumber
 		{
 			get { return _versionNumber; }
@@ -164,9 +180,7 @@ namespace Palaso.WritingSystems
 
 
 		/// <summary>
-		/// Note: this treats the etic and emic extensions as if they were variants, which we can get
-		/// away with for now, but maybe not if this class grows to be extension aware.
-		/// Ideally, these should be suffixes rather than private use
+		/// Adjusts the BCP47 tag to indicate the desired form of Ipa by inserting fonipa in the variant and emic or etic in private use where necessary.
 		/// </summary>
 		virtual public IpaStatusChoices IpaStatus
 		{
@@ -228,6 +242,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Adjusts the BCP47 tag to indicate that this is an "audio writing system" by inserting "audio" in the private use and "Zxxx" in the script
+		/// </summary>
 		virtual public bool IsVoice
 		{
 			get
@@ -273,8 +290,12 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Todo: this could/should become an ordered list of variant tags
+		/// A string representing the subtag of the same name as defined by BCP47.
+		/// Note that the variant also includes the private use subtags. These are appended to the variant subtags seperated by "-x-"
+		/// Also note the convenience methods "SplitVariantAndPrivateUse" and "ConcatenateVariantAndPrivateUse" for easier
+		/// variant/ private use handling
 		/// </summary>
+		// Todo: this could/should become an ordered list of variant tags
 		virtual public string Variant
 		{
 			get
@@ -302,27 +323,43 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public void AddToVariant(string tag)
+		/// <summary>
+		/// Adds a valid BCP47 registered variant subtag to the variant. Any other tag is inserted as private use.
+		/// </summary>
+		/// <param name="registeredVariantOrPrivateUseSubtag">A valid variant tag or another tag which will be inserted into private use.</param>
+		public void AddToVariant(string registeredVariantOrPrivateUseSubtag)
 		{
-			if (StandardTags.IsValidRegisteredVariant(tag))
+			if (StandardTags.IsValidRegisteredVariant(registeredVariantOrPrivateUseSubtag))
 			{
-				_rfcTag.AddToVariant(tag);
+				_rfcTag.AddToVariant(registeredVariantOrPrivateUseSubtag);
 			}
 			else
 			{
-				_rfcTag.AddToPrivateUse(tag);
+				_rfcTag.AddToPrivateUse(registeredVariantOrPrivateUseSubtag);
 			}
 			UpdateIdFromRfcTag();
 			CheckVariantAndScriptRules();
 		}
 
-		public void AddToPrivateUse(string tag)
+		/// <summary>
+		/// Adds a given subtag to the private use section of the BCP47 subtag
+		/// </summary>
+		/// <param name="subtag"></param>
+		public void AddToPrivateUse(string subtag)
 		{
-			_rfcTag.AddToPrivateUse(tag);
+			_rfcTag.AddToPrivateUse(subtag);
 			UpdateIdFromRfcTag();
 			CheckVariantAndScriptRules();
 		}
 
+		/// <summary>
+		/// A convenience method to help consumers deal with variant and private use subtags both being stored in the Variant property.
+		/// This method will search the Variant part of the BCP47 tag for an "x" extension marker and split the tag into variant and private use sections
+		/// Note the complementary method "ConcatenateVariantAndPrivateUse"
+		/// </summary>
+		/// <param name="variantAndPrivateUse">The string containing variant and private use sections seperated by an "x" private use subtag</param>
+		/// <param name="variant">The resulting variant section</param>
+		/// <param name="privateUse">The resulting private use section</param>
 		public static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
 		{
 			if (variantAndPrivateUse.StartsWith("x-",StringComparison.OrdinalIgnoreCase)) // Private Use at the beginning
@@ -348,25 +385,33 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public static string ConcatenateVariantAndPrivateUse(string variant, string privateUse)
+		/// <summary>
+		/// A convenience method to help consumers deal with registeredVariantSubtags and private use subtags both being stored in the Variant property.
+		/// This method will insert a "x" private use subtag between a set of registered BCP47 variants and a set of private use subtags
+		/// Note the complementary method "ConcatenateVariantAndPrivateUse"
+		/// </summary>
+		/// <param name="registeredVariantSubtags">A set of registered variant subtags</param>
+		/// <param name="privateUseSubtags">A set of private use subtags</param>
+		/// <returns>The resulting combination of registeredVariantSubtags and private use.</returns>
+		public static string ConcatenateVariantAndPrivateUse(string registeredVariantSubtags, string privateUseSubtags)
 		{
-			if(String.IsNullOrEmpty(privateUse))
+			if(String.IsNullOrEmpty(privateUseSubtags))
 			{
-				return variant;
+				return registeredVariantSubtags;
 			}
-			if(!privateUse.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+			if(!privateUseSubtags.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 			{
-				privateUse = String.Concat("x-", privateUse);
+				privateUseSubtags = String.Concat("x-", privateUseSubtags);
 			}
 
-			string variantToReturn = variant;
-			if (!String.IsNullOrEmpty(privateUse))
+			string variantToReturn = registeredVariantSubtags;
+			if (!String.IsNullOrEmpty(privateUseSubtags))
 			{
 				if (!String.IsNullOrEmpty(variantToReturn))
 				{
 					variantToReturn += "-";
 				}
-				variantToReturn += privateUse;
+				variantToReturn += privateUseSubtags;
 			}
 			return variantToReturn;
 		}
@@ -420,7 +465,15 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public void SetAllRfc5646LanguageTagComponents(string language, string script, string region, string variant)
+		/// <summary>
+		/// Sets all BCP47 language tag components at once.
+		/// This method is useful for avoiding invalid intermediate states when switching from one valid tag to another.
+		/// </summary>
+		/// <param name="language">A valid BCP47 language subtag.</param>
+		/// <param name="script">A valid BCP47 script subtag.</param>
+		/// <param name="region">A valid BCP47 region subtag.</param>
+		/// <param name="variant">A valid BCP47 variant subtag.</param>
+		public void SetAllTagComponents(string language, string script, string region, string variant)
 		{
 			string oldId = _rfcTag.CompleteTag;
 			string variantPart;
@@ -436,6 +489,9 @@ namespace Palaso.WritingSystems
 			CheckVariantAndScriptRules();
 		}
 
+		/// <summary>
+		/// A string representing the subtag of the same name as defined by BCP47.
+		/// </summary>
 		virtual public string Region
 		{
 			get
@@ -475,8 +531,8 @@ namespace Palaso.WritingSystems
 			set { Language = value; }
 		}
 
-			/// <summary>
-		/// The ISO-639 code which is also the Ethnologue code.
+		/// <summary>
+		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
 		virtual public string Language
 		{
@@ -497,6 +553,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The desired abbreviation for the writing system
+		/// </summary>
 		virtual public string Abbreviation
 		{
 			get
@@ -509,6 +568,10 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+
+		/// <summary>
+		/// A string representing the subtag of the same name as defined by BCP47.
+		/// </summary>
 		virtual public string Script
 		{
 			get
@@ -529,6 +592,10 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+
+		/// <summary>
+		/// The language name to use. Typically this is the language name associated with the BCP47 language subtag as defined by the IANA subtag registry
+		/// </summary>
 		virtual public string LanguageName
 		{
 			get
@@ -537,7 +604,7 @@ namespace Palaso.WritingSystems
 				{
 					return _languageName;
 				}
-				var code = ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
+				var code = StandardTags.ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
 				if (code != null)
 				{
 					return code.Name;
@@ -600,21 +667,30 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Other classes that persist this need to know when our id changed, so they can
-		/// clean up the old copy which is based on the old name.
+		/// Used by IWritingSystemRepository to identify writing systems. Only change this if you would like to replace a writing system with the same StoreId
+		/// already contained in the repo. This is useful creating a temporary copy of a writing system that you may or may not care to persist to the
+		/// IWritingSystemRepository.
+		/// Typical use would therefor be:
+		/// ws.Clone(wsorig);
+		/// ws.StoreId=wsOrig.StoreId;
+		/// **make changes to ws**
+		/// repo.Set(ws);
 		/// </summary>
 		virtual public string StoreID { get; set; }
 
+		/// <summary>
+		/// A automatically generated descriptive label for the writing system definition.
+		/// </summary>
 		virtual public string DisplayLabel
 		{
 			get
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = RFC5646.Equals(WellKnownSubTags.Unlisted.Language, StringComparison.OrdinalIgnoreCase);
-				if (!String.IsNullOrEmpty(RFC5646) && !languageIsUnknown)
+				bool languageIsUnknown = Bcp47Tag.Equals(WellKnownSubTags.Unlisted.Language, StringComparison.OrdinalIgnoreCase);
+				if (!String.IsNullOrEmpty(Bcp47Tag) && !languageIsUnknown)
 				{
-					return RFC5646;
+					return Bcp47Tag;
 				}
 				if (languageIsUnknown)
 				{
@@ -637,14 +713,7 @@ namespace Palaso.WritingSystems
 			get
 			{
 				string n = string.Empty;
-				if (!String.IsNullOrEmpty(LanguageName))
-				{
-					n = LanguageName;
-				}
-				else
-				{
-					n = DisplayLabel;
-				}
+				n = !String.IsNullOrEmpty(LanguageName) ? LanguageName : DisplayLabel;
 				string details = "";
 				if(IpaStatus != IpaStatusChoices.NotIpa)
 				{
@@ -681,14 +750,18 @@ namespace Palaso.WritingSystems
 					details = details.Replace("Zxxx-", "");
 					details += "voice";
 				}
-				details = details.Trim(new char[] { '-' });
+				details = details.Trim(new[] { '-' });
 				if (details.Length > 0)
 					details = " ("+details + ")";
 				return n+details;
 			}
 		}
 
-		virtual public string RFC5646
+
+		/// <summary>
+		/// The current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties.
+		/// </summary>
+		public string Bcp47Tag
 		{
 			get
 			{
@@ -696,6 +769,19 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties.
+		/// </summary>
+	   [Obsolete("Please use the Bcp47Tag property")]
+		virtual public string Rfc5646
+		{
+			get { return Bcp47Tag; }
+		}
+
+		/// <summary>
+		/// The identifier for this writing syetm definition. Use this in files and as a key to the IWritingSystemRepository.
+		/// Note that this is usually identical to the Bcp47 tag and should rarely differ.
+		/// </summary>
 		public string Id
 		{
 			get
@@ -710,7 +796,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
+		/// <summary>
+		/// Provides a list of valid script subtags as defined by the IANA subtag registry.
+		/// </summary>
 		[Obsolete("Use StandardTags directly")]
 		public static List<Iso15924Script> ScriptOptions
 		{
@@ -720,10 +808,17 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Indicates whether the writing system definition has been modified.
+		/// Note that this flag is automatically set by all methods that cause a modification and is reset by the IwritingSystemRepository.Save() method
+		/// </summary>
 		virtual public bool Modified { get; set; }
 
 		virtual public bool MarkedForDeletion { get; set; }
 
+		/// <summary>
+		/// The font used to display data encoded in this writing system
+		/// </summary>
 		virtual public string DefaultFontName
 		{
 			get
@@ -736,6 +831,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// the preferred font size to use for data encoded in this writing system.
+		/// </summary>
 		virtual public float DefaultFontSize
 		{
 			get
@@ -757,6 +855,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The preferred keyboard to use to generate data encoded in this writing system.
+		/// </summary>
 		virtual public string Keyboard
 		{
 			get
@@ -773,6 +874,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Indicates whether this writing system is read and written from left to right or right to left
+		/// </summary>
 		virtual public bool RightToLeftScript
 		{
 			get
@@ -804,6 +908,10 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Indicates the type of sort rules used to encode the sort order.
+		/// Note that the actual sort rules are contained in the SortRules property
+		/// </summary>
 		virtual public SortRulesType SortUsing
 		{
 			get { return _sortUsing; }
@@ -818,6 +926,10 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The sort rules that efine the sort order.
+		/// Note that you must indicate the type of sort rules used by setting the "SortUsing" property
+		/// </summary>
 		virtual public string SortRules
 		{
 			get { return _sortRules ?? string.Empty; }
@@ -828,24 +940,39 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public void SortUsingOtherLanguage(string sortRules)
+		/// <summary>
+		/// A convenience method for sorting like anthoer language
+		/// </summary>
+		/// <param name="languageCode">A valid language code</param>
+		public void SortUsingOtherLanguage(string languageCode)
 		{
 			SortUsing = SortRulesType.OtherLanguage;
-			SortRules = sortRules;
+			SortRules = languageCode;
 		}
 
+		/// <summary>
+		/// A convenience method for sorting with custom ICU rules
+		/// </summary>
+		/// <param name="sortRules">custom ICU sortrules</param>
 		public void SortUsingCustomICU(string sortRules)
 		{
 			SortUsing = SortRulesType.CustomICU;
 			SortRules = sortRules;
 		}
 
+		/// <summary>
+		/// A convenience method for sorting with "shoebox" style rules
+		/// </summary>
+		/// <param name="sortRules">"shoebox" style rules</param>
 		public void SortUsingCustomSimple(string sortRules)
 		{
 			SortUsing = SortRulesType.CustomSimple;
 			SortRules = sortRules;
 		}
 
+		/// <summary>
+		/// The id used to select the spell checker.
+		/// </summary>
 		virtual public string SpellCheckingId
 		{
 			get
@@ -885,6 +1012,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Indicates whether this writing system is unicode encoded or legacy encoded
+		/// </summary>
 		[Obsolete("Use IsUnicodeEncoded instead - which is the inverse of IsLegacyEncoded")]
 		virtual public bool IsLegacyEncoded
 		{
@@ -935,6 +1065,11 @@ namespace Palaso.WritingSystems
 			return _rfcTag.ToString();
 		}
 
+		/// <summary>
+		/// Creates a clone of the current writing system.
+		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreID
+		/// </summary>
+		/// <returns></returns>
 		virtual public WritingSystemDefinition Clone()
 		{
 			return new WritingSystemDefinition(this);
@@ -942,9 +1077,13 @@ namespace Palaso.WritingSystems
 
 		private void UpdateIdFromRfcTag()
 		{
-			_id = RFC5646;
+			_id = Bcp47Tag;
 		}
 
+
+		/// <summary>
+		/// Indicates whether this writing system is unicode encoded or legacy encoded
+		/// </summary>
 		public bool IsUnicodeEncoded
 		{
 			get
@@ -961,31 +1100,51 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public void SetRfc5646FromString(string completeTag)
+		/// <summary>
+		/// Parses the supplied BCP47 tag and sets the Language, Script, Region and Variant properties accordingly
+		/// </summary>
+		/// <param name="completeTag">A valid BCP47 tag</param>
+		public void SetTagFromString(string completeTag)
 		{
 			_rfcTag = RFC5646Tag.Parse(completeTag);
 			UpdateIdFromRfcTag();
 			Modified = true;
 		}
 
+		/// <summary>
+		/// Parses the supplied BCP47 tag and return a new writing system definition with the correspnding Language, Script, Region and Variant properties
+		/// </summary>
+		/// <param name="completeTag">A valid BCP47 tag</param>
 		public static WritingSystemDefinition Parse(string completeTag)
 		{
 			var writingSystemDefinition = new WritingSystemDefinition();
-			writingSystemDefinition.SetRfc5646FromString(completeTag);
+			writingSystemDefinition.SetTagFromString(completeTag);
 			return writingSystemDefinition;
 		}
 
-		public static WritingSystemDefinition FromLanguage(string language)
+		/// <summary>
+		/// Parses the supplied BCP47 tag and return a new writing system definition with the correspnding Language, Script, Region and Variant properties
+		/// </summary>
+		/// <param name="bcp47Tag">A valid BCP47 tag</param>
+		[Obsolete("Use Parse instead.")]
+		public static WritingSystemDefinition FromLanguage(string bcp47Tag)
 		{
-			return new WritingSystemDefinition(language);
+			return new WritingSystemDefinition(bcp47Tag);
 		}
 
-		public static WritingSystemDefinition FromRFC5646Subtags(string language, string script, string region, string variantAndPrivateUse)
+		/// <summary>
+		/// Returns a new writing system definition with the corresponding Language, Script, Region and Variant properties set
+		/// </summary>
+		public static WritingSystemDefinition FromSubtags(string language, string script, string region, string variantAndPrivateUse)
 		{
 			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
 		}
 
-
+		/// <summary>
+		/// Filters out all "WellKnownSubTags" out of a list of subtags
+		/// </summary>
+		/// <param name="privateUseTokens"></param>
+		/// <returns></returns>
 		public static IEnumerable<string> FilterWellKnownPrivateUseTags(IEnumerable<string> privateUseTokens)
 		{
 			foreach (var privateUseToken in privateUseTokens)
@@ -1020,7 +1179,7 @@ namespace Palaso.WritingSystems
 			public const string Script = "Zxxx";
 		}
 
-		//The "x-" is required before each of the strings below, since WritingSystemDefinition needs "x-" to distinguish RFC5646 private use from variant
+		//The "x-" is required before each of the strings below, since WritingSystemDefinition needs "x-" to distinguish BCP47 private use from variant
 		//Without the "x-"  a consumer who wanted to set a writing ystem as audio would have to write: ws.Variant = "x-" + WellKnownSubtags.Audio.PrivateUseSubtag
 		public class Audio
 		{
