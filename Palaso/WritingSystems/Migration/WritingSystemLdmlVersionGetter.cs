@@ -24,7 +24,11 @@ namespace Palaso.WritingSystems.Migration
 			versionNodeVersion.NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 
 			var flexPrivateUseVersionGetter = new XPathVersion(1, "/ldml/identity/language/@type");
-			flexPrivateUseVersionGetter.VersionParser = str => { return str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ? 1 : -1; };
+			flexPrivateUseVersionGetter.VersionParser = str =>
+				{
+					return str.Equals("x", StringComparison.OrdinalIgnoreCase)
+						|| str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ? 1 : -1;
+				};
 
 			_versionGetters.Add(versionNodeVersion);
 			_versionGetters.Add(flexPrivateUseVersionGetter);

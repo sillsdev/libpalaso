@@ -13,6 +13,7 @@ using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
@@ -33,7 +34,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 				{
 					using (var folder = new TemporaryFolder("WS-Test"))
 					{
-						var dlg = new WritingSystemSetupDialog(folder.Path);
+						var dlg = new WritingSystemSetupDialog(folder.Path, DummyMigratorCallback.onMigration);
 						dlg.WritingSystemSuggestor.SuggestVoice = true;
 						dlg.ShowDialog();
 					}
@@ -51,7 +52,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 					{
 						var f = new Form();
 						f.Size = new Size(800, 600);
-						var model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository(folder.Path));
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(
+							DummyMigratorCallback.onMigration,
+							folder.Path
+						);
+						var model = new WritingSystemSetupModel(repository);
 						var v = new WritingSystemSetupView(model);
 						var combo = new WSPickerUsingComboBox(model);
 						f.Controls.Add(combo);
@@ -118,5 +123,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	}
   }
 
+  internal class DummyMigratorCallback
+  {
+	  public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+	  {
+	  }
+  }
 
 }

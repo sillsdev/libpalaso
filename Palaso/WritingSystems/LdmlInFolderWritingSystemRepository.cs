@@ -2,11 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Palaso.WritingSystems.Migration;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.WritingSystems
 {
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
+
+		///<summary>
+		/// Returns an instance of an ldml in folder writing system reposistory.
+		///</summary>
+		///<param name="onMigrationCallback">Callback if during the initialization any writing system id's are changed</param>
+		///<param name="basePath">base location of the global writing system repository</param>
+		public static LdmlInFolderWritingSystemRepository Initialize(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, string basePath)
+		{
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, onMigrationCallback);
+			migrator.Migrate();
+
+			var instance = new LdmlInFolderWritingSystemRepository(basePath);
+			instance.LoadAllDefinitions();
+			return instance;
+		}
+
 		private const string _kExtension = ".ldml";
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
@@ -16,10 +34,9 @@ namespace Palaso.WritingSystems
 		/// use a special path for the repository
 		/// </summary>
 		/// <param name="path"></param>
-		public LdmlInFolderWritingSystemRepository(string path)
+		internal LdmlInFolderWritingSystemRepository(string basePath)
 		{
-			PathToWritingSystems = path;
-			LoadAllDefinitions();
+			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
 		}
 
