@@ -28,7 +28,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			_scriptCombo.Items.Add(new Iso15924Script("", "")); // add a blank item at the top of the list
 			_scriptCombo.Items.AddRange(StandardTags.ValidIso15924Scripts.ToArray());
 			_scriptCombo.DisplayMember = "Label";
-			_regionCombo.Items.Add(new StandardTags.IanaSubtag("region", "", ""));  // add a blank item at the top of the list
+			_regionCombo.Items.Add(new IanaSubtag("region", "", ""));  // add a blank item at the top of the list
 			_regionCombo.Items.AddRange(StandardTags.ValidIso3166Regions.ToArray());
 			_regionCombo.DisplayMember = "Description";
 		}
@@ -106,7 +106,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			}
 			else
 			{
-				_model.CurrentRegion = ((StandardTags.IanaSubtag)_regionCombo.SelectedItem).Subtag;
+				_model.CurrentRegion = ((IanaSubtag)_regionCombo.SelectedItem).Subtag;
 			}
 		}
 

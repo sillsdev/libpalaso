@@ -16,7 +16,7 @@ namespace Palaso.WritingSystems
 	/// a WritingSystemDefinition. This allows the user to change the Rfc646Tag components and thereby the Id of a
 	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
 	/// </summary>
-	public class WritingSystemRepositoryBase : IWritingSystemRepository
+	abstract public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
@@ -85,6 +85,8 @@ namespace Palaso.WritingSystems
 			//TODO: This may be useful if writing systems were reference counted.
 		}
 
+		abstract public string WritingSystemIdHasChangedTo(string id);
+
 		virtual public void LastChecked(string identifier, DateTime dateModified)
 		{
 			if (_writingSystemsToIgnore.ContainsKey(identifier))
@@ -110,6 +112,8 @@ namespace Palaso.WritingSystems
 			}
 			return definition.Clone();
 		}
+
+		public abstract bool WritingSystemIdHasChanged(string id);
 
 		[Obsolete("Deprecated: use Contains instead")]
 		public bool Exists(string identifier)
@@ -144,11 +148,6 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", ws.Id));
 			}
-
-			if (String.IsNullOrEmpty(ws.StoreID))
-			{
-				ws.StoreID = ws.Id;
-			}
 			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreID == ws.StoreID).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
@@ -165,6 +164,10 @@ namespace Palaso.WritingSystems
 				{
 					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
 				}
+			}
+			if (ws.StoreID != ws.Id)
+			{
+				ws.StoreID = ws.Id;
 			}
 		}
 
@@ -247,11 +250,11 @@ namespace Palaso.WritingSystems
 			foreach (var ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.RFC5646))
+				if (_writingSystems.ContainsKey(ws.Bcp47Tag))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.RFC5646, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.RFC5646].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.Bcp47Tag, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.Bcp47Tag].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}

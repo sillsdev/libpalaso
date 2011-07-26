@@ -48,7 +48,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			var unique= defs.GroupBy(d => d.RFC5646)
+			var unique= defs.GroupBy(d => d.Bcp47Tag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}
@@ -81,10 +81,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
 				def.SortRules = language.Culture.IetfLanguageTag;
 				def.DefaultFontSize = 12;
-				if(def.LanguageName == "Unknown Language")
-				{
-					def.LanguageName = language.Culture.DisplayName;
-				}
+				def.LanguageName = language.Culture.DisplayName;
+
 				yield return def;
 			}
 		}

@@ -95,6 +95,7 @@
 	<Compile Include="MultiTextTests.cs" />
 	<Compile Include="Options\OptionRefCollectionTests.cs" />
 	<Compile Include="Options\OptionRefTests.cs" />
+	<Compile Include="Options\WritingSystemsInOptionsListFileHelperTests.cs" />
 	<Compile Include="PalasoObjectTests.cs" />
 	<Compile Include="Parsing\ExtensibleMatcher.cs" />
 	<Compile Include="Parsing\ExtensibleTests.cs" />

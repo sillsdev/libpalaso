@@ -146,6 +146,7 @@
 	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemOrphanFinderTests.cs" />
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\StandardTagsTests.cs" />
 	<Compile Include="WritingSystems\SubTagTests.cs" />
