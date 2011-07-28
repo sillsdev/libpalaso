@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Palaso.Lift.Options;
 using Palaso.TestUtilities;
+using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.Lift.Tests.Options
 {
@@ -27,7 +30,11 @@ namespace Palaso.Lift.Tests.Options
 				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
 
-				Helper = new WritingSystemsInOptionsListFileHelper(WritingSystemsPath, _optionListFile.Path);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(
+					onMigration,
+					WritingSystemsPath
+				);
+				Helper = new WritingSystemsInOptionsListFileHelper(WritingSystemRepository, _optionListFile.Path);
 			}
 
 			#region LongFileContent
@@ -53,18 +60,24 @@ namespace Palaso.Lift.Tests.Options
 </optionsList>".Replace("'", "\"");
 			#endregion
 
+			private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+			{
+			}
+
 			private string ProjectPath
 			{
 				get { return _folder.Path; }
 			}
 
-			public WritingSystemsInOptionsListFileHelper Helper { get; set; }
+			public WritingSystemsInOptionsListFileHelper Helper { get; private set; }
 
 			public void Dispose()
 			{
 				_optionListFile.Dispose();
 				_folder.Dispose();
 			}
+
+			public IWritingSystemRepository WritingSystemRepository { get; private set; }
 
 			public string WritingSystemsPath
 			{
@@ -209,7 +222,6 @@ namespace Palaso.Lift.Tests.Options
 			using (var environment = new TestEnvironment("wee-dupl1", "x-wee-dupl1"))
 			{
 				File.WriteAllText(environment.PathToOptionsListFile, "text");
-				environment.Helper = new WritingSystemsInOptionsListFileHelper(environment.WritingSystemsPath, environment.PathToOptionsListFile);
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
 				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
@@ -223,7 +235,6 @@ namespace Palaso.Lift.Tests.Options
 			using (var environment = new TestEnvironment("wee-dupl1", "x-wee-dupl1"))
 			{
 				File.WriteAllText(environment.PathToOptionsListFile, "<?xml version='1.0' encoding='utf-8'?><form>yo</form>".Replace("'", "\""));
-				environment.Helper = new WritingSystemsInOptionsListFileHelper(environment.WritingSystemsPath, environment.PathToOptionsListFile);
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
 				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
