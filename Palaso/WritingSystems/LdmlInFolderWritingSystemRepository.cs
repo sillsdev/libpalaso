@@ -9,15 +9,18 @@ namespace Palaso.WritingSystems
 {
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
-
 		///<summary>
 		/// Returns an instance of an ldml in folder writing system reposistory.
 		///</summary>
-		///<param name="onMigrationCallback">Callback if during the initialization any writing system id's are changed</param>
 		///<param name="basePath">base location of the global writing system repository</param>
-		public static LdmlInFolderWritingSystemRepository Initialize(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, string basePath)
+		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		public static LdmlInFolderWritingSystemRepository Initialize(
+			string basePath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler
+		)
 		{
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, onMigrationCallback);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler);
 			migrator.Migrate();
 
 			var instance = new LdmlInFolderWritingSystemRepository(basePath);

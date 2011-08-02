@@ -37,20 +37,20 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			public string RfcTagAfterMigration;
 		}
 
-		public delegate void OnMigrationFn(IEnumerable<MigrationInfo> migrationInfo);
+		public delegate void MigrationHandler(IEnumerable<MigrationInfo> migrationInfo);
 
 		private readonly List<MigrationInfo> _migrationInfo;
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
-		private readonly OnMigrationFn _onMigrationCallback;
-		private IAuditTrail _auditLog;
+		private readonly MigrationHandler _migrationCallback;
+		private readonly IAuditTrail _auditLog;
 
-		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog) :
+		public LdmlVersion0MigrationStrategy(MigrationHandler migrationCallback, IAuditTrail auditLog) :
 			base(0, 1)
 		{
-			Guard.AgainstNull(onMigrationCallback, "onMigrationCallback must be set");
+			Guard.AgainstNull(migrationCallback, "migrationCallback must be set");
 			_migrationInfo = new List<MigrationInfo>();
 			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();
-			_onMigrationCallback = onMigrationCallback;
+			_migrationCallback = migrationCallback;
 			_auditLog = auditLog;
 		}
 
@@ -141,9 +141,9 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				}
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
-			if (_onMigrationCallback != null)
+			if (_migrationCallback != null)
 			{
-				_onMigrationCallback(_migrationInfo);
+				_migrationCallback(_migrationInfo);
 			}
 		}
 

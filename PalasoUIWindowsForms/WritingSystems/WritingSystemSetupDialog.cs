@@ -43,8 +43,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		// This method really gets in the way of good migration.
 		[Obsolete]
-		public WritingSystemSetupDialog(string writingSystemRepositoryPath, LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback) :
-			this(LdmlInFolderWritingSystemRepository.Initialize(onMigrationCallback, writingSystemRepositoryPath))
+		public WritingSystemSetupDialog(string writingSystemRepositoryPath, LdmlVersion0MigrationStrategy.MigrationHandler migrationCallback) :
+			this(LdmlInFolderWritingSystemRepository.Initialize(writingSystemRepositoryPath, migrationCallback))
 		{
 		}
 

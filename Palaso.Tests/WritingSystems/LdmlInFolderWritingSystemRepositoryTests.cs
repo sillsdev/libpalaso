@@ -44,7 +44,7 @@ namespace Palaso.Tests.WritingSystems
 				Directory.Delete(testPath, true);
 			}
 			_testPaths.Add(testPath);
-			LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, testPath);
+			LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(testPath, DummyMigratorCallback.onMigration);
 			//repository.DontAddDefaultDefinitions = true;
 			return repository;
 		}
@@ -69,7 +69,7 @@ namespace Palaso.Tests.WritingSystems
 					Directory.Delete(TestPath, true);
 				}
 				_writingSystem = new WritingSystemDefinition();
-				Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, TestPath);
+				Collection = LdmlInFolderWritingSystemRepository.Initialize(TestPath, DummyMigratorCallback.onMigration);
 			}
 
 			public void Dispose()
@@ -128,7 +128,7 @@ namespace Palaso.Tests.WritingSystems
 				var ws2 = new WritingSystemDefinition();
 				ws2.Language = "two";
 				environment.Collection.SaveDefinition(ws2);
-				var newStore = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newStore = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 
 				Assert.AreEqual(2, newStore.Count);
 			}
@@ -178,7 +178,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				var newRepoPath = Path.Combine(environment.TestPath, "newguy");
-				var newRepository = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, newRepoPath);
+				var newRepository = LdmlInFolderWritingSystemRepository.Initialize(newRepoPath, DummyMigratorCallback.onMigration);
 				newRepository.SaveDefinition(environment.WritingSystem);
 				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.Bcp47Tag + ".ldml")));
 			}
@@ -189,10 +189,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var e = new TestEnvironment())
 			{
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(
-					DummyMigratorCallback.onMigration,
-					Path.Combine(e.TestPath, "idchangedtest1")
-				);
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.TestPath, "idchangedtest1"), DummyMigratorCallback.onMigration);
 				var ws = WritingSystemDefinition.Parse("en");
 				repo.Set(ws);
 				repo.Save();
@@ -235,7 +232,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Language = "en";
 				Assert.AreNotEqual(0, Directory.GetFiles(environment.TestPath, "*.ldml"));
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				var newStore = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newStore = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newStore.Get("en");
 				Assert.AreEqual(
 					Path.GetFileNameWithoutExtension(Directory.GetFiles(environment.TestPath, "*.ldml")[0]), ws2.StoreID);
@@ -297,7 +294,7 @@ namespace Palaso.Tests.WritingSystems
 					//crucially, abbreviation isn't part of the name of the file
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get(environment.WritingSystem.StoreID);
 				ws2.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(ws2);
@@ -318,7 +315,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get(environment.WritingSystem.StoreID);
 				Assert.AreEqual("x-piglatin", ws2.Variant);
 			}
@@ -333,7 +330,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.DefaultFontName = "Courier";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
 				Assert.AreEqual("Courier", ws2.DefaultFontName);
 			}
@@ -348,7 +345,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Keyboard = "Thai";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
 				Assert.AreEqual("Thai", ws2.Keyboard);
 			}
@@ -365,7 +362,7 @@ namespace Palaso.Tests.WritingSystems
 				Assert.IsTrue(environment.WritingSystem.RightToLeftScript);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
 				Assert.IsTrue(ws2.RightToLeftScript);
 			}
@@ -382,7 +379,7 @@ namespace Palaso.Tests.WritingSystems
 				Assert.IsFalse(environment.WritingSystem.IsUnicodeEncoded);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
 				Assert.IsFalse(ws2.IsUnicodeEncoded);
 			}
@@ -396,7 +393,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
 				Assert.IsTrue(ws2.IsUnicodeEncoded);
 			}
@@ -525,7 +522,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				WritingSystemDefinition ws2 = newCollection.Get(environment.WritingSystem.StoreID);
 				Assert.IsFalse(ws2.Modified);
 			}
@@ -569,7 +566,7 @@ namespace Palaso.Tests.WritingSystems
 				WritingSystemDefinition ws2 = list2[0];
 				environment.Collection.Remove(ws2.Language);
 
-				var repository = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var repository = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				//  repository.DontAddDefaultDefinitions = false;
 				repository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 				Assert.IsFalse(ContainsLanguageWithName(repository.AllWritingSystems, "English"));
@@ -617,7 +614,7 @@ namespace Palaso.Tests.WritingSystems
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml,
 								  LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
 				environment.Collection.Set(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
@@ -631,13 +628,13 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				//Make the filepath inconsistant
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
 				// Now try to load up.
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				Assert.That(environment.Collection.Contains("en"));
 			}
 		}
@@ -648,13 +645,13 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				//Make the filepath inconsistant
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
 				// Now try to load up.
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				var ws = environment.Collection.Get("en");
 				Assert.That(ws.Bcp47Tag, Is.EqualTo("en"));
 			}
@@ -667,7 +664,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 
 				// Now try to load up.
 				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo("qaa"));
@@ -680,7 +677,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				var ws = new WritingSystemDefinition("en");
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				environment.Collection.Set(ws);
 				Assert.That(environment.Collection.Get("en").Bcp47Tag, Is.EqualTo("en"));
 			}
@@ -693,7 +690,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("x", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(DummyMigratorCallback.onMigration, environment.TestPath);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyMigratorCallback.onMigration);
 				var ws = environment.Collection.Get("x-Zxxx-x-audio");
 				environment.Collection.SaveDefinition(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml));

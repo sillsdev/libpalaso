@@ -39,24 +39,24 @@ namespace Palaso.WritingSystems
 		/// Initializes the global writing system repository.  Migrates any ldml files if required,
 		/// notifying of any changes of writing system id that occured during migration.
 		///</summary>
-		///<param name="onMigrationCallback"></param>
-		public static GlobalWritingSystemRepository Initialize(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback)
+		///<param name="migrationHandler"></param>
+		public static GlobalWritingSystemRepository Initialize(LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
 		{
-			return InitializeWithBasePath(onMigrationCallback, DefaultBasePath);
+			return InitializeWithBasePath(DefaultBasePath, migrationHandler);
 		}
 
 		///<summary>
 		/// This initializer is intended for tests as it allows setting of the basePath explicitly.
 		///</summary>
-		///<param name="onMigrationCallback">Callback if during the initialization any writing system id's are changed</param>
 		///<param name="basePath">base location of the global writing system repository</param>
-		internal static GlobalWritingSystemRepository InitializeWithBasePath(LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, string basePath)
+		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		internal static GlobalWritingSystemRepository InitializeWithBasePath(string basePath, LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
 		{
 			lock (_padlock)
 			{
 				if (_instance == null)
 				{
-					var migrator = new GlobalWritingSystemRepositoryMigrator(basePath, onMigrationCallback);
+					var migrator = new GlobalWritingSystemRepositoryMigrator(basePath, migrationHandler);
 					if (migrator.NeedsMigration())
 					{
 						migrator.Migrate();

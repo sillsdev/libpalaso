@@ -20,7 +20,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			public TestEnvironment()
 			{
-				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(OnMigrationFn, _folder.Path);
+				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(_folder.Path, OnMigrationFn);
 				MockSetupModel = new Mock<WritingSystemSetupModel>(writingSystemRepository);
 				SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			}

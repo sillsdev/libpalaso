@@ -5,9 +5,11 @@ namespace Palaso.WritingSystems
 {
 	public delegate void WritingSystemIdChangedEventHandler(object sender, WritingSystemIdChangedEventArgs e);
 	public delegate void WritingSystemDeleted(object sender, WritingSystemDeletedEventArgs e);
+	public delegate void WritingSystemLoadProblemHandler(IEnumerable<WritingSystemRepositoryProblem> problems);
 
 	public interface IWritingSystemRepository
 	{
+
 		/// <summary>
 		/// Notifies a consuming class of a changed writing system id on Set()
 		/// </summary>

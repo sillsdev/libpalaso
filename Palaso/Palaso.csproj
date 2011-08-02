@@ -349,6 +349,7 @@
 	<Compile Include="WritingSystems\WritingSystemChangeLogDataMapper.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />
+	<Compile Include="WritingSystems\WritingSystemRepositoryProblem.cs" />
 	<Compile Include="Xml\CanonicalXmlSettings.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />

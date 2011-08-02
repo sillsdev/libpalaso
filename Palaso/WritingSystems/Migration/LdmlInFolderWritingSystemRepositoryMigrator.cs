@@ -7,7 +7,7 @@ namespace Palaso.WritingSystems.Migration
 {
 	public class LdmlInFolderWritingSystemRepositoryMigrator : FolderMigrator
 	{
-		public LdmlInFolderWritingSystemRepositoryMigrator(string ldmlPath, LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback)
+		public LdmlInFolderWritingSystemRepositoryMigrator(string ldmlPath, LdmlVersion0MigrationStrategy.MigrationHandler migrationCallback)
 			: base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
 		{
 			SearchPattern = "*.ldml";
@@ -20,7 +20,7 @@ namespace Palaso.WritingSystems.Migration
 			var auditLog =
 				new WritingSystemChangeLog(
 					new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml")));
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationCallback, auditLog));
 		}
 
 		public void Migrate()

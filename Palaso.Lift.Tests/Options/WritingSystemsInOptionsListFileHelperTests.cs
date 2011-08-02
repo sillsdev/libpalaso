@@ -30,10 +30,7 @@ namespace Palaso.Lift.Tests.Options
 				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
 
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(
-					onMigration,
-					WritingSystemsPath
-				);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration);
 				Helper = new WritingSystemsInOptionsListFileHelper(WritingSystemRepository, _optionListFile.Path);
 			}
 

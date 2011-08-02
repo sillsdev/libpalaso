@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems.Migration
 	///</summary>
 	public class GlobalWritingSystemRepositoryMigrator
 	{
-		private readonly LdmlVersion0MigrationStrategy.OnMigrationFn _migrationInfoCallback;
+		private readonly LdmlVersion0MigrationStrategy.MigrationHandler _migrationHandler;
 
 		///<summary>
 		/// Initializes the migrator with the given basePath (i.e. excluding the version), and a callback
@@ -23,11 +23,11 @@ namespace Palaso.WritingSystems.Migration
 		/// is called.
 		///</summary>
 		///<param name="basePath"></param>
-		///<param name="onMigrationCallback"></param>
-		public GlobalWritingSystemRepositoryMigrator(string basePath, LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback)
+		///<param name="migrationHandler"></param>
+		public GlobalWritingSystemRepositoryMigrator(string basePath, LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
 		{
-			Guard.AgainstNull(onMigrationCallback, "onMigrationCallback must be set");
-			_migrationInfoCallback = onMigrationCallback;
+			Guard.AgainstNull(migrationHandler, "migrationHandler must be set");
+			_migrationHandler = migrationHandler;
 			BasePath = basePath;
 		}
 
@@ -100,7 +100,7 @@ namespace Palaso.WritingSystems.Migration
 
 		private void MigrateLdmlInFolder()
 		{
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(CurrentVersionPath, _migrationInfoCallback);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(CurrentVersionPath, _migrationHandler);
 			migrator.Migrate();
 		}
 

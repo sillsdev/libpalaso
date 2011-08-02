@@ -52,10 +52,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 					{
 						var f = new Form();
 						f.Size = new Size(800, 600);
-						var repository = LdmlInFolderWritingSystemRepository.Initialize(
-							DummyMigratorCallback.onMigration,
-							folder.Path
-						);
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path, DummyMigratorCallback.onMigration);
 						var model = new WritingSystemSetupModel(repository);
 						var v = new WritingSystemSetupView(model);
 						var combo = new WSPickerUsingComboBox(model);
