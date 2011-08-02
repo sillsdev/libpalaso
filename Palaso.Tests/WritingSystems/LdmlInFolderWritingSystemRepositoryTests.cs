@@ -894,6 +894,19 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		[Ignore("Waiting for Cambell to finish refactoring exception catch in LoadAllDefinitions.  The Assert needs to be changed to match the exception message that Cambell decides on.  cjh")]
+		public void LoadAllDefinitions_LDMLV0_ThrowsFriendlyMessageWithFileName()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ldmlPath = Path.Combine(environment.TestPath, "en.ldml");
+				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("en", "", "", ""));
+				//Assert.DoesNotThrow(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
+				Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>().With.Property("Message").ContainsSubstring(String.Format("The LDML file '{0}' is version 0.  Version {1} was expected.", environment.GetPathForWsId("en"), WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+			}
+		}
+
 		private bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
 		{
 			foreach (WritingSystemDefinition definition in list)

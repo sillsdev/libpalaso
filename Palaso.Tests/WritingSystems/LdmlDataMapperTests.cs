@@ -490,7 +490,7 @@ namespace Palaso.Tests.WritingSystems
 					var wsV0 = new WritingSystemDefinition();
 					var adaptor = new LdmlDataMapper();
 					adaptor.Read(badFlexLdml.Path, wsV0);
-					Assert.Throws<FormatException>(()=>adaptor.Read(version1Ldml.Path, wsV1));
+					Assert.Throws<ApplicationException>(()=>adaptor.Read(version1Ldml.Path, wsV1));
 				}
 			}
 		}
@@ -573,6 +573,18 @@ namespace Palaso.Tests.WritingSystems
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
 				Assert.That(ws.Id, Is.EqualTo("x-en-US"));
+			}
+		}
+
+		[Test]
+		public void Read_V0Ldml_ThrowFriendlyException()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("en", "", "", "", file);
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+				Assert.That(() => dataMapper.Read(file.Path, ws), Throws.Exception.TypeOf<ApplicationException>().With.Property("Message").EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {1} was expected.", file.Path, WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
 

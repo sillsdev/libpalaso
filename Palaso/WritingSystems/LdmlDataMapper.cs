@@ -176,14 +176,15 @@ namespace Palaso.WritingSystems
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
 				if (!_wsIsFlexPrivateUse)
 				{
-					int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
-
-					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+					string version = GetSpecialValue(reader, "palaso", "version");
+					version = string.IsNullOrEmpty(version) ? "0" : version;
+					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString())
 					{
 						throw new ApplicationException(String.Format(
-														   "Cannot read LDML expecting version {0} but got {1}",
-														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
-														   version
+														   "The LDML tag '{0}' is version {1}.  Version {2} was expected.",
+														   ws.Bcp47Tag,
+														   version,
+														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 														   ));
 					}
 				}
