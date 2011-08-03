@@ -583,7 +583,7 @@ namespace Palaso.Reporting
 			 }
 			 catch (Exception error)
 			 {
-				 ErrorReport.NotifyUserOfProblem(
+				 ErrorReport.NotifyUserOfProblem(error,
 					 "This program wasn't able to get your email program, if you have one, to send the error message.");
 				 return false;
 			 }
