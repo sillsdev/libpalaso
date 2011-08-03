@@ -583,8 +583,9 @@ namespace Palaso.Reporting
 			 }
 			 catch (Exception error)
 			 {
+				 PutOnClipboard();
 				 ErrorReport.NotifyUserOfProblem(error,
-					 "This program wasn't able to get your email program, if you have one, to send the error message.");
+					 "This program wasn't able to get your email program, if you have one, to send the error message.  The contents of the error message has been placed on your Clipboard.");
 				 return false;
 			 }
 			 return false;
