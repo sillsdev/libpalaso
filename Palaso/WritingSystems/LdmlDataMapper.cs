@@ -228,7 +228,16 @@ namespace Palaso.WritingSystems
 				string region = GetSubNodeAttributeValue(identityReader, "territory", "type");
 				string variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
 
-				ws.SetAllRfc5646LanguageTagComponents(language, script, region, variant);
+				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+				{
+					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
+					ws.SetAllRfc5646LanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+				}
+				else
+				{
+					ws.SetAllRfc5646LanguageTagComponents(language, script, region, variant);
+				}
 				//Set the id simply as the concatenation of whatever was in the ldml file.
 				ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
 				// move to end of identity node
@@ -683,6 +692,8 @@ namespace Palaso.WritingSystems
 					}
 					reader.Read();
 				}
+				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
 			}
 			WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
