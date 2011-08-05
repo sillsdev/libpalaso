@@ -242,6 +242,75 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		//The exception type here should be changed to Application exception when merged with default branch
+		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("xh", "", "", "", file);
+				var adaptor = new LdmlDataMapper();
+				Assert.That(() => adaptor.Read(file.Path, new WritingSystemDefinition()), Throws.Exception.TypeOf<FormatException>());
+			}
+		}
+
+		[Test]
+		public void WriteNoRoundTrip_LdmlIsFlexPrivateUseFormatLanguageOnly_LdmlIsChanged()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "", "", "", file);
+				var adaptor = new LdmlDataMapper();
+				var ws = new WritingSystemDefinition();
+				adaptor.Read(file.Path,ws);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), false), false);
+				AssertThatLdmlMatches("", "", "", "x-en", file);
+			}
+		}
+
+		[Test]
+		public void WriteNoRoundTrip_LdmlIsFlexPrivateUseFormatlanguageAndScript_LdmlIsChanged()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
+				var adaptor = new LdmlDataMapper();
+				var ws = new WritingSystemDefinition();
+				adaptor.Read(file.Path, ws);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), false), false);
+				AssertThatLdmlMatches("qaa", "Zxxx", "", "x-en", file);
+			}
+		}
+
+		[Test]
+		public void WriteRoundTrip_LdmlIsFlexPrivateUseFormat_LdmlIsUnchanged()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x-en", "", "", "", file);
+				var adaptor = new LdmlDataMapper();
+				var ws = new WritingSystemDefinition();
+				adaptor.Read(file.Path, ws);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), true);
+				AssertThatLdmlMatches("x-en", "", "", "", file);
+			}
+		}
+
+		[Test]
+		public void WriteRoundTrip_LdmlIsValidLanguageStartingWithX_LdmlIsUnchanged()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion2Ldml("xh", "", "", "", file);
+				var adaptor = new LdmlDataMapper();
+				var ws = new WritingSystemDefinition();
+				adaptor.Read(file.Path, ws);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), true);
+				AssertThatLdmlMatches("xh", "", "", "", file);
+				AssertThatVersionIs(2, file);
+			}
+		}
+
+		[Test]
 		public void Read_LdmlIsFlexPrivateUseFormatOnlyLanguageIsPopulated_WritingSystemHasDataInPrivateUse()
 		{
 			using (var file = new TempFile())
@@ -372,6 +441,22 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "fonipa-x-en");
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
+			}
+		}
+
+		[Test]
+		public void RoundTripFlexPrivateUseWritingSystem_LanguageIsOnlyX_AllFieldsPopulated()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("x", "Zxxx", "US", "1901-x-audio", file);
+				var ws = new WritingSystemDefinition();
+				string originalLdml = File.ReadAllText(file.Path);
+				var adaptor = new LdmlDataMapper();
+				adaptor.Read(file.Path, ws);
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "US", "1901-x-audio");
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
@@ -523,7 +608,7 @@ namespace Palaso.Tests.WritingSystems
 					adaptor.Write(badFlexLdml.Path, wsV0, new MemoryStream(File.ReadAllBytes(badFlexLdml.Path)));
 					var wsV1 = new WritingSystemDefinition();
 					adaptor.Write(version1Ldml.Path, wsV1, null);
-					AssertThatXmlIn.File(version1Ldml.Path).HasAtLeastOneMatchForXpath("/ldml/special/palaso:version[@value='2']", namespaceManager);
+					AssertThatVersionIs(2, version1Ldml);
 				}
 			}
 		}
@@ -533,7 +618,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var file = new TempFile())
 			{
-				WriteVersion1Ldml("en", "Zxxx", "US", "1901-x-audio", file);
+				WriteVersion2Ldml("en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
 				Assert.That(ws.Id, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
@@ -606,12 +691,9 @@ namespace Palaso.Tests.WritingSystems
 			new LdmlAdaptorV0().Write(file.Path, ws, null);
 		}
 
-		private static void WriteVersion1Ldml(string language, string script, string territory, string variant, TempFile file)
+		private static void WriteVersion2Ldml(string language, string script, string territory, string variant, TempFile file)
 		{
-			//using a writing system V0 here because the real writing system can't cope with the way
-			//flex encodes private-use language and shouldn't. But using a writing system + ldml adaptor
-			//is the quickest way to generate ldml so I'm using it here.
-			var ws = new WritingSystemDefinition { Language = language, Script = script, Region = territory, Variant = variant };
+			var ws = new WritingSystemDefinition { ISO639 = language, Script = script, Region = territory, Variant = variant };
 			new LdmlDataMapper().Write(file.Path, ws, null);
 		}
 
@@ -631,6 +713,22 @@ namespace Palaso.Tests.WritingSystems
 				return;
 			}
 			AssertThatXmlIn.File(file.Path).HasAtLeastOneMatchForXpath(String.Format("/ldml/identity/{0}[@type='{1}']", element, content));
+		}
+
+		private static void AssertThatVersionIs(int expectedVersion, TempFile file)
+		{
+			var namespaceManager = new XmlNamespaceManager(new NameTable());
+			namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+
+			if(expectedVersion == 0)
+			{
+				AssertThatXmlIn.File(file.Path).HasNoMatchForXpath("/ldml/special/palaso:version[@value]", namespaceManager);
+			}
+			else
+			{
+				AssertThatXmlIn.File(file.Path).HasAtLeastOneMatchForXpath(
+					String.Format("/ldml/special/palaso:version[@value='{0}']", expectedVersion), namespaceManager);
+			}
 		}
 	}
 }

@@ -42,6 +42,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
 		private readonly OnMigrationFn _onMigrationCallback;
 		private IAuditTrail _auditLog;
+		private bool _roundTripBogusFlex70PrivateUse = false;
+
+		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog, int fromVersion, bool roundtripBogusFlex70PrivateUse):
+			this(onMigrationCallback, auditLog, fromVersion)
+		{
+			_roundTripBogusFlex70PrivateUse = roundtripBogusFlex70PrivateUse;
+		}
 
 		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog, int fromVersion) :
 			base(fromVersion, 2)
@@ -142,12 +149,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_onMigrationCallback(_migrationInfo);
 		}
 
-		private static void WriteLdml(WritingSystemDefinitionV1 writingSystemDefinitionV1, string sourceFilePath, string destinationFilePath)
+		private void WriteLdml(WritingSystemDefinitionV1 writingSystemDefinitionV1, string sourceFilePath, string destinationFilePath)
 		{
 			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
 			{
 				var ldmlDataMapper = new LdmlAdaptorV1();
-				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV1, sourceStream);
+				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV1, sourceStream, _roundTripBogusFlex70PrivateUse);
 				sourceStream.Close();
 			}
 		}

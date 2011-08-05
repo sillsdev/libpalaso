@@ -691,6 +691,17 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		public void LoadDefinitions_ValidLanguageTagStartingWithXButV0_Throws()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "xh.ldml");
+				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("xh", "", "", ""));
+				Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
+			}
+		}
+
 		private bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
 		{
 			foreach (WritingSystemDefinition definition in list)

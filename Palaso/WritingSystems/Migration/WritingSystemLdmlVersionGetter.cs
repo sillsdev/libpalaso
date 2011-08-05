@@ -18,16 +18,20 @@ namespace Palaso.WritingSystems.Migration
 	{
 		readonly List<IFileVersion> _versionGetters = new List<IFileVersion>();
 
-		public WritingSystemLdmlVersionGetter()
+		public WritingSystemLdmlVersionGetter():this(false){}
+
+		public WritingSystemLdmlVersionGetter(bool roundtripFlex70PrivateUse)
 		{
 			var versionNodeVersion = new XPathVersion(1, "/ldml/special/palaso:version/@value");
 			versionNodeVersion.NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 
-			var flexPrivateUseVersionGetter = new XPathVersion(1, "/ldml/identity/language/@type");
-			flexPrivateUseVersionGetter.VersionParser = str => { return str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ? 1 : -1; };
+			if(roundtripFlex70PrivateUse){
+				var flexPrivateUseVersionGetter = new XPathVersion(1, "/ldml/identity/language/@type");
+				flexPrivateUseVersionGetter.VersionParser = str => { return str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ? 2 : -1; };
+				_versionGetters.Add(flexPrivateUseVersionGetter);
+			}
 
 			_versionGetters.Add(versionNodeVersion);
-			_versionGetters.Add(flexPrivateUseVersionGetter);
 		}
 
 		public int GetFileVersion(string ldmlFilePath)

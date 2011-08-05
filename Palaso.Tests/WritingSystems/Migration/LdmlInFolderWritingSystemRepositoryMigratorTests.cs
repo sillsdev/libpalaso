@@ -1235,22 +1235,48 @@ namespace Palaso.Tests.WritingSystems.Migration
 
 		// JohnT: this test is obsolete since we now DO migrate writing systems with this sort of ID.
 		// Not sure whether there is anything that should still be tested about this case. I think other tests cover it.
-		//#region BogusFlexPrivateUseLdml
-		//[Test]
-		//public void Migrate_LdmlIsFlexPrivateUseFormat_FileIsUntouched()
-		//{
-		//    using (var environment = new TestEnvironment())
-		//    {
-		//        string filePath = environment.FilePath("test.ldml");
-		//        var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
-		//        environment.WriteLdmlFile("test.ldml", originalFilecontent);
-		//        var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
-		//        migrator.Migrate();
-		//        AssertThatLdmlMatches("x-en", "Zxxx", "US", "1901-x-audio", filePath);
-		//        Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
-		//    }
-		//}
-		//#endregion
+		#region BogusFlexPrivateUseLdml
+		[Test]
+		public void Migrate_LdmlIsFlexPrivateUseFormatandMigratorIsToldRoundTrip_FileIsUntouched()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string filePath = environment.FilePath("test.ldml");
+				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
+				environment.WriteLdmlFile("test.ldml", originalFilecontent);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, true);
+				migrator.Migrate();
+				AssertThatLdmlMatches("x-en", "Zxxx", "US", "1901-x-audio", filePath);
+				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
+			}
+		}
+
+		[Test]
+		public void Migrate_LdmlIsFlexPrivateUseFormatMigratorIsToldNotToroundTrip_FileIsUpdated()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
+				environment.WriteLdmlFile("test.ldml", originalFilecontent);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, false);
+				migrator.Migrate();
+				AssertThatLdmlMatches("qaa", "Zxxx", "US", "1901-x-en-audio", environment.FilePath("qaa-Zxxx-US-1901-x-en-audio.ldml"));
+			}
+		}
+
+		[Test]
+		public void Migrate_LdmlIsFlexPrivateUseFormatDefaultMigrator_FileIsUpdated()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
+				environment.WriteLdmlFile("test.ldml", originalFilecontent);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, false);
+				migrator.Migrate();
+				AssertThatLdmlMatches("qaa", "Zxxx", "US", "1901-x-en-audio", environment.FilePath("qaa-Zxxx-US-1901-x-en-audio.ldml"));
+			}
+		}
+		#endregion
 
 		#region ChangeLog Tests
 

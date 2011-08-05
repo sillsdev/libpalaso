@@ -30,6 +30,7 @@ namespace Palaso.WritingSystems
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
 		private bool _wsIsFlexPrivateUse;
+		private bool _roundTripFlex70PrivateUse;
 
 		public LdmlDataMapper()
 		{
@@ -232,7 +233,7 @@ namespace Palaso.WritingSystems
 				string region = GetSubNodeAttributeValue(identityReader, "territory", "type");
 				string variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
 
-				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+				if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
 				{
 					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
@@ -400,14 +401,21 @@ namespace Palaso.WritingSystems
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
+		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
+		{
+			Write(filePath, ws, oldFile, true);
+		}
+
 		/// <summary>
 		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
+		/// <param name="roundtripFlex70PrivateUse"></param>
+		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile, bool roundtripFlex70PrivateUse)
 		{
+			_roundTripFlex70PrivateUse = roundtripFlex70PrivateUse;
 			if (filePath == null)
 			{
 				throw new ArgumentNullException("filePath");
@@ -446,7 +454,10 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
+		{
+			Write(xmlWriter, ws, oldFileReader, false);
+		}
 
 		/// <summary>
 		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
@@ -454,8 +465,9 @@ namespace Palaso.WritingSystems
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader, bool roundTripFlex70PrivateUse)
 		{
+			_roundTripFlex70PrivateUse = roundTripFlex70PrivateUse;
 			if (xmlWriter == null)
 			{
 				throw new ArgumentNullException("xmlWriter");
@@ -702,12 +714,16 @@ namespace Palaso.WritingSystems
 					}
 					reader.Read();
 				}
-				var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-				interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
-				if (language.StartsWith("x", StringComparison.OrdinalIgnoreCase) && interpreter.RFC5646Tag == ws.RFC5646)
+				if (_roundTripFlex70PrivateUse)
 				{
-					copyFlexFormat = true;
-					_wsIsFlexPrivateUse = true;
+					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
+					if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ||  language.Equals("x", StringComparison.OrdinalIgnoreCase))&&
+						interpreter.RFC5646Tag == ws.RFC5646)
+					{
+						copyFlexFormat = true;
+						_wsIsFlexPrivateUse = true;
+					}
 				}
 			}
 			if (copyFlexFormat)
