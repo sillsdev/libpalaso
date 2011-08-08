@@ -138,7 +138,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				environment.AssertWritingSystemFileExists(environment.WritingSystem.RFC5646);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.Bcp47Tag);
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
 				environment.Collection.SaveDefinition(ws2);
-				environment.AssertWritingSystemFileExists(environment.WritingSystem.RFC5646);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.Bcp47Tag);
 			}
 		}
 
@@ -178,7 +178,7 @@ namespace Palaso.Tests.WritingSystems
 				var newRepoPath = Path.Combine(environment.TestPath, "newguy");
 				var newRepository = new LdmlInFolderWritingSystemRepository(newRepoPath);
 				newRepository.SaveDefinition(environment.WritingSystem);
-				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.RFC5646 + ".ldml")));
+				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.Bcp47Tag + ".ldml")));
 			}
 		}
 
@@ -188,7 +188,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var e = new TestEnvironment())
 			{
 				var repo = new LdmlInFolderWritingSystemRepository(Path.Combine(e.TestPath, "idchangedtest1"));
-				var ws = WritingSystemDefinition.FromLanguage("en");
+				var ws = WritingSystemDefinition.Parse("en");
 				repo.Set(ws);
 				repo.Save();
 
@@ -197,7 +197,7 @@ namespace Palaso.Tests.WritingSystems
 				ws.Script = "Thai";
 				repo.Set(ws);
 
-				var ws2 = WritingSystemDefinition.FromLanguage("de");
+				var ws2 = WritingSystemDefinition.Parse("de");
 				repo.Set(ws2);
 				ws2.Script = "Latn";
 				repo.Save();
@@ -246,7 +246,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems, "en.ldml");
 				Assert.IsTrue(File.Exists(path));
-				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
+				WritingSystemDefinition ws2 = environment.Collection.Get(environment.WritingSystem.Id);
 				ws2.Language = "de";
 				Assert.AreEqual("en", ws2.StoreID);
 				environment.Collection.SaveDefinition(ws2);
@@ -265,7 +265,7 @@ namespace Palaso.Tests.WritingSystems
 
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
 			}
 		}
 
@@ -277,7 +277,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				environment.WritingSystem.Variant = "1901";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
 			}
 		}
 
@@ -297,7 +297,7 @@ namespace Palaso.Tests.WritingSystems
 				ws2.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(ws2);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.GetPathForWsId(ws2.RFC5646));
+										   environment.GetPathForWsId(ws2.Bcp47Tag));
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='x-piglatin']");
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation[@value='bl']",
 																	  environment.NamespaceManager);
@@ -372,14 +372,14 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				environment.WritingSystem.Language = "en";
-				Assert.IsFalse(environment.WritingSystem.IsLegacyEncoded);
-				environment.WritingSystem.IsLegacyEncoded = true;
-				Assert.IsTrue(environment.WritingSystem.IsLegacyEncoded);
+				Assert.IsTrue(environment.WritingSystem.IsUnicodeEncoded);
+				environment.WritingSystem.IsUnicodeEncoded = false;
+				Assert.IsFalse(environment.WritingSystem.IsUnicodeEncoded);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
 				var newCollection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
-				Assert.IsTrue(ws2.IsLegacyEncoded);
+				Assert.IsFalse(ws2.IsUnicodeEncoded);
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace Palaso.Tests.WritingSystems
 
 				var newCollection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
-				Assert.IsFalse(ws2.IsLegacyEncoded);
+				Assert.IsTrue(ws2.IsUnicodeEncoded);
 			}
 		}
 
@@ -405,12 +405,12 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variant = "x-piglatin";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				string path = environment.GetPathForWsId(environment.WritingSystem.RFC5646);
+				string path = environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag);
 
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant");
 				environment.WritingSystem.Variant = string.Empty;
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasNoMatchForXpath("ldml/identity/variant");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag)).HasNoMatchForXpath("ldml/identity/variant");
 			}
 		}
 
@@ -423,7 +423,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Abbreviation = "abbrev";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				string path = environment.GetPathForWsId(environment.WritingSystem.RFC5646);
+				string path = environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag);
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath(
 					"ldml/special/palaso:abbreviation[@value='abbrev']",
 					environment.NamespaceManager
@@ -446,7 +446,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Abbreviation = "bl";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.RFC5646)).HasAtLeastOneMatchForXpath(
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag)).HasAtLeastOneMatchForXpath(
 					"ldml/special/palaso:abbreviation[@value='bl']", environment.NamespaceManager);
 			}
 		}
@@ -459,7 +459,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.GetPathForWsId(environment.WritingSystem.RFC5646));
+										   environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag));
 				Assert.IsTrue(File.Exists(path));
 				environment.Collection.Remove(environment.WritingSystem.Language);
 				Assert.IsFalse(File.Exists(path));
@@ -470,7 +470,7 @@ namespace Palaso.Tests.WritingSystems
 		private void AssertFileIsInTrash(TestEnvironment environment)
 		{
 			string path = Path.Combine(environment.Collection.PathToWritingSystems, "trash");
-			path = Path.Combine(path,environment.WritingSystem.RFC5646 + ".ldml");
+			path = Path.Combine(path,environment.WritingSystem.Bcp47Tag + ".ldml");
 			Assert.IsTrue(File.Exists(path));
 		}
 
@@ -487,7 +487,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(ws2);
 				environment.Collection.Remove(ws2.StoreID);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.GetPathForWsId(environment.WritingSystem.RFC5646));
+										   environment.GetPathForWsId(environment.WritingSystem.Bcp47Tag));
 				Assert.IsFalse(File.Exists(path));
 				AssertFileIsInTrash(environment);
 			}
@@ -647,7 +647,7 @@ namespace Palaso.Tests.WritingSystems
 				// Now try to load up.
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var ws = environment.Collection.Get("en");
-				Assert.That(ws.RFC5646, Is.EqualTo("en"));
+				Assert.That(ws.Bcp47Tag, Is.EqualTo("en"));
 			}
 		}
 
@@ -666,6 +666,17 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void LoadAllDefinitions_WsIsValidRfc5646TagStartingWithx_IsNotTreatedAsFlexPrivateUseAndThrows()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ldmlPath = Path.Combine(environment.TestPath, "xh.ldml");
+				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("xh", "", "", ""));
+				Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>());
+			}
+		}
+
+		[Test]
 		public void Set_NewWritingSystem_StoreContainsWritingSystem()
 		{
 			using (var environment = new TestEnvironment())
@@ -673,7 +684,7 @@ namespace Palaso.Tests.WritingSystems
 				var ws = new WritingSystemDefinition("en");
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				environment.Collection.Set(ws);
-				Assert.That(environment.Collection.Get("en").RFC5646, Is.EqualTo("en"));
+				Assert.That(environment.Collection.Get("en").Bcp47Tag, Is.EqualTo("en"));
 			}
 		}
 
@@ -688,6 +699,234 @@ namespace Palaso.Tests.WritingSystems
 				var ws = environment.Collection.Get("x-Zxxx-x-audio");
 				environment.Collection.SaveDefinition(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml));
+			}
+		}
+
+		[Test]
+		public void SaveDefinition_WritingSystemCameFromValidRfc5646WritingSystemStartingWithX_FileNameIsChanged()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
+				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version2("xh", "", "", ""));
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				Assert.That(File.Exists(Path.Combine(environment.TestPath, "xh.ldml")));
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdNeverExisted_ReturnsFalse()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.False);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdChanged_ReturnsTrue()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				//Now change the Id
+				ws.Variant = "x-bogus";
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.True);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdChangedToMultipleDifferentNewIds_ReturnsTrue()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var wsEn = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEn);
+				environment.Collection.Save();
+				//Now change the Id and create a duplicate of the original Id
+				wsEn.Variant = "x-bogus";
+				environment.Collection.Set(wsEn);
+				var wsEnDup = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				//Now change the duplicate's Id as well
+				wsEnDup.Variant = "x-bogus2";
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.True);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasBeenChanged_IdExistsAndHasNeverChanged_ReturnsFalse()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.False);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdNeverExisted_ReturnsNull()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdChanged_ReturnsNewId()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				//Now change the Id
+				ws.Variant = "x-bogus";
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdChangedToMultipleDifferentNewIds_ReturnsNull()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var wsEn = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEn);
+				environment.Collection.Save();
+				//Now change the Id and create a duplicate of the original Id
+				wsEn.Variant = "x-bogus";
+				environment.Collection.Set(wsEn);
+				var wsEnDup = new WritingSystemDefinition("en");
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				//Now change the duplicate's Id as well
+				wsEnDup.Variant = "x-bogus2";
+				environment.Collection.Set(wsEnDup);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
+			}
+		}
+
+		[Test]
+		public void WritingSystemIdHasChangedTo_IdExistsAndHasNeverChanged_ReturnsId()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				//Add a writing system to the repo
+				var ws = new WritingSystemDefinition("en");
+				environment.Collection.Set(ws);
+				environment.Collection.Save();
+				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
+			}
+		}
+
+		[Test]
+		//This test checks that "old" ldml files are not overwritten on Save before they can be used to roundtrip unknown ldml (i.e. from flex)
+		public void Save_IdOfWsIsSameAsOldIdOfOtherWs_LdmlUnknownToRepoIsMaintained()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string germanFromFlex =
+#region fileContent
+ @"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='' />
+		<generation date='2010-12-02T23:05:33' />
+		<language type='de' />
+	</identity>
+	<collations />
+	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+		<palaso:abbreviation value='de' />
+		<palaso:defaultFontFamily value='FieldWorks Test SIL' />
+		<palaso:defaultKeyboard value='FwTest' />
+		<palaso:languageName value='German' />
+		<palaso:spellCheckingId value='de' />
+		<palaso:version value='1'/>
+	</special>
+	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled value='False' />
+		<fw:windowsLCID value='1058' />
+	</special>
+</ldml>".Replace("'", "\"");
+#endregion
+				var pathForFlexGerman = Path.Combine(environment.TestPath, "de.ldml");
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws1 = new WritingSystemDefinition("en");
+				var ws2 = new WritingSystemDefinition("de");
+				//Create repo with english and flex german
+				environment.Collection.Set(ws1);
+				environment.Collection.Set(ws2);
+				environment.Collection.Save();
+				//The content of the file is switched out here as opposed to loading from this content in the first place
+				//because order is extremely important for this test and if we loaded from this ldml "de" would be the
+				//first writing system in the repo rather than the second.
+				File.WriteAllText(pathForFlexGerman, germanFromFlex);
+				//rename the ws
+				ws1.Language = "de";
+				ws2.Language = "fr";
+				environment.Collection.Set(ws2);
+				environment.Collection.Set(ws1);
+				environment.Collection.Save();
+
+				pathForFlexGerman = Path.Combine(environment.TestPath, "fr.ldml");
+				var manager = new XmlNamespaceManager(new NameTable());
+				manager.AddNamespace("fw", "urn://fieldworks.sil.org/ldmlExtensions/v1");
+				AssertThatXmlIn.File(pathForFlexGerman).HasAtLeastOneMatchForXpath("/ldml/special/fw:graphiteEnabled", manager);
+			}
+		}
+
+		[Test]
+		public void Save_IdOfWsIsSameAsOldIdOfOtherWs_RepoHasCorrectNumberOfWritingSystemsOnLoad()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var pathForFlexGerman = Path.Combine(environment.TestPath, "de.ldml");
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var ws1 = new WritingSystemDefinition("en");
+				var ws2 = new WritingSystemDefinition("de");
+				environment.Collection.Set(ws1);
+				environment.Collection.Set(ws2);
+				environment.Collection.Save();
+				//rename the ws
+				ws1.Language = "de";
+				ws2.Language = "fr";
+				environment.Collection.Set(ws2);
+				environment.Collection.Set(ws1);
+				environment.Collection.Save();
+				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				Assert.That(environment.Collection.Count, Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		[Ignore("Waiting for Cambell to finish refactoring exception catch in LoadAllDefinitions.  The Assert needs to be changed to match the exception message that Cambell decides on.  cjh")]
+		public void LoadAllDefinitions_LDMLV0_ThrowsFriendlyMessageWithFileName()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ldmlPath = Path.Combine(environment.TestPath, "en.ldml");
+				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("en", "", "", ""));
+				//Assert.DoesNotThrow(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
+				Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>().With.Property("Message").ContainsSubstring(String.Format("The LDML file '{0}' is version 0.  Version {1} was expected.", environment.GetPathForWsId("en"), WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
 

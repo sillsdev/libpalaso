@@ -66,7 +66,7 @@ namespace Palaso.WritingSystems
 				{
 					if (!currentToken.Equals("x", StringComparison.OrdinalIgnoreCase))
 					{
-						throw new ValidationException(String.Format("The rfctag {0} does not start with 'x' or 'X'.",
+						throw new ValidationException(String.Format("The rfctag {0} does not start with 'x-' or 'X-'.",
 																	flexConformPrivateUseRfc5646Tag));
 					}
 					language = currentToken;

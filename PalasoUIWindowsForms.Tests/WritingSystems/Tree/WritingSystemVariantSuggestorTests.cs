@@ -60,7 +60,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		{
 			var suggestor = new WritingSystemSuggestor();
 
-			var existingWritingSystems = new List<WritingSystemDefinition>{WritingSystemDefinition.FromLanguage("tpi")};
+			var existingWritingSystems = new List<WritingSystemDefinition>{WritingSystemDefinition.Parse("tpi")};
 			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws => ws.Label == "Tok Pisin"), Is.False);
 		}
 

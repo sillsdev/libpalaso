@@ -1252,6 +1252,21 @@ namespace Palaso.Tests.WritingSystems.Migration
 		}
 
 		[Test]
+		public void Migrate_LdmlIsXonlyFlexPrivateUseFormatandMigratorIsToldRoundTrip_FileIsUntouched()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string filePath = environment.FilePath("test.ldml");
+				var originalFilecontent = LdmlContentForTests.Version0("x", "Zxxx", "US", "1901-x-audio");
+				environment.WriteLdmlFile("test.ldml", originalFilecontent);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, true);
+				migrator.Migrate();
+				AssertThatLdmlMatches("x", "Zxxx", "US", "1901-x-audio", filePath);
+				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
+			}
+		}
+
+		[Test]
 		public void Migrate_LdmlIsFlexPrivateUseFormatMigratorIsToldNotToroundTrip_FileIsUpdated()
 		{
 			using (var environment = new TestEnvironment())

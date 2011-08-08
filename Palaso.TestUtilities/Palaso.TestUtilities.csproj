@@ -76,6 +76,7 @@
 	<Compile Include="ConstrainStringByLine.cs" />
 	<Compile Include="FluentAssertXml.cs" />
 	<Compile Include="LdmlContentForTests.cs" />
+	<Compile Include="LiftContentForTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="TemporaryFolder.cs" />
 	<Compile Include="TemporaryFolderTests.cs" />

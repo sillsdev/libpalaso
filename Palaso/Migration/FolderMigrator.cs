@@ -65,9 +65,10 @@ namespace Palaso.Migration
 				}
 				if (lowestVersionInFolder == lowestVersoinInFolder1)
 				{
+					var fileNotMigrated = _versionCache.First(info => info.Version == lowestVersionInFolder).FileName;
 					throw new ApplicationException(
-						String.Format("The migration strategy for {0} failed to migrate from version {1}",
-						SearchPattern,
+						String.Format("The migration strategy for {0} failed to migrate the file '{1} from version {2}",
+						SearchPattern,fileNotMigrated,
 						lowestVersoinInFolder1)
 					);
 				}

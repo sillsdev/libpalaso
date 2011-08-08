@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace Palaso.Extensions
@@ -9,7 +10,7 @@ namespace Palaso.Extensions
 	{
 		public static List<string> SplitTrimmed(this string s, char seperator)
 		{
-			if(s.Trim() == string.Empty)
+			if (s.Trim() == string.Empty)
 				return new List<string>();
 
 			var x = s.Split(seperator);
@@ -19,7 +20,7 @@ namespace Palaso.Extensions
 			foreach (var part in x)
 			{
 				var trim = part.Trim();
-				if(trim!=string.Empty)
+				if (trim != string.Empty)
 				{
 					r.Add(trim);
 				}
@@ -50,6 +51,7 @@ namespace Palaso.Extensions
 		}
 
 		private static XmlNode _xmlNodeUsedForEscaping;
+
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)
 		{
 			//we actually want to preserve html markup, just escape the disallowed unicode characters
@@ -68,11 +70,13 @@ namespace Palaso.Extensions
 			text = text.Replace("_apos;", "'");
 			return text;
 		}
+
 		public static string EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml(this string text)
 		{
-			if (_xmlNodeUsedForEscaping == null)//notice, this is only done once per run
+			if (_xmlNodeUsedForEscaping == null) //notice, this is only done once per run
 			{
-				XmlDocument doc = new XmlDocument(); // review: There are other, cheaper ways of doing this.  System.Security has a good escape mechanism IIRC CP 2011-01
+				XmlDocument doc = new XmlDocument();
+					// review: There are other, cheaper ways of doing this.  System.Security has a good escape mechanism IIRC CP 2011-01
 				_xmlNodeUsedForEscaping = doc.CreateElement("text", "x", "");
 			}
 
@@ -93,6 +97,53 @@ namespace Palaso.Extensions
 				result = Path.Combine(result, s);
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Finds and replaces invalid characters in a filename
+		/// </summary>
+		/// <param name="input">the string to clean</param>
+		/// <param name="errorChar">the character which replaces bad characters</param>
+		public static string SanitizeFilename(string input, char errorChar)
+		{
+			var invalidFilenameChars = System.IO.Path.GetInvalidFileNameChars();
+			Array.Sort(invalidFilenameChars);
+			return Sanitize(input, invalidFilenameChars, errorChar);
+		}
+
+		/// <summary>
+		/// Finds and replaces invalid characters in a path
+		/// </summary>
+		/// <param name="input">the string to clean</param>
+		/// <param name="errorChar">the character which replaces bad characters</param>
+		public static string SanitizePath(string input, char errorChar)
+		{
+			var invalidPathChars = System.IO.Path.GetInvalidPathChars();
+			Array.Sort(invalidPathChars);
+			return Sanitize(input, invalidPathChars, errorChar);
+		}
+
+		private static string Sanitize(string input, char[] invalidChars, char errorChar)
+		{
+			// null always sanitizes to null
+			if (input == null)
+			{
+				return null;
+			}
+			var result = new StringBuilder();
+			foreach (var characterToTest in input)
+			{
+				// we binary search for the character in the invalid set. This should be lightning fast.
+				if (Array.BinarySearch(invalidChars, characterToTest) >= 0)
+				{
+					result.Append(errorChar);
+				}
+				else
+				{
+					result.Append(characterToTest);
+				}
+			}
+			return result.ToString();
 		}
 
 	}

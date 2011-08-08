@@ -169,7 +169,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.RFC5646 == rfc4646);
+			var index = WritingSystemDefinitions.FindIndex(d => d.Bcp47Tag == rfc4646);
 			if(index<0)
 			{
 				return false;
@@ -378,10 +378,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				List<string> prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.RFC5646))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.Bcp47Tag))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.RFC5646);
+					prohibitedList.Add(CurrentDefinition.Bcp47Tag);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -389,10 +389,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
-						&& !string.IsNullOrEmpty(ws.RFC5646) && prohibitedList.Contains(ws.SortRules)
-						&& !prohibitedList.Contains(ws.RFC5646))
+						&& !string.IsNullOrEmpty(ws.Bcp47Tag) && prohibitedList.Contains(ws.SortRules)
+						&& !prohibitedList.Contains(ws.Bcp47Tag))
 					{
-						prohibitedList.Add(ws.RFC5646);
+						prohibitedList.Add(ws.Bcp47Tag);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -607,7 +607,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					return CurrentDefinition.RFC5646 ?? string.Empty;
+					return CurrentDefinition.Bcp47Tag ?? string.Empty;
 				}
 			}
 //            set
@@ -711,7 +711,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortLabel());
 			}
 
-			summary.AppendFormat(". ({0})", writingSystem.RFC5646);
+			summary.AppendFormat(". ({0})", writingSystem.Bcp47Tag);
 			return summary.ToString().Trim();
 		}
 
@@ -874,7 +874,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		// This is currently only useful for setting the region combobox, since it is expecting an IANASubtag
-		public StandardTags.IanaSubtag CurrentRegionTag
+		public IanaSubtag CurrentRegionTag
 		{
 			get
 			{

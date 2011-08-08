@@ -242,14 +242,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		//The exception type here should be changed to Application exception when merged with default branch
 		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
 		{
 			using (var file = new TempFile())
 			{
 				WriteVersion0Ldml("xh", "", "", "", file);
 				var adaptor = new LdmlDataMapper();
-				Assert.That(() => adaptor.Read(file.Path, new WritingSystemDefinition()), Throws.Exception.TypeOf<FormatException>());
+				Assert.That(() => adaptor.Read(file.Path, new WritingSystemDefinition()), Throws.Exception.TypeOf<ApplicationException>());
 			}
 		}
 
@@ -587,7 +586,7 @@ namespace Palaso.Tests.WritingSystems
 					var wsV0 = new WritingSystemDefinition();
 					var adaptor = new LdmlDataMapper();
 					adaptor.Read(badFlexLdml.Path, wsV0);
-					Assert.Throws<FormatException>(()=>adaptor.Read(version1Ldml.Path, wsV1));
+					Assert.Throws<ApplicationException>(()=>adaptor.Read(version1Ldml.Path, wsV1));
 				}
 			}
 		}
@@ -673,6 +672,18 @@ namespace Palaso.Tests.WritingSystems
 			}
 		}
 
+		[Test]
+		public void Read_V0Ldml_ThrowFriendlyException()
+		{
+			using (var file = new TempFile())
+			{
+				WriteVersion0Ldml("en", "", "", "", file);
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+				Assert.That(() => dataMapper.Read(file.Path, ws), Throws.Exception.TypeOf<ApplicationException>().With.Property("Message").EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {1} was expected.", file.Path, WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+			}
+		}
+
 		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
 		{
 			Assert.That(ws.Language, Is.EqualTo(language));
@@ -693,7 +704,7 @@ namespace Palaso.Tests.WritingSystems
 
 		private static void WriteVersion2Ldml(string language, string script, string territory, string variant, TempFile file)
 		{
-			var ws = new WritingSystemDefinition { ISO639 = language, Script = script, Region = territory, Variant = variant };
+			var ws = new WritingSystemDefinition { Language = language, Script = script, Region = territory, Variant = variant };
 			new LdmlDataMapper().Write(file.Path, ws, null);
 		}
 

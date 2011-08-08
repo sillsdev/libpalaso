@@ -171,20 +171,21 @@ namespace Palaso.WritingSystems
 				string isLegacyEncoded = GetSpecialValue(reader, "palaso", "isLegacyEncoded");
 				if (!String.IsNullOrEmpty(isLegacyEncoded))
 				{
-					ws.IsLegacyEncoded = Convert.ToBoolean(isLegacyEncoded);
+					ws.IsUnicodeEncoded = !Convert.ToBoolean(isLegacyEncoded);
 				}
 				ws.LanguageName = GetSpecialValue(reader, "palaso", "languageName");
 				ws.SpellCheckingId = GetSpecialValue(reader, "palaso", "spellCheckingId");
 				if (!_wsIsFlexPrivateUse)
 				{
-					int version = int.Parse(GetSpecialValue(reader, "palaso", "version"));
-
-					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+					string version = GetSpecialValue(reader, "palaso", "version");
+					version = string.IsNullOrEmpty(version) ? "0" : version;
+					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString())
 					{
 						throw new ApplicationException(String.Format(
-														   "Cannot read LDML expecting version {0} but got {1}",
-														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion,
-														   version
+														   "The LDML tag '{0}' is version {1}.  Version {2} was expected.",
+														   ws.Bcp47Tag,
+														   version,
+														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 														   ));
 					}
 				}
@@ -237,13 +238,13 @@ namespace Palaso.WritingSystems
 				{
 					var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-					ws.SetAllRfc5646LanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+					ws.SetAllComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
 
 					_wsIsFlexPrivateUse = true;
 				}
 				else
 				{
-					ws.SetAllRfc5646LanguageTagComponents(language, script, region, variant);
+					ws.SetAllComponents(language, script, region, variant);
 
 					_wsIsFlexPrivateUse = false;
 				}
@@ -719,7 +720,7 @@ namespace Palaso.WritingSystems
 					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
 					if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ||  language.Equals("x", StringComparison.OrdinalIgnoreCase))&&
-						interpreter.RFC5646Tag == ws.RFC5646)
+						interpreter.RFC5646Tag == ws.Bcp47Tag)
 					{
 						copyFlexFormat = true;
 						_wsIsFlexPrivateUse = true;
@@ -840,9 +841,9 @@ namespace Palaso.WritingSystems
 				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
 			}
 			WriteSpecialValue(writer, "palaso", "defaultKeyboard", ws.Keyboard);
-			if (ws.IsLegacyEncoded)
+			if (!ws.IsUnicodeEncoded)
 			{
-				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", ws.IsLegacyEncoded.ToString());
+				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", (!ws.IsUnicodeEncoded).ToString());
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
 			if (!String.IsNullOrEmpty(ws.SpellCheckingId))

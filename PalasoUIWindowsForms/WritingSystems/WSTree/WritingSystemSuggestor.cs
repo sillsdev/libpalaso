@@ -27,7 +27,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		{
 			OtherKnownWritingSystems =
 				new WritingSystemFromWindowsLocaleProvider().Union(new List<WritingSystemDefinition>
-																	   {WritingSystemDefinition.FromLanguage("tpi")});
+																	   {WritingSystemDefinition.Parse("tpi")});
 			SuppressSuggestionsForMajorWorldLanguages=true;
 			SuggestIpa=true;
 			SuggestDialects=true;
@@ -78,7 +78,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			{
 				foreach (WritingSystemDefinition language in OtherKnownWritingSystems)
 				{
-					if (!existingDefinitions.Any(def => def.RFC5646 == language.RFC5646))
+					if (!existingDefinitions.Any(def => def.Bcp47Tag == language.Bcp47Tag))
 						yield return new LanguageSuggestion(language);
 				}
 			}

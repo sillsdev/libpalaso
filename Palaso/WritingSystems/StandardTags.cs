@@ -5,58 +5,59 @@ using System.Text.RegularExpressions;
 
 namespace Palaso.WritingSystems
 {
+	public class IanaSubtag
+	{
+		public IanaSubtag(string type, string subtag, string description)
+		{
+			Type = type;
+			Subtag = subtag;
+			Description = description;
+		}
+
+		public override string ToString()
+		{
+			return Description;
+		}
+
+		public string Type { get; private set; }
+
+		public string Subtag { get; private set; }
+
+		public string Description { get; private set; }
+
+		public static int CompareByDescription(IanaSubtag x, IanaSubtag y)
+		{
+			if (x == null)
+			{
+				if (y == null)
+				{
+					return 0;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				if (y == null)
+				{
+					return 1;
+				}
+				else
+				{
+					return x.Description.CompareTo(y.Description);
+				}
+			}
+		}
+	}
+
 	/// <summary>
 	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
 	/// for use by the Rfc5646Tag and other classes.
 	/// </summary>
 	public class StandardTags
 	{
-		public class IanaSubtag
-		{
-			public IanaSubtag(string type, string subtag, string description)
-			{
-				Type = type;
-				Subtag = subtag;
-				Description = description;
-			}
-
-			public override string ToString()
-			{
-				return Description;
-			}
-
-			public string Type { get; private set; }
-
-			public string Subtag { get; private set; }
-
-			public string Description { get; private set; }
-
-			public static int CompareByDescription(IanaSubtag x, IanaSubtag y)
-			{
-				if (x == null)
-				{
-					if (y == null)
-					{
-						return 0;
-					}
-					else
-					{
-						return -1;
-					}
-				}
-				else
-				{
-					if (y == null)
-					{
-						return 1;
-					}
-					else
-					{
-						return x.Description.CompareTo(y.Description);
-					}
-				}
-			}
-		}
 
 		public class IanaVariantSubtag : IanaSubtag
 		{

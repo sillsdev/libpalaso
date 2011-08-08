@@ -96,14 +96,14 @@ namespace Palaso.WritingSystems
 					throw new ApplicationException(
 						String.Format("There was a problem loading one of your writing systems, found in file {0}. The exact error message was '{1}'.\r\nThe contents of the file are:\r\n{2}", filePath, e.Message, File.ReadAllText(filePath)), e);
 				}
-				if (wsFromFile.StoreID != wsFromFile.RFC5646)
+				if (wsFromFile.StoreID != wsFromFile.Bcp47Tag)
 				{
 					bool badFileName = true;
-					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x", StringComparison.OrdinalIgnoreCase))
+					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 					{
 						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
-						if (interpreter.RFC5646Tag.Equals(wsFromFile.RFC5646, StringComparison.OrdinalIgnoreCase))
+						if (interpreter.RFC5646Tag.Equals(wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase))
 						{
 							badFileName = false;
 						}
@@ -145,9 +145,9 @@ namespace Palaso.WritingSystems
 		{
 				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 				{
-					if (null == FindAlreadyLoadedWritingSystem(ws.RFC5646))
+					if (null == FindAlreadyLoadedWritingSystem(ws.Bcp47Tag))
 					{
-						if (!HaveMatchingDefinitionInTrash(ws.RFC5646))
+						if (!HaveMatchingDefinitionInTrash(ws.Bcp47Tag))
 						{
 							Set(ws);
 						}
@@ -177,7 +177,7 @@ namespace Palaso.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
 			{
-				if(ws.RFC5646 == rfc4646 )
+				if(ws.Bcp47Tag == rfc4646 )
 					return ws;
 			}
 			return null;
@@ -186,28 +186,25 @@ namespace Palaso.WritingSystems
 		public void SaveDefinition(WritingSystemDefinition ws)
 		{
 			Set(ws);
-			string oldWritingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
+			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			MemoryStream oldData = null;
-			if (!ws.Modified && File.Exists(oldWritingSystemFilePath))
+			if (!ws.Modified && File.Exists(writingSystemFilePath))
 			{
 				return; // no need to save (better to preserve the modified date)
 			}
-			if (File.Exists(oldWritingSystemFilePath))
+			if (File.Exists(writingSystemFilePath))
 			{
 				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
 				try
 				{
-					oldData = new MemoryStream(File.ReadAllBytes(oldWritingSystemFilePath), false);
+					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
 				}
 				catch {}
 				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-				File.Delete(oldWritingSystemFilePath); //!!! Should this be move to trash?
+				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
 			}
-
-			ws.StoreID = ws.Id;
-			string newWritingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
-			adaptor.Write(newWritingSystemFilePath, ws, oldData);
+			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;
 
@@ -302,7 +299,26 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
+			var oldStoreId = ws.StoreID;
 			base.Set(ws);
+			//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
+			//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
+			//helps us avoid having to deal with situations where a writing system id is changed to be
+			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
+			if (oldStoreId != ws.StoreID && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
+			{
+				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreID));
+			}
+		}
+
+		public override bool WritingSystemIdHasChanged(string id)
+		{
+			return _changeLog.HasChangeFor(id);
+		}
+
+		public override string WritingSystemIdHasChangedTo(string id)
+		{
+			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 	}
 }

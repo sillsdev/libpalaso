@@ -68,7 +68,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			else
 			{
-				_rfc4646.Text = _model.CurrentDefinition.RFC5646;
+				_rfc4646.Text = _model.CurrentDefinition.Bcp47Tag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
 			}
 		}

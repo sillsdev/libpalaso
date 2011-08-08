@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using Palaso.Data;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -16,6 +17,13 @@ namespace Palaso.Tests.WritingSystems
 			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 			interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("x-en");
 			AssertThatPropertiesAreSet("", "", "", "x-en", interpreter);
+		}
+
+		[Test]
+		public void ConvertToPalasoConformPrivateUseRfc5646Tag_LanguageIsValidRfc5646TagStartingWithX_Throws()
+		{
+			var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+			Assert.That(()=>interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag("xh"), Throws.Exception.TypeOf<ValidationException>());
 		}
 
 		[Test]

@@ -86,22 +86,6 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void SetDefinitionTwice_UpdatesStore()
-		{
-			_writingSystem.Language = "one";
-			RepositoryUnderTest.Set(_writingSystem);
-			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
-			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.Language = "one";
-			ws1.DefaultFontName = "one font";
-			ws1.StoreID = _writingSystem.StoreID;
-			RepositoryUnderTest.Set(ws1);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
-			Assert.AreEqual("one font", ws2.DefaultFontName);
-		}
-
-		[Test]
 		public void CreateNewDefinitionThenSet_CountEquals1()
 		{
 			RepositoryUnderTest.Set(RepositoryUnderTest.CreateNew());
@@ -115,10 +99,12 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
+			_writingSystem.Language = "two";
 			_writingSystem.DefaultFontName = "one font";
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("one");
+			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("two");
 			Assert.AreEqual("one font", ws2.DefaultFontName);
+			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
 
@@ -253,10 +239,10 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.RFC5646);
+			Assert.AreEqual("en", ws1.Bcp47Tag);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variant = "1901";
-			Assert.AreEqual("en-1901", ws2.RFC5646);
+			Assert.AreEqual("en-1901", ws2.Bcp47Tag);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
@@ -476,7 +462,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void TextWritingSystems_IdIsNotText_ReturnsEmpty()
 		{
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			ws.IsVoice = true;
 			RepositoryUnderTest.Set(ws);
 			var wsIdsToFilter = new List<string> {ws.Id};
@@ -487,7 +473,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void TextWritingSystems_IdIsText_ReturnsId()
 		{
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			var wsIdsToFilter = new List<string> { ws.Id };
 			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
@@ -498,11 +484,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void TextWritingSystems_IdsAreMixOfTextAndNotText_ReturnsOnlyTextIds()
 		{
-			var ws = WritingSystemDefinition.FromLanguage("en");
-			var ws1 = WritingSystemDefinition.FromLanguage("de");
-			var ws2 = WritingSystemDefinition.FromLanguage("th");
+			var ws = WritingSystemDefinition.Parse("en");
+			var ws1 = WritingSystemDefinition.Parse("de");
+			var ws2 = WritingSystemDefinition.Parse("th");
 			ws2.IsVoice = true;
-			var ws3 = WritingSystemDefinition.FromLanguage("pt");
+			var ws3 = WritingSystemDefinition.Parse("pt");
 			ws3.IsVoice = true;
 
 			RepositoryUnderTest.Set(ws);
@@ -528,7 +514,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Set_IdOfWritingSystemChanged_EventArgsAreCorrect()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
@@ -537,10 +523,23 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Set_IdOfNewWritingSystemIsSetToOldStoreIdOfOtherWritingSystem_GetReturnsCorrectWritingSystems()
+		{
+			var ws = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Save();
+			ws.Variant = "x-orig";
+			RepositoryUnderTest.Set(ws);
+			var newWs = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(newWs);
+			Assert.That(RepositoryUnderTest.Get("en-x-orig"), Is.EqualTo(ws));
+		}
+
+		[Test]
 		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "en";
 			RepositoryUnderTest.Set(ws);
@@ -551,7 +550,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Set_NewWritingSystem_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);
 		}
@@ -570,10 +569,111 @@ namespace Palaso.Tests.WritingSystems
 		public void Remove_WritingsystemIdExists_FiresEventAndEventArgIsSetToIdOfDeletedWritingSystem()
 		{
 			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
-			var ws = WritingSystemDefinition.FromLanguage("en");
+			var ws = WritingSystemDefinition.Parse("en");
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Remove(ws.Id);
 			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.Id));
+		}
+
+
+		[Test]
+		[Ignore("WritingSystemIdHasBeenChanged has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasBeenChanged_IdChanged_ReturnsTrue()
+		{
+			//Add a writing system to the repo
+			var ws = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Save();
+			//Now change the Id
+			ws.Variant = "x-bogus";
+			RepositoryUnderTest.Save();
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.True);
+		}
+
+		[Test]
+		[Ignore("WritingSystemIdHasBeenChanged has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasBeenChanged_IdChangedToMultipleDifferentNewIds_ReturnsTrue()
+		{
+			//Add a writing system to the repo
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			RepositoryUnderTest.Save();
+			//Now change the Id and create a duplicate of the original Id
+			wsEn.Variant = "x-bogus";
+			RepositoryUnderTest.Set(wsEn);
+			var wsEnDup = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEnDup);
+			RepositoryUnderTest.Save();
+			//Now change the duplicate's Id as well
+			wsEnDup.Variant = "x-bogus2";
+			RepositoryUnderTest.Set(wsEnDup);
+			RepositoryUnderTest.Save();
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.True);
+		}
+
+		[Test]
+		[Ignore("WritingSystemIdHasBeenChanged has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasBeenChanged_IdExistsAndHasNeverChanged_ReturnsFalse()
+		{
+			//Add a writing system to the repo
+			var ws = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Save();
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.False);
+		}
+
+		[Test]
+		[Ignore("WritingSystemIdHasChangedTo has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasChangedTo_IdNeverExisted_ReturnsNull()
+		{
+			//Add a writing system to the repo
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.Null);
+		}
+
+		[Test]
+		[Ignore("WritingSystemIdHasChangedTo has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasChangedTo_IdChanged_ReturnsNewId()
+		{
+			//Add a writing system to the repo
+			var ws = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Save();
+			//Now change the Id
+			ws.Variant = "x-bogus";
+			RepositoryUnderTest.Save();
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
+		}
+
+		[Test]
+		[Ignore("WritingSystemIdHasChangedTo has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasChangedTo_IdChangedToMultipleDifferentNewIds_ReturnsNull()
+		{
+			//Add a writing system to the repo
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			RepositoryUnderTest.Save();
+			//Now change the Id and create a duplicate of the original Id
+			wsEn.Variant = "x-bogus";
+			RepositoryUnderTest.Set(wsEn);
+			var wsEnDup = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEnDup);
+			RepositoryUnderTest.Save();
+			//Now change the duplicate's Id as well
+			wsEnDup.Variant = "x-bogus2";
+			RepositoryUnderTest.Set(wsEnDup);
+			RepositoryUnderTest.Save();
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.Null);
+		}
+
+		[Test]
+		[Ignore("WritingSystemIdHasChangedTo has not been implmented on LdmlInStreamWritingSystemRepository. A copy of this test exists in LdmlInFolderWritingSystemRepositoryTests")]
+		public void WritingSystemIdHasChangedTo_IdExistsAndHasNeverChanged_ReturnsId()
+		{
+			//Add a writing system to the repo
+			var ws = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(ws);
+			RepositoryUnderTest.Save();
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 		}
 	}
 }

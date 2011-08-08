@@ -27,7 +27,7 @@ namespace Palaso.WritingSystems.Migration
 
 			if(roundtripFlex70PrivateUse){
 				var flexPrivateUseVersionGetter = new XPathVersion(1, "/ldml/identity/language/@type");
-				flexPrivateUseVersionGetter.VersionParser = str => { return str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ? 2 : -1; };
+				flexPrivateUseVersionGetter.VersionParser = str => { return (str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || str.Equals("x")) ? 2 : -1; };
 				_versionGetters.Add(flexPrivateUseVersionGetter);
 			}
 

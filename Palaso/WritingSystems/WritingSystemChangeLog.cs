@@ -33,8 +33,18 @@ namespace Palaso.WritingSystems
 
 		public bool HasChangeFor(string id)
 		{
-			if (GetChangeFor(id) == id)
+			//this is the case if there is a cycle id => id2 => id
+			var changedId = GetChangeFor(id);
+			if (changedId == id)
 			{
+				return false;
+			}
+			if (changedId == null)
+			{
+				if (_logEvents.Where(c => c.Type == "Change" && ((WritingSystemLogChangeEvent)c).From.Equals(id)).Count() > 1)
+				{
+					return true;
+				}
 				return false;
 			}
 			return true;
@@ -42,6 +52,10 @@ namespace Palaso.WritingSystems
 
 		public string GetChangeFor(string id)
 		{
+			if (_logEvents.Where(c => c.Type == "Change" && ((WritingSystemLogChangeEvent)c).From.Equals(id)).Count() != 1)
+			{
+				return null;
+			}
 			string result = id;
 			foreach (WritingSystemLogChangeEvent change in _logEvents.Where(c => c.Type == "Change"))
 			{
