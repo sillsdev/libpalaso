@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Palaso.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -7,8 +9,13 @@ namespace Palaso.WritingSystems.Migration
 {
 	public class LdmlInFolderWritingSystemRepositoryMigrator : FolderMigrator
 	{
-		public LdmlInFolderWritingSystemRepositoryMigrator(string ldmlPath, LdmlVersion0MigrationStrategy.MigrationHandler migrationCallback)
-			: base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
+
+		private readonly List<WritingSystemRepositoryProblem> _migrationProblems = new List<WritingSystemRepositoryProblem>();
+
+		public LdmlInFolderWritingSystemRepositoryMigrator(
+			string ldmlPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler
+		) : base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
 		{
 			SearchPattern = "*.ldml";
 
@@ -17,15 +24,30 @@ namespace Palaso.WritingSystems.Migration
 			AddVersionStrategy(new WritingSystemLdmlVersionGetter());
 			AddVersionStrategy(new DefaultVersion(0, 0));
 
-			var auditLog =
-				new WritingSystemChangeLog(
-					new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml")));
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationCallback, auditLog));
+			var auditLog = new WritingSystemChangeLog(
+				new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml"))
+			);
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog));
 		}
 
-		public void Migrate()
+		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems
 		{
-			base.Migrate();
+			get { return _migrationProblems; }
 		}
+
+		///<summary>
+		/// Converts FolderMigrationProblem probelms to WritingSystemRepositoryProblem stored in MigrationProblems property.
+		///</summary>
+		protected override void OnFolderMigrationProblem(IEnumerable<FolderMigratorProblem> problems)
+		{
+			_migrationProblems.AddRange(problems.Select(
+				problem => new WritingSystemRepositoryProblem
+					{
+						Exception = problem.Exception, FilePath = problem.FilePath
+					}
+			));
+		}
+
+
 	}
 }

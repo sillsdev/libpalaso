@@ -12,9 +12,8 @@ namespace Palaso.WritingSystems
 			WSWillNotBeAvailable
 		}
 
-		public Exception Exception { get; private set; }
-		public string WritingSystemTag { get; private set; }
-		public string FilePath { get; private set; }
-		public ConsequenceType Consequence { get; private set; }
+		public Exception Exception { get; set; }
+		public string FilePath { get; set; }
+		public ConsequenceType Consequence { get; set; }
 	}
 }

@@ -14,6 +14,7 @@ namespace Palaso.WritingSystems
 		///</summary>
 		///<param name="basePath">base location of the global writing system repository</param>
 		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
@@ -25,6 +26,13 @@ namespace Palaso.WritingSystems
 
 			var instance = new LdmlInFolderWritingSystemRepository(basePath);
 			instance.LoadAllDefinitions();
+
+			// Call the loadProblemHandler with both migration problems and load problems
+			var loadProblems = new List<WritingSystemRepositoryProblem>();
+			loadProblems.AddRange(migrator.MigrationProblems);
+			loadProblems.AddRange(instance.LoadProblems);
+			loadProblemHandler(loadProblems);
+
 			return instance;
 		}
 
@@ -32,15 +40,21 @@ namespace Palaso.WritingSystems
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
+		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
 
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		/// <param name="path"></param>
+		/// <param name="basePath"></param>
 		internal LdmlInFolderWritingSystemRepository(string basePath)
 		{
 			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
+		}
+
+		public IList<WritingSystemRepositoryProblem> LoadProblems
+		{
+			get { return _loadProblems; }
 		}
 
 		public string PathToWritingSystems
@@ -89,9 +103,17 @@ namespace Palaso.WritingSystems
 				}
 				catch(Exception e)
 				{
-					throw new ApplicationException(
-						String.Format("There was a problem loading one of your writing systems, found in file {0}. The exact error message was '{1}'.\r\nThe contents of the file are:\r\n{2}", filePath, e.Message, File.ReadAllText(filePath)), e);
+					// Add the exception to our list of problems and continue loading
+					var problem = new WritingSystemRepositoryProblem
+						{
+							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+							Exception = e,
+							FilePath = filePath
+						};
+					_loadProblems.Add(problem);
+					continue;
 				}
+
 				if (wsFromFile.StoreID != wsFromFile.Bcp47Tag)
 				{
 					bool badFileName = true;

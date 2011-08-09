@@ -80,7 +80,7 @@ namespace Palaso.Migration
 		///<summary>
 		/// Default FolderMigrationProblemHandler, does nothing.
 		///</summary>
-		protected void OnFolderMigrationProblem(IEnumerable<FolderMigratorProblem> problems)
+		protected virtual void OnFolderMigrationProblem(IEnumerable<FolderMigratorProblem> problems)
 		{
 		}
 

@@ -20,7 +20,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			public TestEnvironment()
 			{
-				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(_folder.Path, OnMigrationFn);
+				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(
+					_folder.Path,
+					OnMigration,
+					OnLoadProblem
+				);
 				MockSetupModel = new Mock<WritingSystemSetupModel>(writingSystemRepository);
 				SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			}
@@ -52,7 +56,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		private static void OnMigrationFn(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		private static void OnMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		{
+		}
+
+		private static void OnLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
 		{
 		}
 
@@ -116,7 +124,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		private void AssertTreeNodeLabels(WritingSystemTreeModel model, params string[] names)
+		private static void AssertTreeNodeLabels(WritingSystemTreeModel model, params string[] names)
 		{
 			var items = model.GetTreeItems().ToArray();
 			int childIndex = 0;
@@ -153,7 +161,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		private void PrintExpectationsVsActual(string[] names, WritingSystemTreeItem[] items)
+		private static void PrintExpectationsVsActual(string[] names, WritingSystemTreeItem[] items)
 		{
 			Console.Write("exp: ");
 			names.ToList().ForEach(c => Console.Write(c + ", "));

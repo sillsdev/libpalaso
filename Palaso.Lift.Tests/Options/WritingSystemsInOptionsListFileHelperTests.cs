@@ -30,7 +30,7 @@ namespace Palaso.Lift.Tests.Options
 				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
 
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem);
 				Helper = new WritingSystemsInOptionsListFileHelper(WritingSystemRepository, _optionListFile.Path);
 			}
 
@@ -61,6 +61,10 @@ namespace Palaso.Lift.Tests.Options
 			{
 			}
 
+			private static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+			{
+			}
+
 			private string ProjectPath
 			{
 				get { return _folder.Path; }
@@ -74,7 +78,7 @@ namespace Palaso.Lift.Tests.Options
 				_folder.Dispose();
 			}
 
-			public IWritingSystemRepository WritingSystemRepository { get; private set; }
+			private IWritingSystemRepository WritingSystemRepository { get; set; }
 
 			public string WritingSystemsPath
 			{

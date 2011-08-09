@@ -28,7 +28,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
    /* turned out to be hard... so many events are bound to the model, when the dlg
 	* closes we'd need to carefully unsubscribe them alll.
-	* Better to try again with a weak event model*/
+	* Better to try again with a weak event model (JH)
+	* Or perhaps better yet the passive view model
+	*/
 		/// <summary>
 		/// Use this one to keep, say, a picker up to date with any change you make
 		/// while using the dialog.
@@ -42,9 +44,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		// This method really gets in the way of good migration.
-		[Obsolete]
-		public WritingSystemSetupDialog(string writingSystemRepositoryPath, LdmlVersion0MigrationStrategy.MigrationHandler migrationCallback) :
-			this(LdmlInFolderWritingSystemRepository.Initialize(writingSystemRepositoryPath, migrationCallback))
+		[Obsolete("Initialize the writing system repository, then call the constructor that takes an IWritingSystemRepository")]
+		public WritingSystemSetupDialog(
+			string writingSystemRepositoryPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler
+		) : this(LdmlInFolderWritingSystemRepository.Initialize(
+			writingSystemRepositoryPath,
+			migrationHandler,
+			loadProblemHandler
+		))
 		{
 		}
 

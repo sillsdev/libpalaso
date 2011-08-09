@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.WritingSystems;
+using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace PalasoUIWindowsForms.TestApp
@@ -30,7 +31,7 @@ namespace PalasoUIWindowsForms.TestApp
 			Directory.CreateDirectory(tempPath);
 			try
 			{
-				Application.Run(new WritingSystemSetupDialog(tempPath, onMigration));
+				Application.Run(new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem));
 			}
 			catch (Exception)
 			{
@@ -50,5 +51,11 @@ namespace PalasoUIWindowsForms.TestApp
 		public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
 		{
 		}
+
+		public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> migrationInfo)
+		{
+		}
+
+
 	}
 }

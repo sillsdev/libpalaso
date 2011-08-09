@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Security.Permissions;
 using System.Threading;
@@ -11,7 +8,6 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -28,13 +24,13 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test, Ignore("By hand only")]
 		public void WritingSystemSetupDialog()
 		{
-			CrossThreadTestRunner runner = new CrossThreadTestRunner();
+			var runner = new CrossThreadTestRunner();
 			runner.RunInSTA(
 				delegate
 				{
 					using (var folder = new TemporaryFolder("WS-Test"))
 					{
-						var dlg = new WritingSystemSetupDialog(folder.Path, DummyMigratorCallback.onMigration);
+						var dlg = new WritingSystemSetupDialog(folder.Path, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
 						dlg.WritingSystemSuggestor.SuggestVoice = true;
 						dlg.ShowDialog();
 					}
@@ -44,7 +40,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test, Ignore("By hand only")]
 		public void WritingSystemSetupViewWithComboAttached()
 		{
-			CrossThreadTestRunner runner = new CrossThreadTestRunner();
+			var runner = new CrossThreadTestRunner();
 			runner.RunInSTA(
 				delegate
 				{
@@ -52,7 +48,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 					{
 						var f = new Form();
 						f.Size = new Size(800, 600);
-						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path, DummyMigratorCallback.onMigration);
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
 						var model = new WritingSystemSetupModel(repository);
 						var v = new WritingSystemSetupView(model);
 						var combo = new WSPickerUsingComboBox(model);
@@ -67,7 +63,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 
   public class CrossThreadTestRunner
   {
-	private Exception lastException;
+	private Exception _lastException;
 
 	public void RunInMTA(ThreadStart userDelegate)
 	{
@@ -81,9 +77,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 
 	private void Run(ThreadStart userDelegate, ApartmentState apartmentState)
 	{
-	  lastException = null;
+	  _lastException = null;
 
-	  Thread thread = new Thread(
+	  var thread = new Thread(
 		delegate()
 		{
 		  try
@@ -92,7 +88,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		  }
 		  catch (Exception e)
 		  {
-			lastException = e;
+			_lastException = e;
 		  }
 		});
 	  thread.SetApartmentState(apartmentState);
@@ -101,12 +97,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	  thread.Join();
 
 	  if (ExceptionWasThrown())
-		ThrowExceptionPreservingStack(lastException);
+		ThrowExceptionPreservingStack(_lastException);
 	}
 
 	private bool ExceptionWasThrown()
 	{
-	  return lastException != null;
+	  return _lastException != null;
 	}
 
 	[ReflectionPermission(SecurityAction.Demand)]
@@ -120,11 +116,16 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	}
   }
 
-  internal class DummyMigratorCallback
+  internal class DummyWritingSystemHandler
   {
 	  public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
 	  {
 	  }
+
+	  public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+	  {
+	  }
+
   }
 
 }
