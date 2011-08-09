@@ -229,6 +229,9 @@ namespace Palaso.WritingSystems.Migration
 				string migrateTo = "";
 				foreach (string part in _languageSubTag.AllParts)
 				{
+					if (part.Equals("x", StringComparison.OrdinalIgnoreCase))
+						break; // don't migrate language code parts already explicitly marked private-use.
+
 					if (String.IsNullOrEmpty(migrateFrom))
 					{
 						foreach (var code in StandardTags.ValidIso639LanguageCodes)

@@ -264,6 +264,38 @@ namespace Palaso.Tests.WritingSystems.Migration
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "en", "", "", "fonipa", "en-fonipa-x-emic");
 		}
+
+		[Test]
+		public void PrivateUseVariantLanguageCode_IsNotShortened()
+		{
+			var cleaner = new Rfc5646TagCleaner("qaa", "", "", "", "x-kal");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "qaa", "", "", "", "qaa-x-kal");
+		}
+
+		[Test]
+		public void LanguageCodeAfterX_IsNotShortened()
+		{
+			var cleaner = new Rfc5646TagCleaner("qaa-x-kal");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "qaa", "", "", "", "qaa-x-kal");
+		}
+
+		[Test]
+		public void NewTagWithPrivateLanguage_IsNotModified()
+		{
+			var cleaner = new Rfc5646TagCleaner("qaa-Qaaa-QM-x-kal-Mysc-YY");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "qaa", "Qaaa", "QM", "", "qaa-Qaaa-QM-x-kal-Mysc-YY");
+		}
+
+		[Test]
+		public void NewTag_IsNotModified()
+		{
+			var cleaner = new Rfc5646TagCleaner("fr-Qaaa-QM-x-Mysc-YY");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "fr", "Qaaa", "QM", "", "fr-Qaaa-QM-x-Mysc-YY");
+		}
 		void VerifyRfcCleaner(Rfc5646TagCleaner cleaner, string language, string script, string region, string variant, string completeTag)
 		{
 			Assert.That(cleaner.Language, Is.EqualTo(language));
