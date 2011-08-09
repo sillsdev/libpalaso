@@ -12,11 +12,11 @@ namespace Palaso.Lift.Options
 	{
 		private readonly XmlDocument _xmlDoc = new XmlDocument();
 		private readonly string _optionListFilePath;
-		private readonly string _writingSystemFolderPath;
+		private readonly IWritingSystemRepository _writingSystemRepository;
 
-		public WritingSystemsInOptionsListFileHelper(string writingSystemFolderPath, string optionsListFilePath)
+		public WritingSystemsInOptionsListFileHelper(IWritingSystemRepository writingSystemRepository, string optionsListFilePath)
 		{
-			_writingSystemFolderPath = writingSystemFolderPath;
+			_writingSystemRepository = writingSystemRepository;
 			_optionListFilePath = optionsListFilePath;
 			try
 			{
@@ -63,9 +63,7 @@ namespace Palaso.Lift.Options
 
 		public void CreateNonExistentWritingSystemsFoundInFile()
 		{
-			var writingSystemRepository =
-				new LdmlInFolderWritingSystemRepository(_writingSystemFolderPath);
-			WritingSystemOrphanFinder.FindOrphans(WritingSystemsInUse, ReplaceWritingSystemId, writingSystemRepository);
+			WritingSystemOrphanFinder.FindOrphans(WritingSystemsInUse, ReplaceWritingSystemId, _writingSystemRepository);
 		}
 	}
 }

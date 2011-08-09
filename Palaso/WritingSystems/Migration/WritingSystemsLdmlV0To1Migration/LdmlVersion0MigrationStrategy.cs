@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Palaso.Code;
 using Palaso.Migration;
 
 namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
@@ -22,12 +23,12 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			public string RfcTagAfterMigration;
 		}
 
-		public delegate void OnMigrationFn(IEnumerable<MigrationInfo> migrationInfo);
+		public delegate void MigrationHandler(IEnumerable<MigrationInfo> migrationInfo);
 
 		private readonly List<MigrationInfo> _migrationInfo;
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
-		private readonly OnMigrationFn _onMigrationCallback;
-		private IAuditTrail _auditLog;
+		private readonly MigrationHandler _migrationCallback;
+		private readonly IAuditTrail _auditLog;
 		private bool _roundTripBogusFlex70PrivateUse = false;
 
 		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog, int fromVersion, bool roundtripBogusFlex70PrivateUse):
@@ -39,9 +40,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		public LdmlVersion0MigrationStrategy(OnMigrationFn onMigrationCallback, IAuditTrail auditLog, int fromVersion) :
 			base(fromVersion, 2)
 		{
+			Guard.AgainstNull(migrationCallback, "migrationCallback must be set");
 			_migrationInfo = new List<MigrationInfo>();
 			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();
-			_onMigrationCallback = onMigrationCallback;
+			_migrationCallback = migrationCallback;
 			_auditLog = auditLog;
 		}
 
@@ -132,7 +134,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				}
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
-			_onMigrationCallback(_migrationInfo);
+			if (_migrationCallback != null)
+			{
+				_migrationCallback(_migrationInfo);
+			}
 		}
 
 		private void WriteLdml(WritingSystemDefinitionV1 writingSystemDefinitionV1, string sourceFilePath, string destinationFilePath)

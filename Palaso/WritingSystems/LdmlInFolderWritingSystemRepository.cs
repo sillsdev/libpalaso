@@ -1,50 +1,60 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Xml;
-using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.WritingSystems
 {
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
+		///<summary>
+		/// Returns an instance of an ldml in folder writing system reposistory.
+		///</summary>
+		///<param name="basePath">base location of the global writing system repository</param>
+		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		public static LdmlInFolderWritingSystemRepository Initialize(
+			string basePath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler
+		)
+		{
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler);
+			migrator.Migrate();
+
+			var instance = new LdmlInFolderWritingSystemRepository(basePath);
+			instance.LoadAllDefinitions();
+
+			// Call the loadProblemHandler with both migration problems and load problems
+			var loadProblems = new List<WritingSystemRepositoryProblem>();
+			loadProblems.AddRange(migrator.MigrationProblems);
+			loadProblems.AddRange(instance.LoadProblems);
+			loadProblemHandler(loadProblems);
+
+			return instance;
+		}
+
 		private const string _kExtension = ".ldml";
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
-		private WritingSystemChangeLog _changeLog;
-
-		public static int LatestVersion
-		{
-			get{ return 1;}
-		}
-
-		/// <summary>
-		/// Use the default repository
-		/// </summary>
-		public LdmlInFolderWritingSystemRepository()
-		{
-			string p =
-				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
-			Directory.CreateDirectory(p);
-			p = Path.Combine(p, "WritingSystemRepository");
-			Directory.CreateDirectory(p);
-			PathToWritingSystems = p;
-			LoadAllDefinitions();
-			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
-		}
+		private readonly WritingSystemChangeLog _changeLog;
+		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
 
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		/// <param name="path"></param>
-		public LdmlInFolderWritingSystemRepository(string path)
+		/// <param name="basePath"></param>
+		internal LdmlInFolderWritingSystemRepository(string basePath)
 		{
-			PathToWritingSystems = path;
-			LoadAllDefinitions();
+			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
+		}
+
+		public IList<WritingSystemRepositoryProblem> LoadProblems
+		{
+			get { return _loadProblems; }
 		}
 
 		public string PathToWritingSystems
@@ -81,7 +91,7 @@ namespace Palaso.WritingSystems
 			return identifier + _kExtension;
 		}
 
-		private void LoadAllDefinitions()
+		protected void LoadAllDefinitions()
 		{
 			Clear();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
@@ -93,9 +103,17 @@ namespace Palaso.WritingSystems
 				}
 				catch(Exception e)
 				{
-					throw new ApplicationException(
-						String.Format("There was a problem loading one of your writing systems, found in file {0}. The exact error message was '{1}'.\r\nThe contents of the file are:\r\n{2}", filePath, e.Message, File.ReadAllText(filePath)), e);
+					// Add the exception to our list of problems and continue loading
+					var problem = new WritingSystemRepositoryProblem
+						{
+							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+							Exception = e,
+							FilePath = filePath
+						};
+					_loadProblems.Add(problem);
+					continue;
 				}
+
 				if (wsFromFile.StoreID != wsFromFile.Bcp47Tag)
 				{
 					bool badFileName = true;
@@ -173,14 +191,9 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
+		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
 		{
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
-			{
-				if(ws.Bcp47Tag == rfc4646 )
-					return ws;
-			}
-			return null;
+			return AllWritingSystems.FirstOrDefault(ws => ws.Bcp47Tag == bcp47Tag);
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)
@@ -224,7 +237,7 @@ namespace Palaso.WritingSystems
 		{
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Exists(identifier))
+			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Contains(identifier))
 			{
 				WritingSystemDefinition ws = Get(identifier);
 				SaveDefinition(ws);
@@ -256,8 +269,8 @@ namespace Palaso.WritingSystems
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
-			List<string> idsToRemove = new List<string>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var idsToRemove = new List<string>();
+			foreach (var ws in AllWritingSystems)
 			{
 				if (ws.MarkedForDeletion)
 				{
@@ -272,15 +285,15 @@ namespace Palaso.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			List<WritingSystemDefinition> allDefs = new List<WritingSystemDefinition>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var allDefs = new List<WritingSystemDefinition>();
+			foreach (var ws in AllWritingSystems)
 			{
 				if (CanSet(ws))
 				{
 					allDefs.Add(ws);
 				}
 			}
-			foreach (WritingSystemDefinition ws in allDefs)
+			foreach (var ws in allDefs)
 			{
 				SaveDefinition(ws);
 				if (!ws.Modified)
