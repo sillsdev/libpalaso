@@ -592,13 +592,21 @@ namespace Palaso.Tests.WritingSystems
 								  LdmlContentForTests.Version0("de", WellKnownSubTags.Audio.Script, "",
 													 WellKnownSubTags.Audio.PrivateUseSubtag));
 
-				//Assert.Throws<ApplicationException>(
-				//    () => environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath)
-				//);
 				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var problems = repository.LoadProblems;
-				Assert.AreEqual(2, problems.Count);
-				Assert.AreEqual("", problems[0].Exception);
+
+				Assert.That(problems.Count, Is.EqualTo(2));
+				Assert.That(
+					problems[0].Exception,
+					Is.TypeOf<Palaso.Data.ValidationException>().With.Property("Message").
+					ContainsSubstring("The language tag may not contain dashes.")
+				);
+				Assert.That(
+					problems[1].Exception,
+					Is.TypeOf<ApplicationException>().With.Property("Message").
+					ContainsSubstring("The LDML tag 'de-Zxxx-x-audio' is version 0.  Version 1 was expected.")
+				);
+				Assert.Fail("TA review please"); // Don't think that this test was correct, at least in recent times. CP 2011-08
 
 			}
 		}
@@ -614,8 +622,14 @@ namespace Palaso.Tests.WritingSystems
 
 				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var problems = repository.LoadProblems;
-				Assert.AreEqual(1, problems.Count);
-				Assert.AreEqual("", problems[0].Exception);
+
+				Assert.That(problems.Count, Is.EqualTo(1));
+				Assert.That(
+					problems[0].Exception,
+					Is.TypeOf<ApplicationException>().With.Property("Message").
+					ContainsSubstring("The LDML tag 'de-latn-ch-1901' is version 0.  Version 1 was expected.")
+				);
+				Assert.Fail("TA review please"); // Don't think that this test was correct, at least in recent times. CP 2011-08
 			}
 		}
 
@@ -914,15 +928,22 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		[Ignore("Waiting for Cambell to finish refactoring exception catch in LoadAllDefinitions.  The Assert needs to be changed to match the exception message that Cambell decides on.  cjh")]
-		public void LoadAllDefinitions_LDMLV0_ThrowsFriendlyMessageWithFileName()
+		public void LoadAllDefinitions_LDMLV0_HasExpectedProblem()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "en.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("en", "", "", ""));
-				//Assert.DoesNotThrow(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
-				Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>().With.Property("Message").ContainsSubstring(String.Format("The LDML file '{0}' is version 0.  Version {1} was expected.", environment.GetPathForWsId("en"), WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+
+				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var problems = repository.LoadProblems;
+
+				Assert.That(problems.Count, Is.EqualTo(1));
+				Assert.That(
+					problems[0].Exception,
+					Is.TypeOf<ApplicationException>().With.Property("Message").
+					ContainsSubstring("The LDML tag 'en' is version 0.  Version 1 was expected.")
+				);
 			}
 		}
 
