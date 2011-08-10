@@ -1,4 +1,5 @@
 ﻿using System;
+using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.TestUtilities
@@ -34,6 +35,28 @@ namespace Palaso.TestUtilities
 	<palaso:defaultFontSize value='12' />
 </special>
 </ldml>".Replace('\'', '"'), language, script, region, variant);
+		}
+
+		static public string CurrentVersion(string language, string script, string region, string variant)
+		{
+			return String.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+	<script type='{1}' />
+	<territory type='{2}' />
+	<variant type='{3}' />
+</identity>
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:version value='{4}' />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+</ldml>".Replace('\'', '"'), language, script, region, variant, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		static public string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)

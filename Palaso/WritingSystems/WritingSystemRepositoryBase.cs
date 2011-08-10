@@ -146,7 +146,7 @@ namespace Palaso.WritingSystems
 			//Check if this is a new writing system with a conflicting id
 			if (!CanSet(ws))
 			{
-				throw new ArgumentException(String.Format("Unable to store writing system '{0}' because this id already exists.  Please change this writing system before storing.", ws.Id));
+				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.Id));
 			}
 			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreID == ws.StoreID).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update

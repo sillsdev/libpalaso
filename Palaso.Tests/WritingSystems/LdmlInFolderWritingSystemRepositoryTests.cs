@@ -587,9 +587,10 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				File.WriteAllText(Path.Combine(environment.TestPath, "de-Zxxx-x-audio.ldml"),
-								  LdmlContentForTests.Version0("de-Zxxx-x-audio", "", "", ""));
+								  LdmlContentForTests.CurrentVersion("de", WellKnownSubTags.Audio.Script, "",
+													 WellKnownSubTags.Audio.PrivateUseSubtag));
 				File.WriteAllText(Path.Combine(environment.TestPath, "inconsistent-filename.ldml"),
-								  LdmlContentForTests.Version0("de", WellKnownSubTags.Audio.Script, "",
+								  LdmlContentForTests.CurrentVersion("de", WellKnownSubTags.Audio.Script, "",
 													 WellKnownSubTags.Audio.PrivateUseSubtag));
 
 				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
@@ -598,15 +599,14 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(problems.Count, Is.EqualTo(2));
 				Assert.That(
 					problems[0].Exception,
-					Is.TypeOf<Palaso.Data.ValidationException>().With.Property("Message").
-					ContainsSubstring("The language tag may not contain dashes.")
+					Is.TypeOf<ApplicationException>().With.Property("Message").
+					ContainsSubstring(@"The writing system file C:\Users\PaxErit\AppData\Local\Temp\LdmlInFolderWritingSystemRepositoryTests\inconsistent-filename.ldml seems to be named inconsistently. It conatins the Rfc5646 tag: 'de-Zxxx-x-audio'. The name should have been made consistent with its content upon migration of the writing systems.")
 				);
 				Assert.That(
 					problems[1].Exception,
-					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring("The LDML tag 'de-Zxxx-x-audio' is version 0.  Version 1 was expected.")
+					Is.TypeOf<ArgumentException>().With.Property("Message").
+					ContainsSubstring("Unable to set writing system 'de-Zxxx-x-audio' because this id already exists. Please change this writing system id before storing setting it.")
 				);
-				Assert.Fail("TA review please"); // Don't think that this test was correct, at least in recent times. CP 2011-08
 
 			}
 		}
@@ -618,7 +618,7 @@ namespace Palaso.Tests.WritingSystems
 			using (var environment = new TestEnvironment())
 			{
 				File.WriteAllText(Path.Combine(environment.TestPath, "tpi-Zxxx-x-audio.ldml"),
-								  LdmlContentForTests.Version0("de", "latn", "ch", "1901"));
+								  LdmlContentForTests.CurrentVersion("de", "latn", "ch", "1901"));
 
 				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var problems = repository.LoadProblems;
@@ -627,9 +627,8 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring("The LDML tag 'de-latn-ch-1901' is version 0.  Version 1 was expected.")
+					ContainsSubstring(@"The writing system file C:\Users\PaxErit\AppData\Local\Temp\LdmlInFolderWritingSystemRepositoryTests\tpi-Zxxx-x-audio.ldml seems to be named inconsistently. It conatins the Rfc5646 tag: 'de-latn-ch-1901'. The name should have been made consistent with its content upon migration of the writing systems.")
 				);
-				Assert.Fail("TA review please"); // Don't think that this test was correct, at least in recent times. CP 2011-08
 			}
 		}
 
