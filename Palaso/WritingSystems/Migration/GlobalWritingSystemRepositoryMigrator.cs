@@ -100,7 +100,7 @@ namespace Palaso.WritingSystems.Migration
 
 		private void MigrateLdmlInFolder()
 		{
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(CurrentVersionPath, _migrationHandler);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(CurrentVersionPath, _migrationHandler, false);
 			migrator.Migrate();
 		}
 

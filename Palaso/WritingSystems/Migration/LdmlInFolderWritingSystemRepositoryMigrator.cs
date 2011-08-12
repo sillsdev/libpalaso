@@ -14,7 +14,15 @@ namespace Palaso.WritingSystems.Migration
 
 		public LdmlInFolderWritingSystemRepositoryMigrator(
 			string ldmlPath,
-			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler
+			LdmlVersion0MigrationStrategy.MigrationHandler onMigrationCallback
+		) : this(ldmlPath, onMigrationCallback, false)
+		{
+		}
+
+		public LdmlInFolderWritingSystemRepositoryMigrator(
+			string ldmlPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			bool roundtripFlex70PrivateUse
 		) : base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
 		{
 			SearchPattern = "*.ldml";
@@ -27,9 +35,9 @@ namespace Palaso.WritingSystems.Migration
 			var auditLog = new WritingSystemChangeLog(
 				new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml"))
 			);
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog, 0, roundtripFlex70PrivateUse));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, roundtripFlex70PrivateUse));
 			// Version 0 strategy has been enhanced to also migrate version 1.
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog, 1, roundtripFlex70PrivateUse));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, roundtripFlex70PrivateUse));
 		}
 
 		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems

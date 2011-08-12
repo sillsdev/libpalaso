@@ -139,11 +139,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WritePalasoFile("x-bogus", "bogus", TestEnvironment.LdmlV0);
+				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogus", TestEnvironment.LdmlV0);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("x-bogus.ldml"));
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 			}
 		}
 
@@ -152,11 +152,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteFlexFile("x-bogus", "bogus", TestEnvironment.LdmlV0);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", TestEnvironment.LdmlV0);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("x-bogus.ldml"));
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 			}
 		}
 
@@ -165,11 +165,11 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteFlexFile("x-bogus", "bogus", TestEnvironment.LdmlV1);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", TestEnvironment.LdmlV1);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("x-bogus.ldml"));
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 			}
 		}
 
@@ -178,13 +178,13 @@ namespace Palaso.Tests.WritingSystems.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WritePalasoFile("x-bogus", "bogusPalaso", TestEnvironment.LdmlV0);
-				TestEnvironment.WriteFlexFile("x-bogus", "bogusFlex", TestEnvironment.LdmlV0);
+				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogusPalaso", TestEnvironment.LdmlV0);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogusFlex", TestEnvironment.LdmlV0);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("x-bogus.ldml"));
-				AssertThatXmlIn.String(e.MigratedLdml("x-bogus.ldml")).HasAtLeastOneMatchForXpath(
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				AssertThatXmlIn.String(e.MigratedLdml("qaa-x-bogus.ldml")).HasAtLeastOneMatchForXpath(
 					"ldml/special/palaso:abbreviation[@value='bogusFlex']",
 					e.NamespaceManager
 				);

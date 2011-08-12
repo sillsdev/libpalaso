@@ -21,7 +21,24 @@ namespace Palaso.WritingSystems
 			WritingSystemLoadProblemHandler loadProblemHandler
 		)
 		{
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler);
+			return Initialize(basePath, migrationHandler, loadProblemHandler, false);
+		}
+
+		///<summary>
+		/// Returns an instance of an ldml in folder writing system reposistory.
+		///</summary>
+		///<param name="basePath">base location of the global writing system repository</param>
+		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		///<param name="roundtripFlex70PrivateUse"></param>
+		public static LdmlInFolderWritingSystemRepository Initialize(
+			string basePath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler,
+			bool roundtripFlex70PrivateUse
+		)
+		{
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, roundtripFlex70PrivateUse);
 			migrator.Migrate();
 
 			var instance = new LdmlInFolderWritingSystemRepository(basePath);

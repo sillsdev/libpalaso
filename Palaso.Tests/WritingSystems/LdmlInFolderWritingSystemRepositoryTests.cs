@@ -111,9 +111,9 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LatestVersion_IsOne()
+		public void LatestVersion_IsTwo()
 		{
-			Assert.AreEqual(1, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+			Assert.AreEqual(2, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		[Test]
@@ -604,7 +604,10 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(
 					problems[1].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring("The LDML tag 'de-Zxxx-x-audio' is version 0.  Version 1 was expected.")
+					ContainsSubstring(String.Format(
+						"The LDML tag 'de-Zxxx-x-audio' is version 0.  Version {0} was expected.",
+						WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+					))
 				);
 				Assert.Fail("TA review please"); // Don't think that this test was correct, at least in recent times. CP 2011-08
 
@@ -627,7 +630,10 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring("The LDML tag 'de-latn-ch-1901' is version 0.  Version 1 was expected.")
+					ContainsSubstring(String.Format(
+						"The LDML tag 'de-latn-ch-1901' is version 0.  Version {0} was expected.",
+						WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+					))
 				);
 				Assert.Fail("TA review please"); // Don't think that this test was correct, at least in recent times. CP 2011-08
 			}
@@ -641,7 +647,7 @@ namespace Palaso.Tests.WritingSystems
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml,
 								  LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, true);
 				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
 				environment.Collection.Set(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
@@ -685,16 +691,30 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_DoesNotThrow()
+		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646TagWithLegacySupport_DoesNotThrow()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, true);
 
 				// Now try to load up.
 				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo("qaa"));
+			}
+		}
+
+		[Test]
+		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_Migrates()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
+				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, false);
+
+				// Now try to load up.
+				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo("qaa"));
 			}
 		}
 
@@ -705,7 +725,8 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "xh.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("xh", "", "", ""));
-				Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>());
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, false);
+				//Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>());
 			}
 		}
 
@@ -728,7 +749,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("x", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, true);
 				var ws = environment.Collection.Get("x-Zxxx-x-audio");
 				environment.Collection.SaveDefinition(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml));
@@ -965,7 +986,10 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring("The LDML tag 'en' is version 0.  Version 1 was expected.")
+					ContainsSubstring(String.Format(
+						"The LDML tag 'en' is version 0.  Version {0} was expected.",
+						WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+					))
 				);
 			}
 		}
@@ -977,7 +1001,18 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "xh.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("xh", "", "", ""));
-				Assert.Throws<ApplicationException>(() => new LdmlInFolderWritingSystemRepository(environment.TestPath));
+				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var problems = repository.LoadProblems;
+
+				Assert.That(problems.Count, Is.EqualTo(1));
+				Assert.That(
+					problems[0].Exception,
+					Is.TypeOf<ApplicationException>().With.Property("Message").
+					ContainsSubstring(String.Format(
+						"The LDML tag 'xh' is version 0.  Version {0} was expected.",
+						WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+					))
+				);
 			}
 		}
 
