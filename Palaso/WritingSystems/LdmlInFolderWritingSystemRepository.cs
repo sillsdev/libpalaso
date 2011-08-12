@@ -144,15 +144,33 @@ namespace Palaso.WritingSystems
 						}
 					}
 					if(badFileName)
-					{
-						//Sometimes Flex produces bad filenames (particularly for x-Zxxx-x-audio) so we're letting this slide
-						//throw new ApplicationException(
-						//        String.Format(
-						//            "The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.",
-						//            filePath));
+					{// Add the exception to our list of problems and continue loading
+						var problem = new WritingSystemRepositoryProblem
+						{
+							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+							Exception = new ApplicationException(
+								String.Format(
+									"The writing system file {0} seems to be named inconsistently. It conatins the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
+									filePath, wsFromFile.Bcp47Tag)),
+							FilePath = filePath
+						};
+						_loadProblems.Add(problem);
 					}
 				}
-				Set(wsFromFile);
+				try
+				{
+					Set(wsFromFile);
+				}
+				catch(Exception e){
+					// Add the exception to our list of problems and continue loading
+					var problem = new WritingSystemRepositoryProblem
+					{
+						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+						Exception = e,
+						FilePath = filePath
+					};
+					_loadProblems.Add(problem);
+				}
 			}
 			LoadIdChangeMapFromExistingWritingSystems();
 		}
@@ -335,6 +353,7 @@ namespace Palaso.WritingSystems
 			//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
 			//helps us avoid having to deal with situations where a writing system id is changed to be
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
+			//The inconsistency is resolved on Save()
 			if (oldStoreId != ws.StoreID && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
 			{
 				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreID));
