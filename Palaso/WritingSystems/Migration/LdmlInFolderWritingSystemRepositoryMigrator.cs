@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Palaso.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -7,13 +9,21 @@ namespace Palaso.WritingSystems.Migration
 {
 	public class LdmlInFolderWritingSystemRepositoryMigrator : FolderMigrator
 	{
-		public LdmlInFolderWritingSystemRepositoryMigrator(string ldmlPath,
-														   LdmlVersion0MigrationStrategy.OnMigrationFn
-															   onMigrationCallback)
-			: this(ldmlPath, onMigrationCallback, false){}
 
-		public LdmlInFolderWritingSystemRepositoryMigrator(string ldmlPath, LdmlVersion0MigrationStrategy.OnMigrationFn onMigrationCallback, bool roundtripFlex70PrivateUse)
-			: base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
+		private readonly List<WritingSystemRepositoryProblem> _migrationProblems = new List<WritingSystemRepositoryProblem>();
+
+		public LdmlInFolderWritingSystemRepositoryMigrator(
+			string ldmlPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler onMigrationCallback
+		) : this(ldmlPath, onMigrationCallback, false)
+		{
+		}
+
+		public LdmlInFolderWritingSystemRepositoryMigrator(
+			string ldmlPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			bool roundtripFlex70PrivateUse
+		) : base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
 		{
 			SearchPattern = "*.ldml";
 
@@ -22,17 +32,32 @@ namespace Palaso.WritingSystems.Migration
 			AddVersionStrategy(new WritingSystemLdmlVersionGetter(roundtripFlex70PrivateUse));
 			AddVersionStrategy(new DefaultVersion(0, 0));
 
-			var auditLog =
-				new WritingSystemChangeLog(
-					new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml")));
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog, 0, roundtripFlex70PrivateUse));
+			var auditLog = new WritingSystemChangeLog(
+				new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml"))
+			);
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, roundtripFlex70PrivateUse));
 			// Version 0 strategy has been enhanced to also migrate version 1.
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(onMigrationCallback, auditLog, 1, roundtripFlex70PrivateUse));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, roundtripFlex70PrivateUse));
 		}
 
-		public void Migrate()
+		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems
 		{
-			base.Migrate();
+			get { return _migrationProblems; }
 		}
+
+		///<summary>
+		/// Converts FolderMigrationProblem probelms to WritingSystemRepositoryProblem stored in MigrationProblems property.
+		///</summary>
+		protected override void OnFolderMigrationProblem(IEnumerable<FolderMigratorProblem> problems)
+		{
+			_migrationProblems.AddRange(problems.Select(
+				problem => new WritingSystemRepositoryProblem
+					{
+						Exception = problem.Exception, FilePath = problem.FilePath
+					}
+			));
+		}
+
+
 	}
 }

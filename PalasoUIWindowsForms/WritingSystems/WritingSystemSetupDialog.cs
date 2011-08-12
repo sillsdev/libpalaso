@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -9,12 +10,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	{
 		private readonly WritingSystemSetupModel _model;
 
-		public WritingSystemSetupDialog()
-		{
-			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository());
-			_writingSystemSetupView.BindToModel(_model);
-		}
+		//public WritingSystemSetupDialog()
+		//{
+		//    InitializeComponent();
+		//    _model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository());
+		//    _writingSystemSetupView.BindToModel(_model);
+		//}
 
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your
@@ -27,7 +28,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
    /* turned out to be hard... so many events are bound to the model, when the dlg
 	* closes we'd need to carefully unsubscribe them alll.
-	* Better to try again with a weak event model*/
+	* Better to try again with a weak event model (JH)
+	* Or perhaps better yet the passive view model
+	*/
 		/// <summary>
 		/// Use this one to keep, say, a picker up to date with any change you make
 		/// while using the dialog.
@@ -40,16 +43,30 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		public WritingSystemSetupDialog(string writingSystemRepositoryPath)
+		// This method really gets in the way of good migration.
+		[Obsolete("Initialize the writing system repository, then call the constructor that takes an IWritingSystemRepository")]
+		public WritingSystemSetupDialog(
+			string writingSystemRepositoryPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler
+		) : this(LdmlInFolderWritingSystemRepository.Initialize(
+			writingSystemRepositoryPath,
+			migrationHandler,
+			loadProblemHandler
+		))
+		{
+		}
+
+		public WritingSystemSetupDialog(IWritingSystemRepository repository)
 		{
 			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository(writingSystemRepositoryPath));
+			_model = new WritingSystemSetupModel(repository);
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		public DialogResult  ShowDialog(string initiallySelectWritingSystemRfc4646)
+		public DialogResult ShowDialog(string initiallySelectWritingSystemBcp47)
 		{
-			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemRfc4646);
+			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemBcp47);
 			return ShowDialog();
 		}
 

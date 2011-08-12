@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +25,31 @@ namespace Palaso.Migration
 			}
 		}
 
+		///<summary>
+		/// A handler delegate for notification of issues encountered during migration.
+		///</summary>
+		///<param name="problems"></param>
+		public delegate void FolderMigratorProblemHandler(IEnumerable<FolderMigratorProblem> problems);
+
+		private readonly FolderMigratorProblemHandler _problemHandler;
+
+		///<summary>
+		/// FolderMigrationProblem contains information about exceptions thrown during execution
+		/// of a migration strategy.
+		///</summary>
+		public class FolderMigratorProblem
+		{
+			///<summary>
+			/// The exceptions that was thrown by the migration stragegy.
+			///</summary>
+			public Exception Exception { get; set; }
+
+			///<summary>
+			/// The file being migrated when the problem occurred.
+			///</summary>
+			public string FilePath { get; set; }
+		}
+
 		private readonly List<FileVersionInfo> _versionCache = new List<FileVersionInfo>();
 		private string _versionCachePath;
 
@@ -32,11 +57,31 @@ namespace Palaso.Migration
 		/// Constructor
 		///</summary>
 		///<param name="versionToMigrateTo">Target version to migrate to</param>
-		///<param name="ldmlPath">Folder path containing files to migrate</param>
-		public FolderMigrator(int versionToMigrateTo, string ldmlPath) :
+		///<param name="sourcePath">FolderMigratorProblemHandler callback to pass exceptions thrown during migration</param>
+		public FolderMigrator(int versionToMigrateTo, string sourcePath) :
 			base(versionToMigrateTo)
 		{
-			SourcePath = ldmlPath;
+			SourcePath = sourcePath;
+			_problemHandler = OnFolderMigrationProblem;
+		}
+
+		///<summary>
+		/// Constructor with FolderMigratorProblemHandler which is passed a collection of exceptions thrown during migration.
+		///</summary>
+		///<param name="versionToMigrateTo">Target version to migrate to</param>
+		///<param name="sourcePath">Folder path containing files to migrate</param>
+		///<param name="problemHandler">Folder path containing files to migrate</param>
+		public FolderMigrator(int versionToMigrateTo, string sourcePath, FolderMigratorProblemHandler problemHandler) :
+			this(versionToMigrateTo, sourcePath)
+		{
+			_problemHandler = problemHandler;
+		}
+
+		///<summary>
+		/// Default FolderMigrationProblemHandler, does nothing.
+		///</summary>
+		protected virtual void OnFolderMigrationProblem(IEnumerable<FolderMigratorProblem> problems)
+		{
 		}
 
 		///<summary>
@@ -45,6 +90,8 @@ namespace Palaso.Migration
 		///<exception cref="InvalidOperationException"></exception>
 		public void Migrate()
 		{
+			var problems = new List<FolderMigratorProblem>();
+
 			// Clean up root backup path
 			if (Directory.Exists(MigrationPath))
 			{
@@ -106,7 +153,14 @@ namespace Palaso.Migration
 					}
 				}
 
-				strategy.PostMigrate(currentPath, destinationPath);
+				try
+				{
+					strategy.PostMigrate(currentPath, destinationPath);
+				}
+				catch (Exception e)
+				{
+					problems.Add(new FolderMigratorProblem { Exception = e, FilePath = currentPath });
+				}
 
 				// Setup for the next iteration
 				currentPath = destinationPath;
@@ -122,6 +176,12 @@ namespace Palaso.Migration
 			// Copy the migration results into SourcePath
 			CopyDirectory(currentPath, SourcePath, "");
 			DeleteFolderAvoidingDeletionBug(MigrationPath);
+
+			// Call the problem handler if we encountered problems during migration.
+			if (problems.Count > 0)
+			{
+				_problemHandler(problems);
+			}
 		}
 
 		internal IEnumerable<string> GetFilesOfVersion(int currentVersion, string path)

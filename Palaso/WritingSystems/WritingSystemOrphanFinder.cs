@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Palaso.WritingSystems.Migration;
 
 namespace Palaso.WritingSystems
@@ -21,14 +20,25 @@ namespace Palaso.WritingSystems
 	/// </summary>
 	public class WritingSystemOrphanFinder
 	{
+		///<summary>
+		/// A delegate that implements the actual replacement of writing system tags in the file.
+		/// The method is given the old writing system id 'oldId' and the new writing system id 'newId'.
+		///</summary>
+		///<param name="newId"></param>
+		///<param name="oldId"></param>
 		public delegate void IdReplacementStrategy(string newId, string oldId);
 
+		///<summary>
+		/// Constructor.
+		///</summary>
+		///<param name="idsInFile"></param>
+		///<param name="replaceIdsInFile"></param>
+		///<param name="writingSystemRepository"></param>
 		public static void FindOrphans(
 			IEnumerable<string> idsInFile,
 			IdReplacementStrategy replaceIdsInFile,
-			LdmlInFolderWritingSystemRepository writingSystemRepository
-			)
-		{
+			IWritingSystemRepository writingSystemRepository
+		) {
 			var originalIds = new List<string>(idsInFile);
 			var updatedIds = new List<string>(idsInFile);
 			foreach (var wsId in originalIds)
