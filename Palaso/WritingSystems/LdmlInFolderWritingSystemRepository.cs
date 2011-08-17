@@ -63,7 +63,7 @@ namespace Palaso.WritingSystems
 		/// use a special path for the repository
 		/// </summary>
 		/// <param name="basePath"></param>
-		protected LdmlInFolderWritingSystemRepository(string basePath)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath)
 		{
 			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
