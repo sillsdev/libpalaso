@@ -184,7 +184,7 @@ namespace Palaso.Media
 
 		/// <summary>
 		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
-		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// is responsible for verifying with the user and deleting the file before calling this.
 		/// </summary>
 		/// <param name="inputPath"></param>
 		/// <param name="outputPath"></param>
@@ -193,23 +193,72 @@ namespace Palaso.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult ExtractBestQualityWavAudio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
+			return ExtractAudio(inputPath, outputPath, "copy", 0, channels, progress);
+		}
+
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is responsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="bitsPerSample">e.g. 8, 16, 24, 32</param>
+		/// <param name="sampleRate">e.g. 22050, 44100, 4800</param>
+		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ExtractPcmAudio(string inputPath, string outputPath,
+			int bitsPerSample, int sampleRate, int channels, IProgress progress)
+		{
+			var audioCodec = "copy";
+
+			switch (bitsPerSample)
+			{
+				case 8: audioCodec = "pcm_s8"; break;
+				case 16: audioCodec = "pcm_s16le"; break;
+				case 24: audioCodec = "pcm_s24le"; break;
+				case 32: audioCodec = "pcm_s32le"; break;
+			}
+
+			return ExtractAudio(inputPath, outputPath, audioCodec, sampleRate, channels, progress);
+		}
+
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is responsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="audioCodec">e.g. copy, pcm_s16le, pcm_s32le, etc.</param>
+		/// <param name="sampleRate">e.g. 22050, 44100, 4800. Use 0 to use ffmpeg's default</param>
+		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		private static ExecutionResult ExtractAudio(string inputPath, string outputPath,
+			string audioCodec, int sampleRate, int channels, IProgress progress)
+		{
 			if (string.IsNullOrEmpty(LocateFFmpeg()))
 			{
 				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
 			}
 
+			var sampleRateArg = "";
+			if (sampleRate > 0)
+				sampleRateArg = string.Format("-ar {0}", sampleRate);
+
 			//TODO: this will output whatever mp3 or wav or whatever is in the video... might not be wav at all!
 			var channelsArg = "";
-			if(channels>0)
-				channelsArg=string.Format(" -ac {0}", channels);
+			if (channels > 0)
+				channelsArg = string.Format(" -ac {0}", channels);
 
-			var arguments = string.Format("-i \"{0}\" -vn -acodec copy  {1} \"{2}\"", inputPath, channelsArg, outputPath);
+			var arguments = string.Format("-i \"{0}\" -vn -acodec {1}  {2} {3} \"{4}\"",
+				inputPath, audioCodec, sampleRateArg, channelsArg, outputPath);
+
 			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
 														arguments,
 														Environment.CurrentDirectory,
 														60 * 10, //10 minutes
-														progress
-				);
+														progress);
 
 			progress.WriteVerbose(result.StandardOutput);
 
