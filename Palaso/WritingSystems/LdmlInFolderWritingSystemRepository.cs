@@ -48,7 +48,10 @@ namespace Palaso.WritingSystems
 			var loadProblems = new List<WritingSystemRepositoryProblem>();
 			loadProblems.AddRange(migrator.MigrationProblems);
 			loadProblems.AddRange(instance.LoadProblems);
-			loadProblemHandler(loadProblems);
+			if (loadProblems.Count > 0)
+			{
+				loadProblemHandler(loadProblems);
+			}
 
 			return instance;
 		}

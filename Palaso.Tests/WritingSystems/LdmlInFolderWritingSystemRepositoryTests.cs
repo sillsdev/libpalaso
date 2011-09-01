@@ -72,12 +72,16 @@ namespace Palaso.Tests.WritingSystems
 				Collection = LdmlInFolderWritingSystemRepository.Initialize(TestPath, DummyWritingSystemHandler.onMigration, onLoadProblem);
 			}
 
-			public IEnumerable<WritingSystemRepositoryProblem> LoadProblems { get; private set; }
-
 			private void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
 			{
-				LoadProblems = problems;
+				throw new ApplicationException("Unexpected Writing System load problem in test.");
+				// Currently there are no tests that expect load problems. If there are then we can
+				// make the TestEnvironment suppress the exception above and make the problems available
+				// to the test.
+				//LoadProblems = problems;
 			}
+
+			//public IEnumerable<WritingSystemRepositoryProblem> LoadProblems { get; private set; }
 
 			public void Dispose()
 			{
@@ -132,8 +136,10 @@ namespace Palaso.Tests.WritingSystems
 			{
 				environment.WritingSystem.Language = "one";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				var ws2 = new WritingSystemDefinition();
-				ws2.Language = "two";
+				var ws2 = new WritingSystemDefinition
+					{
+						Language = "two"
+					};
 				environment.Collection.SaveDefinition(ws2);
 				var newStore = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
 
