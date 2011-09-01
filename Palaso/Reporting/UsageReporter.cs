@@ -547,7 +547,7 @@ namespace Palaso.Reporting
 					return;
 				}
 				Debug.WriteLine(string.Format("SendEvent(cat={0},action={1},label={2},value={3}",category,action,optionalLabel,optionalInteger));
-				s_singleton._analytics.SendEvent(programArea, "runtime", action, optionalLabel, optionalInteger);
+				s_singleton._analytics.SendEvent(programArea, category, action, optionalLabel, optionalInteger);
 			}
 			catch (Exception e)
 			{
