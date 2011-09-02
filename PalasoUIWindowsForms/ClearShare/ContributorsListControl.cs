@@ -206,6 +206,9 @@ namespace Palaso.ClearShare
 			if (ValidatingContributor != null && _grid.CurrentCellAddress.Y >= 0 &&
 				_grid.CurrentCellAddress.Y < _grid.RowCount - 1)
 			{
+				if (_grid.CurrentCellAddress.Y == _model.Contributions.Count())
+					return;
+
 				var contribution = _model.Contributions.ElementAt(_grid.CurrentCellAddress.Y);
 				var args = new CancelEventArgs(false);
 				ValidatingContributor(this, contribution, args);
