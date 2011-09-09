@@ -296,6 +296,15 @@ namespace Palaso.Tests.WritingSystems.Migration
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "Qaaa", "QM", "", "fr-Qaaa-QM-x-Mysc-YY");
 		}
+
+		[Test]
+		public void RegionCodesThatMatchLanguageCodesNotMovedToPrivateUse()
+		{
+			var cleaner = new Rfc5646TagCleaner("rwr-IN");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "rwr", "", "IN", "", "rwr-IN");
+		}
+
 		void VerifyRfcCleaner(Rfc5646TagCleaner cleaner, string language, string script, string region, string variant, string completeTag)
 		{
 			Assert.That(cleaner.Language, Is.EqualTo(language));

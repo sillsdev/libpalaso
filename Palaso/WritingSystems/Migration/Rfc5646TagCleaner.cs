@@ -236,10 +236,11 @@ namespace Palaso.WritingSystems.Migration
 					{
 						foreach (var code in StandardTags.ValidIso639LanguageCodes)
 						{
-							if (String.IsNullOrEmpty(migrateFrom) && code.ISO3Code.Equals(part))
+							if (code.ISO3Code.Equals(part))
 							{
 								migrateFrom = part;
 								migrateTo = code.Code;
+								break;
 							}
 						}
 					}
@@ -438,17 +439,31 @@ namespace Palaso.WritingSystems.Migration
 			}
 		}
 
+		/// <summary>
+		/// This method should move all subtag parts in the 'from' subtag which match the moveAllMatching predicate into the 'to' subtag.
+		/// Because some parts of a subtag may match in more than one language tag area care must be taken to prevent emptying all parts of
+		/// one subtag into another so the first part that matches the keepFirstMatching predicate will not be moved.
+		/// i.e. if the languageTag is 'from' and the regionTag is 'to' and keepFirstMatching matches language codes and moveAllMatching
+		/// matches region codes, all region looking parts would be placed in 'to' with the possible exception of the first language looking
+		/// part.
+		/// </summary>
+		/// <param name="from">SubTag to move parts from</param>
+		/// <param name="to">SubTag to move matching parts to</param>
+		/// <param name="moveAllMatching">predicate matching parts to move</param>
+		/// <param name="keepFirstMatching">predicate matching part to keep</param>
 		private static void MoveTagsMatching(SubTag from, SubTag to, Predicate<string> moveAllMatching, Predicate<string> keepFirstMatching)
 		{
-			var list = new List<string>(from.AllParts.Where(part => moveAllMatching(part)));
 			bool haveFirstMatching = false;
-			foreach (var part in list)
+			var allParts = new List<string>(from.AllParts);
+			foreach (var part in allParts)
 			{
 				if (!haveFirstMatching && keepFirstMatching(part))
 				{
 					haveFirstMatching = true;
 					continue;
 				}
+				if (!moveAllMatching(part))
+					continue;
 				to.AddToSubtag(part);
 				from.RemoveParts(part);
 			}
