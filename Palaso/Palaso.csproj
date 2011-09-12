@@ -327,7 +327,7 @@
 	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\LdmlInXmlWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparer.cs" />
-	<Compile Include="WritingSystems\LdmlSharedWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigrator.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleaner.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
 	<Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
@@ -343,11 +343,13 @@
 	<Compile Include="WritingSystems\RFC5646Tag.cs" />
 	<Compile Include="WritingSystems\StandardTags.cs" />
 	<Compile Include="WritingSystems\StringContainsExtension.cs" />
+	<Compile Include="WritingSystems\GlobalWritingSystemRepository.cs" />
 	<Compile Include="WritingSystems\WritingSystemLogEvent.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeLog.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeLogDataMapper.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />
+	<Compile Include="WritingSystems\WritingSystemRepositoryProblem.cs" />
 	<Compile Include="Xml\CanonicalXmlSettings.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />

@@ -21,14 +21,22 @@ namespace Palaso.Network
 			if (verboseLog != null)
 				verboseLog.Invoke("RobustNetworkOperation.Do()");
 
-			IWebProxy proxy;
+
+			var proxy = new WebProxy();
+			action(proxy);
+
+			//!!!!!!!!!!!!!! in Sept 2011, hatton disabled proxy lookup. It was reportedly causing grief in Nigeria,
+			//asking for credentials over and over, and SIL PNG doesn't use a proxy anymore. So for now...
+
+
+/*            IWebProxy proxy;
 			try
 			{
-				proxy = WebRequest.GetSystemWebProxy();
+				proxy = WebRequest.DefaultWebProxy;//.GetSystemWebProxy();
 			}
 			catch (Exception e)
 			{
-				Logger.WriteEvent("RobustNetworkOperation:GetSystemWebProxy() gave exception: ", e.Message);
+				Logger.WriteEvent("RobustNetworkOperation:DefaultWebProxy() gave exception: ", e.Message);
 				proxy = null;
 			}
 
@@ -81,7 +89,7 @@ namespace Palaso.Network
 					action(proxy); // if this one throws, just let it go to the caller, we did our best
 				}
 			}
-
+			*/
 			return proxy;
 		}
 

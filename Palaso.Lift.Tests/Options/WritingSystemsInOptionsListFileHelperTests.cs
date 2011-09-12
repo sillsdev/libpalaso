@@ -1,9 +1,12 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Palaso.Lift.Options;
 using Palaso.TestUtilities;
+using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.Lift.Tests.Options
 {
@@ -26,8 +29,6 @@ namespace Palaso.Lift.Tests.Options
 				var pathtoOptionsListFile1 = Path.Combine(_folder.Path, "test1.xml");
 				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
-
-				Helper = new WritingSystemsInOptionsListFileHelper(WritingSystemsPath, _optionListFile.Path);
 			}
 
 			#region LongFileContent
@@ -51,20 +52,56 @@ namespace Palaso.Lift.Tests.Options
 		</option>
 	</options>
 </optionsList>".Replace("'", "\"");
+
+			private WritingSystemsInOptionsListFileHelper _helper;
+
 			#endregion
+
+			public void CreateWritingSystemRepository()
+			{
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, false);
+			}
+
+			public void CreateLegacyFriendlyWritingSystemRepository()
+			{
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, true);
+			}
+
+			private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+			{
+			}
+
+			private static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+			{
+			}
 
 			private string ProjectPath
 			{
 				get { return _folder.Path; }
 			}
 
-			public WritingSystemsInOptionsListFileHelper Helper { get; set; }
+			public WritingSystemsInOptionsListFileHelper Helper {
+				get
+				{
+					if (_helper == null)
+					{
+						if (WritingSystemRepository == null)
+						{
+							CreateWritingSystemRepository();
+						}
+						_helper = new WritingSystemsInOptionsListFileHelper(WritingSystemRepository, _optionListFile.Path);
+					}
+					return _helper;
+				}
+			}
 
 			public void Dispose()
 			{
 				_optionListFile.Dispose();
 				_folder.Dispose();
 			}
+
+			private IWritingSystemRepository WritingSystemRepository { get; set; }
 
 			public string WritingSystemsPath
 			{
@@ -156,19 +193,20 @@ namespace Palaso.Lift.Tests.Options
 		//This test makes sure that existing Flex private use tags are not changed
 		public void CreateNonExistentWritingSystemsFoundInOptionsList_OptionsListFileContainsEntirelyPrivateUseRfcTagThatExistsInRepo_RfcTagIsNotMigrated()
 		{
-			using (var e = new TestEnvironment("x-en-Zxxx-x-audio"))
+			using (var e = new TestEnvironment("x-blah"))
 			{
-				e.WriteContentToLdmlFileInWritingSystemFolderWithName("x-en-Zxxx-x-audio", LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
+				e.WriteContentToLdmlFileInWritingSystemFolderWithName("x-blah", LdmlContentForTests.Version0("x-blah", "", "", ""));
+				e.CreateLegacyFriendlyWritingSystemRepository();
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
-				Assert.That(File.Exists(e.GetLdmlFileforWs("x-en-Zxxx-x-audio")), Is.True);
-				Assert.That(File.Exists(e.GetLdmlFileforWs("en-Zxxx-x-audio")), Is.False);
-				AssertThatXmlIn.File(e.PathToOptionsListFile).HasAtLeastOneMatchForXpath("/optionsList/options/option/name/form[@lang='x-en-Zxxx-x-audio']");
-				AssertThatXmlIn.File(e.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='en-Zxxx-x-audio']");
+				Assert.That(File.Exists(e.GetLdmlFileforWs("x-blah")), Is.True);
+				Assert.That(File.Exists(e.GetLdmlFileforWs("qaa-x-blah")), Is.False);
+				AssertThatXmlIn.File(e.PathToOptionsListFile).HasAtLeastOneMatchForXpath("/optionsList/options/option/name/form[@lang='x-blah']");
+				AssertThatXmlIn.File(e.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='qaa-x-blah']");
 			}
 		}
 
 		[Test]
-		public void CreateNonExistentWritingSystemsFoundInOptionsList_OptionsListFileContainsEntirelyPrivateUseRfcTagThatDoesNotExistInRepo_RfcTagIsNotMigrated()
+		public void CreateNonExistentWritingSystemsFoundInOptionsList_OptionsListFileContainsEntirelyPrivateUseRfcTagThatDoesNotExistInRepo_RfcTagIsMigrated()
 		{
 			using (var e = new TestEnvironment("x-blah"))
 			{
@@ -209,7 +247,6 @@ namespace Palaso.Lift.Tests.Options
 			using (var environment = new TestEnvironment("wee-dupl1", "x-wee-dupl1"))
 			{
 				File.WriteAllText(environment.PathToOptionsListFile, "text");
-				environment.Helper = new WritingSystemsInOptionsListFileHelper(environment.WritingSystemsPath, environment.PathToOptionsListFile);
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
 				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
@@ -223,7 +260,6 @@ namespace Palaso.Lift.Tests.Options
 			using (var environment = new TestEnvironment("wee-dupl1", "x-wee-dupl1"))
 			{
 				File.WriteAllText(environment.PathToOptionsListFile, "<?xml version='1.0' encoding='utf-8'?><form>yo</form>".Replace("'", "\""));
-				environment.Helper = new WritingSystemsInOptionsListFileHelper(environment.WritingSystemsPath, environment.PathToOptionsListFile);
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
 				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));

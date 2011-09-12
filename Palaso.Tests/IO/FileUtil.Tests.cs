@@ -103,5 +103,55 @@ namespace Palaso.Tests.IO
 				Assert.That(FileUtils.GrepFile(e.tempFile.Path, "1234567"), Is.True);
 			}
 		}
+
+		[Test]
+		public void CheckValidPathname_RejectsNullOrEmpty_Pathname()
+		{
+			Assert.IsFalse(FileUtils.CheckValidPathname(null, "xyz"));
+			Assert.IsFalse(FileUtils.CheckValidPathname("", "xyz"));
+		}
+
+		[Test]
+		public void CheckValidPathname_RejectsNonExtant_Pathname()
+		{
+			Assert.IsFalse(FileUtils.CheckValidPathname("Bogus.txt", "xyz"));
+		}
+
+		[Test]
+		public void CheckValidPathname_RejectsMismatchedExtension()
+		{
+			using (var e = new TestEnvironment())
+			{
+				Assert.IsFalse(FileUtils.CheckValidPathname(e.tempFile.Path, "xyz"));
+				Assert.IsFalse(FileUtils.CheckValidPathname(e.tempFile.Path, null));
+				Assert.IsFalse(FileUtils.CheckValidPathname(e.tempFile.Path, ""));
+			}
+		}
+
+		[Test]
+		public void CheckValidPathname_AcceptsMatchedExtensions()
+		{
+			using (var e = new TestEnvironment())
+			{
+				Assert.True(FileUtils.CheckValidPathname(e.tempFile.Path, Path.GetExtension(e.tempFile.Path))); // With starting '.'
+				Assert.True(FileUtils.CheckValidPathname(e.tempFile.Path, Path.GetExtension(e.tempFile.Path).Substring(1))); // Sans starting '.'
+			}
+		}
+
+		[Test]
+		public void CheckValidPathname_AcceptsMissingExtensions()
+		{
+			var tempPathname = Path.Combine(Path.GetTempPath(), "extensionlessfile");
+			try
+			{
+				File.WriteAllText(tempPathname, "stuff");
+				Assert.True(FileUtils.CheckValidPathname(tempPathname, null));
+			}
+			finally
+			{
+				if (File.Exists(tempPathname))
+					File.Delete(tempPathname);
+			}
+		}
 	}
 }

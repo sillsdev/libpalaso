@@ -121,15 +121,31 @@ namespace Palaso.Reporting
 			bw.DoWork += (o, args) =>
 				RobustNetworkOperation.Do(proxy =>
 											  {
-												  Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",requestUriString);
-												  var request = WebRequest.Create(requestUriString);
-												  request.Proxy = proxy;
+												  try
+												  {
+													  Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
+																			 requestUriString);
 
-												   //warning, this uses the ui thread:
-												  //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
-													//since we're in the background anyway...
-												  //review but on a single core machine, might this still hang us up, or does it sleep, internally?
-												  request.GetResponse();
+													  var request = WebRequest.Create(requestUriString);
+													  request.Proxy = proxy;
+
+													  //warning, this uses the ui thread:
+													  //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
+													  //since we're in the background anyway...
+													  //review but on a single core machine, might this still hang us up, or does it sleep, internally?
+													  request.GetResponse();
+												  }
+												  catch (WebException e)
+												  {
+													  if (e.Status == WebExceptionStatus.Timeout)
+													  {
+														  // ah well
+													  }
+													  else
+													  {
+														  throw e;
+													  }
+												  }
 											  }, null);
 			 bw.RunWorkerAsync();
 		}

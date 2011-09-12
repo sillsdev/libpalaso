@@ -60,6 +60,31 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
+		/// Make sure the given <paramref name="pathToFile"/> file is 'valid'.
+		///
+		/// Valid means that
+		///		1. <paramref name="pathToFile"/> must not be null or an empty string
+		///		2. <paramref name="pathToFile"/> must exist, and
+		///		3. The extension for <paramref name="pathToFile"/> must equal <paramref name="expectedExtension"/>
+		///			(Or both must be null)
+		/// </summary>
+		public static bool CheckValidPathname(string pathToFile, string expectedExtension)
+		{
+			var extension = ((expectedExtension == null) || (expectedExtension.Trim() == String.Empty))
+								? null
+								: expectedExtension.StartsWith(".") ? expectedExtension.Substring(1) : expectedExtension;
+
+			if (string.IsNullOrEmpty(pathToFile) || !File.Exists(pathToFile))
+				return false;
+
+			var actualExtension = Path.GetExtension(pathToFile);
+			if (actualExtension == String.Empty)
+				actualExtension = null;
+			return (actualExtension == null && extension == null) || (actualExtension != null && extension != null &&
+				   actualExtension.ToLowerInvariant() == "." + extension.ToLowerInvariant());
+		}
+
+		/// <summary>
 		/// If there is a problem doing the replace, a dialog is shown which tells the user
 		/// what happened, and lets them try to fix it.  It also lets them "Give up", in
 		/// which case this returns False.

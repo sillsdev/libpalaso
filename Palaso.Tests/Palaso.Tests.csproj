@@ -141,6 +141,7 @@
 	<Compile Include="WritingSystems\Collation\SortingTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
+	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
@@ -149,6 +150,7 @@
 	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
 	<Compile Include="WritingSystems\StandardTagsTests.cs" />
 	<Compile Include="WritingSystems\SubTagTests.cs" />
+	<Compile Include="WritingSystems\GlobalWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeLogDataMapperTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeLogTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemChangeTests.cs" />
