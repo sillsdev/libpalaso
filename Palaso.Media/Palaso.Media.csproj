@@ -97,6 +97,7 @@
 	<Compile Include="Naudio\IAudioPlayer.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
 	<Compile Include="MediaInfo.cs" />
+	<Compile Include="Naudio\RecordingDevice.cs" />
 	<Compile Include="Naudio\TrimWaveStream.cs" />
 	<Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
 	  <AutoGen>True</AutoGen>
