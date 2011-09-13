@@ -75,6 +75,9 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\net2.0\irrKlang.NET2.0.dll</HintPath>
 	</Reference>
+	<Reference Include="NAudio">
+	  <HintPath>..\lib\net2.0\NAudio.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -88,9 +91,35 @@
 	<Compile Include="AudioFactory.cs" />
 	<Compile Include="AudioIrrKlangSession.cs" />
 	<Compile Include="AudioNullSession.cs" />
+	<Compile Include="Naudio\AudioPlayer.cs" />
+	<Compile Include="Naudio\AudioRecorder.cs" />
 	<Compile Include="FFmpegRunner.cs" />
+	<Compile Include="Naudio\IAudioPlayer.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
 	<Compile Include="MediaInfo.cs" />
+	<Compile Include="Naudio\TrimWaveStream.cs" />
+	<Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>AudioDeviceIcons.resx</DependentUpon>
+	</Compile>
+	<Compile Include="Naudio\UI\BitmapButton.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Naudio\UI\PeakMeterCtrl.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Naudio\UI\PeakMeterCtrl.designer.cs">
+	  <DependentUpon>PeakMeterCtrl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Naudio\UI\RecordingDeviceButton.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="Naudio\UI\RecordingDeviceButton.designer.cs">
+	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Naudio\RecordingState.cs" />
+	<Compile Include="Naudio\SampleAggregator.cs" />
 	<Compile Include="ShortSoundFieldControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -114,6 +143,16 @@
 	<None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Naudio\UI\BitmapButton.resx">
+	  <DependentUpon>BitmapButton.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Naudio\UI\RecordingDeviceButton.resx">
+	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="ShortSoundFieldControl.resx">
 	  <DependentUpon>ShortSoundFieldControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -168,6 +207,30 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="HeadSet.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Microphone.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="NOTEBOOK.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Recorder.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\HeadSet.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\Microphone.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\NOTEBOOK.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\Recorder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
