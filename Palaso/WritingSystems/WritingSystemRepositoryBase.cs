@@ -28,10 +28,11 @@ namespace Palaso.WritingSystems
 		public event WritingSystemDeleted WritingSystemDeleted;
 
 		/// <summary>
-		/// Use the default repository
+		/// Constructor, set the CompatibilityMode
 		/// </summary>
-		public WritingSystemRepositoryBase()
+		protected WritingSystemRepositoryBase(WritingSystemCompatibility compatibilityMode)
 		{
+			CompatibilityMode = compatibilityMode;
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
@@ -291,6 +292,9 @@ namespace Palaso.WritingSystems
 		{
 			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
 		}
+
+		public WritingSystemCompatibility CompatibilityMode { get; private set; }
+
 	}
 
 	public class WritingSystemIdChangedEventArgs : EventArgs

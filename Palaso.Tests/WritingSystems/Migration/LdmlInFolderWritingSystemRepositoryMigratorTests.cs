@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
+using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -1244,7 +1245,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				string filePath = environment.FilePath("test.ldml");
 				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
 				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, true);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, WritingSystemCompatibility.Flex7V0Compatible);
 				migrator.Migrate();
 				AssertThatLdmlMatches("x-en", "Zxxx", "US", "1901-x-audio", filePath);
 				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
@@ -1259,7 +1260,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 				string filePath = environment.FilePath("test.ldml");
 				var originalFilecontent = LdmlContentForTests.Version0("x", "Zxxx", "US", "1901-x-audio");
 				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, true);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, WritingSystemCompatibility.Flex7V0Compatible);
 				migrator.Migrate();
 				AssertThatLdmlMatches("x", "Zxxx", "US", "1901-x-audio", filePath);
 				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
@@ -1273,7 +1274,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 			{
 				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
 				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, false);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, WritingSystemCompatibility.Strict);
 				migrator.Migrate();
 				AssertThatLdmlMatches("qaa", "Zxxx", "US", "1901-x-en-audio", environment.FilePath("qaa-Zxxx-US-1901-x-en-audio.ldml"));
 			}
@@ -1286,7 +1287,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 			{
 				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
 				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, false);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, WritingSystemCompatibility.Strict);
 				migrator.Migrate();
 				AssertThatLdmlMatches("qaa", "Zxxx", "US", "1901-x-en-audio", environment.FilePath("qaa-Zxxx-US-1901-x-en-audio.ldml"));
 			}

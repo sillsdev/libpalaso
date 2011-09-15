@@ -7,9 +7,25 @@ namespace Palaso.WritingSystems
 	public delegate void WritingSystemDeleted(object sender, WritingSystemDeletedEventArgs e);
 	public delegate void WritingSystemLoadProblemHandler(IEnumerable<WritingSystemRepositoryProblem> problems);
 
+	///<summary>
+	/// Specifies any comaptibiltiy modes that can be imposed on a WritingSystemRepository
+	///</summary>
+	public enum WritingSystemCompatibility
+	{
+		///<summary>
+		/// Strict adherence to the current LDML standard (with extensions)
+		///</summary>
+		Strict,
+		///<summary>
+		/// Permits backward compatibility with Flex 7.0.x and 7.1.x V0 LDML
+		/// notably custom language tags having all elements in private use.
+		/// e.g. x-abc-Zxxx-x-audio
+		///</summary>
+		Flex7V0Compatible
+	};
+
 	public interface IWritingSystemRepository
 	{
-
 		/// <summary>
 		/// Notifies a consuming class of a changed writing system id on Set()
 		/// </summary>
@@ -136,12 +152,22 @@ namespace Palaso.WritingSystems
 		// TODO: Maybe this should be IEnumerable<string> .... which returns the identifiers.
 		IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs);
 
-
 		/// <summary>
 		/// Event Handler that updates the store when a writing system id has changed
 		/// </summary>
 		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId);
 
+		///<summary>
+		/// Returns a list of writing system tags that apply only to text based writing systems.
+		/// i.e. audio writing systems (and all non written writing systems) are excluded.
+		///</summary>
+		///<param name="idsToFilter"></param>
+		///<returns></returns>
 		IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter);
+
+		///<summary>
+		/// Gets / Sets the compatibilitiy mode imposed on this repository.
+		///</summary>
+		WritingSystemCompatibility CompatibilityMode { get; }
 	}
 }

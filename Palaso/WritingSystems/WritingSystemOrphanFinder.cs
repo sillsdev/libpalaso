@@ -48,7 +48,7 @@ namespace Palaso.WritingSystems
 				{
 					continue;
 				}
-				string newId;
+				string newId = wsId;
 				if (writingSystemRepository.WritingSystemIdHasChanged(wsId))
 				{
 					newId = writingSystemRepository.WritingSystemIdHasChangedTo(wsId);
@@ -56,10 +56,17 @@ namespace Palaso.WritingSystems
 				else
 				{
 					// It's an orphan
-					// Clean it
-					var rfcTagCleaner = new Rfc5646TagCleaner(wsId);
-					rfcTagCleaner.Clean();
-					newId = rfcTagCleaner.GetCompleteTag();
+					// Check for the writing system repository compatibility mode
+					if (writingSystemRepository.CompatibilityMode == WritingSystemCompatibility.Flex7V0Compatible)
+					{
+						if (!wsId.StartsWith("x-"))
+						{
+							// Clean it
+							var rfcTagCleaner = new Rfc5646TagCleaner(wsId);
+							rfcTagCleaner.Clean();
+							newId = rfcTagCleaner.GetCompleteTag();
+						}
+					}
 				}
 				var conformantWritingSystem = WritingSystemDefinition.Parse(newId);
 				// If it changed, then change

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml;
 using Palaso.Migration;
 
 namespace Palaso.WritingSystems.Migration
@@ -18,14 +16,14 @@ namespace Palaso.WritingSystems.Migration
 	{
 		readonly List<IFileVersion> _versionGetters = new List<IFileVersion>();
 
-		public WritingSystemLdmlVersionGetter():this(false){}
+		public WritingSystemLdmlVersionGetter():this(WritingSystemCompatibility.Strict){}
 
-		public WritingSystemLdmlVersionGetter(bool roundtripFlex70PrivateUse)
+		public WritingSystemLdmlVersionGetter(WritingSystemCompatibility compatibilityMode)
 		{
 			var versionNodeVersion = new XPathVersion(1, "/ldml/special/palaso:version/@value");
 			versionNodeVersion.NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 
-			if(roundtripFlex70PrivateUse){
+			if(compatibilityMode == WritingSystemCompatibility.Flex7V0Compatible){
 				var flexPrivateUseVersionGetter = new XPathVersion(1, "/ldml/identity/language/@type");
 				flexPrivateUseVersionGetter.VersionParser = str => { return (str.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || str.Equals("x")) ? 2 : -1; };
 				_versionGetters.Add(flexPrivateUseVersionGetter);

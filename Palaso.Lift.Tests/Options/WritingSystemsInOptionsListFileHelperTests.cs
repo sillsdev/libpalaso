@@ -59,12 +59,12 @@ namespace Palaso.Lift.Tests.Options
 
 			public void CreateWritingSystemRepository()
 			{
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, false);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, WritingSystemCompatibility.Strict);
 			}
 
 			public void CreateLegacyFriendlyWritingSystemRepository()
 			{
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, true);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
 			}
 
 			private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)

@@ -261,7 +261,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path,ws);
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), false), false);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), false), WritingSystemCompatibility.Strict);
 				AssertThatLdmlMatches("", "", "", "x-en", file);
 			}
 		}
@@ -275,7 +275,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), false), false);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), false), WritingSystemCompatibility.Strict);
 				AssertThatLdmlMatches("qaa", "Zxxx", "", "x-en", file);
 			}
 		}
@@ -289,7 +289,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), true);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), WritingSystemCompatibility.Flex7V0Compatible);
 				AssertThatLdmlMatches("x-en", "", "", "", file);
 			}
 		}
@@ -303,7 +303,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), true);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), WritingSystemCompatibility.Flex7V0Compatible);
 				AssertThatLdmlMatches("xh", "", "", "", file);
 				AssertThatVersionIs(2, file);
 			}
@@ -392,7 +392,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
@@ -408,7 +408,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "", "x-en");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
@@ -424,7 +424,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
@@ -440,7 +440,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "fonipa-x-en");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
@@ -456,7 +456,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "US", "1901-x-audio");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
@@ -472,7 +472,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "US", "1901-x-en-audio");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
@@ -488,7 +488,7 @@ namespace Palaso.Tests.WritingSystems
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
 				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en-private");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)), WritingSystemCompatibility.Flex7V0Compatible);
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}

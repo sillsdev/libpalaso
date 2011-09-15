@@ -21,7 +21,7 @@ namespace Palaso.Tests.WritingSystems
 
 			public TestEnvironment(string id1, string id2)
 			{   _writingSystemsPath = new TemporaryFolder().Path;
-				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(_writingSystemsPath);
+				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(_writingSystemsPath, WritingSystemCompatibility.Flex7V0Compatible);
 				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
 			}
 

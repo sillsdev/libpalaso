@@ -29,9 +29,13 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
 		private readonly MigrationHandler _migrationHandler;
 		private readonly IAuditTrail _auditLog;
-		private readonly bool _roundTripBogusFlex70PrivateUse;
+		private readonly WritingSystemCompatibility _roundTripBogusFlex70PrivateUse;
 
-		public LdmlVersion0MigrationStrategy(MigrationHandler migrationHandler, IAuditTrail auditLog, int fromVersion, bool roundtripBogusFlex70PrivateUse) :
+		public LdmlVersion0MigrationStrategy(
+			MigrationHandler migrationHandler,
+			IAuditTrail auditLog,
+			int fromVersion,
+			WritingSystemCompatibility roundtripBogusFlex70PrivateUse) :
 			this(migrationHandler, auditLog, fromVersion)
 		{
 			_roundTripBogusFlex70PrivateUse = roundtripBogusFlex70PrivateUse;

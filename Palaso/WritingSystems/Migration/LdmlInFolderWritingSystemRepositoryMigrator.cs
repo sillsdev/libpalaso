@@ -15,29 +15,29 @@ namespace Palaso.WritingSystems.Migration
 		public LdmlInFolderWritingSystemRepositoryMigrator(
 			string ldmlPath,
 			LdmlVersion0MigrationStrategy.MigrationHandler onMigrationCallback
-		) : this(ldmlPath, onMigrationCallback, false)
+		) : this(ldmlPath, onMigrationCallback, WritingSystemCompatibility.Strict)
 		{
 		}
 
 		public LdmlInFolderWritingSystemRepositoryMigrator(
 			string ldmlPath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			bool roundtripFlex70PrivateUse
+			WritingSystemCompatibility compatibilityMode
 		) : base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
 		{
 			SearchPattern = "*.ldml";
 
 			//The first versiongetter checks for the palaso:version node.
 			//The DefaultVersion is a catchall that identifies any file as version 0 that the first version getter can't identify
-			AddVersionStrategy(new WritingSystemLdmlVersionGetter(roundtripFlex70PrivateUse));
+			AddVersionStrategy(new WritingSystemLdmlVersionGetter(compatibilityMode));
 			AddVersionStrategy(new DefaultVersion(0, 0));
 
 			var auditLog = new WritingSystemChangeLog(
 				new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml"))
 			);
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, roundtripFlex70PrivateUse));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, compatibilityMode));
 			// Version 0 strategy has been enhanced to also migrate version 1.
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, roundtripFlex70PrivateUse));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, compatibilityMode));
 		}
 
 		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems

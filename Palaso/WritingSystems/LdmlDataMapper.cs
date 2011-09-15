@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Palaso.WritingSystems;
 using Palaso.WritingSystems.Collation;
 using Palaso.Xml;
 
@@ -30,7 +28,7 @@ namespace Palaso.WritingSystems
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
 		private bool _wsIsFlexPrivateUse;
-		private bool _roundTripFlex70PrivateUse;
+		private WritingSystemCompatibility _compatibilityMode;
 
 		public LdmlDataMapper()
 		{
@@ -404,7 +402,7 @@ namespace Palaso.WritingSystems
 
 		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
-			Write(filePath, ws, oldFile, true);
+			Write(filePath, ws, oldFile, WritingSystemCompatibility.Strict);
 		}
 
 		/// <summary>
@@ -413,10 +411,10 @@ namespace Palaso.WritingSystems
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		/// <param name="roundtripFlex70PrivateUse"></param>
-		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile, bool roundtripFlex70PrivateUse)
+		/// <param name="compatibilityMode"></param>
+		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile, WritingSystemCompatibility compatibilityMode)
 		{
-			_roundTripFlex70PrivateUse = roundtripFlex70PrivateUse;
+			_compatibilityMode = compatibilityMode;
 			if (filePath == null)
 			{
 				throw new ArgumentNullException("filePath");
@@ -457,7 +455,7 @@ namespace Palaso.WritingSystems
 
 		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
 		{
-			Write(xmlWriter, ws, oldFileReader, false);
+			Write(xmlWriter, ws, oldFileReader, WritingSystemCompatibility.Strict);
 		}
 
 		/// <summary>
@@ -466,9 +464,9 @@ namespace Palaso.WritingSystems
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader, bool roundTripFlex70PrivateUse)
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader, WritingSystemCompatibility compatibilityMode)
 		{
-			_roundTripFlex70PrivateUse = roundTripFlex70PrivateUse;
+			_compatibilityMode = compatibilityMode;
 			if (xmlWriter == null)
 			{
 				throw new ArgumentNullException("xmlWriter");
@@ -715,7 +713,7 @@ namespace Palaso.WritingSystems
 					}
 					reader.Read();
 				}
-				if (_roundTripFlex70PrivateUse)
+				if (_compatibilityMode == WritingSystemCompatibility.Flex7V0Compatible)
 				{
 					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);

@@ -651,7 +651,7 @@ namespace Palaso.Tests.WritingSystems
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml,
 								  LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, true);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
 				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
 				environment.Collection.Set(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
@@ -701,7 +701,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, true);
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
 
 				// Now try to load up.
 				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo("qaa"));
@@ -715,7 +715,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, false);
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, WritingSystemCompatibility.Strict);
 
 				// Now try to load up.
 				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo("qaa"));
@@ -729,7 +729,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var ldmlPath = Path.Combine(environment.TestPath, "xh.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("xh", "", "", ""));
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, false);
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, WritingSystemCompatibility.Strict);
 				//Assert.That(() => new LdmlInFolderWritingSystemRepository(environment.TestPath), Throws.Exception.TypeOf<ApplicationException>());
 			}
 		}
@@ -753,7 +753,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("x", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, true);
+				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
 				var ws = environment.Collection.Get("x-Zxxx-x-audio");
 				environment.Collection.SaveDefinition(ws);
 				Assert.That(File.Exists(pathToFlexprivateUseLdml));

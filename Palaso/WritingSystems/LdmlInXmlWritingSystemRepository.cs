@@ -14,7 +14,8 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Use the default repository
 		/// </summary>
-		public LdmlInXmlWritingSystemRepository()
+		public LdmlInXmlWritingSystemRepository() :
+			base(WritingSystemCompatibility.Strict)
 		{
 		}
 
