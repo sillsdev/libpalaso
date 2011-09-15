@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace Palaso.Media.Naudio.UI
@@ -19,7 +20,7 @@ namespace Palaso.Media.Naudio.UI
 			{
 				_recorder = value;
 				if(_recorder !=null)
-					toolTip1.SetToolTip(_recordingDeviceButton, value.SelectedDevice.Capabilities.ProductName);
+					toolTip1.SetToolTip(_recordingDeviceImage, value.SelectedDevice.Capabilities.ProductName);
 
 			}
 		}
@@ -36,18 +37,18 @@ namespace Palaso.Media.Naudio.UI
 				return;
 
 			if(_recorder.SelectedDevice.GenericName.Contains("Internal"))
-				_recordingDeviceButton.ImageNormal = AudioDeviceIcons.Computer;
+				_recordingDeviceImage.Image = AudioDeviceIcons.Computer;
 			else if (_recorder.SelectedDevice.GenericName.Contains("USB Audio Device"))
-				_recordingDeviceButton.ImageNormal = AudioDeviceIcons.HeadSet;
+				_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
 
 			var deviceName = _recorder.SelectedDevice.ProductName;
 
 			if(deviceName.Contains("ZOOM"))
-				_recordingDeviceButton.ImageNormal = AudioDeviceIcons.Recorder;
+				_recordingDeviceImage.Image = AudioDeviceIcons.Recorder;
 			if (deviceName.Contains("Plantronics"))
-				_recordingDeviceButton.ImageNormal = AudioDeviceIcons.HeadSet;
+				_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
 			if (deviceName.Contains("Andrea"))
-				_recordingDeviceButton.ImageNormal = AudioDeviceIcons.HeadSet;
+				_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
 		}
 	}
 }

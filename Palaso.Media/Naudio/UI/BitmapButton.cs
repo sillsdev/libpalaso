@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace Palaso.Media.Naudio.UI
@@ -321,6 +322,8 @@ namespace Palaso.Media.Naudio.UI
 			// TODO: Add any initialization after the InitComponent call
 
 			//LoadGraphics();
+
+			ImageAttributes = new ImageAttributes();
 		}
 		/// <summary>
 		/// Clean up any resources being used.
@@ -743,11 +746,17 @@ namespace Palaso.Media.Naudio.UI
 				brush.Dispose();
 			}
 		}
+
+		/// <summary>
+		/// Use this to recolor the image
+		/// </summary>
+		public ImageAttributes ImageAttributes { get; set; }
+
+
 		/// <summary>
 		/// Paints the image on the button.
 		/// </summary>
 		/// <param name="e"></param>
-
 		private void paint_Image(PaintEventArgs e)
 		{
 
@@ -766,13 +775,13 @@ namespace Palaso.Media.Naudio.UI
 					rect.Offset(1,1);
 				if(this.StretchImage)
 				{
-					g.DrawImage(image,rect, 0, 0 ,image.Width,image.Height, GraphicsUnit.Pixel);
+					g.DrawImage(image,rect, 0, 0 ,image.Width,image.Height, GraphicsUnit.Pixel, ImageAttributes);
 				}
 				else
 				{
 					System.Drawing.Rectangle r = GetImageDestinationRect();
 					//g.DrawImage(image,rect.Left,rect.Top);
-					g.DrawImage(image,rect, 0, 0 ,image.Width,image.Height, GraphicsUnit.Pixel);
+					g.DrawImage(image,rect, 0, 0 ,image.Width,image.Height, GraphicsUnit.Pixel, ImageAttributes);
 				}
 				paint_ImageBorder(g,rect);
 			}

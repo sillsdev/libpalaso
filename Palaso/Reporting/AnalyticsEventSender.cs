@@ -119,34 +119,39 @@ namespace Palaso.Reporting
 
 			var bw = new BackgroundWorker();
 			bw.DoWork += (o, args) =>
-				RobustNetworkOperation.Do(proxy =>
-											  {
-												  try
-												  {
-													  Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
-																			 requestUriString);
+							 {
+//                RobustNetworkOperation.Do(proxy =>
+//                                              {
+								 try
+								 {
+									 Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
+															requestUriString);
 
-													  var request = WebRequest.Create(requestUriString);
-													  request.Proxy = proxy;
+									 var request = WebRequest.Create(requestUriString);
+									 //                                                    request.Proxy = proxy;
 
-													  //warning, this uses the ui thread:
-													  //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
-													  //since we're in the background anyway...
-													  //review but on a single core machine, might this still hang us up, or does it sleep, internally?
-													  request.GetResponse();
-												  }
-												  catch (WebException e)
-												  {
-													  if (e.Status == WebExceptionStatus.Timeout)
-													  {
-														  // ah well
-													  }
-													  else
-													  {
-														  throw e;
-													  }
-												  }
-											  }, null);
+									 //warning, this uses the ui thread:
+									 //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
+									 //since we're in the background anyway...
+									 //review but on a single core machine, might this still hang us up, or does it sleep, internally?
+									 request.GetResponse();
+									 Debug.WriteLine("  Succesful SendUrlRequestAsync");// ah well
+								 }
+								 catch (WebException e)
+								 {
+									 if (e.Status == WebExceptionStatus.Timeout)
+									 {
+										 Debug.WriteLine("  TimedOut SendUrlRequestAsync");// ah well
+									 }
+									 else
+									 {
+#if DEBUG
+										 throw e;
+#endif
+									 }
+								 }
+							 };
+//                                              }, null);
 			 bw.RunWorkerAsync();
 		}
 

@@ -22,7 +22,7 @@ namespace Palaso.Media.Naudio.UI {
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
 	[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-	internal class AudioDeviceIcons {
+	public class AudioDeviceIcons {
 
 		private static global::System.Resources.ResourceManager resourceMan;
 
@@ -60,7 +60,7 @@ namespace Palaso.Media.Naudio.UI {
 			}
 		}
 
-		internal static System.Drawing.Bitmap Computer {
+		public static System.Drawing.Bitmap Computer {
 			get {
 				object obj = ResourceManager.GetObject("Computer", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
