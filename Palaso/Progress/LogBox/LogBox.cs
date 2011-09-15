@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using Palaso.Extensions;
 
 namespace Palaso.Progress.LogBox
 {
@@ -279,8 +280,15 @@ namespace Palaso.Progress.LogBox
 			{
 				_verboseBox.SelectionStart = _verboseBox.Text.Length;
 				_verboseBox.SelectionColor = Color.DarkGray;
-				_verboseBox.AppendText(string.Format(message + Environment.NewLine, args));
+				_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
 			}));
+		}
+		public static string SafeFormat(string format, params object[] args)
+		{
+			if (args == null && args.Length == 0)
+				return format;      //in many cases, we can avoid the format entirely.  This gets us past the "hg log -template {node}" error.
+
+			return format.FormatWithErrorStringInsteadOfException(args);
 		}
 
 		public bool ShowVerbose
