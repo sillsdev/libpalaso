@@ -67,6 +67,13 @@ namespace Palaso.WritingSystems
 							newId = rfcTagCleaner.GetCompleteTag();
 						}
 					}
+					else
+					{
+						// Clean it
+						var rfcTagCleaner = new Rfc5646TagCleaner(wsId);
+						rfcTagCleaner.Clean();
+						newId = rfcTagCleaner.GetCompleteTag();
+					}
 				}
 				var conformantWritingSystem = WritingSystemDefinition.Parse(newId);
 				// If it changed, then change
