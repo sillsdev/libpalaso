@@ -15,25 +15,26 @@ namespace Palaso.Tests.WritingSystems
 	{
 		private class TestEnvironment:IDisposable
 		{
-			private TempFile _file = new TempFile();
-			private string _writingSystemsPath;
-			private LdmlInFolderWritingSystemRepository _writingSystemRepository;
+			private readonly TemporaryFolder _folder = new TemporaryFolder("WritingSystemOrphanFinderTests");
+			private readonly TempFile _file;
 
 			public TestEnvironment(string id1, string id2)
-			{   _writingSystemsPath = new TemporaryFolder().Path;
-				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(_writingSystemsPath, WritingSystemCompatibility.Flex7V0Compatible);
+			{
+				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath, WritingSystemCompatibility.Flex7V0Compatible);
+				_file = _folder.GetNewTempFile(true);
 				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
 			}
 
-			public LdmlInFolderWritingSystemRepository WritingSystemRepository
+			private string WritingSystemsPath
 			{
-				get { return _writingSystemRepository; }
-				set { _writingSystemRepository = value; }
+				get { return _folder.Combine("WritingSystems"); }
 			}
+
+			public LdmlInFolderWritingSystemRepository WritingSystemRepository { get; private set; }
 
 			public void Dispose()
 			{
-				File.Delete(_file.Path);
+				_folder.Dispose();
 			}
 
 			public IEnumerable<string> GetIdsFromFile
@@ -140,5 +141,23 @@ namespace Palaso.Tests.WritingSystems
 				Assert.That(e.FileContent, Is.EqualTo("|qaa-Zxxx-x-boglang-bogusws||qaa-Zxxx-x-boglang-bogusws||qaa-Zxxx-x-boglang-bogusws-dupl0|"));
 			}
 		}
+
+		[Test]
+		/* Ideally we would be able to preserve the 2 x's in compatibility mode. However we stopped short
+		 * of requiring the WritingSystemDefinition to hold info about malformed tags. So, in this case
+		 * it gets cleaned up (due to the call to parse in FindOrphans.
+		 */
+		public void FindOrphans_FileContainsEntirelyPrivateUseRfcTagWithFlexStyleTwoX_RfcTagIsMigrated()
+		{
+			using (var e = new TestEnvironment("x-custom-Zxxx-x-audio", "x-dontcare"))
+			{
+				var wss = new List<string>(e.GetIdsFromFile);
+				WritingSystemOrphanFinder.FindOrphans(wss, e.ReplaceIdInFile, e.WritingSystemRepository);
+				Assert.That(e.FileContent, Is.EqualTo("|x-custom-Zxxx-audio||x-custom-Zxxx-audio||x-dontcare|"));
+				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
+			}
+		}
+
+
 	}
 }
