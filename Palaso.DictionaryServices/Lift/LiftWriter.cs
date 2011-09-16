@@ -420,7 +420,7 @@ namespace Palaso.DictionaryServices.Lift
 				PictureRef pictureRef = pair.Value as PictureRef;
 				if (pictureRef != null)
 				{
-					WriteURLRef("illustration", pictureRef.Value, pictureRef.Caption);
+					WriteIllustrationElement(pictureRef);
 					continue;
 				}
 				throw new ApplicationException(
@@ -429,6 +429,11 @@ namespace Palaso.DictionaryServices.Lift
 								pair.Key,
 								pair.Value.GetType()));
 			}
+		}
+
+		protected virtual void WriteIllustrationElement(PictureRef pictureRef)
+		{
+			WriteURLRef("illustration", pictureRef.Value, pictureRef.Caption);
 		}
 
 		protected virtual bool ShouldOutputProperty(string key)
