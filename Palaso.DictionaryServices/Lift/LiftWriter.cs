@@ -449,7 +449,7 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void WriteURLRef(string key, string href, MultiText caption)
+		protected void WriteURLRef(string key, string href, MultiText caption)
 		{
 			if (!string.IsNullOrEmpty(href))
 			{
