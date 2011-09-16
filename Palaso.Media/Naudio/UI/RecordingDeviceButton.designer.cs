@@ -38,9 +38,11 @@
 			// _recordingDeviceImage
 			//
 			this._recordingDeviceImage.Image = ((System.Drawing.Image)(resources.GetObject("_recordingDeviceImage.Image")));
-			this._recordingDeviceImage.Location = new System.Drawing.Point(4, 5);
+			this._recordingDeviceImage.Location = new System.Drawing.Point(0, 0);
+			this._recordingDeviceImage.Margin = new System.Windows.Forms.Padding(0);
 			this._recordingDeviceImage.Name = "_recordingDeviceImage";
-			this._recordingDeviceImage.Size = new System.Drawing.Size(32, 32);
+			this._recordingDeviceImage.Size = new System.Drawing.Size(16, 16);
+			this._recordingDeviceImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this._recordingDeviceImage.TabIndex = 0;
 			this._recordingDeviceImage.TabStop = false;
 			//
@@ -50,8 +52,9 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Transparent;
 			this.Controls.Add(this._recordingDeviceImage);
+			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "RecordingDeviceButton";
-			this.Size = new System.Drawing.Size(92, 39);
+			this.Size = new System.Drawing.Size(20, 26);
 			((System.ComponentModel.ISupportInitialize)(this._recordingDeviceImage)).EndInit();
 			this.ResumeLayout(false);
 

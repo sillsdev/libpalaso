@@ -222,9 +222,6 @@
 	<None Include="Recorder.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\HeadSet.png" />
-  </ItemGroup>
-  <ItemGroup>
 	<None Include="Resources\Microphone.png" />
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +229,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\Recorder.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\HeadSet.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
