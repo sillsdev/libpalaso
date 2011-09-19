@@ -36,7 +36,10 @@ namespace Palaso.Extensions
 		{
 			try
 			{
-				return string.Format(format, args);
+				if (args.Length == 0)
+					return format;
+				else
+					return string.Format(format, args);
 			}
 			catch (Exception e)
 			{
