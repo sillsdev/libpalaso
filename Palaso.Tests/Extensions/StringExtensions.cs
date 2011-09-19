@@ -90,9 +90,14 @@ namespace Palaso.Tests.Extensions
 
 
 		[Test]
+		public void Format_StringWithNoArgs_GivesErrorString()
+		{
+			Assert.That("{node}".FormatWithErrorStringInsteadOfException().Equals("{node}"));
+		}
+		[Test]
 		public void Format_UnSafeString_GivesErrorString()
 		{
-			Assert.That("{".FormatWithErrorStringInsteadOfException().Contains("Error"));
+			Assert.That("{foo}".FormatWithErrorStringInsteadOfException("blah").Contains("Error"));
 		}
 	}
 }
