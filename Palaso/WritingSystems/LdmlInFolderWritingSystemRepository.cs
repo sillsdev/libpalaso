@@ -112,7 +112,12 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetFilePathFromIdentifier(string identifier)
+		///<summary>
+		/// Returns the full path to the underlying store for this writing system.
+		///</summary>
+		///<param name="identifier"></param>
+		///<returns>FilePath</returns>
+		public string GetFilePathFromIdentifier(string identifier)
 		{
 			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(identifier));
 		}
