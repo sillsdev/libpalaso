@@ -907,7 +907,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			get
 			{
-				return _spellCheckerItems.First(item => item.GetSpellCheckingId() == CurrentSpellCheckingId);
+				if (_spellCheckerItems == null || _spellCheckerItems.Count == 0)
+					return null;
+				return _spellCheckerItems.FirstOrDefault(item => item.GetSpellCheckingId() == CurrentSpellCheckingId);
 			}
 			set
 			{
