@@ -55,7 +55,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			get { return "Script/Region/Variant"; }
 		}
 
-		private void Variant_OnTextChanged(object sender, EventArgs e)
+		public void MoveDataFromViewToModel()
+		{
+			UpdateModelFromView();
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			_variant.Leave -= Variant_OnLeave;
+		}
+
+		private void Variant_OnLeave(object sender, EventArgs e)
+		{
+			UpdateModelFromView();
+		}
+
+		private void UpdateModelFromView()
 		{
 			if (_updatingFromModel)
 				return;

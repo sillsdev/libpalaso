@@ -61,6 +61,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		}
 
+		public void MoveDataFromViewToModel()
+		{
+			//do nothing
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			//do nothing
+		}
+
 		#endregion
 	}
 }

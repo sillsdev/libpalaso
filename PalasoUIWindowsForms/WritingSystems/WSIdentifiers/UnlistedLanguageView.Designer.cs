@@ -40,7 +40,7 @@
 			this.nonStandardLanguageName.Name = "nonStandardLanguageName";
 			this.nonStandardLanguageName.Size = new System.Drawing.Size(137, 20);
 			this.nonStandardLanguageName.TabIndex = 4;
-			this.nonStandardLanguageName.Leave += new System.EventHandler(this.field_OnLeave);
+			this.nonStandardLanguageName.Leave += new System.EventHandler(this.OnLeave_NonStandardLanguageName);
 			//
 			// betterLabel2
 			//

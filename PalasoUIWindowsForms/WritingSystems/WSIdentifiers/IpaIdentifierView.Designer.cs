@@ -1,4 +1,6 @@
-﻿namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
+﻿using System;
+
+namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
 	partial class IpaIdentifierView
 	{

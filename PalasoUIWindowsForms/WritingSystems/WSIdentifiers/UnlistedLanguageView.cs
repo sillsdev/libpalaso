@@ -63,9 +63,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			get{return "Unlisted Language Details";}
 		}
 
-		private void field_OnLeave(object sender, EventArgs e)
+		private void OnLeave_NonStandardLanguageName(object sender, EventArgs e)
 		{
-			if(_updatingFromModel)
+			MoveDataFromViewToModel();
+		}
+
+		public void Selected()
+		{
+			_model.IdentifierUnlistedLanguageSelected();
+			UpdateDisplayFromModel(null, null);
+		}
+
+		public void MoveDataFromViewToModel()
+		{
+			if (_updatingFromModel)
 				return;
 			//ResetFieldsIfNecessary();
 			//_model.SetCurrentVariant = "x-" + nonStandardLanguageCode.Text;
@@ -73,10 +84,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			_model.CurrentLanguageName = nonStandardLanguageName.Text;
 		}
 
-		public void Selected()
+		public void UnwireBeforeClosing()
 		{
-			_model.IdentifierUnlistedLanguageSelected();
-			UpdateDisplayFromModel(null, null);
+			nonStandardLanguageName.Leave -= OnLeave_NonStandardLanguageName;
 		}
 
 		private void betterLabel1_TextChanged(object sender, EventArgs e)

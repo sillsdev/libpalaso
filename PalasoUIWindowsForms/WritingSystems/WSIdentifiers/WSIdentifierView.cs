@@ -138,10 +138,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_model.CurrentAbbreviation = s;
 			}
 		}
+
+		public void MoveDataFromViewToModel()
+		{
+			((ISelectableIdentifierOptions)comboBox1.SelectedItem).MoveDataFromViewToModel();
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			((ISelectableIdentifierOptions)comboBox1.SelectedItem).UnwireBeforeClosing();
+		}
 	}
 
 	public interface ISelectableIdentifierOptions
 	{
 		void Selected();
+		void MoveDataFromViewToModel();
+		void UnwireBeforeClosing();
 	}
 }

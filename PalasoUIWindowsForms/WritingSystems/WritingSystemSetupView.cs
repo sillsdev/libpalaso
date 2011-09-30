@@ -56,7 +56,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void SetWritingSystemsInRepo()
 		{
+			_propertiesTabControl.MoveDataFromViewToModel();
 			_model.SetAllPossibleAndRemoveOthers();
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			_propertiesTabControl.UnwireBeforeClosing();
 		}
 
 		private void UpdateHeaders(object sender, EventArgs e)

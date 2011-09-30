@@ -61,5 +61,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_model != null)
 				_model.SelectionChanged -= ModelChanged;
 		}
+
+		public void MoveDataFromViewToModel()
+		{
+			_identifiersControl.MoveDataFromViewToModel();
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			_identifiersControl.UnwireBeforeClosing();
+		}
 	}
 }

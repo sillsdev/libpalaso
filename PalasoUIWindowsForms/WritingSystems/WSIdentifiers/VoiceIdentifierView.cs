@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
@@ -21,6 +22,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_model.IdentifierVoiceSelected();
 			}
 		}
+
+		public void MoveDataFromViewToModel()
+		{
+			//do nothing
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			//Do nothing
+		}
+
 		public string ChoiceName
 		{
 			get { return "Voice"; }
