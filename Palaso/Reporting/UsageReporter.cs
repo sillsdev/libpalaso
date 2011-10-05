@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Windows.Forms;
 
 namespace Palaso.Reporting
@@ -453,7 +454,7 @@ namespace Palaso.Reporting
 				_settings.Launches++;
 			}
 
-			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper);
+			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
 
 			 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
@@ -480,6 +481,12 @@ namespace Palaso.Reporting
 
 
 			//Usage.Send("Runtime", "launched", ErrorReport.VersionNumberString, UsageReporter.AppReportingSettings.Launches);
+		}
+
+		private void SaveCookie(Cookie cookie)
+		{
+			//ErrorReportSettings.Default.AnalyticsCookie = cookie; /*TODO: how to serialize the cookie?*/
+			ErrorReportSettings.Default.Save();
 		}
 
 		/// <summary>
