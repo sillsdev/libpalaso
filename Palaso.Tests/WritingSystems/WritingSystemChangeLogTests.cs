@@ -55,5 +55,13 @@ namespace Palaso.Tests.WritingSystems
 			log.LogChange("bbb", "aaa");
 			Assert.That(log.GetChangeFor("aaa"), Is.EqualTo("aaa"));
 		}
+
+		[Test]
+		public void LogChange_FromSameAsTo_DoesNotLogChange()
+		{
+			var log = new WritingSystemChangeLog();
+			log.LogChange("aaa", "aaa");
+			Assert.That(log.GetChangeFor("aaa"), Is.EqualTo(null));
+		}
 	}
 }

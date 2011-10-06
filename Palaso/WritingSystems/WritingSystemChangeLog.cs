@@ -69,7 +69,10 @@ namespace Palaso.WritingSystems
 
 		public void LogChange(string from, string to)
 		{
-			_WriteToLog(new WritingSystemLogChangeEvent(from, to));
+			if (from != to)
+			{
+				_WriteToLog(new WritingSystemLogChangeEvent(from, to));
+			}
 		}
 
 		public void LogAdd(string added)
