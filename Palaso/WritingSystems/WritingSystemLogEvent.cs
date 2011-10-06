@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Palaso.Extensions;
+using Palaso.Reporting;
 
 namespace Palaso.WritingSystems
 {
@@ -29,13 +30,7 @@ namespace Palaso.WritingSystems
 
 		private string _getProducerVersion()
 		{
-			var assembly = Assembly.GetEntryAssembly();
-			if (assembly != null)
-			{
-				var ver = assembly.GetName().Version;
-				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
-			}
-			return "???";
+			return ErrorReport.GetVersionForErrorReporting();
 		}
 
 		public string Producer { get; internal set; }
