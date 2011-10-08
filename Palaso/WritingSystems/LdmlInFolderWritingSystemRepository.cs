@@ -169,7 +169,7 @@ namespace Palaso.WritingSystems
 							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
 							Exception = new ApplicationException(
 								String.Format(
-									"The writing system file {0} seems to be named inconsistently. It conatins the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
+									"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
 									filePath, wsFromFile.Bcp47Tag)),
 							FilePath = filePath
 						};

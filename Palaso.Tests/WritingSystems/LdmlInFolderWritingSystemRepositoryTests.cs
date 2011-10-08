@@ -607,7 +607,7 @@ namespace Palaso.Tests.WritingSystems
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
-						@"The writing system file {0} seems to be named inconsistently. It conatins the Rfc5646 tag: 'de-Zxxx-x-audio'. The name should have been made consistent with its content upon migration of the writing systems.",
+						@"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: 'de-Zxxx-x-audio'. The name should have been made consistent with its content upon migration of the writing systems.",
 						Path.Combine(environment.TestPath, "inconsistent-filename.ldml")
 					))
 				);
@@ -636,7 +636,7 @@ namespace Palaso.Tests.WritingSystems
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
-						@"The writing system file {0} seems to be named inconsistently. It conatins the Rfc5646 tag: 'de-latn-ch-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
+						@"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: 'de-latn-ch-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
 						Path.Combine(environment.TestPath, "tpi-Zxxx-x-audio.ldml")
 					))
 				);

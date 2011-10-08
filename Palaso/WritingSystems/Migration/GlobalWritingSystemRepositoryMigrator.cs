@@ -106,7 +106,7 @@ namespace Palaso.WritingSystems.Migration
 
 		private void CopyLdmlFromFolder(string sourcePath)
 		{
-			FolderUtils.CopyFolderWithException(sourcePath, CurrentVersionPath);
+			DirectoryUtilities.CopyDirectoryWithException(sourcePath, CurrentVersionPath);
 		}
 
 		///<summary>

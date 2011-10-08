@@ -46,7 +46,7 @@ namespace Palaso.Tests.IO
 		public void CopyFolder_SourceDoesNotExist_ReturnsFalse()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
-				Assert.IsFalse(FolderUtils.CopyFolderContents("sblah", "dblah"));
+				Assert.IsFalse(DirectoryUtilities.CopyDirectoryContents("sblah", "dblah"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ namespace Palaso.Tests.IO
 		public void CopyFolder_DestinationFolderDoesNotExist_CreatesItAndReturnsTrue()
 		{
 			Assert.IsFalse(Directory.Exists(_dstFolder));
-			Assert.IsTrue(FolderUtils.CopyFolderContents(_srcFolder, _dstFolder));
+			Assert.IsTrue(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
 			Assert.IsTrue(Directory.Exists(_dstFolder));
 		}
 
@@ -64,7 +64,7 @@ namespace Palaso.Tests.IO
 		{
 			File.CreateText(Path.Combine(_srcFolder, "file1.txt")).Close();
 			File.CreateText(Path.Combine(_srcFolder, "file2.txt")).Close();
-			Assert.IsTrue(FolderUtils.CopyFolderContents(_srcFolder, _dstFolder));
+			Assert.IsTrue(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
 			Assert.IsTrue(File.Exists(Path.Combine(_dstFolder, "file1.txt")));
 			Assert.IsTrue(File.Exists(Path.Combine(_dstFolder, "file2.txt")));
 		}
@@ -76,7 +76,7 @@ namespace Palaso.Tests.IO
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
 			using (var fs = File.Open(Path.Combine(_srcFolder, "file1.txt"), FileMode.Append))
 			{
-				Assert.IsFalse(FolderUtils.CopyFolderContents(_srcFolder, _dstFolder));
+				Assert.IsFalse(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
 				fs.Close();
 			}
 		}
@@ -88,7 +88,7 @@ namespace Palaso.Tests.IO
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
 			using (var fs = File.Open(Path.Combine(_srcFolder, "file1.txt"), FileMode.Append))
 			{
-				Assert.IsFalse(FolderUtils.CopyFolderContents(_srcFolder, _dstFolder));
+				Assert.IsFalse(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
 				Assert.IsFalse(Directory.Exists(_dstFolder));
 				fs.Close();
 			}
@@ -100,7 +100,7 @@ namespace Palaso.Tests.IO
 		{
 			Directory.CreateDirectory(Path.Combine(_srcFolder, "subfolder1"));
 			Directory.CreateDirectory(Path.Combine(_srcFolder, "subfolder2"));
-			Assert.IsTrue(FolderUtils.CopyFolderContents(_srcFolder, _dstFolder));
+			Assert.IsTrue(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, "subfolder1")));
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, "subfolder2")));
 		}
@@ -112,7 +112,7 @@ namespace Palaso.Tests.IO
 			var subfolder = Path.Combine(_srcFolder, "subfolder");
 			Directory.CreateDirectory(subfolder);
 			File.CreateText(Path.Combine(subfolder, "file1.txt")).Close();
-			Assert.IsTrue(FolderUtils.CopyFolderContents(_srcFolder, _dstFolder));
+			Assert.IsTrue(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
 
 			subfolder = Path.Combine(_dstFolder, "subfolder");
 			Assert.IsTrue(File.Exists(Path.Combine(subfolder, "file1.txt")));
@@ -122,7 +122,7 @@ namespace Palaso.Tests.IO
 		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_ReturnsCorrectFolderPath()
 		{
-			var returnPath = FolderUtils.CopyFolderToTempFolder(_srcFolder);
+			var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(_srcFolder);
 			Assert.IsNotNull(returnPath);
 			var foldername = Path.GetFileName(_srcFolder);
 			Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
@@ -132,7 +132,7 @@ namespace Palaso.Tests.IO
 		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_MakesCopyInTempFolder()
 		{
-			var returnPath = FolderUtils.CopyFolderToTempFolder(_srcFolder);
+			var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(_srcFolder);
 			Assert.IsNotNull(returnPath);
 			Assert.IsTrue(Directory.Exists(returnPath));
 		}
@@ -142,7 +142,7 @@ namespace Palaso.Tests.IO
 		public void CopyFolder_DestinationFolderDoesNotExist_ReturnsFalse()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
-				Assert.IsFalse(FolderUtils.CopyFolder(_srcFolder, _dstFolder));
+				Assert.IsFalse(DirectoryUtilities.CopyDirectory(_srcFolder, _dstFolder));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ namespace Palaso.Tests.IO
 		public void CopyFolder_SourceFolderExists_MakesCopyOfFolderWithSameName()
 		{
 			Directory.CreateDirectory(_dstFolder);
-			Assert.IsTrue(FolderUtils.CopyFolder(_srcFolder, _dstFolder));
+			Assert.IsTrue(DirectoryUtilities.CopyDirectory(_srcFolder, _dstFolder));
 			var foldername = Path.GetFileName(_srcFolder);
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
 		}
@@ -171,7 +171,7 @@ namespace Palaso.Tests.IO
 
 				Assert.AreEqual(4, Directory.GetDirectories(tempDir.Path).Length);
 
-				var safeDirectories = FolderUtils.GetSafeDirectories(tempDir.Path);
+				var safeDirectories = DirectoryUtilities.GetSafeDirectories(tempDir.Path);
 
 				Assert.AreEqual(1, safeDirectories.Length);
 				Assert.AreEqual(ordinaryDir.FullName, safeDirectories[0]);
