@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Palaso.IO;
 
 namespace Palaso.Migration
 {
@@ -95,7 +97,12 @@ namespace Palaso.Migration
 			// Clean up root backup path
 			if (Directory.Exists(MigrationPath))
 			{
-				DeleteFolderAvoidingDeletionBug(MigrationPath);
+				if (!DirectoryUtilities.DeleteDirectoryRobust(MigrationPath))
+				{
+					//for user, ah well
+					//for programmer, tell us
+					Debug.Fail("(Debug mode only) Couldn't delete the migration folder");
+				}
 			}
 			// Backup current folder to backup path under backup root
 			CopyDirectory(SourcePath, BackupPath, MigrationPath);
@@ -175,7 +182,12 @@ namespace Palaso.Migration
 
 			// Copy the migration results into SourcePath
 			CopyDirectory(currentPath, SourcePath, "");
-			DeleteFolderAvoidingDeletionBug(MigrationPath);
+			if (!DirectoryUtilities.DeleteDirectoryRobust(MigrationPath))
+			{
+				//for user, ah well
+				//for programmer, tell us
+				Debug.Fail("(Debug mode only) Couldn't delete the migration folder");
+			}
 
 			// Call the problem handler if we encountered problems during migration.
 			if (problems.Count > 0)
@@ -234,39 +246,6 @@ namespace Palaso.Migration
 			}
 		}
 
-		//This method works  around an issue where creating a folder shortly after deleting it, fails. Documented here:
-		//http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/c7c4557b-a940-40dc-9fdf-1d8e8b64c46c
-		//(JH): REVIEW: i don't see how that link would lead to the approach of copying it and then deleteing... the copy seems to fail, just like the delete would.
-		//      But rather  than ditch this all together before someone has a chance to explain, I've just added a sleep and multiple retries
-		private static void DeleteFolderAvoidingDeletionBug(string folderToDelete)
-		{
-			string deletionPath = folderToDelete + "ToBeDeleted";
-
-			//since this temp folder doesn't have a unique name, it, too, could already exist
-			DeleteFolderThatMayBeInUse(deletionPath);
-			if(Directory.Exists(deletionPath))
-			{
-				return; //ah well
-			}
-
-			// we had some instance of a crash in the above (as if this whole approach of this method doesn't really work)... this is an attempt to alleviate it by waiting a bit
-			for (int i = 0; i < 10; i++)
-			{
-				try
-				{
-					Directory.Move(folderToDelete, deletionPath);
-					break;
-				}
-				catch (Exception error)
-				{
-					Thread.Sleep(50);
-				}
-			}
-			if (Directory.Exists(folderToDelete))
-				return; //ah well, we failed
-
-			DeleteFolderThatMayBeInUse(deletionPath);
-		}
 
 		private static void CopyDirectory(string sourcePath, string targetPath, string excludePath)
 		{
@@ -285,54 +264,23 @@ namespace Palaso.Migration
 			}
 
 			// Copy each file into its new directory.
-			foreach (FileInfo fi in source.GetFiles())
+			foreach (FileInfo fileInfo in source.GetFiles())
 			{
-				fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
+				fileInfo.CopyTo(Path.Combine(target.ToString(), fileInfo.Name), true);
 			}
 
 			// Copy each subdirectory using recursion.
-			foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+			foreach (DirectoryInfo directoryInfo in source.GetDirectories())
 			{
-				if (excludePath != null && diSourceSubDir.FullName == excludePath.FullName)
+				if (excludePath != null && directoryInfo.FullName == excludePath.FullName)
 				{
 					continue;
 				}
-				DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-				CopyDirectory(diSourceSubDir, nextTargetSubDir, excludePath);
+				DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(directoryInfo.Name);
+				CopyDirectory(directoryInfo, nextTargetSubDir, excludePath);
 			}
 		}
 
-		//Copied from Testutilities. should this become an extension method on directory?
-		private static void DeleteFolderThatMayBeInUse(string folder)
-		{
-			if (Directory.Exists(folder))
-			{
-				try
-				{
-					Directory.Delete(folder, true);
-				}
-				catch (Exception e)
-				{
-					try
-					{
-						Console.WriteLine(e.Message);
-						//maybe we can at least clear it out a bit
-						string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
-						foreach (string s in files)
-						{
-							File.Delete(s);
-						}
-						//sleep and try again (seems to work)
-						Thread.Sleep(1000);
-						Directory.Delete(folder, true);
-					}
-					// ReSharper disable EmptyGeneralCatchClause
-					catch
-					{
-					}
-					// ReSharper restore EmptyGeneralCatchClause
-				}
-			}
-		}
+
 	}
 }
