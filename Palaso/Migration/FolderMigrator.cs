@@ -236,6 +236,8 @@ namespace Palaso.Migration
 
 		//This method works  around an issue where creating a folder shortly after deleting it, fails. Documented here:
 		//http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/c7c4557b-a940-40dc-9fdf-1d8e8b64c46c
+		//(JH): REVIEW: i don't see how that link would lead to the approach of copying it and then deleteing... the copy seems to fail, just like the delete would.
+		//      But rather  than ditch this all together before someone has a chance to explain, I've just added a sleep and multiple retries
 		private static void DeleteFolderAvoidingDeletionBug(string folderToDelete)
 		{
 			string deletionPath = folderToDelete + "ToBeDeleted";
@@ -247,7 +249,22 @@ namespace Palaso.Migration
 				return; //ah well
 			}
 
-			Directory.Move(folderToDelete, deletionPath);
+			// we had some instance of a crash in the above (as if this whole approach of this method doesn't really work)... this is an attempt to alleviate it by waiting a bit
+			for (int i = 0; i < 10; i++)
+			{
+				try
+				{
+					Directory.Move(folderToDelete, deletionPath);
+					break;
+				}
+				catch (Exception error)
+				{
+					Thread.Sleep(50);
+				}
+			}
+			if (Directory.Exists(folderToDelete))
+				return; //ah well, we failed
+
 			DeleteFolderThatMayBeInUse(deletionPath);
 		}
 

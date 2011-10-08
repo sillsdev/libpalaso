@@ -129,8 +129,9 @@ namespace Palaso.Reporting
 //                                              {
 								 try
 								 {
-									 Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
-															requestUriString);
+//jh: i got tired of seeing this in the logs
+//                                     Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
+//                                                            requestUriString);
 
 									 HttpWebRequest request = (HttpWebRequest) WebRequest.Create(requestUriString);
 									 request.CookieContainer = new CookieContainer();
