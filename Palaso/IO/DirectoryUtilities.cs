@@ -185,25 +185,32 @@ namespace Palaso.IO
 				if (!Directory.Exists(path))
 					break;
 
-				//try to clear it out a bit
-				string[] dirs = Directory.GetDirectories(path);
-				string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
-				foreach (string filePath in files)
+				try
 				{
-					try
+					//try to clear it out a bit
+					string[] dirs = Directory.GetDirectories(path);
+					string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+					foreach (string filePath in files)
 					{
-						/* we could do this too, but it's dangerous
-						 *  File.SetAttributes(filePath, FileAttributes.Normal);
-						 */
-						File.Delete(filePath);
+						try
+						{
+							/* we could do this too, but it's dangerous
+							 *  File.SetAttributes(filePath, FileAttributes.Normal);
+							 */
+							File.Delete(filePath);
+						}
+						catch (Exception)
+						{
+						}
 					}
-					catch(Exception)
+					foreach (var dir in dirs)
 					{
+						DeleteDirectoryRobust(dir);
 					}
+
 				}
-				foreach (var dir in dirs)
+				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted base on our prior request
 				{
-					DeleteDirectoryRobust(dir);
 				}
 				//sleep and let some OS things catch up
 				Thread.Sleep(50);
