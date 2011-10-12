@@ -174,8 +174,16 @@ namespace Palaso.WritingSystems.Collation
 			// * Single characters can be escaped using backslash \ (U+005C).
 			// * Strings can be escaped by putting them between single quotes 'like this'.
 			// * Single quote can be quoted using two single quotes ''.
-			// escapeSequence ::= "\" anyChar
-			_escapeSequence = Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.", Prims.AnyChar));
+			// because Unicode escape sequences are allowed in LDML we need to handle those also,
+			// escapeSequence ::= '\' U[A-F0-9]{8} | u[A-F0-9]{4} | anyChar
+			_escapeSequence = Ops.Choice(new Parser[] {
+									Ops.Sequence('\\', Ops.Sequence('U', Prims.HexDigit, Prims.HexDigit, Prims.HexDigit,
+													   Prims.HexDigit, Prims.HexDigit, Prims.HexDigit, Prims.HexDigit,
+													   Prims.HexDigit)),
+									Ops.Sequence('\\', Ops.Sequence('u', Prims.HexDigit, Prims.HexDigit, Prims.HexDigit,
+													   Prims.HexDigit)),
+									Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.", Prims.AnyChar))
+							  });
 
 			// singleQuoteLiteral ::= "''"
 			// quotedStringCharacter ::= AllChars - "'"
@@ -634,9 +642,15 @@ namespace Palaso.WritingSystems.Collation
 
 		private void OnEscapeSequence(object sender, ActionEventArgs args)
 		{
-			Debug.Assert(args.Value.Length == 2);
 			Debug.Assert(args.Value[0] == '\\');
-			_currentDataString.Append(args.Value[1]);
+			if(args.Value.Length == 2)
+			{
+				_currentDataString.Append(args.Value[1]); //drop the backslash and just insert the escaped character
+			}
+			else if (args.Value.Length == 6 || args.Value.Length == 10)//put unicode escapes into text unmolested
+			{
+				_currentDataString.Append(args.Value);
+			}
 		}
 
 		private void OnSingleQuoteLiteral(object sender, ActionEventArgs args)
