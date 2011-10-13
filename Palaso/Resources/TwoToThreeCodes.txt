@@ -107,7 +107,7 @@ mt	mlt
 mo	mol
 mn	mon
 mi	mri
-ms	zln
+ms	zlm
 my	mya
 na	nau
 nv	nav
