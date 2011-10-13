@@ -71,6 +71,9 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+#if MONO
+		[Ignore("This test won't fail as expected on Linux")]
+#endif
 		public void CopyFolder_SourceContainsLockedFile_ReturnsFalse()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
@@ -83,6 +86,9 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+#if MONO
+		[Ignore("This test won't fail as expected on Linux")]
+#endif
 		public void CopyFolder_CopyFails_DestinationFolderNotLeftBehind()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())

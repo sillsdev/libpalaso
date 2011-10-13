@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {	/// ----------------------------------------------------------------------------------------
 	public interface IAutoCompleteValueProviderWeird
 	{

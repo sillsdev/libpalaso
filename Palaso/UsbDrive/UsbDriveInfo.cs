@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 
+#if MONO
+using Palaso.UsbDrive.Linux;
+#else
+using Palaso.UsbDrive.Windows;
+#endif
+
 namespace Palaso.UsbDrive
 {
 	[CLSCompliant (false)]
@@ -27,7 +33,7 @@ namespace Palaso.UsbDrive
 		public static List<UsbDriveInfo> GetDrives()
 		{
 #if MONO
-			return UsbDriveInfoLinux.GetDrives();
+			return UsbDriveInfoUDisks.GetDrives(); // Lucid now uses UDisks, HAL use is deprecated.
 #else
 			return UsbDriveInfoWindows.GetDrives();
 #endif
@@ -35,14 +41,4 @@ namespace Palaso.UsbDrive
 		}
 	}
 
-	/*
-	public class Test
-	{
-		static void la()
-		{
-			List<UsbDriveInfo> drives = UsbDriveInfo.GetDrives();
-			DirectoryInfo path = drives[0].RootDirectory;
-		}
-	}
-	*/
 }

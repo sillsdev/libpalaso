@@ -73,7 +73,7 @@
   <ItemGroup>
 	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\irrKlang.NET2.0.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\irrKlang.NET2.0.dll</HintPath>
 	</Reference>
 	<Reference Include="NAudio">
 	  <HintPath>..\lib\net2.0\NAudio.dll</HintPath>

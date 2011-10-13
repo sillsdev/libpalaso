@@ -106,6 +106,13 @@ namespace Palaso.Xml
 			}
 		}
 
+		// review: I (CP) think that this method changes the syntax of xpath to account for the use of a default namespace
+		// such that for example:
+		//  xpath = a/b
+		//  xml = <a xmlns="MyNameSpace"><b></a>
+		// would match when it should not.  The xpath should be:
+		//  xpath = MyNameSpace:a/MyNameSpace:b
+		// bug: The code below currently doesn't allow for a / in a literal string which should not have pfx: prepended.
 		private static string GetPrefixedPath(string xPath, string prefix)
 		{
 			char[] validLeadCharacters = "@/".ToCharArray();

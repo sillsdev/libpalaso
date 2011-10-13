@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	/// <summary>
 	/// describes a single license, under which many works can be licensed for use

@@ -366,7 +366,7 @@ namespace Palaso.WritingSystems.Migration
 		/// As a side effect, this method may remove non-alphanumeric characters from the from tag.
 		/// (I don't like having such a side effect, but it seems necessary to produce the desired behavior).
 		/// </summary>
-		private void MoveFirstPartToPrivateUseIfNecessary(SubTag from, Func<bool, string> test, string standardPrivatePart,
+		private void MoveFirstPartToPrivateUseIfNecessary(SubTag from, Func<string, bool> test, string standardPrivatePart,
 			bool keepStandardPartInPrivateUse)
 		{
 			var part = from.AllParts.FirstOrDefault();
@@ -401,7 +401,7 @@ namespace Palaso.WritingSystems.Migration
 		/// If keepStandardPartInPrivateUse is true, only a part before the first 'x' may be moved.
 		/// Return true if an acceptable part was found.
 		/// </summary>
-		private bool MoveStandardPartToStart(SubTag from, Func<bool, string> test, bool keepStandardPartInPrivateUse)
+		private bool MoveStandardPartToStart(SubTag from, Func<string, bool> test, bool keepStandardPartInPrivateUse)
 		{
 			foreach (var goodPart in from.AllParts)
 			{

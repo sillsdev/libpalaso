@@ -42,7 +42,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Windows IME")]
 		public void GetAllKeyboards_GivesSeveral()
 		{
 			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
@@ -84,14 +83,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Scim")]
 		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
 		{
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
 		}
 
 		[Test]
-		[Category("Scim")]
 		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -100,17 +97,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Scim")]
 		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
-			Assert.AreEqual("English/European", availableKeyboards[0].Name);
-			Assert.AreEqual("RAW CODE", availableKeyboards[1].Name);
-			Assert.AreEqual("English/Keyboard", availableKeyboards[2].Name);
+			Assert.AreEqual("English/European", availableKeyboards[0].ShortName);
+			Assert.AreEqual("RAW CODE", availableKeyboards[1].ShortName);
+			Assert.AreEqual("English/Keyboard", availableKeyboards[2].ShortName);
 		}
 
 		[Test]
-		[Category("Scim")]
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -120,7 +115,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Scim")]
 		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
 			RequiresWindowForFocus();
@@ -131,7 +125,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
-		[Category("Scim")]
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
@@ -157,13 +150,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
 			Assert.AreEqual(0, availableKeyboards.Count);
-		}
-
-		[Test]
-		[Category("Scim not Running")]
-		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
-		{
-			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
 		}
 
 		[Test]

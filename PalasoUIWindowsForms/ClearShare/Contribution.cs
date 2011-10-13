@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	/// <summary>
 	/// Records a single contribution of a single individual to a single "work".

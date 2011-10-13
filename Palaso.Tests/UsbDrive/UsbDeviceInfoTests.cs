@@ -37,10 +37,38 @@ namespace Palaso.Tests.UsbDrive
 		[Test]
 		[Category("RequiresUSB")]
 		[Category("SkipOnTeamCity")]
-		public void GetDrives_1DrivesArePluggedIn_DrivesAreReturned()
+		public void GetDrives_1Drive_DrivesAreReturned()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(1, usbDrives.Count);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void IsReady_1Drive_True()
+		{
+			var drives = UsbDriveInfo.GetDrives();
+			Assert.That(drives[0].IsReady, Is.True);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void RootDirectory_1Drive_MatchesMountPath()
+		{
+			var drives = UsbDriveInfo.GetDrives();
+			// TODO The below is a platform specific expectation.  Fix for windows
+			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/"));
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void TotalSize_1Drive_GreaterThan1000()
+		{
+			var drives = UsbDriveInfo.GetDrives();
+			Assert.That(drives[0].TotalSize, Is.GreaterThan(1000));
 		}
 
 		[Test]
@@ -103,7 +131,7 @@ namespace Palaso.Tests.UsbDrive
 					{
 						string s = usbDrives[0].RootDirectory.FullName;
 					}
-			);
+				);
 		}
 	}
 }

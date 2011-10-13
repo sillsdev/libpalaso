@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="../OLAC_doc.xsl" type="text/xsl"?>
-<!DOCTYPE OLAC_doc SYSTEM "../OLAC_doc.dtd">
 <OLAC_doc>
   <header>
 	 <status code="adopted" type="recommendation"/>

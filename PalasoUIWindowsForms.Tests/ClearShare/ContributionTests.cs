@@ -1,6 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
-using Palaso.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {
