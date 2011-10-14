@@ -3,7 +3,7 @@ ab	abk
 af	afr
 ak	aka
 am	amh
-ar	ara
+ar	arb
 an	arg
 as	asm
 av	ava
@@ -40,7 +40,7 @@ et	est
 eu	eus
 ee	ewe
 fo	fao
-fa	fas
+fa	pes
 fj	fij
 fi	fin
 fr	fra
@@ -107,7 +107,7 @@ mt	mlt
 mo	mol
 mn	mon
 mi	mri
-ms	msa
+ms	zlm
 my	mya
 na	nau
 nv	nav
@@ -181,5 +181,5 @@ xh	xho
 yi	yid
 yo	yor
 za	zha
-zh	zho
+zh	cmn
 zu	zul

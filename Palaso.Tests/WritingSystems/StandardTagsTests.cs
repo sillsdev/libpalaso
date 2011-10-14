@@ -29,6 +29,14 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void CodeFaHasIso3Pes()
+		{
+			var codes = StandardTags.ValidIso639LanguageCodes;
+			var target = codes.Where(code => code.Code == "fa").First();
+			Assert.That(target.ISO3Code, Is.EqualTo("pes"));
+		}
+
+		[Test]
 		public void ValidIso639LanguageCodes_HasISO3CodeForEnglish()
 		{
 			var codes = StandardTags.ValidIso639LanguageCodes;

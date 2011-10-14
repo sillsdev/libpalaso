@@ -151,6 +151,7 @@
 	<Compile Include="Email\ThunderbirdEmailProvider.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
+	<Compile Include="Extensions\ByteArrayExtensions.cs" />
 	<Compile Include="Extensions\DateTimeExtensions.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
 	<Compile Include="Extensions\IEnumberableExtensions.cs" />
@@ -354,6 +355,7 @@
 	<Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />
 	<Compile Include="WritingSystems\WritingSystemRepositoryProblem.cs" />
 	<Compile Include="Xml\CanonicalXmlSettings.cs" />
+	<Compile Include="Xml\FastXmlElementSplitter.cs" />
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
 	<Compile Include="Xml\XmlNodeExtensions.cs" />
