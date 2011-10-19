@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Palaso.Progress.LogBox;
 
 namespace Palaso.Extensions
 {
@@ -61,10 +62,27 @@ namespace Palaso.Extensions
 
 
 		/// <summary>
+		/// if we can't parse it, we stick in the min value & write a warning to the progress
+//        /// </summary>
+//
+//        public static DateTime ParseDateTimePermissivelyWithFallbackToDefaultAndWarningToProgress(string when, IProgress progress)
+//        {
+//            try
+//            {
+//                return ParseDateTimePermissivelyWithException(when);
+//            }
+//            catch (Exception error)
+//            {
+//                progress.WriteWarning(error.Message);
+//                return default(DateTime);
+//            }
+//        }
+
+		/// <summary>
 		/// We have this permsissive business because we released versions of SayMore which used the local
 		/// format, rather than a universal one.
 		/// </summary>
-		public static DateTime ParseDateTimePermissively(string when)
+		public static DateTime ParseDateTimePermissivelyWithException(string when)
 		{
 			try
 			{
