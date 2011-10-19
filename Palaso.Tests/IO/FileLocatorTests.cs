@@ -50,30 +50,35 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		public void GetFromRegistryProgramThatOpensFileType_SendInvalidType_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".blah"));
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		public void GetFromRegistryProgramThatOpensFileType_SendValidType_ReturnsProgramPath()
 		{
 			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".txt"));
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		public void GetFromRegistryProgramThatOpensFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
 		{
 			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		public void LocateInProgramFiles_SendInvalidProgramNoDeepSearch_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.LocateInProgramFiles("blah.exe", false));
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		[Category("SkipOnTeamCity")]
 		public void LocateInProgramFiles_SendValidProgramNoDeepSearch_ReturnsNull()
 		{
@@ -81,6 +86,7 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		[Category("SkipOnTeamCity")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
 		{
@@ -88,6 +94,7 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		[Category("SkipOnTeamCity")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
@@ -95,6 +102,7 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
+		[Platform(Exclude="Unix")]
 		[Category("SkipOnTeamCity")]
 		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
 		{

@@ -160,8 +160,8 @@ namespace Palaso.Tests.IO
 			var foldername = Path.GetFileName(_srcFolder);
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
 		}
-
 		[Test]
+		[Platform(Exclude="Unix")]
 		public void SafeFoldersOmitSystemAndHiddenFolders()
 		{
 			using (var tempDir = new TemporaryFolder("TempRootDir"))
