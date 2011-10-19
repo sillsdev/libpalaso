@@ -117,6 +117,8 @@ namespace Palaso.WritingSystems.Migration
 			get {
 				string result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
 				result = Path.Combine(result, "WritingSystemRepository");
+				if (!Directory.Exists(result))
+					Directory.CreateDirectory(result);
 				return result;
 			}
 		}
@@ -129,6 +131,8 @@ namespace Palaso.WritingSystems.Migration
 			get {
 				string result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
 				result = Path.Combine(result, "WritingSystemRepository");
+				if (!Directory.Exists(result))
+					Directory.CreateDirectory(result);
 				return result;
 			}
 		}
