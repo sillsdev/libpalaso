@@ -259,7 +259,7 @@ namespace Palaso.Lift.Tests.Options
 		{
 			using (var environment = new TestEnvironment("wee-dupl1", "x-wee-dupl1"))
 			{
-				File.WriteAllText(environment.PathToOptionsListFile, "<?xml version='1.0' encoding='utf-8'?><form>yo</form>".Replace("'", "\""));
+				File.WriteAllText(environment.PathToOptionsListFile, "<?xml version='1.0' encoding='utf-8'?>\r\n<form>yo</form>".Replace("'", "\""));
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				environment.Helper.ReplaceWritingSystemId("text", "test");
 				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
