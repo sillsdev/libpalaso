@@ -83,22 +83,23 @@ namespace Palaso.WritingSystems
 		///<summary>
 		/// The DefaultBasePath is %CommonApplicationData%\SIL\WritingSystemRepository
 		/// On Windows 7 this is \ProgramData\SIL\WritingSystemRepository\
+		/// On Linux this must be in /var/lib so that it may be edited
 		///</summary>
 		public static string DefaultBasePath
 		{
 			get
 			{
-				string result = Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-					"SIL"
-				);
+				string result = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+				if (result == "/usr/share")
+					result = "/var/lib";
+				result = Path.Combine(result,"SIL");
 				result = Path.Combine(result, "WritingSystemRepository");
 				return result;
 			}
 		}
 
 		///<summary>
-		/// The BasePath of this instance of GloablWritingSystemRepository.
+		/// The BasePath of this instance of GlobalWritingSystemRepository.
 		/// e.g. c:\ProgramData\SIL\WritingSystemRepository\
 		///</summary>
 		public string BasePath { get; private set; }
