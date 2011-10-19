@@ -20,6 +20,7 @@ namespace Palaso.Lift.Options
 			_optionListFilePath = optionsListFilePath;
 			try
 			{
+				_xmlDoc.PreserveWhitespace = true;
 				_xmlDoc.Load(_optionListFilePath);
 			}
 			catch(Exception e)
@@ -52,8 +53,8 @@ namespace Palaso.Lift.Options
 							node.Attributes["lang"].Value = newId;
 						}
 					}
+					_xmlDoc.Save(_optionListFilePath);
 				}
-				_xmlDoc.Save(_optionListFilePath);
 			}
 			catch (Exception e)
 			{
