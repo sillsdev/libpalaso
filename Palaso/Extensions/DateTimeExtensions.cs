@@ -96,7 +96,8 @@ namespace Palaso.Extensions
 																			{
 																				CultureInfo.CurrentCulture,
 																				CultureInfo.CreateSpecificCulture("en-US"),
-																				CultureInfo.CreateSpecificCulture("en-GB")
+																				CultureInfo.CreateSpecificCulture("en-GB"),
+																				CultureInfo.CreateSpecificCulture("ru")
 																			});
 				foreach (var cultureInfo in culturesToTry)
 				{
