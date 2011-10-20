@@ -38,6 +38,18 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
+		public void OpenConnection_IBusNotRunning_ThrowsProblemNotificationSentToUser()
+		{
+			using (var e = new IBusEnvironmentForTest(true))
+			{
+				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+					() => IBusAdaptor.OpenConnection()
+				);
+			}
+		}
+
+		[Test]
+		[Category("IBus")]
 		public void KeyboardDescriptors_IBusNotRunning_ThrowsProblemNotificationSentToUser()
 		{
 			using (var e = new IBusEnvironmentForTest(true))
@@ -50,19 +62,17 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		public void Deactivate_IBusNotRunning_ThrowsProblemNotificationSentToUser()
+		public void Deactivate_IBusNotRunning_DoesNotThrow()
 		{
 			using (var e = new IBusEnvironmentForTest(true))
 			{
-				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-					IBusAdaptor.Deactivate
-				);
+				Assert.DoesNotThrow(() => IBusAdaptor.Deactivate());
 			}
 		}
 
 		[Test]
 		[Category("IBus")]
-		public void ActivateKeyBoard_IBusNotRunning_DoesNotThrow()
+		public void ActivateKeyBoard_IBusNotRunning_ThrowsProblemNotificationSentToUser()
 		{
 			using (var e = new IBusEnvironmentForTest(true))
 			{
