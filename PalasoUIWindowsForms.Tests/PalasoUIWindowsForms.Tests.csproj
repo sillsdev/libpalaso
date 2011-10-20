@@ -131,6 +131,7 @@
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
 	<Compile Include="Keyboarding\LinuxKeyboardControllerTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeModelTests.cs" />
+	<Compile Include="ErrorReporting\ErrorReportingTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
