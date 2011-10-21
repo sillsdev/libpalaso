@@ -11,14 +11,14 @@ namespace PalasoUIWindowsForms.Tests.ErrorReporting
 	public class ErrorReportingTests
 	{
 
-		[Test]
+		[Test, Ignore("By hand only")]
 		public void NotifyUserOfProblem_Message()
 		{
 			string message = "Oh no!";
 			ErrorReport.NotifyUserOfProblem(message);
 		}
 
-		[Test]
+		[Test, Ignore("By hand only")]
 		public void NotifyUserOfProblem_OncePerSession()
 		{
 			string message = "Oh no!";
