@@ -95,7 +95,7 @@
 	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
 	  <EmbedInteropTypes>True</EmbedInteropTypes>
-	  <HintPath>..\lib\net2.0\Interop.WIA.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\Interop.WIA.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
