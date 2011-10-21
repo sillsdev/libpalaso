@@ -1281,26 +1281,26 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "The word is borrowed from another language")),
 						  Is.EqualTo(new LiftMultiText("en", "borrowed")),
 						  Is.EqualTo(new LiftMultiText()),
-						  Is.EqualTo("<range-element id=\"borrowed\">\n" +
-								"          <label>\n" +
-								"            <form lang=\"en\"><text>borrowed</text></form>\n" +
-								"          </label>\n" +
-								"          <description>\n" +
-								"            <form lang=\"en\"><text>The word is borrowed from another language</text></form>\n" +
-								"          </description>\n" +
+						  Is.EqualTo("<range-element id=\"borrowed\">\r\n" +
+								"          <label>\r\n" +
+								"            <form lang=\"en\"><text>borrowed</text></form>\r\n" +
+								"          </label>\r\n" +
+								"          <description>\r\n" +
+								"            <form lang=\"en\"><text>The word is borrowed from another language</text></form>\r\n" +
+								"          </description>\r\n" +
 								"        </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("etymology"), Is.EqualTo("proto"), Is.Null, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "The proto form of the word in another language")),
 						  Is.EqualTo(new LiftMultiText("en", "proto")),
 						  Is.EqualTo(new LiftMultiText()),
-						  Is.EqualTo("<range-element id=\"proto\">\n" +
-								"          <label>\n" +
-								"            <form lang=\"en\"><text>proto</text></form>\n" +
-								"          </label>\n" +
-								"          <description>\n" +
-								"            <form lang=\"en\"><text>The proto form of the word in another language</text></form>\n" +
-								"          </description>\n" +
+						  Is.EqualTo("<range-element id=\"proto\">\r\n" +
+								"          <label>\r\n" +
+								"            <form lang=\"en\"><text>proto</text></form>\r\n" +
+								"          </label>\r\n" +
+								"          <description>\r\n" +
+								"            <form lang=\"en\"><text>The proto form of the word in another language</text></form>\r\n" +
+								"          </description>\r\n" +
 								"        </range-element>"));
 				// The following range elements are from an external range file.
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
@@ -1308,30 +1308,30 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "modify verbs")),
 						  Is.EqualTo(new LiftMultiText("en", "Adverb")),
 						  Is.EqualTo(new LiftMultiText("en", "adv")),
-						  Is.EqualTo("<range-element guid=\"c528ee72-31a5-423d-833d-0c8454f345d3\" id=\"Adverb\">\n" +
-								"      <label><form lang=\"en\"><text>Adverb</text></form></label>\n" +
-								"      <abbrev><form lang=\"en\"><text>adv</text></form></abbrev>\n" +
-								"      <description><form lang=\"en\"><text>modify verbs</text></form></description>\n" +
+						  Is.EqualTo("<range-element guid=\"c528ee72-31a5-423d-833d-0c8454f345d3\" id=\"Adverb\">\r\n" +
+								"      <label><form lang=\"en\"><text>Adverb</text></form></label>\r\n" +
+								"      <abbrev><form lang=\"en\"><text>adv</text></form></abbrev>\r\n" +
+								"      <description><form lang=\"en\"><text>modify verbs</text></form></description>\r\n" +
 								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Noun"), Is.NotNull, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "substantives and nominals")),
 						  Is.EqualTo(new LiftMultiText("en", "Noun")),
 						  Is.EqualTo(new LiftMultiText("en", "n")),
-						  Is.EqualTo("<range-element guid=\"0fae9a91-36c0-429f-9a31-fbef1292da6a\" id=\"Noun\">\n" +
-								"      <label><form lang=\"en\"><text>Noun</text></form></label>\n" +
-								"      <abbrev><form lang=\"en\"><text>n</text></form></abbrev>\n" +
-								"      <description><form lang=\"en\"><text>substantives and nominals</text></form></description>\n" +
+						  Is.EqualTo("<range-element guid=\"0fae9a91-36c0-429f-9a31-fbef1292da6a\" id=\"Noun\">\r\n" +
+								"      <label><form lang=\"en\"><text>Noun</text></form></label>\r\n" +
+								"      <abbrev><form lang=\"en\"><text>n</text></form></abbrev>\r\n" +
+								"      <description><form lang=\"en\"><text>substantives and nominals</text></form></description>\r\n" +
 								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Verb"), Is.NotNull, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "signal events and actions")),
 						  Is.EqualTo(new LiftMultiText("en", "Verb")),
 						  Is.EqualTo(new LiftMultiText("en", "v")),
-						  Is.EqualTo("<range-element guid=\"4812abf3-31e5-450c-a15f-a830dfc7f223\" id=\"Verb\">\n" +
-								"      <label><form lang=\"en\"><text>Verb</text></form></label>\n" +
-								"      <abbrev><form lang=\"en\"><text>v</text></form></abbrev>\n" +
-								"      <description><form lang=\"en\"><text>signal events and actions</text></form></description>\n" +
+						  Is.EqualTo("<range-element guid=\"4812abf3-31e5-450c-a15f-a830dfc7f223\" id=\"Verb\">\r\n" +
+								"      <label><form lang=\"en\"><text>Verb</text></form></label>\r\n" +
+								"      <abbrev><form lang=\"en\"><text>v</text></form></abbrev>\r\n" +
+								"      <description><form lang=\"en\"><text>signal events and actions</text></form></description>\r\n" +
 								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("cv-pattern"),
