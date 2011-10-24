@@ -133,6 +133,8 @@
 	<Compile Include="Text\ApproximateMatcherTests.cs" />
 	<Compile Include="Text\LanguageFormTest.cs" />
 	<Compile Include="Text\MultiTextBase.Tests.cs" />
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDeviceTests.cs" />
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisksTests.cs" />
 	<Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXmlTests.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesParserTests.cs" />
@@ -191,9 +193,6 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

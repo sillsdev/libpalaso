@@ -272,6 +272,9 @@ namespace Palaso.IO
 		/// ------------------------------------------------------------------------------------
 		public static string GetFromRegistryProgramThatOpensFileType(string fileExtension)
 		{
+#if MONO
+			throw new NotImplementedException("GetFromRegistryProgramThatOpensFileType not implemented on Mono yet.");
+#else
 			var ext = fileExtension.Trim();
 			if (!ext.StartsWith("."))
 				ext = "." + ext;
@@ -298,6 +301,7 @@ namespace Palaso.IO
 
 			value = value.Trim('\"', '%', '1', ' ');
 			return (!File.Exists(value) ? null : value);
+#endif
 		}
 
 		/// ------------------------------------------------------------------------------------

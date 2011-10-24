@@ -175,6 +175,40 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Write_LdmlIsNicelyFormatted()
 		{
+#if MONO
+				// mono inserts \r\n\t before xmlns where windows doesn't
+			string expectedFileContent =
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version
+			number='' />
+		<generation
+			date='0001-01-01T00:00:00' />
+		<language
+			type='en' />
+		<script
+			type='Zxxx' />
+		<territory
+			type='US' />
+		<variant
+			type='x-audio' />
+	</identity>
+	<collations />
+	<special
+		xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+		<palaso:abbreviation
+			value='en' />
+		<palaso:languageName
+			value='English' />
+		<palaso:version
+			value='2' />
+	</special>
+</ldml>".Replace("'", "\"");
+#endregion
+
+#else
 			string expectedFileContent =
 #region filecontent
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -204,6 +238,7 @@ namespace Palaso.Tests.WritingSystems
 	</special>
 </ldml>".Replace("'", "\"");
 #endregion
+#endif
 			using (var file = new TempFile())
 			{
 				//Create an ldml fiel to read

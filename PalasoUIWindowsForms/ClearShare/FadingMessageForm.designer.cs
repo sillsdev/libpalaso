@@ -1,6 +1,4 @@
-﻿using Palaso.UI.WindowsForms.ClearShare;
-
-namespace Palaso.ClearShare
+﻿namespace Palaso.UI.WindowsForms.ClearShare
 {
 	partial class FadingMessageForm
 	{

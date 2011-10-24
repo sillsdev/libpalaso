@@ -1,6 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
-using Palaso.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {
@@ -106,9 +106,10 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 
 			var l1 = License.CreativeCommons_Attribution;
 			var l2 = License.CreativeCommons_Attribution;
+			var d1 = DateTime.Now;
 
-			var c1 = new Contribution("joey", r1) { Date = DateTime.Now, Comments = "get bread", ApprovedLicense = l1 };
-			var c2 = new Contribution("joey", r2) { Date = DateTime.Now, Comments = "get bread", ApprovedLicense = l2 };
+			var c1 = new Contribution("joey", r1) { Date = d1, Comments = "get bread", ApprovedLicense = l1 };
+			var c2 = new Contribution("joey", r2) { Date = d1, Comments = "get bread", ApprovedLicense = l2 };
 			Assert.IsTrue(c1.AreContentsEqual(c2));
 		}
 
@@ -165,8 +166,10 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			var l1 = License.CreativeCommons_Attribution;
 			var l2 = License.CreativeCommons_Attribution;
 
-			var c1 = new Contribution("joey", r1) { Date = DateTime.Now, Comments = "get bread", ApprovedLicense = l1 };
-			var c2 = new Contribution("joey", r2) { Date = DateTime.Now, Comments = "get bread", ApprovedLicense = l2 };
+			var d1 = DateTime.Now;
+
+			var c1 = new Contribution("joey", r1) { Date = d1, Comments = "get bread", ApprovedLicense = l1 };
+			var c2 = new Contribution("joey", r2) { Date = d1, Comments = "get bread", ApprovedLicense = l2 };
 			Assert.IsTrue(c1.Equals(c2));
 		}
 	}

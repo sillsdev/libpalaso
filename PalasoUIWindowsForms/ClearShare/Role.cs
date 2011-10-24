@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	public class Role
 	{

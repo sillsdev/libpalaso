@@ -263,6 +263,7 @@ namespace Palaso.Lift.Merging
 			newerDoc.Load(newerFilePath);
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.NewLineOnAttributes = true; //ugly, but great for merging with revision control systems
+			settings.NewLineChars = "\r\n";
 			settings.Indent = true;
 			settings.IndentChars = "\t";
 			settings.CheckCharacters = false;

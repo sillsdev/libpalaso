@@ -17,4 +17,6 @@ config
 *.usertasks
 *~
 *.resources
+$(Configuration)
 nant.resx.bak
+glob:lib/DebugMono/icu*40.dll

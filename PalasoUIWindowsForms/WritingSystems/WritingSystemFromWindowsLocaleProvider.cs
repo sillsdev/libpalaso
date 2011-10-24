@@ -57,6 +57,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 			{
+				if (language.Culture.EnglishName.StartsWith("Invariant"))
+				{
+					continue;
+				}
 				string region = string.Empty;
 				if (Environment.OSVersion.Platform != PlatformID.Unix)
 				{

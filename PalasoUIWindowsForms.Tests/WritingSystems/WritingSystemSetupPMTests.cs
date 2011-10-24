@@ -23,10 +23,12 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void Setup()
 		{
 			EventFired = false;
+			ErrorReport.IsOkToInteractWithUser = false;
+			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
+
 			_testFilePath = Path.GetTempFileName();
 			_writingSystemRepository = new LdmlInXmlWritingSystemRepository();
 			_model = new WritingSystemSetupModel(_writingSystemRepository);
-			Palaso.Reporting.ErrorReport.IsOkToInteractWithUser = false;
 		}
 
 		[TearDown]

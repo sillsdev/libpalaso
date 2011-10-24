@@ -99,8 +99,19 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			if (Writer.Settings.ConformanceLevel != ConformanceLevel.Fragment)
 			{
+#if MONO
+				// If there are no open elements and you try to WriteEndElement then mono throws a
+				// InvalidOperationException: There is no more open element
+				// WriteEndDocument will close any open elements anyway
+				//
+				// If you try to WriteEndDocument on a closed writer then mono throws a
+				// InvalidOperationException: This XmlWriter does not accept EndDocument at this state Closed
+				if (Writer.WriteState != WriteState.Closed)
+					Writer.WriteEndDocument();
+#else
 				Writer.WriteEndElement(); //lift
 				Writer.WriteEndDocument();
+#endif
 			}
 			Writer.Flush();
 			Writer.Close();

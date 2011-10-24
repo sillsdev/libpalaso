@@ -9,8 +9,7 @@ using System.Windows.Forms;
 using Palaso.Code;
 using Palaso.UI.WindowsForms.Widgets.Grid;
 
-
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	/// ----------------------------------------------------------------------------------------
 	public partial class ContributorsListControl : UserControl
