@@ -19,6 +19,7 @@ namespace Palaso.UI.WindowsForms.Widgets
 		{
 			InitializeComponent();
 			CheckOnClick = false;
+			AuthorizeCheck = true; // allow setup code to do any pre-checking
 		}
 
 		public BetterCheckedListBox(IContainer container)
@@ -54,6 +55,12 @@ namespace Palaso.UI.WindowsForms.Widgets
 					return;
 				}
 			}
+		}
+
+		private void BetterCheckedListBox_Enter(object sender, System.EventArgs e)
+		{
+			//ok, now that we're all set up, turn off unwanted checking.  Until this point, we might have head checking by set-up code
+			AuthorizeCheck = false;
 		}
 
 	}

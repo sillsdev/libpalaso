@@ -33,6 +33,7 @@
 			// BetterCheckedListBox
 			//
 			this.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnItemCheck);
+			this.Enter += new System.EventHandler(this.BetterCheckedListBox_Enter);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
 			this.ResumeLayout(false);
 

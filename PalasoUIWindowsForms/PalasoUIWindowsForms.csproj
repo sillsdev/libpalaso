@@ -273,7 +273,9 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Widgets\BetterCheckedListBox.cs" />
+	<Compile Include="Widgets\BetterCheckedListBox.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Widgets\BetterCheckedListBox.designer.cs">
 	  <DependentUpon>BetterCheckedListBox.cs</DependentUpon>
 	</Compile>
