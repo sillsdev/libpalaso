@@ -147,7 +147,7 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// Return subdirectorys of <paramref name="path"/> that are not system or hidden.
+		/// Return subdirectoriess of <paramref name="path"/> that are not system or hidden. Note, still dies on Windows Backup files, which apparently look like directories.
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
 		/// <returns>Zero or more directory names that are not system or hidden.</returns>

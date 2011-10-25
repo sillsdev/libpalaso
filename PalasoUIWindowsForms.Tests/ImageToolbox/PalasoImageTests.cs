@@ -10,7 +10,7 @@ using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
 {
-	[TestFixture]
+	[TestFixture, Ignore("Needs exiftool in the distfiles")]
 	public class PalasoImageTests
 	{
 		[Test]
@@ -70,7 +70,64 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 				() => PalasoImage.FromImage(null));
 		}
 
-		[Test, Ignore("not yet")]
+		[Test]
+		public void SaveAndLoad_PNG_PreservesCopyrightNotice()
+		{
+			var png = new Bitmap(10, 10);
+			var pi = new PalasoImage(png);
+			pi.CopyrightNotice = "Copyright Test";
+			using (var temp = TempFile.WithExtension("png"))
+			{
+				pi.Save(temp.Path);
+				var incoming = PalasoImage.FromFile(temp.Path);
+			   Assert.AreEqual(pi.CopyrightNotice, incoming.CopyrightNotice);
+			}
+		}
+
+		[Test]
+		public void SaveAndLoad_HasCreativeCommonsLicense_ReadsInSameLicense()
+		{
+			var png = new Bitmap(10, 10);
+			var pi = new PalasoImage(png);
+			pi.Licenses.Add(new CreativeCommonsLicense());
+			using (var temp = TempFile.WithExtension("png"))
+			{
+				pi.Save(temp.Path);
+				var incoming = PalasoImage.FromFile(temp.Path);
+				Assert.AreEqual(1,incoming.Licenses.Count);
+				Assert.IsInstanceOf(typeof (CreativeCommonsLicense), incoming.Licenses[0]);
+			}
+		}
+
+
+		[Test]
+		public void SaveAndLoad_PNG_PreservesIllustratorNotice()
+		{
+			var png = new Bitmap(10, 10);
+			var pi = new PalasoImage(png);
+			pi.IllustratorPhotographer = "Joe Shmo";
+			using (var temp = TempFile.WithExtension("png"))
+			{
+				pi.Save(temp.Path);
+				var incoming = PalasoImage.FromFile(temp.Path);
+				Assert.AreEqual(pi.IllustratorPhotographer, incoming.IllustratorPhotographer);
+			}
+		}
+
+		[Test]
+		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
+		{
+			var png = new Bitmap(10, 10);
+			var pi = new PalasoImage(png);
+			using (var temp = TempFile.WithExtension("png"))
+			{
+				pi.Save(temp.Path);
+				var incoming = PalasoImage.FromFile(temp.Path);
+				Assert.IsNull(incoming.CopyrightNotice);
+			}
+		}
+
+		[Test]
 		public void SaveAndLoad_PNGWithDangerousCharacters_PreservesCopyrightNotice()
 		{
 			var png = new Bitmap(10, 10);
@@ -84,7 +141,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("not yet")]
+		[Test]
 		public void LoadAndSave_DeleteAfter_NothingLocked()
 		{
 			var png = new Bitmap(10, 10);
@@ -116,7 +173,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			Assert.IsFalse(pi.Locked);
 		}
 
-		[Test, Ignore("not yet")]
+		[Test]
 		public void Locked_LoadedWithIllustrator_True()
 		{
 			var png = new Bitmap(10, 10);
@@ -131,12 +188,12 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		}
 
 
-		[Test, Ignore("not yet")]
+		[Test]
 		public void Illustrator_TryToChangeWhileLocked_Throws()
 		{
 			var pi = new PalasoImage();
 			pi.Locked = true;
-			Assert.Throws<ApplicationException>(() => pi.IllustratorPhotographer = "me");
+			Assert.Throws<InvalidOperationException>(() => pi.IllustratorPhotographer = "me");
 		}
 	}
 }

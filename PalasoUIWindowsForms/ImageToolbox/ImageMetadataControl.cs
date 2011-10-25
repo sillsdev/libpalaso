@@ -47,7 +47,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			else
 			{
-				_licenseDescription.ReadOnly = FirstLicense.EditableWhenNotLocked;
+				_licenseDescription.ReadOnly = FirstLicense.EditingAllowed;
 				_licenseDescription.Visible = true;
 				_licenseDescription.Text = FirstLicense.GetDescription("en");
 				_licenseImage.Image = FirstLicense.GetImage();
