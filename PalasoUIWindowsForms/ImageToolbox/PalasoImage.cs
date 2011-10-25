@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -45,26 +46,25 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			get { return _copyrightNotice; }
 			set
 			{
-				Guard.Against(Locked, "You must first explicitly unlock the metadata of this image before setting an metatdata values.");
+				Guard.Against(MetaDataLocked, "You must first explicitly unlock the metadata of this image before setting an metatdata values.");
 				_copyrightNotice = value;
 			}
 		}
 
-		private string _illustratorPhotographer;
-		public string IllustratorPhotographer
-		{
-			get { return _illustratorPhotographer; }
-			set
-			{
-				Guard.Against(Locked, "You must first explicitly unlock the metadata of this image before setting an metatdata values.");
-				_illustratorPhotographer = value;
-			}
-		}
+		/// <summary>
+		/// Use this for artist, photographer, company, whatever.  It is mapped to XMP-Creative Commons--AttributionName, but may be used even if you don't have a creative commons license
+		/// </summary>
+		public string AttributionName { get; set; }
 
 		/// <summary>
-		/// Should the user be able to make changes?
+		/// Use this for the site to link to in attribution.  It is mapped to XMP-Creative Commons--AttributionUrl, but may be used even if you don't have a creative commons license
 		/// </summary>
-		public bool Locked
+		public string AttributionUrl { get; set; }
+
+		/// <summary>
+		/// Should the user be able to make changes to MetaData?
+		/// </summary>
+		public bool MetaDataLocked
 		{
 			get; set;
 		}
@@ -80,23 +80,33 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
-			if(!string.IsNullOrEmpty(CopyrightNotice))
-			{
-				arguments.AppendFormat(" -copyright=\"{0}\"", CopyrightNotice);
-				arguments.AppendFormat(" -XMP-xmpRights:Marked=\"True\" --XMP-dc:Rights=\"{0}\"", CopyrightNotice);
-			}
-			if (!string.IsNullOrEmpty(IllustratorPhotographer))
-				arguments.AppendFormat(" -author=\"{0}\"", IllustratorPhotographer);
 
-			if(Licenses.Count>0 && !string.IsNullOrEmpty(Licenses[0].Url))
+			foreach (var assignment in MetaDataAssignments)
 			{
-				arguments.AppendFormat(" -XMP-cc:License=\"{0}\"", Licenses[0].Url);
-				arguments.AppendFormat(" -XMP-xmpRights:Marked=\"True\"");
+				if(assignment.ShouldSetValue(this))
+				{
+					arguments.AppendFormat(" " + assignment.Switch + "=\"" + assignment.GetStringFunction(this) + "\" ");
+				}
 			}
+
+			if (arguments.ToString().Length == 0)
+			{
+				//no metadata
+				return;
+			}
+
 			arguments.AppendFormat(" \"{0}\"", path);
-			CommandLineRunner.Run(exifPath,arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifPath,arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
 																												 // -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
+#if DEBUG
+			Debug.WriteLine("writing");
+			Debug.WriteLine(arguments.ToString());
+			Debug.WriteLine(result.StandardError);
+			Debug.WriteLine(result.StandardOutput);
+#endif
 		}
+
+
 
 		public static PalasoImage FromFile(string path)
 		{
@@ -105,33 +115,37 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						   Image = LoadImageWithoutLocking(path),
 						   FileName = Path.GetFileName(path)
 			};
-			string s = null;
 			var properties = GetImageProperites(path);
-			if (properties.TryGetValue("copyright", out s))
-			{
-				i.CopyrightNotice = s;
-			}
-			if(properties.TryGetValue("author", out s))
-			{
-				i.IllustratorPhotographer = s;
-			}
-
-			s = null;
-			if(properties.TryGetValue("license", out s))
-			{
-				i.Licenses.Add(CreativeCommonsLicense.FromUrl(s));
-			}
 
 
-			//if this came in with meta data, we don't want the UI to encourage editing it.
-			i.Locked = properties.Count > 0;
+			foreach (var assignment in MetaDataAssignments)
+			{
+				string propertyValue;
+				if (properties.TryGetValue(assignment.ResultLabel.ToLower(), out propertyValue))
+				{
+					assignment.AssignmentAction.Invoke(i,propertyValue);
+					i.MetaDataLocked = true;
+				}
+			}
 			return i;
 		}
+
 
 		private static Dictionary<string,string> GetImageProperites(string path)
 		{
 			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
-			var result =CommandLineRunner.Run(exifPath, string.Format("-XMP-cc:License -author -copyright \"{0}\"", path), Path.GetDirectoryName(path), 5, new NullProgress());
+			var args = new StringBuilder();
+			foreach (var assignment in MetaDataAssignments)
+			{
+				args.Append(" "+assignment.Switch+" ");
+			}
+			var result =CommandLineRunner.Run(exifPath, string.Format("{0} \"{1}\"", args.ToString(), path), Path.GetDirectoryName(path), 5, new NullProgress());
+#if DEBUG
+			Debug.WriteLine("reading");
+			Debug.WriteLine(args.ToString());
+			Debug.WriteLine(result.StandardError);
+			Debug.WriteLine(result.StandardOutput);
+#endif
 			var lines= result.StandardOutput.SplitTrimmed('\r');
 			var values = new Dictionary<string, string>();
 			foreach (var line in lines)
@@ -170,6 +184,50 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						   Image = image
 					   };
 		}
+
+		private class MetaDataAssignemtn
+		{
+			public Func<PalasoImage, string> GetStringFunction { get; set; }
+			public Func<PalasoImage, bool> ShouldSetValue { get; set; }
+			public string Switch;
+			public string ResultLabel;
+			public Action<PalasoImage, string> AssignmentAction;
+
+			public MetaDataAssignemtn(string Switch, string resultLabel, Action<PalasoImage, string> assignmentAction, Func<PalasoImage, string> stringProvider)
+				: this(Switch, resultLabel, assignmentAction,stringProvider, p => !string.IsNullOrEmpty(stringProvider(p)))
+			{
+			}
+
+			public MetaDataAssignemtn(string @switch, string resultLabel, Action<PalasoImage, string> assignmentAction, Func<PalasoImage, string> stringProvider, Func<PalasoImage, bool> shouldSetValueFunction)
+			{
+				GetStringFunction = stringProvider;
+				ShouldSetValue = shouldSetValueFunction;
+				Switch = @switch;
+				ResultLabel = resultLabel;
+				AssignmentAction = assignmentAction;
+			}
+		}
+
+		private static List<MetaDataAssignemtn> MetaDataAssignments
+		{
+			get
+			{
+				var assignments = new List<MetaDataAssignemtn>();
+				assignments.Add(new MetaDataAssignemtn("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
+
+				assignments.Add(new MetaDataAssignemtn("-author", "author", (p, value) => p.AttributionName = value, p => p.AttributionName));
+				assignments.Add(new MetaDataAssignemtn("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
+
+				assignments.Add(new MetaDataAssignemtn("-XMP-cc:License", "license",
+													   (p, value) =>
+													   p.Licenses.Add(
+														   CreativeCommonsLicense.FromUrl(
+															   value)),
+												   p=>p.Licenses[0].Url, p => p.Licenses.Count > 0));
+				return assignments;
+			}
+		}
+
 	}
 
 
