@@ -34,8 +34,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 
 			_lockedCheckbox.Checked = _image.MetaDataLocked;
-			_illustrator.Text = _image.AttributionName;
-			_copyright.Text = _image.CopyrightNotice;
+			_illustrator.Text = _image.MetaData.AttributionName;
+			_copyright.Text = _image.MetaData.CopyrightNotice;
 
 			_illustrator.ReadOnly = _copyright.ReadOnly = _image.MetaDataLocked;
 
@@ -57,20 +57,20 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			get
 			{
-				if (_image.Licenses.Count == 0)
+				if (_image.MetaData.License!=null)
 					return null;
-				return _image.Licenses[0];
+				return _image.MetaData.License;
 			}
 		}
 
 		private void _illustrator_TextChanged(object sender, EventArgs e)
 		{
-			_image.AttributionName = _illustrator.Text;
+			_image.MetaData.AttributionName = _illustrator.Text;
 		}
 
 		private void _copyright_TextChanged(object sender, EventArgs e)
 		{
-			_image.CopyrightNotice = _copyright.Text;
+			_image.MetaData.CopyrightNotice = _copyright.Text;
 		}
 
 		private void _lockedCheckbox_CheckedChanged(object sender, EventArgs e)

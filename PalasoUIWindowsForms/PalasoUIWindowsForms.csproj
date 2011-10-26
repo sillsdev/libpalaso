@@ -134,6 +134,7 @@
 	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\License.cs" />
+	<Compile Include="ClearShare\MetaDataAccess.cs" />
 	<Compile Include="ClearShare\OlacSystem.cs" />
 	<Compile Include="ClearShare\Role.cs" />
 	<Compile Include="ClearShare\Work.cs" />
