@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Palaso.Code;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Progress.LogBox;
-using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {
+	/// <summary>
+	/// Provides reading and writing of metdata, currently for any file which exiftool can read AND write (images, pdf).
+	/// ExifTool can read many more formats that it can write (video, html, docx), but I have not tested those yet  (should be easy).
+	/// ExifTool can also read/write sidecar files, but that is not yet implemented here, either (should be easy).
+	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), exif provides conformance to the MedatData
+	/// Working Group guidelines: http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf, which we use by telling exiftool to
+	/// to "-use MWG": http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html.  E.g., this puts the "Copyright" into both the exif "copyright", and "xmp:Rights".
+	///
+	/// Microsoft Pro Photo Tools: http://www.microsoft.com/download/en/details.aspx?id=13518
+	/// </summary>
 	public class MetaDataAccess
 	{
+		public MetaDataAccess()
+		{
+			AllowEditingMetadata = true;
+		}
+
 		/// <summary>
 		/// Create a MetaDataAccess by reading an existing media file
 		/// </summary>
@@ -34,27 +45,80 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				if (properties.TryGetValue(assignment.ResultLabel.ToLower(), out propertyValue))
 				{
 					assignment.AssignmentAction.Invoke(m, propertyValue);
+					m.AllowEditingMetadata = false;
+
 				}
 			}
+			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
+			m.HasChanges = false;
 			return m;
 		}
+
+		private LicenseInfo _license;
 
 		///<summary>
 		/// 0 or more licenses offered by the copyright holder
 		///</summary>
-		public LicenseInfo License { get; set; }
+		public LicenseInfo License
+		{
+			get { return _license; }
+			set
+			{
+				if (value != _license)
+					HasChanges = true;
+				_license = value;
+			}
+		}
 
-		public string CopyrightNotice  { get; set; }
+		private string _copyrightNotice;
+		public string CopyrightNotice
+		{
+			get { return _copyrightNotice; }
+			set
+			{
+				if (value.Trim().Length == 0)
+					value = null;
+				if (value != _copyrightNotice)
+					HasChanges = true;
+				_copyrightNotice = value;
+			}
+		}
+
+		private string _creator;
 
 		/// <summary>
-		/// Use this for artist, photographer, company, whatever.  It is mapped to XMP-Creative Commons--AttributionName, but may be used even if you don't have a creative commons license
+		/// Use this for artist, photographer, company, whatever.  It is mapped to EXIF:Author and XMP:AttributionName
 		/// </summary>
-		public string AttributionName { get; set; }
+		public string Creator
+		{
+			get { return _creator; }
+			set
+			{
+				if (value.Trim().Length == 0)
+					value = null;
+				if (value != _creator)
+					HasChanges = true;
+				_creator = value;
+			}
+		}
+
+		private string _attributionUrl;
 
 		/// <summary>
 		/// Use this for the site to link to in attribution.  It is mapped to XMP-Creative Commons--AttributionUrl, but may be used even if you don't have a creative commons license
 		/// </summary>
-		public string AttributionUrl { get; set; }
+		public string AttributionUrl
+		{
+			get { return _attributionUrl; }
+			set
+			{
+				if (value.Trim().Length == 0)
+					value = null;
+				if (value != _attributionUrl)
+					HasChanges = true;
+				_attributionUrl = value;
+			}
+		}
 
 
 		private static Dictionary<string, string> GetImageProperites(string path)
@@ -72,7 +136,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			Debug.WriteLine(result.StandardError);
 			Debug.WriteLine(result.StandardOutput);
 #endif
-			var lines = result.StandardOutput.SplitTrimmed('\r');
+			var lines = result.StandardOutput.SplitTrimmed('\n');
 			var values = new Dictionary<string, string>();
 			foreach (var line in lines)
 			{
@@ -121,7 +185,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				var assignments = new List<MetaDataAssignement>();
 				assignments.Add(new MetaDataAssignement("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
 
-				assignments.Add(new MetaDataAssignement("-author", "author", (p, value) => p.AttributionName = value, p => p.AttributionName));
+				assignments.Add(new MetaDataAssignement("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
 				assignments.Add(new MetaDataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
 
 				assignments.Add(new MetaDataAssignement("-XMP-cc:License", "license",
@@ -132,12 +196,16 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+		public bool AllowEditingMetadata { get; private set; }
+
+		public bool HasChanges { get; private set; }
+
 		private string _path;
 
 		public void Write()
 		{
 
-			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
 
@@ -155,8 +223,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				return;
 			}
 
+			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
+
+			arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", _path);
-			var result = CommandLineRunner.Run(exifPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 #if DEBUG
 			Debug.WriteLine("writing");
@@ -164,7 +235,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			Debug.WriteLine(result.StandardError);
 			Debug.WriteLine(result.StandardOutput);
 #endif
-
+			//as of right now, we are clean with respect to what is on disk, no need to save.
+			HasChanges = false;
 		}
 	}
 }

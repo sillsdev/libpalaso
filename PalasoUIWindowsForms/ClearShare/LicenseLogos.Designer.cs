@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.UI.WindowsForms.ImageToolbox {
+namespace Palaso.UI.WindowsForms.ClearShare {
 	using System;
 
 
@@ -22,14 +22,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox {
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
 	[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-	internal class ImageToolboxButtons {
+	internal class LicenseLogos {
 
 		private static global::System.Resources.ResourceManager resourceMan;
 
 		private static global::System.Globalization.CultureInfo resourceCulture;
 
 		[global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal ImageToolboxButtons() {
+		internal LicenseLogos() {
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.UI.WindowsForms.ImageToolbox.ImageToolboxButtons", typeof(ImageToolboxButtons).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.UI.WindowsForms.ClearShare.LicenseLogos", typeof(LicenseLogos).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
@@ -60,58 +60,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox {
 			}
 		}
 
-		internal static System.Drawing.Bitmap browse {
+		internal static System.Drawing.Bitmap cc_BY_88x31 {
 			get {
-				object obj = ResourceManager.GetObject("browse", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap camera {
-			get {
-				object obj = ResourceManager.GetObject("camera", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap camera64x64 {
-			get {
-				object obj = ResourceManager.GetObject("camera64x64", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap credits {
-			get {
-				object obj = ResourceManager.GetObject("credits", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap crop {
-			get {
-				object obj = ResourceManager.GetObject("crop", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap scanner {
-			get {
-				object obj = ResourceManager.GetObject("scanner", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap scanner64x64 {
-			get {
-				object obj = ResourceManager.GetObject("scanner64x64", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap searchFolder {
-			get {
-				object obj = ResourceManager.GetObject("searchFolder", resourceCulture);
+				object obj = ResourceManager.GetObject("cc_BY_88x31", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}

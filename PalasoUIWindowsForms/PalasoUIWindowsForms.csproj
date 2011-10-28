@@ -215,8 +215,8 @@
 	<Compile Include="ImageToolbox\ImageToolboxDialog.Designer.cs">
 	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\LicenseInfo.cs" />
-	<Compile Include="ImageToolbox\LicenseLogos.Designer.cs">
+	<Compile Include="ClearShare\LicenseInfo.cs" />
+	<Compile Include="ClearShare\LicenseLogos.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>LicenseLogos.resx</DependentUpon>
@@ -494,7 +494,7 @@
 	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\LicenseLogos.resx">
+	<EmbeddedResource Include="ClearShare\LicenseLogos.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
@@ -653,9 +653,6 @@
 	<None Include="Resources\browse.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\Licenses.png" />
-  </ItemGroup>
-  <ItemGroup>
 	<None Include="Resources\scanner.png" />
   </ItemGroup>
   <ItemGroup>
@@ -705,6 +702,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\OlacRoles.xml" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\Licenses.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

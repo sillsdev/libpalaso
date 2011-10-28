@@ -94,7 +94,20 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			foreach (var macPath in results)
 			{
 				var path = Path.Combine(RootImagePath, ((string) macPath).Replace(':', Path.DirectorySeparatorChar));
-				if (!limitToThoseActuallyAvailable || File.Exists(path))
+				if (!limitToThoseActuallyAvailable)
+					yield return path;
+
+				if (File.Exists(path))
+				{
+					yield return path;
+				}
+				//the index has the original file names, and were tifs.
+
+				//the re-republished versions (which have embedd3ed metadata and watermarks) start with AOR_ and end with png
+				path =
+					Path.GetDirectoryName(path).CombineForPath("AOR_" + Path.GetFileName(path).Replace(".tif", ".png"));
+
+				if(File.Exists(path))
 				{
 					yield return path;
 				}
@@ -140,10 +153,10 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		public static string TryToGetRootImageCatalogPath()
 		{
 			//look for the cd/dvd
-			var cdPath = TryToGetPathToCollectionOnCd();
+/* retire this            var cdPath = TryToGetPathToCollectionOnCd();
 			if (!string.IsNullOrEmpty(cdPath))
 				return cdPath;
-
+*/
 			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"ArtOfReading", "images");
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
@@ -165,9 +178,12 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 			else
 			{
-				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading","images");
+				var appDataSIL = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
+
+				//the rest of these are for before we had an installer for AOR
+				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading", "images");
 				var appDataNoSpace = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("ArtOfReading", "images");
-				var winPaths = new[] { @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
+				var winPaths = new[] { appDataSIL,  @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
 
 				foreach (var path in winPaths)
 				{
@@ -186,7 +202,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				try
 				{
-					if (drive.VolumeLabel.Contains("Art Of Reading"))
+					if(drive.IsReady && drive.VolumeLabel.Contains("Art Of Reading"))
 						return Path.Combine(drive.RootDirectory.FullName, "images");
 				}
 				catch (Exception)
