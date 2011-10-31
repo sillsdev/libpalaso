@@ -67,15 +67,15 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_AttributionName()
 		{
-			_outgoing.AttributionName = "joe shmo";
+			_outgoing.Creator = "joe shmo";
 			_outgoing.Write();
-			Assert.AreEqual("joe shmo", MetaDataAccess.FromFile(_tempFile.Path).AttributionName);
+			Assert.AreEqual("joe shmo", MetaDataAccess.FromFile(_tempFile.Path).Creator);
 		}
 
 		[Test]
 		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
 		{
-			Assert.IsNull(MetaDataAccess.FromFile(_tempFile.Path).AttributionName);
+			Assert.IsNull(MetaDataAccess.FromFile(_tempFile.Path).Creator);
 		}
 	}
 }
