@@ -49,6 +49,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 				}
 			}
+			m.License = LicenseInfo.FromXmp(properties);
+
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
 			m.HasChanges = false;
 			return m;
@@ -189,8 +191,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				assignments.Add(new MetaDataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
 
 				assignments.Add(new MetaDataAssignement("-XMP-cc:License", "license",
-													   (p, value) =>
-													   p.License=CreativeCommonsLicense.FromUrl(value),
+													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.Url, p => p.License !=null));
 				return assignments;
 			}

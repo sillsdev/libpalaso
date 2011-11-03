@@ -49,13 +49,38 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		}
 
 		[Test]
-		public void RoundTripPng_HasCreativeCommonsLicense_ReadsInSameLicense()
+		public void RoundTripPng_HasCC_Permissive_License_ReadsInSameLicense()
 		{
-			_outgoing.License =new CreativeCommonsLicense();
+			_outgoing.License =new CreativeCommonsLicense(false,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
 			_outgoing.Write();
-			 Assert.IsInstanceOf(typeof(CreativeCommonsLicense), MetaDataAccess.FromFile(_tempFile.Path).License);
+			var cc = (CreativeCommonsLicense) MetaDataAccess.FromFile(_tempFile.Path).License;
+			Assert.AreEqual(cc.AttributionRequired, false);
+			Assert.AreEqual(cc.CommercialUseAllowed, true);
+			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.Derivatives);
 		}
 
+		[Test]
+		public void RoundTripPng_HasCC_Strict_License_ReadsInSameLicense()
+		{
+			_outgoing.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
+			_outgoing.Write();
+			var cc = (CreativeCommonsLicense)MetaDataAccess.FromFile(_tempFile.Path).License;
+			Assert.AreEqual(cc.AttributionRequired, true);
+			Assert.AreEqual(cc.CommercialUseAllowed, false);
+			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
+		}
+
+
+		[Test]
+		public void RoundTripPng_HasCC_Medium_License_ReadsInSameLicense()
+		{
+			_outgoing.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			_outgoing.Write();
+			var cc = (CreativeCommonsLicense)MetaDataAccess.FromFile(_tempFile.Path).License;
+			Assert.AreEqual(cc.AttributionRequired, true);
+			Assert.AreEqual(cc.CommercialUseAllowed, true);
+			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+		}
 		[Test]
 		public void RoundTripPng_AttributionUrl()
 		{

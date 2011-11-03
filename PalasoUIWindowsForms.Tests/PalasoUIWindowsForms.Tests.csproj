@@ -93,6 +93,7 @@
 	<Compile Include="ClearShare\ClearShareUsage.cs" />
 	<Compile Include="ClearShare\ContributionTests.cs" />
 	<Compile Include="ClearShare\ContributorsListControlViewModelTests.cs" />
+	<Compile Include="ClearShare\CreativeCommonsLicenseTests.cs" />
 	<Compile Include="ClearShare\LicenseTests.cs" />
 	<Compile Include="ClearShare\MetaDataAccessorTests.cs" />
 	<Compile Include="ClearShare\OlacSystemTests.cs" />

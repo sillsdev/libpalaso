@@ -157,7 +157,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			if (!string.IsNullOrEmpty(cdPath))
 				return cdPath;
 */
-			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"ArtOfReading", "images");
+			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", "images");
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
 
@@ -178,12 +178,13 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 			else
 			{
-				var appDataSIL = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
+				//look for the folder created by the ArtOfReadingFree installer
+				var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
 
 				//the rest of these are for before we had an installer for AOR
 				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading", "images");
 				var appDataNoSpace = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("ArtOfReading", "images");
-				var winPaths = new[] { appDataSIL,  @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
+				var winPaths = new[] { aorInstallerTarget,  @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
 
 				foreach (var path in winPaths)
 				{
@@ -234,6 +235,12 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static string TryToGetPathToIndex()
 		{
+			//look for the folder created by the ArtOfReadingFree installer
+			var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
+			var path = aorInstallerTarget.CombineForPath("index.txt");
+			if (File.Exists(path))
+				return path;
+
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}
 	}

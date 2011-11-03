@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Palaso.UI.WindowsForms.ClearShare
@@ -8,47 +9,44 @@ namespace Palaso.UI.WindowsForms.ClearShare
 	/// </summary>
 	public abstract class LicenseInfo
 	{
-		public string GetDescription(string iso639_3LanguageCode)
+		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
 		{
-			//if we don't have it, just return English ("en")
-			return "to do";
+			if(properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
+			{
+				return CreativeCommonsLicense.FromMetadata(properties);
+			}
+			return new NullLicense();
 		}
 
-//        public void SetDescription(string iso639_3LanguageCode, string description)
-//        {
-//        }
+		public abstract string GetDescription(string iso639_3LanguageCode);
 
-		public abstract Image GetImage();
+		virtual public Image GetImage()
+		{
+			return null;
+		}
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
 		/// </summary>
-		public abstract bool EditingAllowed{ get;}
+		public virtual bool EditingAllowed
+		{
+			get { throw new NotImplementedException(); }
+		}
 
-		public string Url { get; set; }
+		public abstract string Url { get; set; }
 	}
 
-	public class CreativeCommonsLicense : LicenseInfo
+	public class NullLicense : LicenseInfo
 	{
-		public CreativeCommonsLicense()
+		public override string GetDescription(string iso639_3LanguageCode)
 		{
-			Url = "http://creativecommons.org/licenses/by-sa/2.0/";
-		}
-		//we'll need to give out an image, description, url.
-		//what you *store* in the image metadata is a different question.
-		public override Image GetImage()
-		{
-			return LicenseLogos.cc_BY_88x31;
+			throw new NotImplementedException();
 		}
 
-		public override bool EditingAllowed
+		public override string Url
 		{
-			get { return false; }
-		}
-
-		public static LicenseInfo FromUrl(string url)
-		{
-			return new CreativeCommonsLicense() {Url = url};
+			get { return ""; }
+			set { throw new NotImplementedException(); }
 		}
 	}
 
@@ -58,14 +56,21 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 		}
 
+		public override string GetDescription(string iso639_3LanguageCode)
+		{
+			return "";
+		}
+
 		public override Image GetImage()
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public override bool EditingAllowed
 		{
 			get { return true; }
 		}
+
+		public override string Url { get; set; }
 	}
 }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace TestApp
 {
@@ -15,7 +17,7 @@ namespace TestApp
 
 			InitializeComponent();
 
-			_repository = GlobalWritingSystemRepository.Initialize(null);
+			_repository = GlobalWritingSystemRepository.Initialize(MigrationHandler);
 			_wsModel = new WritingSystemSetupModel(_repository);
 			wsPropertiesPanel1.BindToModel(_wsModel);
 		}
@@ -24,5 +26,11 @@ namespace TestApp
 		{
 			_wsModel.Save();
 		}
+
+		public void MigrationHandler(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		{
+		}
 	}
+
+
 }

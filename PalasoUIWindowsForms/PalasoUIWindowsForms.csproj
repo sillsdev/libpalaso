@@ -127,6 +127,7 @@
 	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\ContributorsListControlViewModel.cs" />
+	<Compile Include="ClearShare\CreativeCommonsLicense.cs" />
 	<Compile Include="ClearShare\FadingMessageForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -705,6 +706,12 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\Licenses.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\by-nd.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\srr.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
