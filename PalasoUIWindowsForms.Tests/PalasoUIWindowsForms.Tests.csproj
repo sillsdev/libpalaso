@@ -103,6 +103,7 @@
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxTests.cs" />
+	<Compile Include="ImageToolbox\MetaDataDisplayTests.cs" />
 	<Compile Include="ImageToolbox\PalasoImageTests.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />

@@ -7,18 +7,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public class PalasoImage
 	{
-		public MetaDataAccess MetaData;
+		public MetaData MetaData;
 
 		public PalasoImage()
 		{
-			MetaData = new MetaDataAccess();
+			MetaData = new MetaData();
 		}
 
 		public PalasoImage(Image image)
 		{
 			Image = image;
 			FileName = null;
-			MetaData = new MetaDataAccess();
+			MetaData = new MetaData();
 		}
 
 
@@ -80,7 +80,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						   Image = LoadImageWithoutLocking(path),
 						   FileName = Path.GetFileName(path)
 			};
-			i.MetaData = MetaDataAccess.FromFile(path);
+			i.MetaData = MetaData.FromFile(path);
 			return i;
 		}
 

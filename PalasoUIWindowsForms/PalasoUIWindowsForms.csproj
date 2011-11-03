@@ -135,7 +135,7 @@
 	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\License.cs" />
-	<Compile Include="ClearShare\MetaDataAccess.cs" />
+	<Compile Include="ClearShare\MetaData.cs" />
 	<Compile Include="ClearShare\OlacSystem.cs" />
 	<Compile Include="ClearShare\Role.cs" />
 	<Compile Include="ClearShare\Work.cs" />
@@ -193,11 +193,11 @@
 	<Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\ImageMetadataControl.cs">
+	<Compile Include="ImageToolbox\MetadataDisplayControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ImageToolbox\ImageMetadataControl.Designer.cs">
-	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	<Compile Include="ImageToolbox\MetadataDisplayControl.Designer.cs">
+	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
 	  <AutoGen>True</AutoGen>
@@ -221,6 +221,12 @@
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>LicenseLogos.resx</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\MetdataEditorControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\MetdataEditorControl.Designer.cs">
+	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
@@ -478,8 +484,8 @@
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageMetadataControl.resx">
-	  <DependentUpon>ImageMetadataControl.cs</DependentUpon>
+	<EmbeddedResource Include="ImageToolbox\MetadataDisplayControl.resx">
+	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
@@ -499,6 +505,9 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\MetdataEditorControl.resx">
+	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -712,6 +721,21 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\srr.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\by-sa.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\by-nc.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\by-nc-sa.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\by-nc-nd.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\by.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

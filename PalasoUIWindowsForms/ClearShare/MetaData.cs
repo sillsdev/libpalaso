@@ -20,9 +20,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 	///
 	/// Microsoft Pro Photo Tools: http://www.microsoft.com/download/en/details.aspx?id=13518
 	/// </summary>
-	public class MetaDataAccess
+	public class MetaData
 	{
-		public MetaDataAccess()
+		public MetaData()
 		{
 			AllowEditingMetadata = true;
 		}
@@ -32,14 +32,14 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		public static MetaDataAccess FromFile(string path)
+		public static MetaData FromFile(string path)
 		{
-			var m = new MetaDataAccess();
+			var m = new MetaData();
 			m._path = path;
 
-			var properties = MetaDataAccess.GetImageProperites(path);
+			var properties = MetaData.GetImageProperites(path);
 
-			foreach (var assignment in MetaDataAccess.MetaDataAssignments)
+			foreach (var assignment in MetaData.MetaDataAssignments)
 			{
 				string propertyValue;
 				if (properties.TryGetValue(assignment.ResultLabel.ToLower(), out propertyValue))
@@ -122,6 +122,37 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+		private string _collectionName;
+
+		/// <summary>
+		/// E.g. "Art of Reading"
+		/// </summary>
+		public string CollectionName
+		{
+			get { return _collectionName; }
+			set
+			{
+				if (value.Trim().Length == 0)
+					value = null;
+				if (value != _collectionName)
+					HasChanges = true;
+				_collectionName = value;
+			}
+		}
+
+		private string _collectionUri;
+		public string CollectionUri
+		{
+			get { return _collectionUri; }
+			set
+			{
+				if (value.Trim().Length == 0)
+					value = null;
+				if (value != _collectionUri)
+					HasChanges = true;
+				_collectionUri = value;
+			}
+		}
 
 		private static Dictionary<string, string> GetImageProperites(string path)
 		{
@@ -159,18 +190,18 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		private class MetaDataAssignement
 		{
-			public Func<MetaDataAccess, string> GetStringFunction { get; set; }
-			public Func<MetaDataAccess, bool> ShouldSetValue { get; set; }
+			public Func<MetaData, string> GetStringFunction { get; set; }
+			public Func<MetaData, bool> ShouldSetValue { get; set; }
 			public string Switch;
 			public string ResultLabel;
-			public Action<MetaDataAccess, string> AssignmentAction;
+			public Action<MetaData, string> AssignmentAction;
 
-			public MetaDataAssignement(string Switch, string resultLabel, Action<MetaDataAccess, string> assignmentAction, Func<MetaDataAccess, string> stringProvider)
+			public MetaDataAssignement(string Switch, string resultLabel, Action<MetaData, string> assignmentAction, Func<MetaData, string> stringProvider)
 				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !String.IsNullOrEmpty(stringProvider(p)))
 			{
 			}
 
-			public MetaDataAssignement(string @switch, string resultLabel, Action<MetaDataAccess, string> assignmentAction, Func<MetaDataAccess, string> stringProvider, Func<MetaDataAccess, bool> shouldSetValueFunction)
+			public MetaDataAssignement(string @switch, string resultLabel, Action<MetaData, string> assignmentAction, Func<MetaData, string> stringProvider, Func<MetaData, bool> shouldSetValueFunction)
 			{
 				GetStringFunction = stringProvider;
 				ShouldSetValue = shouldSetValueFunction;
@@ -188,8 +219,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				assignments.Add(new MetaDataAssignement("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
 
 				assignments.Add(new MetaDataAssignement("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
+				assignments.Add(new MetaDataAssignement("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
+				assignments.Add(new MetaDataAssignement("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
 				assignments.Add(new MetaDataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
-
 				assignments.Add(new MetaDataAssignement("-XMP-cc:License", "license",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.Url, p => p.License !=null));
@@ -201,6 +233,19 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public bool HasChanges { get; private set; }
 
+		/// <summary>
+		/// Attempt to cut off notices like "Copyright Blah 2009. Blah blah blah"
+		/// </summary>
+		public string ShortCopyrightNotice
+		{
+			get {
+				var i = CopyrightNotice.IndexOf('.');
+				if(i<0)
+					return CopyrightNotice;
+				return CopyrightNotice.Substring(0, i);
+			}
+		}
+
 		private string _path;
 
 		public void Write()
@@ -210,7 +255,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
 
-			foreach (var assignment in MetaDataAccess.MetaDataAssignments)
+			foreach (var assignment in MetaData.MetaDataAssignments)
 			{
 				if (assignment.ShouldSetValue(this))
 				{

@@ -60,9 +60,44 @@ namespace Palaso.UI.WindowsForms.ClearShare {
 			}
 		}
 
+		internal static System.Drawing.Bitmap by {
+			get {
+				object obj = ResourceManager.GetObject("by", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap by_nc {
+			get {
+				object obj = ResourceManager.GetObject("by_nc", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap by_nc_nd {
+			get {
+				object obj = ResourceManager.GetObject("by_nc_nd", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap by_nc_sa {
+			get {
+				object obj = ResourceManager.GetObject("by_nc_sa", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		internal static System.Drawing.Bitmap by_nd {
 			get {
 				object obj = ResourceManager.GetObject("by_nd", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap by_sa {
+			get {
+				object obj = ResourceManager.GetObject("by_sa", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}

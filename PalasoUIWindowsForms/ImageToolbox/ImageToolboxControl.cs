@@ -35,10 +35,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
-
-#if !DEBUG
-			_imageMetadataControl.Visible = false;  // until it actuall works
-#endif
 		}
 
 		/// <summary>
@@ -76,9 +72,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 												}
 						  */
 						_currentImageBox.Image = value.Image;
+						_metadataDisplayControl.SetLicense(value.MetaData);
 					}
 					_imageInfo = value;
-					_imageMetadataControl.SetImage(_imageInfo);
 				}
 				catch (Exception e)
 				{

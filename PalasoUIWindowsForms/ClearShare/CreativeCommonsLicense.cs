@@ -112,8 +112,23 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override Image GetImage()
 		{
-			if(AttributionRequired && DerivativeRule == DerivativeRules.NoDerivatives)
+			if (AttributionRequired && CommercialUseAllowed && DerivativeRule == DerivativeRules.Derivatives)
+				return LicenseLogos.by;
+
+			if (AttributionRequired && CommercialUseAllowed && DerivativeRule == DerivativeRules.NoDerivatives)
 				return LicenseLogos.by_nd;
+
+			if (AttributionRequired && CommercialUseAllowed && DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
+				return LicenseLogos.by_sa;
+
+			if (AttributionRequired && !CommercialUseAllowed && DerivativeRule == DerivativeRules.NoDerivatives)
+				return LicenseLogos.by_nc_nd;
+
+			if (AttributionRequired && !CommercialUseAllowed && DerivativeRule == DerivativeRules.Derivatives)
+				return LicenseLogos.by_nc;
+
+			if (AttributionRequired && !CommercialUseAllowed && DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
+				return LicenseLogos.by_nc_sa;
 
 			return LicenseLogos.srr;
 		}
