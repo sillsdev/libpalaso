@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
@@ -36,9 +37,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 #if MONO // CultureAndRegionInfoBuilder not supported by Mono
 			return string.Empty;
 #else
-			System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
-			b.LoadDataFromCultureInfo(language.Culture);
-			return b.TwoLetterISORegionName ?? String.Empty;
+			//  http://jira.palaso.org/issues/browse/WS-34216 has KonKani, which is a "macro language", as causing a crash here, on computers
+			// with that locale installed (India). It dies when it looks like we're trying to make a new versionf of it, becuase the
+			// CultureAndRegionModifiers flag here is "none". Someone in ChiangMai please review: should this be changed to "Replacement"
+			// to avoid this?  Do we need an
+			try
+			{
+				//REVIEW: if we changed the "none" to "Replacement", that would presumably get us past the KanKani crash, but is that the right
+				//thing to do, or a hack which would mean we lose region information on other languages?
+				System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
+				b.LoadDataFromCultureInfo(language.Culture);
+				return b.TwoLetterISORegionName ?? String.Empty;
+			}
+			catch (Exception)
+			{
+				Debug.Fail("This is a bug (http://jira.palaso.org/issues/browse/WS-34216 ) we would like to look into on a developer machine");
+				return string.Empty;
+			}
 #endif
 		}
 

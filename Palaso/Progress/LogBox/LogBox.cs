@@ -296,11 +296,7 @@ namespace Palaso.Progress.LogBox
 			set { _showDetailsMenu.Checked = value; }
 		}
 
-		public bool CancelRequested
-		{
-			get { return false; }
-			set {  }
-		}
+		public bool CancelRequested { get; set; }
 
 		private void _showDetails_CheckedChanged(object sender, EventArgs e)
 		{

@@ -6,11 +6,12 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.IO;
+using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
 {
-	[TestFixture]
+	[TestFixture, Ignore("Needs exiftool in the distfiles")]
 	public class PalasoImageTests
 	{
 		[Test]
@@ -70,21 +71,8 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 				() => PalasoImage.FromImage(null));
 		}
 
-		[Test, Ignore("not yet")]
-		public void SaveAndLoad_PNGWithDangerousCharacters_PreservesCopyrightNotice()
-		{
-			var png = new Bitmap(10, 10);
-			var pi = new PalasoImage(png);
-			pi.CopyrightNotice = "Copyright <! ' <hello>";
-			using (var temp = new TempFile(false))
-			{
-				pi.Save(temp.Path);
-				var incoming = PalasoImage.FromFile(temp.Path);
-				Assert.AreEqual(pi.CopyrightNotice, incoming.CopyrightNotice);
-			}
-		}
 
-		[Test, Ignore("not yet")]
+		[Test]
 		public void LoadAndSave_DeleteAfter_NothingLocked()
 		{
 			var png = new Bitmap(10, 10);
@@ -92,7 +80,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			{
 				png.Save(temp.Path);
 				var pi = PalasoImage.FromFile(temp.Path);
-				pi.CopyrightNotice = "Copyright 2011 me";
+				pi.MetaData.CopyrightNotice = "Copyright 2011 me";
 				Assert.DoesNotThrow(() => pi.Save(temp.Path));
 				Assert.DoesNotThrow(() => File.Delete(temp.Path));
 			}
@@ -106,37 +94,29 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			{
 				png.Save(temp.Path);
 				var pi = PalasoImage.FromFile(temp.Path);
-				Assert.IsFalse(pi.Locked);
+				Assert.IsFalse(pi.MetaDataLocked);
 			}
 		}
 		[Test]
 		public void Locked_NewOne_False()
 		{
 			var pi = new PalasoImage();
-			Assert.IsFalse(pi.Locked);
+			Assert.IsFalse(pi.MetaDataLocked);
 		}
 
-		[Test, Ignore("not yet")]
-		public void Locked_LoadedWithIllustrator_True()
-		{
-			var png = new Bitmap(10, 10);
-			using (var temp = new TempFile(false))
-			{
-				var pi = PalasoImage.FromImage(png);
-				pi.IllustratorPhotographer = "me";
-				pi.Save(temp.Path);
-				var incoming = PalasoImage.FromFile(temp.Path);
-				Assert.IsTrue(incoming.Locked);
-			}
-		}
+//        [Test]
+//        public void MetaDataLocked_IfLoadedWithIllustrator_True()
+//        {
+//            var png = new Bitmap(10, 10);
+//            using (var temp = new TempFile(false))
+//            {
+//                var pi = PalasoImage.FromImage(png);
+//                pi.MetaData.AttributionName = "me";
+//                pi.Save(temp.Path);
+//                var incoming = PalasoImage.FromFile(temp.Path);
+//                Assert.IsTrue(incoming.MetaDataLocked);
+//            }
+//        }
 
-
-		[Test, Ignore("not yet")]
-		public void Illustrator_TryToChangeWhileLocked_Throws()
-		{
-			var pi = new PalasoImage();
-			pi.Locked = true;
-			Assert.Throws<ApplicationException>(() => pi.IllustratorPhotographer = "me");
-		}
 	}
 }

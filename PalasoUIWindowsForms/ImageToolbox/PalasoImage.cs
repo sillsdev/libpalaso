@@ -1,24 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using Palaso.Code;
+using Palaso.UI.WindowsForms.ClearShare;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public class PalasoImage
 	{
+		public MetaData MetaData;
+
 		public PalasoImage()
 		{
-			Licenses = new List<LicenseInfo>();
+			MetaData = new MetaData();
 		}
 
 		public PalasoImage(Image image)
 		{
 			Image = image;
 			FileName = null;
-			Licenses = new List<LicenseInfo>();
+			MetaData = new MetaData();
 		}
+
+
+
+		public static PalasoImage FromImage(Image image)
+		{
+			Guard.AgainstNull(image, "image");
+			return new PalasoImage()
+			{
+				Image = image
+			};
+		}
+
 
 		public Image Image { get; private set; }
 
@@ -28,19 +41,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public string FileName { get; private set; }
 
-		///<summary>
-		/// 0 or more licenses offered by the copyright holder
-		///</summary>
-		public List<LicenseInfo> Licenses { get; set; }
-
-		public string CopyrightNotice { get; set; }
-
-		public string IllustratorPhotographer { get; set;}
 
 		/// <summary>
-		/// Should the user be able to make changes?
+		/// Should the user be able to make changes to MetaData?
 		/// </summary>
-		public bool Locked
+		public bool MetaDataLocked
 		{
 			get; set;
 		}
@@ -51,17 +56,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// <param name="path"></param>
 		public void Save(string path)
 		{
+		   Image.Save(path);
+			MetaData.Write();
 		}
-
-		public static PalasoImage FromFile(string path)
-		{
-			return new PalasoImage()
-					   {
-						   Image = LoadImageWithoutLocking(path),
-						   FileName = Path.GetFileName(path)
-			};
-		}
-
 
 		private static Image LoadImageWithoutLocking(string path)
 		{
@@ -74,65 +71,48 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				return Image.FromStream(fs);
 			}
 		}
-		public static PalasoImage FromImage(Image image)
+
+
+		public static PalasoImage FromFile(string path)
 		{
-			Guard.AgainstNull(image, "image");
-			return new PalasoImage()
+			var i = new PalasoImage()
 					   {
-						   Image = image
-					   };
+						   Image = LoadImageWithoutLocking(path),
+						   FileName = Path.GetFileName(path)
+			};
+			i.MetaData = MetaData.FromFile(path);
+			return i;
 		}
+
+		/*
+		 *
+		[Test]
+		public void MetaDataLocked_LoadedWithNonEmptyAttributionName_True()
+		{
+			var png = new Bitmap(10, 10);
+			var pi = new PalasoImage(png);
+			pi.AttributionName = "Joe Shmo";
+			using (var temp = TempFile.WithExtension("png"))
+			{
+				pi.Save(temp.Path);
+				var incoming = PalasoImage.FromFile(temp.Path);
+				Assert.IsTrue(incoming.MetaDataLocked);
+			}
+		}
+
+		[Test]
+		public void MetaDataLocked_LoadedWithNoMetaData_False()
+		{
+			var png = new Bitmap(10, 10);
+			var pi = new PalasoImage(png);
+			using (var temp = TempFile.WithExtension("png"))
+			{
+				pi.Save(temp.Path);
+				var incoming = PalasoImage.FromFile(temp.Path);
+				Assert.IsFalse(incoming.MetaDataLocked);
+			}
+		}*/
 	}
 
-	public abstract class LicenseInfo
-	{
-		public string GetDescription(string iso639_3LanguageCode)
-		{
-			//if we don't have it, just return English ("en")
-			return "to do";
-		}
 
-		public void SetDescription(string iso639_3LanguageCode, string description)
-		{
-		}
-
-		public abstract Image GetImage();
-
-		/// <summary>
-		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
-		/// </summary>
-		public abstract bool EditableWhenNotLocked{ get;}
-	}
-
-	public class CreativeCommonsLicense : LicenseInfo
-	{
-		//we'll need to give out an image, description, url.
-		//what you *store* in the image metadata is a different question.
-		public override Image GetImage()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override bool EditableWhenNotLocked
-		{
-			get { return false; }
-		}
-	}
-
-	public class CustomLicense : LicenseInfo
-	{
-		public void SetDescription(string iso639_3LanguageCode, string description)
-		{
-		}
-
-		public override Image GetImage()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override bool EditableWhenNotLocked
-		{
-			get { return true; }
-		}
-	}
 }

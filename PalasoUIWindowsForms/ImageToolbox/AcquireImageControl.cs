@@ -114,6 +114,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				var acquisitionService = new ImageAcquisitionService(deviceKind);
 
 				var file = acquisitionService.Acquire();
+				if (file == null)
+					return;
 				var temp = Path.GetTempFileName();
 				File.Delete(temp);
 				file.SaveFile(temp);
