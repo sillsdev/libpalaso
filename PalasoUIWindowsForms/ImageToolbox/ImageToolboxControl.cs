@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
 #if !MONO
 
@@ -50,6 +52,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					if (value == null || value.Image == null)
 					{
 						_currentImageBox.Image = null;
+						_metadataDisplayControl.Visible = false;
+						_invitationToMetadataPanel.Visible = false;
 					}
 					else
 					{
@@ -72,7 +76,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 												}
 						  */
 						_currentImageBox.Image = value.Image;
-						_metadataDisplayControl.SetLicense(value.MetaData);
+						SetupMetaDataControls(value.Metadata);
 					}
 					_imageInfo = value;
 				}
@@ -81,6 +85,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.");
 				}
 			}
+		}
+
+		private void SetupMetaDataControls(Metadata metaData)
+		{
+			_invitationToMetadataPanel.Visible = (metaData == null || metaData.IsEmpty);
+			_metadataDisplayControl.Visible = !_invitationToMetadataPanel.Visible;
+			if (_metadataDisplayControl.Visible)
+				_metadataDisplayControl.SetMetadata(metaData);
 		}
 
 
@@ -158,6 +170,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				_currentControl.Dispose();
 			}
 
+		}
+
+		private void _editMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
+			{
+				dlg.ShowDialog();
+				SetupMetaDataControls(_imageInfo.Metadata);
+			}
 		}
 	}
 

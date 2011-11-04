@@ -4,12 +4,71 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
 	public partial class MetdataEditorControl : UserControl
 	{
+		private Metadata _metadata;
+
 		public MetdataEditorControl()
 		{
 			InitializeComponent();
 		}
 
-		 /*       private PalasoImage _image;
+		public Metadata Metadata
+		{
+			get { return _metadata; }
+			set
+			{
+				_metadata = value;
+
+				if (_metadata == null)
+				{
+					this.Visible = false;
+					return;
+				}
+				this.Visible = true;
+				_illustrator.Text = _metadata.Creator;
+				_copyright.Text = _metadata.CopyrightNotice;
+				_licenseImage.Image = _metadata.License.GetImage();
+				if (_metadata.License is CreativeCommonsLicense)
+				{
+					var cc = (CreativeCommonsLicense) _metadata.License;
+					_creativeCommons.Checked = true;
+					_noDerivates.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.NoDerivatives;
+					_shareAlike.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
+					_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
+					_commercial.Checked = cc.CommercialUseAllowed;
+					_nonCommercial.Checked = !cc.CommercialUseAllowed;
+				}
+				else
+				{
+					_noLicense.Checked = true;
+				}
+
+			}
+		}
+
+		private void OnLicenseComponentChanged(object sender, System.EventArgs e)
+		{
+			if(_metadata.License ==null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
+				_metadata.License = new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+
+			panel1.Enabled = panel2.Enabled = _creativeCommons.Checked;
+			_licenseImage.Visible = _creativeCommons.Checked;
+
+			if (_creativeCommons.Checked)
+			{
+				var cc = (CreativeCommonsLicense) _metadata.License;
+				cc.AttributionRequired = true; // for now, we don't have a way to turn that off
+				cc.CommercialUseAllowed = _commercial.Checked;
+				if (_derivatives.Checked)
+					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+				else if (_shareAlike.Checked)
+					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
+				else
+					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
+				_licenseImage.Image = cc.GetImage();
+			}
+		}
+
+		/*       private PalasoImage _image;
 
 		public ImageMetadataControl()
 		{
@@ -26,9 +85,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 		private void SaveChanges()
 		{
-			if (_image != null && _image.MetaData.HasChanges)
+			if (_image != null && _image.Metadata.HasChanges)
 			{
-				_image.MetaData.Write();
+				_image.Metadata.Write();
 			}
 		}
 
@@ -48,13 +107,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 			this.Visible = _image.Image != null;
 
-			//_lockedCheckbox.Checked = _image.MetaDataLocked;
-			_illustrator.Text = _image.MetaData.Creator;
-			_copyright.Text = _image.MetaData.CopyrightNotice;
-			_illustrator.ReadOnly = _copyright.ReadOnly = !_image.MetaData.AllowEditingMetadata;
-			_illustrator.BorderStyle = _copyright.BorderStyle = _image.MetaData.AllowEditingMetadata ? BorderStyle.FixedSingle : BorderStyle.None;
+			//_lockedCheckbox.Checked = _image.MetadataLocked;
+			_illustrator.Text = _image.Metadata.Creator;
+			_copyright.Text = _image.Metadata.CopyrightNotice;
+			_illustrator.ReadOnly = _copyright.ReadOnly = !_image.Metadata.AllowEditingMetadata;
+			_illustrator.BorderStyle = _copyright.BorderStyle = _image.Metadata.AllowEditingMetadata ? BorderStyle.FixedSingle : BorderStyle.None;
 
-			if (_image.MetaData.AllowEditingMetadata)
+			if (_image.Metadata.AllowEditingMetadata)
 			{
 			}
 			//only handle the first one, for now
@@ -75,23 +134,23 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			get
 			{
-				return _image.MetaData.License;
+				return _image.Metadata.License;
 			}
 		}
 
 		private void _illustrator_TextChanged(object sender, EventArgs e)
 		{
-			_image.MetaData.Creator = _illustrator.Text;
+			_image.Metadata.Creator = _illustrator.Text;
 		}
 
 		private void _copyright_TextChanged(object sender, EventArgs e)
 		{
-			_image.MetaData.CopyrightNotice = _copyright.Text;
+			_image.Metadata.CopyrightNotice = _copyright.Text;
 		}
 
 		private void _lockedCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			// _image.MetaDataLocked = _lockedCheckbox.Checked;
+			// _image.MetadataLocked = _lockedCheckbox.Checked;
 			UpdateDisplay();
 		}
 

@@ -138,6 +138,12 @@
 	<Compile Include="ClearShare\MetaData.cs" />
 	<Compile Include="ClearShare\OlacSystem.cs" />
 	<Compile Include="ClearShare\Role.cs" />
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.Designer.cs">
+	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="ClearShare\Work.cs" />
 	<Compile Include="ControlExtensions.cs" />
 	<Compile Include="CustomDropDown.cs">
@@ -463,6 +469,9 @@
 	<EmbeddedResource Include="ClearShare\WinFormsUI\FadingMessageForm.resx">
 	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorDialog.resx">
+	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>

@@ -7,18 +7,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public class PalasoImage
 	{
-		public MetaData MetaData;
+		public Metadata Metadata;
 
 		public PalasoImage()
 		{
-			MetaData = new MetaData();
+			Metadata = new Metadata();
 		}
 
 		public PalasoImage(Image image)
 		{
 			Image = image;
 			FileName = null;
-			MetaData = new MetaData();
+			Metadata = new Metadata();
 		}
 
 
@@ -43,9 +43,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 
 		/// <summary>
-		/// Should the user be able to make changes to MetaData?
+		/// Should the user be able to make changes to Metadata?
 		/// </summary>
-		public bool MetaDataLocked
+		public bool MetadataLocked
 		{
 			get; set;
 		}
@@ -57,7 +57,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public void Save(string path)
 		{
 		   Image.Save(path);
-			MetaData.Write();
+			Metadata.Write();
 		}
 
 		private static Image LoadImageWithoutLocking(string path)
@@ -80,14 +80,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						   Image = LoadImageWithoutLocking(path),
 						   FileName = Path.GetFileName(path)
 			};
-			i.MetaData = MetaData.FromFile(path);
+			i.Metadata = Metadata.FromFile(path);
 			return i;
 		}
 
 		/*
 		 *
 		[Test]
-		public void MetaDataLocked_LoadedWithNonEmptyAttributionName_True()
+		public void MetadataLocked_LoadedWithNonEmptyAttributionName_True()
 		{
 			var png = new Bitmap(10, 10);
 			var pi = new PalasoImage(png);
@@ -96,12 +96,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				pi.Save(temp.Path);
 				var incoming = PalasoImage.FromFile(temp.Path);
-				Assert.IsTrue(incoming.MetaDataLocked);
+				Assert.IsTrue(incoming.MetadataLocked);
 			}
 		}
 
 		[Test]
-		public void MetaDataLocked_LoadedWithNoMetaData_False()
+		public void MetadataLocked_LoadedWithNoMetadata_False()
 		{
 			var png = new Bitmap(10, 10);
 			var pi = new PalasoImage(png);
@@ -109,7 +109,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				pi.Save(temp.Path);
 				var incoming = PalasoImage.FromFile(temp.Path);
-				Assert.IsFalse(incoming.MetaDataLocked);
+				Assert.IsFalse(incoming.MetadataLocked);
 			}
 		}*/
 	}

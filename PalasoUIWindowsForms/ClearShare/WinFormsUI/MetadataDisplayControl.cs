@@ -15,7 +15,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			InitializeComponent();
 		}
 
-		public void SetLicense(MetaData metaData)
+		public void SetMetadata(Metadata metaData)
 		{
 			_table.SuspendLayout();
 			_table.Controls.Clear();
