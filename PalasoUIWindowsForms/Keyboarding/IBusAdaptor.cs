@@ -58,6 +58,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				try
 				{
 					_connection = IBusConnectionFactory.Create();
+					if (_connection == null)
+					{
+						NotifyUserOfProblem(IBusError.Unknown, "IBus doesn't seem to be running");
+					}
 					_engineVersion = IBusEngineVersion.NotConfigured;
 				}
 				catch (DirectoryNotFoundException e)
