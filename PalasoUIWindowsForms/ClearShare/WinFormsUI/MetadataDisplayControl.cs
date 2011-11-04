@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.Widgets;
 
-namespace Palaso.UI.WindowsForms.ImageToolbox
+namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
 	/// <summary>
 	/// This control is just for displaying metadata in a compact way, not editing it.

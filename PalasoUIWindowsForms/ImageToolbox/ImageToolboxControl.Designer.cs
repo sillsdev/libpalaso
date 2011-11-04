@@ -1,4 +1,7 @@
-﻿namespace Palaso.UI.WindowsForms.ImageToolbox
+﻿using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
+
+namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	partial class ImageToolboxControl
 	{
@@ -39,7 +42,7 @@
 			this._panelForControls = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._currentImageBox = new System.Windows.Forms.PictureBox();
-			this._metadataDisplayControl = new Palaso.UI.WindowsForms.ImageToolbox.MetadataDisplayControl();
+			this._metadataDisplayControl = new MetadataDisplayControl();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
 			this.SuspendLayout();

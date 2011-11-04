@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
