@@ -26,12 +26,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void KeyboardDescriptors_ListAllKeyboards()
 		{
-			Console.WriteLine("ListAllKeyboards");
-			foreach (var keyboard in IBusAdaptor.KeyboardDescriptors)
+			using (var e = new IBusEnvironmentForTest(true))
 			{
-				Console.WriteLine("Name {0}, Id {1}", keyboard.ShortName, keyboard.Id);
+				Console.WriteLine("ListAllKeyboards");
+				foreach (var keyboard in IBusAdaptor.KeyboardDescriptors)
+				{
+					Console.WriteLine("Name {0}, Id {1}", keyboard.ShortName, keyboard.Id);
+				}
 			}
-		}
+		 }
 
 		[Test]
 		[Category("IBus")]
