@@ -273,7 +273,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			get
 			{
-				EnsureConnection();
+				try
+				{
+					EnsureConnection();
+				}
+				catch {};
 				return new List<KeyboardController.KeyboardDescriptor>(GetKeyboardDescriptors () );
 			}
 		}
