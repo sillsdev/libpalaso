@@ -34,10 +34,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 					Console.WriteLine("Name {0}, Id {1}", keyboard.ShortName, keyboard.Id);
 				}
 			}
-		 }
+		}
 
 		[Test]
 		[Category("IBus")]
+		// This will fail because Deactivate does nothing
 		public void Deactivate_SwitchesBackToDefaultKeyboard()
 		{
 			using (var e = new IBusEnvironmentForTest(true))
@@ -55,10 +56,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			using (var e = new IBusEnvironmentForTest(true))
 			{
-				//IBusAdaptor.Deactivate();
-				IBusAdaptor.ActivateKeyboard("m17n:am:sera");
-				Assert.AreEqual("m17n:am:sera", KeyboardController.GetActiveKeyboard());
-				IBusAdaptor.Deactivate();
+				IBusAdaptor.ActivateKeyboard(IBusEnvironmentForTest.OtherKeyboard);
+				string actual = IBusAdaptor.GetActiveKeyboard();
+				Assert.AreEqual(IBusEnvironmentForTest.DefaultKeyboard, actual);
 			}
 		}
 
