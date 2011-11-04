@@ -1,3 +1,4 @@
+#if MONO
 using System;
 using System.IO;
 using NDesk.DBus;
@@ -129,3 +130,4 @@ namespace IBusDotNet
 		}
 	}
 }
+#endif

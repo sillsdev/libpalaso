@@ -1,3 +1,4 @@
+#if MONO
 using NDesk.DBus;
 
 namespace IBusDotNet
@@ -28,3 +29,4 @@ namespace IBusDotNet
 		}
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+#if MONO
 using System;
 using System.Collections.Generic;
 using NDesk.DBus;
@@ -278,3 +279,4 @@ namespace IBusDotNet
 		public object[] c;
 	}
 }
+#endif
