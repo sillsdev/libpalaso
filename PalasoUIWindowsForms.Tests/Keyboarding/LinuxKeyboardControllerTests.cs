@@ -154,7 +154,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("No IM Running")]
 		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
+			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 
