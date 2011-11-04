@@ -151,10 +151,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		private static void OnTimerTick(object sender, EventArgs e)
 		{
-			_timer.Stop();
-			var ibus = new InputBusWrapper(_connection);
-			var inputContextBus = TryGetFocusedInputContext(ibus);
-			inputContextBus.InputContext.SetEngine(_requestActivateName);
+			try
+			{
+				_timer.Stop();
+				var ibus = new InputBusWrapper(_connection);
+				var inputContextBus = TryGetFocusedInputContext(ibus);
+				inputContextBus.InputContext.SetEngine(_requestActivateName);
+			}
+			catch (Exception x)
+			{
+				Console.WriteLine ("OnTimerTick Exception: {0}", x.Message);
+			}
 		}
 
 		/// <summary>
