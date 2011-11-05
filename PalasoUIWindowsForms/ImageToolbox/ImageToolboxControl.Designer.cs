@@ -36,16 +36,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("testing");
+			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
 			this._panelForControls = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._invitationToMetadataPanel = new System.Windows.Forms.Panel();
-			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
-			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
 			this._metadataDisplayControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetadataDisplayControl();
+			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this.panel1.SuspendLayout();
 			this._invitationToMetadataPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
@@ -55,13 +55,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._toolListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)));
-			listViewGroup2.Header = "test";
-			listViewGroup2.Name = "listViewGroup1";
+			listViewGroup1.Header = "test";
+			listViewGroup1.Name = "listViewGroup1";
 			this._toolListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-			listViewGroup2});
+			listViewGroup1});
 			this._toolListView.HideSelection = false;
 			this._toolListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-			listViewItem2});
+			listViewItem1});
 			this._toolListView.Location = new System.Drawing.Point(0, 0);
 			this._toolListView.Name = "_toolListView";
 			this._toolListView.ShowGroups = false;
@@ -104,31 +104,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 133);
 			this._invitationToMetadataPanel.TabIndex = 8;
 			//
-			// _editMetadataLink
-			//
-			this._editMetadataLink.AutoSize = true;
-			this._editMetadataLink.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._editMetadataLink.Location = new System.Drawing.Point(0, 100);
-			this._editMetadataLink.Name = "_editMetadataLink";
-			this._editMetadataLink.Size = new System.Drawing.Size(240, 21);
-			this._editMetadataLink.TabIndex = 8;
-			this._editMetadataLink.TabStop = true;
-			this._editMetadataLink.Text = "Can you answer these questions?";
-			this._editMetadataLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._editMetadataLink_LinkClicked);
-			//
-			// _currentImageBox
-			//
-			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this._currentImageBox.BackColor = System.Drawing.SystemColors.Control;
-			this._currentImageBox.Location = new System.Drawing.Point(7, 0);
-			this._currentImageBox.MinimumSize = new System.Drawing.Size(251, 245);
-			this._currentImageBox.Name = "_currentImageBox";
-			this._currentImageBox.Size = new System.Drawing.Size(251, 245);
-			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this._currentImageBox.TabIndex = 5;
-			this._currentImageBox.TabStop = false;
-			//
 			// betterLabel1
 			//
 			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -142,8 +117,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.betterLabel1.Size = new System.Drawing.Size(245, 80);
 			this.betterLabel1.TabIndex = 9;
 			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "This image does not know:\r\n\r\nWho drew me?\r\nWho can use me?\r\nUnder what conditions" +
-	"?";
+			this.betterLabel1.Text = "This image does not know:\r\n\r\nWho created it?\r\nWho can use it?";
+			//
+			// _editMetadataLink
+			//
+			this._editMetadataLink.AutoSize = true;
+			this._editMetadataLink.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._editMetadataLink.Location = new System.Drawing.Point(0, 100);
+			this._editMetadataLink.Name = "_editMetadataLink";
+			this._editMetadataLink.Size = new System.Drawing.Size(213, 19);
+			this._editMetadataLink.TabIndex = 8;
+			this._editMetadataLink.TabStop = true;
+			this._editMetadataLink.Text = "Can you answer these questions?";
+			this._editMetadataLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnEditMetadataLink_LinkClicked);
 			//
 			// _metadataDisplayControl
 			//
@@ -153,6 +139,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._metadataDisplayControl.Name = "_metadataDisplayControl";
 			this._metadataDisplayControl.Size = new System.Drawing.Size(251, 190);
 			this._metadataDisplayControl.TabIndex = 6;
+			//
+			// _currentImageBox
+			//
+			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._currentImageBox.BackColor = System.Drawing.SystemColors.Control;
+			this._currentImageBox.Location = new System.Drawing.Point(7, 0);
+			this._currentImageBox.MinimumSize = new System.Drawing.Size(251, 245);
+			this._currentImageBox.Name = "_currentImageBox";
+			this._currentImageBox.Size = new System.Drawing.Size(251, 245);
+			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this._currentImageBox.TabIndex = 5;
+			this._currentImageBox.TabStop = false;
 			//
 			// ImageToolboxControl
 			//

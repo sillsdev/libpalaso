@@ -96,7 +96,7 @@
 	<Compile Include="ClearShare\MetadataEditorControlTests.cs" />
 	<Compile Include="ClearShare\CreativeCommonsLicenseTests.cs" />
 	<Compile Include="ClearShare\LicenseTests.cs" />
-	<Compile Include="ClearShare\MetaDataAccessorTests.cs" />
+	<Compile Include="ClearShare\MetadataTests.cs" />
 	<Compile Include="ClearShare\OlacSystemTests.cs" />
 	<Compile Include="ClearShare\RoleTests.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />

@@ -11,6 +11,11 @@ using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
+	/// <summary>
+	/// The ImageToolbox lets you acquire images from camera, scanner, image collection, or the file system.
+	/// It has a cropping control.
+	/// It can read metadata, and allow you to enter metadata for an image.
+	/// </summary>
 	public partial class ImageToolboxControl : UserControl
 	{
 		private readonly ImageList _toolImages;
@@ -95,7 +100,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				_metadataDisplayControl.SetMetadata(metaData);
 		}
 
-
 		private void AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
 		{
 			_toolImages.Images.Add(bitmap);
@@ -169,15 +173,23 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				Controls.Remove(_currentControl);
 				_currentControl.Dispose();
 			}
-
 		}
 
-		private void _editMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
+			//it's not clear at the moment where the following belongs... but we want
+			//to encourage Creative Commons Licensing, so if there is no license, we'll start
+			//the following dialog out with a reasonable default.
+			_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+
 			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
 			{
-				dlg.ShowDialog();
-				SetupMetaDataControls(_imageInfo.Metadata);
+				if(DialogResult.OK == dlg.ShowDialog())
+				{
+					_imageInfo.Metadata = dlg.Metadata;
+					SetupMetaDataControls(_imageInfo.Metadata);
+					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+				}
 			}
 		}
 	}

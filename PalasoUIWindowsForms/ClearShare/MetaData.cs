@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
@@ -37,9 +38,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			var m = new Metadata();
 			m._path = path;
 
-			var properties = Metadata.GetImageProperites(path);
+			var properties = GetImageProperites(path);
 
-			foreach (var assignment in Metadata.MetadataAssignments)
+			foreach (var assignment in MetadataAssignments)
 			{
 				string propertyValue;
 				if (properties.TryGetValue(assignment.ResultLabel.ToLower(), out propertyValue))
@@ -80,12 +81,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _copyrightNotice; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value!=null && value.Trim().Length == 0)
 					value = null;
 				if (value != _copyrightNotice)
 					HasChanges = true;
 				_copyrightNotice = value;
-				if (!string.IsNullOrEmpty(_copyrightNotice))
+				if (!String.IsNullOrEmpty(_copyrightNotice))
 					IsEmpty = false;
 			}
 		}
@@ -100,12 +101,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _creator; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _creator)
 					HasChanges = true;
 				_creator = value;
-				if (!string.IsNullOrEmpty(_creator))
+				if (!String.IsNullOrEmpty(_creator))
 					IsEmpty = false;
 			}
 		}
@@ -120,12 +121,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _attributionUrl; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _attributionUrl)
 					HasChanges = true;
 				_attributionUrl = value;
-				if (!string.IsNullOrEmpty(_attributionUrl))
+				if (!String.IsNullOrEmpty(_attributionUrl))
 					IsEmpty = false;
 			}
 		}
@@ -140,12 +141,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _collectionName; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _collectionName)
 					HasChanges = true;
 				_collectionName = value;
-				if (!string.IsNullOrEmpty(_collectionName))
+				if (!String.IsNullOrEmpty(_collectionName))
 					IsEmpty = false;
 
 			}
@@ -157,14 +158,27 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _collectionUri; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _collectionUri)
 					HasChanges = true;
 				_collectionUri = value;
-				if (!string.IsNullOrEmpty(_collectionUri))
+				if (!String.IsNullOrEmpty(_collectionUri))
 					IsEmpty = false;
 
+			}
+		}
+
+		/// <summary>
+		/// Used during UI editing to know if we should enable the OK button
+		/// </summary>
+		public bool IsMinimallyComplete
+		{
+			get
+			{
+				//I'm thinking, license is secondary. Primary is who did it or what the copyright is... if you have a license without any of that... it's kind of bogus.
+				return !String.IsNullOrEmpty(CopyrightNotice) || !String.IsNullOrEmpty(Creator) ||
+					   !String.IsNullOrEmpty(CollectionUri);
 			}
 		}
 
@@ -245,7 +259,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public bool IsEmpty { get; private set; }
 
-		public bool HasChanges { get; private set; }
+		public bool HasChanges { get; set; }
 
 		/// <summary>
 		/// Attempt to cut off notices like "Copyright Blah 2009. Blah blah blah"
@@ -264,11 +278,16 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public void Write()
 		{
+			Write(_path);
+		}
+
+		public void Write(string path)
+		{
 			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
 
-			foreach (var assignment in Metadata.MetadataAssignments)
+			foreach (var assignment in MetadataAssignments)
 			{
 				if (assignment.ShouldSetValue(this))
 				{
@@ -285,7 +304,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
 			arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
-			arguments.AppendFormat(" \"{0}\"", _path);
+			arguments.AppendFormat(" \"{0}\"", path);
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 #if DEBUG
@@ -296,6 +315,68 @@ namespace Palaso.UI.WindowsForms.ClearShare
 #endif
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
+		}
+
+		public void SetupReasonableLicenseDefaultBeforeEditing()
+		{
+			if(License == null || License is NullLicense)
+			{
+				License= new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			}
+		}
+
+		public Metadata DeepCopy()
+		{
+			return (Metadata) CloneObject(this);
+		}
+
+		/// <summary>
+		/// This is actually a generic cloning method, copied into this class just because UI needs to clone this class.
+		/// From http://stackoverflow.com/questions/78536/cloning-objects-in-c-sharp/78551#78551
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		private static object CloneObject(object source)
+		{
+			//grab the type and create a new instance of that type
+			Type sourceType = source.GetType();
+			//  var target =  Activator.CreateInstance(source.GetType(), null);
+			object target = Activator.CreateInstance(sourceType, true);
+
+			//grab the properties
+			PropertyInfo[] PropertyInfo =
+				sourceType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+			//iterate over the properties and if it has a 'set' method assign it from the source TO the target
+			foreach (PropertyInfo item in PropertyInfo)
+			{
+				if (item.CanWrite)
+				{
+					//value types can simply be 'set'
+					if (item.PropertyType.IsValueType || item.PropertyType.IsEnum ||
+						item.PropertyType.Equals(typeof(System.String)))
+					{
+						item.SetValue(target, item.GetValue(source, null), null);
+					}
+						//object/complex types need to recursively call this method until the end of the tree is reached
+					else
+					{
+						object propertyValue = item.GetValue(source, null);
+						if (propertyValue == null)
+						{
+							item.SetValue(target, null, null);
+						}
+						else
+						{
+							Type z = item.PropertyType;
+							item.SetValue(target, CloneObject(propertyValue), null);
+							//item.SetValue(target, CloneObject<LicenseInfo>(propertyValue as LicenseInfo), null);
+						}
+					}
+				}
+			}
+			//return the new item
+			return target;
 		}
 	}
 }

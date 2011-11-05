@@ -1,10 +1,12 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
 	public partial class MetdataEditorControl : UserControl
 	{
 		private Metadata _metadata;
+		private bool _settingUp;
 
 		public MetdataEditorControl()
 		{
@@ -23,6 +25,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					this.Visible = false;
 					return;
 				}
+				_settingUp = true;
 				this.Visible = true;
 				_illustrator.Text = _metadata.Creator;
 				_copyright.Text = _metadata.CopyrightNotice;
@@ -32,8 +35,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					var cc = (CreativeCommonsLicense) _metadata.License;
 					_creativeCommons.Checked = true;
 					_noDerivates.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.NoDerivatives;
-					_shareAlike.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
-					_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
+					_shareAlike.Checked = cc.DerivativeRule ==
+										  CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
+					_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
 					_commercial.Checked = cc.CommercialUseAllowed;
 					_nonCommercial.Checked = !cc.CommercialUseAllowed;
 				}
@@ -41,14 +45,17 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				{
 					_noLicense.Checked = true;
 				}
-
+				_settingUp = false;
 			}
 		}
 
 		private void OnLicenseComponentChanged(object sender, System.EventArgs e)
 		{
-			if(_metadata.License ==null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
-				_metadata.License = new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			if(_settingUp)
+				return;
+
+			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
+				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 
 			panel1.Enabled = panel2.Enabled = _creativeCommons.Checked;
 			_licenseImage.Visible = _creativeCommons.Checked;
@@ -66,6 +73,29 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
 				_licenseImage.Image = cc.GetImage();
 			}
+			if(_noLicense.Checked)
+			{
+				_metadata.License = new NullLicense();
+			}
+
+		}
+
+//        public bool IsMinimallyComplete
+//        {
+//            get
+//            {
+//                return _
+//            }
+//        }
+
+		private void _illustrator_TextChanged(object sender, EventArgs e)
+		{
+			_metadata.Creator = _illustrator.Text;
+		}
+
+		private void _copyright_TextChanged(object sender, EventArgs e)
+		{
+			_metadata.CopyrightNotice = _copyright.Text;
 		}
 
 		/*       private PalasoImage _image;
@@ -138,15 +168,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			}
 		}
 
-		private void _illustrator_TextChanged(object sender, EventArgs e)
-		{
-			_image.Metadata.Creator = _illustrator.Text;
-		}
 
-		private void _copyright_TextChanged(object sender, EventArgs e)
-		{
-			_image.Metadata.CopyrightNotice = _copyright.Text;
-		}
 
 		private void _lockedCheckbox_CheckedChanged(object sender, EventArgs e)
 		{

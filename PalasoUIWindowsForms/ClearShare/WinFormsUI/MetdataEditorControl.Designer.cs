@@ -38,12 +38,12 @@
 			this._noDerivates = new System.Windows.Forms.RadioButton();
 			this._derivatives = new System.Windows.Forms.RadioButton();
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._nonCommercial = new System.Windows.Forms.RadioButton();
 			this._commercial = new System.Windows.Forms.RadioButton();
 			this._licenseImage = new System.Windows.Forms.PictureBox();
 			this._creativeCommons = new System.Windows.Forms.RadioButton();
 			this._noLicense = new System.Windows.Forms.RadioButton();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -67,6 +67,7 @@
 			this._copyright.Name = "_copyright";
 			this._copyright.Size = new System.Drawing.Size(163, 23);
 			this._copyright.TabIndex = 8;
+			this._copyright.TextChanged += new System.EventHandler(this._copyright_TextChanged);
 			//
 			// label2
 			//
@@ -85,6 +86,7 @@
 			this._illustrator.Name = "_illustrator";
 			this._illustrator.Size = new System.Drawing.Size(163, 23);
 			this._illustrator.TabIndex = 6;
+			this._illustrator.TextChanged += new System.EventHandler(this._illustrator_TextChanged);
 			//
 			// label1
 			//
@@ -155,6 +157,21 @@
 			this.panel2.Size = new System.Drawing.Size(229, 65);
 			this.panel2.TabIndex = 20;
 			//
+			// betterLabel1
+			//
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
+			this.betterLabel1.Multiline = true;
+			this.betterLabel1.Name = "betterLabel1";
+			this.betterLabel1.ReadOnly = true;
+			this.betterLabel1.Size = new System.Drawing.Size(392, 20);
+			this.betterLabel1.TabIndex = 16;
+			this.betterLabel1.TabStop = false;
+			this.betterLabel1.Text = "Allow commercial uses of your work?";
+			//
 			// _nonCommercial
 			//
 			this._nonCommercial.AutoSize = true;
@@ -212,21 +229,6 @@
 			this._noLicense.Text = "Contact the copyright holder for any permissions";
 			this._noLicense.UseVisualStyleBackColor = true;
 			this._noLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
-			// betterLabel1
-			//
-			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
-			this.betterLabel1.Multiline = true;
-			this.betterLabel1.Name = "betterLabel1";
-			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(392, 20);
-			this.betterLabel1.TabIndex = 16;
-			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "Allow commercial uses of your work?";
 			//
 			// betterLabel2
 			//

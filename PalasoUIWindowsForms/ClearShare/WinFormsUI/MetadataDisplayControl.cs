@@ -54,17 +54,24 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			}
 			if(metaData.License!=null)
 			{
-				var image = new PictureBox(){Image = metaData.License.GetImage()};
-				_table.Controls.Add(image);
-				if (!string.IsNullOrEmpty(metaData.License.Url))
+				if (metaData.License is NullLicense)
 				{
-					AddHyperLink("License Info", metaData.License.Url,1);
+					AddRow("No license specified");
 				}
 				else
 				{
-					_table.SetColumnSpan(image,2);
+					var image = new PictureBox() {Image = metaData.License.GetImage()};
+					_table.Controls.Add(image);
+					if (!string.IsNullOrEmpty(metaData.License.Url))
+					{
+						AddHyperLink("License Info", metaData.License.Url, 1);
+					}
+					else
+					{
+						_table.SetColumnSpan(image, 2);
+					}
+					_table.RowCount++;
 				}
-				_table.RowCount++;
 			}
 			_table.ResumeLayout();
 		}

@@ -6,12 +6,13 @@ using System.Text;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {
 	[TestFixture, Ignore("Needs exiftool in the distfiles")]
-	public class MetadataAccessorTests
+	public class MetadataTests
 	{
 		private Bitmap _mediaFile;
 		private TempFile _tempFile;
@@ -101,6 +102,17 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
 		{
 			Assert.IsNull(Metadata.FromFile(_tempFile.Path).Creator);
+		}
+
+		[Test]
+		public void DeepCopy()
+		{
+			var m = new Metadata();
+			m.License = new CreativeCommonsLicense(true, true,
+												   CreativeCommonsLicense.DerivativeRules.
+													   DerivativesWithShareAndShareAlike);
+			Metadata copy = m.DeepCopy();
+			Assert.AreEqual(m.License.Url,copy.License.Url);
 		}
 	}
 }

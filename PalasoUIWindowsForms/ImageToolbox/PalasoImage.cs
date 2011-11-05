@@ -9,6 +9,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		public Metadata Metadata;
 
+		/// <summary>
+		/// generally, when we load an image, we can happily forget where it came from, becuase
+		/// the nature of the palso image system is to deliver images, not file paths, to documents
+		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
+		/// as the document is shared.
+		/// But in on circumumstance, we do care: when the user chooses a from disk (as opposed to from camera or scanner)
+		/// and enters metadata, we want to store that metadata in the original.  That's the only reason we store this path.
+		/// </summary>
+		private static string _pathForSavingMetadataChanges;
+
 		public PalasoImage()
 		{
 			Metadata = new Metadata();
@@ -60,6 +70,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			Metadata.Write();
 		}
 
+		/// <summary>
+		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
+		/// If not (e.g. the image came from a scanner), it won't do anything.
+		/// </summary>
+		public void SaveUpdatedMetadataIfItMakesSense()
+		{
+			if(Metadata!=null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+			{
+				Metadata.Write(_pathForSavingMetadataChanges);
+				Metadata.HasChanges = false;
+			}
+		}
+
 		private static Image LoadImageWithoutLocking(string path)
 		{
 			//locks until the image is dispose of some day, which is counter-intuitive to me
@@ -75,6 +98,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		public static PalasoImage FromFile(string path)
 		{
+			_pathForSavingMetadataChanges = path;
 			var i = new PalasoImage()
 					   {
 						   Image = LoadImageWithoutLocking(path),
