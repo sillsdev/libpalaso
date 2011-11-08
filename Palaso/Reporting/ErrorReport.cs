@@ -324,7 +324,8 @@ namespace Palaso.Reporting
 					   os.Platform == _platform;
 			}
 		}
-		private static string GetOperatingSystemLabel()
+
+		public static string GetOperatingSystemLabel()
 		{
 			var list = new List<Version>();
 			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
