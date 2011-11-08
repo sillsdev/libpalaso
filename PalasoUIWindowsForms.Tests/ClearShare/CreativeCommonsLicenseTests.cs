@@ -59,5 +59,52 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			original.Version = "2.2";
 			Assert.AreEqual("http://creativecommons.org/licenses/by/2.2/", original.Url);
 		}
+
+
+		[Test]
+		public void ChangeVersion_HasChanges_True()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			l.HasChanges = false;
+			l.Version = "3.23";
+			Assert.IsTrue(l.HasChanges);
+		}
+
+		[Test]
+		public void ChangeAttributionRequired_HasChanges_True()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			l.HasChanges = false;
+			l.AttributionRequired = !l.AttributionRequired;
+			Assert.IsTrue(l.HasChanges);
+		}
+
+		[Test]
+		public void ChangeCommercialUseAllowed_HasChanges_True()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			l.HasChanges = false;
+			l.CommercialUseAllowed = !l.CommercialUseAllowed;
+			Assert.IsTrue(l.HasChanges);
+		}
+
+		[Test]
+		public void ChangeDerivativeRule_HasChanges_True()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			l.HasChanges = false;
+			l.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
+			Assert.IsTrue(l.HasChanges);
+		}
+		[Test]
+		public void HasChanges_CanToggle()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			l.HasChanges = false;
+			Assert.IsFalse(l.HasChanges);
+			l.HasChanges = true;
+			Assert.IsTrue(l.HasChanges);
+		}
+
 	}
 }

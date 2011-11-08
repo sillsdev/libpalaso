@@ -10,9 +10,49 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			NoDerivatives, DerivativesWithShareAndShareAlike, Derivatives
 		}
-		public bool AttributionRequired { get; set; }
-		public bool CommercialUseAllowed { get; set; }
-		public DerivativeRules DerivativeRule { get; set; }
+
+		private bool _attributionRequired;
+		public bool AttributionRequired
+		{
+			get { return _attributionRequired; }
+			set
+			{
+				if (value != _attributionRequired)
+				{
+					HasChanges = true;
+				}
+				_attributionRequired = value;
+			}
+		}
+
+		private bool _commercialUseAllowed;
+		public bool CommercialUseAllowed
+		{
+			get { return _commercialUseAllowed; }
+			set
+			{
+				if (value != _commercialUseAllowed)
+				{
+					HasChanges = true;
+				}
+				_commercialUseAllowed = value;
+			}
+		}
+
+		private DerivativeRules _derivativeRule;
+		public DerivativeRules DerivativeRule
+		{
+			get { return _derivativeRule; }
+			set
+			{
+				if (value != _derivativeRule)
+				{
+					HasChanges = true;
+				}
+				_derivativeRule = value;
+			}
+		}
+
 		public string kDefaultVersion = "3.0";
 
 		/// <summary>
@@ -81,6 +121,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 			set
 			{
+				if(value!=Url)
+				{
+					HasChanges = true;
+				}
 				CommercialUseAllowed = true;
 				DerivativeRule = DerivativeRules.Derivatives;
 
@@ -138,6 +182,18 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return false; }
 		}
 
-		public string Version { get; set; }
+		private string _version;
+		public string Version
+		{
+			get { return _version; }
+			set
+			{
+				if (value != _version)
+				{
+					HasChanges = true;
+				}
+				_version = value;
+			}
+		}
 	}
 }

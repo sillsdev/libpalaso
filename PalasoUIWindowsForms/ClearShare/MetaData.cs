@@ -259,7 +259,20 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public bool IsEmpty { get; private set; }
 
-		public bool HasChanges { get; set; }
+		private bool _hasChanges;
+		public bool HasChanges
+		{
+			get
+			{
+				return _hasChanges || (License!=null && License.HasChanges);
+			}
+			set
+			{
+				_hasChanges = value;
+				if(!value && License!=null)
+					License.HasChanges = false;
+			}
+		}
 
 		/// <summary>
 		/// Attempt to cut off notices like "Copyright Blah 2009. Blah blah blah"

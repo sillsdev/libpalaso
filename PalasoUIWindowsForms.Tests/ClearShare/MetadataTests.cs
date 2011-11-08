@@ -98,6 +98,50 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			Assert.AreEqual("joe shmo", Metadata.FromFile(_tempFile.Path).Creator);
 		}
 
+
+		[Test]
+		public void SetLicense_HasChanges_True()
+		{
+			var m = new Metadata();
+			m.HasChanges = false;
+			m.License=new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			Assert.IsTrue(m.HasChanges);
+		}
+
+		[Test]
+		public void ChangeLicenseObject_HasChanges_True()
+		{
+			var m = new Metadata();
+			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			m.HasChanges = false;
+			m.License = new NullLicense();
+			Assert.IsTrue(m.HasChanges);
+		}
+
+
+		[Test]
+		public void ChangeLicenseDetails_HasChanges_True()
+		{
+			var m = new Metadata();
+			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			m.HasChanges = false;
+			((CreativeCommonsLicense) m.License).CommercialUseAllowed = false;
+			Assert.IsTrue(m.HasChanges);
+		}
+
+
+		[Test]
+		public void SetHasChangesFalse_AlsoClearsLicenseHasChanges()
+		{
+			var m = new Metadata();
+			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			 ((CreativeCommonsLicense)m.License).CommercialUseAllowed = false;
+			 Assert.IsTrue(m.HasChanges);
+			 m.HasChanges = false;
+			 Assert.IsFalse(m.License.HasChanges);
+			 Assert.IsFalse(m.HasChanges);
+		}
+
 		[Test]
 		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
 		{

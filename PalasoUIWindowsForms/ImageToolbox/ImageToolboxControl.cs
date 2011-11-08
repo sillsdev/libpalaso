@@ -36,6 +36,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_toolImages.ColorDepth = ColorDepth.Depth24Bit;
 			_toolImages.ImageSize = new Size(32,32);
 
+			_editLink.Visible = false;
 
 			 AddControl("Get Picture", ImageToolboxButtons.browse, "browse",  (x) => new AcquireImageControl());
 			  AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
@@ -96,6 +97,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			_invitationToMetadataPanel.Visible = (metaData == null || metaData.IsEmpty);
 			_metadataDisplayControl.Visible = !_invitationToMetadataPanel.Visible;
+			bool looksOfficial = !string.IsNullOrEmpty(metaData.CollectionUri);
+			_editLink.Visible = metaData!=null && _metadataDisplayControl.Visible && !looksOfficial;
 			if (_metadataDisplayControl.Visible)
 				_metadataDisplayControl.SetMetadata(metaData);
 		}
@@ -192,6 +195,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 		}
+
 	}
 
 	public interface IImageToolboxControl
