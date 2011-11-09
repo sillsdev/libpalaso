@@ -164,6 +164,7 @@
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
+	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
 	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
   </ItemGroup>
