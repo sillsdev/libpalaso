@@ -63,15 +63,17 @@
 			// imageToolboxControl1
 			//
 			this.imageToolboxControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			palasoImage1.MetadataLocked = false;
 			this.imageToolboxControl1.ImageInfo = palasoImage1;
 			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
 			this.imageToolboxControl1.Name = "imageToolboxControl1";
 			this.imageToolboxControl1.Size = new System.Drawing.Size(873, 379);
 			this.imageToolboxControl1.TabIndex = 3;
+
 			//
 			// localizationHelper1
 			//

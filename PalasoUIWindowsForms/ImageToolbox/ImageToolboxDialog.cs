@@ -13,7 +13,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		public ImageToolboxDialog(PalasoImage imageInfo)
 		{
-			InitializeComponent();
+			 InitializeComponent();
 			imageToolboxControl1.ImageInfo = imageInfo;
 		}
 		public PalasoImage ImageInfo { get { return imageToolboxControl1.ImageInfo; } }

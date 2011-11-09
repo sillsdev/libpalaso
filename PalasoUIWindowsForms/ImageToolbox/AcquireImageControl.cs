@@ -69,6 +69,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				_pictureBox.Image = null;
 			else
 				_pictureBox.Image = image.Image;
+
+			SetMode(Modes.SingleImage);
 		}
 
 		public PalasoImage GetImage()

@@ -43,7 +43,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 
-		public Image Image { get; private set; }
+		public Image Image { get; set; }
 
 		/// <summary>
 		/// Really, just the name, not the path.  Use if you want to save the image somewhere.

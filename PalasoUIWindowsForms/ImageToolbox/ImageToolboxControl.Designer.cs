@@ -179,6 +179,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.Controls.Add(this._toolListView);
 			this.Name = "ImageToolboxControl";
 			this.Size = new System.Drawing.Size(814, 498);
+			this.Load += new System.EventHandler(this.OnLoad);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this._invitationToMetadataPanel.ResumeLayout(false);

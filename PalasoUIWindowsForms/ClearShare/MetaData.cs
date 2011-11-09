@@ -300,6 +300,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
 
+			//No arguments.Append("-P "); //don't change the modified date  (this isn't totally obvious... it's good unless it interferes with backup)
+
 			foreach (var assignment in MetadataAssignments)
 			{
 				if (assignment.ShouldSetValue(this))
