@@ -29,7 +29,7 @@
   <!-- ExifTool is too large to stick in souce control, so we grab it out of the c:\builddownloads directory.
 	  That file may be used in unit tests, and definitely offered up as an artifact to users of palaso -->
   <Target Name="GatherLargeFiles">
-	<Copy SourceFiles ="$(LargeFilesDir)/exiftool.exe" DestinationFolder="$(RootDir)/DistFiles"></Copy>
+	<Copy SourceFiles ="$(LargeFilesDir)\exiftool.exe" DestinationFolder="$(RootDir)\DistFiles"></Copy>
   </Target>
 
 	<ItemGroup>
