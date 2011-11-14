@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Xml;
-using System.Xml.XPath;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Palaso.Extensions;
 
 namespace Palaso.Tests.Extensions
 {
 	[TestFixture]
-	public class StringExtensions
+	public class StringExtensionTests
 	{
 		[Test]
 		public void SplitTrimmed_StringHasSpacesOnly_GivesEmptyList()
@@ -98,6 +91,32 @@ namespace Palaso.Tests.Extensions
 		public void Format_UnSafeString_GivesErrorString()
 		{
 			Assert.That("{foo}".FormatWithErrorStringInsteadOfException("blah").Contains("Error"));
+		}
+
+		[Test]
+		public void ToUpperFirstLetter_Empty_EmptyString()
+		{
+			Assert.AreEqual("","".ToUpperFirstLetter());
+		}
+		[Test]
+		public void ToUpperFirstLetter_OneCharacter_UpperCase()
+		{
+			Assert.AreEqual("X", "x".ToUpperFirstLetter());
+		}
+		[Test]
+		public void ToUpperFirstLetter_Digit_ReturnsSame()
+		{
+			Assert.AreEqual("1abc", "1abc".ToUpperFirstLetter());
+		}
+		[Test]
+		public void ToUpperFirstLetter_AlreadyUpper_ReturnsSame()
+		{
+			Assert.AreEqual("Abc", "Abc".ToUpperFirstLetter());
+		}
+		[Test]
+		public void ToUpperFirstLetter_typical_MakesUppercase()
+		{
+			Assert.AreEqual("Abc", "abc".ToUpperFirstLetter());
 		}
 	}
 }
