@@ -118,5 +118,11 @@ namespace Palaso.Tests.Extensions
 		{
 			Assert.AreEqual("Abc", "abc".ToUpperFirstLetter());
 		}
+
+		[Test]
+		public void ToUpperFirstLetter_ALLUPPERCASE_MakesOnlyFirstUppercase()
+		{
+			Assert.AreEqual("Abc def", "ABC DEF".ToUpperFirstLetter());
+		}
 	}
 }

@@ -150,13 +150,13 @@ namespace Palaso.Extensions
 		}
 
 		/// <summary>
-		/// Make the first letter of the string upper-case.
+		/// Make the first letter of the string upper-case, and the rest lower case. Does not consider words.
 		/// </summary>
 		public static string ToUpperFirstLetter(this string source)
 		{
 			if (string.IsNullOrEmpty(source))
 				return string.Empty;
-			var letters = source.ToCharArray();
+			var letters = source.ToLowerInvariant().ToCharArray();
 			letters[0] = char.ToUpperInvariant(letters[0]);
 			return new string(letters);
 		}
