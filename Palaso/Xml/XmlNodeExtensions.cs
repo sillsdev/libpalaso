@@ -146,6 +146,8 @@ namespace Palaso.Xml
 
 			foreach (var axis in axes)
 			{
+				if (result.Contains(axis + "-"))//don't match on, e.g., "following" if what we have is "following-sibling"
+					continue;
 				result = result.Replace(prefix + ":#"+axis, axis+"::" + prefix + ":");
 			}
 
