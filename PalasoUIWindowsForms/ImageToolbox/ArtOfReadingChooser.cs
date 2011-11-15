@@ -31,12 +31,25 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 			else
 			{
 #if DEBUG
-				_searchTermsBox.Text = @"flower";
+			  //  _searchTermsBox.Text = @"flower";
 #endif
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
 			}
 		}
 
+		public void Dispose()
+		{
+			_thumbnailViewer.Closing(); //this guy was working away in the background
+		}
+
+		/// <summary>
+		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
+		/// </summary>
+		/// <param name="searchTerm"></param>
+		public void SetIntialSearchTerm(string searchTerm)
+		{
+			_searchTermsBox.Text = searchTerm;
+		}
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -77,13 +90,6 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 			Cursor.Current = Cursors.Default;
 		}
 
-		private void PictureChooser_Load(object sender, EventArgs e)
-		{
-			_thumbnailViewer.CaptionMethod = _imageCollection.CaptionMethod;
-
-			if (_searchTermsBox.Text.Length > 0)
-				_searchButton_Click(this, null);
-		}
 		public string ChosenPath { get { return _thumbnailViewer.SelectedPath; } }
 
 		public bool HaveImageCollectionOnThisComputer
@@ -137,7 +143,7 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 			if (!HaveImageCollectionOnThisComputer)
 				return;
 			//when just testing, I just want to see some choices.
-			_searchTermsBox.Text = @"flower";
+		   // _searchTermsBox.Text = @"flower";
 			_searchButton_Click(this,null);
 #endif
 

@@ -38,8 +38,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			_editLink.Visible = false;
 
-			 AddControl("Get Picture", ImageToolboxButtons.browse, "browse",  (x) => new AcquireImageControl());
-			  AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
+			AddControl("Get Picture", ImageToolboxButtons.browse, "browse", (x) => { var c = new AcquireImageControl();
+																					c.SetIntialSearchString(InitialSearchString);
+																					return c;
+																					});
+			 AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
@@ -92,6 +95,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 		}
+
+		/// <summary>
+		/// used by galleries (e.g. art of reading)
+		/// </summary>
+		public string InitialSearchString { get; set; }
 
 		private void SetupMetaDataControls(Metadata metaData)
 		{
@@ -177,6 +185,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				Controls.Remove(_currentControl);
 				_currentControl.Dispose();
 			}
+
 		}
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

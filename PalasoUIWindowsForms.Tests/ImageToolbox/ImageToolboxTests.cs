@@ -20,7 +20,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		public void ShowToolbox()
 		{
 			Application.EnableVisualStyles();
-			using (var dlg = new ImageToolboxDialog(new PalasoImage()))
+			using (var dlg = new ImageToolboxDialog(new PalasoImage(), "arrow"))
 			{
 				dlg.ShowDialog();
 			}
@@ -36,7 +36,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			//using (var f = TempFile.WithExtension(".png"))
 			{
 				//i.Save(f.Path);
-				using (var dlg = new ImageToolboxDialog(i))
+				using (var dlg = new ImageToolboxDialog(i, "arrow"))
 				{
 					dlg.ShowDialog();
 				}

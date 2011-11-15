@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage1 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
+			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage2 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this.imageToolboxControl1 = new Palaso.UI.WindowsForms.ImageToolbox.ImageToolboxControl();
@@ -67,13 +67,14 @@
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			palasoImage1.MetadataLocked = false;
-			this.imageToolboxControl1.ImageInfo = palasoImage1;
+			palasoImage2.Image = null;
+			palasoImage2.MetadataLocked = false;
+			this.imageToolboxControl1.ImageInfo = palasoImage2;
+			this.imageToolboxControl1.InitialSearchString = null;
 			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
 			this.imageToolboxControl1.Name = "imageToolboxControl1";
 			this.imageToolboxControl1.Size = new System.Drawing.Size(873, 379);
 			this.imageToolboxControl1.TabIndex = 3;
-
 			//
 			// localizationHelper1
 			//
@@ -90,7 +91,8 @@
 			this.Controls.Add(this._cancelButton);
 			this.MinimumSize = new System.Drawing.Size(732, 432);
 			this.Name = "ImageToolboxDialog";
-			this.Text = "ImageToolboxDialog";
+			this.ShowIcon = false;
+			this.Text = "Image Toolbox";
 			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();
 			this.ResumeLayout(false);
 

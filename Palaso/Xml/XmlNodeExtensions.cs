@@ -124,7 +124,7 @@ namespace Palaso.Xml
 		{
 			//the code I purloined from stackoverflow didn't cope with axes and the double colon (ancestor::)
 			//Rather than re-write it, I just get the axes out of the way, then put them back after we insert the prefix
-			var axes = new List<string>(new[] { "ancestor","ancestor-or-self","attribute","child","descendant","descendant-or-self","following","following-sibling","namespace","parent","preceding","preceding-sibling","self" });
+			var axes = new List<string>(new[] {"ancestor","ancestor-or-self","attribute","child","descendant","descendant-or-self","following","following-sibling","namespace","parent","preceding","preceding-sibling","self" });
 			foreach (var axis in axes)
 			{
 				xPath = xPath.Replace(axis+"::", "#"+axis);
@@ -152,6 +152,7 @@ namespace Palaso.Xml
 			}
 
 			result = result.Replace(prefix + ":text()", "text()");//remove the pfx from the text()
+			result = result.Replace(prefix + ":node()", "node");
 			return result;
 		}
 
