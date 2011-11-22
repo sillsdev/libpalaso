@@ -152,7 +152,7 @@ namespace Palaso.Xml
 			}
 
 			result = result.Replace(prefix + ":text()", "text()");//remove the pfx from the text()
-			result = result.Replace(prefix + ":node()", "node");
+			result = result.Replace(prefix + ":node()", "node()");
 			return result;
 		}
 
