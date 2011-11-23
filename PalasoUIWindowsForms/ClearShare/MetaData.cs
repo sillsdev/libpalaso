@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
@@ -20,32 +21,32 @@ namespace Palaso.UI.WindowsForms.ClearShare
 	///
 	/// Microsoft Pro Photo Tools: http://www.microsoft.com/download/en/details.aspx?id=13518
 	/// </summary>
-	public class MetaData
+	public class Metadata
 	{
-		public MetaData()
+		public Metadata()
 		{
-			AllowEditingMetadata = true;
+			IsEmpty = true;
 		}
 
 		/// <summary>
-		/// Create a MetaDataAccess by reading an existing media file
+		/// Create a MetadataAccess by reading an existing media file
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		public static MetaData FromFile(string path)
+		public static Metadata FromFile(string path)
 		{
-			var m = new MetaData();
+			var m = new Metadata();
 			m._path = path;
 
-			var properties = MetaData.GetImageProperites(path);
+			var properties = GetImageProperites(path);
 
-			foreach (var assignment in MetaData.MetaDataAssignments)
+			foreach (var assignment in MetadataAssignments)
 			{
 				string propertyValue;
 				if (properties.TryGetValue(assignment.ResultLabel.ToLower(), out propertyValue))
 				{
 					assignment.AssignmentAction.Invoke(m, propertyValue);
-					m.AllowEditingMetadata = false;
+					m.IsEmpty = false;
 
 				}
 			}
@@ -69,6 +70,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				if (value != _license)
 					HasChanges = true;
 				_license = value;
+				if (!(value is NullLicense))
+					IsEmpty = false;
 			}
 		}
 
@@ -78,11 +81,13 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _copyrightNotice; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value!=null && value.Trim().Length == 0)
 					value = null;
 				if (value != _copyrightNotice)
 					HasChanges = true;
 				_copyrightNotice = value;
+				if (!String.IsNullOrEmpty(_copyrightNotice))
+					IsEmpty = false;
 			}
 		}
 
@@ -96,11 +101,13 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _creator; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _creator)
 					HasChanges = true;
 				_creator = value;
+				if (!String.IsNullOrEmpty(_creator))
+					IsEmpty = false;
 			}
 		}
 
@@ -114,11 +121,13 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _attributionUrl; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _attributionUrl)
 					HasChanges = true;
 				_attributionUrl = value;
+				if (!String.IsNullOrEmpty(_attributionUrl))
+					IsEmpty = false;
 			}
 		}
 
@@ -132,11 +141,14 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _collectionName; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _collectionName)
 					HasChanges = true;
 				_collectionName = value;
+				if (!String.IsNullOrEmpty(_collectionName))
+					IsEmpty = false;
+
 			}
 		}
 
@@ -146,11 +158,27 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get { return _collectionUri; }
 			set
 			{
-				if (value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _collectionUri)
 					HasChanges = true;
 				_collectionUri = value;
+				if (!String.IsNullOrEmpty(_collectionUri))
+					IsEmpty = false;
+
+			}
+		}
+
+		/// <summary>
+		/// Used during UI editing to know if we should enable the OK button
+		/// </summary>
+		public bool IsMinimallyComplete
+		{
+			get
+			{
+				//I'm thinking, license is secondary. Primary is who did it or what the copyright is... if you have a license without any of that... it's kind of bogus.
+				return !String.IsNullOrEmpty(CopyrightNotice) || !String.IsNullOrEmpty(Creator) ||
+					   !String.IsNullOrEmpty(CollectionUri);
 			}
 		}
 
@@ -158,7 +186,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			var args = new StringBuilder();
-			foreach (var assignment in MetaDataAssignments)
+			foreach (var assignment in MetadataAssignments)
 			{
 				args.Append(" " + assignment.Switch + " ");
 			}
@@ -188,20 +216,20 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 
 
-		private class MetaDataAssignement
+		private class MetadataAssignement
 		{
-			public Func<MetaData, string> GetStringFunction { get; set; }
-			public Func<MetaData, bool> ShouldSetValue { get; set; }
+			public Func<Metadata, string> GetStringFunction { get; set; }
+			public Func<Metadata, bool> ShouldSetValue { get; set; }
 			public string Switch;
 			public string ResultLabel;
-			public Action<MetaData, string> AssignmentAction;
+			public Action<Metadata, string> AssignmentAction;
 
-			public MetaDataAssignement(string Switch, string resultLabel, Action<MetaData, string> assignmentAction, Func<MetaData, string> stringProvider)
+			public MetadataAssignement(string Switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider)
 				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !String.IsNullOrEmpty(stringProvider(p)))
 			{
 			}
 
-			public MetaDataAssignement(string @switch, string resultLabel, Action<MetaData, string> assignmentAction, Func<MetaData, string> stringProvider, Func<MetaData, bool> shouldSetValueFunction)
+			public MetadataAssignement(string @switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider, Func<Metadata, bool> shouldSetValueFunction)
 			{
 				GetStringFunction = stringProvider;
 				ShouldSetValue = shouldSetValueFunction;
@@ -211,27 +239,40 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
-		private static List<MetaDataAssignement> MetaDataAssignments
+		private static List<MetadataAssignement> MetadataAssignments
 		{
 			get
 			{
-				var assignments = new List<MetaDataAssignement>();
-				assignments.Add(new MetaDataAssignement("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
+				var assignments = new List<MetadataAssignement>();
+				assignments.Add(new MetadataAssignement("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
 
-				assignments.Add(new MetaDataAssignement("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
-				assignments.Add(new MetaDataAssignement("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
-				assignments.Add(new MetaDataAssignement("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
-				assignments.Add(new MetaDataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
-				assignments.Add(new MetaDataAssignement("-XMP-cc:License", "license",
+				assignments.Add(new MetadataAssignement("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
+				assignments.Add(new MetadataAssignement("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
+				assignments.Add(new MetadataAssignement("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
+				assignments.Add(new MetadataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
+				assignments.Add(new MetadataAssignement("-XMP-cc:License", "license",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.Url, p => p.License !=null));
 				return assignments;
 			}
 		}
 
-		public bool AllowEditingMetadata { get; private set; }
+		public bool IsEmpty { get; private set; }
 
-		public bool HasChanges { get; private set; }
+		private bool _hasChanges;
+		public bool HasChanges
+		{
+			get
+			{
+				return _hasChanges || (License!=null && License.HasChanges);
+			}
+			set
+			{
+				_hasChanges = value;
+				if(!value && License!=null)
+					License.HasChanges = false;
+			}
+		}
 
 		/// <summary>
 		/// Attempt to cut off notices like "Copyright Blah 2009. Blah blah blah"
@@ -250,12 +291,18 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public void Write()
 		{
+			Write(_path);
+		}
 
+		public void Write(string path)
+		{
 			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
 
-			foreach (var assignment in MetaData.MetaDataAssignments)
+			//No arguments.Append("-P "); //don't change the modified date  (this isn't totally obvious... it's good unless it interferes with backup)
+
+			foreach (var assignment in MetadataAssignments)
 			{
 				if (assignment.ShouldSetValue(this))
 				{
@@ -272,7 +319,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
 			arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
-			arguments.AppendFormat(" \"{0}\"", _path);
+			arguments.AppendFormat(" \"{0}\"", path);
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 #if DEBUG
@@ -283,6 +330,68 @@ namespace Palaso.UI.WindowsForms.ClearShare
 #endif
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
+		}
+
+		public void SetupReasonableLicenseDefaultBeforeEditing()
+		{
+			if(License == null || License is NullLicense)
+			{
+				License= new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			}
+		}
+
+		public Metadata DeepCopy()
+		{
+			return (Metadata) CloneObject(this);
+		}
+
+		/// <summary>
+		/// This is actually a generic cloning method, copied into this class just because UI needs to clone this class.
+		/// From http://stackoverflow.com/questions/78536/cloning-objects-in-c-sharp/78551#78551
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		private static object CloneObject(object source)
+		{
+			//grab the type and create a new instance of that type
+			Type sourceType = source.GetType();
+			//  var target =  Activator.CreateInstance(source.GetType(), null);
+			object target = Activator.CreateInstance(sourceType, true);
+
+			//grab the properties
+			PropertyInfo[] PropertyInfo =
+				sourceType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+			//iterate over the properties and if it has a 'set' method assign it from the source TO the target
+			foreach (PropertyInfo item in PropertyInfo)
+			{
+				if (item.CanWrite)
+				{
+					//value types can simply be 'set'
+					if (item.PropertyType.IsValueType || item.PropertyType.IsEnum ||
+						item.PropertyType.Equals(typeof(System.String)))
+					{
+						item.SetValue(target, item.GetValue(source, null), null);
+					}
+						//object/complex types need to recursively call this method until the end of the tree is reached
+					else
+					{
+						object propertyValue = item.GetValue(source, null);
+						if (propertyValue == null)
+						{
+							item.SetValue(target, null, null);
+						}
+						else
+						{
+							Type z = item.PropertyType;
+							item.SetValue(target, CloneObject(propertyValue), null);
+							//item.SetValue(target, CloneObject<LicenseInfo>(propertyValue as LicenseInfo), null);
+						}
+					}
+				}
+			}
+			//return the new item
+			return target;
 		}
 	}
 }

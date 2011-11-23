@@ -67,11 +67,17 @@ namespace Palaso.Xml
 
 		#region HonorDefaultNamespace  // from http://stackoverflow.com/questions/585812/using-xpath-with-default-namespace-in-c/2054877#2054877
 
+		public const string DefaultNamespacePrefix = "pfx";
+
+		/// <summary>
+		/// This is for doing selections in xhtml, where there is a default namespace, which makes
+		/// normal selects fail.  This tries to set a namespace and inject prefix into the xpath.
+		/// </summary>
 		public static XmlNode SelectSingleNodeHonoringDefaultNS(this XmlNode node, string path)
 		{
-			const string prefix = "pfx";
-			XmlNamespaceManager nsmgr = GetNsmgr(node, prefix);
-			string prefixedPath = GetPrefixedPath(path, prefix);
+
+			XmlNamespaceManager nsmgr = GetNsmgr(node, DefaultNamespacePrefix);
+			string prefixedPath = GetPrefixedPath(path, DefaultNamespacePrefix);
 			return node.SelectSingleNode(prefixedPath, nsmgr);
 		}
 
@@ -106,6 +112,7 @@ namespace Palaso.Xml
 			}
 		}
 
+
 		// review: I (CP) think that this method changes the syntax of xpath to account for the use of a default namespace
 		// such that for example:
 		//  xpath = a/b
@@ -115,6 +122,14 @@ namespace Palaso.Xml
 		// bug: The code below currently doesn't allow for a / in a literal string which should not have pfx: prepended.
 		private static string GetPrefixedPath(string xPath, string prefix)
 		{
+			//the code I purloined from stackoverflow didn't cope with axes and the double colon (ancestor::)
+			//Rather than re-write it, I just get the axes out of the way, then put them back after we insert the prefix
+			var axes = new List<string>(new[] {"ancestor","ancestor-or-self","attribute","child","descendant","descendant-or-self","following","following-sibling","namespace","parent","preceding","preceding-sibling","self" });
+			foreach (var axis in axes)
+			{
+				xPath = xPath.Replace(axis+"::", "#"+axis);
+			}
+
 			char[] validLeadCharacters = "@/".ToCharArray();
 			char[] quoteChars = "\'\"".ToCharArray();
 
@@ -129,7 +144,15 @@ namespace Palaso.Xml
 												? x
 												: prefix + ":" + x).ToArray());
 
+			foreach (var axis in axes)
+			{
+				if (result.Contains(axis + "-"))//don't match on, e.g., "following" if what we have is "following-sibling"
+					continue;
+				result = result.Replace(prefix + ":#"+axis, axis+"::" + prefix + ":");
+			}
+
 			result = result.Replace(prefix + ":text()", "text()");//remove the pfx from the text()
+			result = result.Replace(prefix + ":node()", "node()");
 			return result;
 		}
 

@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 {
 	public partial class ImageCropper : UserControl, IImageToolboxControl
 	{
-		private Image _image;
+		private PalasoImage _image;
 		private Grip _gripperBeingDragged;
 		private Rectangle _sourceImageArea;
 		private const int GripThickness = 20;
@@ -114,7 +114,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 		{
 			 return _topGrip.Bottom + ((_bottomGrip.Top  - _topGrip.Bottom) / 2);
 		}
-		public Image Image
+		public PalasoImage Image
 		{
 			get {
 				return _image;
@@ -196,14 +196,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 		private void CalculateSourceImageArea()
 		{
 			float imageToCanvaseScaleFactor = GetImageToCanvasScaleFactor();
-			_sourceImageArea = new Rectangle(GripThickness,GripThickness, (int)(_image.Width * imageToCanvaseScaleFactor), (int)(_image.Height * imageToCanvaseScaleFactor ));
+			_sourceImageArea = new Rectangle(GripThickness,GripThickness, (int)(_image.Image.Width * imageToCanvaseScaleFactor), (int)(_image.Image.Height * imageToCanvaseScaleFactor ));
 		}
 
 		private float GetImageToCanvasScaleFactor()
 		{
 			var availArea = new Rectangle(BorderSize, BorderSize, Width - (2*BorderSize), Height - (2*BorderSize));
-			float hProportion = availArea.Width/((float)_image.Width);
-			float vProportion = availArea.Height/((float)_image.Height);
+			float hProportion = availArea.Width/((float)_image.Image.Width);
+			float vProportion = availArea.Height/((float)_image.Image.Height);
 			return Math.Min(hProportion, vProportion);
 		}
 
@@ -217,11 +217,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 				e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);
 				e.Graphics.DrawImage(
-					_image,
+					_image.Image,
 					_sourceImageArea,
 					new Rectangle( // Source
 						0, 0,
-						_image.Width, _image.Height),
+						_image.Image.Width, _image.Image.Height),
 					GraphicsUnit.Pixel);
 
 				using (Brush brush = new Pen(Color.FromArgb(150, Color.LightBlue)).Brush)
@@ -318,7 +318,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 				//jpeg = b96b3cae-0728-11d3-9d7b-0000f81ef32e
 
-				Bitmap bmp = _image as Bitmap;
+				Bitmap bmp = _image.Image as Bitmap;
 				if (bmp == null)
 					throw new ArgumentException("No valid bitmap");
 
@@ -326,7 +326,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 				//This may be because I closed the stream? THe doc says you have to keep that stream open.
 				// return bmp.Clone(selection, _image.PixelFormat);
 				//So now, I first copy it, then clone with the bounds of our crop:
-				using (var copy = new Bitmap(_image))
+				using (var copy = new Bitmap(_image.Image))
 				{
 					return copy.Clone(selection, copy.PixelFormat);
 				}
@@ -348,16 +348,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			}
 			else
 			{
-				Image = image.Image;
+				Image = image;
 			}
 		}
 
 		public PalasoImage GetImage()
 		{
-			Image image = GetCroppedImage();
-			if (image == null)
+			Image x = GetCroppedImage();
+			if (x == null)
 				return null;
-			return PalasoImage.FromImage(image);
+			//we want to retain the metdata of the PalasoImage we started with; we just want to update its actual image
+			_image.Image = x;
+			return _image;
 		}
 
 		public event EventHandler ImageChanged;

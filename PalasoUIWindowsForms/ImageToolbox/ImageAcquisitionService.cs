@@ -1,5 +1,6 @@
 ﻿#if !MONO
 using System;
+using Palaso.Reporting;
 using WIA;
 using System.Runtime.InteropServices;
 
@@ -60,6 +61,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						false,
 						true,
 						false);
+				UsageReporter.SendNavigationNotice("AcquiredImage/" + (_deviceKind == DeviceKind.Camera?"Camera": "Scanner"));
 
 				return image;
 			}

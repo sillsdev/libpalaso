@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
+	/// <summary>
+	/// Provides 4 ways to get an image: Gallery (art of reading), scanner, camera, or file system.
+	/// </summary>
 	public partial class AcquireImageControl : UserControl, IImageToolboxControl
 	{
 		private PalasoImage _previousImage;
@@ -69,6 +72,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				_pictureBox.Image = null;
 			else
 				_pictureBox.Image = image.Image;
+
+			SetMode(Modes.SingleImage);
 		}
 
 		public PalasoImage GetImage()
@@ -138,6 +143,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		}
 		#endif
+
+		/// <summary>
+		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
+		/// </summary>
+		/// <param name="searchTerm"></param>
+		public void SetIntialSearchString(string searchTerm)
+		{
+			_galleryControl.SetIntialSearchTerm(searchTerm);
+		}
 
 		/// <summary>
 		/// Will delete the incoming file if it needs to do a conversion

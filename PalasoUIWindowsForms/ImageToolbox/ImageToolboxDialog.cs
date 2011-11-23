@@ -6,21 +6,30 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public partial class ImageToolboxDialog : Form
 	{
-		public ImageToolboxDialog(PalasoImage imageInfo)
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="imageInfo">optional (can be null)</param>
+		/// <param name="initialSearchString">optional</param>
+		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString)
 		{
-			InitializeComponent();
+			 InitializeComponent();
 			imageToolboxControl1.ImageInfo = imageInfo;
+			imageToolboxControl1.InitialSearchString = initialSearchString;
 		}
 		public PalasoImage ImageInfo { get { return imageToolboxControl1.ImageInfo; } }
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
-		  DialogResult = DialogResult.OK;
+			//enhance: doesn't tell us all that much.
+			UsageReporter.SendNavigationNotice("ImageToolboxDialog/Ok");
+			DialogResult = DialogResult.OK;
 			imageToolboxControl1.Closing();
 			Close();
 		}

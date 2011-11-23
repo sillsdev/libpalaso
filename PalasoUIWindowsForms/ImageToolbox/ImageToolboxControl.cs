@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
 #if !MONO
 
@@ -9,6 +11,11 @@ using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
+	/// <summary>
+	/// The ImageToolbox lets you acquire images from camera, scanner, image collection, or the file system.
+	/// It has a cropping control.
+	/// It can read metadata, and allow you to enter metadata for an image.
+	/// </summary>
 	public partial class ImageToolboxControl : UserControl
 	{
 		private readonly ImageList _toolImages;
@@ -29,9 +36,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_toolImages.ColorDepth = ColorDepth.Depth24Bit;
 			_toolImages.ImageSize = new Size(32,32);
 
+			_editLink.Visible = false;
 
-			 AddControl("Get Picture", ImageToolboxButtons.browse, "browse",  (x) => new AcquireImageControl());
-			  AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
+			AddControl("Get Picture", ImageToolboxButtons.browse, "browse", (x) => { var c = new AcquireImageControl();
+																					c.SetIntialSearchString(InitialSearchString);
+																					return c;
+																					});
+			 AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
@@ -50,6 +61,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					if (value == null || value.Image == null)
 					{
 						_currentImageBox.Image = null;
+						_metadataDisplayControl.Visible = false;
+						_invitationToMetadataPanel.Visible = false;
 					}
 					else
 					{
@@ -72,7 +85,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 												}
 						  */
 						_currentImageBox.Image = value.Image;
-						_metadataDisplayControl.SetLicense(value.MetaData);
+						SetupMetaDataControls(value.Metadata);
 					}
 					_imageInfo = value;
 				}
@@ -83,6 +96,21 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 		}
 
+		/// <summary>
+		/// used by galleries (e.g. art of reading)
+		/// </summary>
+		public string InitialSearchString { get; set; }
+
+		private void SetupMetaDataControls(Metadata metaData)
+		{
+			//NB: there was a bug here where the display control refused to go to visible, if this was called before loading. Weird.  So now, we have an OnLoad() to call it again.
+			_invitationToMetadataPanel.Visible = (metaData == null || metaData.IsEmpty);
+			_metadataDisplayControl.Visible = !_invitationToMetadataPanel.Visible;
+			bool looksOfficial = !string.IsNullOrEmpty(metaData.CollectionUri);
+			_editLink.Visible = metaData!=null && _metadataDisplayControl.Visible && !looksOfficial;
+			if (_metadataDisplayControl.Visible)
+				_metadataDisplayControl.SetMetadata(metaData);
+		}
 
 		private void AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
 		{
@@ -159,6 +187,34 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 
 		}
+
+		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			//it's not clear at the moment where the following belongs... but we want
+			//to encourage Creative Commons Licensing, so if there is no license, we'll start
+			//the following dialog out with a reasonable default.
+			_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+
+			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
+			{
+				if(DialogResult.OK == dlg.ShowDialog())
+				{
+					_imageInfo.Metadata = dlg.Metadata;
+					SetupMetaDataControls(_imageInfo.Metadata);
+					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+				}
+			}
+		}
+
+		private void OnLoad(object sender, EventArgs e)
+		{
+			if(ImageInfo==null)
+				return;
+
+			SetupMetaDataControls(ImageInfo.Metadata);
+
+		}
+
 	}
 
 	public interface IImageToolboxControl

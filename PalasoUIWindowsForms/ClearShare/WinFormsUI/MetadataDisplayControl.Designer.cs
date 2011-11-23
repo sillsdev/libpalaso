@@ -1,4 +1,4 @@
-﻿namespace Palaso.UI.WindowsForms.ImageToolbox
+﻿namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
 	partial class MetadataDisplayControl
 	{

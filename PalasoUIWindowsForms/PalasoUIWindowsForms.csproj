@@ -120,24 +120,30 @@
 	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
 	<Compile Include="ClearShare\Contribution.cs" />
 	<Compile Include="ClearShare\ContributionCollection.cs" />
-	<Compile Include="ClearShare\ContributorsListControl.cs">
+	<Compile Include="ClearShare\WinFormsUI\ContributorsListControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ClearShare\ContributorsListControl.designer.cs">
+	<Compile Include="ClearShare\WinFormsUI\ContributorsListControl.designer.cs">
 	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\ContributorsListControlViewModel.cs" />
 	<Compile Include="ClearShare\CreativeCommonsLicense.cs" />
-	<Compile Include="ClearShare\FadingMessageForm.cs">
+	<Compile Include="ClearShare\WinFormsUI\FadingMessageForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="ClearShare\FadingMessageForm.designer.cs">
+	<Compile Include="ClearShare\WinFormsUI\FadingMessageForm.designer.cs">
 	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\License.cs" />
 	<Compile Include="ClearShare\MetaData.cs" />
 	<Compile Include="ClearShare\OlacSystem.cs" />
 	<Compile Include="ClearShare\Role.cs" />
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.Designer.cs">
+	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="ClearShare\Work.cs" />
 	<Compile Include="ControlExtensions.cs" />
 	<Compile Include="CustomDropDown.cs">
@@ -193,10 +199,10 @@
 	<Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\MetadataDisplayControl.cs">
+	<Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ImageToolbox\MetadataDisplayControl.Designer.cs">
+	<Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.Designer.cs">
 	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
@@ -222,10 +228,10 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>LicenseLogos.resx</DependentUpon>
 	</Compile>
-	<Compile Include="ImageToolbox\MetdataEditorControl.cs">
+	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ImageToolbox\MetdataEditorControl.Designer.cs">
+	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.Designer.cs">
 	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
@@ -460,13 +466,16 @@
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\ContributorsListControl.resx">
+	<EmbeddedResource Include="ClearShare\WinFormsUI\ContributorsListControl.resx">
 	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\FadingMessageForm.resx">
+	<EmbeddedResource Include="ClearShare\WinFormsUI\FadingMessageForm.resx">
 	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorDialog.resx">
+	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
@@ -488,7 +497,7 @@
 	  <DependentUpon>ImageCropper.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\MetadataDisplayControl.resx">
+	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataDisplayControl.resx">
 	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
@@ -510,7 +519,7 @@
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\MetdataEditorControl.resx">
+	<EmbeddedResource Include="ClearShare\WinFormsUI\MetdataEditorControl.resx">
 	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">

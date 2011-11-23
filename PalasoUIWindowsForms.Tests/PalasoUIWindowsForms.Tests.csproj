@@ -93,9 +93,10 @@
 	<Compile Include="ClearShare\ClearShareUsage.cs" />
 	<Compile Include="ClearShare\ContributionTests.cs" />
 	<Compile Include="ClearShare\ContributorsListControlViewModelTests.cs" />
+	<Compile Include="ClearShare\MetadataEditorControlTests.cs" />
 	<Compile Include="ClearShare\CreativeCommonsLicenseTests.cs" />
 	<Compile Include="ClearShare\LicenseTests.cs" />
-	<Compile Include="ClearShare\MetaDataAccessorTests.cs" />
+	<Compile Include="ClearShare\MetadataTests.cs" />
 	<Compile Include="ClearShare\OlacSystemTests.cs" />
 	<Compile Include="ClearShare\RoleTests.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
@@ -103,7 +104,7 @@
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxTests.cs" />
-	<Compile Include="ImageToolbox\MetaDataDisplayTests.cs" />
+	<Compile Include="ClearShare\MetaDataDisplayTests.cs" />
 	<Compile Include="ImageToolbox\PalasoImageTests.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />

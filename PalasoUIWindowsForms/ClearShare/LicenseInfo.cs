@@ -34,6 +34,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 
 		public abstract string Url { get; set; }
+
+		public bool HasChanges { get; set; }
 	}
 
 	public class NullLicense : LicenseInfo

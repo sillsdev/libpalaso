@@ -80,41 +80,41 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			{
 				png.Save(temp.Path);
 				var pi = PalasoImage.FromFile(temp.Path);
-				pi.MetaData.CopyrightNotice = "Copyright 2011 me";
+				pi.Metadata.CopyrightNotice = "Copyright 2011 me";
 				Assert.DoesNotThrow(() => pi.Save(temp.Path));
 				Assert.DoesNotThrow(() => File.Delete(temp.Path));
 			}
 		}
 
 		[Test]
-		public void Locked_LoadedButImageHasNoMetaData_False()
+		public void Locked_LoadedButImageHasNoMetadata_False()
 		{
 			var png = new Bitmap(10, 10);
 			using (var temp = new TempFile(false))
 			{
 				png.Save(temp.Path);
 				var pi = PalasoImage.FromFile(temp.Path);
-				Assert.IsFalse(pi.MetaDataLocked);
+				Assert.IsFalse(pi.MetadataLocked);
 			}
 		}
 		[Test]
 		public void Locked_NewOne_False()
 		{
 			var pi = new PalasoImage();
-			Assert.IsFalse(pi.MetaDataLocked);
+			Assert.IsFalse(pi.MetadataLocked);
 		}
 
 //        [Test]
-//        public void MetaDataLocked_IfLoadedWithIllustrator_True()
+//        public void MetadataLocked_IfLoadedWithIllustrator_True()
 //        {
 //            var png = new Bitmap(10, 10);
 //            using (var temp = new TempFile(false))
 //            {
 //                var pi = PalasoImage.FromImage(png);
-//                pi.MetaData.AttributionName = "me";
+//                pi.Metadata.AttributionName = "me";
 //                pi.Save(temp.Path);
 //                var incoming = PalasoImage.FromFile(temp.Path);
-//                Assert.IsTrue(incoming.MetaDataLocked);
+//                Assert.IsTrue(incoming.MetadataLocked);
 //            }
 //        }
 

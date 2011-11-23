@@ -5,7 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Timer = System.Windows.Forms.Timer;
 
-namespace Palaso.UI.WindowsForms.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
 	public partial class FadingMessageForm : Form
 	{

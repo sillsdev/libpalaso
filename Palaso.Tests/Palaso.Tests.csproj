@@ -96,7 +96,7 @@
 	<Compile Include="Data\ResultSetTests.cs" />
 	<Compile Include="Data\PalasoTestItem.cs" />
 	<Compile Include="Data\TestRepositoryId.cs" />
-	<Compile Include="Extensions\StringExtensions.cs" />
+	<Compile Include="Extensions\StringExtensionTests.cs" />
 	<Compile Include="i18n\StringCatalogTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
@@ -164,6 +164,7 @@
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
+	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
 	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
   </ItemGroup>

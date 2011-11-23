@@ -52,6 +52,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		private void SetThumbnail(Image image)
 		{
 			if (Disposing) return;
+			if (IsDisposed)
+				return;
 
 			if (this.InvokeRequired)
 			{
@@ -131,6 +133,9 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 			foreach (string fileName in fileList)
 			{
+				if (IsDisposed)
+					return;
+
 				if (_thumbnailWorker.CancellationPending)
 				{
 					e.Cancel = true;

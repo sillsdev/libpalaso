@@ -17,6 +17,7 @@
 			{
 				components.Dispose();
 			}
+			_galleryControl.Dispose();
 			base.Dispose(disposing);
 		}
 
