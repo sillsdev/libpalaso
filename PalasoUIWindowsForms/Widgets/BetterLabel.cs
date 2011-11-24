@@ -44,8 +44,28 @@ namespace Palaso.UI.WindowsForms.Widgets
 		private void BetterLabel_TextChanged(object sender, System.EventArgs e)
 		{
 			//this is apparently dangerous to do in the constructor
-			Font = SystemFonts.MessageBoxFont;
+			Font =  SystemFonts.MessageBoxFont;
+
+		}
+	}
+
+	public class BetterLinkLabel : BetterLabel
+	{
+		public BetterLinkLabel()
+		{
+			ReadOnly = true;
+			this.MouseEnter += new EventHandler(BetterLinkLabel_MouseEnter);
 		}
 
+		void BetterLinkLabel_MouseEnter(object sender, EventArgs e)
+		{
+			Cursor = Cursors.Hand;
+		}
+		protected override void OnLayout(LayoutEventArgs levent)
+		{
+			base.OnLayout(levent);
+			ForeColor = Color.Blue;//TODO
+			Font = new Font(Font, FontStyle.Underline);
+		}
 	}
 }

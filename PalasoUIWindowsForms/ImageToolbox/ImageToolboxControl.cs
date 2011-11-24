@@ -25,27 +25,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public ImageToolboxControl()
 		{
 			InitializeComponent();
-
-			ImageInfo = new PalasoImage();
-			_toolListView.Items.Clear();
-
-
-			//doing our own image list because VS2010 croaks their resx if have an imagelist while set to .net 3.5 with x86 on a 64bit os (something like that). This is a known bug MS doesn't plan to fix.
 			_toolImages = new ImageList();
-			_toolListView.LargeImageList = _toolImages;
-			_toolImages.ColorDepth = ColorDepth.Depth24Bit;
-			_toolImages.ImageSize = new Size(32,32);
-
-			_editLink.Visible = false;
-
-			AddControl("Get Picture", ImageToolboxButtons.browse, "browse", (x) => { var c = new AcquireImageControl();
-																					c.SetIntialSearchString(InitialSearchString);
-																					return c;
-																					});
-			 AddControl("Crop",  ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
-
-			_toolListView.Items[0].Selected = true;
-			_toolListView.Refresh();
+			ImageInfo = new PalasoImage();
+			_copyExemplarMetadata.Font = _editMetadataLink.Font;
 		}
 
 		/// <summary>
@@ -110,6 +92,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_editLink.Visible = metaData!=null && _metadataDisplayControl.Visible && !looksOfficial;
 			if (_metadataDisplayControl.Visible)
 				_metadataDisplayControl.SetMetadata(metaData);
+
+			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
+			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
+			{
+				_copyExemplarMetadata.Text = string.Format("Use {0}", Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
+			}
 		}
 
 		private void AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
@@ -202,17 +190,48 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					_imageInfo.Metadata = dlg.Metadata;
 					SetupMetaDataControls(_imageInfo.Metadata);
 					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+					_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
 				}
 			}
 		}
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if(ImageInfo==null)
+			_toolListView.Items.Clear();
+
+
+			//doing our own image list because VS2010 croaks their resx if have an imagelist while set to .net 3.5 with x86 on a 64bit os (something like that). This is a known bug MS doesn't plan to fix.
+
+			_toolListView.LargeImageList = _toolImages;
+			_toolImages.ColorDepth = ColorDepth.Depth24Bit;
+			_toolImages.ImageSize = new Size(32, 32);
+
+			_editLink.Visible = false;
+
+			AddControl("Get Picture", ImageToolboxButtons.browse, "browse", (x) =>
+			{
+				var c = new AcquireImageControl();
+				c.SetIntialSearchString(InitialSearchString);
+				return c;
+			});
+			AddControl("Crop", ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
+
+			_toolListView.Items[0].Selected = true;
+			_toolListView.Refresh();
+
+			if (ImageInfo == null)
 				return;
 
 			SetupMetaDataControls(ImageInfo.Metadata);
+			this._toolListView.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
 
+		}
+
+
+		private void OnCopyExamplar_MouseClick(object sender, MouseEventArgs e)
+		{
+			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
+			SetupMetaDataControls(ImageInfo.Metadata);
 		}
 
 	}

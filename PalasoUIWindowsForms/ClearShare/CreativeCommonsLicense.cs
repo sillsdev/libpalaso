@@ -25,6 +25,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+		public override string ToString()
+		{
+			return Abbreviation;  //by-nc-sa
+		}
+
 		private bool _commercialUseAllowed;
 		public bool CommercialUseAllowed
 		{
@@ -91,27 +96,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			get
 			{
-				var url = "";
-				if (AttributionRequired)
-					url += "by-";
-				if (!CommercialUseAllowed)
-					url += "nc-";
-				switch (DerivativeRule)
-				{
-					case DerivativeRules.NoDerivatives:
-						url += "nd";
-						break;
-					case DerivativeRules.DerivativesWithShareAndShareAlike:
-						url += "sa";
-						break;
-					case DerivativeRules.Derivatives:
-						break;
-					default:
-						throw new ArgumentOutOfRangeException("derivativeRule");
-				}
-				url = url.TrimEnd(new char[] {'-'});
-				if (url == "")
-					url = "srr"; //some rights reserved
+				var url = Abbreviation;
 
 				url += "/";
 
@@ -145,6 +130,35 @@ namespace Palaso.UI.WindowsForms.ClearShare
 					Version = v;
 			}
 
+		}
+
+		private string Abbreviation
+		{
+			get
+			{
+				var url = "";
+				if (AttributionRequired)
+					url += "by-";
+				if (!CommercialUseAllowed)
+					url += "nc-";
+				switch (DerivativeRule)
+				{
+					case DerivativeRules.NoDerivatives:
+						url += "nd";
+						break;
+					case DerivativeRules.DerivativesWithShareAndShareAlike:
+						url += "sa";
+						break;
+					case DerivativeRules.Derivatives:
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("derivativeRule");
+				}
+				url = url.TrimEnd(new char[] {'-'});
+				if (url == "")
+					url = "srr"; //some rights reserved
+				return url;
+			}
 		}
 
 		//we'll need to give out an image, description, url.

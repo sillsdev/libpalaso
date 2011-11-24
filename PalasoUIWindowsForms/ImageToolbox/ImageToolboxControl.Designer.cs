@@ -36,13 +36,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
+			System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
+			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
 			this._panelForControls = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._editLink = new System.Windows.Forms.LinkLabel();
 			this._invitationToMetadataPanel = new System.Windows.Forms.Panel();
+			this._copyExemplarMetadata = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
 			this._metadataDisplayControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetadataDisplayControl();
@@ -56,13 +57,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._toolListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)));
-			listViewGroup1.Header = "test";
-			listViewGroup1.Name = "listViewGroup1";
+			listViewGroup2.Header = "test";
+			listViewGroup2.Name = "listViewGroup1";
 			this._toolListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-			listViewGroup1});
+			listViewGroup2});
 			this._toolListView.HideSelection = false;
 			this._toolListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-			listViewItem1});
+			listViewItem2});
 			this._toolListView.Location = new System.Drawing.Point(0, 0);
 			this._toolListView.Name = "_toolListView";
 			this._toolListView.ShowGroups = false;
@@ -112,12 +113,30 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			// _invitationToMetadataPanel
 			//
 			this._invitationToMetadataPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._invitationToMetadataPanel.Controls.Add(this._copyExemplarMetadata);
 			this._invitationToMetadataPanel.Controls.Add(this.betterLabel1);
 			this._invitationToMetadataPanel.Controls.Add(this._editMetadataLink);
-			this._invitationToMetadataPanel.Location = new System.Drawing.Point(7, 349);
+			this._invitationToMetadataPanel.Location = new System.Drawing.Point(7, 318);
 			this._invitationToMetadataPanel.Name = "_invitationToMetadataPanel";
-			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 133);
+			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 146);
 			this._invitationToMetadataPanel.TabIndex = 8;
+			//
+			// _copyExemplarMetadata
+			//
+			this._copyExemplarMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._copyExemplarMetadata.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._copyExemplarMetadata.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._copyExemplarMetadata.ForeColor = System.Drawing.SystemColors.WindowText;
+			this._copyExemplarMetadata.Location = new System.Drawing.Point(5, 104);
+			this._copyExemplarMetadata.Multiline = true;
+			this._copyExemplarMetadata.Name = "_copyExemplarMetadata";
+			this._copyExemplarMetadata.ReadOnly = true;
+			this._copyExemplarMetadata.Size = new System.Drawing.Size(237, 37);
+			this._copyExemplarMetadata.TabIndex = 11;
+			this._copyExemplarMetadata.TabStop = false;
+			this._copyExemplarMetadata.Text = "Copy Examplar that is really long";
+			this._copyExemplarMetadata.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnCopyExamplar_MouseClick);
 			//
 			// betterLabel1
 			//
@@ -138,12 +157,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._editMetadataLink.AutoSize = true;
 			this._editMetadataLink.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._editMetadataLink.Location = new System.Drawing.Point(0, 100);
+			this._editMetadataLink.Location = new System.Drawing.Point(4, 82);
 			this._editMetadataLink.Name = "_editMetadataLink";
-			this._editMetadataLink.Size = new System.Drawing.Size(213, 19);
+			this._editMetadataLink.Size = new System.Drawing.Size(119, 19);
 			this._editMetadataLink.TabIndex = 8;
 			this._editMetadataLink.TabStop = true;
-			this._editMetadataLink.Text = "Can you answer these questions?";
+			this._editMetadataLink.Text = "Set up metadata...";
 			this._editMetadataLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnEditMetadataLink_LinkClicked);
 			//
 			// _metadataDisplayControl
@@ -200,5 +219,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private Widgets.BetterLabel betterLabel1;
 		private System.Windows.Forms.LinkLabel _editMetadataLink;
 		private System.Windows.Forms.LinkLabel _editLink;
+		private Widgets.BetterLinkLabel _copyExemplarMetadata;
 	}
 }

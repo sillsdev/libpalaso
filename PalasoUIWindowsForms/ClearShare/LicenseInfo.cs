@@ -45,6 +45,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			throw new NotImplementedException();
 		}
 
+		public override string ToString()
+		{
+			return "No License";
+		}
+
 		public override string Url
 		{
 			get { return ""; }
@@ -56,6 +61,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 	{
 		public void SetDescription(string iso639_3LanguageCode, string description)
 		{
+		}
+
+		public override string ToString()
+		{
+			return "Custom License";
 		}
 
 		public override string GetDescription(string iso639_3LanguageCode)

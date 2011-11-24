@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -38,6 +39,17 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			var m = new Metadata();
 			m._path = path;
 
+			LoadProperties(path, m);
+			return m;
+		}
+
+		/// <summary>
+		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="m"></param>
+		private static void LoadProperties(string path, Metadata m)
+		{
 			var properties = GetImageProperites(path);
 
 			foreach (var assignment in MetadataAssignments)
@@ -47,14 +59,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				{
 					assignment.AssignmentAction.Invoke(m, propertyValue);
 					m.IsEmpty = false;
-
 				}
 			}
 			m.License = LicenseInfo.FromXmp(properties);
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
 			m.HasChanges = false;
-			return m;
 		}
 
 		private LicenseInfo _license;
@@ -302,13 +312,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 			//No arguments.Append("-P "); //don't change the modified date  (this isn't totally obvious... it's good unless it interferes with backup)
 
-			foreach (var assignment in MetadataAssignments)
-			{
-				if (assignment.ShouldSetValue(this))
-				{
-					arguments.AppendFormat(" " + assignment.Switch + "=\"" + assignment.GetStringFunction(this) + "\" ");
-				}
-			}
+			AddAssignmentArguments(arguments);
 
 			if (arguments.ToString().Length == 0)
 			{
@@ -330,6 +334,17 @@ namespace Palaso.UI.WindowsForms.ClearShare
 #endif
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
+		}
+
+		private void AddAssignmentArguments(StringBuilder arguments)
+		{
+			foreach (var assignment in MetadataAssignments)
+			{
+				if (assignment.ShouldSetValue(this))
+				{
+					arguments.AppendFormat(" " + assignment.Switch + "=\"" + assignment.GetStringFunction(this) + "\" ");
+				}
+			}
 		}
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()
@@ -393,5 +408,123 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//return the new item
 			return target;
 		}
+
+		/// <summary>
+		/// Saves all the metadata that fits in XMP to a file.
+		/// </summary>
+		/// <example>SaveXmplFile("c:\dir\metadata.xmp")</example>
+		public void SaveXmpFile(string path)
+		{
+			Debug.Assert(path.EndsWith(".xmp"), "No really, the file must end in .xmp or exiftool won't work.");
+			if(File.Exists(path))
+				File.Delete(path);
+
+			StringBuilder arguments = new StringBuilder();
+			arguments.AppendFormat(" -o \"{0}\"", path);
+			AddAssignmentArguments(arguments);
+
+			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
+
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+		}
+
+		/// <summary>
+		/// Loads all metadata found in the XMP file.
+		/// </summary>
+		/// <example>LoadXmplFile("c:\dir\metadata.xmp")</example>
+		public void LoadXmpFile(string path)
+		{
+			if(!File.Exists(path))
+				throw new FileNotFoundException(path);
+
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+
+
+			//OK, so exiftool doesn't actually let us just read an xmp file. It needs an image to push the values into.
+			//So we oblige by creating a temp image, pushing the values in, then reading out the values. Wheeww.
+			using(var temp = TempFile.WithExtension("png"))
+			{
+				File.Delete(temp.Path);
+				using (var tempImage = new Bitmap(1, 1))
+				{
+					tempImage.Save(temp.Path);
+				}
+				StringBuilder arguments = new StringBuilder();
+				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", path, temp.Path);
+				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+				LoadProperties(temp.Path, this);
+			}
+
+		}
+
+		/// <summary>
+		/// Save the current metadata in the user settings, so that in the future, a call to LoadFromStoredExamplar() will retrieve them.
+		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustruator, license, etc.)
+		/// </summary>
+		/// <param name="category">e.g. "image", "document"</param>
+		public void StoreAsExemplar(FileCategory category)
+		{
+			SaveXmpFile(GetExemplarPath(category));
+		}
+
+		/// <summary>
+		/// Get previously saved values from a file in the user setting.
+		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustruator, license, etc.)
+		/// </summary>
+		/// <param name="category">e.g. "image", "document"</param>
+		public void LoadFromStoredExemplar(FileCategory category)
+		{
+			LoadXmpFile(GetExemplarPath(category));
+		}
+
+		/// <summary>
+		/// Tell if there is previously saved values from a file in the user setting.
+		/// </summary>
+		/// <param name="category">e.g. "image", "document"</param>
+		static public bool HaveStoredExemplar(FileCategory category)
+		{
+			return File.Exists(GetExemplarPath(category));
+		}
+
+		/// <summary>
+		/// For use on a hyperlink/button
+		/// </summary>
+		/// <returns></returns>
+		static public string GetStoredExemplarSummaryString(FileCategory category)
+		{
+			try
+			{
+				var m = new Metadata();
+				m.LoadFromStoredExemplar(category);
+				return string.Format("{0}/{1}/{2}", m.Creator, m.CopyrightNotice, m.License.ToString());
+			}
+			catch (Exception)
+			{
+				return string.Empty;
+			}
+		}
+
+		private static string GetExemplarPath(FileCategory category)
+		{
+			String appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			var path = appData.CombineForPath("palaso");
+			if(!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
+			path = path.CombineForPath("rememberedMetadata-" + Enum.GetName(typeof(FileCategory), category) + ".xmp");
+			return path;
+		}
+
+		/// <summary>
+		/// used when storing/retrieving exemplar metadata
+		/// </summary>
+		public enum FileCategory
+		{
+			Audio,
+			Image,
+			Document
+		};
 	}
 }
