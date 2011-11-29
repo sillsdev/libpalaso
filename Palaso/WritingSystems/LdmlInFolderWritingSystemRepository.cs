@@ -150,7 +150,7 @@ namespace Palaso.WritingSystems
 					continue;
 				}
 
-				if (wsFromFile.StoreID != wsFromFile.Bcp47Tag)
+				if (String.Compare(wsFromFile.StoreID, wsFromFile.Bcp47Tag, true) != 0)
 				{
 					bool badFileName = true;
 					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))

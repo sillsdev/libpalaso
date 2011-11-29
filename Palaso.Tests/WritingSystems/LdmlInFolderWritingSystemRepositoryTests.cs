@@ -644,6 +644,20 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Constructor_LdmlFolderStoreContainsInconsistentlyNamedFileDifferingInCaseOnly_HasNoProblem()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				File.WriteAllText(Path.Combine(environment.TestPath, "tpi-latn.ldml"),
+								  LdmlContentForTests.CurrentVersion("tpi", "Latn", "", ""));
+
+				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				var problems = repository.LoadProblems;
+				Assert.That(problems.Count, Is.EqualTo(0));
+			}
+		}
+
+		[Test]
 		public void Set_WritingSystemWasLoadedFromFlexPrivateUseLdmlAndRearranged_DoesNotChangeFileName()
 		{
 			using (var environment = new TestEnvironment())
