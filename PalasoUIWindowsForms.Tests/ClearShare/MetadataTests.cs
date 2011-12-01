@@ -149,6 +149,23 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		}
 
 		[Test]
+		public void LoadXmpFile_ValuesCopiedFromOtherFile()
+		{
+			var original = new Metadata();
+			var another = new Metadata();
+			original.Creator = "John";
+			original.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			using(var f = TempFile.WithExtension("xmp"))
+			{
+				original.SaveXmpFile(f.Path);
+				another.LoadXmpFile(f.Path);
+			}
+			Assert.AreEqual("John", another.Creator);
+			Assert.AreEqual(original.License.Url, another.License.Url);
+		}
+
+
+		[Test]
 		public void DeepCopy()
 		{
 			var m = new Metadata();
