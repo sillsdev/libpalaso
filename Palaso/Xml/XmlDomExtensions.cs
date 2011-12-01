@@ -15,9 +15,14 @@ namespace Palaso.Xml
 
 		public static void AddStyleSheet(this XmlDocument dom, string cssFilePath)
 		{
+			dom.AddStyleSheet(cssFilePath, null);
+		}
+
+		public static void AddStyleSheet(this XmlDocument dom, string cssFilePath, string nameSpaceIfDesired)
+		{
 			RemoveStyleSheetIfFound(dom, cssFilePath);//prevent duplicates
 			var head = dom.SelectSingleNodeHonoringDefaultNS("//head");
-			AddSheet(dom, head, cssFilePath);
+			AddSheet(dom, head, cssFilePath, nameSpaceIfDesired);
 		}
 
 		public static void RemoveStyleSheetIfFound(XmlDocument dom, string cssFilePath)
@@ -38,9 +43,10 @@ namespace Palaso.Xml
 			}
 		}
 
-		private static void AddSheet(this XmlDocument dom, XmlNode head, string cssFilePath)
+
+		private static void AddSheet(this XmlDocument dom, XmlNode head, string cssFilePath, string namespaceIfDesired)
 		{
-			var link = dom.CreateElement("link", "http://www.w3.org/1999/xhtml");
+			var link = string.IsNullOrEmpty(namespaceIfDesired) ? dom.CreateElement("link") : dom.CreateElement("link", namespaceIfDesired);
 			link.SetAttribute("rel", "stylesheet");
 
 			if(cssFilePath.Contains(Path.DirectorySeparatorChar.ToString())) // review: not sure about relative vs. complete paths
