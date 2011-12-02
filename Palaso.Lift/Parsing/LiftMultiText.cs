@@ -388,6 +388,7 @@ namespace Palaso.Lift.Parsing
 			{
 				alternative = new LiftString();
 				this[key] = alternative;
+				alternative.Text = String.Empty;
 			}
 			int start = alternative.Text.Length;
 			if (lang == key)

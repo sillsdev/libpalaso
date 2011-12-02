@@ -87,7 +87,8 @@
 	<Compile Include="Merging\SynchronicMergerTests.cs" />
 	<Compile Include="Merging\xmldiff\XmlDiffTests.cs" />
 	<Compile Include="Migration\GeneralMigratorTests.cs" />
-	<Compile Include="Migration\MigrateToV13Tests.cs" />
+	<Compile Include="Migration\MigrateV12ToCurrentTests.cs" />
+	<Compile Include="Migration\MigrateV13ToCurrentTests.cs" />
 	<Compile Include="Migration\MigratorTestBase.cs" />
 	<Compile Include="Migration\V10To11MigratorTests.cs" />
 	<Compile Include="Migration\V11To12MigratorTests.cs" />
@@ -126,6 +127,12 @@
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
 	<None Include="test20080407.lift-ranges">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="test20111130.lift">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="test20111130.lift-ranges">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>

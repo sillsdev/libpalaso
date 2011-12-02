@@ -180,6 +180,14 @@
   <ItemGroup>
 	<EmbeddedResource Include="canonicalizeLift.xsl" />
   </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="Validation\lift-0.13.rng" />
+	<EmbeddedResource Include="Validation\lift-0.14.rng" />
+  </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="Migration\LIFT-0.13-0.14.xsl" />
+	<EmbeddedResource Include="Migration\LIFT-0.14-0.15.xsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.

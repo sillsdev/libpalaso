@@ -23,7 +23,7 @@ namespace Palaso.Lift.Options
 				_xmlDoc.PreserveWhitespace = true;
 				_xmlDoc.Load(_optionListFilePath);
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				//Do nothing... guess it wasn't an optionlist file
 			}
@@ -56,7 +56,7 @@ namespace Palaso.Lift.Options
 					_xmlDoc.Save(_optionListFilePath);
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//Do nothing. If the load failed then it's not an optionlist.
 			}

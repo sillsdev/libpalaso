@@ -196,7 +196,7 @@ namespace Palaso.Lift.Validation
 		{
 			get
 			{
-				return "0.13";
+				return "0.15";
 			}
 		}
 

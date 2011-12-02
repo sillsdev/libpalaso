@@ -26,7 +26,7 @@ namespace Palaso.Lift
 		public List<string> EmbeddedXmlElements = new List<string>();
 
 		//Adapter pattern: LiftMultitext has some features we would like to use
-		private static LiftMultiText _liftMultitext;
+		//private static LiftMultiText _liftMultitext;
 
 		public MultiText(PalasoDataObject parent)
 		{
@@ -302,10 +302,10 @@ namespace Palaso.Lift
 			return strippedString;
 		}
 
-		public string GetFormWithoutSpans(string languageId)
-		{
-			return _liftMultitext[languageId].Text;
-		}
+		//public string GetFormWithoutSpans(string languageId)
+		//{
+		//    return _liftMultitext[languageId].Text;
+		//}
 
 		public bool ContainsEqualForm(string form, string writingSystemId)
 		{

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Palaso.Lift.Tests.Migration
 {
 	[TestFixture]
-	public class MigrateToV13Tests : MigratorTestBase
+	public class MigrateV12ToCurrentTests : MigratorTestBase
 	{
 		[Test]
 		public void LiftVersion_Was0Point12_IsSetTo0Point13()
@@ -33,7 +33,7 @@ namespace Palaso.Lift.Tests.Migration
 				string path = Migrator.MigrateToLatestVersion(f.Path);
 				Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
 				AssertXPathAtLeastOne("//lift[@producer='tester']", path);
-				AssertXPathAtLeastOne("//entry/field[@type='literal-meaning']", path);
+				AssertXPathAtLeastOne("//entry/note[@type='literal-meaning']", path);
 				AssertXPathNotFound("//entry/sense/field", path);
 				AssertXPathAtLeastOne("//entry/sense/trait[@name='semantic-domain-ddp4']", path);
 				AssertXPathNotFound("//entry/sense/trait[@name='SemanticDomainDdp4']", path);

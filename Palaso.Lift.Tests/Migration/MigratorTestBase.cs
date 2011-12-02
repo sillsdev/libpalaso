@@ -19,6 +19,11 @@ namespace Palaso.Lift.Tests.Migration
 				Console.WriteLine(err.Message);
 				Console.WriteLine(File.ReadAllText(filePath));
 			}
+			AssertXPathNotFound(doc, xpath);
+		}
+
+		public void AssertXPathNotFound(XmlDocument doc, string xpath)
+		{
 			XmlNode node = doc.SelectSingleNode(xpath);
 			if (node != null)
 			{
@@ -32,7 +37,6 @@ namespace Palaso.Lift.Tests.Migration
 			Assert.IsNull(node);
 		}
 
-
 		public void AssertXPathAtLeastOne(string xpath, string filePath)
 		{
 			XmlDocument doc = new XmlDocument();
@@ -45,6 +49,11 @@ namespace Palaso.Lift.Tests.Migration
 				Console.WriteLine(err.Message);
 				Console.WriteLine(File.ReadAllText(filePath));
 			}
+			AssertXPathAtLeastOne(doc, xpath);
+		}
+
+		public void AssertXPathAtLeastOne(XmlDocument doc, string xpath)
+		{
 			XmlNode node = doc.SelectSingleNode(xpath);
 			if (node == null)
 			{

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<lift producer="SIL.FLEx 7.2.0.40876" version="0.13">
+<header>
+<ranges>
+<range id="grammatical-info" href="file://test20111130.lift-ranges"/>
+<range id="morph-type" href="file://test20111130.lift-ranges"/>
+<range id="genres" href="file://test20111130.lift-ranges"/>
+<range id="education" href="file://test20111130.lift-ranges"/>
+</ranges>
+<fields>
+<field tag="cv-pattern">
+<form lang="en"><text>This records the syllable pattern for a LexPronunciation in FieldWorks.</text></form>
+</field>
+<field tag="tone">
+<form lang="en"><text>This records the tone information for a LexPronunciation in FieldWorks.</text></form>
+</field>
+<field tag="comment">
+<form lang="en"><text>This records a comment (note) in a LexEtymology in FieldWorks.</text></form>
+</field>
+<field tag="import-residue">
+<form lang="en"><text>This records residue left over from importing a standard format file into FieldWorks (or LinguaLinks).</text></form>
+</field>
+<field tag="literal-meaning">
+<form lang="en"><text>This field is used to store a literal meaning of the entry.  Typically, this field is necessary only for a compound or an idiom where the meaning of the whole is different from the sum of its parts.</text></form>
+</field>
+<field tag="summary-definition">
+<form lang="en"><text>A summary definition (located at the entry level in the Entry pane) is a general definition summarizing all the senses of a primary entry. It has no theoretical value; its use is solely pragmatic.</text></form>
+</field>
+<field tag="scientific-name">
+<form lang="en"><text>This field stores the scientific name pertinent to the current sense.</text></form>
+</field>
+<field tag="Entry String">
+<form lang="en"><text>This is a test.</text></form>
+<form lang="qaa-x-spec"><text>Class=LexEntry; Type=String; WsSelector=kwsAnal</text></form>
+</field>
+<field tag="Entry Text">
+<form lang="en"><text>This is a test.</text></form>
+<form lang="qaa-x-spec"><text>Class=LexEntry; Type=OwningAtomic; WsSelector=kwsVern; DstCls=StText</text></form>
+</field>
+<field tag="Entry List Item">
+<form lang="en"><text>This references the Genres list.</text></form>
+<form lang="qaa-x-spec"><text>Class=LexEntry; Type=ReferenceAtomic; WsSelector=kwsAnal; DstCls=CmPossibility; range=genres</text></form>
+</field>
+<field tag="Sense List Items">
+<form lang="en"><text>The education levels using this sense implies.</text></form>
+<form lang="qaa-x-spec"><text>Class=LexSense; Type=ReferenceCollection; WsSelector=kwsAnal; DstCls=CmPossibility; range=education</text></form>
+</field>
+<field tag="Sense multilingual string">
+<form lang="en"><text>all vernacular and analysis writing systems</text></form>
+<form lang="qaa-x-spec"><text>Class=LexSense; Type=MultiUnicode; WsSelector=kwsVernAnals</text></form>
+</field>
+<field tag="Sense date">
+<form lang="en"><text>dating something or other</text></form>
+<form lang="qaa-x-spec"><text>Class=LexSense; Type=GenDate; WsSelector=kwsAnal</text></form>
+</field>
+<field tag="Allomorph Number">
+<form lang="en"><text>numbering away</text></form>
+<form lang="qaa-x-spec"><text>Class=MoForm; Type=Integer; WsSelector=kwsAnal</text></form>
+</field>
+</fields>
+</header>
+<entry dateCreated="2011-11-22T22:25:44Z" dateModified="2011-11-30T16:05:51Z" id="tist_b4e4618c-9c89-4afb-96b3-9e2ebea01ffb" guid="b4e4618c-9c89-4afb-96b3-9e2ebea01ffb">
+<lexical-unit>
+<form lang="fng"><text>tehst</text></form>
+<form lang="en"><text>test</text></form>
+</lexical-unit>
+<trait  name="morph-type" value="root"/>
+<citation>
+<form lang="fng"><text>tist</text></form>
+</citation>
+<variant>
+<form lang="fng"><text>tess</text></form>
+<trait name ="environment" value="/_d"/>
+<trait  name="morph-type" value="root"/>
+<trait name="Allomorph Number" value="42"/>
+</variant>
+<field type="Entry String">
+<form lang="en"><text>test</text></form>
+</field>
+<field type="Entry Text">
+<form lang="en"><text><span lang="en">This is a long text of vernacular data, believe it or not.</span> <span lang="en">I don't personally believe, myself.</span></text></form>
+</field>
+<trait name="Entry List Item" value="Monologue"/>
+<sense id="0971611e-c7b2-4aed-a95e-96d6d726020d">
+<grammatical-info value="Noun"/>
+<gloss lang="en"><text>trial</text></gloss>
+<gloss lang="pt"><text>Portuguese trial</text></gloss>
+<definition>
+<form lang="en"><text>an attempt to do something</text></form>
+</definition>
+<trait name="Sense List Items" value="No Formal"/>
+<trait name="Sense List Items" value="Professor"/>
+<field type="Sense multilingual string">
+<form lang="fng"><text>testier</text></form>
+<form lang="en"><text>testingly</text></form>
+<form lang="pt"><text>Portuguese something</text></form>
+</field>
+</sense>
+</entry>
+</lift>

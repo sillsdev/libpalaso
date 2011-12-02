@@ -89,9 +89,14 @@ namespace Palaso.Lift.Parsing
 
 		internal void ReadFieldDefinition(XmlNode node)
 		{
-			string tag = Utilities.GetStringAttribute(node, "tag"); //NB: Tag is correct (as of v12).  Changed to "type" only on *instances* of <field> element
-			LiftMultiText description = ReadMultiText(node);
-			_merger.ProcessFieldDefinition(tag, description);
+			string name = Utilities.GetStringAttribute(node, "name");
+			string classes = Utilities.GetOptionalAttributeString(node, "class");
+			string type = Utilities.GetOptionalAttributeString(node, "type");
+			string range = Utilities.GetOptionalAttributeString(node, "option-range");
+			string langs = Utilities.GetOptionalAttributeString(node, "writing-system");
+			LiftMultiText description = LocateAndReadMultiText(node, "description");
+			LiftMultiText label = LocateAndReadMultiText(node, "label");
+			_merger.ProcessFieldDefinition(name, classes, type, range, langs, description, label);
 		}
 
 		internal TEntry ReadEntry(XmlNode node)
@@ -484,7 +489,7 @@ namespace Palaso.Lift.Parsing
 			{
 				foreach (XmlNode fieldNode in nodes)
 				{
-					string fieldType = Utilities.GetStringAttribute(fieldNode, "type");
+					string fieldType = Utilities.GetStringAttribute(fieldNode, "name");	// "name" instead of "type" as of LIFT 0.15
 					//string priorFieldWithSameTag = String.Format("preceding-sibling::field[@type='{0}']", fieldType);
 					//    JH removed this Oct 2010... I can't figure out why this limitation, which is not supported logicall
 					//                or by the schema, was in here.  It was preventing, for example, multiple variants.
@@ -853,7 +858,7 @@ namespace Palaso.Lift.Parsing
 						reader.ReadStartElement("fields");
 						if (!fieldsIsEmpty)
 						{
-							while (reader.IsStartElement("field"))
+							while (reader.IsStartElement("field-definition"))
 							{
 								string fieldXml = reader.ReadOuterXml();
 								if (!String.IsNullOrEmpty(fieldXml))

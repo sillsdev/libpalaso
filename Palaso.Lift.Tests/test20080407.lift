@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<lift producer="hand crafted" version="0.13">
+<lift producer="hand crafted" version="0.15">
   <header>
 	<ranges>
 	  <range id="etymology">
@@ -24,18 +24,26 @@
 	  </range>
 	</ranges>
 	<fields>
-	  <field tag="cv-pattern">
-		<form lang="en"><text>the syllable pattern for a pronunciation</text></form>
-	  </field>
-	  <field tag="tone">
-		<form lang="en"><text>the tone information for a pronunciation</text></form>
-	  </field>
-	  <field tag="import-residue">
-		<form lang="en"><text>residue left over from importing</text></form>
-	  </field>
-	  <field tag="literal-meaning">
-		<form lang="en"><text>literal meaning of an entry</text></form>
-	  </field>
+	  <field-definition name="cv-pattern">
+		<description>
+		  <form lang="en"><text>the syllable pattern for a pronunciation</text></form>
+		</description>
+	  </field-definition>
+	  <field-definition name="tone">
+		<description>
+		  <form lang="en"><text>the tone information for a pronunciation</text></form>
+		</description>
+	  </field-definition>
+	  <field-definition name="import-residue">
+		<description>
+		  <form lang="en"><text>residue left over from importing</text></form>
+		</description>
+	  </field-definition>
+	  <field-definition name="literal-meaning">
+		<description>
+		  <form lang="en"><text>literal meaning of an entry</text></form>
+		</description>
+	  </field-definition>
 	</fields>
   </header>
   <entry dateCreated="2008-03-31T03:04:09-05:00" dateModified="2008-03-31T03:04:09-05:00" guid="6db30a98-530e-4614-86d4-237f6984db71" id="bird_6db30a98-530e-4614-86d4-237f6984db71">

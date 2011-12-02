@@ -83,7 +83,7 @@ namespace Palaso.Lift.Tests.Merging
 
 			StringReader o = new StringReader(origDocContent);
 			StringReader m = new StringReader(modifiedDocContent);
-			LiftChangeReport report=null;
+			//LiftChangeReport report=null;
 /*experiment with rhino mocks
  * With.Mocks(delegate
 						   {

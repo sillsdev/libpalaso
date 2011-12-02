@@ -156,9 +156,15 @@ namespace Palaso.Lift.Parsing
 		/// Process a field definition from the header.  The application may totally ignore this
 		/// information if it so desires...
 		/// </summary>
-		/// <param name="tag"></param>
-		/// <param name="description"></param>
-		void ProcessFieldDefinition(string tag, LiftMultiText description);
+		/// <param name="name">field name used in instances of the field</param>
+		/// <param name="classes">space separated list of class (LIFT element) names</param>
+		/// <param name="type">value type (from suggested list if possible)</param>
+		/// <param name="range">name of the option range values are taken from (if applicable)</param>
+		/// <param name="langs">space separated list of language tags the data is displayed in by default (if applicable)</param>
+		/// <param name="description">short description of the field content</param>
+		/// <param name="label">optional UI label for the field</param>
+		void ProcessFieldDefinition(string name, string classes, string type, string range, string langs,
+			LiftMultiText description, LiftMultiText label);
 	}
 
 //    /// <summary>

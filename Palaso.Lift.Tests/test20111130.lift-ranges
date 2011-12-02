@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lift-ranges>
+<range id="grammatical-info">
+<range-element id="Noun" guid="c1e5f352-aece-4473-a726-aadae20520a1">
+<label><form lang="en"><text>Noun</text></form></label>
+<abbrev><form lang="en"><text>n</text></form></abbrev>
+<description><form lang="en"><text>A noun is a broad classification of parts of speech which include substantives and nominals.</text></form></description>
+</range-element>
+<range-element id="Verb" guid="907d0751-1ae5-45dc-a6ef-7f90b1c8f446">
+<label><form lang="en"><text>Verb</text></form></label>
+<abbrev><form lang="en"><text>v</text></form></abbrev>
+<description><form lang="en"><text>A verb is a part of speech whose members typically signal events and actions.</text></form></description>
+</range-element>
+</range>
+<range id="morph-type">
+<range-element id="prefix" guid="d7f713db-e8cf-11d3-9764-00c04f186933">
+<label><form lang="en"><text>prefix</text></form></label>
+<abbrev><form lang="en"><text>pfx</text></form></abbrev>
+<description><form lang="en"><text>A prefix is an affix that is joined before a root or stem.</text></form></description>
+<trait name="trailing-symbol" value="-"/>
+</range-element>
+<range-element id="suffix" guid="d7f713dd-e8cf-11d3-9764-00c04f186933">
+<label><form lang="en"><text>suffix</text></form></label>
+<abbrev><form lang="en"><text>sfx</text></form></abbrev>
+<description><form lang="en"><text>A suffix is an affix that is attached to the end of a root or stem.</text></form></description>
+<trait name="leading-symbol" value="-"/>
+</range-element>
+<range-element id="root" guid="d7f713e5-e8cf-11d3-9764-00c04f186933">
+<label><form lang="en"><text>root</text></form></label>
+<abbrev><form lang="en"><text>ubd root</text></form></abbrev>
+<description><form lang="en"><text>A root is the portion of a word that is not further analyzable and that carries the principle portion of meaning.</text></form></description>
+</range-element>
+</range>
+<range id="genres" guid="c06b099c-ea5e-11de-890c-0013722f8dec">
+<range-element id="Monologue" guid="c076f554-ea5e-11de-9793-0013722f8dec">
+<label><form lang="en"><text>Monologue</text></form></label>
+<abbrev><form lang="en"><text>mnlg</text></form></abbrev>
+<description><form lang="en"><text>A text with a single participant, typically a narrator addressing an audience</text></form></description>
+</range-element>
+<range-element id="Narrative" guid="c082e102-ea5e-11de-92f2-0013722f8dec" parent="Monologue">
+<label><form lang="en"><text>Narrative</text></form></label>
+<abbrev><form lang="en"><text>nar</text></form></abbrev>
+<description><form lang="en"><text>An account of events, a text that describes or projects a contingent succession of actions</text></form></description>
+</range-element>
+<range-element id="Dialogue" guid="c13f39e2-ea5e-11de-9645-0013722f8dec">
+<label><form lang="en"><text>Dialogue</text></form></label>
+<abbrev><form lang="en"><text>dia</text></form></abbrev>
+<description><form lang="en"><text>Literal speech between individuals or quoted text that uses quotation formulas (typically using the verb 'to say')</text></form></description>
+</range-element>
+</range>
+<range id="education" guid="d70c7f6e-ea5e-11de-9dc3-0013722f8dec">
+<range-element id="No Formal" guid="bda22e02-ea5e-11de-9452-0013722f8dec">
+<label><form lang="en"><text>No Formal</text></form></label>
+<abbrev><form lang="en"><text>No</text></form></abbrev>
+</range-element>
+<range-element id="High School" guid="bdc38ec6-ea5e-11de-9902-0013722f8dec">
+<label><form lang="en"><text>High School</text></form></label>
+<abbrev><form lang="en"><text>HS</text></form></abbrev>
+</range-element>
+<range-element id="Professor" guid="bde4ef8a-ea5e-11de-8623-0013722f8dec">
+<label><form lang="en"><text>Professor</text></form></label>
+<abbrev><form lang="en"><text>Prof</text></form></abbrev>
+</range-element>
+</range>
+</lift-ranges>

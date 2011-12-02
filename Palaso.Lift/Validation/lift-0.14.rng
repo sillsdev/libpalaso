@@ -2,8 +2,6 @@
 		 xmlns="http://relaxng.org/ns/structure/1.0"
 		 xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 
-  <!-- LIFT version 0.15 -->
-
   <!-- need to define the normalization or lack thereof in keys especially in regard to whitespace -->
 
 
@@ -22,12 +20,11 @@
 
   <!-- ======================================================== form-content -->
   <define name="form-content">
-	<!-- rfc 4646 -->
 	<attribute name="lang"/>
+	<!-- rfc 4646 -->
 	<ref name="form-no-lang-content"/>
   </define>
 
-  <!-- ================================================ form-no-lang-content -->
   <define name="form-no-lang-content">
 	<interleave>
 	  <element name="text">
@@ -43,13 +40,14 @@
 
   <!-- ======================================================== span-content -->
   <define name="span-content">
-	<mixed>
+	<interleave>
+	  <text/>
 	  <zeroOrMore>
 		<element name="span">
 		  <ref name="inner-span-content"/>
 		</element>
 	  </zeroOrMore>
-	</mixed>
+	</interleave>
   </define>
 
   <!-- ================================================== inner-span-content -->
@@ -103,7 +101,7 @@
 	<ref name="extensible-without-field-content"/>
 	</interleave>
 	<!-- problem should be same as extensible but without field -->
-	<attribute name="name"/>
+	<attribute name="type"/>
 	<sch:rule context="field" >
 	  <sch:assert test="not(preceding-sibling::field[@type=current()/@type])">
 		Fields should have different types.
@@ -117,6 +115,7 @@
 	<attribute name="name"/>
 	<attribute name="value"/>
 	<zeroOrMore>
+	  <!-- !!! documentation has this labeled as status-->
 	  <element name="annotation">
 		<ref name="annotation-content"/>
 	  </element>
@@ -179,18 +178,6 @@
 	</interleave>
   </define>
 
-  <!-- ======================================================= gloss-content -->
-  <define name="gloss-content">
-	<interleave>
-	  <ref name="form-content"/>
-	  <zeroOrMore>
-		<element name="trait">
-		  <ref name="trait-content"/>
-		</element>
-	  </zeroOrMore>
-	</interleave>
-  </define>
-
   <!-- ======================================================== note-content -->
   <define name="note-content">
 	<optional>
@@ -234,7 +221,7 @@
 	  </zeroOrMore>
 	  <zeroOrMore>
 		<element name="gloss">
-		  <ref name="form-content"/><!-- NOT gloss-content -->
+		  <ref name="form-content"/>
 		</element>
 	  </zeroOrMore>
 	</interleave>
@@ -340,6 +327,7 @@
 
 	<interleave>
 	  <ref name="extensible-content"/>
+
 	  <optional>
 		<element name="usage">
 		  <ref name="multitext-content"/>
@@ -394,7 +382,7 @@
 	  </optional>
 	  <zeroOrMore>
 		<element name="gloss">
-		  <ref name="gloss-content"/>
+		  <ref name="form-content"/>
 		</element>
 	  </zeroOrMore>
 	  <optional>
@@ -499,75 +487,16 @@
 	</interleave>
   </define>
 
-  <!-- ========================================================== field-type -->
-  <define name="field-type">
-	<choice>
-	  <value>multi-string</value><!-- may not contain multiple paragraphs -->
-	  <value>multi-text</value><!-- may contain multiple paragraphs -->
-	  <value>option</value><!-- single value -->
-	  <value>option-collection</value><!-- unordered set -->
-	  <value>option-sequence</value><!-- ordered list -->
-	  <value>datetime</value>
-	  <value>integer</value>
-	  <text/><!-- program-specific types that may not be handled elsewhere -->
-	</choice>
-  </define>
-
-  <!-- ========================================================== class-name -->
-  <define name="class-name">
-	<choice>
-	  <!-- There are all the elements that reference extensible-content. -->
-	  <value>entry</value>
-	  <value>sense</value>
-	  <value>example</value>
-	  <value>variant</value>
-	  <value>pronunciation</value>
-	  <value>etymology</value>
-	  <value>note</value>
-	  <value>relation</value>
-	  <!-- These are implied by a change for version 0.14. -->
-	  <value>range</value>
-	  <value>range-element</value>
-	</choice>
-  </define>
-
   <!-- ================================================== field-defn-content -->
   <define name="field-defn-content">
-	<attribute name="name"/>
-	<optional>
-	  <attribute name="class">
-		<ref name="class-name"/>
-	  </attribute>
-	</optional>
-	<optional>
-	  <attribute name="type">
-		<ref name="field-type"/>
-	  </attribute>
-	</optional>
-	<optional>
-	  <attribute name="option-range"/>
-	</optional>
-	<optional>
-	  <attribute name="writing-system"/>
-	</optional>
-	<interleave>
-	  <optional>
-		<element name="description">
-		  <ref name="multitext-content"/>
-		</element>
-	  </optional>
-	  <optional>
-		<element name="label">
-		  <ref name="multitext-content"/>
-		</element>
-	  </optional>
-	</interleave>
+	<ref name="multitext-content"/>
+	<attribute name="tag"/>
   </define>
 
   <!-- ================================================= field-defns-content -->
   <define name="field-defns-content">
 	<zeroOrMore>
-	  <element name="field-definition">
+	  <element name="field">
 		<ref name="field-defn-content"/>
 	  </element>
 	</zeroOrMore>
@@ -641,11 +570,11 @@
 
   <!-- ====================================================== ranges-content -->
   <define name="ranges-content">
-	<oneOrMore>
+	<zeroOrMore>
 	  <element name="range">
 		<ref name="range-content"/>
 	  </element>
-	</oneOrMore>
+	</zeroOrMore>
   </define>
 
   <!-- ====================================================== header-content -->
@@ -672,7 +601,7 @@
   <!-- ======================================================== lift-content -->
   <define name="lift-content">
 	<attribute name="version">
-	  <value>0.15</value>
+	  <value>0.14</value>
 	</attribute>
 	<optional>
 	  <attribute name="producer"/>

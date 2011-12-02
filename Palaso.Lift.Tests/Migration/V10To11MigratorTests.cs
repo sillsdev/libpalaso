@@ -102,7 +102,7 @@ namespace Palaso.Lift.Tests.Migration
 		}
 
 		[Test]
-		public void FieldHasTag_ChangedToType()
+		public void FieldHasTag_ChangedToType_ChangedToName()
 		{
 			using (TempFile f = new TempFile(@"
 				<lift version='0.10'>
@@ -112,14 +112,15 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//entry/field[@type='test']", path);
+				AssertXPathAtLeastOne("//entry/field[@name='test']", path);
+				AssertXPathNotFound("//entry/field[@type='test']", path);
 				AssertXPathNotFound("//entry/field[@tag='test']", path);
 			}
 		}
 
 
 		[Test]
-		public void FieldInHeaderHasTag_NotChangedToType()
+		public void FieldInHeaderHasTag_NotChangedToType_ButChangedToName()
 		{
 			using (TempFile f = new TempFile(@"
 				<lift version='0.10'>
@@ -133,8 +134,10 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//header//field[@tag='test']", path);
-				AssertXPathNotFound("//header//field[@type='test']", path);
+				AssertXPathAtLeastOne("//header//field-definition[@name='test']", path);
+				AssertXPathNotFound("//header//field", path);
+				AssertXPathNotFound("//header//field-definition[@type='test']", path);
+				AssertXPathNotFound("//header//field-definition[@tag='test']", path);
 			}
 		}
 

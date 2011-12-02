@@ -47,7 +47,6 @@ namespace Palaso.Lift.Tests.Parsing
 		public void TearDown()
 		{
 
-
 		}
 
 		[Test]
@@ -506,7 +505,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Has.Property("Count", Is.EqualTo(0))//traits
 				);
 			ParseEntryAndCheck(@"<entry><pronunciation>
-					<field type='cvPattern'>
+					<field name='cvPattern'>
 						<form lang='en'>
 							<text>acvpattern</text>
 						</form>
@@ -798,7 +797,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Has.Property("Count", Is.EqualTo(0))
 				);
 			ParseEntryAndCheck(
-				"<entry><field type='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field></entry>");
+				"<entry><field name='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field></entry>");
 		}
 
 		[Test]
@@ -814,7 +813,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Has.Property("Count", Is.EqualTo(0))
 				);
 			ParseEntryAndCheck(
-				"<entry><sense><field type='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field></sense></entry>");
+				"<entry><sense><field name='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field></sense></entry>");
 		}
 
 		[Test]
@@ -831,7 +830,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Has.Property("Count", Is.EqualTo(0))
 				);
 			ParseEntryAndCheck(
-				"<entry><sense><example><field type='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field></example></sense></entry>");
+				"<entry><sense><example><field name='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field></example></sense></entry>");
 		}
 
 
@@ -854,7 +853,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Has.Property("Count", Is.EqualTo(0))
 				);
 			ParseEntryAndCheck(
-				"<entry><field type='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field><field type='special'><form lang='en'><text>free</text></form></field></entry>");
+				"<entry><field name='color'><form lang='en'><text>red</text></form><form lang='es'><text>roco</text></form></field><field name='special'><form lang='en'><text>free</text></form></field></entry>");
 		}
 
 
@@ -876,7 +875,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Is.Anything,
 				Has.Property("Count", Is.EqualTo(0))
 				);
-			ParseEntryAndCheck(String.Format("<entry><field type='color' dateCreated='{0}'  dateModified='{1}' ></field></entry>",
+			ParseEntryAndCheck(String.Format("<entry><field name='color' dateCreated='{0}'  dateModified='{1}' ></field></entry>",
 											 createdTime,
 											 modifiedTime));
 		}
@@ -1065,18 +1064,18 @@ namespace Palaso.Lift.Tests.Parsing
 		[Test]
 		public void EmptyFieldOk()
 		{
-			SimpleCheckWithHeader(InsertVersion("<lift V><header><fields><field tag='custom'/></fields></header><entry/></lift>"), 0,1,1);
+			SimpleCheckWithHeader(InsertVersion("<lift V><header><fields><field-definition name='custom'/></fields></header><entry/></lift>"), 0,1,1);
 		}
 		[Test]
 		public void TwoFields()
 		{
-			SimpleCheckWithHeader(InsertVersion("<lift V><header><fields><field tag='special'/><field tag='custom'></field></fields></header><entry/></lift>"), 0, 2, 1);
+			SimpleCheckWithHeader(InsertVersion("<lift V><header><fields><field-definition name='special'/><field-definition name='custom'></field-definition></fields></header><entry/></lift>"), 0, 2, 1);
 		}
 
 		[Test]
 		public void EmptyFieldNoEntriesOk()
 		{
-			SimpleCheckWithHeader(InsertVersion("<lift V><header><fields><field tag='custom'/></fields></header></lift>"), 0, 1, 0);
+			SimpleCheckWithHeader(InsertVersion("<lift V><header><fields><field-definition name='custom'/></fields></header></lift>"), 0, 1, 0);
 		}
 
 
@@ -1182,9 +1181,15 @@ namespace Palaso.Lift.Tests.Parsing
 		[Test]
 		public void SimpleFieldDefinition()
 		{
-			string content = "<field tag='tone'><form lang='en'><text>the tone information for a pronunciation</text></form></field>";
+			string content = "<field-definition name='tone'><description><form lang='en'><text>the tone information for a pronunciation</text></form></description></field-definition>";
 			Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
-				.With(Is.EqualTo("tone"), Is.EqualTo(new LiftMultiText("en", "the tone information for a pronunciation")));
+				.With(Is.EqualTo("tone"),
+					  Is.EqualTo(null),
+					  Is.EqualTo(null),
+					  Is.EqualTo(null),
+					  Is.EqualTo(null),
+					  Is.EqualTo(new LiftMultiText("en", "the tone information for a pronunciation")),
+					  Is.EqualTo(new LiftMultiText()));
 			_doc.LoadXml(content);
 			_parser.ReadFieldDefinition(_doc.FirstChild);
 			_mocks.VerifyAllExpectationsHaveBeenMet();
@@ -1193,7 +1198,7 @@ namespace Palaso.Lift.Tests.Parsing
 		[Test]
 		public void SimpleEtymology()
 		{
-			string content = "<entry><etymology source='Greek' type='borrowed'><form lang='bam'><text>alphabeta</text></form><gloss lang='en'><text>letters</text></gloss><field type='comment'><form lang='en'><text>this etymology is nonsense</text></form></field></etymology></entry>";
+			string content = "<entry><etymology source='Greek' type='borrowed'><form lang='bam'><text>alphabeta</text></form><gloss lang='en'><text>letters</text></gloss><field name='comment'><form lang='en'><text>this etymology is nonsense</text></form></field></etymology></entry>";
 			_doc.LoadXml(content);
 			using (_mocks.Ordered)
 			{
@@ -1269,21 +1274,22 @@ namespace Palaso.Lift.Tests.Parsing
 			_mocks.VerifyAllExpectationsHaveBeenMet();
 		}
 
+#if MONO
+		const string NewLine = "\r\n";
+#else
+		const string NewLine = "\n";
+		// string NewLine = Environment.NewLine;
+		/* review: I (CP) am not clear why there is a difference in line endings between linux and windows.
+		 * Linux expects the windows convention \r\n (correctly) where as windows interprets \n to match the \r\n
+		 * used in the file.  Environment.NewLine also gives \r\n.  I would expect \r\n to work everywhere.
+		 */
+#endif
+
 		[Test]
 		public void ReadExternalLiftFile()
 		{
 			// For this test to work, the files test20080407.lift and test20080407.lift-ranges MUST
 			// be copied to the current working directory.
-#if MONO
-			const string NewLine = "\r\n";
-#else
-			const string NewLine = "\n";
-			// string NewLine = Environment.NewLine;
-			/* review: I (CP) am not clear why there is a difference in line endings between linux and windows.
-			 * Linux expects the windows convention \r\n (correctly) where as windows interprets \n to match the \r\n
-			 * used in the file.  Environment.NewLine also gives \r\n.  I would expect \r\n to work everywhere.
-			 */
-#endif
 			using (_mocks.Ordered)	// Ordered may be too strong if parse details change.
 			{
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
@@ -1345,16 +1351,36 @@ namespace Palaso.Lift.Tests.Parsing
 								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("cv-pattern"),
-						  Is.EqualTo(new LiftMultiText("en", "the syllable pattern for a pronunciation")));
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "the syllable pattern for a pronunciation")),
+						  Is.EqualTo(new LiftMultiText()));
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("tone"),
-						  Is.EqualTo(new LiftMultiText("en", "the tone information for a pronunciation")));
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "the tone information for a pronunciation")),
+						  Is.EqualTo(new LiftMultiText()));
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("import-residue"),
-						  Is.EqualTo(new LiftMultiText("en", "residue left over from importing")));
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "residue left over from importing")),
+						  Is.EqualTo(new LiftMultiText()));
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("literal-meaning"),
-						  Is.EqualTo(new LiftMultiText("en", "literal meaning of an entry")));
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "literal meaning of an entry")),
+						  Is.EqualTo(new LiftMultiText()));
 				ExpectGetOrMakeEntry(new ExtensibleMatcher("bird_6db30a98-530e-4614-86d4-237f6984db71",
 														   new Guid("6db30a98-530e-4614-86d4-237f6984db71"),
 														   new DateTime(2008, 3, 31, 8, 4, 9, DateTimeKind.Utc),
@@ -1373,6 +1399,289 @@ namespace Palaso.Lift.Tests.Parsing
 				ExpectFinishEntry();
 			}
 			_parser.ReadLiftFile("test20080407.lift");
+			_mocks.VerifyAllExpectationsHaveBeenMet();
+		}
+
+		[Test]
+		public void MigrateAndReadExternalFile()
+		{
+			// For this test to work, the files test20111130.lift and test20111130.lift-ranges MUST
+			// be copied to the current working directory.
+			var needed = Lift.Migration.Migrator.IsMigrationNeeded("test20111130.lift");
+			Assert.IsTrue(needed, "test20111130.lift needs to be migrated!");
+			var path = Lift.Migration.Migrator.MigrateToLatestVersion("test20111130.lift");
+			using (_mocks.Ordered)	// Ordered may be too strong if parse details change.
+			{
+				var mtLex = new LiftMultiText("fng", "tehst");
+				mtLex.Add("en", "test");
+
+				var mtGloss = new LiftMultiText("en", "trial");
+				mtGloss.Add("pt", "Portuguese trial");
+
+				var mtField = new LiftMultiText("fng", "testier");
+				mtField.Add("en", "testingly");
+				mtField.Add("pt", "Portuguese something");
+
+				var mtText = new LiftMultiText();
+				mtText.AddSpan("en", "en", null, null, 58);
+				mtText.AddOrAppend("en", "This is a long text of vernacular data, believe it or not.\u2029", "");
+				mtText.AddSpan("en", "en", null, null, 35);
+				mtText.AddOrAppend("en", "I don't personally believe, myself.", "");
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Noun"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "A noun is a broad classification of parts of speech which include substantives and nominals.")),
+						  Is.EqualTo(new LiftMultiText("en", "Noun")),
+						  Is.EqualTo(new LiftMultiText("en", "n")),
+						  Is.EqualTo("<range-element id=\"Noun\" guid=\"c1e5f352-aece-4473-a726-aadae20520a1\">" + NewLine +
+								 "<label><form lang=\"en\"><text>Noun</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>n</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>A noun is a broad classification of parts of speech which include substantives and nominals.</text></form></description>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Verb"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "A verb is a part of speech whose members typically signal events and actions.")),
+						  Is.EqualTo(new LiftMultiText("en", "Verb")),
+						  Is.EqualTo(new LiftMultiText("en", "v")),
+						  Is.EqualTo("<range-element id=\"Verb\" guid=\"907d0751-1ae5-45dc-a6ef-7f90b1c8f446\">" + NewLine +
+								 "<label><form lang=\"en\"><text>Verb</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>v</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>A verb is a part of speech whose members typically signal events and actions.</text></form></description>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("morph-type"), Is.EqualTo("prefix"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "A prefix is an affix that is joined before a root or stem.")),
+						  Is.EqualTo(new LiftMultiText("en", "prefix")),
+						  Is.EqualTo(new LiftMultiText("en", "pfx")),
+						  Is.EqualTo("<range-element id=\"prefix\" guid=\"d7f713db-e8cf-11d3-9764-00c04f186933\">" + NewLine +
+								 "<label><form lang=\"en\"><text>prefix</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>pfx</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>A prefix is an affix that is joined before a root or stem.</text></form></description>" + NewLine +
+								 "<trait name=\"trailing-symbol\" value=\"-\" />" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("morph-type"), Is.EqualTo("suffix"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "A suffix is an affix that is attached to the end of a root or stem.")),
+						  Is.EqualTo(new LiftMultiText("en", "suffix")),
+						  Is.EqualTo(new LiftMultiText("en", "sfx")),
+						  Is.EqualTo("<range-element id=\"suffix\" guid=\"d7f713dd-e8cf-11d3-9764-00c04f186933\">" + NewLine +
+								 "<label><form lang=\"en\"><text>suffix</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>sfx</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>A suffix is an affix that is attached to the end of a root or stem.</text></form></description>" + NewLine +
+								 "<trait name=\"leading-symbol\" value=\"-\" />" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("morph-type"), Is.EqualTo("root"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "A root is the portion of a word that is not further analyzable and that carries the principle portion of meaning.")),
+						  Is.EqualTo(new LiftMultiText("en", "root")),
+						  Is.EqualTo(new LiftMultiText("en", "ubd root")),
+						  Is.EqualTo("<range-element id=\"root\" guid=\"d7f713e5-e8cf-11d3-9764-00c04f186933\">" + NewLine +
+								 "<label><form lang=\"en\"><text>root</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>ubd root</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>A root is the portion of a word that is not further analyzable and that carries the principle portion of meaning.</text></form></description>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("genres"), Is.EqualTo("Monologue"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "A text with a single participant, typically a narrator addressing an audience")),
+						  Is.EqualTo(new LiftMultiText("en", "Monologue")),
+						  Is.EqualTo(new LiftMultiText("en", "mnlg")),
+						  Is.EqualTo("<range-element id=\"Monologue\" guid=\"c076f554-ea5e-11de-9793-0013722f8dec\">" + NewLine +
+								 "<label><form lang=\"en\"><text>Monologue</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>mnlg</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>A text with a single participant, typically a narrator addressing an audience</text></form></description>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("genres"), Is.EqualTo("Narrative"), Is.NotNull, Is.EqualTo("Monologue"),
+						  Is.EqualTo(new LiftMultiText("en", "An account of events, a text that describes or projects a contingent succession of actions")),
+						  Is.EqualTo(new LiftMultiText("en", "Narrative")),
+						  Is.EqualTo(new LiftMultiText("en", "nar")),
+						  Is.EqualTo("<range-element id=\"Narrative\" guid=\"c082e102-ea5e-11de-92f2-0013722f8dec\" parent=\"Monologue\">" + NewLine +
+								 "<label><form lang=\"en\"><text>Narrative</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>nar</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>An account of events, a text that describes or projects a contingent succession of actions</text></form></description>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("genres"), Is.EqualTo("Dialogue"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText("en", "Literal speech between individuals or quoted text that uses quotation formulas (typically using the verb 'to say')")),
+						  Is.EqualTo(new LiftMultiText("en", "Dialogue")),
+						  Is.EqualTo(new LiftMultiText("en", "dia")),
+						  Is.EqualTo("<range-element id=\"Dialogue\" guid=\"c13f39e2-ea5e-11de-9645-0013722f8dec\">" + NewLine +
+								 "<label><form lang=\"en\"><text>Dialogue</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>dia</text></form></abbrev>" + NewLine +
+								 "<description><form lang=\"en\"><text>Literal speech between individuals or quoted text that uses quotation formulas (typically using the verb 'to say')</text></form></description>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("education"), Is.EqualTo("No Formal"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText()),
+						  Is.EqualTo(new LiftMultiText("en", "No Formal")),
+						  Is.EqualTo(new LiftMultiText("en", "No")),
+						  Is.EqualTo("<range-element id=\"No Formal\" guid=\"bda22e02-ea5e-11de-9452-0013722f8dec\">" + NewLine +
+								 "<label><form lang=\"en\"><text>No Formal</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>No</text></form></abbrev>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("education"), Is.EqualTo("High School"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText()),
+						  Is.EqualTo(new LiftMultiText("en", "High School")),
+						  Is.EqualTo(new LiftMultiText("en", "HS")),
+						  Is.EqualTo("<range-element id=\"High School\" guid=\"bdc38ec6-ea5e-11de-9902-0013722f8dec\">" + NewLine +
+								 "<label><form lang=\"en\"><text>High School</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>HS</text></form></abbrev>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
+					.With(Is.EqualTo("education"), Is.EqualTo("Professor"), Is.NotNull, Is.Null,
+						  Is.EqualTo(new LiftMultiText()),
+						  Is.EqualTo(new LiftMultiText("en", "Professor")),
+						  Is.EqualTo(new LiftMultiText("en", "Prof")),
+						  Is.EqualTo("<range-element id=\"Professor\" guid=\"bde4ef8a-ea5e-11de-8623-0013722f8dec\">" + NewLine +
+								 "<label><form lang=\"en\"><text>Professor</text></form></label>" + NewLine +
+								 "<abbrev><form lang=\"en\"><text>Prof</text></form></abbrev>" + NewLine +
+								 "</range-element>"));
+
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("import-residue"),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "This records residue left over from importing a standard format file into FieldWorks (or LinguaLinks).")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Entry String"),
+						  Is.EqualTo("entry"),
+						  Is.EqualTo("string"),
+						  Is.EqualTo(null),
+						  Is.EqualTo("en"),
+						  Is.EqualTo(new LiftMultiText("en", "This is a test.")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Entry Text"),
+						  Is.EqualTo("entry"),
+						  Is.EqualTo("multitext"),
+						  Is.EqualTo(null),
+						  Is.EqualTo("fng"),
+						  Is.EqualTo(new LiftMultiText("en", "This is a test.")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Entry List Item"),
+						  Is.EqualTo("entry"),
+						  Is.EqualTo("option"),
+						  Is.EqualTo("genres"),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "This references the Genres list.")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Sense List Items"),
+						  Is.EqualTo("sense"),
+						  Is.EqualTo("option-collection"),
+						  Is.EqualTo("education"),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "The education levels using this sense implies.")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Sense multilingual string"),
+						  Is.EqualTo("sense"),
+						  Is.EqualTo("multistring"),
+						  Is.EqualTo(null),
+						  Is.EqualTo("fng en pt"),
+						  Is.EqualTo(new LiftMultiText("en", "all vernacular and analysis writing systems")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Sense date"),
+						  Is.EqualTo("sense"),
+						  Is.EqualTo("gendate"),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "dating something or other")),
+						  Is.EqualTo(new LiftMultiText()));
+				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
+					.With(Is.EqualTo("Allomorph Number"),
+						  Is.EqualTo("variant"),
+						  Is.EqualTo("integer"),
+						  Is.EqualTo(null),
+						  Is.EqualTo(null),
+						  Is.EqualTo(new LiftMultiText("en", "numbering away")),
+						  Is.EqualTo(new LiftMultiText()));
+
+				ExpectGetOrMakeEntry(new ExtensibleMatcher("tist_b4e4618c-9c89-4afb-96b3-9e2ebea01ffb",
+														   new Guid("b4e4618c-9c89-4afb-96b3-9e2ebea01ffb"),
+														   new DateTime(2011, 11, 22, 22, 25, 44, DateTimeKind.Utc),
+														   new DateTime(2011, 11, 30, 16,  5, 51, DateTimeKind.Utc)));
+				Expect.Exactly(1).On(_merger).Method("MergeInLexemeForm")
+					.With(Is.Anything,
+						  Is.EqualTo(mtLex));
+				Expect.Exactly(1).On(_merger).Method("MergeInCitationForm")
+					.With(Is.Anything,
+						  Is.EqualTo(new LiftMultiText("fng", "tist")));
+				ExpectGetOrMakeSense();
+				Expect.Exactly(1).On(_merger).Method("MergeInGrammaticalInfo")
+					.With(Is.Anything,
+						  Is.EqualTo("Noun"), Is.NotNull);
+				Expect.Exactly(1).On(_merger).Method("MergeInGloss")
+					.With(Is.Anything,
+						  Is.EqualTo(mtGloss));
+				Expect.Exactly(1).On(_merger).Method("MergeInDefinition")
+					.With(Is.Anything,
+						  Is.EqualTo(new LiftMultiText("en", "an attempt to do something")));
+				Expect.Exactly(1).On(_merger).Method("MergeInField")
+					.With(Is.Anything,
+						  Is.EqualTo("Sense multilingual string"),
+						  Is.Anything, Is.Anything,
+						  Is.EqualTo(mtField),
+						  Is.EqualTo(new List<Trait>()));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything,
+						  Is.EqualTo(new Trait("Sense List Items", "No Formal")));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything,
+						  Is.EqualTo(new Trait("Sense List Items", "Professor")));
+				Expect.Exactly(1).On(_merger).Method("MergeInVariant")
+					.With(Is.Anything,
+						  Is.EqualTo(new LiftMultiText("fng", "tess")),
+						  Is.EqualTo("<variant>" + NewLine +
+									 "<form lang=\"fng\"><text>tess</text></form>" + NewLine +
+									 "<trait name=\"environment\" value=\"/_d\" />" + NewLine +
+									 "<trait name=\"morph-type\" value=\"root\" />" + NewLine +
+									 "<trait name=\"Allomorph Number\" value=\"42\" />" + NewLine +
+									 "</variant>")
+									 )
+					.Will(Return.Value(new Dummy()));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything, Is.EqualTo(new Trait("environment", "/_d")));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything, Is.EqualTo(new Trait("morph-type", "root")));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything, Is.EqualTo(new Trait("Allomorph Number", "42")));
+				Expect.Exactly(1).On(_merger).Method("MergeInField")
+					.With(Is.Anything,
+						  Is.EqualTo("Entry String"),
+						  Is.Anything, Is.Anything,
+						  Is.EqualTo(new LiftMultiText("en", "test")),
+						  Is.EqualTo(new List<Trait>()));
+				Expect.Exactly(1).On(_merger).Method("MergeInField")
+					.With(Is.Anything,
+						  Is.EqualTo("Entry Text"),
+						  Is.Anything, Is.Anything,
+						  Is.EqualTo(mtText),
+						  Is.EqualTo(new List<Trait>()));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything, Is.EqualTo(new Trait("morph-type", "root")));
+				Expect.Exactly(1).On(_merger).Method("MergeInTrait")
+					.With(Is.Anything, Is.EqualTo(new Trait("Entry List Item", "Monologue")));
+				ExpectFinishEntry();
+			}
+			var count = _parser.ReadLiftFile(path);
+			Assert.AreEqual(1, count, "test20111130.lift has one entry.");
 			_mocks.VerifyAllExpectationsHaveBeenMet();
 		}
 
