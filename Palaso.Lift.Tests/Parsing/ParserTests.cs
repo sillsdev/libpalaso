@@ -1623,6 +1623,13 @@ namespace Palaso.Lift.Tests.Parsing
 				Expect.Exactly(1).On(_merger).Method("MergeInCitationForm")
 					.With(Is.Anything,
 						  Is.EqualTo(new LiftMultiText("fng", "tist")));
+				Expect.Exactly(1).On(_merger).Method("MergeInNote")
+					.With(Is.Anything,
+						  Is.EqualTo("summary-definition"),
+						  Is.EqualTo(new LiftMultiText("en", "summarily speaking ...")),
+						  Is.EqualTo("<note type=\"summary-definition\">" + NewLine +
+									 "<form lang=\"en\"><text>summarily speaking ...</text></form>" + NewLine +
+									 "</note>"));
 				ExpectGetOrMakeSense();
 				Expect.Exactly(1).On(_merger).Method("MergeInGrammaticalInfo")
 					.With(Is.Anything,
@@ -1633,6 +1640,13 @@ namespace Palaso.Lift.Tests.Parsing
 				Expect.Exactly(1).On(_merger).Method("MergeInDefinition")
 					.With(Is.Anything,
 						  Is.EqualTo(new LiftMultiText("en", "an attempt to do something")));
+				Expect.Exactly(1).On(_merger).Method("MergeInNote")
+					.With(Is.Anything,
+						  Is.EqualTo("scientific-name"),
+						  Is.EqualTo(new LiftMultiText("en", "trialate")),
+						  Is.EqualTo("<note type=\"scientific-name\">" + NewLine +
+									 "<form lang=\"en\"><text>trialate</text></form>" + NewLine +
+									 "</note>"));
 				Expect.Exactly(1).On(_merger).Method("MergeInField")
 					.With(Is.Anything,
 						  Is.EqualTo("Sense multilingual string"),

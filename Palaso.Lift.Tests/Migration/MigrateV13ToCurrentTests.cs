@@ -45,12 +45,15 @@ namespace Palaso.Lift.Tests.Migration
 			AssertXPathNotFound(doc, "/lift/header/fields/field-definition/@tag");
 			AssertXPathAtLeastOne(doc, "/lift/header/fields/field-definition/@name");
 
-			// verify that cv-pattern, tone, and comment are no longer defined as fields, and
-			// that import-residue still is.
+			// verify that cv-pattern, tone, comment, literal-meaning, summary-definition, and
+			// scientific-name are no longer defined as fields, but that import-residue still is.
 			AssertXPathNotFound(doc, "/lift/header/fields/field-definition[@name='cv-pattern']");
 			AssertXPathNotFound(doc, "/lift/header/fields/field-definition[@name='tone']");
 			AssertXPathNotFound(doc, "/lift/header/fields/field-definition[@name='comment']");
 			AssertXPathAtLeastOne(doc, "/lift/header/fields/field-definition[@name='import-residue']");
+			AssertXPathNotFound(doc, "/lift/header/fields/field-definition[@name='literal-meaning']");
+			AssertXPathNotFound(doc, "/lift/header/fields/field-definition[@name='summary-definition']");
+			AssertXPathNotFound(doc, "/lift/header/fields/field-definition[@name='scientific-name']");
 
 			// verify that the descriptions in the field definitions have been moved inside a
 			// description element
@@ -66,6 +69,22 @@ namespace Palaso.Lift.Tests.Migration
 			AssertXPathAtLeastOne(doc, "/lift/header/fields/field-definition/@type");
 			AssertXPathAtLeastOne(doc, "/lift/header/fields/field-definition/@option-range");
 			AssertXPathAtLeastOne(doc, "/lift/header/fields/field-definition/@writing-system");
+
+			// verify that instances of summary-definition and scientific-name have changed from
+			// "field" elements to "note" elements
+			AssertXPathNotFound(doc, "/lift/entry/field[@type='summary-definition']");
+			AssertXPathNotFound(doc, "/lift/entry/field[@name='summary-definition']");
+			AssertXPathNotFound(doc, "/lift/entry/sense/field[@type='scientific-name']");
+			AssertXPathNotFound(doc, "/lift/entry/sense/field[@name='scientific-name']");
+			AssertXPathAtLeastOne(doc, "/lift/entry/note[@type='summary-definition']");
+			AssertXPathAtLeastOne(doc, "/lift/entry/sense/note[@type='scientific-name']");
+
+			// verify that at least some field instances are still called "field", and that the
+			// "type" attribute has changed to "name"
+			AssertXPathNotFound(doc, "/lift/entry/field/@type");
+			AssertXPathNotFound(doc, "/lift/entry/sense/field/@type");
+			AssertXPathAtLeastOne(doc, "/lift/entry/field/@name");
+			AssertXPathAtLeastOne(doc, "/lift/entry/sense/field/@name");
 		}
 	}
 }

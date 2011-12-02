@@ -64,14 +64,17 @@
 <form lang="fng"><text>tehst</text></form>
 <form lang="en"><text>test</text></form>
 </lexical-unit>
-<trait  name="morph-type" value="root"/>
+<trait name="morph-type" value="root"/>
 <citation>
 <form lang="fng"><text>tist</text></form>
 </citation>
+<field type="summary-definition">
+<form lang="en"><text>summarily speaking ...</text></form>
+</field>
 <variant>
 <form lang="fng"><text>tess</text></form>
 <trait name ="environment" value="/_d"/>
-<trait  name="morph-type" value="root"/>
+<trait name="morph-type" value="root"/>
 <trait name="Allomorph Number" value="42"/>
 </variant>
 <field type="Entry String">
@@ -88,6 +91,9 @@
 <definition>
 <form lang="en"><text>an attempt to do something</text></form>
 </definition>
+<field type="scientific-name">
+<form lang="en"><text>trialate</text></form>
+</field>
 <trait name="Sense List Items" value="No Formal"/>
 <trait name="Sense List Items" value="Professor"/>
 <field type="Sense multilingual string">
