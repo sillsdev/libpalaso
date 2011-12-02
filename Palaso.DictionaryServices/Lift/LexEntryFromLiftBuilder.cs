@@ -305,7 +305,13 @@ namespace Palaso.DictionaryServices.Lift
 										LiftMultiText abbrev,
 										string rawXml) {}
 
-		public void ProcessFieldDefinition(string tag, LiftMultiText description) {}
+		public void ProcessFieldDefinition(string name,
+										   string classes,
+										   string type,
+										   string range,
+										   string langs,
+										   LiftMultiText description,
+										   LiftMultiText label) {}
 
 		public void MergeInGrammaticalInfo(PalasoDataObject senseOrReversal,
 										   string val,
