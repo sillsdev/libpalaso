@@ -20,16 +20,16 @@ namespace Palaso.Lift.Parsing
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public LiftField(string type, LiftMultiText contents)
+		public LiftField(string name, LiftMultiText contents)
 		{
 			Annotations = new List<LiftAnnotation>();
 			Traits = new List<LiftTrait>();
-			Type = type;
+			Name = name;
 			Content = contents;
 		}
 
 		///<summary></summary>
-		public string Type { get; set; }
+		public string Name { get; set; }
 
 		///<summary></summary>
 		public DateTime DateCreated { get; set; }
@@ -45,5 +45,47 @@ namespace Palaso.Lift.Parsing
 
 		///<summary></summary>
 		public LiftMultiText Content { get; set; }
+	}
+
+	/// <summary>
+	/// This class holds all the information from a &lt;field-definition&gt; element.
+	/// </summary>
+	public class LiftFieldDefinition
+	{
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public LiftFieldDefinition(string name, string classes, string type, string range,
+			string langs, LiftMultiText description, LiftMultiText label)
+		{
+			Name = name;
+			Classes = classes;
+			Type = type;
+			Range = range;
+			LanguageTags = langs;
+			Description = description;
+			Label = label;
+		}
+
+		///<summary></summary>
+		public string Name { get; set; }
+
+		///<summary></summary>
+		public string Classes { get; set; }
+
+		///<summary></summary>
+		public string Type { get; set; }
+
+		///<summary></summary>
+		public string Range { get; set; }
+
+		///<summary></summary>
+		public string LanguageTags { get; set; }
+
+		///<summary></summary>
+		public LiftMultiText Description { get; set; }
+
+		///<summary></summary>
+		public LiftMultiText Label { get; set; }
 	}
 }
