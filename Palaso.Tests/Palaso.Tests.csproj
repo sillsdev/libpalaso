@@ -108,6 +108,7 @@
 	<Compile Include="Migration\XslMigratorTests.cs" />
 	<Compile Include="Misc\GuardAgainstReentry.cs" />
 	<Compile Include="Network\RobustNetworkOperation.Tests.cs" />
+	<Compile Include="Progress\ProgressIndicatorTests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
 	<Compile Include="reporting\ErrorReportTests.cs" />

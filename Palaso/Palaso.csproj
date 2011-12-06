@@ -190,6 +190,9 @@
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
 	<Compile Include="Progress\Commands\BasicCommand.cs" />
 	<Compile Include="Progress\ConsoleProgressState.cs" />
+	<Compile Include="Progress\IProgressIndicator.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Progress\LogBox\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>

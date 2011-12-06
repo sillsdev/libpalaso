@@ -274,6 +274,8 @@ namespace Palaso.Progress.LogBox
 			set;
 		}
 
+		public IProgressIndicator ProgressIndicator { get; set; } // this isn't implemented for a LogBox
+
 		public void WriteVerbose(string message, params object[] args)
 		{
 			SafeInvoke(_verboseBox, (() =>

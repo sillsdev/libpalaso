@@ -21,8 +21,7 @@ namespace Palaso.Progress.LogBox
 		bool ShowVerbose {set; }
 		bool CancelRequested { get;  set; }
 		bool ErrorEncountered { get; set; }
-
-
+		IProgressIndicator ProgressIndicator { get; set; }
 	}
 
 	public class NullProgress : IProgress
@@ -68,17 +67,80 @@ namespace Palaso.Progress.LogBox
 
 		public bool CancelRequested { get; set; }
 
-		public bool ErrorEncountered{get;set;}
+		public bool ErrorEncountered {get;set;}
+
+		public IProgressIndicator ProgressIndicator { get; set; }
 	}
 
 	public class MultiProgress : IProgress, IDisposable
 	{
+
+		private class ProgressIndicatorForMultiProgress : IProgressIndicator
+		{
+			private int _numberOfSteps;
+			private int _numberOfStepsCompleted;
+			private List<IProgressIndicator> _indicators;
+			public ProgressIndicatorForMultiProgress(int numberOfSteps)
+			{
+				_numberOfSteps = numberOfSteps;
+				_numberOfStepsCompleted = 0;
+				_indicators = new List<IProgressIndicator>();
+			}
+			public ProgressIndicatorForMultiProgress() : this(100) {}
+
+			public void AddIndicator(IProgressIndicator indicator)
+			{
+				_indicators.Add(indicator);
+			}
+
+			public int GetTotalNumberOfSteps()
+			{
+				return _numberOfSteps;
+			}
+
+			public int NumberOfStepsCompleted
+			{
+				get { return _numberOfStepsCompleted; }
+				set
+				{
+					_numberOfStepsCompleted = value;
+					foreach (IProgressIndicator progressIndicator in _indicators)
+					{
+						progressIndicator.NumberOfStepsCompleted = value;
+					}
+				}
+			}
+
+			public int PercentCompleted
+			{
+				get { return NumberOfStepsCompleted*100/_numberOfSteps; }
+				set { NumberOfStepsCompleted = value*_numberOfSteps/100; }
+			}
+
+			public void NextStep()
+			{
+				NumberOfStepsCompleted = NumberOfStepsCompleted + 1;
+			}
+
+			public void Finish()
+			{
+				NumberOfStepsCompleted = _numberOfSteps;
+			}
+
+			public void Initialize(int numberOfSteps)
+			{
+				_numberOfSteps = numberOfSteps;
+			}
+		}
+
 		private readonly List<IProgress> _progressHandlers=new List<IProgress>();
 		private bool _cancelRequested;
+		private ProgressIndicatorForMultiProgress _indicatorForMultiProgress;
 
 		public MultiProgress(IEnumerable<IProgress> progressHandlers)
 		{
 			_progressHandlers.AddRange(progressHandlers);
+			_indicatorForMultiProgress = new ProgressIndicatorForMultiProgress();
 		}
 
 
@@ -103,6 +165,15 @@ namespace Palaso.Progress.LogBox
 		public bool ErrorEncountered
 		{
 			get; set;
+		}
+
+		public IProgressIndicator ProgressIndicator
+		{
+			get { return _indicatorForMultiProgress; }
+			set
+			{
+				// don't do anything
+			}
 		}
 
 		public void WriteStatus(string message, params object[] args)
@@ -187,6 +258,7 @@ namespace Palaso.Progress.LogBox
 		public void Add(IProgress progress)
 		{
 			_progressHandlers.Add(progress);
+			_indicatorForMultiProgress.AddIndicator(progress.ProgressIndicator);
 		}
 	}
 
@@ -205,6 +277,8 @@ namespace Palaso.Progress.LogBox
 			indent++;
 		}
 		public bool ErrorEncountered { get; set; }
+
+		public IProgressIndicator ProgressIndicator { get; set; }
 
 		public void WriteStatus(string message, params object[] args)
 		{
@@ -307,6 +381,8 @@ namespace Palaso.Progress.LogBox
 			set { }
 		}
 		public bool ErrorEncountered { get; set; }
+
+		public IProgressIndicator ProgressIndicator { get; set; }
 
 		public bool CancelRequested { get; set; }
 
@@ -453,9 +529,10 @@ namespace Palaso.Progress.LogBox
 			set { }
 		}
 
+		public IProgressIndicator ProgressIndicator { get; set; }
 
 
-	   public  void WriteStatus(string message, params object[] args)
+		public  void WriteStatus(string message, params object[] args)
 		{
 			LastStatus = GenericProgress.SafeFormat(message, args);
 		}
@@ -538,6 +615,8 @@ namespace Palaso.Progress.LogBox
 		public abstract void WriteMessageWithColor(string colorName, string message, params object[] args);
 
 		public bool ErrorEncountered { get; set; }
+
+		public IProgressIndicator ProgressIndicator { get; set; }
 
 		public void WriteStatus(string message, params object[] args)
 		{
