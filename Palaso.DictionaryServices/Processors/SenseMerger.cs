@@ -97,7 +97,9 @@ namespace Palaso.DictionaryServices.Processors
 
 			//at this point, we're committed
 
-			foreach (var pair in incomingItem.Properties)
+			//I (JH) once saw this foreach break saying the collection was modified, so I'm makinkg this safeProperties thing
+			var safeProperties = new List<KeyValuePair<string,object>>(incomingItem.Properties.ToArray());
+			foreach (var pair in safeProperties)
 			{
 				var match = targetItem.Properties.FirstOrDefault(p => p.Key == pair.Key);
 
