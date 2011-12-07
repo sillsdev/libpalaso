@@ -68,6 +68,7 @@ namespace Palaso.Xml
 		/// </exception>
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string recordMarker)
 		{
+#if USEORIGINAL
 			if (string.IsNullOrEmpty(recordMarker))
 				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
 
@@ -87,6 +88,11 @@ namespace Palaso.Xml
 				i = endOffset - 1;
 			}
 			return results;
+#else
+			return new List<byte[]>(
+				GetSecondLevelElementStrings(recordMarker)
+					.Select(stringResult => _encUtf8.GetBytes(stringResult)));
+#endif
 		}
 
 		///<summary>
@@ -112,9 +118,14 @@ namespace Palaso.Xml
 		/// </exception>
 		public IEnumerable<string> GetSecondLevelElementStrings(string recordMarker)
 		{
+#if USEORIGINAL
 			return new List<string>(
 				GetSecondLevelElementBytes(recordMarker)
 					.Select(byteResult => _encUtf8.GetString(byteResult)));
+#else
+			bool foundOptionalFirstElement;
+			return GetSecondLevelElementStrings(null, recordMarker, out foundOptionalFirstElement);
+#endif
 		}
 
 		/// <summary>
@@ -122,6 +133,7 @@ namespace Palaso.Xml
 		/// </summary>
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker, out bool foundOptionalFirstElement)
 		{
+#if USEORIGINAL
 			foundOptionalFirstElement = false;
 			if (string.IsNullOrEmpty(recordMarker))
 				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
@@ -157,6 +169,11 @@ namespace Palaso.Xml
 			}
 
 			return results;
+#else
+			return new List<byte[]>(
+				GetSecondLevelElementStrings(firstElementMarker, recordMarker, out foundOptionalFirstElement)
+					.Select(stringResult => _encUtf8.GetBytes(stringResult)));
+#endif
 		}
 
 		/// <summary>
@@ -164,9 +181,62 @@ namespace Palaso.Xml
 		/// </summary>
 		public IEnumerable<string> GetSecondLevelElementStrings(string firstElementMarker, string recordMarker, out bool foundOptionalFirstElement)
 		{
+#if USEORIGINAL
 			return new List<string>(
 				GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
 					.Select(byteResult => _encUtf8.GetString(byteResult)));
+#else
+			if (string.IsNullOrEmpty(recordMarker))
+				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
+
+			foundOptionalFirstElement = false;
+			var results = new List<string>(25000);
+			if (!string.IsNullOrEmpty(firstElementMarker))
+				firstElementMarker = firstElementMarker.Replace("<", null).Replace(">", null);
+			recordMarker = recordMarker.Replace("<", null).Replace(">", null);
+			var readerSettings = new XmlReaderSettings
+			{
+				CheckCharacters = false,
+				ConformanceLevel = ConformanceLevel.Document,
+#if NET_4_0 && !__MonoCS__
+				DtdProcessing = DtdProcessing.Parse,
+#else
+				ProhibitDtd = true,
+#endif
+				ValidationType = ValidationType.None,
+				CloseInput = true,
+				IgnoreWhitespace = true
+			};
+			var textReader = new XmlTextReader(_pathname)
+			{
+				WhitespaceHandling = WhitespaceHandling.Significant
+			};
+			using (var reader = XmlReader.Create(textReader, readerSettings))
+			{
+				// Try to get the optional first element. Prepend it to 'results', if found.
+				reader.MoveToContent();
+				var keepReading = reader.Read();
+				while (keepReading)
+				{
+					if (!reader.IsStartElement())
+					{
+						keepReading = false;
+						continue;
+					}
+					if (reader.LocalName == firstElementMarker)
+					{
+						foundOptionalFirstElement = true;
+						results.Insert(0, reader.ReadOuterXml());
+					}
+					else if (reader.LocalName == recordMarker)
+					{
+						results.Add(reader.ReadOuterXml());
+					}
+				}
+			}
+
+			return results;
+#endif
 		}
 
 		/// <summary>
@@ -197,16 +267,18 @@ namespace Palaso.Xml
 
 		private int FindStartOfMainRecordOffset(int currentOffset, byte openingAngleBracket, byte[] inputBytes, byte[] recordMarkerAsBytes)
 		{
+			// NB: It is possible for records to be nested, so be sure to handle this.
+
 			// Need to get the next starting marker, or the main closing tag
 			// When the end point is found, call _outputHandler with the current array
 			// from 'offset' to 'i' (more or less).
-			// Skip quickly over anything that doesn't match even one character.
 			for (var i = currentOffset; i < _endOfRecordsOffset; ++i)
 			{
 				var currentByte = inputBytes[i];
 				// Need to get the next starting marker, or the main closing tag
 				// When the end point is found, call _outputHandler with the current array
 				// from 'offset' to 'i' (more or less).
+
 				// Skip quickly over anything that doesn't match even one character.
 				if (currentByte != openingAngleBracket)
 					continue;

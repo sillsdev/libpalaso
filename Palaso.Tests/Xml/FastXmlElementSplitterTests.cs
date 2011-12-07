@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.Xml;
 
@@ -116,7 +118,7 @@ namespace Palaso.Tests.Xml
 				File.WriteAllText(goodPathname, noRecordsInput, Encoding.UTF8);
 				using (var reader = new FastXmlElementSplitter(goodPathname))
 				{
-					Assert.Throws<InvalidOperationException>(() => reader.GetSecondLevelElementBytes("rt"));
+					Assert.Throws<XmlException>(() => reader.GetSecondLevelElementBytes("rt"));
 				}
 			}
 			finally
@@ -145,6 +147,27 @@ namespace Palaso.Tests.Xml
 
 			CheckGoodFile(hasRecordsInput, 5, null, "rt");
 			CheckGoodFile(hasRecordsInput, 5, null, "<rt");
+		}
+
+		[Test]
+		public void FindsMainRecordsWhenTheyContainNestedElementsOfSameElementName()
+		{
+			const string hasNestedRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<Reversal>
+<ReversalIndex>
+</ReversalIndex>
+<ReversalIndexEntry guid='elementWithNesting1'>
+	<ReversalIndexEntry guid='nestedElement1' />
+</ReversalIndexEntry>
+<ReversalIndexEntry guid='elementWithNesting2'>
+	<ReversalIndexEntry guid='nestedElement2'>
+		<morestuff />
+	</ReversalIndexEntry>
+</ReversalIndexEntry>
+</Reversal>";
+
+			CheckGoodFile(hasNestedRecordsInput, 3, "ReversalIndex", "ReversalIndexEntry");
 		}
 
 		[Test]
@@ -227,9 +250,11 @@ namespace Palaso.Tests.Xml
 					Assert.AreEqual(expectedCount, elementStrings.Count);
 					for (var i = 0; i < elementStrings.Count; ++i)
 					{
+						var currentStr = elementStrings[i];
 						Assert.AreEqual(
-							elementStrings[i],
+							currentStr,
 							enc.GetString(elementBytes[i]));
+						var el = XElement.Parse(currentStr);
 					}
 				}
 			}
