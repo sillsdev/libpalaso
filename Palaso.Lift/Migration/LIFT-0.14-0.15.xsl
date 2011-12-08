@@ -99,8 +99,8 @@
 						<xsl:attribute name="type">integer</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="contains($spec,'Type=GenDate')">
-						<!-- not a standard value, but it's not really datetime -->
-						<xsl:attribute name="type">gendate</xsl:attribute>
+						<!-- not really datetime, but the closest match -->
+						<xsl:attribute name="type">datetime</xsl:attribute>
 					</xsl:when>
 					<xsl:when test="contains($spec,'Type=String')">
 						<xsl:attribute name="type">string</xsl:attribute>
@@ -140,31 +140,11 @@
 					<xsl:choose>
 						<xsl:when test="contains($spec,'WsSelector=kwsAnalVerns')">
 							<xsl:attribute name="writing-system">
-<!--
-								<xsl:for-each select="$anal-lang-nodes">
-									<xsl:value-of select="string(.)"/>
-									<xsl:text>&#32;</xsl:text>
-								</xsl:for-each>
-								<xsl:for-each select="$vern-lang-nodes">
-									<xsl:if test="position()>1"><xsl:text>&#32;</xsl:text></xsl:if>
-									<xsl:value-of select="string(.)"/>
-								</xsl:for-each>
--->
 								<xsl:value-of select="$anal-vern-langs"/>
 							</xsl:attribute>
 						</xsl:when>
 						<xsl:when test="contains($spec,'WsSelector=kwsVernAnals')">
 							<xsl:attribute name="writing-system">
-<!--
-								<xsl:for-each select="$vern-lang-nodes">
-									<xsl:value-of select="string(.)"/>
-									<xsl:text>&#32;</xsl:text>
-								</xsl:for-each>
-								<xsl:for-each select="$anal-lang-nodes">
-									<xsl:if test="position()>1"><xsl:text>&#32;</xsl:text></xsl:if>
-									<xsl:value-of select="string(.)"/>
-								</xsl:for-each>
--->
 								<xsl:value-of select="$vern-anal-langs"/>
 							</xsl:attribute>
 						</xsl:when>

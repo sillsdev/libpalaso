@@ -1599,7 +1599,7 @@ namespace Palaso.Lift.Tests.Parsing
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("Sense date"),
 						  Is.EqualTo("sense"),
-						  Is.EqualTo("gendate"),
+						  Is.EqualTo("datetime"),
 						  Is.EqualTo(null),
 						  Is.EqualTo(null),
 						  Is.EqualTo(new LiftMultiText("en", "dating something or other")),
