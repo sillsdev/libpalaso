@@ -219,5 +219,24 @@ namespace Palaso.IO
 			return !Directory.Exists(path);
 			// ReSharper restore EmptyGeneralCatchClause
 		}
+
+		/// <summary>
+		/// If necessary, append a number to make the folder path unique.
+		/// </summary>
+		/// <param name="folderPath">Source folder pathname.</param>
+		/// <returns>A unique folder pathname at the same level as <paramref name="folderPath"/>. It may have a number apended to <paramref name="folderPath"/>, or it may be <paramref name="folderPath"/>.</returns>
+		public static string GetUniqueFolderPath(string folderPath)
+		{
+			var i = 0;
+			var suffix = "";
+			var parent = Directory.GetParent(folderPath).FullName;
+			var name = Path.GetFileName(folderPath);
+			while (Directory.Exists(Path.Combine(parent, name + suffix)))
+			{
+				++i;
+				suffix = i.ToString();
+			}
+			return Path.Combine(parent, name + suffix);
+		}
 	}
 }

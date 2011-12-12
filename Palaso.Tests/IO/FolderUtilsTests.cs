@@ -183,5 +183,30 @@ namespace Palaso.Tests.IO
 				Assert.AreEqual(ordinaryDir.FullName, safeDirectories[0]);
 			}
 		}
+
+		[Test]
+		public void UniqueFolderPathNotCreated()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			{
+				var targetDir = Path.Combine(tempDir.Path, "ZPI");
+				var uniqueFolderPath = DirectoryUtilities.GetUniqueFolderPath(targetDir);
+				Assert.IsFalse(Directory.Exists(uniqueFolderPath));
+				Assert.AreEqual(targetDir, uniqueFolderPath);
+			}
+		}
+
+		[Test]
+		public void UniqueFolderPathCreated()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			{
+				var targetDir = Path.Combine(tempDir.Path, "ZPI");
+				Directory.CreateDirectory(targetDir);
+				var uniqueFolderPath = DirectoryUtilities.GetUniqueFolderPath(targetDir);
+				Assert.IsFalse(Directory.Exists(uniqueFolderPath));
+				Assert.AreNotEqual(targetDir, uniqueFolderPath);
+			}
+		}
 	}
 }
