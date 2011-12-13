@@ -305,6 +305,22 @@ namespace Palaso.Tests.WritingSystems.Migration
 			VerifyRfcCleaner(cleaner, "rwr", "", "IN", "", "rwr-IN");
 		}
 
+		[Test]
+		public void CleanMarksCustomScriptMovedToPrivateUse()
+		{
+			var cleaner = new Rfc5646TagCleaner("en-Zyxw");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "en", "Qaaa", "", "", "en-Qaaa-x-Zyxw");
+		}
+
+		[Test]
+		public void ScriptEndingWithX_IsHandledCorrectly()
+		{
+			var cleaner = new Rfc5646TagCleaner("zh-Phnx-CN-fonipa-x-emic");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "zh", "Phnx", "CN", "fonipa", "zh-Phnx-CN-fonipa-x-emic");
+		}
+
 		void VerifyRfcCleaner(Rfc5646TagCleaner cleaner, string language, string script, string region, string variant, string completeTag)
 		{
 			Assert.That(cleaner.Language, Is.EqualTo(language));

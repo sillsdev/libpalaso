@@ -282,17 +282,28 @@ namespace Palaso.WritingSystems.Migration
 			MoveTagsMatching(_languageSubTag, _regionSubTag, StandardTags.IsValidIso3166Region, StandardTags.IsValidIso639LanguageCode);
 			MoveTagsMatching(_languageSubTag, _variantSubTag, StandardTags.IsValidRegisteredVariant, StandardTags.IsValidIso639LanguageCode);
 
-			// This didn't really work out
-			//foreach (string part in _languageSubTag.AllParts.Where(languagecode => StandardTags.ValidIso639LanguageCodes.Any(code => code.ISO3Code.Equals(languagecode))))
-			//{
-			//    _languageSubTag.AddToSubtag(StandardTags.ValidIso639LanguageCodes.First(code => code.ISO3Code.Equals(part)).Code);
-			//    _languageSubTag.RemoveParts(part);
-			//}
-
 			// Move all other tags that don't belong to the private use subtag.
+
+			//keep track of everything that we moved
+			var tempSubTag = new SubTag();
+
 			MoveTagsMatching(
-				_languageSubTag, _privateUseSubTag, tag => !StandardTags.IsValidIso639LanguageCode(tag)
+				_languageSubTag, tempSubTag, tag => !StandardTags.IsValidIso639LanguageCode(tag)
 			);
+			//place all the moved parts in private use.
+			foreach (var part in tempSubTag.AllParts)
+			{
+				_privateUseSubTag.AddToSubtag(part);
+				//if it looks like we moved a custom script set the subtag to mark that we've moved it
+				if(_scriptSubTag.IsEmpty
+					&& part.Length == 4 //potential custom script tag
+					&& !WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.EndsWith(part)
+					&& !WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.EndsWith(part))
+				{
+					_scriptSubTag = new SubTag("Qaaa");
+				}
+			}
+
 			MoveTagsMatching(
 				_scriptSubTag, _privateUseSubTag, tag => !StandardTags.IsValidIso15924ScriptCode(tag)
 			);
@@ -417,16 +428,29 @@ namespace Palaso.WritingSystems.Migration
 			return false;
 		}
 
+		/// <summary>
+		/// If the given subtag has an "x" part move all subsequent parts into private use and remove the x
+		/// and all subsequent parts from the from SubTag.
+		/// </summary>
+		/// <param name="from"></param>
 		private void MovePartsToPrivateUseIfNecessary(SubTag from)
 		{
-			string completeTag = from.CompleteTag;
-			if (completeTag.Contains("x-"))
+			string movedParts = null;
+			foreach (var part in from.AllParts)
 			{
-				string privateUseParts = completeTag.Substring(completeTag.IndexOf("x-") + 2);
-				from.RemoveParts("x");
-				from.RemoveParts(privateUseParts);
-				_privateUseSubTag.AddToSubtag(privateUseParts);
+				if(movedParts == null && part.ToLowerInvariant().Equals("x"))
+				{
+					movedParts = "x";
+				}
+				else if(movedParts != null)
+				{
+					movedParts += "-";
+					movedParts += part;
+					_privateUseSubTag.AddToSubtag(part);
+				}
 			}
+			if(movedParts != null)
+				from.RemoveParts(movedParts);
 		}
 
 		private static void MoveTagsMatching(SubTag from, SubTag to, Predicate<string> moveAllMatching)
