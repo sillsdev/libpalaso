@@ -117,6 +117,16 @@ namespace Palaso.Progress.LogBox
 			set { base.Font = _verboseBox.Font = _box.Font = value; }
 		}
 
+		public override string Text
+		{
+			get { return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; }
+		}
+
+		public string Rtf
+		{
+			get { return "Box:" + _box.Rtf + "Verbose:" + _verboseBox.Rtf; }
+		}
+
 		public void ScrollToTop()
 		{
 			foreach (var rtfBox in new[] { _box, _verboseBox })
