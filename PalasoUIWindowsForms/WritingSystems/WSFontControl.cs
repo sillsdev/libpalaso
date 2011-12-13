@@ -165,8 +165,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
+#if !MONO // disabling keyboard switching because of ibus problems
 			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
 			_model.ActivateCurrentKeyboard();
+#endif
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)
@@ -175,7 +177,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
+#if !MONO // disabling keyboard switching because of ibus problems
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+#endif
 		}
 
 		private void RightToLeftCheckBox_CheckedChanged(object sender, EventArgs e)
