@@ -234,15 +234,11 @@ namespace Palaso.i18n
 				_font = value;
 			}
 		}
+
+		// Font resizing is deprecated - obsolete API 2011-12-13
 		public static Font ModifyFontForLocalization(Font incoming)
 		{
-			float sBaseFontSizeInPoints = (float)8.25;
-			float points = incoming.SizeInPoints + (StringCatalog.LabelFont.SizeInPoints- sBaseFontSizeInPoints);
-			//float points = incoming.SizeInPoints * (StringCatalog.LabelFont.SizeInPoints / sBaseFontSizeInPoints);
-			// 0 < points <= System.Single.MaxValue must be true or Font will throw
-			points = Math.Max(Single.Epsilon, Math.Min(Single.MaxValue, points));
-			return new Font(StringCatalog.LabelFont.Name, points, incoming.Style);
-
+			return incoming;
 		}
 	}
 }
