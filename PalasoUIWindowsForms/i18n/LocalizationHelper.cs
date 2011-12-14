@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Palaso.i18n;
+using Palaso.UI.WindowsForms.Widgets;
 
 
 namespace Palaso.UI.WindowsForms.i18n
@@ -194,6 +195,7 @@ namespace Palaso.UI.WindowsForms.i18n
 		private static bool IsAllowedControl(Control control)
 		{
 			return control is Label ||
+				   control is BetterLabel ||
 				   control is GroupBox ||
 				   control is ButtonBase ||
 				   control is IButtonControl ||
