@@ -235,7 +235,7 @@ namespace Palaso.i18n
 			}
 		}
 
-		// Font resizing is deprecated - obsolete API 2011-12-13
+		// Font resizing is deprecated - obsolete API DG 2011-12
 		public static Font ModifyFontForLocalization(Font incoming)
 		{
 			return incoming;
