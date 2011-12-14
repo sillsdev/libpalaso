@@ -457,6 +457,10 @@
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
+	<Compile Include="Keyboarding\IBusConnection.cs" />
+	<Compile Include="Keyboarding\IBusConnectionFactory.cs" />
+	<Compile Include="Keyboarding\InputBusWrapper.cs" />
+	<Compile Include="Keyboarding\InputContextWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">

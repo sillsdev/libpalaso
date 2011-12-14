@@ -64,6 +64,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static void ActivateKeyboard(string name)
 		{
 #if MONO
+			if (string.IsNullOrEmpty(name))
+			{
+				return;
+			}
 			if (IBusAdaptor.HasKeyboardNamed(name))
 			{
 				IBusAdaptor.ActivateKeyboard(name);

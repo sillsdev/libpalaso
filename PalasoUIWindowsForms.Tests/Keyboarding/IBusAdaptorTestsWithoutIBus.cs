@@ -50,11 +50,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("IBus")]
-		public void KeyboardDescriptors_IBusNotRunning_ThrowsProblemNotificationSentToUser()
+		public void KeyboardDescriptors_IBusNotRunning_DoesNotThrow()
 		{
 			using (var e = new IBusEnvironmentForTest(true))
 			{
-				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+				Assert.DoesNotThrow(
 					() => { var keyboards = IBusAdaptor.KeyboardDescriptors; }
 				);
 			}
@@ -66,7 +66,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			using (var e = new IBusEnvironmentForTest(true))
 			{
-				Assert.DoesNotThrow(() => IBusAdaptor.Deactivate());
+				Assert.DoesNotThrow(
+					() => IBusAdaptor.Deactivate()
+				);
 			}
 		}
 
