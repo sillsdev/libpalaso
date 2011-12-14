@@ -228,8 +228,10 @@ peach";
 			{
 				return;
 			}
+#if !MONO
 			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
 			_model.ActivateCurrentKeyboard();
+#endif
 		}
 
 		private void TextControl_Leave(object sender, EventArgs e)
@@ -238,7 +240,9 @@ peach";
 			{
 				return;
 			}
+#if !MONO
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+#endif
 			if (_rulesValidationTimer.Enabled)
 			{
 				_rulesValidationTimer.Enabled = false;
