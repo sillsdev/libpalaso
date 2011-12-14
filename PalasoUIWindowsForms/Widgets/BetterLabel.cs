@@ -44,7 +44,10 @@ namespace Palaso.UI.WindowsForms.Widgets
 		private void BetterLabel_TextChanged(object sender, System.EventArgs e)
 		{
 			//this is apparently dangerous to do in the constructor
-			Font =  SystemFonts.MessageBoxFont;
+			// set the BetterLabel font to be the same as a Label
+			var label = new System.Windows.Forms.Label();
+			Font = new Font(label.Font, label.Font.Style);
+			ForeColor = label.ForeColor;
 
 		}
 	}
