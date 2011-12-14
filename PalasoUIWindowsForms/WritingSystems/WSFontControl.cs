@@ -87,6 +87,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			// For clearing the list was resizing the combo box, so we save the original size and then reset it
 			Rectangle originalBounds = _fontComboBox.Bounds;
+			List<string> fontitems = new List<string>();
 			_fontComboBox.Items.Clear();
 			if (_model == null)
 			{
@@ -98,7 +99,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					continue;
 				}
-				_fontComboBox.Items.Add(fontFamily.Name);
+				fontitems.Add(fontFamily.Name);
+			}
+			fontitems.Sort();
+			foreach (string fontname in fontitems)
+			{
+				_fontComboBox.Items.Add(fontname);
 			}
 			_fontComboBox.Bounds = originalBounds;
 		}
