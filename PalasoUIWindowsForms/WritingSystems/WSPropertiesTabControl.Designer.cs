@@ -130,7 +130,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _identifiersPage
 			//
-			this._identifiersPage.BackColor = System.Drawing.Color.White;
 			this._identifiersPage.Controls.Add(this._identifiersControl);
 			this._identifiersPage.Location = new System.Drawing.Point(4, 22);
 			this._identifiersPage.Name = "_identifiersPage";
