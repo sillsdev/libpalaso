@@ -389,15 +389,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			// But from ibus 1.3 it can be global
 			//trying to find out how to deactivate
-			try
+			if (!String.IsNullOrEmpty(DefaultKeyboardName))
 			{
-				ActivateKeyboard(DefaultKeyboardName);
+				try
+				{
+					ActivateKeyboard(DefaultKeyboardName);
+				}
+				catch (ErrorReport.ProblemNotificationSentToUserException e)
+				{
+					if (!e.Message.Contains("seem to be running"))
+						throw;
+				};
 			}
-			catch (ErrorReport.ProblemNotificationSentToUserException e)
-			{
-				if (!e.Message.Contains("seem to be running"))
-					throw;
-			};
 
 /*			if (_connection != null)
 			{
