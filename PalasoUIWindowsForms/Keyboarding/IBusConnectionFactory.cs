@@ -109,7 +109,7 @@ namespace IBusDotNet
 				}
 			}
 
-			throw new ApplicationException(String.Format("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_ADDRESS));
+			throw new ApplicationException(String.Format("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_DAEMON_PID));
 		}
 
 		static IBusConnection singleConnection = null;
