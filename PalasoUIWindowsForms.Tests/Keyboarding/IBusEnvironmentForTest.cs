@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
 
+#if MONO
+
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	public class IBusEnvironmentForTest : IDisposable
@@ -65,3 +67,5 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 	}
 }
+
+#endif
