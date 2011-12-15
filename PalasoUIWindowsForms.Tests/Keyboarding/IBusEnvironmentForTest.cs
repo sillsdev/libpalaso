@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Windows.Forms;
 using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	public class IBusEnvironmentForTest : IDisposable
 	{
 		private Form _window;
+		private bool wasibusrunning;
 
 		public const string OtherKeyboard = "m17n:am:sera";
 		public const string DefaultKeyboard = "m17n:en:ispell";
 
-		public IBusEnvironmentForTest(bool withWindow)
+		public IBusEnvironmentForTest(bool withWindow, bool withIBus)
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
+			wasibusrunning = IBusAdaptor.EngineAvailable;
+			if (withIBus)
+			{
+				IBusAdaptor.StartIBus();
+			}
+			else {
+				IBusAdaptor.ExitIBus();
+			}
+			IBusAdaptor.CloseConnection();
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
 			if (withWindow)
 			{
@@ -42,6 +53,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 				_window.Dispose();
 				_window = null;
 			}
+			IBusAdaptor.CloseConnection();
+			if (wasibusrunning)
+			{
+				IBusAdaptor.StartIBus();
+			}
+			else {
+				IBusAdaptor.ExitIBus();
+			}
+
 		}
 	}
 }

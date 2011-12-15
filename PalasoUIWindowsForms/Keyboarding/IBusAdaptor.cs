@@ -1,6 +1,7 @@
 #if MONO
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -91,6 +92,48 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				_connection.Close ();
 				_connection = null;
+			}
+		}
+
+		/// <summary>
+		/// Tell IBus to exit
+		/// </summary>
+		public static void ExitIBus()
+		{
+			if (EngineAvailable)
+			{
+				var ibus = new InputBusWrapper (_connection);
+				ibus.InputBus.Exit (false);
+				Thread.Sleep(100);
+				CloseConnection();
+			}
+		}
+
+		/// <summary>
+		/// Tell IBus to restart
+		/// </summary>
+		public static void RestartIBus()
+		{
+			if (EngineAvailable)
+			{
+				var ibus = new InputBusWrapper (_connection);
+				ibus.InputBus.Exit (true);
+				Thread.Sleep(100);
+				CloseConnection();
+			}
+		}
+
+		/// <summary>
+		/// Start IBus manually
+		/// </summary>
+		public static void StartIBus()
+		{
+			if (!EngineAvailable)
+			{
+				ProcessStartInfo startInfo = new ProcessStartInfo("ibus-daemon",
+															  "-x -d -r");
+				Process.Start(startInfo);
+				Thread.Sleep(100);
 			}
 		}
 

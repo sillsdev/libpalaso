@@ -18,7 +18,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void EngineAvailable_IBusNotRunning_ReturnsFalse()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, false))
 			{
 				Assert.IsFalse(IBusAdaptor.EngineAvailable);
 			}
@@ -28,7 +28,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void GetActiveKeyboard_IBusNotRunning_ThrowsProblemNotificationSentToUser()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, false))
 			{
 				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 					() => IBusAdaptor.GetActiveKeyboard()
@@ -40,7 +40,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void OpenConnection_IBusNotRunning_ThrowsProblemNotificationSentToUser()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, false))
 			{
 				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 					() => IBusAdaptor.OpenConnection()
@@ -52,7 +52,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void KeyboardDescriptors_IBusNotRunning_DoesNotThrow()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, false))
 			{
 				Assert.DoesNotThrow(
 					() => { var keyboards = IBusAdaptor.KeyboardDescriptors; }
@@ -64,7 +64,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void Deactivate_IBusNotRunning_DoesNotThrow()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, false))
 			{
 				Assert.DoesNotThrow(
 					() => IBusAdaptor.Deactivate()
@@ -76,7 +76,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void ActivateKeyBoard_IBusNotRunning_ThrowsProblemNotificationSentToUser()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, false))
 			{
 				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 					() => IBusAdaptor.ActivateKeyboard(IBusEnvironmentForTest.OtherKeyboard)
