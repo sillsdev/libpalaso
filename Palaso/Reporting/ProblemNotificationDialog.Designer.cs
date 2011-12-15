@@ -142,7 +142,7 @@ namespace Palaso.Reporting
 			this.ClientSize = new System.Drawing.Size(444, 189);
 			this.ControlBox = false;
 			this.Controls.Add(this.tableLayout);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(450, 38);
