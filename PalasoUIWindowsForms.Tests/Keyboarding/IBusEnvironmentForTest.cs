@@ -21,10 +21,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			wasibusrunning = IBusAdaptor.EngineAvailable;
 			if (withIBus)
 			{
-				IBusAdaptor.StartIBus();
+				if (!IBusAdaptor.StartIBus())
+					throw new ApplicationException("Could not start IBus");
 			}
-			else {
-				IBusAdaptor.ExitIBus();
+			else if (wasibusrunning) {
+				if (!IBusAdaptor.ExitIBus())
+					throw new ApplicationException("Could not stop IBus");
 			}
 			IBusAdaptor.CloseConnection();
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
