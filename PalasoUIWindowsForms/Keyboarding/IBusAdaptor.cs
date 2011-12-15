@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+
 using Palaso.Code;
 using Palaso.Reporting;
+using Palaso.WritingSystems;
 
 using IBusDotNet;
 using Timer = System.Windows.Forms.Timer;
@@ -150,7 +153,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static string DefaultKeyboardName
 		{
-			get { return _defaultKeyboard != null ? _defaultKeyboard.ShortName : String.Empty; }
+			get { return _defaultKeyboard != null ? _defaultKeyboard.Id : String.Empty; }
 		}
 
 		private static InputContextWrapper TryGetFocusedInputContext(InputBusWrapper ibus)
@@ -178,7 +181,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			EnsureConnection ();
 
-			if(!HasKeyboardNamed(name))
+			if(String.Compare(name,"None") != 0 && !HasKeyboardNamed(name))
 			{
 				throw new ArgumentOutOfRangeException("name", name, "IBus does not have a Keyboard of that name.");
 			}
@@ -250,6 +253,34 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
+		protected static string GetLanguageFromId (string lang_id)
+		{
+			String language;
+			try
+			{
+				CultureInfo ci = CultureInfo.GetCultureInfo(lang_id);
+				language = ci.DisplayName; // + "(" + lang_id + ")";
+				if (language.Contains("Invariant"))
+				{
+					language = "Other"; // + "(" + lang_id + ")";
+				}
+			}
+			catch
+			{
+				if (StandardTags.IsValidIso639LanguageCode(lang_id))
+				{
+					var codes = StandardTags.ValidIso639LanguageCodes;
+					var lang = codes.Where(code => code.Code == lang_id).First();
+					language = lang.Name; // + "(" + lang_id + ")";
+				}
+				else
+				{
+					language = "Unknown"; // + "(" + lang_id + ")";
+				}
+			}
+			return language;
+		}
+
 		/// <summary>
 		/// Helper function the builds a list of Active Keyboards
 		/// </summary>
@@ -258,11 +289,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			var engineDesc = (IBusEngineDesc_v1)Convert.ChangeType (engine, typeof(IBusEngineDesc_v1));
 			var v = new KeyboardController.KeyboardDescriptor
 					{
-						Id = engineDesc.name,
-						ShortName = engineDesc.longname,
-						LongName = engineDesc.longname,
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
 						engine = KeyboardController.Engines.IBus
 					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
 
 			return v;
 		}
@@ -275,11 +307,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			var engineDesc = (IBusEngineDesc_v2)Convert.ChangeType (engine, typeof(IBusEngineDesc_v2));
 			var v = new KeyboardController.KeyboardDescriptor
 					{
-						Id = engineDesc.name,
-						ShortName = engineDesc.longname,
-						LongName = engineDesc.longname,
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
 						engine = KeyboardController.Engines.IBus
 					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
 
 			return v;
 		}
@@ -292,11 +325,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			var engineDesc = (IBusEngineDesc_v3)Convert.ChangeType (engine, typeof(IBusEngineDesc_v3));
 			var v = new KeyboardController.KeyboardDescriptor
 					{
-						Id = engineDesc.name,
-						ShortName = engineDesc.longname,
-						LongName = engineDesc.longname,
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
 						engine = KeyboardController.Engines.IBus
 					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
 
 			return v;
 		}
@@ -309,11 +343,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			var engineDesc = (IBusEngineDesc_v4)Convert.ChangeType (engine, typeof(IBusEngineDesc_v4));
 			var v = new KeyboardController.KeyboardDescriptor
 					{
-						Id = engineDesc.name,
-						ShortName = engineDesc.longname,
-						LongName = engineDesc.longname,
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
 						engine = KeyboardController.Engines.IBus
 					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
 
 			return v;
 		}
@@ -351,7 +386,25 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			// Do nothing. IBus and mono maintain one input context per control.
 			// So, there is no need to deactivate it as the keyboard is not global.
-			//ActivateKeyboard(DefaultKeyboardName);
+
+			// But from ibus 1.3 it can be global
+			//trying to find out how to deactivate
+			try
+			{
+				ActivateKeyboard(DefaultKeyboardName);
+			}
+			catch (ErrorReport.ProblemNotificationSentToUserException e)
+			{
+				if (!e.Message.Contains("seem to be running"))
+					throw;
+			};
+
+/*			if (_connection != null)
+			{
+				ActivateKeyboard("None");
+			}
+			CloseConnection();
+			*/
 		}
 
 		public static void GetEngineVersion (object engine)
@@ -394,7 +447,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static bool HasKeyboardNamed (string name)
 		{
-			return GetKeyboardDescriptors().Any(d => d.ShortName.Equals(name));
+#if DEBUG
+			Console.WriteLine("Looking for {0} in:",name);
+			foreach (var keyboard in GetKeyboardDescriptors())
+			{
+				Console.WriteLine(keyboard.Id);
+			}
+#endif
+			bool retval = GetKeyboardDescriptors().Any(d => d.Id.Equals(name));
+#if DEBUG
+			Console.WriteLine(retval ? "succeeded" : "failed");
+#endif
+			return retval;
 		}
 
 		public static string GetActiveKeyboard ()
