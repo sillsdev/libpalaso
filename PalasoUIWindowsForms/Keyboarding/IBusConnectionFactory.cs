@@ -12,6 +12,7 @@ namespace IBusDotNet
 	{
 		const string ENV_IBUS_ADDRESS = "IBUS_ADDRESS";
 		const string IBUS_ADDRESS = "IBUS_ADDRESS";
+		const string IBUS_DAEMON_PID = "IBUS_DAEMON_PID";
 
 		/// <summary>
 		/// Attempts to return the file name of the ibus server config file that contains the socket name.
@@ -89,6 +90,28 @@ namespace IBusDotNet
 			throw new ApplicationException(String.Format("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_ADDRESS));
 		}
 
+		static string GetPID(string filename)
+		{
+			// Look for line
+			// IBUS_DAEMON_PID=8314
+
+			StreamReader s = new StreamReader(filename);
+			string line = String.Empty;
+			while (line != null) {
+				line = s.ReadLine();
+
+				if (line.Contains(IBUS_DAEMON_PID)) {
+					string[] toks = line.Split("=".ToCharArray(), 2);
+					if (toks.Length != 2 || toks[1] == String.Empty)
+						throw new ApplicationException(String.Format("IBUS config file : {0} not as expected for line {1}. Expected IBUS_DAEMON_PID='some process id'", filename, line));
+
+					return toks[1];
+				}
+			}
+
+			throw new ApplicationException(String.Format("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_ADDRESS));
+		}
+
 		static IBusConnection singleConnection = null;
 		/// <summary>
 		/// Create a DBus to connection to the IBus system in use.
@@ -106,6 +129,11 @@ namespace IBusDotNet
 			{
 				// if Enviroment var IBUS_ADDRESS doesn't exist then attempt to read it from IBus server settings file.
 				string socketName = System.Environment.GetEnvironmentVariable(ENV_IBUS_ADDRESS);
+
+				string pid = GetPID(IBusConfigFilename());
+				System.Diagnostics.Process process = System.Diagnostics.Process.GetProcessById(int.Parse(pid));
+				// throws System.Exception if process not found
+
 				if (String.IsNullOrEmpty(socketName))
 					socketName = GetSocket(IBusConfigFilename());
 
@@ -113,7 +141,7 @@ namespace IBusDotNet
 				singleConnection = new IBusConnection(Bus.Open(socketName));
 				singleConnection.Disposed += HandleSingleConnectionDisposed;
 			}
-			catch(System.Exception e) { } // ignore - ibus may not be running.
+			catch(System.Exception) { } // ignore - ibus may not be running.
 
 			return singleConnection;
 		}
