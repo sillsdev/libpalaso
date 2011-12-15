@@ -9,6 +9,10 @@ namespace IBusDotNet
 
 		public InputBusWrapper(IBusConnection connection)
 		{
+			if (connection == null)
+			{
+				throw new System.ArgumentNullException("IBusConnection");
+			}
 			_inputBus = ((NDesk.DBus.Connection)connection).GetObject<IIBus>("org.freedesktop.IBus", new ObjectPath("/org/freedesktop/IBus"));
 		}
 
