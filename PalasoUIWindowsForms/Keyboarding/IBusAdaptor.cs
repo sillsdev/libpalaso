@@ -101,7 +101,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <summary>
 		/// Tell IBus to exit
 		/// </summary>
-		public static void ExitIBus()
+		public static bool ExitIBus()
 		{
 			if (EngineAvailable)
 			{
@@ -110,12 +110,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Thread.Sleep(100);
 				CloseConnection();
 			}
+			return !EngineAvailable;
 		}
 
 		/// <summary>
 		/// Tell IBus to restart
 		/// </summary>
-		public static void RestartIBus()
+		public static bool RestartIBus()
 		{
 			if (EngineAvailable)
 			{
@@ -124,12 +125,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Thread.Sleep(100);
 				CloseConnection();
 			}
+			return EngineAvailable;
 		}
 
 		/// <summary>
 		/// Start IBus manually
 		/// </summary>
-		public static void StartIBus()
+		public static bool StartIBus()
 		{
 			if (!EngineAvailable)
 			{
@@ -138,6 +140,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Process.Start(startInfo);
 				Thread.Sleep(100);
 			}
+			return EngineAvailable;
 		}
 
 		private static void NotifyUserOfProblem(IBusError error, string message)
