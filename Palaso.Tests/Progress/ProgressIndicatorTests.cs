@@ -11,6 +11,8 @@ namespace Palaso.Tests.Progress
 	public class SimpleProgressIndicatorTests
 	{
 		[Test]
+		[Category("SkipOnTeamCity")]
+		// Skip on Team City, I think because of some problem with BeginInvoke() when run on TC
 		public void NextStep_Zero_GoesToOne()
 		{
 			var progress = new SimpleProgressIndicator();
@@ -20,6 +22,8 @@ namespace Palaso.Tests.Progress
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
+		// Skip on Team City, I think because of some problem with BeginInvoke() when run on TC
 		public void PercentCompleted_ThreeNextStep_ThreePercent()
 		{
 			var progress = new SimpleProgressIndicator();
@@ -35,6 +39,8 @@ namespace Palaso.Tests.Progress
 	public class MultiPhaseProgressIndicatorTests
 	{
 		[Test]
+		[Category("SkipOnTeamCity")]
+		// Skip on Team City, I think because of some problem with BeginInvoke() when run on TC
 		public void ThreePhase_ProgressesNormally()
 		{
 			var globalIndicator = new SimpleProgressIndicator();
