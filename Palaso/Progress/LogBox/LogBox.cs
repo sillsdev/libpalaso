@@ -254,7 +254,7 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteError(string message, params object[] args)
 		{
-			Write(Color.Red, _box.Font.Style, Environment.NewLine + "Error:" + message, args);
+			Write(Color.Red, _box.Font.Style, Environment.NewLine + "Error: " + message, args);
 
 			// There is no Invoke method on ToolStripItems (which the _reportLink is)
 			// and setting it to visible from another thread seems to work okay.
