@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Palaso.Progress
@@ -39,7 +39,17 @@ namespace Palaso.Progress
 
 		public void NextStep()
 		{
-			Increment(1);
+			if (Thread.CurrentThread.IsBackground)
+			{
+				// necessary when background worker thread updates the progress bar on the UI (main) thread
+				BeginInvoke((MethodInvoker) (() => Increment(1)) );
+			}
+			else
+			{
+				Increment(1);
+			}
+
+
 		}
 
 		public void Finish()
@@ -61,7 +71,20 @@ namespace Palaso.Progress
 		public int NumberOfStepsCompleted
 		{
 			get { return Value; }
-			set { Value = value; }
+
+			set
+			{
+				 if (Thread.CurrentThread.IsBackground)
+				 {
+					 // necessary when background worker thread updates the progress bar on the UI (main) thread
+					 // prevents cross-thread calling exception
+					 BeginInvoke((MethodInvoker)(() => Value = value));
+				 }
+				 else
+				 {
+					 Value = value;
+				 }
+			}
 		}
 	}
 

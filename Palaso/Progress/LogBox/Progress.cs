@@ -90,6 +90,10 @@ namespace Palaso.Progress.LogBox
 
 			public void AddIndicator(IProgressIndicator indicator)
 			{
+				if (indicator == null)
+				{
+					throw new ArgumentNullException("indicator was null when passed to ProgressIndicatorForMultiProgress.AddIndicator");
+				}
 				_indicators.Add(indicator);
 			}
 
@@ -130,6 +134,10 @@ namespace Palaso.Progress.LogBox
 			public void Initialize(int numberOfSteps)
 			{
 				_numberOfSteps = numberOfSteps;
+				foreach (IProgressIndicator progressIndicator in _indicators)
+				{
+					progressIndicator.Initialize(numberOfSteps);
+				}
 			}
 		}
 
@@ -172,7 +180,8 @@ namespace Palaso.Progress.LogBox
 			get { return _indicatorForMultiProgress; }
 			set
 			{
-				// don't do anything
+				// cjh: this could cause confusion by wrapping AddIndicator() with a property setter.  There's no way to "undo" the set later on.
+				_indicatorForMultiProgress.AddIndicator(value);
 			}
 		}
 
@@ -258,7 +267,10 @@ namespace Palaso.Progress.LogBox
 		public void Add(IProgress progress)
 		{
 			_progressHandlers.Add(progress);
-			_indicatorForMultiProgress.AddIndicator(progress.ProgressIndicator);
+			if (progress.ProgressIndicator != null)
+			{
+				_indicatorForMultiProgress.AddIndicator(progress.ProgressIndicator);
+			}
 		}
 	}
 
