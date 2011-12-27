@@ -29,7 +29,8 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				this.Visible = true;
 				_illustrator.Text = _metadata.Creator;
 				_copyright.Text = _metadata.CopyrightNotice;
-				_licenseImage.Image = _metadata.License.GetImage();
+				if(_metadata.License!=null)
+					_licenseImage.Image = _metadata.License.GetImage();
 				if (_metadata.License is CreativeCommonsLicense)
 				{
 					var cc = (CreativeCommonsLicense) _metadata.License;

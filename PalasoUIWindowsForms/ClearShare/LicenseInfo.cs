@@ -53,7 +53,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public override string Url
 		{
 			get { return ""; }
-			set { throw new NotImplementedException(); }
+			set { }
 		}
 	}
 
