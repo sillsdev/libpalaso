@@ -30,8 +30,11 @@ namespace Palaso.Xml
 			//REVIEW JH(jh): this will put pfx in front of every element in the path, but in html, that actually makes the queries fail.
 			const string prefix = "pfx";
 			XmlNamespaceManager nsmgr = GetNsmgr(node, prefix);
-			string prefixedPath = GetPrefixedPath(path, prefix);
-			var x= node.SelectNodes(prefixedPath, nsmgr);
+			if(nsmgr!=null)// skip this pfx business if there is no namespace anyhow (as in html5)
+			{
+				path = GetPrefixedPath(path, prefix);
+			}
+			var x= node.SelectNodes(path, nsmgr);
 
 			if (x == null)
 				return new NullXMlNodeList();
@@ -77,8 +80,9 @@ namespace Palaso.Xml
 		{
 
 			XmlNamespaceManager nsmgr = GetNsmgr(node, DefaultNamespacePrefix);
-			string prefixedPath = GetPrefixedPath(path, DefaultNamespacePrefix);
-			return node.SelectSingleNode(prefixedPath, nsmgr);
+			if(nsmgr!=null)
+				path = GetPrefixedPath(path, DefaultNamespacePrefix);
+			return node.SelectSingleNode(path, nsmgr);
 		}
 
 
@@ -100,6 +104,10 @@ namespace Palaso.Xml
 					Guard.AgainstNull(node.OwnerDocument, "node.OwnerDocument");
 					nameTable = node.OwnerDocument.NameTable;
 					namespaceUri = node.NamespaceURI;
+				}
+				if(string.IsNullOrEmpty(namespaceUri))
+				{
+					return null;
 				}
 				XmlNamespaceManager nsmgr = new XmlNamespaceManager(nameTable);
 				nsmgr.AddNamespace(prefix, namespaceUri);
