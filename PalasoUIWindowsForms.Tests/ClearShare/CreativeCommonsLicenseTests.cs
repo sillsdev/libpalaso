@@ -52,6 +52,13 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 
 		}
 
+
+		[Test]
+		public void FromLicenseUrl_EmtpyString_Throws()
+		{
+			Assert.Throws<ArgumentOutOfRangeException>(()=>CreativeCommonsLicense.FromLicenseUrl(""));
+		}
+
 		[Test]
 		public void Url_GivesVersion()
 		{

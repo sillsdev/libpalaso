@@ -50,6 +50,16 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			}
 		}
 
+
+		/// <summary>
+		/// Set this to false if you don't want to collect info on who created it (e.g. you're just getting copyright/license)
+		/// </summary>
+		public bool ShowCreator
+		{
+			get { return _illustrator.Visible; }
+			set { _illustrator.Visible = _illustratorLabel.Visible = value; }
+		}
+
 		private void OnLicenseComponentChanged(object sender, System.EventArgs e)
 		{
 			if(_settingUp)

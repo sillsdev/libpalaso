@@ -74,6 +74,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public static CreativeCommonsLicense FromLicenseUrl(string url)
 		{
+			if(url==null || url.Trim()=="")
+			{
+				throw new ArgumentOutOfRangeException();
+			}
 			var l = new CreativeCommonsLicense();
 			l.Url = url;
 			return l;
@@ -165,7 +169,29 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		//what you *store* in the image metadata is a different question.
 		public override string GetDescription(string iso639_3LanguageCode)
 		{
-			return Url;
+			//Enanced labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than consise, description.
+
+			string s="";
+
+			if(CommercialUseAllowed)
+				s+="You are free to make commercial use of this book. ";
+			else
+				s += "You may not use this work for commercial purposes. ";
+
+			if(DerivativeRule == DerivativeRules.Derivatives)
+				s += "You are free to adapt, remix, copy, distribute, and transmit this book. ";
+
+			if (DerivativeRule == DerivativeRules.NoDerivatives)
+				s += "You may not alter, transform, or build upon this book without permission. ";
+
+			if (DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
+				s += "If adapt or build upon this book, but you may distribute the resulting work only under the same or similar license to this one. ";
+
+
+			if (AttributionRequired)
+				s += "You must attribute the work in the manner specified by the author. ";
+
+			return s;
 		}
 
 		public override Image GetImage()

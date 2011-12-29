@@ -13,7 +13,16 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			_originalMetaData = originalMetaData;
 			InitializeComponent();
-			metdataEditorControl1.Metadata = _returnMetaData = originalMetaData.DeepCopy();
+			_metdataEditorControl.Metadata = _returnMetaData = originalMetaData.DeepCopy();
+			ShowCreator = true;
+		}
+
+		/// <summary>
+		/// Set this to false if you don't want to collect info on who created it (e.g. you're just getting copyright/license)
+		/// </summary>
+		public bool ShowCreator {
+			get { return _metdataEditorControl.ShowCreator; }
+			set { _metdataEditorControl.ShowCreator = value; }
 		}
 
 		public Metadata Metadata
@@ -37,49 +46,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 		private void _minimallyCompleteCheckTimer_Tick(object sender, EventArgs e)
 		{
-			_okButton.Enabled = metdataEditorControl1.Metadata.IsMinimallyComplete;
+			_okButton.Enabled = _metdataEditorControl.Metadata.IsMinimallyComplete;
 		}
 	}
 }
-/*    public static T CloneObject<T>(T source)
-		{
-			//grab the type and create a new instance of that type
-			Type sourceType = source.GetType();
-			T target = (T) Activator.CreateInstance(source.GetType(), null);
-			//T target = Activator.CreateInstance<T>();
-
-			//grab the properties
-			PropertyInfo[] PropertyInfo =
-				sourceType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-			//iterate over the properties and if it has a 'set' method assign it from the source TO the target
-			foreach (PropertyInfo item in PropertyInfo)
-			{
-				if (item.CanWrite)
-				{
-					//value types can simply be 'set'
-					if (item.PropertyType.IsValueType || item.PropertyType.IsEnum ||
-						item.PropertyType.Equals(typeof (System.String)))
-					{
-						item.SetValue(target, item.GetValue(source, null), null);
-					}
-						//object/complex types need to recursively call this method until the end of the tree is reached
-					else
-					{
-						object propertyValue = item.GetValue(source, null);
-						if (propertyValue == null)
-						{
-							item.SetValue(target, null, null);
-						}
-						else
-						{
-							Type z = item.PropertyType;
-							item.SetValue(target, CloneObject(propertyValue), null);
-							//item.SetValue(target, CloneObject<LicenseInfo>(propertyValue as LicenseInfo), null);
-						}
-					}
-				}
-			}
-			//return the new item
-			return target;
-		}*/

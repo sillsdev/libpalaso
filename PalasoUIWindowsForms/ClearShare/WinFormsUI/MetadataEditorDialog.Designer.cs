@@ -29,19 +29,19 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.metdataEditorControl1 = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetdataEditorControl();
+			this._metdataEditorControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetdataEditorControl();
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._minimallyCompleteCheckTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			//
-			// metdataEditorControl1
+			// _metdataEditorControl
 			//
-			this.metdataEditorControl1.Location = new System.Drawing.Point(-1, 0);
-			this.metdataEditorControl1.Metadata = null;
-			this.metdataEditorControl1.Name = "metdataEditorControl1";
-			this.metdataEditorControl1.Size = new System.Drawing.Size(338, 392);
-			this.metdataEditorControl1.TabIndex = 0;
+			this._metdataEditorControl.Location = new System.Drawing.Point(-1, 0);
+			this._metdataEditorControl.Metadata = null;
+			this._metdataEditorControl.Name = "_metdataEditorControl";
+			this._metdataEditorControl.Size = new System.Drawing.Size(338, 392);
+			this._metdataEditorControl.TabIndex = 0;
 			//
 			// _okButton
 			//
@@ -79,7 +79,7 @@
 			this.ControlBox = false;
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);
-			this.Controls.Add(this.metdataEditorControl1);
+			this.Controls.Add(this._metdataEditorControl);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "MetadataEditorDialog";
 			this.Text = "Meta";
@@ -89,7 +89,7 @@
 
 		#endregion
 
-		private MetdataEditorControl metdataEditorControl1;
+		private MetdataEditorControl _metdataEditorControl;
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Button _cancelButton;
 		private System.Windows.Forms.Timer _minimallyCompleteCheckTimer;

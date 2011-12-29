@@ -32,7 +32,7 @@
 			this._copyright = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this._illustrator = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
+			this._illustratorLabel = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._shareAlike = new System.Windows.Forms.RadioButton();
 			this._noDerivates = new System.Windows.Forms.RadioButton();
@@ -88,15 +88,15 @@
 			this._illustrator.TabIndex = 6;
 			this._illustrator.TextChanged += new System.EventHandler(this._illustrator_TextChanged);
 			//
-			// label1
+			// _illustratorLabel
 			//
-			this.label1.AutoSize = true;
-			this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(12, 21);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(57, 15);
-			this.label1.TabIndex = 5;
-			this.label1.Text = "Illustrator";
+			this._illustratorLabel.AutoSize = true;
+			this._illustratorLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._illustratorLabel.Location = new System.Drawing.Point(12, 21);
+			this._illustratorLabel.Name = "_illustratorLabel";
+			this._illustratorLabel.Size = new System.Drawing.Size(57, 15);
+			this._illustratorLabel.TabIndex = 5;
+			this._illustratorLabel.Text = "Illustrator";
 			//
 			// panel1
 			//
@@ -259,7 +259,7 @@
 			this.Controls.Add(this._copyright);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this._illustrator);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this._illustratorLabel);
 			this.Name = "MetdataEditorControl";
 			this.Size = new System.Drawing.Size(338, 392);
 			this.panel1.ResumeLayout(false);
@@ -278,7 +278,7 @@
 		private System.Windows.Forms.TextBox _copyright;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox _illustrator;
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label _illustratorLabel;
 		private Widgets.BetterLabel betterLabel2;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.RadioButton _shareAlike;
