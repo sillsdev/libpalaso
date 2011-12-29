@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using Palaso.Reporting;
 
@@ -88,6 +89,9 @@ namespace Palaso.IO
 		/// If there is a problem doing the replace, a dialog is shown which tells the user
 		/// what happened, and lets them try to fix it.  It also lets them "Give up", in
 		/// which case this returns False.
+		///
+		/// To help with situations where something may temporarily be holding on to the file,
+		/// this will retry for up to 5 seconds.
 		/// </summary>
 		/// <param name="sourcePath"></param>
 		/// <param name="destinationPath"></param>
@@ -116,7 +120,24 @@ namespace Palaso.IO
 					}
 					else
 					{
-						File.Replace(sourcePath, destinationPath, backupPath);
+						var giveUpTime = DateTime.Now.AddSeconds(5);
+						Exception theProblem;
+						do
+						{
+							try
+							{
+								theProblem = null;
+								File.Replace(sourcePath, destinationPath, backupPath);
+							}
+							catch (Exception e)
+							{
+								theProblem = e;
+								Thread.Sleep(100);
+							}
+
+						} while (theProblem!=null && DateTime.Now < giveUpTime);
+						if(theProblem!=null)
+							throw theProblem;
 					}
 					succeeded = true;
 				}
