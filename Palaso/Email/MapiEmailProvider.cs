@@ -1,3 +1,6 @@
+using System;
+using System.Diagnostics;
+
 namespace Palaso.Email
 {
 	public class MapiEmailProvider : IEmailProvider
@@ -12,6 +15,8 @@ namespace Palaso.Email
 			var mapi = new MAPI();
 			foreach (string recipient in message.To)
 			{
+				Debug.Assert(string.IsNullOrEmpty(recipient),"Email address for reporting is empty");
+
 				mapi.AddRecipientTo(recipient);
 			}
 			foreach (string recipient in message.Cc)

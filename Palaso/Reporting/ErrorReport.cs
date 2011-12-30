@@ -153,7 +153,7 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				var asm = Assembly.GetExecutingAssembly();
+				var asm = Assembly.GetEntryAssembly();
 				var ver = asm.GetName().Version;
 				var file = asm.CodeBase.Replace("file:", string.Empty);
 				file = file.TrimStart('/');
