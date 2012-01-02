@@ -16,11 +16,13 @@ namespace Palaso.IO
 		string LocateFile(string fileName);
 		string LocateFile(string fileName, string descriptionForErrorMessage);
 		string LocateOptionalFile(string fileName);
+		string LocateDirectory(string directoryName);
+		string LocateDirectory(string directoryName, string descriptionForErrorMessage);
 	}
 
 	public class FileLocator :IFileLocator
 	{
-		private readonly IEnumerable<string> _searchPaths;
+		protected readonly IEnumerable<string> _searchPaths;
 
 		public FileLocator(IEnumerable<string> searchPaths  )
 		{
@@ -29,7 +31,7 @@ namespace Palaso.IO
 
 		public string LocateFile(string fileName)
 		{
-			foreach (var path in _searchPaths)
+			foreach (var path in GetSearchPaths())
 			{
 				var fullPath = Path.Combine(path, fileName);
 				if(File.Exists(fullPath))
@@ -38,11 +40,44 @@ namespace Palaso.IO
 			return string.Empty;
 		}
 
+		/// <summary>
+		/// Subclasses (e.g. in Bloom) override this to provide a dynamic set of paths
+		/// </summary>
+		/// <returns></returns>
+		virtual protected IEnumerable<string> GetSearchPaths()
+		{
+			return _searchPaths;
+		}
+
 		public string LocateFile(string fileName, string descriptionForErrorMessage)
 		{
 
 			var path = LocateFile(fileName);
 			if (string.IsNullOrEmpty(path) || !File.Exists(path))
+			{
+				ErrorReport.NotifyUserOfProblem(
+					"{0} could not find the {1}.  It expected to find it in one of these locations: {2}",
+					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, GetSearchPaths().Concat(", ")
+					);
+			}
+			return path;
+		}
+
+		public string LocateDirectory(string directoryName)
+		{
+			foreach (var path in GetSearchPaths())
+			{
+				var fullPath = Path.Combine(path, directoryName);
+				if (Directory.Exists(fullPath))
+					return fullPath;
+			}
+			return string.Empty;
+		}
+		public string LocateDirectory(string directoryName, string descriptionForErrorMessage)
+		{
+
+			var path = LocateDirectory(directoryName);
+			if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
 			{
 				ErrorReport.NotifyUserOfProblem(
 					"{0} could not find the {1}.  It expected to find it in one of these locations: {2}",
