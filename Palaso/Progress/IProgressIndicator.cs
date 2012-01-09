@@ -41,6 +41,7 @@ namespace Palaso.Progress
 		{
 			if (Thread.CurrentThread.IsBackground)
 			{
+				//TODO: reimplement this with SychronizationContext
 				// necessary when background worker thread updates the progress bar on the UI (main) thread
 				BeginInvoke((MethodInvoker) (() => Increment(1)) );
 			}
@@ -76,6 +77,7 @@ namespace Palaso.Progress
 			{
 				 if (Thread.CurrentThread.IsBackground)
 				 {
+					 //TODO: reimplement this with SychronizationContext
 					 // necessary when background worker thread updates the progress bar on the UI (main) thread
 					 // prevents cross-thread calling exception
 					 BeginInvoke((MethodInvoker)(() => Value = value));
@@ -140,9 +142,9 @@ namespace Palaso.Progress
 			//_globalIndicator.CurrentStep = _currentPhase * NumberOfGlobalStepsPerProcess();
 		}
 
-		private int NumberOfGlobalStepsPerPhase()
+		private int NumberOfGlobalStepsPerPhase
 		{
-			return _globalIndicator.GetTotalNumberOfSteps()/_numberOfPhases;
+			get { return _globalIndicator.GetTotalNumberOfSteps()/_numberOfPhases; }
 		}
 
 		public void Initialize(int numberOfSteps)  // Initialize/begin next process
@@ -170,8 +172,7 @@ namespace Palaso.Progress
 					throw new ArgumentOutOfRangeException(string.Format("CurrentStep must be set to a number between 0 and {0}", GetTotalNumberOfSteps()));
 				}
 				_stepInCurrentPhase = value;
-				_globalIndicator.NumberOfStepsCompleted = (_currentPhase - 1 + PercentCompleted/100)*
-											   NumberOfGlobalStepsPerPhase();
+				_globalIndicator.NumberOfStepsCompleted = (value*NumberOfGlobalStepsPerPhase/_currentPhaseNumberOfSteps) + (NumberOfGlobalStepsPerPhase*(_currentPhase - 1));
 			}
 		}
 	}
