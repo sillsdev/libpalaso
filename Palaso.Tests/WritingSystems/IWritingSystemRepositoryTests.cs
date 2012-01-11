@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -503,6 +504,26 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(2, textIds.Count);
 			Assert.AreEqual("en", textIds[0]);
 			Assert.AreEqual("de", textIds[1]);
+		}
+
+		[Test]
+		public void FilterForTextIds_PreservesOrderGivenByParameter()
+		{
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("ar"));
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("th"));
+
+			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(new []{"en","ar","th"}));
+
+			Assert.AreEqual("en", textIds[0]);
+			Assert.AreEqual("ar", textIds[1]);
+			Assert.AreEqual("th", textIds[2]);
+
+			 textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(new[] { "th", "ar", "en" }));
+
+			Assert.AreEqual("th", textIds[0]);
+			Assert.AreEqual("ar", textIds[1]);
+			Assert.AreEqual("en", textIds[2]);
 		}
 
 		private void OnWritingSystemIdChanged(object sender, WritingSystemIdChangedEventArgs e)

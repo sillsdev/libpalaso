@@ -288,9 +288,15 @@ namespace Palaso.WritingSystems
 			_writingSystems.Remove(oldId);
 		}
 
+		/// <summary>
+		/// filters the list down to those that are texts (not audio), while preserving their order
+		/// </summary>
+		/// <param name="idsToFilter"></param>
+		/// <returns></returns>
 		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
 		{
-			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
+			var textIds = TextWritingSystems.Select(ws => ws.Id);
+			return idsToFilter.Where(id => textIds.Contains(id));
 		}
 
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
