@@ -2,12 +2,12 @@ External Dependencies
 ---------------------
 The palaso library has dependencies on external packages as follows:
 
-- libicu42
+
+- libicu42 (or libicu44 or libicu48 depending which is the default in the distribution)
   * For the ICU collation library
 
-- happycoders-libsocket
-  * Currently used for the keyboarding / ibus implementation
-
+- libicu-cil
+  * For the C# bindings to the ICU library
 
 API Policy
 ---------------------
