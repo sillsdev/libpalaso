@@ -1,4 +1,7 @@
 #if MONO
+
+#define DISABLE_KEYBOARDSWITCHING
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,6 +60,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void OpenConnection()
 		{
+#if !DISABLE_KEYBOARDSWITCHING
 			if (_connection == null)
 			{
 				try
@@ -84,6 +88,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					}
 				}
 			}
+#endif
 		}
 
 		/// <summary>
@@ -103,6 +108,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		public static bool ExitIBus()
 		{
+#if DISABLE_KEYBOARDSWITCHING
+			return true;
+#else
 			if (EngineAvailable)
 			{
 				var ibus = new InputBusWrapper (_connection);
@@ -111,6 +119,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				CloseConnection();
 			}
 			return !EngineAvailable;
+#endif
 		}
 
 		/// <summary>
@@ -118,6 +127,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		public static bool RestartIBus()
 		{
+#if DISABLE_KEYBOARDSWITCHING
+			return true;
+#else
 			if (EngineAvailable)
 			{
 				var ibus = new InputBusWrapper (_connection);
@@ -126,6 +138,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				CloseConnection();
 			}
 			return EngineAvailable;
+#endif
 		}
 
 		/// <summary>
@@ -133,6 +146,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		public static bool StartIBus()
 		{
+#if DISABLE_KEYBOARDSWITCHING
+			return true;
+#else
 			if (!EngineAvailable)
 			{
 				ProcessStartInfo startInfo = new ProcessStartInfo("ibus-daemon",
@@ -141,8 +157,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Thread.Sleep(100);
 			}
 			return EngineAvailable;
+#endif
 		}
 
+#if !DISABLE_KEYBOARDSWITCHING
 		private static void NotifyUserOfProblem(IBusError error, string message)
 		{
 			switch (error)
@@ -153,6 +171,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					break;
 			}
 		}
+#endif
 
 		public static string DefaultKeyboardName
 		{
@@ -182,6 +201,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void ActivateKeyboard (string name)
 		{
+#if !DISABLE_KEYBOARDSWITCHING
 			EnsureConnection ();
 
 			if(String.Compare(name,"None") != 0 && !HasKeyboardNamed(name))
@@ -196,6 +216,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			_requestActivateName = name;
 			_timer.Start();
+#endif
 		}
 
 		private static void OnTimerTick(object sender, EventArgs e)
@@ -470,7 +491,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static string GetActiveKeyboard ()
 		{
 			EnsureConnection ();
-
+#if DISABLE_KEYBOARDSWITCHING
+			return "Manual";
+#else
 			var ibus = new InputBusWrapper (_connection);
 			try
 			{
@@ -518,6 +541,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				);
 				return String.Empty;
 			}
+#endif
 		}
 	}
 }
