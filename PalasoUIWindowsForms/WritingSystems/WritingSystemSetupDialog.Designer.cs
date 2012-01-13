@@ -31,7 +31,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._writingSystemSetupView = new Palaso.UI.WindowsForms.WritingSystems.WritingSystemSetupView();
 			this._closeButton = new System.Windows.Forms.Button();
 			this._openGlobal = new System.Windows.Forms.Button();
-			this._openLocal = new System.Windows.Forms.Button();
 			this._openDirectory = new System.Windows.Forms.Button();
 			this._openLabel = new System.Windows.Forms.Label();
 			this.SuspendLayout();
@@ -60,29 +59,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _openGlobal
 			//
 			this._openGlobal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._openGlobal.Location = new System.Drawing.Point(602, 444);
+			this._openGlobal.Location = new System.Drawing.Point(521, 444);
 			this._openGlobal.Name = "_openGlobal";
 			this._openGlobal.Size = new System.Drawing.Size(75, 23);
 			this._openGlobal.TabIndex = 2;
-			this._openGlobal.Text = "Global";
+			this._openGlobal.Text = "Computer";
 			this._openGlobal.UseVisualStyleBackColor = true;
-			this._openGlobal.Click += new System.EventHandler(this._OpenGlobal_Click);
-			//
-			// _openLocal
-			//
-			this._openLocal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._openLocal.Location = new System.Drawing.Point(521, 444);
-			this._openLocal.Name = "_openLocal";
-			this._openLocal.Size = new System.Drawing.Size(75, 23);
-			this._openLocal.TabIndex = 3;
-			this._openLocal.Text = "Local";
-			this._openLocal.UseVisualStyleBackColor = true;
-			this._openLocal.Click += new System.EventHandler(this._OpenLocal_Click);
+			this._openGlobal.Click += new System.EventHandler(this._openGlobal_Click);
 			//
 			// _openDirectory
 			//
 			this._openDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._openDirectory.Location = new System.Drawing.Point(440, 444);
+			this._openDirectory.Location = new System.Drawing.Point(602, 444);
 			this._openDirectory.Name = "_openDirectory";
 			this._openDirectory.Size = new System.Drawing.Size(75, 23);
 			this._openDirectory.TabIndex = 4;
@@ -93,11 +81,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _openLabel
 			//
 			this._openLabel.AutoSize = true;
-			this._openLabel.Location = new System.Drawing.Point(387, 448);
+			this._openLabel.Location = new System.Drawing.Point(380, 448);
 			this._openLabel.Name = "_openLabel";
 			this._openLabel.Size = new System.Drawing.Size(36, 13);
 			this._openLabel.TabIndex = 10;
-			this._openLabel.Text = "Open:";
+			this._openLabel.Text = "Open Writing Systems:";
 			//
 			// WritingSystemSetupDialog
 			//
@@ -106,7 +94,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.ClientSize = new System.Drawing.Size(855, 479);
 			this.Controls.Add(this._openLabel);
 			this.Controls.Add(this._openDirectory);
-			this.Controls.Add(this._openLocal);
 			this.Controls.Add(this._openGlobal);
 			this.Controls.Add(this._closeButton);
 			this.Controls.Add(this._writingSystemSetupView);
@@ -121,7 +108,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private WritingSystemSetupView _writingSystemSetupView;
 		private System.Windows.Forms.Button _closeButton;
 		private System.Windows.Forms.Button _openGlobal;
-		private System.Windows.Forms.Button _openLocal;
 		private System.Windows.Forms.Button _openDirectory;
 		private System.Windows.Forms.Label _openLabel;
 	}
