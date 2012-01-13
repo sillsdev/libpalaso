@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.label3 = new System.Windows.Forms.Label();
-			this._copyright = new System.Windows.Forms.TextBox();
+			this._copyrightBy = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this._illustrator = new System.Windows.Forms.TextBox();
 			this._illustratorLabel = new System.Windows.Forms.Label();
@@ -38,12 +38,14 @@
 			this._noDerivates = new System.Windows.Forms.RadioButton();
 			this._derivatives = new System.Windows.Forms.RadioButton();
 			this.panel2 = new System.Windows.Forms.Panel();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._nonCommercial = new System.Windows.Forms.RadioButton();
 			this._commercial = new System.Windows.Forms.RadioButton();
 			this._licenseImage = new System.Windows.Forms.PictureBox();
 			this._creativeCommons = new System.Windows.Forms.RadioButton();
 			this._noLicense = new System.Windows.Forms.RadioButton();
+			this._copyrightYear = new System.Windows.Forms.TextBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -60,14 +62,14 @@
 			this.label3.TabIndex = 9;
 			this.label3.Text = "License";
 			//
-			// _copyright
+			// _copyrightBy
 			//
-			this._copyright.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._copyright.Location = new System.Drawing.Point(74, 47);
-			this._copyright.Name = "_copyright";
-			this._copyright.Size = new System.Drawing.Size(163, 23);
-			this._copyright.TabIndex = 8;
-			this._copyright.TextChanged += new System.EventHandler(this._copyright_TextChanged);
+			this._copyrightBy.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._copyrightBy.Location = new System.Drawing.Point(173, 47);
+			this._copyrightBy.Name = "_copyrightBy";
+			this._copyrightBy.Size = new System.Drawing.Size(128, 23);
+			this._copyrightBy.TabIndex = 1;
+			this._copyrightBy.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
 			//
 			// label2
 			//
@@ -75,17 +77,17 @@
 			this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label2.Location = new System.Drawing.Point(12, 48);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(60, 15);
+			this.label2.Size = new System.Drawing.Size(86, 15);
 			this.label2.TabIndex = 7;
-			this.label2.Text = "Copyright";
+			this.label2.Text = "Copyright Year";
 			//
 			// _illustrator
 			//
 			this._illustrator.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._illustrator.Location = new System.Drawing.Point(74, 20);
+			this._illustrator.Location = new System.Drawing.Point(104, 20);
 			this._illustrator.Name = "_illustrator";
-			this._illustrator.Size = new System.Drawing.Size(163, 23);
-			this._illustrator.TabIndex = 6;
+			this._illustrator.Size = new System.Drawing.Size(197, 23);
+			this._illustrator.TabIndex = 0;
 			this._illustrator.TextChanged += new System.EventHandler(this._illustrator_TextChanged);
 			//
 			// _illustratorLabel
@@ -106,7 +108,7 @@
 			this.panel1.Location = new System.Drawing.Point(60, 212);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(222, 67);
-			this.panel1.TabIndex = 18;
+			this.panel1.TabIndex = 1;
 			//
 			// _shareAlike
 			//
@@ -156,21 +158,6 @@
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(229, 65);
 			this.panel2.TabIndex = 20;
-			//
-			// betterLabel1
-			//
-			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
-			this.betterLabel1.Multiline = true;
-			this.betterLabel1.Name = "betterLabel1";
-			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(392, 20);
-			this.betterLabel1.TabIndex = 16;
-			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "Allow commercial uses of your work?";
 			//
 			// _nonCommercial
 			//
@@ -224,11 +211,45 @@
 			this._noLicense.Location = new System.Drawing.Point(43, 331);
 			this._noLicense.Name = "_noLicense";
 			this._noLicense.Size = new System.Drawing.Size(250, 17);
-			this._noLicense.TabIndex = 23;
+			this._noLicense.TabIndex = 2;
 			this._noLicense.TabStop = true;
 			this._noLicense.Text = "Contact the copyright holder for any permissions";
 			this._noLicense.UseVisualStyleBackColor = true;
 			this._noLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
+			//
+			// _copyrightYear
+			//
+			this._copyrightYear.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._copyrightYear.Location = new System.Drawing.Point(104, 47);
+			this._copyrightYear.Name = "_copyrightYear";
+			this._copyrightYear.Size = new System.Drawing.Size(38, 23);
+			this._copyrightYear.TabIndex = 2;
+			this._copyrightYear.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
+			//
+			// label1
+			//
+			this.label1.AutoSize = true;
+			this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label1.Location = new System.Drawing.Point(149, 50);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(20, 15);
+			this.label1.TabIndex = 25;
+			this.label1.Text = "By";
+			//
+			// betterLabel1
+			//
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
+			this.betterLabel1.Multiline = true;
+			this.betterLabel1.Name = "betterLabel1";
+			this.betterLabel1.ReadOnly = true;
+			this.betterLabel1.Size = new System.Drawing.Size(392, 20);
+			this.betterLabel1.TabIndex = 0;
+			this.betterLabel1.TabStop = false;
+			this.betterLabel1.Text = "Allow commercial uses of your work?";
 			//
 			// betterLabel2
 			//
@@ -249,6 +270,8 @@
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this._copyrightYear);
 			this.Controls.Add(this._noLicense);
 			this.Controls.Add(this._creativeCommons);
 			this.Controls.Add(this._licenseImage);
@@ -256,7 +279,7 @@
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.betterLabel2);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this._copyright);
+			this.Controls.Add(this._copyrightBy);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this._illustrator);
 			this.Controls.Add(this._illustratorLabel);
@@ -275,7 +298,7 @@
 		#endregion
 
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.TextBox _copyright;
+		private System.Windows.Forms.TextBox _copyrightBy;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox _illustrator;
 		private System.Windows.Forms.Label _illustratorLabel;
@@ -291,5 +314,7 @@
 		private System.Windows.Forms.PictureBox _licenseImage;
 		private System.Windows.Forms.RadioButton _creativeCommons;
 		private System.Windows.Forms.RadioButton _noLicense;
+		private System.Windows.Forms.TextBox _copyrightYear;
+		private System.Windows.Forms.Label label1;
 	}
 }

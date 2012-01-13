@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
@@ -526,5 +527,40 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			Image,
 			Document
 		};
+
+		public void SetCopyrightNotice(string year, string by)
+		{
+			if(!string.IsNullOrEmpty(year))
+				CopyrightNotice = "Copyright © " + year + ", " + by;
+			else
+				CopyrightNotice = "Copyright © " + by;
+		}
+
+		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>.+)?";
+		const string kNoYearPattern = @"([cC]opyright\s+)?(COPYRIGHT\s+)?\©?\s*(?<by>.+)";
+
+
+		public string GetCopyrightYear()
+		{
+			if (string.IsNullOrEmpty(CopyrightNotice))
+				return string.Empty;
+			Match m = Regex.Match(CopyrightNotice, kCopyrightPattern);
+			return m.Groups["year"].Value;
+		}
+
+		public string GetCopyrightBy()
+		{
+			if(string.IsNullOrEmpty(CopyrightNotice))
+				return string.Empty;
+			Match m = Regex.Match(CopyrightNotice, kCopyrightPattern);
+
+			//I was never able to get the cases without years to work with the standard pattern (just not good enough with regex's).
+			if (!m.Groups["year"].Success && !m.Groups["by"].Success)
+			{
+				m = Regex.Match(CopyrightNotice, kNoYearPattern);
+			}
+
+			return m.Groups["by"].Value.Trim();
+		}
 	}
 }

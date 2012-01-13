@@ -175,5 +175,125 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			Metadata copy = m.DeepCopy();
 			Assert.AreEqual(m.License.Url,copy.License.Url);
 		}
+
+		[Test]
+		public void GetCopyrightBy_HasSymbolAndComma_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "© 2012, SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+		[Test]
+		public void GetCopyrightBy_HasCopyrightAndSymbolAndComma_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright © 2012, SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+		[Test]
+		public void GetCopyrightBy_HasCopyrightAndSymbolNoYear_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright © SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+
+		[Test]
+		public void GetCopyrightBy_HasCOPYRIGHTAndSymbolNoYear_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "COPYRIGHT © SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+
+		[Test]
+		public void GetCopyrightBy_HasSymbolNoComma_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "© 2012 SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+
+		[Test]
+		public void GetCopyrightBy_Empty_ReturnsEmpty()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "";
+			Assert.AreEqual("", m.GetCopyrightBy());
+		}
+
+		[Test]
+		public void GetCopyrightBy_HasSymbolNoYear_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "© SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+
+		[Test]
+		public void GetCopyrightBy_NoSymbolOrYear_ReturnsCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "SIL International";
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+
+		[Test]
+		public void GetCopyrightYear_HasCopyrightAndSymbolAndComma_ReturnsCopyrightYear()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright © 2012, SIL International";
+			Assert.AreEqual("2012", m.GetCopyrightYear());
+		}
+
+
+		[Test]
+		public void GetCopyrightYear_HasSymbolAndComma_ReturnsCopyrightYear()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "© 2012, SIL International";
+			Assert.AreEqual("2012", m.GetCopyrightYear());
+		}
+
+		[Test]
+		public void GetCopyrightYear_NoSymbolOrComma_ReturnsCopyrightYear()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "2012 SIL International";
+			Assert.AreEqual("2012", m.GetCopyrightYear());
+		}
+
+		[Test]
+		public void GetCopyrightYear_SymbolButNoYear_ReturnsEmptyString()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "© SIL International";
+			Assert.AreEqual("", m.GetCopyrightYear());
+		}
+
+
+		[Test]
+		public void GetCopyrightYear_NoYear_ReturnsEmptyString()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "SIL International";
+			Assert.AreEqual("", m.GetCopyrightYear());
+		}
+
+		[Test]
+		public void GetCopyrightYear_Empty_ReturnsEmptyString()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "";
+			Assert.AreEqual("", m.GetCopyrightYear());
+		}
+
 	}
 }

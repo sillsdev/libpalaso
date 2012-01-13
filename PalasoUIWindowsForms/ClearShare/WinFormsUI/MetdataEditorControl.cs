@@ -28,7 +28,11 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				_settingUp = true;
 				this.Visible = true;
 				_illustrator.Text = _metadata.Creator;
-				_copyright.Text = _metadata.CopyrightNotice;
+				_copyrightYear.Text = _metadata.GetCopyrightYear();
+				if(_copyrightYear.Text =="")
+					_copyrightYear.Text = DateTime.Now.Year.ToString();
+
+				_copyrightBy.Text = _metadata.GetCopyrightBy();
 				if(_metadata.License!=null)
 					_licenseImage.Image = _metadata.License.GetImage();
 				if (_metadata.License is CreativeCommonsLicense)
@@ -49,7 +53,6 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				_settingUp = false;
 			}
 		}
-
 
 		/// <summary>
 		/// Set this to false if you don't want to collect info on who created it (e.g. you're just getting copyright/license)
@@ -104,9 +107,12 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			_metadata.Creator = _illustrator.Text;
 		}
 
-		private void _copyright_TextChanged(object sender, EventArgs e)
+
+		private void _copyrightYear_TextChanged(object sender, EventArgs e)
 		{
-			_metadata.CopyrightNotice = _copyright.Text;
+			if (_settingUp)
+				return;
+			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
 		}
 
 		/*       private PalasoImage _image;

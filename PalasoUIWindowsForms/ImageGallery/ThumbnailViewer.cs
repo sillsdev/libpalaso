@@ -54,6 +54,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			if (Disposing) return;
 			if (IsDisposed)
 				return;
+			if (!IsHandleCreated)
+				return;
 
 			if (this.InvokeRequired)
 			{
