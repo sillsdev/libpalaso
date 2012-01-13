@@ -86,5 +86,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		private void _openDirectory_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void _OpenLocal_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void _OpenGlobal_Click(object sender, EventArgs e)
+		{
+
+		}
+
 	}
 }
