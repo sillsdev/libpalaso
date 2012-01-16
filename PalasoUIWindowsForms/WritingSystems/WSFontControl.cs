@@ -21,6 +21,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 			_defaultFontName = _testArea.Font.Name;
 			_defaultFontSize = _testArea.Font.SizeInPoints;
+			_fontComboBox.Text = _defaultFontName;
+			_fontSizeComboBox.Text = _defaultFontSize.ToString();
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 		}
 
@@ -70,11 +72,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if (_model.CurrentDefaultFontName != _fontComboBox.Text)
 			{
-				_fontComboBox.Text = _model.CurrentDefaultFontName;
+				if (string.IsNullOrEmpty(_model.CurrentDefaultFontName))
+				{
+					_fontComboBox.Text = _defaultFontName;
+				}
+				else
+				{
+					_fontComboBox.Text = _model.CurrentDefaultFontName;
+				}
+				_fontComboBox.SelectAll();
 			}
 			if (_model.CurrentDefaultFontSize != currentSize)
 			{
-				_fontSizeComboBox.Text = _model.CurrentDefaultFontSize.ToString();
+				if (_model.CurrentDefaultFontSize == 0)
+				{
+					_fontSizeComboBox.Text = _defaultFontSize.ToString();
+				}
+				else
+				{
+					_fontSizeComboBox.Text = _model.CurrentDefaultFontSize.ToString();
+				}
+				_fontSizeComboBox.SelectAll();
 			}
 			if (_rightToLeftCheckBox.Checked != _model.CurrentRightToLeftScript)
 			{
