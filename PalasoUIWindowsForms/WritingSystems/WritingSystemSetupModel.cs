@@ -892,7 +892,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSpellCheckingId
 		{
-			get { return CurrentDefinition.SpellCheckingId ?? string.Empty; }
+			get
+			{
+				if (CurrentDefinition == null)
+				{
+					return string.Empty;
+				}
+				return CurrentDefinition.SpellCheckingId ?? string.Empty;
+			}
 			set
 			{
 				if (CurrentDefinition.SpellCheckingId != value)
@@ -932,7 +939,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					_spellCheckerItems.AddRange(broker.Dictionaries.Select(dictionaryInfo => new SpellCheckInfo(dictionaryInfo)));
 
 					// add current dictionary, if not installed
-					if ((CurrentDefinition != null) && !string.IsNullOrEmpty(CurrentSpellCheckingId))
+					if (!string.IsNullOrEmpty(CurrentSpellCheckingId))
 					{
 						if (!broker.DictionaryExists(CurrentSpellCheckingId))
 						{
