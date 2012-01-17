@@ -65,9 +65,9 @@ namespace Palaso.Progress.LogBox
 			set {  }
 		}
 
-		public bool CancelRequested { get; set; }
+		public virtual bool CancelRequested { get; set; }
 
-		public bool ErrorEncountered {get;set;}
+		public virtual bool ErrorEncountered {get;set;}
 
 		public IProgressIndicator ProgressIndicator { get; set; }
 	}
