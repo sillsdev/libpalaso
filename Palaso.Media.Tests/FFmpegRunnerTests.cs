@@ -28,6 +28,17 @@ namespace Palaso.Media.Tests
 			}
 		}
 
+		[Test]
+		[NUnit.Framework.Category("RequiresFfmpeg")]
+		public void ChangeNumberOfAudioChannels_CreatesFile()
+		{
+			using (var file = TempFile.FromResource(Resources._2Channel, ".wav"))
+			{
+				var outputPath = file.Path.Replace(".wav", "1ch.wav");
+				FFmpegRunner.ChangeNumberOfAudioChannels(file.Path, outputPath, 1, new NullProgress());
+				Assert.IsTrue(File.Exists(outputPath));
+			}
+		}
 
 		[Test]
 		[NUnit.Framework.Category("RequiresFfmpeg")]

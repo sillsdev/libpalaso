@@ -279,6 +279,50 @@ namespace Palaso.Media
 
 			return result;
 		}
+
+		/// <summary>
+		/// Creates an audio file, using the received one as the bases, with the specified number
+		/// of channels. For example, this can be used to convert a 2-channel audio file to a
+		/// single channel audio file.
+		/// </summary>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ChangeNumberOfAudioChannels(string inputPath,
+			string outputPath, int channels, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+				return new ExecutionResult { StandardError = "Could not locate FFMpeg" };
+
+			var arguments = string.Format("-i \"{0}\" -vn -ac {1} \"{2}\"",
+				inputPath, channels, outputPath);
+
+			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+							arguments,
+							Environment.CurrentDirectory,
+							60 * 10, //10 minutes
+							progress);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small") && File.Exists(outputPath))
+			{
+				var doctoredResult = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+
+				return doctoredResult;
+			}
+
+			// ffmpeg always outputs config info to standarderror
+			if (result.StandardError.ToLower().Contains("error"))
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
 		/// <summary>
 		/// Converts to low-quality, mono mp3
 		/// </summary>
