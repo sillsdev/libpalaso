@@ -42,9 +42,11 @@
 			this._commercial = new System.Windows.Forms.RadioButton();
 			this._licenseImage = new System.Windows.Forms.PictureBox();
 			this._creativeCommons = new System.Windows.Forms.RadioButton();
-			this._noLicense = new System.Windows.Forms.RadioButton();
+			this._unknownLicense = new System.Windows.Forms.RadioButton();
 			this._copyrightYear = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this._customLicense = new System.Windows.Forms.RadioButton();
+			this._customLicenseDescription = new System.Windows.Forms.TextBox();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.panel1.SuspendLayout();
@@ -205,17 +207,17 @@
 			this._creativeCommons.UseVisualStyleBackColor = true;
 			this._creativeCommons.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
 			//
-			// _noLicense
+			// _unknownLicense
 			//
-			this._noLicense.AutoSize = true;
-			this._noLicense.Location = new System.Drawing.Point(43, 331);
-			this._noLicense.Name = "_noLicense";
-			this._noLicense.Size = new System.Drawing.Size(250, 17);
-			this._noLicense.TabIndex = 2;
-			this._noLicense.TabStop = true;
-			this._noLicense.Text = "Contact the copyright holder for any permissions";
-			this._noLicense.UseVisualStyleBackColor = true;
-			this._noLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
+			this._unknownLicense.AutoSize = true;
+			this._unknownLicense.Location = new System.Drawing.Point(43, 331);
+			this._unknownLicense.Name = "_unknownLicense";
+			this._unknownLicense.Size = new System.Drawing.Size(250, 17);
+			this._unknownLicense.TabIndex = 2;
+			this._unknownLicense.TabStop = true;
+			this._unknownLicense.Text = "Contact the copyright holder for any permissions";
+			this._unknownLicense.UseVisualStyleBackColor = true;
+			this._unknownLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
 			//
 			// _copyrightYear
 			//
@@ -235,6 +237,28 @@
 			this.label1.Size = new System.Drawing.Size(20, 15);
 			this.label1.TabIndex = 25;
 			this.label1.Text = "By";
+			//
+			// _customLicense
+			//
+			this._customLicense.AutoSize = true;
+			this._customLicense.Location = new System.Drawing.Point(43, 354);
+			this._customLicense.Name = "_customLicense";
+			this._customLicense.Size = new System.Drawing.Size(60, 17);
+			this._customLicense.TabIndex = 26;
+			this._customLicense.TabStop = true;
+			this._customLicense.Text = "Custom";
+			this._customLicense.UseVisualStyleBackColor = true;
+			this._customLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
+			//
+			// _customLicenseDescription
+			//
+			this._customLicenseDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._customLicenseDescription.Location = new System.Drawing.Point(63, 377);
+			this._customLicenseDescription.Multiline = true;
+			this._customLicenseDescription.Name = "_customLicenseDescription";
+			this._customLicenseDescription.Size = new System.Drawing.Size(219, 83);
+			this._customLicenseDescription.TabIndex = 27;
+			this._customLicenseDescription.TextChanged += new System.EventHandler(this._customLicenseDescription_TextChanged);
 			//
 			// betterLabel1
 			//
@@ -270,9 +294,11 @@
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._customLicenseDescription);
+			this.Controls.Add(this._customLicense);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this._copyrightYear);
-			this.Controls.Add(this._noLicense);
+			this.Controls.Add(this._unknownLicense);
 			this.Controls.Add(this._creativeCommons);
 			this.Controls.Add(this._licenseImage);
 			this.Controls.Add(this.panel2);
@@ -284,7 +310,7 @@
 			this.Controls.Add(this._illustrator);
 			this.Controls.Add(this._illustratorLabel);
 			this.Name = "MetdataEditorControl";
-			this.Size = new System.Drawing.Size(338, 392);
+			this.Size = new System.Drawing.Size(338, 481);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this.panel2.ResumeLayout(false);
@@ -313,8 +339,10 @@
 		private System.Windows.Forms.RadioButton _commercial;
 		private System.Windows.Forms.PictureBox _licenseImage;
 		private System.Windows.Forms.RadioButton _creativeCommons;
-		private System.Windows.Forms.RadioButton _noLicense;
+		private System.Windows.Forms.RadioButton _unknownLicense;
 		private System.Windows.Forms.TextBox _copyrightYear;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.RadioButton _customLicense;
+		private System.Windows.Forms.TextBox _customLicenseDescription;
 	}
 }

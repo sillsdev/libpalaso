@@ -40,6 +40,12 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		private void _okButton_Click(object sender, EventArgs e)
 		{
 			DialogResult = DialogResult.OK;
+
+			//we can't have a custom license without some description of it
+			var customLicense = _returnMetaData.License as CustomLicense;
+			if(customLicense!=null && string.IsNullOrEmpty(customLicense.RightsStatement))
+				_returnMetaData.License = new NullLicense();
+
 			Close();
 		}
 

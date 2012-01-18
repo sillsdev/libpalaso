@@ -62,6 +62,10 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				{
 					var image = new PictureBox() {Image = metaData.License.GetImage()};
 					_table.Controls.Add(image);
+					if (!string.IsNullOrEmpty(metaData.License.RightsStatement))
+					{
+						AddRow(metaData.License.RightsStatement);
+					}
 					if (!string.IsNullOrEmpty(metaData.License.Url))
 					{
 						AddHyperLink("License Info", metaData.License.Url, 1);

@@ -15,6 +15,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			{
 				return CreativeCommonsLicense.FromMetadata(properties);
 			}
+			else if ( properties.ContainsKey("rights (en)"))
+			{
+				return CustomLicense.FromMetadata(properties);
+			}
 			return new NullLicense();
 		}
 
@@ -36,6 +40,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public abstract string Url { get; set; }
 
 		public bool HasChanges { get; set; }
+
+		/// <summary>
+		/// custom or extra rights
+		/// </summary>
+		public string RightsStatement {get; set; }
 	}
 
 	public class NullLicense : LicenseInfo
@@ -57,11 +66,13 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 	}
 
+
 	public class CustomLicense : LicenseInfo
 	{
-		public void SetDescription(string iso639_3LanguageCode, string description)
-		{
-		}
+//        public void SetDescription(string iso639_3LanguageCode, string description)
+//        {
+//			RightsStatement = description;
+//        }
 
 		public override string ToString()
 		{
@@ -70,7 +81,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override string GetDescription(string iso639_3LanguageCode)
 		{
-			return "";
+			if (string.IsNullOrEmpty(RightsStatement))
+				return "For permission to reuse, contact the copyright holder.";
+			return RightsStatement;
 		}
 
 		public override Image GetImage()
@@ -80,9 +93,21 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override bool EditingAllowed
 		{
-			get { return true; }
+			get { return false; }//it may be ok, but we can't read the description.
 		}
 
 		public override string Url { get; set; }
+
+		public static LicenseInfo FromMetadata(Dictionary<string, string> properties)
+		{
+			 if(!properties.ContainsKey("rights (en)"))
+				throw new ApplicationException("A license property is required in order to make a  Custom License from metadata.");
+
+			var license = new CustomLicense();
+			license.RightsStatement = properties["rights (en)"];
+			return license;
+		}
 	}
+
+
 }

@@ -46,11 +46,17 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					_commercial.Checked = cc.CommercialUseAllowed;
 					_nonCommercial.Checked = !cc.CommercialUseAllowed;
 				}
+				else if(_metadata.License is CustomLicense)
+				{
+					_customLicense.Checked = true;
+					_customLicenseDescription.Text = _metadata.License.RightsStatement;
+				}
 				else
 				{
-					_noLicense.Checked = true;
+					_unknownLicense.Checked = true;
 				}
 				_settingUp = false;
+				UpdateDisplay();
 			}
 		}
 
@@ -71,8 +77,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
 				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 
-			panel1.Enabled = panel2.Enabled = _creativeCommons.Checked;
-			_licenseImage.Visible = _creativeCommons.Checked;
+
 
 			if (_creativeCommons.Checked)
 			{
@@ -87,11 +92,23 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
 				_licenseImage.Image = cc.GetImage();
 			}
-			if(_noLicense.Checked)
+			if(_unknownLicense.Checked)
 			{
 				_metadata.License = new NullLicense();
 			}
+			if (_customLicense.Checked)
+			{
+				_metadata.License = new CustomLicense();
+			}
 
+			UpdateDisplay();
+		}
+
+		private void UpdateDisplay()
+		{
+			panel1.Enabled = panel2.Enabled = _creativeCommons.Checked;
+			_licenseImage.Visible = _creativeCommons.Checked;
+			_customLicenseDescription.Enabled = _customLicense.Checked;
 		}
 
 //        public bool IsMinimallyComplete
@@ -113,6 +130,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			if (_settingUp)
 				return;
 			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
+		}
+
+		private void _customLicenseDescription_TextChanged(object sender, EventArgs e)
+		{
+			var customLicense = _metadata.License as CustomLicense;
+			if(customLicense!=null)
+				customLicense.RightsStatement = _customLicenseDescription.Text;
 		}
 
 		/*       private PalasoImage _image;

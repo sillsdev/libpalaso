@@ -50,6 +50,15 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		}
 
 		[Test]
+		public void RoundTripPng_CustomLicense_PreservesRightsStatement()
+		{
+			_outgoing.License = new CustomLicense() {RightsStatement = "Use this if you must."};
+			_outgoing.Write();
+			var license = (CustomLicense)Metadata.FromFile(_tempFile.Path).License;
+			Assert.AreEqual(_outgoing.License.RightsStatement, license.RightsStatement);
+		}
+
+		[Test]
 		public void RoundTripPng_HasCC_Permissive_License_ReadsInSameLicense()
 		{
 			_outgoing.License =new CreativeCommonsLicense(false,true,CreativeCommonsLicense.DerivativeRules.Derivatives);

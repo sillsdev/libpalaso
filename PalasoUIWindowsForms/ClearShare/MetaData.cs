@@ -142,6 +142,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+
 		private string _collectionName;
 
 		/// <summary>
@@ -264,6 +265,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				assignments.Add(new MetadataAssignement("-XMP-cc:License", "license",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.Url, p => p.License !=null));
+				//NB: CC also has a custom one, for adding rights beyond the normal. THat's not what this is (at least right now). This is for custom licenses.
+				assignments.Add(new MetadataAssignement("-XMP-dc:Rights-en", "Rights (en)",
+													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
+													   p => p.License.RightsStatement, p => p.License != null));
+
 				return assignments;
 			}
 		}
