@@ -149,6 +149,19 @@
 	<Compile Include="CustomDropDown.cs">
 	  <SubType>Component</SubType>
 	</Compile>
+	<Compile Include="FileDialogExtender\Enums.cs" />
+	<Compile Include="FileDialogExtender\Extensions.cs" />
+	<Compile Include="FileDialogExtender\FileDialogControlBase.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="FileDialogExtender\FileDialogControlBase.designer.cs">
+	  <DependentUpon>FileDialogControlBase.cs</DependentUpon>
+	</Compile>
+	<Compile Include="FileDialogExtender\HelperTypes.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="FileDialogExtender\structs.cs" />
+	<Compile Include="FileDialogExtender\Win32.cs" />
 	<Compile Include="FileSystem\ConfirmRecycleDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -233,6 +246,12 @@
 	</Compile>
 	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.Designer.cs">
 	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ImageToolbox\ExtendedFileDialog.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="ImageToolbox\ExtendedFileDialog.designer.cs">
+	  <DependentUpon>ExtendedFileDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
@@ -473,6 +492,9 @@
 	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorDialog.resx">
 	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
 	</EmbeddedResource>
+	<EmbeddedResource Include="FileDialogExtender\FileDialogControlBase.resx">
+	  <DependentUpon>FileDialogControlBase.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -517,6 +539,9 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\WinFormsUI\MetdataEditorControl.resx">
 	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ImageToolbox\ExtendedFileDialog.resx">
+	  <DependentUpon>ExtendedFileDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
@@ -746,6 +771,7 @@
   <ItemGroup>
 	<None Include="Resources\by.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
