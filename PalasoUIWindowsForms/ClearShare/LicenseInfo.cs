@@ -34,7 +34,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// </summary>
 		public virtual bool EditingAllowed
 		{
-			get { throw new NotImplementedException(); }
+			get { return false; }//we don't konw
 		}
 
 		public abstract string Url { get; set; }
@@ -51,7 +51,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 	{
 		public override string GetDescription(string iso639_3LanguageCode)
 		{
-			throw new NotImplementedException();
+			return "For permission to reuse, contact the copyright holder.";
 		}
 
 		public override string ToString()
@@ -83,7 +83,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			if (string.IsNullOrEmpty(RightsStatement))
 				return "For permission to reuse, contact the copyright holder.";
-			return RightsStatement;
+			return "";
 		}
 
 		public override Image GetImage()
