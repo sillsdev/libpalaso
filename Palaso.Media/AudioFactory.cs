@@ -10,8 +10,7 @@ namespace Palaso.Media
 			{
 				return new AudioNullSession();
 			}
-			return new AudioIrrKlangSession(filePath);
+			return new NAudioSession(filePath);
 		}
 	}
-
 }

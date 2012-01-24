@@ -26,7 +26,7 @@ namespace Palaso.Media.Naudio
 		TimeSpan RecordedTime { get; }
 	}
 
-	public class AudioRecorder : IAudioRecorder
+	public class NAudioAudioRecorder : IAudioRecorder, IDisposable
 	{
 		/// <summary>
 		/// This guy is always working, whether we're playing, recording, or just idle (monitoring)
@@ -38,7 +38,6 @@ namespace Palaso.Media.Naudio
 		/// </summary>
 		WaveFileWriter _writer;
 
-
 		SampleAggregator _sampleAggregator;
 		UnsignedMixerControl _volumeControl;
 		double _microphoneLevel = 100;
@@ -48,7 +47,7 @@ namespace Palaso.Media.Naudio
 
 		public event EventHandler Stopped = delegate { };
 
-		public AudioRecorder()
+		public NAudioAudioRecorder()
 		{
 			_sampleAggregator = new SampleAggregator();
 			_sampleAggregator.MaximumCalculated += new EventHandler<MaxSampleEventArgs>(
@@ -323,6 +322,23 @@ namespace Palaso.Media.Naudio
 					Stop();
 				}
 			}
+		}
+
+		public void Dispose()
+		{
+			if(_writer!=null)
+			{
+				_writer.Dispose();
+				_writer = null;
+			}
+			if (_waveIn != null)
+			{
+				_waveIn.Dispose();
+				_waveIn = null;
+			}
+
+			_sampleAggregator = null;
+			_volumeControl = null;
 		}
 	}
 }

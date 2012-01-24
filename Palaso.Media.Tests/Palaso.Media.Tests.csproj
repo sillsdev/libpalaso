@@ -69,7 +69,8 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="AudioRecorderTests.cs" />
+	<Compile Include="AudioIrrKlangTests.cs" />
+	<Compile Include="AudioNAudioSessionTests.cs" />
 	<Compile Include="FFmpegRunnerTests.cs" />
 	<Compile Include="MediaInfoTests.cs" />
 	<Compile Include="Properties\Resources.Designer.cs">

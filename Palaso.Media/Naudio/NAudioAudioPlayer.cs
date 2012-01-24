@@ -3,13 +3,13 @@ using NAudio.Wave;
 
 namespace Palaso.Media.Naudio
 {
-	public class AudioPlayer : IAudioPlayer
+	public class NAudioAudioPlayer : IAudioPlayer
 	{
 		private WaveOut _waveOut;
 		private TrimWaveStream _inStream;
 		public event EventHandler Stopped;
 
-		public AudioPlayer()
+		public NAudioAudioPlayer()
 		{
 		}
 

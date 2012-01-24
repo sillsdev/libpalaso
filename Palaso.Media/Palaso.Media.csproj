@@ -90,9 +90,10 @@
   <ItemGroup>
 	<Compile Include="AudioFactory.cs" />
 	<Compile Include="AudioIrrKlangSession.cs" />
+	<Compile Include="NAudioSession.cs" />
 	<Compile Include="AudioNullSession.cs" />
-	<Compile Include="Naudio\AudioPlayer.cs" />
-	<Compile Include="Naudio\AudioRecorder.cs" />
+	<Compile Include="Naudio\NAudioAudioPlayer.cs" />
+	<Compile Include="Naudio\NAudioAudioRecorder.cs" />
 	<Compile Include="FFmpegRunner.cs" />
 	<Compile Include="Naudio\IAudioPlayer.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
