@@ -15,7 +15,7 @@ namespace Palaso.Email
 			var mapi = new MAPI();
 			foreach (string recipient in message.To)
 			{
-				Debug.Assert(string.IsNullOrEmpty(recipient),"Email address for reporting is empty");
+				Debug.Assert(!string.IsNullOrEmpty(recipient),"Email address for reporting is empty");
 
 				mapi.AddRecipientTo(recipient);
 			}
