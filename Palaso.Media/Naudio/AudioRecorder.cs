@@ -28,6 +28,8 @@ namespace Palaso.Media.Naudio
 
 	public class AudioRecorder : IAudioRecorder
 	{
+		private readonly int _maxMinutes;
+
 		/// <summary>
 		/// This guy is always working, whether we're playing, recording, or just idle (monitoring)
 		/// </summary>
@@ -48,8 +50,13 @@ namespace Palaso.Media.Naudio
 
 		public event EventHandler Stopped = delegate { };
 
-		public AudioRecorder()
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="maxMinutes">REVIW: why does this max time even exist?  I don't see that it affects buffer size</param>
+		public AudioRecorder(int maxMinutes)
 		{
+			_maxMinutes = maxMinutes;
 			_sampleAggregator = new SampleAggregator();
 			_sampleAggregator.MaximumCalculated += new EventHandler<MaxSampleEventArgs>(
 				delegate
@@ -308,7 +315,8 @@ namespace Palaso.Media.Naudio
 
 		private void WriteToFile(byte[] buffer, int bytesRecorded)
 		{
-			long maxFileLength = this._recordingFormat.AverageBytesPerSecond * 60;
+			//REVIEW: why does this max time even exist?  I don't see that it affects buffer size
+			long maxFileLength = this._recordingFormat.AverageBytesPerSecond * 60*_maxMinutes;
 
 			if (_recordingState == RecordingState.Recording
 				|| _recordingState == RecordingState.RequestedStop)
