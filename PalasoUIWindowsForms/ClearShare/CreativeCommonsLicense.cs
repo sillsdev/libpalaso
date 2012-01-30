@@ -185,7 +185,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				s += "You may not alter, transform, or build upon this book without permission. ";
 
 			if (DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
-				s += "If adapt or build upon this book, but you may distribute the resulting work only under the same or similar license to this one. ";
+				s += "You may adapt or build upon this book, but you may distribute the resulting work only under the same or similar license to this one.";
 
 
 			if (AttributionRequired)
