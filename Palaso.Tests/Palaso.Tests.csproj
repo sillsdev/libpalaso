@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -169,6 +169,9 @@
 	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
 	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
+	<Compile Include="Progress\LogBox\LogBoxFormForTest.cs" />
+	<Compile Include="Progress\LogBox\LogBoxTests.cs" />
+	<Compile Include="Progress\LogBox\StringBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">

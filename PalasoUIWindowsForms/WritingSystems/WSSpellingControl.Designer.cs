@@ -35,7 +35,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// label1
 			//
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(13, 6);
+			this.label1.Location = new System.Drawing.Point(13, 22);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(95, 13);
 			this.label1.TabIndex = 0;
@@ -45,9 +45,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._spellCheckingIdComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this._spellCheckingIdComboBox.FormattingEnabled = true;
-			this._spellCheckingIdComboBox.Location = new System.Drawing.Point(114, 3);
+			this._spellCheckingIdComboBox.Location = new System.Drawing.Point(114, 22);
 			this._spellCheckingIdComboBox.Name = "_spellCheckingIdComboBox";
-			this._spellCheckingIdComboBox.Size = new System.Drawing.Size(304, 21);
+			this._spellCheckingIdComboBox.Size = new System.Drawing.Size(294, 21);
 			this._spellCheckingIdComboBox.TabIndex = 2;
 			this._spellCheckingIdComboBox.SelectedIndexChanged += new System.EventHandler(this._spellCheckingIdComboBox_SelectedIndexChanged);
 			//

@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -84,6 +85,71 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					MessageBoxButtons.OK, MessageBoxIcon.Exclamation
 				);
 			}
+		}
+
+  internal class DummyWritingSystemHandler
+
+  {
+
+	  public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+
+	  {
+
+	  }
+
+
+
+	  public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+
+	  {
+
+	  }
+
+
+
+  }
+
+		private void _openDirectory_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog openDir = new FolderBrowserDialog();
+
+			openDir.RootFolder = Environment.SpecialFolder.Personal;
+
+			// Set the help text description for the FolderBrowserDialog.
+			openDir.Description =
+			"Select the folder with Writing Systems";
+
+			// Allow the user to create new files via the FolderBrowserDialog.
+			openDir.ShowNewFolderButton = true;
+
+			// Display the openFile dialog.
+			DialogResult result = openDir.ShowDialog();
+
+			if (result == DialogResult.OK)
+			{
+				var newDir = openDir.SelectedPath;
+
+				var repository = LdmlInFolderWritingSystemRepository.Initialize(newDir,
+					DummyWritingSystemHandler.onMigration,
+					DummyWritingSystemHandler.onLoadProblem);
+				var dlg = new WritingSystemSetupDialog(repository);
+
+				dlg.WritingSystemSuggestor.SuggestVoice = true;
+				dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
+				dlg.Text = String.Format("Writing Systems in folder {0}", newDir);
+
+				dlg.Show();
+			}
+		}
+
+		private void _openGlobal_Click(object sender, EventArgs e)
+		{
+			var dlg = new WritingSystemSetupDialog(GlobalWritingSystemRepository.Instance);
+			dlg.WritingSystemSuggestor.SuggestVoice = true;
+			dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
+			dlg.Text = String.Format("Writing Systems for all users of this computer");
+
+			dlg.Show();
 		}
 
 	}

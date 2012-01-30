@@ -16,7 +16,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void EngineAvailable_ReturnsTrue()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, true))
 			{
 				Assert.IsTrue(IBusAdaptor.EngineAvailable);
 			}
@@ -26,18 +26,22 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void KeyboardDescriptors_ListAllKeyboards()
 		{
-			Console.WriteLine("ListAllKeyboards");
-			foreach (var keyboard in IBusAdaptor.KeyboardDescriptors)
+			using (var e = new IBusEnvironmentForTest(true, true))
 			{
-				Console.WriteLine("Name {0}, Id {1}", keyboard.ShortName, keyboard.Id);
+				Console.WriteLine("ListAllKeyboards");
+				foreach (var keyboard in IBusAdaptor.KeyboardDescriptors)
+				{
+					Console.WriteLine("Name {0}, Id {1}", keyboard.ShortName, keyboard.Id);
+				}
 			}
 		}
 
 		[Test]
 		[Category("IBus")]
+		// This will fail because Deactivate does nothing
 		public void Deactivate_SwitchesBackToDefaultKeyboard()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, true))
 			{
 				IBusAdaptor.ActivateKeyboard(IBusEnvironmentForTest.OtherKeyboard);
 				IBusAdaptor.Deactivate();
@@ -50,12 +54,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, true))
 			{
-				//IBusAdaptor.Deactivate();
-				IBusAdaptor.ActivateKeyboard("m17n:am:sera");
-				Assert.AreEqual("m17n:am:sera", KeyboardController.GetActiveKeyboard());
-				IBusAdaptor.Deactivate();
+				IBusAdaptor.ActivateKeyboard(IBusEnvironmentForTest.OtherKeyboard);
+				string actual = IBusAdaptor.GetActiveKeyboard();
+				Assert.AreEqual(IBusEnvironmentForTest.OtherKeyboard, actual);
 			}
 		}
 
@@ -63,10 +66,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("IBus")]
 		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
 		{
-			using (var e = new IBusEnvironmentForTest(true))
+			using (var e = new IBusEnvironmentForTest(true, true))
 			{
 				Assert.Throws<ArgumentOutOfRangeException>(
-					() => IBusAdaptor.ActivateKeyboard("Nonexistant Keyboard")
+					() => IBusAdaptor.ActivateKeyboard("Nonexistent Keyboard")
 					);
 			}
 		}
@@ -77,7 +80,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			IBusAdaptor.EnsureConnection();
 			string actual = IBusAdaptor.DefaultKeyboardName;
-			Assert.AreEqual("m17n:en:ispell", actual); // An assumption.  Should actually be the zeroth element in the list of available keyboards.
+			Assert.AreEqual(IBusEnvironmentForTest.DefaultKeyboard, actual); // An assumption.  Should actually be the zeroth element in the list of available keyboards.
 		}
 	}
 }

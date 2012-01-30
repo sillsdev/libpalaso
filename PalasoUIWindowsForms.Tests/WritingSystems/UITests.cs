@@ -30,7 +30,14 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 				{
 					using (var folder = new TemporaryFolder("WS-Test"))
 					{
-						var dlg = new WritingSystemSetupDialog(folder.Path, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+						//var dlg = new WritingSystemSetupDialog(folder.Path,
+						//	DummyWritingSystemHandler.onMigration,
+						//	DummyWritingSystemHandler.onLoadProblem);
+						//that constructor is now obsolete, create repo first
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path,
+							DummyWritingSystemHandler.onMigration,
+							DummyWritingSystemHandler.onLoadProblem);
+						var dlg = new WritingSystemSetupDialog(repository);
 						dlg.WritingSystemSuggestor.SuggestVoice = true;
 						dlg.ShowDialog();
 					}
