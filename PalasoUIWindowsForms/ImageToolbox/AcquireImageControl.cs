@@ -22,6 +22,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public AcquireImageControl()
 		{
 			InitializeComponent();
+
 			#if MONO
 			_scannerButton.Enabled =  _cameraButton.Enabled = false;
 			#endif
@@ -158,7 +159,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				var temp = Path.GetTempFileName();
 				File.Delete(temp);
 				file.SaveFile(temp);
-				temp = ConvertToPngIfNotAlready(temp);
+				temp = ConvertToPngOrJpegIfNotAlready(temp);
 				_pictureBox.Load(temp);
 				File.Delete(temp);
 				if (ImageChanged != null)
@@ -188,15 +189,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 		/// <summary>
-		/// Will delete the incoming file if it needs to do a conversion
+		/// Bitmaps --> PNG, JPEGs stay as jpegs.
+		/// Will delete the incoming file if it needs to do a conversion.
 		/// </summary>
-		private string ConvertToPngIfNotAlready(string incoming)
+		private string ConvertToPngOrJpegIfNotAlready(string incoming)
 		{
 			string outgoing = incoming;
 			//important to dispose of these things, they lock down the file.
 			using (var image = Image.FromFile(incoming))
 			{
-				if (!ImageFormat.Png.Equals(image.PixelFormat))
+				if (!ImageFormat.Png.Equals(image.PixelFormat) && !ImageFormat.Jpeg.Equals(image.PixelFormat))
 				{
 					outgoing = Path.GetTempFileName();
 					image.Save(outgoing, ImageFormat.Png);
@@ -228,6 +230,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					_galleryControl.Visible= true;
 					//_galleryButton.Select();
 					_galleryButton.Checked = true;
+					_galleryControl.Focus();
 					break;
 				case Modes.SingleImage:
 					_galleryButton.Checked = false;
@@ -242,6 +245,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void OnGalleryClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.Gallery);
+			_galleryControl.Focus();
 		}
 
 		private void AcquireImageControl_Load(object sender, EventArgs e)
@@ -249,12 +253,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if(_galleryControl.HaveImageCollectionOnThisComputer)
 			{
 				SetMode(Modes.Gallery);
+				_focusTimer.Enabled = true;
 			}
 			else
 			{
 				SetMode(Modes.SingleImage);
 			}
 
+		}
+
+		private void _focusTimer_Tick(object sender, EventArgs e)
+		{
+			_focusTimer.Enabled = false;
+			_galleryControl.Focus();
 		}
 	}
 }

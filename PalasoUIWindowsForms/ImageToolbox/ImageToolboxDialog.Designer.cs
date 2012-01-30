@@ -28,13 +28,10 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage2 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
+			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage1 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this.imageToolboxControl1 = new Palaso.UI.WindowsForms.ImageToolbox.ImageToolboxControl();
-			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
-			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).BeginInit();
 			this.SuspendLayout();
 			//
 			// _cancelButton
@@ -67,18 +64,14 @@
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			palasoImage2.Image = null;
-			palasoImage2.MetadataLocked = false;
-			this.imageToolboxControl1.ImageInfo = palasoImage2;
+			palasoImage1.Image = null;
+			palasoImage1.MetadataLocked = false;
+			this.imageToolboxControl1.ImageInfo = palasoImage1;
 			this.imageToolboxControl1.InitialSearchString = null;
 			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
 			this.imageToolboxControl1.Name = "imageToolboxControl1";
 			this.imageToolboxControl1.Size = new System.Drawing.Size(873, 379);
 			this.imageToolboxControl1.TabIndex = 3;
-			//
-			// localizationHelper1
-			//
-			this.localizationHelper1.Parent = this;
 			//
 			// ImageToolboxDialog
 			//
@@ -93,7 +86,6 @@
 			this.Name = "ImageToolboxDialog";
 			this.ShowIcon = false;
 			this.Text = "Image Toolbox";
-			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -103,6 +95,5 @@
 		private System.Windows.Forms.Button _cancelButton;
 		private System.Windows.Forms.Button _okButton;
 		private ImageToolboxControl imageToolboxControl1;
-		private i18n.LocalizationHelper localizationHelper1;
 	}
 }

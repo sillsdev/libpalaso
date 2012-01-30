@@ -116,29 +116,30 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			try
 			{
 
-			if (_toolListView.SelectedItems.Count == 0)
-				return;
-			if(_currentControl !=null)
-			{
-				GetImageFromCurrentControl();
+				if (_toolListView.SelectedItems.Count == 0)
+					return;
+				if (_currentControl != null)
+				{
+					GetImageFromCurrentControl();
 
-				_panelForControls.Controls.Remove(_currentControl);
-				((IImageToolboxControl)_currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
-				_currentControl.Dispose();
-			}
-			System.Func<PalasoImage, Control> fun =
-				(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
-			_currentControl = fun(ImageInfo);
+					_panelForControls.Controls.Remove(_currentControl);
+					((IImageToolboxControl) _currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
+					_currentControl.Dispose();
+				}
+				System.Func<PalasoImage, Control> fun =
+					(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
+				_currentControl = fun(ImageInfo);
 
-			_currentControl.Dock = DockStyle.Fill;
-			_panelForControls.Controls.Add(_currentControl);
+				_currentControl.Dock = DockStyle.Fill;
+				_panelForControls.Controls.Add(_currentControl);
 
-			IImageToolboxControl imageToolboxControl = ((IImageToolboxControl)_currentControl);
-			imageToolboxControl.SetImage(ImageInfo);
-			imageToolboxControl.ImageChanged += new EventHandler(imageToolboxControl_ImageChanged);
-			Refresh();
-
-
+				IImageToolboxControl imageToolboxControl = ((IImageToolboxControl) _currentControl);
+				if(ImageInfo.Image!=null)
+				{
+					imageToolboxControl.SetImage(ImageInfo);
+				}
+				imageToolboxControl.ImageChanged += new EventHandler(imageToolboxControl_ImageChanged);
+				Refresh();
 			}
 			catch (Exception error)
 			{
@@ -233,7 +234,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
 		}
-
 	}
 
 	public interface IImageToolboxControl

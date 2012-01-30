@@ -67,5 +67,20 @@ namespace Palaso.UI.WindowsForms.Widgets
 			ForeColor = Color.Blue;//TODO
 			Font = new Font(Font, FontStyle.Underline);
 		}
+
+		/// <summary>
+		/// The url to launch
+		/// </summary>
+		/// <param name="e"></param>
+		public string URL { get; set; }
+
+		protected override void OnClick(EventArgs e)
+		{
+			base.OnClick(e);
+			if(!string.IsNullOrEmpty(URL))
+			{
+				System.Diagnostics.Process.Start(URL);
+			}
+		}
 	}
 }

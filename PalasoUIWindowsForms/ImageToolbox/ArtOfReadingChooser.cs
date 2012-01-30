@@ -12,6 +12,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		private IImageCollection _imageCollection;
 		private PalasoImage _previousImage;
+		public bool InSomeoneElesesDesignMode;
 
 		public ArtOfReadingChooser()
 		{
@@ -39,6 +40,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if(ImageChanged!=null && _thumbnailViewer.SelectedItems.Count>0)
 			{
 				ImageChanged.Invoke(this, null);
+			}
+		}
+
+		private void _thumbnailViewer_DoubleClick(object sender, EventArgs e)
+		{
+			if (ImageChangedAndAccepted != null && _thumbnailViewer.SelectedItems.Count > 0)
+			{
+				ImageChangedAndAccepted.Invoke(this, null);
 			}
 		}
 
@@ -111,6 +120,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 		public event EventHandler ImageChanged;
+		/// <summary>
+		/// happens when you double click an item
+		/// </summary>
+		public event EventHandler ImageChangedAndAccepted;
 
 		private void _searchTermsBox_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -122,17 +135,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void ArtOfReadingChooser_Load(object sender, EventArgs e)
 		{
+			if (InSomeoneElesesDesignMode)
+				return;
+
 			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
 			if (_imageCollection == null)
 			{
 				label1.Visible = _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
 				_messageLabel.Visible = true;
-				_messageLabel.Text = "The Art Of Reading collection was not found on this computer.";
-				_messageLabel.Text = @"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet. If you can find a copy of it, you can freely copy the images to this comptuer, according to its license. But you must only copy the images (which SIL owns), not the software (which is commercial). To do this, follow these steps:
-1) Create a folder named 'Art of Reading' at the root of your 'C:\' drive.
-2) Copy the 'Images' folder from the Art of Reading DVD into that folder.
-
-If you can't get a copy of Art Of Reading locally, you can purchase the DVD from www.ethnologue.com.";
+				_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
+				_messageLabel.Text = @"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet.";
+				betterLinkLabel1.Visible = true;
 			}
 			else
 			{
@@ -150,6 +163,10 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 			_searchButton_Click(this,null);
 #endif
 
+			_messageLabel.BackColor = Color.White;
+			_searchTermsBox.Focus();
 		}
+
+
 	}
 }

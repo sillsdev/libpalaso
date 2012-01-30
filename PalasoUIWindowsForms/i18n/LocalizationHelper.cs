@@ -5,6 +5,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Widgets;
 using Palaso.i18n;
 
 
@@ -199,7 +200,8 @@ namespace Palaso.UI.WindowsForms.i18n
 				   control is IButtonControl ||
 				   control is TabControl ||
 				   control is TabPage ||
-				   control is Form;
+				   control is Form ||
+				   control is BetterLabel;
 		}
 
 		#region ISupportInitialize Members

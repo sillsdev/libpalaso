@@ -36,8 +36,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("testing");
+			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
 			this._panelForControls = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -57,13 +57,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._toolListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)));
-			listViewGroup2.Header = "test";
-			listViewGroup2.Name = "listViewGroup1";
+			listViewGroup1.Header = "test";
+			listViewGroup1.Name = "listViewGroup1";
 			this._toolListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-			listViewGroup2});
+			listViewGroup1});
 			this._toolListView.HideSelection = false;
 			this._toolListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-			listViewItem2});
+			listViewItem1});
 			this._toolListView.Location = new System.Drawing.Point(0, 0);
 			this._toolListView.Name = "_toolListView";
 			this._toolListView.ShowGroups = false;
@@ -126,8 +126,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._copyExemplarMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this._copyExemplarMetadata.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._copyExemplarMetadata.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this._copyExemplarMetadata.ForeColor = System.Drawing.SystemColors.WindowText;
+			this._copyExemplarMetadata.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this._copyExemplarMetadata.ForeColor = System.Drawing.Color.Blue;
 			this._copyExemplarMetadata.Location = new System.Drawing.Point(5, 104);
 			this._copyExemplarMetadata.Multiline = true;
 			this._copyExemplarMetadata.Name = "_copyExemplarMetadata";
@@ -136,6 +136,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._copyExemplarMetadata.TabIndex = 11;
 			this._copyExemplarMetadata.TabStop = false;
 			this._copyExemplarMetadata.Text = "Copy Examplar that is really long";
+			this._copyExemplarMetadata.URL = null;
 			this._copyExemplarMetadata.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnCopyExamplar_MouseClick);
 			//
 			// betterLabel1

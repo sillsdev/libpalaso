@@ -29,6 +29,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AcquireImageControl));
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this._galleryButton = new System.Windows.Forms.ToolStripButton();
@@ -38,6 +39,7 @@
 			this._pictureBox = new System.Windows.Forms.PictureBox();
 			this._galleryControl = new Palaso.UI.WindowsForms.ImageToolbox.ArtOfReadingChooser();
 			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this._focusTimer = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
 			this.SuspendLayout();
@@ -63,8 +65,8 @@
 			this._galleryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._galleryButton.Margin = new System.Windows.Forms.Padding(20, 1, 0, 2);
 			this._galleryButton.Name = "_galleryButton";
-			this._galleryButton.Size = new System.Drawing.Size(47, 51);
-			this._galleryButton.Text = "Gallery";
+			this._galleryButton.Size = new System.Drawing.Size(89, 51);
+			this._galleryButton.Text = "Art Of Reading";
 			this._galleryButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
 			this._galleryButton.Click += new System.EventHandler(this.OnGalleryClick);
 			//
@@ -104,8 +106,8 @@
 			// _pictureBox
 			//
 			this._pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._pictureBox.Location = new System.Drawing.Point(0, 57);
 			this._pictureBox.Name = "_pictureBox";
 			this._pictureBox.Size = new System.Drawing.Size(556, 349);
@@ -116,8 +118,8 @@
 			// _galleryControl
 			//
 			this._galleryControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._galleryControl.Location = new System.Drawing.Point(3, 57);
 			this._galleryControl.Name = "_galleryControl";
 			this._galleryControl.Size = new System.Drawing.Size(551, 349);
@@ -126,11 +128,11 @@
 			// _messageLabel
 			//
 			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._messageLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._messageLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._messageLabel.ForeColor = System.Drawing.Color.Gray;
-			this._messageLabel.Location = new System.Drawing.Point(39, 87);
+			this._messageLabel.Location = new System.Drawing.Point(97, 171);
 			this._messageLabel.Multiline = true;
 			this._messageLabel.Name = "_messageLabel";
 			this._messageLabel.ReadOnly = true;
@@ -139,6 +141,10 @@
 			this._messageLabel.TabStop = false;
 			this._messageLabel.Text = "This will notify you of problems";
 			this._messageLabel.Visible = false;
+			//
+			// _focusTimer
+			//
+			this._focusTimer.Tick += new System.EventHandler(this._focusTimer_Tick);
 			//
 			// AcquireImageControl
 			//
@@ -169,5 +175,6 @@
 		private System.Windows.Forms.PictureBox _pictureBox;
 		private ArtOfReadingChooser _galleryControl;
 		private Widgets.BetterLabel _messageLabel;
+		private System.Windows.Forms.Timer _focusTimer;
 	}
 }
