@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using Palaso.Extensions;
 
@@ -22,6 +23,7 @@ namespace Palaso.Progress.LogBox
 		bool CancelRequested { get;  set; }
 		bool ErrorEncountered { get; set; }
 		IProgressIndicator ProgressIndicator { get; set; }
+		SynchronizationContext SyncContext { get; set; }
 	}
 
 	public class NullProgress : IProgress
@@ -70,6 +72,8 @@ namespace Palaso.Progress.LogBox
 		public virtual bool ErrorEncountered {get;set;}
 
 		public IProgressIndicator ProgressIndicator { get; set; }
+
+		public SynchronizationContext SyncContext { get; set; }
 	}
 
 	public class MultiProgress : IProgress, IDisposable
@@ -79,6 +83,7 @@ namespace Palaso.Progress.LogBox
 		{
 			private int _numberOfSteps;
 			private int _numberOfStepsCompleted;
+			private SynchronizationContext _syncContext;
 			private List<IProgressIndicator> _indicators;
 			public ProgressIndicatorForMultiProgress(int numberOfSteps)
 			{
@@ -139,6 +144,21 @@ namespace Palaso.Progress.LogBox
 					progressIndicator.Initialize(numberOfSteps);
 				}
 			}
+
+			public SynchronizationContext SyncContext {
+				get
+				{
+					return _syncContext;
+				}
+				set
+				{
+					_syncContext = value;
+					foreach (IProgressIndicator progressIndicator in _indicators)
+					{
+						progressIndicator.SyncContext = value;
+					}
+				}
+			}
 		}
 
 		private readonly List<IProgress> _progressHandlers=new List<IProgress>();
@@ -149,6 +169,27 @@ namespace Palaso.Progress.LogBox
 		{
 			_progressHandlers.AddRange(progressHandlers);
 			_indicatorForMultiProgress = new ProgressIndicatorForMultiProgress();
+		}
+
+		public MultiProgress()
+		{
+			_indicatorForMultiProgress = new ProgressIndicatorForMultiProgress();
+		}
+
+		public SynchronizationContext SyncContext {
+			get { return _indicatorForMultiProgress.SyncContext; }
+			set
+			{
+				foreach (IProgress progressHandler in _progressHandlers)
+				{
+					progressHandler.SyncContext = value;
+					if (progressHandler.ProgressIndicator != null)
+					{
+						progressHandler.ProgressIndicator.SyncContext = value;
+					}
+				}
+				_indicatorForMultiProgress.SyncContext = value;
+			}
 		}
 
 
@@ -291,7 +332,7 @@ namespace Palaso.Progress.LogBox
 		public bool ErrorEncountered { get; set; }
 
 		public IProgressIndicator ProgressIndicator { get; set; }
-
+		public SynchronizationContext SyncContext { get; set; }
 		public void WriteStatus(string message, params object[] args)
 		{
 #if MONO
@@ -387,6 +428,8 @@ namespace Palaso.Progress.LogBox
 		{
 			_box = box;
 		}
+
+		public SynchronizationContext SyncContext { get; set; }
 
 		public bool ShowVerbose
 		{
@@ -529,9 +572,60 @@ namespace Palaso.Progress.LogBox
 		}
 	}
 
+	public class SimpleStatusProgress : Label, IProgress
+	{
+		public void WriteStatus(string message, params object[] args)
+		{
+			LastStatus = GenericProgress.SafeFormat(message, args);
+			if (SyncContext != null)
+			{
+				SyncContext.Post(UpdateText, message);
+			}
+			else
+			{
+				Text = message;
+			}
+		}
+
+		private void UpdateText(object state)
+		{
+			Text = state as string;
+		}
+
+		public SynchronizationContext SyncContext { get; set; }
+		public void WriteMessage(string message, params object[] args){}
+		public void WriteMessageWithColor(string colorName, string message, params object[] args){}
+		public void WriteWarning(string message, params object[] args)
+		{
+			WarningEncountered = true;
+			LastWarning = GenericProgress.SafeFormat(message, args);
+			LastStatus = LastWarning;
+		}
+		public void WriteException(Exception error)
+		{
+			ErrorEncountered = true;
+		}
+		public void WriteError(string message, params object[] args)
+		{
+			ErrorEncountered = true;
+			LastError = GenericProgress.SafeFormat(message, args);
+			LastStatus = LastError;
+		}
+		public void WriteVerbose(string message, params object[] args){}
+		public bool ShowVerbose { set {} }
+		public bool CancelRequested { get; set; }
+		public bool WarningEncountered { get; set; }
+		public bool ErrorEncountered { get; set; }
+		public IProgressIndicator ProgressIndicator { get; set; }
+		public string LastStatus { get; private set; }
+		public string LastWarning { get; private set; }
+		public string LastError { get; private set; }
+
+	}
+
 	public class StatusProgress : IProgress
 	{
-
+		public SynchronizationContext SyncContext { get; set; }
 		public string LastStatus { get; private set; }
 		public string LastWarning { get; private set; }
 		public string LastError { get; private set; }
@@ -625,7 +719,7 @@ namespace Palaso.Progress.LogBox
 		public bool CancelRequested { get; set; }
 		public abstract void WriteMessage(string message, params object[] args);
 		public abstract void WriteMessageWithColor(string colorName, string message, params object[] args);
-
+		public SynchronizationContext SyncContext { get; set; }
 		public bool ErrorEncountered { get; set; }
 
 		public IProgressIndicator ProgressIndicator { get; set; }

@@ -204,7 +204,9 @@
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
 	</Compile>
-	<Compile Include="Progress\LogBox\Progress.cs" />
+	<Compile Include="Progress\LogBox\Progress.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Progress\LogBox\LogBoxResources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
