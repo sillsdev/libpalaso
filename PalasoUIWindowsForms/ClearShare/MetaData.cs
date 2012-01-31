@@ -329,10 +329,25 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
-			arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
+			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", path);
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
+
+
+
+			//-overwrite_original didn't work for this
+			var extra = path + "_original";
+			try
+			{
+				if (File.Exists(extra))
+					File.Delete(extra);
+			}
+			catch (Exception)
+			{
+				//not worth reporting
+			}
+
 #if DEBUG
 			Debug.WriteLine("writing");
 			Debug.WriteLine(arguments.ToString());
@@ -427,13 +442,14 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				File.Delete(path);
 
 			StringBuilder arguments = new StringBuilder();
-			arguments.AppendFormat(" -o \"{0}\"", path);
+			arguments.AppendFormat("-o \"{0}\"", path);
 			AddAssignmentArguments(arguments);
 
 			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 
 			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+
 		}
 
 		/// <summary>
