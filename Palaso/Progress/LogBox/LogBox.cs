@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
@@ -56,8 +57,10 @@ namespace Palaso.Progress.LogBox
 
 			_verboseBox.Size = _box.Size = _panelBox.Size;
 			_verboseBox.Location = _box.Location = new Point(0, 0);
+			SyncContext = SynchronizationContext.Current;
 		}
 
+		public SynchronizationContext SyncContext { get; set; }
 
 		public void AddMenuItem(string label, Image image, EventHandler onClick)
 		{

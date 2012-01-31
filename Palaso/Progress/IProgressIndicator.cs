@@ -13,6 +13,7 @@ namespace Palaso.Progress
 		void NextStep(); // advance indicator one step
 		void Finish();
 		void Initialize(int numberOfSteps);
+		SynchronizationContext SyncContext { get; set; }
 	}
 
 	public class SimpleProgressIndicator : ProgressBar, IProgressIndicator
@@ -23,6 +24,8 @@ namespace Palaso.Progress
 			NumberOfStepsCompleted = 0;
 			Maximum = 100;
 		}
+
+		public SynchronizationContext SyncContext { get; set; }
 
 		public int PercentCompleted
 		{
@@ -39,18 +42,19 @@ namespace Palaso.Progress
 
 		public void NextStep()
 		{
-			if (Thread.CurrentThread.IsBackground)
+			if (SyncContext != null)
 			{
-				//TODO: reimplement this with SychronizationContext
-				// necessary when background worker thread updates the progress bar on the UI (main) thread
-				BeginInvoke((MethodInvoker) (() => Increment(1)) );
+				SyncContext.Post(Increment, 1);
 			}
 			else
 			{
 				Increment(1);
 			}
+		}
 
-
+		private void Increment(object state)
+		{
+			Increment(state as string);
 		}
 
 		public void Finish()
@@ -75,18 +79,20 @@ namespace Palaso.Progress
 
 			set
 			{
-				 if (Thread.CurrentThread.IsBackground)
+				 if (SyncContext != null)
 				 {
-					 //TODO: reimplement this with SychronizationContext
-					 // necessary when background worker thread updates the progress bar on the UI (main) thread
-					 // prevents cross-thread calling exception
-					 BeginInvoke((MethodInvoker)(() => Value = value));
+					SyncContext.Post(UpdateValue, value);
 				 }
 				 else
 				 {
 					 Value = value;
 				 }
 			}
+		}
+
+		private void UpdateValue(object state)
+		{
+			Value = (int) state;
 		}
 	}
 
@@ -113,6 +119,12 @@ namespace Palaso.Progress
 
 			_numberOfPhases = numberOfPhases;
 			_currentPhase = 0;  // must call Initialize() to increment the _currentProcess
+		}
+
+		public SynchronizationContext SyncContext
+		{
+			get { return _globalIndicator.SyncContext; }
+			set { _globalIndicator.SyncContext = value; }
 		}
 
 		public int PercentCompleted  // per process
