@@ -30,5 +30,22 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			dlg.Controls.Add(c);
 			dlg.ShowDialog();
 		}
+		[Test, Ignore("By Hand")]
+		public void ShowControlDefault()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "copyright me";
+			m.Creator = "you";
+			m.AttributionUrl = "http://google.com";
+			m.License = new NullLicense();
+			var c = new MetdataEditorControl();
+			c.Metadata = m;
+			var dlg = new Form();
+			dlg.Height = c.Height;
+			dlg.Width = c.Width + 20;
+			c.Dock = DockStyle.Fill;
+			dlg.Controls.Add(c);
+			dlg.ShowDialog();
+		}
 	}
 }

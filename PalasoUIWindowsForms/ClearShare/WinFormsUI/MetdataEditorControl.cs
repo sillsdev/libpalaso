@@ -11,6 +11,11 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		public MetdataEditorControl()
 		{
 			InitializeComponent();
+
+			_settingUp = true;
+			//set some defaults in case they turn on CC
+			_shareAlike.Checked = true;
+			_nonCommercial.Checked = true;
 		}
 
 		public Metadata Metadata
