@@ -18,7 +18,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public event EventHandler OnLoadComplete;
 
-
 		public string SelectedPath
 		{
 			get
@@ -60,7 +59,10 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			if (this.InvokeRequired)
 			{
 				SetThumbnailDelegate d = new SetThumbnailDelegate(SetThumbnail);
-				this.Invoke(d, new object[] { image });
+
+				if (IsDisposed || _thumbnailWorker == null || !IsHandleCreated)
+						return;
+				this.Invoke(d, new object[] {image});
 			}
 			else
 			{
@@ -135,7 +137,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 			foreach (string fileName in fileList)
 			{
-				if (IsDisposed)
+				if (IsDisposed || _thumbnailWorker ==null)
 					return;
 
 				if (_thumbnailWorker.CancellationPending)
@@ -202,7 +204,32 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			if (_thumbnailWorker != null)
 			{
 				_thumbnailWorker.CancelAsync();
+				var stopTime = DateTime.Now.AddSeconds(5);
+				//NB: had a lot of trouble getting the thumbnailer to shut down before we dispose, until I added this.
+				while(_thumbnailWorker.IsBusy && DateTime.Now < stopTime )
+				{
+					Application.DoEvents();
+				}
+				_thumbnailWorker = null;
 			}
+		}
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (_thumbnailWorker != null)
+			{
+				_thumbnailWorker = null;
+			}
+
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
