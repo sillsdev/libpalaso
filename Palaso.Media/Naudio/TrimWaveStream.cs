@@ -5,68 +5,55 @@ namespace Palaso.Media.Naudio
 {
 	public class TrimWaveStream : WaveStream
 	{
-		private WaveStream source;
-		private long startBytePosition;
-		private long endBytePosition;
-		private TimeSpan startPosition;
-		private TimeSpan endPosition;
+		protected WaveStream _source;
+		protected long _startBytePosition;
+		protected long _endBytePosition;
+		protected TimeSpan _startPosition;
+		protected TimeSpan _endPosition;
 
 		public TrimWaveStream(WaveStream source)
 		{
-			this.source = source;
-			this.EndPosition = source.TotalTime;
+			_source = source;
+			EndPosition = source.TotalTime;
 		}
 
 		public TimeSpan StartPosition
 		{
-			get
-			{
-				return startPosition;
-			}
+			get { return _startPosition; }
 			set
 			{
-				startPosition = value;
-				startBytePosition = (int)(WaveFormat.AverageBytesPerSecond * startPosition.TotalSeconds);
-				startBytePosition = startBytePosition - (startBytePosition % WaveFormat.BlockAlign);
+				_startPosition = value;
+				_startBytePosition = (int)(WaveFormat.AverageBytesPerSecond * _startPosition.TotalSeconds);
+				_startBytePosition = _startBytePosition - (_startBytePosition % WaveFormat.BlockAlign);
 				Position = 0;
 			}
 		}
 
 		public TimeSpan EndPosition
 		{
-			get
-			{
-				return endPosition;
-			}
+			get { return _endPosition; }
 			set
 			{
-				endPosition = value;
-				endPosition = value;
-				endBytePosition = (int)Math.Round(WaveFormat.AverageBytesPerSecond * endPosition.TotalSeconds);
-				endBytePosition = endBytePosition - (endBytePosition % WaveFormat.BlockAlign);
+				_endPosition = value;
+				_endBytePosition = (int)Math.Round(WaveFormat.AverageBytesPerSecond * _endPosition.TotalSeconds);
+				_endBytePosition = _endBytePosition - (_endBytePosition % WaveFormat.BlockAlign);
 			}
 		}
 
 		public override WaveFormat WaveFormat
 		{
-			get { return source.WaveFormat; }
+			get { return _source.WaveFormat; }
 		}
 
 		public override long Length
 		{
-			get { return endBytePosition - startBytePosition; }
+			get { return _endBytePosition - _startBytePosition; }
 		}
 
 		public override long Position
 		{
-			get
-			{
-				return source.Position - startBytePosition;
-			}
-			set
-			{
-				source.Position = value + startBytePosition;
-			}
+			get { return _source.Position - _startBytePosition; }
+			set { _source.Position = value + _startBytePosition; }
 		}
 
 		public override int Read(byte[] buffer, int offset, int count)
@@ -74,15 +61,14 @@ namespace Palaso.Media.Naudio
 			int bytesRequired = (int)Math.Min(count, Length - Position);
 			int bytesRead = 0;
 			if (bytesRequired > 0)
-			{
-				bytesRead = source.Read(buffer, offset, bytesRequired);
-			}
+				bytesRead = _source.Read(buffer, offset, bytesRequired);
+
 			return bytesRead;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			source.Dispose();
+			_source.Dispose();
 			base.Dispose(disposing);
 		}
 	}

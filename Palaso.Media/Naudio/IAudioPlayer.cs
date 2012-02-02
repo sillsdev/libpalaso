@@ -10,5 +10,8 @@ namespace Palaso.Media.Naudio
 		TimeSpan CurrentPosition { get; set; }
 		TimeSpan StartPosition { get; set; }
 		TimeSpan EndPosition { get; set; }
+		event EventHandler PlaybackStarted;
+		event EventHandler Stopped;
+		event EventHandler<PlaybackProgressEventArgs> PlaybackProgress;
 	}
 }
