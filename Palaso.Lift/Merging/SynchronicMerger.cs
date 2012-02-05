@@ -80,6 +80,7 @@ namespace Palaso.Lift.Merging
 				catch (IOException)
 				{
 					// todo: "Cannot most likely one of the files is locked
+					File.Delete(outputPath);
 					throw;
 				}
 				catch (Exception)
@@ -90,6 +91,7 @@ namespace Palaso.Lift.Merging
 					}
 					catch (Exception e2)
 					{
+						File.Delete(outputPath);
 						throw new BadUpdateFileException(pathToMergeInTo, files[i].FullName, e2);
 					}
 					//eventually we'll just check everything before-hand.  But for now our rng

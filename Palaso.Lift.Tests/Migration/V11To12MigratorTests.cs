@@ -1,3 +1,4 @@
+using System.IO;
 using Palaso.Lift.Migration;
 using Palaso.Lift.Tests.Migration;
 using Palaso.Lift.Validation;
@@ -14,9 +15,16 @@ namespace Palaso.Lift.Tests.Migration
 			using (TempFile f = new TempFile("<lift version='0.11'><entry><sense><etymology/></sense></entry></lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				using (TempFile.TrackExisting(path))
+				try
 				{
-					AssertXPathAtLeastOne("//entry/etymology", path);
+					using (TempFile.TrackExisting(path))
+					{
+						AssertXPathAtLeastOne("//entry/etymology", path);
+					}
+				}
+				finally
+				{
+					File.Delete(path);
 				}
 			}
 		}
@@ -27,7 +35,14 @@ namespace Palaso.Lift.Tests.Migration
 			using (TempFile f = new TempFile("<lift version='0.11'></lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+				try
+				{
+					Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -38,7 +53,14 @@ namespace Palaso.Lift.Tests.Migration
 			using (TempFile f = new TempFile("<lift version='0.11' producer='p'/>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//lift[@producer='p']", path);
+				try
+				{
+					AssertXPathAtLeastOne("//lift[@producer='p']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 

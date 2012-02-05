@@ -636,10 +636,17 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void Export_CreatesFile()
 		{
-			_model.AddNew ();
-			string filePath = Path.GetTempFileName ();
-			_model.ExportCurrentWritingSystemAsFile (filePath);
-			Assert.IsTrue (File.Exists (filePath));
+			_model.AddNew();
+			var filePath = Path.GetTempFileName();
+			try
+			{
+				_model.ExportCurrentWritingSystemAsFile(filePath);
+				Assert.IsTrue(File.Exists(filePath));
+			}
+			finally
+			{
+				File.Delete(filePath);
+			}
 		}
 
 		[Test]

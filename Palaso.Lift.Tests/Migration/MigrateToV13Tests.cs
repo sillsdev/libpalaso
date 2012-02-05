@@ -1,4 +1,6 @@
-﻿using Palaso.Lift.Migration;
+﻿using System;
+using System.IO;
+using Palaso.Lift.Migration;
 using Palaso.Lift.Validation;
 using NUnit.Framework;
 
@@ -10,11 +12,18 @@ namespace Palaso.Lift.Tests.Migration
 		[Test]
 		public void LiftVersion_Was0Point12_IsSetTo0Point13()
 		{
-			using (TempFile f = new TempFile("<lift version='0.12' producer='testing'/>"))
+			using (var f = new TempFile("<lift version='0.12' producer='testing'/>"))
 			{
-				string path = Migrator.MigrateToLatestVersion(f.Path);
-				Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
-				AssertXPathAtLeastOne("//lift[@producer='testing']", path);
+				var path = Migrator.MigrateToLatestVersion(f.Path);
+				try
+				{
+					Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+					AssertXPathAtLeastOne("//lift[@producer='testing']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -30,13 +39,20 @@ namespace Palaso.Lift.Tests.Migration
 				"</entry>" +
 				"</lift>"))
 			{
-				string path = Migrator.MigrateToLatestVersion(f.Path);
-				Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
-				AssertXPathAtLeastOne("//lift[@producer='tester']", path);
-				AssertXPathAtLeastOne("//entry/field[@type='literal-meaning']", path);
-				AssertXPathNotFound("//entry/sense/field", path);
-				AssertXPathAtLeastOne("//entry/sense/trait[@name='semantic-domain-ddp4']", path);
-				AssertXPathNotFound("//entry/sense/trait[@name='SemanticDomainDdp4']", path);
+				var path = Migrator.MigrateToLatestVersion(f.Path);
+				try
+				{
+					Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+					AssertXPathAtLeastOne("//lift[@producer='tester']", path);
+					AssertXPathAtLeastOne("//entry/field[@type='literal-meaning']", path);
+					AssertXPathNotFound("//entry/sense/field", path);
+					AssertXPathAtLeastOne("//entry/sense/trait[@name='semantic-domain-ddp4']", path);
+					AssertXPathNotFound("//entry/sense/trait[@name='SemanticDomainDdp4']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -45,12 +61,19 @@ namespace Palaso.Lift.Tests.Migration
 		{
 			using (TempFile f = new TempFile("<lift version='0.11' producer='testing'><entry><sense><etymology/></sense></entry></lift>"))
 			{
-				string path = Migrator.MigrateToLatestVersion(f.Path);
-				using (TempFile.TrackExisting(path))
+				var path = Migrator.MigrateToLatestVersion(f.Path);
+				try
 				{
-					Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
-					AssertXPathAtLeastOne("//lift[@producer='testing']", path);
-					AssertXPathAtLeastOne("//entry/etymology", path);
+					using (TempFile.TrackExisting(path))
+					{
+						Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+						AssertXPathAtLeastOne("//lift[@producer='testing']", path);
+						AssertXPathAtLeastOne("//entry/etymology", path);
+					}
+				}
+				finally
+				{
+					File.Delete(path);
 				}
 			}
 		}
@@ -65,9 +88,16 @@ namespace Palaso.Lift.Tests.Migration
 					  </entry>
 				</lift>"))
 			{
-				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathNotFound("//entry/trait[@name='flag_skip_FooBar']", path);
-				AssertXPathAtLeastOne("//entry/trait[@name='flag-skip-FooBar']", path);
+				var path = Migrator.MigrateToLatestVersion(f.Path);
+				try
+				{
+					AssertXPathNotFound("//entry/trait[@name='flag_skip_FooBar']", path);
+					AssertXPathAtLeastOne("//entry/trait[@name='flag-skip-FooBar']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 	}

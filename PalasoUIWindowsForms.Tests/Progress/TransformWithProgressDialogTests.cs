@@ -54,6 +54,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			}
 			finally
 			{
+				File.Delete(outputPath);
 				File.Delete(sourceFilePath);
 			}
 		}

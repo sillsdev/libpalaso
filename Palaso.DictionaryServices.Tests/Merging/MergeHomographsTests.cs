@@ -1,28 +1,25 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Processors;
-using Palaso.IO;
 using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 
 namespace Palaso.DictionaryServices.Tests.Merging
 {
+	[TestFixture]
 	public class MergeHomographsTests
 	{
-		private TempFile _outputLift;
 		private StringBuilderProgress _progress;
 		private XmlDocument _resultDom;
 
 		[SetUp]
 		public void Setup()
 		{
-			_outputLift = new TempFile();
 			_progress = new StringBuilderProgress();
 			_resultDom = new XmlDocument();
 		}
-
-
 
 		[Test]
 		public void Run_NoEntries_HeaderPreserved()
@@ -664,6 +661,9 @@ namespace Palaso.DictionaryServices.Tests.Merging
 				{
 					deletedEntry.ParentNode.RemoveChild(deletedEntry);
 				}
+				var bakPathname = input.Path + ".bak";
+				if (File.Exists(bakPathname))
+					File.Delete(bakPathname);
 			}
 		}
 

@@ -1,3 +1,4 @@
+using System.IO;
 using Palaso.Lift.Migration;
 using Palaso.Lift.Validation;
 using NUnit.Framework;
@@ -22,7 +23,14 @@ namespace Palaso.Lift.Tests.Migration
 			using (TempFile f = new TempFile("<lift version='0.10'></lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+				try
+				{
+					Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(path));
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -32,10 +40,17 @@ namespace Palaso.Lift.Tests.Migration
 			using (TempFile f = new TempFile("<lift version='0.10'><entry><relation order='2' ref='xyz' name='foo'/></entry></lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				using (TempFile.TrackExisting(path))
+				try
 				{
-					AssertXPathAtLeastOne("//relation[@order='2' and @ref='xyz' and @type='foo']", path);
-					AssertXPathNotFound("//relation/@name", path);
+					using (TempFile.TrackExisting(path))
+					{
+						AssertXPathAtLeastOne("//relation[@order='2' and @ref='xyz' and @type='foo']", path);
+						AssertXPathNotFound("//relation/@name", path);
+					}
+				}
+				finally
+				{
+					File.Delete(path);
 				}
 			}
 		}
@@ -53,8 +68,15 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//sense/illustration[@href='waterBasket1.png']", path);
-				AssertXPathNotFound("//sense/picture", path);
+				try
+				{
+					AssertXPathAtLeastOne("//sense/illustration[@href='waterBasket1.png']", path);
+					AssertXPathNotFound("//sense/picture", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -74,8 +96,15 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//entry/sense/gloss/annotation[@value='1']", path);
-				AssertXPathNotFound("//entry/sense/gloss/trait", path);
+				try
+				{
+					AssertXPathAtLeastOne("//entry/sense/gloss/annotation[@value='1']", path);
+					AssertXPathNotFound("//entry/sense/gloss/trait", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -96,8 +125,18 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//entry/lexical-unit/form/annotation[@value='1']", path);
-				AssertXPathNotFound("//entry/lexical-unit/form/trait", path);
+				try
+				{
+					using (TempFile.TrackExisting(path))
+					{
+						AssertXPathAtLeastOne("//entry/lexical-unit/form/annotation[@value='1']", path);
+						AssertXPathNotFound("//entry/lexical-unit/form/trait", path);
+					}
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -112,8 +151,15 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//entry/field[@type='test']", path);
-				AssertXPathNotFound("//entry/field[@tag='test']", path);
+				try
+				{
+					AssertXPathAtLeastOne("//entry/field[@type='test']", path);
+					AssertXPathNotFound("//entry/field[@tag='test']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -133,8 +179,15 @@ namespace Palaso.Lift.Tests.Migration
 				</lift>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//header//field[@tag='test']", path);
-				AssertXPathNotFound("//header//field[@type='test']", path);
+				try
+				{
+					AssertXPathAtLeastOne("//header//field[@tag='test']", path);
+					AssertXPathNotFound("//header//field[@type='test']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -144,7 +197,14 @@ namespace Palaso.Lift.Tests.Migration
 			using (TempFile f = new TempFile("<lift version='0.10' producer='p'/>"))
 			{
 				string path = Migrator.MigrateToLatestVersion(f.Path);
-				AssertXPathAtLeastOne("//lift[@producer='p']", path);
+				try
+				{
+					AssertXPathAtLeastOne("//lift[@producer='p']", path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 	}

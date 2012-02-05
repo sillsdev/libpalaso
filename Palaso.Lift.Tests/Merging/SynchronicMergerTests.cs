@@ -243,6 +243,7 @@ namespace Palaso.Lift.Tests.Merging
 		{
 			WriteFile(_baseLiftFileName, "<entry id='one' greeting='hi'></entry><entry id='two' guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22'></entry>", _directory);
 			WriteFile(GetNextUpdateFileName(), "<entry id='one' guid='0ae89610-fc01-4bfd-a0d6-1125b7281dd2' greeting='hello'></entry>", _directory);
+
 			Merge(_directory);
 		}
 
@@ -348,32 +349,54 @@ namespace Palaso.Lift.Tests.Merging
 		[Test, ExpectedException(typeof(IOException))]
 		public void LockedBaseFile_Throws()
 		{
+			Exception ex = null;
 			string baseFilePath = Path.Combine(this._directory, _baseLiftFileName);
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, GetNextUpdateFileName());
 			using(File.Open(baseFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
 			{
-				Merge(_directory);
+				try
+				{
+					Merge(_directory);
+				}
+				catch (Exception err)
+				{
+					ex = err;
+				}
 			}
 
 			XmlDocument doc = GetResult(_directory);
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one' and @greeting='hi']").Count);
 			ExpectFileCount(2, _directory);
+
+			if (ex != null)
+				throw ex;
 		}
 
 		[Test, ExpectedException(typeof(IOException))]
 		public void LockedUpdate_Throws()
 		{
+			Exception ex = null;
 			string updateFilePath = Path.Combine(this._directory, GetNextUpdateFileName());
 
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, updateFilePath);
 			using (File.Open(updateFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
 			{
-				Merge(_directory);
+				try
+				{
+					Merge(_directory);
+				}
+				catch(Exception err)
+				{
+					ex = err; // Rethrow it later, after the end code has been run.
+				}
 			}
 
-			XmlDocument doc = GetResult(_directory);
+			var doc = GetResult(_directory);
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one' and @greeting='hi']").Count);
 			ExpectFileCount(2, _directory);
+
+			if (ex != null)
+				throw ex;
 		}
 
 

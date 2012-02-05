@@ -34,18 +34,17 @@ namespace Palaso.Tests.IO
 		public void MANUAL_ReplaceFileWithUserInteractionIfNeeded_DifferentDrives_OK()
 		{
 			Reporting.ErrorReport.IsOkToInteractWithUser = false;
-			using(var source = new TempFile("one"))
+			using (var source = new TempFile("one"))
+			using (var backup = new TempFile("two"))
 			{
-				var backup = new TempFile("two");
-
 				var drives = UsbDriveInfo.GetDrives();
 				Assert.Greater(drives.Count, 0, "This test requires at least one writeable USB drive");
 
 				var testFolder = Path.Combine(drives[0].RootDirectory.FullName, "PalasoFileUtilsUnitTests");
 				Directory.CreateDirectory(testFolder);
 				using (var folder = TemporaryFolder.TrackExisting(testFolder))
+				using (var destination = new TempFileFromFolder(folder))
 				{
-					var destination = new TempFileFromFolder(folder);
 					FileUtils.ReplaceFileWithUserInteractionIfNeeded(source.Path, destination.Path, backup.Path);
 				}
 			}
@@ -55,9 +54,9 @@ namespace Palaso.Tests.IO
 		public void ReplaceFileWithUserInteractionIfNeeded_SameDrive_OK()
 		{
 			using (var source = new TempFile("new"))
+			using (var backup = new TempFile("previousBackup"))
+			using (var destination = new TempFile("old"))
 			{
-				var backup = new TempFile("previousBackup");
-				var destination = new TempFile("old");
 				FileUtils.ReplaceFileWithUserInteractionIfNeeded(source.Path, destination.Path, backup.Path);
 				Assert.AreEqual("new", File.ReadAllText(destination.Path));
 				Assert.AreEqual("old", File.ReadAllText(backup.Path));
@@ -68,8 +67,8 @@ namespace Palaso.Tests.IO
 		public void ReplaceFileWithUserInteractionIfNeeded_BackupNull_OK()
 		{
 			using (var source = new TempFile("one"))
+			using (var destination = new TempFile("three"))
 			{
-				var destination = new TempFile("three");
 				FileUtils.ReplaceFileWithUserInteractionIfNeeded(source.Path, destination.Path, null);
 				Assert.AreEqual("one", File.ReadAllText(destination.Path));
 			}
@@ -101,6 +100,8 @@ namespace Palaso.Tests.IO
 			{
 				FileUtils.GrepFile(e.tempFile.Path, "lang", "1234567");
 				Assert.That(FileUtils.GrepFile(e.tempFile.Path, "1234567"), Is.True);
+				var bakPath = e.tempFile.Path + ".bak";
+				File.Delete(bakPath);
 			}
 		}
 

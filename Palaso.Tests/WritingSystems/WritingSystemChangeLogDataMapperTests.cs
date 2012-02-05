@@ -38,7 +38,7 @@ namespace Palaso.Tests.WritingSystems
 		{
 			using (var e = new TestEnvironment())
 			{
-				string tempFilePath = Path.Combine(e.tempFolder.Path, "testchangelog.xml");
+				string tempFilePath = Path.Combine(e._tempFolder.Path, "testchangelog.xml");
 				var log = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(tempFilePath));
 				log.LogChange("aab", "bba");
 				log.LogAdd("aab");
@@ -51,12 +51,8 @@ namespace Palaso.Tests.WritingSystems
 
 		public class TestEnvironment : IDisposable
 		{
-			public TemporaryFolder tempFolder = new TemporaryFolder("writingSystemChangeLogTests");
-
-			public TestEnvironment()
-			{
-				TempFile file = new TempFile();
-			}
+			public TemporaryFolder _tempFolder = new TemporaryFolder("writingSystemChangeLogTests");
+			private TempFile _tempFile = new TempFile();
 
 			public string GetSampleLogFilePath()
 			{
@@ -79,13 +75,16 @@ namespace Palaso.Tests.WritingSystems
 </Changes>
 </WritingSystemChangeLog>
 ").Replace("'", "\"");
-				var tempFile = new TempFile(contents);
-				return tempFile.Path;
+				File.WriteAllText(_tempFile.Path, contents);
+				return _tempFile.Path;
 			}
 
 			public WritingSystemChangeLog Log { get; set; }
+
 			public void Dispose()
 			{
+				_tempFolder.Dispose();
+				_tempFile.Dispose();
 			}
 
 			public WritingSystemChangeLog GetSampleWritingSystemChangeLog()

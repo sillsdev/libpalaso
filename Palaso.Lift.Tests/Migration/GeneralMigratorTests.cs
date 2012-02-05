@@ -33,7 +33,15 @@ namespace Palaso.Lift.Tests.Migration
 		{
 			using (TempFile f = new TempFile("<lift version='0.10'></lift>"))
 			{
-				Assert.AreNotEqual(f.Path, Migrator.MigrateToLatestVersion(f.Path));
+				var path = Migrator.MigrateToLatestVersion(f.Path);
+				try
+				{
+					Assert.AreNotEqual(f.Path, path);
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 
@@ -47,7 +55,15 @@ namespace Palaso.Lift.Tests.Migration
 		{
 			using (TempFile f = new TempFile("<lift version='0.10'></lift>"))
 			{
-				Assert.AreEqual(Path.GetDirectoryName(f.Path), Path.GetDirectoryName(Migrator.MigrateToLatestVersion(f.Path)));
+				var path = Migrator.MigrateToLatestVersion(f.Path);
+				try
+				{
+					Assert.AreEqual(Path.GetDirectoryName(f.Path), Path.GetDirectoryName(path));
+				}
+				finally
+				{
+					File.Delete(path);
+				}
 			}
 		}
 

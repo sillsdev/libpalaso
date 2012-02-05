@@ -1173,10 +1173,17 @@ namespace Palaso.Lift.Tests.Parsing
 		public void GetNumberOfEntriesInFile_3Entries_Returns3()
 		{
 			string path = Path.GetTempFileName();
-			File.WriteAllText(path, @"<lift><entry></entry>
+			try
+			{
+				File.WriteAllText(path, @"<lift><entry></entry>
 				<entry id='foo'/><entry/></lift>");
-			int count = LiftParser<DummyBase, Dummy, Dummy, Dummy>.GetEstimatedNumberOfEntriesInFile(path);
-			Assert.AreEqual(3, count);
+				int count = LiftParser<DummyBase, Dummy, Dummy, Dummy>.GetEstimatedNumberOfEntriesInFile(path);
+				Assert.AreEqual(3, count);
+			}
+			finally
+			{
+				File.Delete(path);
+			}
 		}
 
 		[Test]
