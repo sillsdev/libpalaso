@@ -28,6 +28,7 @@ namespace Palaso.DictionaryServices.Tests
 		public void Teardown()
 		{
 			_repository.Dispose();
+			_tempfolder.Dispose();
 		}
 
 		[Test]

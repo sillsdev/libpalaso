@@ -36,6 +36,7 @@ namespace Palaso.Lift.Tests
 			{
 				string output = Utilities.ProcessLiftForLaterMerging(f.Path);
 				XmlTestHelper.AssertXPathNotNull(output, "//entry[@guid='123abc']");
+				File.Delete(output);
 			}
 		}
 
@@ -47,6 +48,7 @@ namespace Palaso.Lift.Tests
 				string output = Utilities.ProcessLiftForLaterMerging(file.Path);
 				XmlTestHelper.AssertXPathNotNull(output, "//entry[@id='one' and @guid]");
 				XmlTestHelper.AssertXPathNotNull(output, "//entry[@id='two' and @guid]");
+				File.Delete(output);
 			}
 		}
 
@@ -58,6 +60,7 @@ namespace Palaso.Lift.Tests
 			{
 				string output = Utilities.ProcessLiftForLaterMerging(f.Path);
 				XmlTestHelper.AssertXPathNotNull(output, "//entry[@id and @guid]");
+				File.Delete(output);
 			}
 		}
 
@@ -68,6 +71,7 @@ namespace Palaso.Lift.Tests
 			{
 				string output = Utilities.ProcessLiftForLaterMerging(f.Path);
 				XmlTestHelper.AssertXPathNotNull(output, "//entry[@id and @guid]");
+				File.Delete(output);
 			}
 		}
 
@@ -78,6 +82,7 @@ namespace Palaso.Lift.Tests
 			{
 				string output = Utilities.ProcessLiftForLaterMerging(f.Path);
 				XmlTestHelper.AssertXPathNotNull(output, "//entry[@guid and not(@id)]");
+				File.Delete(output);
 			}
 		}
 
@@ -88,6 +93,7 @@ namespace Palaso.Lift.Tests
 			{
 				string output = Utilities.ProcessLiftForLaterMerging(f.Path);
 				XmlTestHelper.AssertXPathNotNull(output, "//entry/sense[@id='foo']/example");
+				File.Delete(output);
 			}
 		}
 

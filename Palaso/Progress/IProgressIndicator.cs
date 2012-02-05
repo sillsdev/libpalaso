@@ -52,6 +52,7 @@ namespace Palaso.Progress
 			}
 		}
 
+		// This method does nothing, but cause a stack overflow exception, since the provided int (above) ends up being cast as null, and the death sriral begins.
 		private void Increment(object state)
 		{
 			Increment(state as string);

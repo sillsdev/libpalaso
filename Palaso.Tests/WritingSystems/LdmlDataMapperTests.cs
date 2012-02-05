@@ -139,18 +139,32 @@ namespace Palaso.Tests.WritingSystems
 			const string ldmlwithNoCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
 
 			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithEmptyCollationElement);
-			string pathToLdmlWithNoCollationElement = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlWithNoCollationElement, ldmlwithNoCollationElement);
+			try
+			{
+				File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithEmptyCollationElement);
+				string pathToLdmlWithNoCollationElement = Path.GetTempFileName();
+				try
+				{
+					File.WriteAllText(pathToLdmlWithNoCollationElement, ldmlwithNoCollationElement);
 
 
-			var adaptor = new LdmlDataMapper();
-			var wsFromEmptyCollationElement = new WritingSystemDefinition();
-			adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromEmptyCollationElement);
-			var wsFromNoCollationElement = new WritingSystemDefinition();
-			adaptor.Read(pathToLdmlWithNoCollationElement, wsFromNoCollationElement);
+					var adaptor = new LdmlDataMapper();
+					var wsFromEmptyCollationElement = new WritingSystemDefinition();
+					adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromEmptyCollationElement);
+					var wsFromNoCollationElement = new WritingSystemDefinition();
+					adaptor.Read(pathToLdmlWithNoCollationElement, wsFromNoCollationElement);
 
-			Assert.AreEqual(wsFromNoCollationElement.SortUsing, wsFromEmptyCollationElement.SortUsing);
+					Assert.AreEqual(wsFromNoCollationElement.SortUsing, wsFromEmptyCollationElement.SortUsing);
+				}
+				finally
+				{
+					File.Delete(pathToLdmlWithNoCollationElement);
+				}
+			}
+			finally
+			{
+				File.Delete(pathToLdmlWithEmptyCollationElement);
+			}
 		}
 
 
@@ -161,15 +175,22 @@ namespace Palaso.Tests.WritingSystems
 
 
 			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
-			File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithOnlyPrivateUse);
+			try
+			{
+				File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithOnlyPrivateUse);
 
-			var adaptor = new LdmlDataMapper();
-			var wsFromLdml = new WritingSystemDefinition();
-			adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
-			var ws = new WritingSystemDefinition();
-			adaptor.Read(pathToLdmlWithEmptyCollationElement, ws);
-			Assert.That(wsFromLdml.Language, Is.EqualTo(String.Empty));
-			Assert.That(wsFromLdml.Variant, Is.EqualTo("x-private-use"));
+				var adaptor = new LdmlDataMapper();
+				var wsFromLdml = new WritingSystemDefinition();
+				adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
+				var ws = new WritingSystemDefinition();
+				adaptor.Read(pathToLdmlWithEmptyCollationElement, ws);
+				Assert.That(wsFromLdml.Language, Is.EqualTo(String.Empty));
+				Assert.That(wsFromLdml.Variant, Is.EqualTo("x-private-use"));
+			}
+			finally
+			{
+				File.Delete(pathToLdmlWithEmptyCollationElement);
+			}
 		}
 
 		[Test]

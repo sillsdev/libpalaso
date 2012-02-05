@@ -19,8 +19,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		[SetUp]
 		public void Setup()
 		{
-			_liftFilePath = Path.GetTempFileName();
-			_liftFilePath = _liftFilePath.Replace(".tmp", ".lift");
+			var tempPathname = Path.GetTempFileName();
+			_liftFilePath = tempPathname.Replace(".tmp", ".lift");
+			File.Delete(tempPathname);
 			ErrorReport.IsOkToInteractWithUser = false;
 		}
 
@@ -61,6 +62,10 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.IsTrue(preparer.IsMigrationNeeded(), "IsMigrationNeeded Failed");
 			preparer.MigrateLiftFile(new ProgressState());
 			Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(_liftFilePath));
+			// Get rid of the other file, as well.
+			var otherPathname = _liftFilePath.Replace(".", ".0.10.");
+			if (File.Exists(otherPathname))
+				File.Delete(otherPathname);
 		}
 
 		// TODO Move these tests to LiftDataMapperTests

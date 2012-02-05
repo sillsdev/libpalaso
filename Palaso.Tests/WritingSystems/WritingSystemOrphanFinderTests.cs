@@ -34,6 +34,7 @@ namespace Palaso.Tests.WritingSystems
 
 			public void Dispose()
 			{
+				_file.Dispose();
 				_folder.Dispose();
 			}
 

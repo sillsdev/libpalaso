@@ -62,6 +62,7 @@ namespace Palaso.Lift.Tests.Migration
 			{
 				using (TempFolder x = new TempFolder("13-12LiftMigrator"))
 				{
+					// NB: No need for Dispose on this one.
 					TempFile toFile = x.GetPathForNewTempFile(false);
 
 					Migrator.ReverseMigrateFrom13ToFLEx12(fromFile.Path, toFile.Path);

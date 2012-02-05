@@ -11,7 +11,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 	{
 		private class TestEnvironment : IDisposable
 		{
-			readonly string _pathToLdml = Path.GetTempFileName();
+			private readonly string _pathToLdml;
 
 			public TestEnvironment()
 			{

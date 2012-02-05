@@ -19,7 +19,7 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempLiftFile(TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(false)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			if (parentFolder != null)
 			{
@@ -27,8 +27,9 @@ namespace Palaso.TestUtilities
 			}
 			else
 			{
-				_path = System.IO.Path.GetTempFileName() + ".lift";
-				//_path = System.IO.Path.GetRandomFileName() + ".lift";
+				var temp = System.IO.Path.GetTempFileName();
+				_path = temp + ".lift";
+				File.Move(temp, _path);
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
@@ -36,7 +37,7 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(false)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder.Combine(fileName);
 
@@ -71,6 +72,7 @@ namespace Palaso.TestUtilities
 		/// Create a tempfile within the given parent folder
 		/// </summary>
 		public TempFileFromFolder(TemporaryFolder parentFolder)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
 		}
@@ -117,7 +119,9 @@ namespace Palaso.TestUtilities
 		static public TemporaryFolder TrackExisting(string path)
 		{
 			Debug.Assert(Directory.Exists(path));
-			TemporaryFolder f = new TemporaryFolder();
+			var f = new TemporaryFolder(); // This creates a new directory called "unnamedTestFolder", which is not deleted on Dispose.
+			if (f.Path.EndsWith("unnamedTestFolder") && Directory.Exists(f.Path))
+				Directory.Delete(f.Path);
 			f._path = path;
 			return f;
 		}

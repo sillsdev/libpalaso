@@ -71,7 +71,9 @@ namespace Palaso.Tests.Xml
 @"<?xml version='1.0' encoding='utf-8'?>
 <classdata>
 </classdata>";
-			var goodXmlPathname = Path.ChangeExtension(Path.GetTempFileName(), ".ClassData");
+			var tempPathname = Path.GetTempFileName();
+			var goodXmlPathname = Path.ChangeExtension(tempPathname, ".ClassData");
+			File.Delete(tempPathname);
 			try
 			{
 				File.WriteAllText(goodXmlPathname, noRecordsInput, Encoding.UTF8);
@@ -93,7 +95,9 @@ namespace Palaso.Tests.Xml
 @"<?xml version='1.0' encoding='utf-8'?>
 <classdata />";
 
-			var goodXmlPathname = Path.ChangeExtension(Path.GetTempFileName(), ".ClassData");
+			var tempPathname = Path.GetTempFileName();
+			var goodXmlPathname = Path.ChangeExtension(tempPathname, ".ClassData");
+			File.Delete(tempPathname);
 			try
 			{
 				File.WriteAllText(goodXmlPathname, noRecordsInput, Encoding.UTF8);
@@ -112,7 +116,9 @@ namespace Palaso.Tests.Xml
 		public void Not_Xml_Throws()
 		{
 			const string noRecordsInput = "Some random text file.";
-			var goodPathname = Path.ChangeExtension(Path.GetTempFileName(), ".txt");
+			var tempPathname = Path.GetTempFileName();
+			var goodPathname = Path.ChangeExtension(tempPathname, ".txt");
+			File.Delete(tempPathname);
 			try
 			{
 				File.WriteAllText(goodPathname, noRecordsInput, Encoding.UTF8);
