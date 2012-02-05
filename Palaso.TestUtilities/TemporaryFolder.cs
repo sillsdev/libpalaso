@@ -46,6 +46,7 @@ namespace Palaso.TestUtilities
 		}
 
 		private TempLiftFile()
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 		}
 
@@ -78,6 +79,7 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder.Combine(name);
 			File.WriteAllText(_path, contents);
