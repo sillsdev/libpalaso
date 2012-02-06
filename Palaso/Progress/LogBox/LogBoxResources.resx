@@ -124,4 +124,10 @@
 	<data name="kNullOrEmptyString">
 		<value xml:space="preserve">Null or empty string.</value>
 	</data>
+  <data name="kFilenameIsEmptyString">
+	<value xml:space="preserve">Filename has no content</value>
+  </data>
+  <data name="kFilenameIsOnlyWhitespace">
+	<value xml:space="preserve">Filename has only whitespace</value>
+  </data>
 </root>

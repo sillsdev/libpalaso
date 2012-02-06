@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Palaso.Progress.LogBox;
 
 namespace Palaso.IO
 {
@@ -82,7 +83,25 @@ namespace Palaso.IO
 			extension = extension.TrimStart('.');
 			var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + "." + extension);
 			File.Create(path).Close();
-			return TempFile.TrackExisting(path);
+			return TrackExisting(path);
+		}
+
+		/// <summary>
+		/// Use this one when it's important to have a certain file name (with, or without extension).
+		/// </summary>
+		/// <param name="filename">with or with out an extension, will work the same</param>
+		public static TempFile WithFilename(string filename)
+		{
+			if (filename == null) throw new ArgumentNullException("filename");
+			if (filename == string.Empty)
+				throw new ArgumentException(LogBoxResources.kFilenameIsEmptyString, "filename");
+			filename = filename.Trim();
+			if (filename == string.Empty)
+				throw new ArgumentException(LogBoxResources.kFilenameIsOnlyWhitespace, "filename");
+
+			var pathname = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
+			File.Create(pathname).Close();
+			return TrackExisting(pathname);
 		}
 
 		/// <summary>

@@ -61,6 +61,24 @@ namespace Palaso.Progress.LogBox {
 		}
 
 		/// <summary>
+		///   Looks up a localized string similar to Filename has no content.
+		/// </summary>
+		internal static string kFilenameIsEmptyString {
+			get {
+				return ResourceManager.GetString("kFilenameIsEmptyString", resourceCulture);
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized string similar to Filename has only whitespace.
+		/// </summary>
+		internal static string kFilenameIsOnlyWhitespace {
+			get {
+				return ResourceManager.GetString("kFilenameIsOnlyWhitespace", resourceCulture);
+			}
+		}
+
+		/// <summary>
 		///   Looks up a localized string similar to Null or empty string..
 		/// </summary>
 		internal static string kNullOrEmptyString {

@@ -102,6 +102,7 @@
 	<Compile Include="IO\FileLocatorTests.cs" />
 	<Compile Include="IO\FileUtil.Tests.cs" />
 	<Compile Include="IO\FolderUtilsTests.cs" />
+	<Compile Include="IO\TempFileTests.cs" />
 	<Compile Include="Migration\DefaultVersionTests.cs" />
 	<Compile Include="Migration\FileMigratorTests.cs" />
 	<Compile Include="Migration\XmlReaderWriterMigratorTests.cs" />
