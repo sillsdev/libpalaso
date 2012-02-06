@@ -566,6 +566,11 @@ namespace Palaso.Progress.LogBox
 			get { return _builder.ToString(); }
 		}
 
+		public override string ToString()
+		{
+			return Text;
+		}
+
 		public void Clear()
 		{
 			_builder = new StringBuilder();
