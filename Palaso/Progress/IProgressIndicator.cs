@@ -7,12 +7,10 @@ namespace Palaso.Progress
 {
 	public interface IProgressIndicator
 	{
-		int GetTotalNumberOfSteps();
-		int NumberOfStepsCompleted { get; set; }
 		int PercentCompleted { get; set; }
-		void NextStep(); // advance indicator one step
 		void Finish();
-		void Initialize(int numberOfSteps);
+		void Initialize();
+		void IndicateUnknownProgress();
 		SynchronizationContext SyncContext { get; set; }
 	}
 
@@ -21,79 +19,82 @@ namespace Palaso.Progress
 		public SimpleProgressIndicator()
 		{
 			Style = ProgressBarStyle.Continuous;
-			NumberOfStepsCompleted = 0;
-			Maximum = 100;
+			UpdateValue(0);
+			UpdateMaximum(100);
+		}
+
+		public void IndicateUnknownProgress()
+		{
+			Style = ProgressBarStyle.Marquee;
 		}
 
 		public SynchronizationContext SyncContext { get; set; }
 
 		public int PercentCompleted
 		{
-			get { return (NumberOfStepsCompleted*100/Maximum); }
+			get { return Value; }
 			set
 			{
-				if (value < 0 || value > 100)
+				int valueToSet = value;
+				if (value < 0)
 				{
-					throw new ArgumentOutOfRangeException("PercentCompleted must be between 0 and 100");
+					valueToSet = 0;
 				}
-				NumberOfStepsCompleted = value*Maximum/100;
+				else if (value > 100)
+				{
+					valueToSet = 100;
+				}
+				Style = ProgressBarStyle.Continuous;
+				UpdateValue(valueToSet);
 			}
-		}
-
-		public void NextStep()
-		{
-			if (SyncContext != null)
-			{
-				SyncContext.Post(Increment, 1);
-			}
-			else
-			{
-				Increment(1);
-			}
-		}
-
 		// This method does nothing, but cause a stack overflow exception, since the provided int (above) ends up being cast as null, and the death sriral begins.
-		private void Increment(object state)
-		{
-			Increment(state as string);
 		}
 
 		public void Finish()
 		{
-			NumberOfStepsCompleted = Maximum;
+			Style = ProgressBarStyle.Continuous;
+			UpdateValue(Maximum);
 		}
 
-		public void Initialize(int numberOfSteps)
+		public void Initialize()
 		{
-			NumberOfStepsCompleted = 0;
-			Maximum = numberOfSteps;
+			Style = ProgressBarStyle.Continuous;
+			UpdateValue(0);
+			UpdateMaximum(100);
 		}
 
-		public int GetTotalNumberOfSteps()
+		private void SetVal(object state)
 		{
-			return Maximum;
+			Value = (int)state;
 		}
 
-		public int NumberOfStepsCompleted
+		private void UpdateValue(int x)
 		{
-			get { return Value; }
-
-			set
+			if (SyncContext != null)
 			{
-				 if (SyncContext != null)
-				 {
-					SyncContext.Post(UpdateValue, value);
-				 }
-				 else
-				 {
-					 Value = value;
-				 }
+				SyncContext.Post(SetVal, x);
+			}
+			else
+			{
+				Value = x;
 			}
 		}
 
-		private void UpdateValue(object state)
+		private void SetMax(object state)
 		{
-			Value = (int) state;
+			Maximum = (int)state;
+		}
+
+		private void UpdateMaximum(int x)
+		{
+			if (SyncContext != null)
+			{
+				SyncContext.Post(SetMax, x);
+			}
+			else
+			{
+				Maximum = x;
+			}
 		}
 	}
 
@@ -108,18 +109,21 @@ namespace Palaso.Progress
 		private int _currentPhase;
 		private int _numberOfPhases;
 		private IProgressIndicator _globalIndicator;
-		private int _stepInCurrentPhase;
-		private int _currentPhaseNumberOfSteps;
+		private int _currentPhasePercentComplete;
 
 		public MultiPhaseProgressIndicator(IProgressIndicator indicator, int numberOfPhases)
 		{
 			_globalIndicator = indicator;
-			_stepInCurrentPhase = 0;
-			_currentPhaseNumberOfSteps = 100;
-			_globalIndicator.Initialize(1000000);  // we pick a really high number so that we don't have to expand it
+			_globalIndicator.Initialize();
 
 			_numberOfPhases = numberOfPhases;
 			_currentPhase = 0;  // must call Initialize() to increment the _currentProcess
+			PercentCompleted = 0;
+		}
+
+		public void IndicateUnknownProgress()
+		{
+			_globalIndicator.IndicateUnknownProgress();
 		}
 
 		public SynchronizationContext SyncContext
@@ -130,63 +134,36 @@ namespace Palaso.Progress
 
 		public int PercentCompleted  // per process
 		{
-			get { return (_stepInCurrentPhase * 100 / _currentPhaseNumberOfSteps); }
+			get { return _currentPhasePercentComplete; }
 			set
 			{
-				if (value < 0 || value > 100)
+				int valueToSet = value;
+				if (value < 0)
 				{
-					throw new ArgumentOutOfRangeException("PercentCompleted must be between 0 and 100");
+					valueToSet = 0;
+				} else if (value > 100)
+				{
+					valueToSet = 100;
 				}
-				NumberOfStepsCompleted = value * _currentPhaseNumberOfSteps / 100;
-			}
-		}
 
-		public void NextStep() // for current process
-		{
-			if (NumberOfStepsCompleted < GetTotalNumberOfSteps())
-			{
-				NumberOfStepsCompleted = NumberOfStepsCompleted + 1;
+				_currentPhasePercentComplete = valueToSet;
+				_globalIndicator.PercentCompleted = (_currentPhasePercentComplete + 100*(_currentPhase - 1)) / _numberOfPhases;
 			}
 		}
 
 		public void Finish() // Finish current process
 		{
-			NumberOfStepsCompleted = _currentPhaseNumberOfSteps;
-			//_globalIndicator.CurrentStep = _currentPhase * NumberOfGlobalStepsPerProcess();
+			PercentCompleted = 100;
 		}
 
-		private int NumberOfGlobalStepsPerPhase
-		{
-			get { return _globalIndicator.GetTotalNumberOfSteps()/_numberOfPhases; }
-		}
-
-		public void Initialize(int numberOfSteps)  // Initialize/begin next process
+		public void Initialize()  // Initialize/begin next process
 		{
 			if (_currentPhase != _numberOfPhases)
 			{
 				_currentPhase++;
 			}
-			NumberOfStepsCompleted = 0;
-			_currentPhaseNumberOfSteps = numberOfSteps;
-		}
 
-		public int GetTotalNumberOfSteps()
-		{
-			return _currentPhaseNumberOfSteps;
-		}
-
-		public int NumberOfStepsCompleted // current step for the current process
-		{
-			get { return _stepInCurrentPhase; }
-			set
-			{
-				if (value > GetTotalNumberOfSteps() || value < 0)
-				{
-					throw new ArgumentOutOfRangeException(string.Format("CurrentStep must be set to a number between 0 and {0}", GetTotalNumberOfSteps()));
-				}
-				_stepInCurrentPhase = value;
-				_globalIndicator.NumberOfStepsCompleted = (value*NumberOfGlobalStepsPerPhase/_currentPhaseNumberOfSteps) + (NumberOfGlobalStepsPerPhase*(_currentPhase - 1));
-			}
+			PercentCompleted = 0;
 		}
 	}
 }

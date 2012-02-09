@@ -81,14 +81,12 @@ namespace Palaso.Progress.LogBox
 
 		private class ProgressIndicatorForMultiProgress : IProgressIndicator
 		{
-			private int _numberOfSteps;
-			private int _numberOfStepsCompleted;
+			private int _percentCompleted;
 			private SynchronizationContext _syncContext;
 			private List<IProgressIndicator> _indicators;
 			public ProgressIndicatorForMultiProgress(int numberOfSteps)
 			{
-				_numberOfSteps = numberOfSteps;
-				_numberOfStepsCompleted = 0;
+				_percentCompleted = 0;
 				_indicators = new List<IProgressIndicator>();
 			}
 			public ProgressIndicatorForMultiProgress() : this(100) {}
@@ -102,46 +100,38 @@ namespace Palaso.Progress.LogBox
 				_indicators.Add(indicator);
 			}
 
-			public int GetTotalNumberOfSteps()
+			public int PercentCompleted
 			{
-				return _numberOfSteps;
-			}
-
-			public int NumberOfStepsCompleted
-			{
-				get { return _numberOfStepsCompleted; }
+				get { return _percentCompleted; }
 				set
 				{
-					_numberOfStepsCompleted = value;
+					_percentCompleted = value;
 					foreach (IProgressIndicator progressIndicator in _indicators)
 					{
-						progressIndicator.NumberOfStepsCompleted = value;
+						progressIndicator.PercentCompleted = value;
 					}
 				}
 			}
 
-			public int PercentCompleted
-			{
-				get { return NumberOfStepsCompleted*100/_numberOfSteps; }
-				set { NumberOfStepsCompleted = value*_numberOfSteps/100; }
-			}
-
-			public void NextStep()
-			{
-				NumberOfStepsCompleted = NumberOfStepsCompleted + 1;
-			}
-
 			public void Finish()
 			{
-				NumberOfStepsCompleted = _numberOfSteps;
+				PercentCompleted = 100;
 			}
 
-			public void Initialize(int numberOfSteps)
+			public void Initialize()
 			{
-				_numberOfSteps = numberOfSteps;
+				_percentCompleted = 0;
 				foreach (IProgressIndicator progressIndicator in _indicators)
 				{
-					progressIndicator.Initialize(numberOfSteps);
+					progressIndicator.Initialize();
+				}
+			}
+
+			public void IndicateUnknownProgress()
+			{
+				foreach (IProgressIndicator progressIndicator in _indicators)
+				{
+					progressIndicator.IndicateUnknownProgress();
 				}
 			}
 
