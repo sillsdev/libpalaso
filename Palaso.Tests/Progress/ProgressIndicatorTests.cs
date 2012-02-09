@@ -10,9 +10,7 @@ namespace Palaso.Tests.Progress
 	[TestFixture]
 	public class MultiPhaseProgressIndicatorTests
 	{
-		[Test, Ignore("The NextStep() call starts a death spiral in the Increment(1) call, if SyncContext is null (and probably the same, if SyncContext is not null, which leads to infinite recursion.")]
-		[Category("SkipOnTeamCity")]
-		// Skip on Team City, I think because of some problem with SyncContext() when run on TC (cjh 2012-02)
+		[Test]
 		public void FivePhase_ProgressesNormally()
 		{
 			var globalIndicator = new SimpleProgressIndicator();
