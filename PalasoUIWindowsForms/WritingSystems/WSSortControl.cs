@@ -142,6 +142,7 @@ peach";
 				return;
 			}
 			string newValue = (string)_sortUsingValueMap[_sortUsingComboBox.SelectedIndex];
+			_changingModel = true;
 			try
 			{
 				_model.CurrentSortUsing = newValue;
@@ -165,7 +166,6 @@ peach";
 				_sortrules_panel.Visible = true;
 				_sortRulesTextBox.Text = _model.CurrentSortRules;
 			}
-			_changingModel = true;
 		}
 
 		private void _languageComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -228,8 +228,10 @@ peach";
 			{
 				return;
 			}
+#if !MONO
 			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
 			_model.ActivateCurrentKeyboard();
+#endif
 		}
 
 		private void TextControl_Leave(object sender, EventArgs e)
@@ -238,7 +240,9 @@ peach";
 			{
 				return;
 			}
+#if !MONO
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+#endif
 			if (_rulesValidationTimer.Enabled)
 			{
 				_rulesValidationTimer.Enabled = false;

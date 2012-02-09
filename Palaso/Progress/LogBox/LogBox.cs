@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -120,6 +120,16 @@ namespace Palaso.Progress.LogBox
 			set { base.Font = _verboseBox.Font = _box.Font = value; }
 		}
 
+		public override string Text
+		{
+			get { return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; }
+		}
+
+		public string Rtf
+		{
+			get { return "Box:" + _box.Rtf + "Verbose:" + _verboseBox.Rtf; }
+		}
+
 		public void ScrollToTop()
 		{
 			foreach (var rtfBox in new[] { _box, _verboseBox })
@@ -192,6 +202,14 @@ namespace Palaso.Progress.LogBox
 
 		private void Write(Color color, FontStyle style, string msg, params object[] args)
 		{
+#if MONO // changing the text colour throws exceptions with mono 2011-12-09
+		// so just append plain text
+			_box.AppendText(string.Format(msg + Environment.NewLine, args));
+			_box.ScrollToCaret();
+			_verboseBox.AppendText(string.Format(msg + Environment.NewLine, args));
+			_verboseBox.ScrollToCaret();
+#else
+
 #if !DEBUG
 			try
 			{
@@ -223,6 +241,7 @@ namespace Palaso.Progress.LogBox
 				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
 			}
 #endif
+#endif //MONO
 		}
 
 		public void WriteWarning(string message, params object[] args)
@@ -281,12 +300,16 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteVerbose(string message, params object[] args)
 		{
+#if MONO
+			_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
+#else
 			SafeInvoke(_verboseBox, (() =>
 			{
 				_verboseBox.SelectionStart = _verboseBox.Text.Length;
 				_verboseBox.SelectionColor = Color.DarkGray;
 				_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
 			}));
+#endif
 		}
 		public static string SafeFormat(string format, params object[] args)
 		{
