@@ -18,6 +18,7 @@ namespace Palaso.IO
 		string LocateOptionalFile(string fileName);
 		string LocateDirectory(string directoryName);
 		string LocateDirectory(string directoryName, string descriptionForErrorMessage);
+		IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths);
 	}
 
 	public class FileLocator :IFileLocator
@@ -229,6 +230,15 @@ namespace Palaso.IO
 			return GetDirectoryDistributedWithApplication(false, partsOfTheSubPath);
 		}
 
+		/// <summary>
+		/// Use this when you can't mess with the whole application's filelocator, but you want to add a path or two, e.g., the folder of the current book in Bloom.
+		/// </summary>
+		/// <param name="addedSearchPaths"></param>
+		/// <returns></returns>
+		public virtual IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths)
+		{
+			return new FileLocator(new List<string>(_searchPaths.Concat(addedSearchPaths)));
+		}
 		#region Methods for locating file in program files folders
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
