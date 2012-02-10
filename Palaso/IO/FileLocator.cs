@@ -297,9 +297,17 @@ namespace Palaso.IO
 			{
 				foreach (var path in subFoldersToSearch.Select(sf => Path.Combine(progFolder, sf)).Where(Directory.Exists))
 				{
-					var tgtPath = Directory.GetFiles(path, exeName, srcOption).FirstOrDefault();
-					if (tgtPath != null)
-						return tgtPath;
+					try
+					{
+						var tgtPath = Directory.GetFiles(path, exeName, srcOption).FirstOrDefault();
+						if (tgtPath != null)
+							return tgtPath;
+					}
+					catch (Exception)
+					{
+						//swallow. Some paths, we aren't allowed to look in (like Google Chrome crash reports)
+					}
+
 				}
 			}
 
