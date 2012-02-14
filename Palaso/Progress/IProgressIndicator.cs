@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Palaso.Progress
@@ -16,14 +17,15 @@ namespace Palaso.Progress
 	{
 		public SimpleProgressIndicator()
 		{
-			Style = ProgressBarStyle.Continuous;
+			UpdateStyle(ProgressBarStyle.Continuous);
+			MarqueeAnimationSpeed = 50; // only used when IndicateUnknownProgress() is in effect
 			UpdateValue(0);
 			UpdateMaximum(100);
 		}
 
 		public void IndicateUnknownProgress()
 		{
-			Style = ProgressBarStyle.Marquee;
+			UpdateStyle(ProgressBarStyle.Marquee);
 		}
 
 		public SynchronizationContext SyncContext { get; set; }
@@ -42,7 +44,7 @@ namespace Palaso.Progress
 				{
 					valueToSet = 100;
 				}
-				Style = ProgressBarStyle.Continuous;
+				UpdateStyle(ProgressBarStyle.Continuous);
 				UpdateValue(valueToSet);
 			}
 		// This method does nothing, but cause a stack overflow exception, since the provided int (above) ends up being cast as null, and the death sriral begins.
@@ -50,20 +52,37 @@ namespace Palaso.Progress
 
 		public void Finish()
 		{
-			Style = ProgressBarStyle.Continuous;
+			UpdateStyle(ProgressBarStyle.Continuous);
 			UpdateValue(Maximum);
 		}
 
 		public void Initialize()
 		{
-			Style = ProgressBarStyle.Continuous;
+			UpdateStyle(ProgressBarStyle.Continuous);
 			UpdateValue(0);
 			UpdateMaximum(100);
 		}
 
+		private void UpdateStyle(ProgressBarStyle x)
+		{
+			if (SyncContext != null)
+			{
+				SyncContext.Post(SetStyle, x);
+			}
+			else
+			{
+				Style = x;
+			}
+		}
+
+		private void SetStyle(object state)
+		{
+			Style = (ProgressBarStyle) state;
+		}
+
 		private void SetVal(object state)
 		{
-			Value = (int)state;
+			Value = (int) state;
 		}
 
 		private void UpdateValue(int x)
@@ -80,7 +99,7 @@ namespace Palaso.Progress
 
 		private void SetMax(object state)
 		{
-			Maximum = (int)state;
+			Maximum = (int) state;
 		}
 
 		private void UpdateMaximum(int x)
@@ -94,6 +113,7 @@ namespace Palaso.Progress
 				Maximum = x;
 			}
 		}
+
 	}
 
 	///<summary>
@@ -116,7 +136,7 @@ namespace Palaso.Progress
 
 			_numberOfPhases = numberOfPhases;
 			_currentPhase = 0;  // must call Initialize() to increment the _currentProcess
-			PercentCompleted = 0;
+			_currentPhasePercentComplete = 0;
 		}
 
 		public void IndicateUnknownProgress()
