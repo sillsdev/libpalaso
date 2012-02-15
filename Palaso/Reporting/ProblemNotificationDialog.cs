@@ -51,11 +51,14 @@ namespace Palaso.Reporting
 
 		private ProblemNotificationDialog()
 		{
+#if MONO
+			this.AutoScaleMode = AutoScaleMode.None;
+#endif
 			InitializeComponent();
 			_message.Font = SystemFonts.MessageBoxFont;
 			_message.BackColor = BackColor;
 			_message.ForeColor = ForeColor;
-			_reoccurenceMessage.Font = SystemFonts.MessageBoxFont;
+			_reoccurenceMessage.Font = SystemFonts.DialogFont;
 			_icon.Image = SystemIcons.Warning.ToBitmap();
 		}
 
@@ -107,7 +110,8 @@ namespace Palaso.Reporting
 
 		private void AdjustHeights()
 		{
-			_message.Height = GetDesiredTextBoxHeight();
+			Size desiredSize = GetDesiredTextBoxSize();
+			_message.Height = desiredSize.Height + _message.Margin.Bottom;
 
 			var desiredWindowHeight = tableLayout.Height + Padding.Top +
 				Padding.Bottom + (Height - ClientSize.Height);
@@ -124,7 +128,7 @@ namespace Palaso.Reporting
 			Height = Math.Min(desiredWindowHeight, maxWindowHeight);
 		}
 
-		private int GetDesiredTextBoxHeight()
+		private Size GetDesiredTextBoxSize()
 		{
 			if (!IsHandleCreated)
 				CreateHandle();
@@ -134,8 +138,11 @@ namespace Palaso.Reporting
 				const TextFormatFlags flags = TextFormatFlags.NoClipping | TextFormatFlags.NoPadding |
 					TextFormatFlags.TextBoxControl | TextFormatFlags.WordBreak;
 
-				return TextRenderer.MeasureText(g, _message.Text, _message.Font,
-					new Size(_message.ClientSize.Width, 0), flags).Height;
+				int[] tlcols = tableLayout.GetColumnWidths();
+
+				Size measuredSize = TextRenderer.MeasureText(g, _message.Text, _message.Font,
+					new Size(tlcols[1], 0), flags);
+				return measuredSize;
 			}
 		}
 	}
