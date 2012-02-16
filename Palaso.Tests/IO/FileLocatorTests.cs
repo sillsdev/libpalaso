@@ -51,6 +51,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
+		[Category("KnownMonoIssue")]
 		public void GetFromRegistryProgramThatOpensFileType_SendInvalidType_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".blah"));
@@ -58,6 +59,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
+		[Category("KnownMonoIssue")]
 		public void GetFromRegistryProgramThatOpensFileType_SendValidType_ReturnsProgramPath()
 		{
 			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".txt"));
@@ -65,6 +67,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
+		[Category("KnownMonoIssue")]
 		public void GetFromRegistryProgramThatOpensFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
 		{
 			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
@@ -72,6 +75,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
+		[Category("KnownMonoIssue")]
 		public void LocateInProgramFiles_SendInvalidProgramNoDeepSearch_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.LocateInProgramFiles("blah.exe", false));
@@ -79,7 +83,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity")]
+		[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramNoDeepSearch_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.LocateInProgramFiles("msinfo32.exe", false));
@@ -87,7 +91,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity")]
+		[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
 		{
 			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true));
@@ -95,7 +99,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity")]
+		[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
 			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true, "Common Files"));
@@ -103,7 +107,7 @@ namespace Palaso.Tests.IO
 
 		[Test]
 		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity")]
+		[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
 		{
 			Assert.DoesNotThrow(() => FileLocator.LocateInProgramFiles("msinfo32.exe", true, "!~@blah"));

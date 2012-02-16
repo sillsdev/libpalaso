@@ -892,7 +892,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSpellCheckingId
 		{
-			get { return CurrentDefinition.SpellCheckingId ?? string.Empty; }
+			get
+			{
+				if (CurrentDefinition == null)
+				{
+					return string.Empty;
+				}
+				return CurrentDefinition.SpellCheckingId ?? string.Empty;
+			}
 			set
 			{
 				if (CurrentDefinition.SpellCheckingId != value)
@@ -932,9 +939,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					_spellCheckerItems.AddRange(broker.Dictionaries.Select(dictionaryInfo => new SpellCheckInfo(dictionaryInfo)));
 
 					// add current dictionary, if not installed
-					if (!broker.DictionaryExists(CurrentSpellCheckingId))
+					if (!string.IsNullOrEmpty(CurrentSpellCheckingId))
 					{
-						_spellCheckerItems.Add(new SpellCheckInfo(CurrentSpellCheckingId));
+						if (!broker.DictionaryExists(CurrentSpellCheckingId))
+						{
+							_spellCheckerItems.Add(new SpellCheckInfo(CurrentSpellCheckingId));
+						}
 					}
 				}
 			}
@@ -942,7 +952,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				//If Enchant is not installed we expect an exception.
 			}
-			catch (Exception e)//there are other errors we can get from the enchange binding
+			catch (Exception e)//there are other errors we can get from the enchant binding
 			{
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
 												"The Enchant Spelling engine encountered an error: " + e.Message);

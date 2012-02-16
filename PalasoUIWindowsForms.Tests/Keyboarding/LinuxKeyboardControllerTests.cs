@@ -154,7 +154,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("No IM Running")]
 		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
+			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
 			Assert.AreEqual(0, availableKeyboards.Count);
 		}
 
@@ -208,9 +208,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindowForFocus();
 
-			KeyboardController.ActivateKeyboard("am:sera");
+			KeyboardController.ActivateKeyboard("m17n:am:sera");
 			KeyboardController.DeactivateKeyboard();
-			Assert.AreEqual("am:sera", KeyboardController.GetActiveKeyboard());
+			Assert.AreEqual("m17n:am:sera", KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
@@ -221,8 +221,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			RequiresWindowForFocus();
 
 			KeyboardController.DeactivateKeyboard();
-			KeyboardController.ActivateKeyboard("am:sera");
-			Assert.AreEqual("am:sera", KeyboardController.GetActiveKeyboard());
+			KeyboardController.ActivateKeyboard("m17n:am:sera");
+			Assert.AreEqual("m17n:am:sera", KeyboardController.GetActiveKeyboard());
 			KeyboardController.DeactivateKeyboard();
 		}
 
