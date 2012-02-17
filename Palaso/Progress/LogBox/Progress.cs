@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -76,88 +77,120 @@ namespace Palaso.Progress.LogBox
 		public SynchronizationContext SyncContext { get; set; }
 	}
 
-	public class MultiProgress : IProgress, IDisposable
+	public class ProgressIndicatorForMultiProgress : IProgressIndicator
 	{
-
-		private class ProgressIndicatorForMultiProgress : IProgressIndicator
+		private int _percentCompleted;
+		private SynchronizationContext _syncContext;
+		private List<IProgressIndicator> _indicators;
+		public ProgressIndicatorForMultiProgress()
 		{
-			private int _percentCompleted;
-			private SynchronizationContext _syncContext;
-			private List<IProgressIndicator> _indicators;
-			public ProgressIndicatorForMultiProgress(int numberOfSteps)
-			{
-				_percentCompleted = 0;
-				_indicators = new List<IProgressIndicator>();
-			}
-			public ProgressIndicatorForMultiProgress() : this(100) {}
+			_percentCompleted = 0;
+			_indicators = new List<IProgressIndicator>();
+		}
 
-			public void AddIndicator(IProgressIndicator indicator)
+		public void AddIndicator(IProgressIndicator indicator)
+		{
+			if (indicator == null)
 			{
-				if (indicator == null)
-				{
-					throw new ArgumentNullException("indicator was null when passed to ProgressIndicatorForMultiProgress.AddIndicator");
-				}
-				_indicators.Add(indicator);
+				throw new ArgumentNullException("indicator was null when passed to ProgressIndicatorForMultiProgress.AddIndicator");
 			}
+			_indicators.Add(indicator);
+		}
 
-			public int PercentCompleted
+		public int PercentCompleted
+		{
+			get { return _percentCompleted; }
+			set
 			{
-				get { return _percentCompleted; }
-				set
-				{
-					_percentCompleted = value;
-					foreach (IProgressIndicator progressIndicator in _indicators)
-					{
-						progressIndicator.PercentCompleted = value;
-					}
-				}
-			}
-
-			public void Finish()
-			{
-				PercentCompleted = 100;
-			}
-
-			public void Initialize()
-			{
-				_percentCompleted = 0;
+				_percentCompleted = value;
 				foreach (IProgressIndicator progressIndicator in _indicators)
 				{
-					progressIndicator.Initialize();
-				}
-			}
-
-			public void IndicateUnknownProgress()
-			{
-				foreach (IProgressIndicator progressIndicator in _indicators)
-				{
-					progressIndicator.IndicateUnknownProgress();
-				}
-			}
-
-			public SynchronizationContext SyncContext {
-				get
-				{
-					return _syncContext;
-				}
-				set
-				{
-					_syncContext = value;
-					foreach (IProgressIndicator progressIndicator in _indicators)
-					{
-						progressIndicator.SyncContext = value;
-					}
+					progressIndicator.PercentCompleted = value;
 				}
 			}
 		}
 
-		private readonly List<IProgress> _progressHandlers=new List<IProgress>();
+		public void Finish()
+		{
+			PercentCompleted = 100;
+		}
+
+		public void Initialize()
+		{
+			_percentCompleted = 0;
+			foreach (IProgressIndicator progressIndicator in _indicators)
+			{
+				progressIndicator.Initialize();
+			}
+		}
+
+		public void IndicateUnknownProgress()
+		{
+			foreach (IProgressIndicator progressIndicator in _indicators)
+			{
+				progressIndicator.IndicateUnknownProgress();
+			}
+		}
+
+		public SynchronizationContext SyncContext
+		{
+			get
+			{
+				return _syncContext;
+			}
+			set
+			{
+				_syncContext = value;
+				foreach (IProgressIndicator progressIndicator in _indicators)
+				{
+					progressIndicator.SyncContext = value;
+				}
+			}
+		}
+	}
+
+	public class MultiProgress : IProgress, IDisposable
+	{
+		private class ProgressHandler
+		{
+			public IProgress Handler { get; private set; }
+			public bool CanHandleStatus { get; private set; }
+			public bool CanHandleMessages { get; private set; }
+			public ProgressHandler(IProgress p, Capabilities c)
+			{
+				Handler = p;
+				CanHandleStatus = false;
+				CanHandleMessages = false;
+				if (c == Capabilities.Status || c == Capabilities.All)
+				{
+					CanHandleStatus = true;
+				}
+				if (c == Capabilities.Message || c == Capabilities.All)
+				{
+					CanHandleMessages = true;
+				}
+			}
+		}
+
+		private enum Capabilities
+		{
+			Status,
+			Message,
+			All
+		}
+
+		private readonly List<ProgressHandler> _progressHandlers=new List<ProgressHandler>();
 		private bool _cancelRequested;
 		private ProgressIndicatorForMultiProgress _indicatorForMultiProgress;
 
 		public MultiProgress(IEnumerable<IProgress> progressHandlers)
 		{
-			_progressHandlers.AddRange(progressHandlers);
+			ErrorEncountered = false;
+			WarningsEncountered = false;
+			foreach (IProgress progressHandler in progressHandlers)
+			{
+				_progressHandlers.Add(new ProgressHandler(progressHandler, Capabilities.All));
+			}
 			_indicatorForMultiProgress = new ProgressIndicatorForMultiProgress();
 		}
 
@@ -170,12 +203,12 @@ namespace Palaso.Progress.LogBox
 			get { return _indicatorForMultiProgress.SyncContext; }
 			set
 			{
-				foreach (IProgress progressHandler in _progressHandlers)
+				foreach (ProgressHandler progressHandler in _progressHandlers)
 				{
-					progressHandler.SyncContext = value;
-					if (progressHandler.ProgressIndicator != null)
+					progressHandler.Handler.SyncContext = value;
+					if (progressHandler.Handler.ProgressIndicator != null)
 					{
-						progressHandler.ProgressIndicator.SyncContext = value;
+						progressHandler.Handler.ProgressIndicator.SyncContext = value;
 					}
 				}
 				_indicatorForMultiProgress.SyncContext = value;
@@ -188,10 +221,9 @@ namespace Palaso.Progress.LogBox
 
 			get
 			{
-				foreach (var handler in _progressHandlers)
+				if (_progressHandlers.Any(h => h.Handler.CancelRequested))
 				{
-					if (handler.CancelRequested)
-						return true;
+					return true;
 				}
 				return _cancelRequested;
 			}
@@ -206,6 +238,9 @@ namespace Palaso.Progress.LogBox
 			get; set;
 		}
 
+		public bool WarningsEncountered { get; set; }
+
+
 		public IProgressIndicator ProgressIndicator
 		{
 			get { return _indicatorForMultiProgress; }
@@ -218,59 +253,67 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteStatus(string message, params object[] args)
 		{
-			foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers)
 			{
-				handler.WriteStatus(message, args);
+				if (h.CanHandleStatus)
+				{
+					h.Handler.WriteStatus(message, args);
+				}
+				if (h.CanHandleMessages)
+				{
+					h.Handler.WriteVerbose(message, args);
+				}
 			}
 		}
 
 		public void WriteMessage(string message, params object[] args)
 		{
-			foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				handler.WriteMessage(message, args);
+				h.Handler.WriteMessage(message, args);
 			}
 		}
 
 		public void WriteMessageWithColor(string colorName, string message, params object[] args)
 		{
-			 foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				handler.WriteMessage(colorName, message, args);
+				h.Handler.WriteMessage(colorName, message, args);
 			}
 		}
 
 		public void WriteWarning(string message, params object[] args)
 		{
-			foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				handler.WriteWarning(message, args);
+				h.Handler.WriteWarning(message, args);
 			}
+			WarningsEncountered = true;
 		}
 
 		public void WriteException(Exception error)
 		{
-			 foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				handler.WriteException(error);
+				h.Handler.WriteException(error);
 			}
 			ErrorEncountered = true;
 		}
 
 		public void WriteError(string message, params object[] args)
 		{
-			foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				handler.WriteError(message, args);
+				h.Handler.WriteError(message, args);
 			}
 			ErrorEncountered = true;
 		}
 
 		public void WriteVerbose(string message, params object[] args)
 		{
-			foreach (var handler in _progressHandlers)
+			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				handler.WriteVerbose(message, args);
+				h.Handler.WriteVerbose(message, args);
 			}
 		}
 
@@ -280,7 +323,7 @@ namespace Palaso.Progress.LogBox
 			{
 				foreach (var handler in _progressHandlers)
 				{
-					handler.ShowVerbose = value;
+					handler.Handler.ShowVerbose = value;
 				}
 			}
 		}
@@ -297,10 +340,28 @@ namespace Palaso.Progress.LogBox
 
 		public void Add(IProgress progress)
 		{
-			_progressHandlers.Add(progress);
+			_progressHandlers.Add(new ProgressHandler(progress, Capabilities.All));
 			if (progress.ProgressIndicator != null)
 			{
 				_indicatorForMultiProgress.AddIndicator(progress.ProgressIndicator);
+			}
+		}
+
+		public void AddStatusProgress(IProgress p)
+		{
+			_progressHandlers.Add(new ProgressHandler(p, Capabilities.Status));
+			if (p.ProgressIndicator != null)
+			{
+				_indicatorForMultiProgress.AddIndicator(p.ProgressIndicator);
+			}
+		}
+
+		public void AddMessageProgress(IProgress p)
+		{
+			_progressHandlers.Add(new ProgressHandler(p, Capabilities.Message));
+			if (p.ProgressIndicator != null)
+			{
+				_indicatorForMultiProgress.AddIndicator(p.ProgressIndicator);
 			}
 		}
 	}
@@ -571,14 +632,15 @@ namespace Palaso.Progress.LogBox
 	{
 		public void WriteStatus(string message, params object[] args)
 		{
-			LastStatus = GenericProgress.SafeFormat(message, args);
+			string theMessage = GenericProgress.SafeFormat(message, args);
+			LastStatus = theMessage;
 			if (SyncContext != null)
 			{
-				SyncContext.Post(UpdateText, message);
+				SyncContext.Post(UpdateText, theMessage);
 			}
 			else
 			{
-				Text = message;
+				Text = theMessage;
 			}
 		}
 
