@@ -1,3 +1,9 @@
+#if MONO
+
+#define DISABLE_KEYBOARDSWITCHING
+
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,11 +11,6 @@ using System.Diagnostics;
 using System.Linq;
 using Palaso.Reporting;
 
-#if MONO
-
-#define DISABLE_KEYBOARDSWITCHING
-
-#endif
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
