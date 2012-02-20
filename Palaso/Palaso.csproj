@@ -364,6 +364,7 @@
 	<Compile Include="Xml\XmlHelpers.cs" />
 	<Compile Include="Xml\XmlNodeExtensions.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
+	<Compile Include="Xml\XmlWriterExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Network\ProxyCredentialsRequestDialog.resx">
