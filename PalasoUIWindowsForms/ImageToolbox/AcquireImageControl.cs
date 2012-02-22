@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -96,6 +97,47 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 #endif
+		}
+
+		private void OpenFileFromDrag(string path)
+		{
+			SetMode(Modes.SingleImage);
+			_currentImage = PalasoImage.FromFile(path);
+			_pictureBox.Image = _currentImage.Image;
+			ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(path);
+			ImageToolboxSettings.Default.Save();
+			if (ImageChanged != null)
+				ImageChanged.Invoke(this, null);
+		}
+
+		private void OnDragDrop(object sender, DragEventArgs e)
+		{
+			try
+			{
+				var a = (Array)e.Data.GetData(DataFormats.FileDrop);
+
+				if (a != null)
+				{
+					// Extract string from first array element
+					// (ignore all files except first if number of files are dropped).
+					string s = a.GetValue(0).ToString();
+
+					// Call OpenFile asynchronously.
+					// Explorer instance from which file is dropped is not responding
+					// all the time when DragDrop handler is active, so we need to return
+					// immidiately (especially if OpenFile shows MessageBox).
+
+					this.BeginInvoke(new Action<string>(OpenFileFromDrag), s);
+
+					this.ParentForm.Activate();        // in the case Explorer overlaps this form
+				}
+			}
+			catch (Exception)
+			{
+#if DEBUG
+				throw;
+#endif
+			}
 		}
 
 		public void SetImage(PalasoImage image)
@@ -266,6 +308,33 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			_focusTimer.Enabled = false;
 			_galleryControl.Focus();
+		}
+
+		private void AcquireImageControl_DragEnter(object sender, DragEventArgs e)
+		{
+			try
+			{
+
+				if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				{
+					var a = (Array) e.Data.GetData(DataFormats.FileDrop);
+
+					if (a != null)
+					{
+						var path = a.GetValue(0).ToString();
+						if ((new List<string>(new[] {".tif", ".png", ".bmp", ".jpg", ".jpeg"})).Contains(Path.GetExtension(path).ToLower()))
+						{
+							e.Effect = DragDropEffects.Copy;
+							return;
+						}
+					}
+
+				}
+			}
+			catch (Exception)
+			{
+			}
+			e.Effect = DragDropEffects.None;
 		}
 	}
 }
