@@ -677,6 +677,16 @@ namespace Palaso.Progress.LogBox
 		public string LastStatus { get; private set; }
 		public string LastWarning { get; private set; }
 		public string LastError { get; private set; }
+		public void Reset()
+		{
+			LastError = "";
+			LastWarning = "";
+			LastStatus = "";
+			CancelRequested = false;
+			WarningEncountered = false;
+			ErrorEncountered = false;
+			WriteStatus("");
+		}
 
 	}
 
