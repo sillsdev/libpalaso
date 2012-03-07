@@ -15,7 +15,7 @@ namespace Palaso.DictionaryServices.Processors
 	public class HomographMerger
 	{
 
-		public static void Merge(LiftLexEntryRepository repo, string writingSystemIdForMatching, string[] traitsWithMultiplicity, StringBuilderProgress progress)
+		public static void Merge(LiftLexEntryRepository repo, string writingSystemIdForMatching, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			var alreadyProcessed = new List<RepositoryId>();
 
