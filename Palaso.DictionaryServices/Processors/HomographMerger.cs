@@ -14,7 +14,8 @@ namespace Palaso.DictionaryServices.Processors
 	/// </summary>
 	public class HomographMerger
 	{
-		public static void Merge(LiftLexEntryRepository repo, string writingSystemIdForMatching, IProgress progress)
+
+		public static void Merge(LiftLexEntryRepository repo, string writingSystemIdForMatching, string[] traitsWithMultiplicity, StringBuilderProgress progress)
 		{
 			var alreadyProcessed = new List<RepositoryId>();
 
@@ -30,9 +31,9 @@ namespace Palaso.DictionaryServices.Processors
 				alreadyProcessed.Add(ids[i]);
 				var entry = repo.GetItem(ids[i]);
 				var writingSystemForMatching = WritingSystemDefinition.Parse(writingSystemIdForMatching);
-				var matches =
-					repo.GetEntriesWithMatchingLexicalForm(
-						entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching);
+				var matches = repo.GetEntriesWithMatchingLexicalForm(
+					entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching
+				);
 
 				//at this point we have entries which match along a single ws axis. We may or may not be able to merge them...
 
@@ -42,15 +43,19 @@ namespace Palaso.DictionaryServices.Processors
 					progress.WriteMessageWithColor("gray", "Found {0} homograph(s) for {1}", matches.Count, lexicalForm);
 				}
 				var mergeCount = 0;
+				var matchAlreadyProcessed = new List<RepositoryId>();
 				foreach (RecordToken<LexEntry> incomingMatch in matches)
 				{
-					if (alreadyProcessed.Contains(incomingMatch.Id))
+					if (incomingMatch.Id == ids[i])
+						continue; // The entry will match itself at least this time.
+					if (matchAlreadyProcessed.Contains(incomingMatch.Id))
 						continue; //we'll be here at least as each element matches itself
 
-					alreadyProcessed.Add(incomingMatch.Id);
-					if (EntryMerger.TryMergeEntries(entry, incomingMatch.RealObject, progress))
+					matchAlreadyProcessed.Add(incomingMatch.Id);
+					if (EntryMerger.TryMergeEntries(entry, incomingMatch.RealObject, traitsWithMultiplicity, progress))
 					{
 						mergeCount++;
+						alreadyProcessed.Add(incomingMatch.Id);
 						repo.DeleteItem(incomingMatch.RealObject);
 						repo.SaveItem(entry);
 					}
@@ -71,39 +76,51 @@ namespace Palaso.DictionaryServices.Processors
 
 			}
 
-			MergeSensesWithinEntries(repo, progress);
+			MergeSensesWithinEntries(repo, traitsWithMultiplicity, progress);
 		}
 
 		/// <summary>
 		/// it can happen that within a single entry, you can have mergable senses.
-		///
-		/// NB!!!! this only thinks about merging the first 2 senses. (this was written as an emergency cleanup for a FLEx bug).
 		/// </summary>
-		private static void MergeSensesWithinEntries(LiftLexEntryRepository repo, IProgress progress)
+		private static void MergeSensesWithinEntries(LiftLexEntryRepository repo, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			var ids = new List<RepositoryId>(repo.GetAllItems());
-			for (int i = 0; i < ids.Count; i++)
+			foreach (var id in ids)
 			{
 				if (progress.CancelRequested)
 				{
 					throw new OperationCanceledException("User cancelled");
 				}
-				var entry = repo.GetItem(ids[i]);
+				var entry = repo.GetItem(id);
 				var senses = entry.Senses.ToArray();
 				if(senses.Length < 2)
 				{
 					continue;
 				}
-				var targetSense = senses[0];
-				var sense2 = senses[1];
-
+				var sensesToRemove = new List<LexSense>();
+				foreach (var sense in entry.Senses)
 				{
-					if(SenseMerger.TryMergeSenseWithSomeExistingSense(targetSense, sense2, progress))
+					if (sensesToRemove.Contains(sense))
+						continue;
+					foreach (var otherSense in entry.Senses)
 					{
-						entry.Senses.Remove(sense2);
-						entry.IsDirty = true;
-						repo.SaveItem(entry);
+						if (otherSense == sense) // Don't try and compare with ourself.
+							continue;
+						if (sensesToRemove.Contains(otherSense))
+							continue;
+						if (!SenseMerger.TryMergeSenseWithSomeExistingSense(sense, otherSense, traitsWithMultiplicity, progress))
+							continue;
+						sensesToRemove.Add(otherSense);
 					}
+				}
+				foreach (var sense in sensesToRemove)
+				{
+					entry.Senses.Remove(sense);
+					entry.IsDirty = true;
+				}
+				if (entry.IsDirty)
+				{
+					repo.SaveItem(entry);
 				}
 			}
 		}
@@ -159,5 +176,6 @@ namespace Palaso.DictionaryServices.Processors
 		{
 			return "Merge Homographs";
 		}
+
 	}
 }

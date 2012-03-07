@@ -53,7 +53,7 @@ namespace Palaso.DictionaryServices.Tests.Merging
 				</header>");
 
 			//todo:
-			XmlNamespaceManager nameSpaceManager = new XmlNamespaceManager(new NameTable());
+			var nameSpaceManager = new XmlNamespaceManager(new NameTable());
 			nameSpaceManager.AddNamespace("olac", "http://www.language-archives.org/OLAC/1.1/");
 			nameSpaceManager.AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
 			AssertThatXmlIn.Dom(_resultDom).HasAtLeastOneMatchForXpath("lift/header/metadata/olac:olac/dc:", nameSpaceManager);
@@ -62,7 +62,7 @@ namespace Palaso.DictionaryServices.Tests.Merging
 		[Test]
 		public void Run_NoHomographs_OK()
 		{
-			var contents = @"
+			const string contents = @"
 				<entry id='foo' GUID1>
 					<lexical-unit>
 						  <form lang='etr'><text>hello</text></form>
@@ -586,6 +586,123 @@ namespace Palaso.DictionaryServices.Tests.Merging
 					});
 		}
 
+		[Test]
+		public void Run_ThreeEntriesWithTwoDifferentProperties_MergeToTwo()
+		{
+			const string contents =
+			@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Northern</text></form>
+				</field>
+			</entry>
+			<entry id='foo' GUID2 dateModified='2006-10-03T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Southern</text></form>
+				</field>
+			</entry>
+			<entry id='foo' GUID3 dateModified='2006-10-04T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Northern</text></form>
+				</field>
+			</entry>";
+			Run(contents);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 2);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/field/form/text[text()='Southern']", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/field/form/text[text()='Northern']", 1);
+		}
+
+		[Test]
+		public void Run_FourEntriesWithTwoDifferentProperties_MergeToTwo()
+		{
+			const string contents =
+			@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Southern</text></form>
+				</field>
+			</entry>
+			<entry id='foo' GUID2 dateModified='2006-10-02T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Northern</text></form>
+				</field>
+			</entry>
+			<entry id='foo' GUID3 dateModified='2006-10-03T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Southern</text></form>
+				</field>
+			</entry>
+			<entry id='foo' GUID4 dateModified='2006-10-04T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<field type='Dialect'>
+					<form lang='en'><text>Northern</text></form>
+				</field>
+			</entry>";
+			Run(contents);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 2);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/field/form/text[text()='Southern']", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/field/form/text[text()='Northern']", 1);
+		}
+
+		[Test]
+		public void Run_TwoEntriesWithOptionCollectionWithMultiplicity_MergeToOne()
+		{
+			const string contents =
+			@"<entry id='foo' GUID1 dateModified='2006-10-02T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<trait name='Dialect list choice' value='Northern'/>
+			</entry>
+			<entry id='foo' GUID2 dateModified='2006-10-03T01:42:57Z'>
+				<lexical-unit>
+				  <form lang='etr'>
+					<text>bandazi</text>
+				  </form>
+				</lexical-unit>
+				<trait name='Dialect list choice' value='Southern'/>
+			</entry>";
+			Run(contents, new[] { "Dialect list choice" });
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/trait[@value='Northern']", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/trait[@value='Southern']", 1);
+		}
+
+
 
 		/// <summary>
 		/// this one comes from the time that flex 7 had a bug where it duplicated your senses
@@ -593,7 +710,7 @@ namespace Palaso.DictionaryServices.Tests.Merging
 		[Test]
 		public void Run_AlmostDuplicateSensesInSameEntry_Merged()
 		{
-			var contents =
+			const string contents =
 				@"<entry
 		dateCreated='2011-03-29T12:01:18Z'
 		dateModified='2011-04-01T03:35:57Z'
@@ -641,17 +758,56 @@ namespace Palaso.DictionaryServices.Tests.Merging
 			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/grammatical-info[@value='noun']", 1);
 		}
 
+		/// <summary>
+		/// </summary>
+		[Test]
+		public void Run_ThreeSensesInSameEntry_Merged()
+		{
+			const string contents =
+		@"<entry
+		dateCreated='2011-03-29T12:01:18Z'
+		dateModified='2011-04-01T03:35:57Z'
+		guid='6da9c2b4-165c-45cb-8779-4ae7a21598e0'
+		id='patintiyan_6da9c2b4-165c-45cb-8779-4ae7a21598e0'>
+		<lexical-unit>
+			<form lang='bto'><text>patintiyan</text></form>
+		</lexical-unit>
+		<sense id='1'>
+			<grammatical-info value='noun' />
+			<definition><form lang='en'><text>wicker lamp</text></form></definition>
+		</sense>
+		<sense id='2'>
+			<grammatical-info value='noun' />
+			<definition><form lang='en'><text>wicker lamp</text></form></definition>
+		</sense>
+		<sense id='3'>
+			<grammatical-info value='noun' />
+			<definition><form lang='en'><text>wicker lamp</text></form></definition>
+		</sense>
+		</entry>";
+
+			Run(contents);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense", 1);
+			AssertThatXmlIn.Dom(_resultDom).HasSpecifiedNumberOfMatchesForXpath("//entry/sense/grammatical-info[@value='noun']", 1);
+		}
+
 		private void Run(string contents)
 		{
-			var m = new HomographMerger();
-			contents = contents.Replace("GUID1", "guid='"+Guid.NewGuid().ToString()+"'");
-			contents = contents.Replace("GUID2", "guid='" + Guid.NewGuid().ToString() + "'");
+			Run(contents, null);
+		}
+
+		private void Run(string contents, string[] traitsWithMultiplicity)
+		{
+			contents = contents.Replace("GUID1", "guid='" + Guid.NewGuid() + "'");
+			contents = contents.Replace("GUID2", "guid='" + Guid.NewGuid() + "'");
+			contents = contents.Replace("GUID3", "guid='" + Guid.NewGuid() + "'");
+			contents = contents.Replace("GUID4", "guid='" + Guid.NewGuid() + "'");
 			using (var input = new TempLiftFile(contents, "0.13"))
 			{
 				using (var repo = new LiftLexEntryRepository(input.Path))
 				{
 					var ws = HomographMerger.GuessPrimarLexicalFormWritingSystem(repo, _progress);
-					HomographMerger.Merge(repo, ws, _progress);
+					HomographMerger.Merge(repo, ws, traitsWithMultiplicity, _progress);
 				}
 
 				_resultDom.Load(input.Path);
