@@ -182,6 +182,7 @@ namespace Palaso.Progress.LogBox
 		private readonly List<ProgressHandler> _progressHandlers=new List<ProgressHandler>();
 		private bool _cancelRequested;
 		private ProgressIndicatorForMultiProgress _indicatorForMultiProgress;
+		private bool _errorsEncountered;
 
 		public MultiProgress(IEnumerable<IProgress> progressHandlers)
 		{
@@ -235,7 +236,15 @@ namespace Palaso.Progress.LogBox
 
 		public bool ErrorEncountered
 		{
-			get; set;
+			get
+			{ return _progressHandlers.Any(h => h.Handler.ErrorEncountered); }
+			set
+			{
+				foreach (var h in _progressHandlers)
+				{
+					h.Handler.ErrorEncountered = value;
+				}
+			}
 		}
 
 		public bool WarningsEncountered { get; set; }
@@ -293,9 +302,12 @@ namespace Palaso.Progress.LogBox
 
 		public void WriteException(Exception error)
 		{
-			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
+			foreach (var h in _progressHandlers)
 			{
-				h.Handler.WriteException(error);
+				if (h.CanHandleMessages)
+				{
+					h.Handler.WriteException(error);
+				}
 			}
 			ErrorEncountered = true;
 		}
