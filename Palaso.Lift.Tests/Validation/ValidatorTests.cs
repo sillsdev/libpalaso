@@ -26,7 +26,7 @@ namespace Palaso.Lift.Tests.Validation
 		public void Validate_EmptyFile_Validates()
 		{
 			string contents = string.Format("<lift version='{0}'></lift>", Validator.LiftVersion);
-			Validate(contents, true);
+			Validate(contents, false, true);
 		}
 
 		[Test]
@@ -42,7 +42,7 @@ namespace Palaso.Lift.Tests.Validation
 					</lexical-unit>
 				</entry>
 				</lift>", Validator.LiftVersion);
-			Validate(contents, true);
+			Validate(contents, false, true);
 		}
 
 
@@ -54,7 +54,7 @@ namespace Palaso.Lift.Tests.Validation
 				 <entry id='one&#x1F;'>
 				</entry>
 				</lift>", Validator.LiftVersion);
-			Validate(contents, true);
+			Validate(contents, false, true);
 		}
 
 
@@ -62,26 +62,52 @@ namespace Palaso.Lift.Tests.Validation
 		public void Validate_BadLift_DoesNotValidate()
 		{
 			string contents = "<lift version='0.10'><header></header><header></header></lift>";
-			Validate(contents, false);
+			Validate(contents, false, false);
 		}
 
 		[Test]
 		public void WrongVersionNumberGivesHelpfulMessage()
 		{
 			string contents = "<lift version='0.8'><header></header><header></header></lift>";
-			string errors = Validate(contents, false);
+			string errors = Validate(contents, false, false);
 			Assert.IsTrue(errors.Contains("This file claims to be version "));
 		}
 
-		private static string Validate(string contents, bool shouldPass)
+		[Test]
+		public void ValidateGUIDs_FileHasDuplicateEntryGuids_DoesNotValidate()
+		{
+			string contents = string.Format(@"
+			<lift version='{0}'>
+				 <entry guid='1'>
+				</entry>
+				 <entry guid='1'>
+				</entry>
+				</lift>", Validator.LiftVersion);
+			Validate(contents, false, true);
+		}
+		[Test]
+		public void ValidateGUIDs_FileHasNoDuplicateGuids_Validates()
+		{
+			string contents = string.Format(@"
+			<lift version='{0}'>
+				 <entry guid='1'>
+				</entry>
+				 <entry guid='2'>
+				</entry>
+				</lift>", Validator.LiftVersion);
+			Validate(contents, false, true);
+		}
+
+
+		private static string Validate(string contents, bool checkGuids, bool shouldPass)
 		{
 			string f = Path.GetTempFileName();
 			File.WriteAllText(f, contents);
 			string errors;
 			try
 			{
-				errors = Validator.GetAnyValidationErrors(f);
-				if(shouldPass)
+				errors = Validator.GetAnyValidationErrors(f, ValidationOptions.All);
+				if (shouldPass)
 				{
 					if (errors != null)
 					{
@@ -100,6 +126,5 @@ namespace Palaso.Lift.Tests.Validation
 			}
 			return errors;
 		}
-
 	}
 }
