@@ -23,7 +23,7 @@ namespace Palaso.Lift.Tests.Validation
 		}
 
 		[Test]
-		public void Validate_EmptyFile_Validates()
+		public void Validate_NoEntriesValidates()
 		{
 			string contents = string.Format("<lift version='{0}'></lift>", Validator.LiftVersion);
 			Validate(contents, false, true);
@@ -113,11 +113,11 @@ namespace Palaso.Lift.Tests.Validation
 					{
 						Console.WriteLine(errors);
 					}
-					Assert.IsNull(errors);
+					Assert.IsNullOrEmpty(errors);
 				}
 				else
 				{
-					Assert.IsNotNull(errors);
+					Assert.Greater(errors.Length,0);
 				}
 			}
 			finally
