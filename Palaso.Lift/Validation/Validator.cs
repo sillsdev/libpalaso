@@ -109,29 +109,28 @@ namespace Palaso.Lift.Validation
 			string errors="";
 			HashSet<string> guids = new HashSet<string>();
 
-			using (XmlTextReader documentReader = new XmlTextReader(path))
+			using (XmlTextReader reader = new XmlTextReader(path))
 			{
 				try
 				{
-					while (documentReader.Read())
+					while (reader.Read())
 					{
-						switch (documentReader.NodeType)
+						if (reader.HasAttributes)
 						{
-							case XmlNodeType.Attribute:
-								if (documentReader.Name == "guid")
+							var guid = reader.GetAttribute("guid");
+							if (!string.IsNullOrEmpty(guid))
+							{
+								if (guids.Contains(guid))
 								{
-									var guid = documentReader.Value.Trim();
-									if (guids.Contains(guid))
-									{
-										errors += Environment.NewLine + "Found duplicate guid, which must be unique: " + guid;
-									}
+									errors += Environment.NewLine + "Found duplicate GUID (Globally Unique Identifier): " + guid+". All GUIDs must be unique.";
 								}
-								break;
-							default:
-								break;
+								else
+								{
+									guids.Add(guid);
+								}
+							}
 						}
 					}
-
 				}
 				catch (Exception error)
 				{
