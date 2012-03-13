@@ -87,141 +87,148 @@ namespace Palaso.Lift.Validation
 		/// Parse the given LIFT file and return a string containing all the validation errors
 		/// (if any).  Progress reporting is supported.
 		///</summary>
-		static public string GetAnyValidationErrors(XmlTextReader documentReader, IValidationProgress progress, ValidationOptions validationOptions)
+		static public string GetAnyValidationErrors(string path, IValidationProgress progress, ValidationOptions validationOptions)
 		{
 			string errors = "";
 			if ((validationOptions & ValidationOptions.CheckLIFT) != null)
 			{
-				errors += GetSchemaValidationErrors(documentReader, null, validationOptions);
+				errors += GetSchemaValidationErrors(path, progress);
 			}
 
 			if ((validationOptions & ValidationOptions.CheckGUIDs)!=null)
 			{
-				documentReader.ResetState();
-				errors += GetDuplicateGuidErrors(documentReader);
+				errors += GetDuplicateGuidErrors(path, progress);
 			}
 
 			return errors;
 		}
 
-		private static string GetDuplicateGuidErrors(XmlTextReader documentReader)
+		private static string GetDuplicateGuidErrors(string path, IValidationProgress progress)
 		{
+			progress.Status = "Checking for duplicate guids...";
 			string errors="";
 			HashSet<string> guids = new HashSet<string>();
 
-			while (documentReader.Read())
+			using (XmlTextReader documentReader = new XmlTextReader(path))
 			{
-				switch (documentReader.NodeType)
+				try
 				{
-					case XmlNodeType.Attribute:
-						if (documentReader.Name == "guid")
+					while (documentReader.Read())
+					{
+						switch (documentReader.NodeType)
 						{
-							var guid = documentReader.Value.Trim();
-							if (guids.Contains(guid))
-							{
-								errors += Environment.NewLine + "Found duplicate guid, which must be unique: " + guid;
-							}
+							case XmlNodeType.Attribute:
+								if (documentReader.Name == "guid")
+								{
+									var guid = documentReader.Value.Trim();
+									if (guids.Contains(guid))
+									{
+										errors += Environment.NewLine + "Found duplicate guid, which must be unique: " + guid;
+									}
+								}
+								break;
+							default:
+								break;
 						}
-						break;
-					default:
-						break;
+					}
+
+				}
+				catch (Exception error)
+				{
+					errors += error.Message;
 				}
 			}
 			return errors;
 		}
 
-		static public string GetAnyValidationErrors(string path, IValidationProgress progress, ValidationOptions validationOptions)
-		{
-			using (XmlTextReader documentReader = new XmlTextReader(path))
-			{
-				return GetAnyValidationErrors(documentReader, progress, validationOptions);
-			}
-		}
 
 		///<summary>
 		/// Validate the LIFT file contained in the XmlTextReader.  Progress reporting is
 		/// supported.
 		///</summary>
-		static private string GetSchemaValidationErrors(XmlTextReader documentReader,
-			IValidationProgress progress, ValidationOptions validationOptions)
+		static private string GetSchemaValidationErrors(string path,IValidationProgress progress)
 		{
-			var resourceStream = typeof(LiftMultiText).Assembly.GetManifestResourceStream("Palaso.Lift.Validation.lift.rng");
-			if (resourceStream == null)
-				throw new Exception();
-			RelaxngValidatingReader reader = new RelaxngValidatingReader(
-				documentReader, new XmlTextReader(resourceStream));
-			reader.ReportDetails = true;
-			string lastGuy = "lift";
-			int line = 0;
-			int step = 0;
-			if (progress != null)
+			using (XmlTextReader documentReader = new XmlTextReader(path))
 			{
+				progress.Status = "Checking for Schema errors...";
+				var resourceStream = typeof (LiftMultiText).Assembly.GetManifestResourceStream("Palaso.Lift.Validation.lift.rng");
+				if (resourceStream == null)
+					throw new Exception();
+				RelaxngValidatingReader reader = new RelaxngValidatingReader(
+					documentReader, new XmlTextReader(resourceStream));
+				reader.ReportDetails = true;
+				string lastGuy = "lift";
+				int line = 0;
+				int step = 0;
+				if (progress != null)
+				{
+					try
+					{
+						if (documentReader.BaseURI != null)
+						{
+							string sFilePath = documentReader.BaseURI.Replace("file://", "");
+							if (sFilePath.StartsWith("/"))
+							{
+								// On Microsoft Windows, the BaseURI may be "file:///C:/foo/bar.lift"
+								if (sFilePath.Length > 3 &&
+									Char.IsLetter(sFilePath[1]) && sFilePath[2] == ':' && sFilePath[3] == '/')
+								{
+									sFilePath = sFilePath.Substring(1);
+								}
+							}
+							System.IO.FileInfo fi = new System.IO.FileInfo(sFilePath);
+							// Unfortunately, XmlTextReader gives access to only line numbers,
+							// not actual file positions while reading.  A check of 8 Flex
+							// generated LIFT files showed a range of 43.9 - 52.1 chars per
+							// line.  The biatah sample distributed with WeSay has an average
+							// of only 23.1 chars per line.  We'll compromise by guessing 33.
+							// The alternative is to read the entire file to get the actual
+							// line count.
+							int maxline = (int) (fi.Length/33);
+							if (maxline < 8)
+								progress.MaxRange = 8;
+							else if (maxline < 100)
+								progress.MaxRange = maxline;
+							else
+								progress.MaxRange = 100;
+							step = (maxline + 99)/100;
+						}
+						if (step <= 0)
+							step = 1;
+					}
+					catch
+					{
+						step = 100;
+					}
+				}
 				try
 				{
-					if (documentReader.BaseURI != null)
+					while (!reader.EOF)
 					{
-						string sFilePath = documentReader.BaseURI.Replace("file://", "");
-						if (sFilePath.StartsWith("/"))
+						// Debug.WriteLine(reader.v
+						reader.Read();
+						lastGuy = reader.Name;
+						if (progress != null && reader.LineNumber != line)
 						{
-							// On Microsoft Windows, the BaseURI may be "file:///C:/foo/bar.lift"
-							if (sFilePath.Length > 3 &&
-								Char.IsLetter(sFilePath[1]) && sFilePath[2] == ':' && sFilePath[3] == '/')
-							{
-								sFilePath = sFilePath.Substring(1);
-							}
+							line = reader.LineNumber;
+							if (line%step == 0)
+								progress.Step(1);
 						}
-						System.IO.FileInfo fi = new System.IO.FileInfo(sFilePath);
-						// Unfortunately, XmlTextReader gives access to only line numbers,
-						// not actual file positions while reading.  A check of 8 Flex
-						// generated LIFT files showed a range of 43.9 - 52.1 chars per
-						// line.  The biatah sample distributed with WeSay has an average
-						// of only 23.1 chars per line.  We'll compromise by guessing 33.
-						// The alternative is to read the entire file to get the actual
-						// line count.
-						int maxline = (int)(fi.Length / 33);
-						if (maxline < 8)
-							progress.MaxRange = 8;
-						else if (maxline < 100)
-							progress.MaxRange = maxline;
-						else
-							progress.MaxRange = 100;
-						step = (maxline + 99) / 100;
 					}
-					if (step <= 0)
-						step = 1;
 				}
-				catch
+				catch (Exception e)
 				{
-					step = 100;
-				}
-			}
-			try
-			{
-				while (!reader.EOF)
-				{
-					// Debug.WriteLine(reader.v
-					reader.Read();
-					lastGuy = reader.Name;
-					if (progress != null && reader.LineNumber != line)
+					if (reader.Name == "version" && (lastGuy == "lift" || lastGuy == ""))
 					{
-						line = reader.LineNumber;
-						if (line % step == 0)
-							progress.Step(1);
+						return String.Format(
+							"This file claims to be version {0} of LIFT, but this version of the program uses version {1}",
+							reader.Value, LiftVersion);
 					}
+					string m = string.Format("{0}\r\nError near: {1} {2} '{3}'", e.Message, lastGuy, reader.Name, reader.Value);
+					return m;
 				}
+				return null;
 			}
-			catch (Exception e)
-			{
-				if (reader.Name == "version" && (lastGuy == "lift" || lastGuy == ""))
-				{
-					return String.Format(
-						"This file claims to be version {0} of LIFT, but this version of the program uses version {1}",
-						reader.Value, LiftVersion);
-				}
-				string m = string.Format("{0}\r\nError near: {1} {2} '{3}'", e.Message, lastGuy, reader.Name, reader.Value);
-				return m;
-			}
-			return null;
 		}
 
 		///<summary>
