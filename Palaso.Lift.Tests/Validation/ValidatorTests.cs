@@ -106,7 +106,7 @@ namespace Palaso.Lift.Tests.Validation
 			string errors;
 			try
 			{
-				errors = Validator.GetAnyValidationErrors(f, ValidationOptions.All);
+				errors = Validator.GetAnyValidationErrors(f, new NullValidationProgress(),  ValidationOptions.All);
 				if (shouldPass)
 				{
 					if (errors != null)
