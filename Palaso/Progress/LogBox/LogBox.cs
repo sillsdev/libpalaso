@@ -27,9 +27,17 @@ namespace Palaso.Progress.LogBox
 			{
 				if (!ReportError(_verboseBox.Text))
 				{
-					Clipboard.SetText(_verboseBox.Text);
-					MessageBox.Show(
-						"Information on what happened has been copied to your clipboard. Please email it to the developers of the program you are using.");
+					try
+					{
+						Clipboard.SetText(_verboseBox.Text);
+						MessageBox.Show(
+							"Information on what happened has been copied to your clipboard. Please email it to the developers of the program you are using.");
+					}
+					catch (Exception)
+					{
+						MessageBox.Show(
+							   "Unable to copy the message to the clipboard. You might need to restart the application or your computer");
+					}
 				}
 
 				if (ReportErrorLinkClicked != null)
