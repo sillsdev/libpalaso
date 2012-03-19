@@ -21,13 +21,19 @@ namespace Palaso.IO
 		IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths);
 	}
 
-	public class FileLocator :IFileLocator
+	public interface IChangeableFileLocator : IFileLocator
 	{
-		protected readonly IEnumerable<string> _searchPaths;
+		void AddPath(string path);
+		void RemovePath(string path);
+	}
+
+	public class FileLocator : IChangeableFileLocator
+	{
+		protected readonly List<string> _searchPaths;
 
 		public FileLocator(IEnumerable<string> searchPaths  )
 		{
-			_searchPaths = searchPaths;
+			_searchPaths = new List<string>(searchPaths);
 		}
 
 		public string LocateFile(string fileName)
@@ -372,5 +378,15 @@ namespace Palaso.IO
 		}
 
 		#endregion
+
+		public void AddPath(string path)
+		{
+			_searchPaths.Add(path);
+		}
+
+		public void RemovePath(string path)
+		{
+			_searchPaths.Remove(path);
+		}
 	}
 }
