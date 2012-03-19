@@ -52,6 +52,8 @@ namespace Palaso.Reporting
 		private ProblemNotificationDialog()
 		{
 #if MONO
+			this.AutoSize = true;
+			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.AutoScaleMode = AutoScaleMode.None;
 #endif
 			InitializeComponent();
