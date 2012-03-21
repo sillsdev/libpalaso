@@ -18,13 +18,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			ContributorsListControl sender, Contribution contribution, CancelEventArgs e);
 
 		public event ValidatingContributorHandler ValidatingContributor;
-		public event EventHandler ContributorDeleted;
 
 		private FadingMessageWindow _msgWindow;
-		private Contribution _preValidatedContribution;
 		private readonly ContributorsListControlViewModel _model;
-		private int _indexOfIncompleteRowToDelete = -1;
-		private bool _deleteButtonVisible = true;
 
 		/// ------------------------------------------------------------------------------------
 		public ContributorsListControl()
@@ -43,7 +39,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// ------------------------------------------------------------------------------------
 		private void Initialize()
 		{
-			_grid.Font = SystemFonts.IconTitleFont;
+			_grid.Font = SystemFonts.MenuFont;
 
 			// TODO: Localize column headings
 
@@ -63,20 +59,20 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			col.Width = 200;
 			_grid.Columns.Add(col);
 
+			_grid.AddRemoveRowColumn(null, null,
+				null /* TODO: Enhance BetterGrid to be able to show tool tips in non-virtual mode */,
+				rowIndex => DeleteRow(rowIndex));
+
 			_grid.AllowUserToAddRows = true;
 			_grid.AllowUserToDeleteRows = true;
 
 			_grid.EditingControlShowing += HandleEditingControlShowing;
-			_grid.RowsRemoved += HandleGridRowRemoved;
-			_grid.CurrentRowChanged += HandleGridCurrentRowChanged;
 			_grid.RowValidating += HandleGridRowValidating;
 			_grid.MouseClick += HandleGridMouseClick;
 			_grid.Leave += HandleGridLeave;
 			_grid.Enter += delegate { _grid.SelectionMode = DataGridViewSelectionMode.CellSelect; };
-			_grid.RowValidated += delegate { _model.CommitTempContributionIfExists(); };
-			_grid.CellValueNeeded += HandleCellValueNeeded;
-			_grid.CellValuePushed += ((s, e) =>
-				_model.SetContributionValue(e.RowIndex, _grid.Columns[e.ColumnIndex].Name, e.Value));
+			_grid.RowValidated += HandleGridRowValidated;
+			_grid.RowsRemoved += HandleGridRowsRemoved;
 
 			if (_model.ContributorsGridSettings != null)
 				_model.ContributorsGridSettings.InitializeGrid(_grid);
@@ -100,31 +96,6 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		/// <remarks>
-		/// Don't just get and set the visible property for _buttonDelete because that doesn't
-		/// serialize/deserialize correctly when this control is dropped on a form in the
-		/// designer.
-		/// </remarks>
-		/// ------------------------------------------------------------------------------------
-		[DefaultValue(true)]
-		public bool DeleteButtonVisible
-		{
-			get { return _deleteButtonVisible; }
-			set
-			{
-				_deleteButtonVisible = value;
-				_buttonDelete.Visible = value;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public virtual Color BorderColor
-		{
-			get { return _panelGrid.BackColor; }
-			set { _panelGrid.BackColor = value; }
-		}
-
-		/// ------------------------------------------------------------------------------------
 		public bool InEditMode
 		{
 			get { return _grid.IsCurrentRowDirty; }
@@ -139,7 +110,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// ------------------------------------------------------------------------------------
 		public Contribution GetCurrentContribution()
 		{
-			return _model.GetContributionAt(_grid.CurrentCellAddress.Y);
+			return GetContributionFromRow(_grid.CurrentCellAddress.Y);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -156,36 +127,18 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			Guard.AgainstNull(_model.Contributions, "Contributions");
 
-			// Add one for the new contributor row.
-			_grid.RowCount = _model.Contributions.Count() + 1;
+			_grid.RowValidated -= HandleGridRowValidated;
+			_grid.RowsRemoved -= HandleGridRowsRemoved;
+			_grid.Rows.Clear();
+
+			foreach (var contribution in _model.Contributions)
+				_grid.Rows.Add(contribution.ContributorName, contribution.Role.Name, contribution.Date, contribution.Comments);
+
 			_grid.CurrentCell = _grid[0, 0];
-		}
+			_grid.IsDirty = false;
 
-		/// ------------------------------------------------------------------------------------
-		private void UpdateDisplay()
-		{
-			_toolTip.SetToolTip(_buttonDelete, null);
-
-			if (!_model.GetCanDeleteContribution(_grid.CurrentCellAddress.Y))
-				_buttonDelete.Enabled = false;
-			else
-			{
-				_buttonDelete.Enabled = true;
-				var name = _model.GetContributionValue(_grid.CurrentCellAddress.Y, "name") as string;
-				if (!string.IsNullOrEmpty(name))
-				{
-					// TODO: Localize
-					var tooltip = string.Format("Delete contributor '{0}'", name);
-					_toolTip.SetToolTip(_buttonDelete, tooltip);
-				}
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		void HandleGridCurrentRowChanged(object sender, EventArgs e)
-		{
-			_preValidatedContribution = _model.GetContributionCopy(_grid.CurrentCellAddress.Y);
-			UpdateDisplay();
+			_grid.RowValidated += HandleGridRowValidated;
+			_grid.RowsRemoved += HandleGridRowsRemoved;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -234,25 +187,12 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// ------------------------------------------------------------------------------------
 		private void HandleGridRowValidating(object sender, DataGridViewCellCancelEventArgs e)
 		{
-			if (e.RowIndex == _grid.RowCount - 1)
+			if (e.RowIndex == _grid.RowCount - 1 || !_grid.IsCurrentRowDirty)
 				return;
 
-			var contribution = _model.GetContributionAt(e.RowIndex);
+			_grid.IsDirty = true;
 
-			// Don't bother doing anything if the contribution didn't change.
-			if (contribution.AreContentsEqual(_preValidatedContribution))
-				return;
-
-			// If the name is missing, then get rid of the current row.
-			// See more explanation of the process in RemoveIncompleteRow.
-			if (contribution.ContributorName == null || contribution.ContributorName.Trim().Length == 0)
-			{
-				_grid.EndEdit();
-				_indexOfIncompleteRowToDelete = e.RowIndex;
-				_model.DiscardTempContribution();
-				Application.Idle += RemoveIncompleteRow;
-				return;
-			}
+			var contribution = GetContributionFromRow(e.RowIndex);
 
 			if (ValidatingContributor == null)
 				return;
@@ -275,36 +215,50 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// The best time to remove an imcomplete row is when it's determined that the row is
-		/// incomplete (i.e. in the row validating event). However, removing the row involves
-		/// changing the row count. The problem is, the grid throws an exception if you try
-		/// to change the row count in any of the row handling events (e.g. RowValidating,
-		/// RowValidated, RowLeave, RowEnter, etc.). The only way I know of to reliably get
-		/// rid of the row when the user would expect it, is when the app. goes idle right
-		/// after the row is validated and it's determined the row is incomplete. Argh!
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		void RemoveIncompleteRow(object sender, EventArgs e)
+		void HandleGridRowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
 		{
-			if (_indexOfIncompleteRowToDelete >= 0)
-				DeleteRow(_indexOfIncompleteRowToDelete);
-
-			Application.Idle -= RemoveIncompleteRow;
+			SaveContributions();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridRowRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+		void HandleGridRowValidated(object sender, DataGridViewCellEventArgs e)
 		{
-			_model.DiscardTempContribution();
+			SaveContributions();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void HandleCellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+		private void SaveContributions()
 		{
-			var value = _model.GetContributionValue(e.RowIndex, _grid.Columns[e.ColumnIndex].Name);
-			if (value != null)
-				e.Value = value;
+			if (_grid.IsDirty)
+			{
+				_model.SaveContributionList(new ContributionCollection(GetContributionCollectionFromGrid()));
+				_grid.IsDirty = false;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private IEnumerable<Contribution> GetContributionCollectionFromGrid()
+		{
+			return _grid.GetRows().Where(r =>
+				r.Index != _grid.NewRowIndex).Select(row => GetContributionFromRow(row.Index)).Where(c => c!= null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private Contribution GetContributionFromRow(int rowIndex)
+		{
+			var row = _grid.Rows[rowIndex];
+
+			var contribution = new Contribution
+			{
+				ContributorName = row.Cells["name"].Value as string,
+				Role = _model.OlacRoles.FirstOrDefault(o => o.Name == row.Cells["role"].Value as string),
+				Comments = row.Cells["comments"].Value as string
+			};
+
+			if (row.Cells["date"].Value != null)
+				contribution.Date = (DateTime)row.Cells["date"].Value;
+
+			return contribution;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -351,7 +305,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private static void HandleCellEditBoxKeyPress(object sender, KeyPressEventArgs e)
+		private void HandleCellEditBoxKeyPress(object sender, KeyPressEventArgs e)
 		{
 			// Prevent characters that are invalid as xml tags. There's probably more,
 			// but this will do for now.
@@ -364,37 +318,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void HandleDeleteButtonClicked(object sender, EventArgs e)
-		{
-			DeleteCurrentContributor();
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public void DeleteCurrentContributor()
-		{
-			DeleteRow(_grid.CurrentCellAddress.Y);
-		}
-
-		/// ------------------------------------------------------------------------------------
 		private void DeleteRow(int rowIndex)
 		{
-			if (!_model.DeleteContribution(rowIndex))
-				return;
+			if (_grid.IsCurrentCellInEditMode)
+				_grid.EndEdit(DataGridViewDataErrorContexts.RowDeletion);
 
-			_grid.RowsRemoved -= HandleGridRowRemoved;
-			_grid.CurrentRowChanged -= HandleGridCurrentRowChanged;
-			_grid.RowCount--;
-			_grid.CurrentRowChanged += HandleGridCurrentRowChanged;
-			_grid.RowsRemoved += HandleGridRowRemoved;
-
-			if (rowIndex >= _grid.RowCount && rowIndex > 0)
-				rowIndex--;
-
-			_grid.CurrentCell = _grid[_grid.CurrentCellAddress.X, rowIndex];
-			UpdateDisplay();
-
-			if (ContributorDeleted != null)
-				ContributorDeleted(this, EventArgs.Empty);
+			_grid.Rows.RemoveAt(rowIndex);
+			_grid.CurrentCell = _grid[0, _grid.CurrentCellAddress.Y];
 		}
 	}
 }
