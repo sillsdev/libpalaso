@@ -174,7 +174,9 @@ namespace Palaso.Progress.LogBox
 
 		/// <summary>
 		/// This is an attempt to avoid a mysterious crash (B. Waters) where the invoke was
-		/// happening before the window's handle had been created
+		/// happening before the window's handle had been created [¿on .NET?]
+		/// On Mono this is crucial--app hangs without Invoke() when called from non-UI thread;
+		/// note phrase "using Control.Invoke" on http://www.mono-project.com/FAQ%3A_Winforms#My_multithreaded_application_crashes_or_locks_up
 		/// </summary>
 		public void SafeInvoke(Control box, Action action)
 		{
@@ -202,14 +204,6 @@ namespace Palaso.Progress.LogBox
 
 		private void Write(Color color, FontStyle style, string msg, params object[] args)
 		{
-#if MONO // changing the text colour throws exceptions with mono 2011-12-09
-		// so just append plain text
-			_box.AppendText(string.Format(msg + Environment.NewLine, args));
-			_box.ScrollToCaret();
-			_verboseBox.AppendText(string.Format(msg + Environment.NewLine, args));
-			_verboseBox.ScrollToCaret();
-#else
-
 #if !DEBUG
 			try
 			{
@@ -224,8 +218,11 @@ namespace Palaso.Progress.LogBox
 					using (var fnt = new Font(rtfBox.Font, style))
 					{
 						rtfBox.SelectionStart = rtfBox.Text.Length;
-						rtfBox.SelectionColor = color;
-						rtfBox.SelectionFont = fnt;
+						rtfBox.SelectionColor = color; // SelectionColor tested good on Mono 2.10.4 and 2.10.5
+						// Prior programmer noted:  changing the text colour throws exceptions with mono 2011-12-09
+						// Setting SelectionFont crashes Mono with:  System.ArgumentException: A null reference or invalid value was found [GDI+ status: InvalidParameter]
+						if (Type.GetType("Mono.Runtime") == null) // running .NET (not Mono Windows, not Mono Linux)
+							rtfBox.SelectionFont = fnt;
 						rtfBox.AppendText(string.Format(msg + Environment.NewLine, args));
 						rtfBox.SelectionStart = rtfBox.Text.Length;
 						rtfBox.ScrollToCaret();
@@ -241,7 +238,6 @@ namespace Palaso.Progress.LogBox
 				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
 			}
 #endif
-#endif //MONO
 		}
 
 		public void WriteWarning(string message, params object[] args)
