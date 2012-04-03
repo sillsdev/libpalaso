@@ -107,7 +107,11 @@ namespace Palaso.Reporting
 
 		private void AdjustHeights()
 		{
-			_message.Height = GetDesiredTextBoxHeight();
+			//hack: I don't know why this is needed, but it was chopping off the last line in the case of the following message:
+			// "There was a problem connecting to the Internet.\r\nWarning: This machine does not have a live network connection.\r\nConnection attempt failed."
+			const int kFudge = 50;
+			_message.Height = GetDesiredTextBoxHeight()+kFudge;
+
 
 			var desiredWindowHeight = tableLayout.Height + Padding.Top +
 				Padding.Bottom + (Height - ClientSize.Height);
