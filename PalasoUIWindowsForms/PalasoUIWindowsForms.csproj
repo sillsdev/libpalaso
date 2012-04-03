@@ -285,6 +285,12 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+	<Compile Include="SettingProtection\SettingProtectionDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SettingProtection\SettingProtectionDialog.Designer.cs">
+	  <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="Spelling\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
 	  <SubType>Form</SubType>
@@ -557,6 +563,9 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
+	<EmbeddedResource Include="SettingProtection\SettingProtectionDialog.resx">
+	  <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
 	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -771,7 +780,15 @@
   <ItemGroup>
 	<None Include="Resources\by.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+	<None Include="Resources\lockOpenBlack48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\lockOpenBlack48x48-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\lockOpenBlack48x48-21.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.

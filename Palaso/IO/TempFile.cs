@@ -19,9 +19,9 @@ namespace Palaso.IO
 			 _path = System.IO.Path.GetTempFileName();
 		}
 
-		public TempFile(bool dontMakeMeAFile)
+		public TempFile(bool dontMakeMeAFileAndDontSetPath)
 		{
-			if(!dontMakeMeAFile)
+			if(!dontMakeMeAFileAndDontSetPath)
 			{
 				_path = System.IO.Path.GetTempFileName();
 			}
