@@ -74,6 +74,20 @@ namespace Palaso.UI.WindowsForms.Properties {
 			}
 		}
 
+		internal static System.Drawing.Bitmap lockClosed48x48 {
+			get {
+				object obj = ResourceManager.GetObject("lockClosed48x48", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap lockOpenBlack16x16 {
+			get {
+				object obj = ResourceManager.GetObject("lockOpenBlack16x16", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		internal static System.Drawing.Bitmap lockOpenBlack48x48 {
 			get {
 				object obj = ResourceManager.GetObject("lockOpenBlack48x48", resourceCulture);
