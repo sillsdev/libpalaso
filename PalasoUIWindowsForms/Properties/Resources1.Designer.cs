@@ -74,9 +74,16 @@ namespace Palaso.UI.WindowsForms.Properties {
 			}
 		}
 
-		internal static System.Drawing.Bitmap lockClosed48x48 {
+		internal static System.Drawing.Bitmap lockClosedBlack16x16 {
 			get {
-				object obj = ResourceManager.GetObject("lockClosed48x48", resourceCulture);
+				object obj = ResourceManager.GetObject("lockClosedBlack16x16", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap lockClosedBlack48x48 {
+			get {
+				object obj = ResourceManager.GetObject("lockClosedBlack48x48", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
@@ -91,20 +98,6 @@ namespace Palaso.UI.WindowsForms.Properties {
 		internal static System.Drawing.Bitmap lockOpenBlack48x48 {
 			get {
 				object obj = ResourceManager.GetObject("lockOpenBlack48x48", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap lockOpenBlack48x48_2 {
-			get {
-				object obj = ResourceManager.GetObject("lockOpenBlack48x48-2", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		internal static System.Drawing.Bitmap lockOpenBlack48x48_21 {
-			get {
-				object obj = ResourceManager.GetObject("lockOpenBlack48x48-21", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
@@ -147,6 +140,13 @@ namespace Palaso.UI.WindowsForms.Properties {
 		internal static System.Drawing.Bitmap RemoveGridRowNormal {
 			get {
 				object obj = ResourceManager.GetObject("RemoveGridRowNormal", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap settings16x16 {
+			get {
+				object obj = ResourceManager.GetObject("settings16x16", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}

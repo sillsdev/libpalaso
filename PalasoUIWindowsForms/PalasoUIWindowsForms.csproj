@@ -610,6 +610,7 @@
 	<EmbeddedResource Include="SettingProtection\SettingsProtectionIcons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SettingsProtectionIcons.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="SettingProtection\SettingsLauncherButton.resx">
 	  <DependentUpon>SettingsLauncherButton.cs</DependentUpon>
@@ -839,18 +840,6 @@
 	<None Include="Resources\by.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockOpenBlack48x48.png" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Resources\lockOpenBlack48x48-21.png" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Resources\lockOpenBlack16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Resources\lockOpenBlack48x48-2.png" />
-  </ItemGroup>
-  <ItemGroup>
 	<None Include="Resources\lockClosed16x16.png" />
   </ItemGroup>
   <ItemGroup>
@@ -872,7 +861,19 @@
 	<None Include="Resources\lockOpenHidden48x48.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockClosed48x481.png" />
+	<None Include="Resources\settings16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\lockClosedBlack16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\lockClosedBlack48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\lockOpenBlack48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\lockOpenBlack16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
