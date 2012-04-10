@@ -62,6 +62,9 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 
 		private void UpdateDisplay()
 		{
+			if (_customSettingsControl == null)//sometimes get a tick before this has been set
+				return;
+
 			var keys = (Keys.Control | Keys.Shift);
 			_customSettingsControl.Visible = !SettingsProtectionSingleton.Configuration.NormallyHidden
 				|| ((Control.ModifierKeys & keys) == keys);
