@@ -24,6 +24,7 @@ namespace Palaso.Reporting
 		 private TextBox _notificationText;
 		 private TextBox textBox1;
 		 private ComboBox _methodCombo;
+		 private Button _privacyNoticeButton;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -109,6 +110,7 @@ namespace Palaso.Reporting
 			this._notificationText = new System.Windows.Forms.TextBox();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this._methodCombo = new System.Windows.Forms.ComboBox();
+			this._privacyNoticeButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// m_reproduce
@@ -186,6 +188,14 @@ namespace Palaso.Reporting
 			this._methodCombo.Name = "_methodCombo";
 			this._methodCombo.SelectedIndexChanged += new System.EventHandler(this._methodCombo_SelectedIndexChanged);
 			//
+			// _privacyNoticeButton
+			//
+			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
+			this._privacyNoticeButton.Image = global::Palaso.Properties.Resources.spy16x16;
+			this._privacyNoticeButton.Name = "_privacyNoticeButton";
+			this._privacyNoticeButton.UseVisualStyleBackColor = true;
+			this._privacyNoticeButton.Click += new System.EventHandler(this._privacyNoticeButton_Click);
+			//
 			// ExceptionReportingDialog
 			//
 			this.AcceptButton = this._sendAndCloseButton;
@@ -194,6 +204,7 @@ namespace Palaso.Reporting
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.CancelButton = this._sendAndCloseButton;
 			this.ControlBox = false;
+			this.Controls.Add(this._privacyNoticeButton);
 			this.Controls.Add(this._methodCombo);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this._dontSendEmailLink);
@@ -342,7 +353,8 @@ namespace Palaso.Reporting
 			 }
 
 			 PrepareDialog();
-			 _notificationText.Text = message;
+			 if(!string.IsNullOrEmpty(message))
+				 _notificationText.Text = message;
 
 			 if (!string.IsNullOrEmpty(message))
 			 {
@@ -677,7 +689,7 @@ namespace Palaso.Reporting
 			 }
 			 else
 			 {
-				 _sendAndCloseButton.Text += "&& Exit";
+				 _sendAndCloseButton.Text += " and Exit";
 			 }
 		 }
 
@@ -685,6 +697,19 @@ namespace Palaso.Reporting
 		 {
 			 get { return ((ReportingMethod) _methodCombo.SelectedItem); }
 			 set { _methodCombo.SelectedItem = value; }
+		 }
+
+		 private void _privacyNoticeButton_Click(object sender, EventArgs e)
+		 {
+			MessageBox.Show(
+				@"If you don’t care who reads your bug report, you can skip this notice.
+
+When you submit a crash report or other issue, the contents of your email go in our issue tracking system, “jira”, which is available via the web at http://jira.palso.org/issues. This is the normal (though not mandatory) way to handle issues in an open-source project.
+
+Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
+
+However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don’t want the issue in our issue tracking system. If need be, we’ll make some kind of sanitized place-holder for your issue so that we don’t lose it.
+");
 		 }
 	}
 }

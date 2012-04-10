@@ -148,7 +148,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;m_reproduce.ZOrder" xml:space="preserve">
-	<value>3</value>
+	<value>4</value>
   </data>
   <data name="label3.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Bottom, Left</value>
@@ -178,7 +178,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-	<value>8</value>
+	<value>9</value>
   </data>
   <data name="_details.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Bottom, Left, Right</value>
@@ -208,7 +208,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_details.ZOrder" xml:space="preserve">
-	<value>6</value>
+	<value>7</value>
   </data>
   <data name="_sendAndCloseButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Right</value>
@@ -220,7 +220,7 @@
 	<value>NoControl</value>
   </data>
   <data name="_sendAndCloseButton.Location" type="System.Drawing.Point, System.Drawing">
-	<value>413, 469</value>
+	<value>413, 473</value>
   </data>
   <data name="_sendAndCloseButton.Size" type="System.Drawing.Size, System.Drawing">
 	<value>120, 23</value>
@@ -241,7 +241,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_sendAndCloseButton.ZOrder" xml:space="preserve">
-	<value>9</value>
+	<value>10</value>
   </data>
   <data name="_pleaseHelpText.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Left, Right</value>
@@ -274,7 +274,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_pleaseHelpText.ZOrder" xml:space="preserve">
-	<value>5</value>
+	<value>6</value>
   </data>
   <data name="_attemptToContinueLabel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Right</value>
@@ -310,13 +310,16 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_attemptToContinueLabel.ZOrder" xml:space="preserve">
-	<value>7</value>
+	<value>8</value>
   </data>
   <data name="_dontSendEmailLink.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Left</value>
   </data>
+  <data name="_dontSendEmailLink.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+	<value>NoControl</value>
+  </data>
   <data name="_dontSendEmailLink.Location" type="System.Drawing.Point, System.Drawing">
-	<value>21, 473</value>
+	<value>22, 441</value>
   </data>
   <data name="_dontSendEmailLink.Size" type="System.Drawing.Size, System.Drawing">
 	<value>226, 14</value>
@@ -337,7 +340,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_dontSendEmailLink.ZOrder" xml:space="preserve">
-	<value>2</value>
+	<value>3</value>
   </data>
   <data name="_notificationText.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Left, Right</value>
@@ -358,7 +361,7 @@
 	<value>22</value>
   </data>
   <data name="_notificationText.Text" xml:space="preserve">
-	<value>An internal error has occurred.</value>
+	<value>Well, this is embarrassing.</value>
   </data>
   <data name="&gt;&gt;_notificationText.Name" xml:space="preserve">
 	<value>_notificationText</value>
@@ -370,7 +373,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_notificationText.ZOrder" xml:space="preserve">
-	<value>4</value>
+	<value>5</value>
   </data>
   <data name="textBox1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Top, Left, Right</value>
@@ -403,7 +406,7 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;textBox1.ZOrder" xml:space="preserve">
-	<value>1</value>
+	<value>2</value>
   </data>
   <data name="_methodCombo.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
 	<value>Bottom, Right</value>
@@ -427,6 +430,42 @@
 	<value>$this</value>
   </data>
   <data name="&gt;&gt;_methodCombo.ZOrder" xml:space="preserve">
+	<value>1</value>
+  </data>
+  <data name="_privacyNoticeButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+	<value>Bottom, Left</value>
+  </data>
+  <data name="_privacyNoticeButton.AutoSize" type="System.Boolean, mscorlib">
+	<value>True</value>
+  </data>
+  <data name="_privacyNoticeButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+	<value>NoControl</value>
+  </data>
+  <data name="_privacyNoticeButton.Location" type="System.Drawing.Point, System.Drawing">
+	<value>27, 473</value>
+  </data>
+  <data name="_privacyNoticeButton.Size" type="System.Drawing.Size, System.Drawing">
+	<value>115, 23</value>
+  </data>
+  <data name="_privacyNoticeButton.TabIndex" type="System.Int32, mscorlib">
+	<value>27</value>
+  </data>
+  <data name="_privacyNoticeButton.Text" xml:space="preserve">
+	<value>Privacy Notice...</value>
+  </data>
+  <data name="_privacyNoticeButton.TextImageRelation" type="System.Windows.Forms.TextImageRelation, System.Windows.Forms">
+	<value>ImageBeforeText</value>
+  </data>
+  <data name="&gt;&gt;_privacyNoticeButton.Name" xml:space="preserve">
+	<value>_privacyNoticeButton</value>
+  </data>
+  <data name="&gt;&gt;_privacyNoticeButton.Type" xml:space="preserve">
+	<value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_privacyNoticeButton.Parent" xml:space="preserve">
+	<value>$this</value>
+  </data>
+  <data name="&gt;&gt;_privacyNoticeButton.ZOrder" xml:space="preserve">
 	<value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -440,6 +479,9 @@
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
 	<value>552, 516</value>
+  </data>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+	<value>NoControl</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
 	<value>465, 480</value>

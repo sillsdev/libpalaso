@@ -415,6 +415,7 @@
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
 	<Content Include="Resources\ianaSubtagRegistry.txt" />
+	<None Include="Resources\spy16x16.png" />
 	<Content Include="Resources\TwoToThreeCodes.txt" />
 	<None Include="Resources\MenuButtonArrow.png" />
 	<None Include="Resources\menuButton.png" />
