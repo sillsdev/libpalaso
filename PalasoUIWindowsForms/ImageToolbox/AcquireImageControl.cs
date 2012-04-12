@@ -53,7 +53,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
 				}
 
-				dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;*.gif";
+				dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
 				dlg.Multiselect = false;
 				dlg.AutoUpgradeEnabled = true;
 				if (DialogResult.OK == dlg.ShowDialog())
@@ -82,9 +82,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					dlg.FileDlgInitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
 				}
 
-				dlg.FileDlgFilter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;*.gif";
-//				dlg.Multiselect = false;
-//                dlg.AutoUpgradeEnabled = true;
+				//NB: dissallowed because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+				dlg.FileDlgFilter = "picture files(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
 
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
