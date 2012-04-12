@@ -149,7 +149,7 @@
 			this.MinimizeBox = false;
 			this.Name = "SettingProtectionDialog";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-			this.Text = "Setting Protection";
+			this.Text = "Settings Protection";
 			((System.ComponentModel.ISupportInitialize)(this._image)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();

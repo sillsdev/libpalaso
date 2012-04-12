@@ -134,7 +134,7 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "SettingsPasswordDialog";
-			this.Text = "Settings Protection";
+			this.Text = "Settings Protection Password";
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
