@@ -12,8 +12,13 @@ namespace Palaso.Reporting
 	/// ----------------------------------------------------------------------------------------
 	public class ExceptionHandler
 	{
+		/// ------------------------------------------------------------------------------------
+		public delegate void CancelExceptionHandlingEventHandler(object sender, CancelExceptionHandlingEventArgs e);
+
+		private readonly HashSet<CancelExceptionHandlingEventHandler> _errorHandlerDelegates =
+			new HashSet<CancelExceptionHandlingEventHandler>();
+
 		private static ExceptionHandler _singleton;
-		private readonly HashSet<CancelEventHandler> _errorHandlerDelegates = new HashSet<CancelEventHandler>();
 
 		/// ------------------------------------------------------------------------------------
 		public static void Init()
@@ -44,7 +49,7 @@ namespace Palaso.Reporting
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public static bool AddDelegate(CancelEventHandler errorHandlerDelegate)
+		public static bool AddDelegate(CancelExceptionHandlingEventHandler errorHandlerDelegate)
 		{
 			if (errorHandlerDelegate == null)
 				return false;
@@ -54,7 +59,7 @@ namespace Palaso.Reporting
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public static bool RemoveDelegate(CancelEventHandler errorHandlerDelegate)
+		public static bool RemoveDelegate(CancelExceptionHandlingEventHandler errorHandlerDelegate)
 		{
 			return (_singleton != null && _singleton._errorHandlerDelegates.Remove(errorHandlerDelegate));
 		}
@@ -67,16 +72,8 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			if (Suspend)
+			if (!GetShouldHandleException(sender, e.ExceptionObject as Exception))
 				return;
-
-			foreach (var errHandler in _errorHandlerDelegates)
-			{
-				var args = new CancelExceptionHandlingEventArgs(e.ExceptionObject as Exception);
-				errHandler(sender, args);
-				if (args.Cancel)
-					return;
-			}
 
 			if (e.ExceptionObject is Exception)
 				DisplayError(e.ExceptionObject as Exception);
@@ -94,16 +91,8 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void HandleTopLevelError(object sender, ThreadExceptionEventArgs e)
 		{
-			if (Suspend)
+			if (!GetShouldHandleException(sender, e.Exception))
 				return;
-
-			foreach (var errHandler in _errorHandlerDelegates)
-			{
-				var args = new CancelExceptionHandlingEventArgs(e.Exception);
-				errHandler(sender, args);
-				if (args.Cancel)
-					return;
-			}
 
 			if (DisplayError(e.Exception))
 			{
@@ -113,6 +102,23 @@ namespace Palaso.Reporting
 				else
 					Environment.Exit(1); //the 1 here is just non-zero
 			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private bool GetShouldHandleException(object sender, Exception error)
+		{
+			if (Suspend)
+				return false;
+
+			foreach (var errHandler in _errorHandlerDelegates)
+			{
+				var args = new CancelExceptionHandlingEventArgs(error);
+				errHandler(sender, args);
+				if (args.Cancel)
+					return false;
+			}
+
+			return true;
 		}
 
 		/// ------------------------------------------------------------------------------------
