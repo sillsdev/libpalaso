@@ -219,6 +219,7 @@ namespace Palaso.Reporting
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExceptionReportingDialog";
+			this.TopMost = true;
 			this.Load += new System.EventHandler(this.ErrorNotificationDialog_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
