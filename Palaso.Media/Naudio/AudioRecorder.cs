@@ -41,25 +41,26 @@ namespace Palaso.Media.Naudio
 		/// <summary>
 		/// This guy is always working, whether we're playing, recording, or just idle (monitoring)
 		/// </summary>
-		WaveIn _waveIn;
+		private WaveIn _waveIn;
 
 		/// <summary>
 		/// This guy is disposed each time the client calls stop to stop recording and gets recreated
 		/// each time the client starts recording (i.e. using BeginRecording).
 		/// </summary>
-		WaveFileWriter _writer;
+		private WaveFileWriter _writer;
 
-		SampleAggregator _sampleAggregator;
-		UnsignedMixerControl _volumeControl;
-		double _microphoneLevel = 100;
-		RecordingState _recordingState = RecordingState.Stopped;
-		WaveFormat _recordingFormat;
-		RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
-		PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
-		double _prevRecordedTime;
+		private UnsignedMixerControl _volumeControl;
+		private double _microphoneLevel = 100;
+		private RecordingState _recordingState = RecordingState.Stopped;
+		private WaveFormat _recordingFormat;
+		private RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
+		private PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
+		private double _prevRecordedTime;
 
+		public SampleAggregator SampleAggregator { get; private set; }
 		public RecordingDevice SelectedDevice { get; set; }
 		public TimeSpan RecordedTime { get; set; }
+
 		public event EventHandler<PeakLevelEventArgs> PeakLevelChanged = delegate { };
 		public event EventHandler<RecordingProgressEventArgs> RecordingProgress = delegate { };
 		public event EventHandler RecordingStarted = delegate { };
@@ -72,11 +73,11 @@ namespace Palaso.Media.Naudio
 		public AudioRecorder(int maxMinutes)
 		{
 			_maxMinutes = maxMinutes;
-			_sampleAggregator = new SampleAggregator();
-			_sampleAggregator.MaximumCalculated += delegate
+			SampleAggregator = new SampleAggregator();
+			SampleAggregator.MaximumCalculated += delegate
 			{
 				//var peakLevel = Math.Max(e.MaxSample, Math.Abs(e.MinSample));
-				_peakLevelEventArgs.Level = _sampleAggregator.maxValue;
+				_peakLevelEventArgs.Level = SampleAggregator.maxValue;
 				PeakLevelChanged.Invoke(this, _peakLevelEventArgs);
 			};
 
@@ -87,6 +88,7 @@ namespace Palaso.Media.Naudio
 		public void Dispose()
 		{
 			CloseWriter();
+			CloseWaveIn();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -99,13 +101,24 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
+		private void CloseWaveIn()
+		{
+			if (_waveIn != null)
+			{
+				_waveIn.DataAvailable -= waveIn_DataAvailable;
+				_waveIn.Dispose();
+				_waveIn = null;
+			}
+		}
+
 		public WaveFormat RecordingFormat
 		{
 			get { return _recordingFormat; }
 			set
 			{
 				_recordingFormat = value;
-				_sampleAggregator.NotificationCount = value.SampleRate / 10;
+				SampleAggregator.NotificationCount = value.SampleRate / 10;
 			}
 		}
 
@@ -141,12 +154,8 @@ namespace Palaso.Media.Naudio
 			}
 			catch (Exception e)
 			{
+				CloseWaveIn();
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e, "There was a problem starting up volume monitoring.");
-				if (_waveIn != null)
-				{
-					_waveIn.Dispose();
-					_waveIn = null;
-				}
 			}
 		}
 
@@ -287,14 +296,6 @@ namespace Palaso.Media.Naudio
 				{
 					_volumeControl.Percent = value;
 				}
-			}
-		}
-
-		public SampleAggregator SampleAggregator
-		{
-			get
-			{
-				return _sampleAggregator;
 			}
 		}
 
