@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -7,32 +9,54 @@ using System.Windows.Forms;
 
 namespace Palaso.Reporting
 {
+	/// ----------------------------------------------------------------------------------------
 	public class ExceptionHandler
 	{
-		private static ExceptionHandler _singleton=null;
+		private static ExceptionHandler _singleton;
+		private readonly HashSet<CancelEventHandler> _errorHandlerDelegates = new HashSet<CancelEventHandler>();
 
+		/// ------------------------------------------------------------------------------------
 		public static void Init()
 		{
 			if (_singleton == null)
-			{
 				_singleton = new ExceptionHandler();
-			}
 		}
 
+		/// ------------------------------------------------------------------------------------
+		public static bool Suspend { set; get; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Set exception handler. Needs to be done before we create splash screen (don't
+		/// understand why, but otherwise some exceptions don't get caught).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
 		protected ExceptionHandler()
 		{
-
-			 // Set exception handler. Needs to be done before we create splash screen
-			// (don't understand why, but otherwise some exceptions don't get caught)
 			// Using Application.ThreadException rather than
-			// AppDomain.CurrentDomain.UnhandledException has the advantage that the program
-			// doesn't necessarily ends - we can ignore the exception and continue.
-			Application.ThreadException += new ThreadExceptionEventHandler(HandleTopLevelError);
+			// AppDomain.CurrentDomain.UnhandledException has the advantage that the
+			// program doesn't necessarily ends - we can ignore the exception and continue.
+			Application.ThreadException += HandleTopLevelError;
 
-			// we also want to catch the UnhandledExceptions for all the cases that
+			// We also want to catch the UnhandledExceptions for all the cases that
 			// ThreadException don't catch, e.g. in the startup.
-			AppDomain.CurrentDomain.UnhandledException +=
-				new UnhandledExceptionEventHandler(HandleUnhandledException);
+			AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public static bool AddDelegate(CancelEventHandler errorHandlerDelegate)
+		{
+			if (errorHandlerDelegate == null)
+				return false;
+
+			Init();
+			return _singleton._errorHandlerDelegates.Add(errorHandlerDelegate);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public static bool RemoveDelegate(CancelEventHandler errorHandlerDelegate)
+		{
+			return (_singleton != null && _singleton._errorHandlerDelegates.Remove(errorHandlerDelegate));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -40,11 +64,20 @@ namespace Palaso.Reporting
 		/// Catches and displays otherwise unhandled exception, especially those that happen
 		/// during startup of the application before we show our main window.
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
 		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
+			if (Suspend)
+				return;
+
+			foreach (var errHandler in _errorHandlerDelegates)
+			{
+				var args = new CancelExceptionHandlingEventArgs(e.ExceptionObject as Exception);
+				errHandler(sender, args);
+				if (args.Cancel)
+					return;
+			}
+
 			if (e.ExceptionObject is Exception)
 				DisplayError(e.ExceptionObject as Exception);
 			else
@@ -56,22 +89,29 @@ namespace Palaso.Reporting
 		/// Catches and displays a otherwise unhandled exception.
 		/// </summary>
 		/// <param name="sender">sender</param>
-		/// <param name="eventArgs">Exception</param>
+		/// <param name="e">Exception</param>
 		/// <remarks>previously <c>AfApp::HandleTopLevelError</c></remarks>
 		/// ------------------------------------------------------------------------------------
-		protected void HandleTopLevelError(object sender, ThreadExceptionEventArgs eventArgs)
+		protected void HandleTopLevelError(object sender, ThreadExceptionEventArgs e)
 		{
-			if (DisplayError(eventArgs.Exception))
+			if (Suspend)
+				return;
+
+			foreach (var errHandler in _errorHandlerDelegates)
+			{
+				var args = new CancelExceptionHandlingEventArgs(e.Exception);
+				errHandler(sender, args);
+				if (args.Cancel)
+					return;
+			}
+
+			if (DisplayError(e.Exception))
 			{
 				//Are we inside a Application.Run() statement?
-				if (System.Windows.Forms.Application.MessageLoop)
-				{
-					System.Windows.Forms.Application.Exit();
-				}
+				if (Application.MessageLoop)
+					Application.Exit();
 				else
-				{
-					System.Environment.Exit(1); //the 1 here is just non-zero
-				}
+					Environment.Exit(1); //the 1 here is just non-zero
 			}
 		}
 
@@ -104,8 +144,7 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				string strShowUI =
-					ConfigurationManager.AppSettings["ShowUI"];
+				string strShowUI = ConfigurationManager.AppSettings["ShowUI"];
 				bool fShowUI = true;
 				try
 				{
@@ -137,7 +176,7 @@ namespace Palaso.Reporting
 
 				if (exception.InnerException != null)
 				{
-					Debug.WriteLine(String.Format("Exception: {0} {1}", exception.Message, exception.InnerException.Message));
+					Debug.WriteLine(string.Format("Exception: {0} {1}", exception.Message, exception.InnerException.Message));
 					Logger.WriteEvent("Exception: {0} {1}", exception.Message, exception.InnerException.Message);
 				}
 				else
@@ -204,6 +243,19 @@ namespace Palaso.Reporting
 				Debug.Fail("This error could not be reported normally: ",exception.Message);
 			}
 			return true;
+		}
+	}
+
+	/// ----------------------------------------------------------------------------------------
+	public class CancelExceptionHandlingEventArgs : CancelEventArgs
+	{
+		/// ------------------------------------------------------------------------------------
+		public Exception Exception { get; private set; }
+
+		/// ------------------------------------------------------------------------------------
+		public CancelExceptionHandlingEventArgs(Exception error)
+		{
+			Exception = error;
 		}
 	}
 }
