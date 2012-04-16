@@ -36,6 +36,7 @@
 			this._passwordNotice = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel3 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			((System.ComponentModel.ISupportInitialize)(this._image)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -66,7 +67,7 @@
 			//
 			this._requirePasswordCheckBox.AutoSize = true;
 			this._requirePasswordCheckBox.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._requirePasswordCheckBox.Location = new System.Drawing.Point(12, 157);
+			this._requirePasswordCheckBox.Location = new System.Drawing.Point(12, 189);
 			this._requirePasswordCheckBox.Name = "_requirePasswordCheckBox";
 			this._requirePasswordCheckBox.Size = new System.Drawing.Size(284, 19);
 			this._requirePasswordCheckBox.TabIndex = 2;
@@ -91,7 +92,7 @@
 			this._passwordNotice.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._passwordNotice.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._passwordNotice.ForeColor = System.Drawing.Color.DimGray;
-			this._passwordNotice.Location = new System.Drawing.Point(29, 180);
+			this._passwordNotice.Location = new System.Drawing.Point(29, 212);
 			this._passwordNotice.Multiline = true;
 			this._passwordNotice.Name = "_passwordNotice";
 			this._passwordNotice.ReadOnly = true;
@@ -131,12 +132,28 @@
 			this.betterLabel2.TabStop = false;
 			this.betterLabel2.Text = "The button will show up when you hold down the Ctrl and Shift keys together.";
 			//
+			// betterLabel3
+			//
+			this.betterLabel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.betterLabel3.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel3.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel3.Location = new System.Drawing.Point(29, 136);
+			this.betterLabel3.Multiline = true;
+			this.betterLabel3.Name = "betterLabel3";
+			this.betterLabel3.ReadOnly = true;
+			this.betterLabel3.Size = new System.Drawing.Size(431, 47);
+			this.betterLabel3.TabIndex = 7;
+			this.betterLabel3.TabStop = false;
+			this.betterLabel3.Text = "This may also hide other buttons which are not needed by the non-advanced user.";
+			//
 			// SettingProtectionDialog
 			//
 			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(503, 316);
+			this.Controls.Add(this.betterLabel3);
 			this.Controls.Add(this.betterLabel2);
 			this.Controls.Add(this._passwordNotice);
 			this.Controls.Add(this.betterLabel1);
@@ -165,5 +182,6 @@
 		private Widgets.BetterLabel betterLabel1;
 		private Widgets.BetterLabel _passwordNotice;
 		private Widgets.BetterLabel betterLabel2;
+		private Widgets.BetterLabel betterLabel3;
 	}
 }
