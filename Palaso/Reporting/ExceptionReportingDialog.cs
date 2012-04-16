@@ -15,16 +15,15 @@ namespace Palaso.Reporting
 		private TextBox _details;
 		private TextBox _pleaseHelpText;
 		private TextBox m_reproduce;
-		private Label _attemptToContinueLabel;
 
 		private bool _isLethal;
 
 		private Button _sendAndCloseButton;
-		 private LinkLabel _dontSendEmailLink;
 		 private TextBox _notificationText;
 		 private TextBox textBox1;
 		 private ComboBox _methodCombo;
 		 private Button _privacyNoticeButton;
+		 private Label _emailAddress;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -105,12 +104,11 @@ namespace Palaso.Reporting
 			this._details = new System.Windows.Forms.TextBox();
 			this._sendAndCloseButton = new System.Windows.Forms.Button();
 			this._pleaseHelpText = new System.Windows.Forms.TextBox();
-			this._attemptToContinueLabel = new System.Windows.Forms.Label();
-			this._dontSendEmailLink = new System.Windows.Forms.LinkLabel();
 			this._notificationText = new System.Windows.Forms.TextBox();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this._methodCombo = new System.Windows.Forms.ComboBox();
 			this._privacyNoticeButton = new System.Windows.Forms.Button();
+			this._emailAddress = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			//
 			// m_reproduce
@@ -148,19 +146,6 @@ namespace Palaso.Reporting
 			this._pleaseHelpText.Name = "_pleaseHelpText";
 			this._pleaseHelpText.ReadOnly = true;
 			//
-			// _attemptToContinueLabel
-			//
-			resources.ApplyResources(this._attemptToContinueLabel, "_attemptToContinueLabel");
-			this._attemptToContinueLabel.ForeColor = System.Drawing.Color.Firebrick;
-			this._attemptToContinueLabel.Name = "_attemptToContinueLabel";
-			//
-			// _dontSendEmailLink
-			//
-			resources.ApplyResources(this._dontSendEmailLink, "_dontSendEmailLink");
-			this._dontSendEmailLink.Name = "_dontSendEmailLink";
-			this._dontSendEmailLink.TabStop = true;
-			this._dontSendEmailLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnJustExit_LinkClicked);
-			//
 			// _notificationText
 			//
 			resources.ApplyResources(this._notificationText, "_notificationText");
@@ -169,7 +154,6 @@ namespace Palaso.Reporting
 			this._notificationText.ForeColor = System.Drawing.Color.Black;
 			this._notificationText.Name = "_notificationText";
 			this._notificationText.ReadOnly = true;
-			this._notificationText.TextChanged += new System.EventHandler(this._notificationText_TextChanged);
 			//
 			// textBox1
 			//
@@ -191,10 +175,17 @@ namespace Palaso.Reporting
 			// _privacyNoticeButton
 			//
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
+			this._privacyNoticeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._privacyNoticeButton.Image = global::Palaso.Properties.Resources.spy16x16;
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
 			this._privacyNoticeButton.Click += new System.EventHandler(this._privacyNoticeButton_Click);
+			//
+			// _emailAddress
+			//
+			resources.ApplyResources(this._emailAddress, "_emailAddress");
+			this._emailAddress.ForeColor = System.Drawing.Color.DimGray;
+			this._emailAddress.Name = "_emailAddress";
 			//
 			// ExceptionReportingDialog
 			//
@@ -202,17 +193,15 @@ namespace Palaso.Reporting
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this.CancelButton = this._sendAndCloseButton;
 			this.ControlBox = false;
+			this.Controls.Add(this._emailAddress);
 			this.Controls.Add(this._privacyNoticeButton);
 			this.Controls.Add(this._methodCombo);
 			this.Controls.Add(this.textBox1);
-			this.Controls.Add(this._dontSendEmailLink);
 			this.Controls.Add(this.m_reproduce);
 			this.Controls.Add(this._notificationText);
 			this.Controls.Add(this._pleaseHelpText);
 			this.Controls.Add(this._details);
-			this.Controls.Add(this._attemptToContinueLabel);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this._sendAndCloseButton);
 			this.KeyPreview = true;
@@ -220,7 +209,7 @@ namespace Palaso.Reporting
 			this.MinimizeBox = false;
 			this.Name = "ExceptionReportingDialog";
 			this.TopMost = true;
-			this.Load += new System.EventHandler(this.ErrorNotificationDialog_Load);
+			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ExceptionReportingDialog_KeyPress);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -467,7 +456,7 @@ namespace Palaso.Reporting
 			 // Required for Windows Form Designer support
 			 //
 			 InitializeComponent();
-
+			 _emailAddress.Text = ErrorReport.EmailAddress;
 			 SetupMethodCombo();
 
 			 foreach (ReportingMethod  method in _methodCombo.Items)
@@ -482,6 +471,7 @@ namespace Palaso.Reporting
 			 if (!_isLethal)
 			 {
 				 BackColor = Color.FromArgb(255, 255, 192); //yellow
+				_notificationText.Text = "Take Courage. It'll work out.";
 				 _notificationText.BackColor = BackColor;
 				 _pleaseHelpText.BackColor = BackColor;
 				 textBox1.BackColor = BackColor;
@@ -641,7 +631,7 @@ namespace Palaso.Reporting
 		{
 			if (e.KeyCode == Keys.ShiftKey && Visible)
 			{
-				_attemptToContinueLabel.Visible = true;
+				_sendAndCloseButton.Text = "Continue";
 			}
 			base.OnKeyDown(e);
 		}
@@ -656,7 +646,7 @@ namespace Palaso.Reporting
 		{
 			if (e.KeyCode == Keys.ShiftKey && Visible)
 			{
-				_attemptToContinueLabel.Visible = false;
+				SetupCloseButtonText();
 			}
 			base.OnKeyUp(e);
 		}
@@ -664,16 +654,6 @@ namespace Palaso.Reporting
 		 private void OnJustExit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		 {
 			 CloseUp();
-		 }
-
-		 private void ErrorNotificationDialog_Load(object sender, EventArgs e)
-		 {
-
-		 }
-
-		 private void _notificationText_TextChanged(object sender, EventArgs e)
-		 {
-
 		 }
 
 		 private void _methodCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -686,7 +666,7 @@ namespace Palaso.Reporting
 			_sendAndCloseButton.Text = SelectedMethod.CloseButtonLabel;
 			 if (!_isLethal)
 			 {
-				 _dontSendEmailLink.Text = "Don't Send Email";
+				// _dontSendEmailLink.Text = "Don't Send Email";
 			 }
 			 else
 			 {
@@ -705,12 +685,20 @@ namespace Palaso.Reporting
 			MessageBox.Show(
 				@"If you don’t care who reads your bug report, you can skip this notice.
 
-When you submit a crash report or other issue, the contents of your email go in our issue tracking system, “jira”, which is available via the web at http://jira.palso.org/issues. This is the normal (though not mandatory) way to handle issues in an open-source project.
+When you submit a crash report or other issue, the contents of your email go in our issue tracking system, “jira”, which is available via the web at http://jira.palso.org/issues. This is the normal way to handle issues in an open-source project.
 
 Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
 
 However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don’t want the issue in our issue tracking system. If need be, we’ll make some kind of sanitized place-holder for your issue so that we don’t lose it.
 ");
+		 }
+
+		 private void ExceptionReportingDialog_KeyPress(object sender, KeyPressEventArgs e)
+		 {
+			 if(e.KeyChar== 27)//ESCAPE
+			 {
+				CloseUp();
+			 }
 		 }
 	}
 }
