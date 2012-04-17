@@ -8,6 +8,9 @@ namespace Palaso.WritingSystems
 {
 	public class Iso639LanguageCode
 	{
+		//previously, we were spending huge amounts of time during sorting, just calculating this, using a regex
+		private string SortingName;
+
 		public Iso639LanguageCode(string code, string name, string iso3Code)
 		{
 			Code = code;
@@ -15,12 +18,16 @@ namespace Palaso.WritingSystems
 			ISO3Code = iso3Code;
 		}
 
-		internal static string GetNameForSorting(string name)
+		private string _name;
+		public string Name
 		{
-			return Regex.Replace(name, @"[^\w]", "");
+			get { return _name; }
+			set
+			{
+				_name = value;
+				SortingName = Regex.Replace(_name, @"[^\w]", "");
+			}
 		}
-
-		public string Name { get; set; }
 
 		public string Code { get; set; }    //Iso 639-1 code or Iso 639-3 code if former is not available
 
@@ -47,7 +54,7 @@ namespace Palaso.WritingSystems
 				}
 				else
 				{
-					return GetNameForSorting(x.Name).CompareTo(GetNameForSorting(y.Name));
+					return x.SortingName.CompareTo(y.SortingName);
 				}
 			}
 		}
