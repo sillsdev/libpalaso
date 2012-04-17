@@ -36,28 +36,28 @@ namespace Palaso.Media.Naudio
 
 	public class AudioRecorder : IAudioRecorder, IDisposable
 	{
-		private readonly int _maxMinutes;
+		protected readonly int _maxMinutes;
 
 		/// <summary>
 		/// This guy is always working, whether we're playing, recording, or just idle (monitoring)
 		/// </summary>
-		private WaveIn _waveIn;
+		protected WaveIn _waveIn;
 
 		/// <summary>
 		/// This guy is disposed each time the client calls stop to stop recording and gets recreated
 		/// each time the client starts recording (i.e. using BeginRecording).
 		/// </summary>
-		private WaveFileWriter _writer;
+		protected WaveFileWriter _writer;
 
-		private UnsignedMixerControl _volumeControl;
-		private double _microphoneLevel = 100;
-		private RecordingState _recordingState = RecordingState.Stopped;
-		private WaveFormat _recordingFormat;
-		private RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
-		private PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
-		private double _prevRecordedTime;
+		protected UnsignedMixerControl _volumeControl;
+		protected double _microphoneLevel = 100;
+		protected RecordingState _recordingState = RecordingState.Stopped;
+		protected WaveFormat _recordingFormat;
+		protected RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
+		protected PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
+		protected double _prevRecordedTime;
 
-		public SampleAggregator SampleAggregator { get; private set; }
+		public SampleAggregator SampleAggregator { get; protected set; }
 		public RecordingDevice SelectedDevice { get; set; }
 		public TimeSpan RecordedTime { get; set; }
 
@@ -85,14 +85,14 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			CloseWriter();
 			CloseWaveIn();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void CloseWriter()
+		protected virtual void CloseWriter()
 		{
 			if (_writer != null)
 			{
@@ -102,7 +102,7 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void CloseWaveIn()
+		protected virtual void CloseWaveIn()
 		{
 			if (_waveIn != null)
 			{
@@ -112,7 +112,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
-		public WaveFormat RecordingFormat
+		public virtual WaveFormat RecordingFormat
 		{
 			get { return _recordingFormat; }
 			set
@@ -122,7 +122,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
-		public void BeginMonitoring()
+		public virtual void BeginMonitoring()
 		{
 			Debug.Assert(_waveIn == null, "only call this once");
 			try
@@ -162,7 +162,7 @@ namespace Palaso.Media.Naudio
 		/// <summary>
 		/// as far as naudio is concerned, we are still "recording", but we aren't writing this file anymore
 		/// </summary>
-		void TransitionFromRecordingToMonitoring()
+		protected virtual void TransitionFromRecordingToMonitoring()
 		{
 			RecordedTime = TimeSpan.FromSeconds((double)_writer.Length / _writer.WaveFormat.AverageBytesPerSecond);
 			RecordingState = RecordingState.Monitoring;
@@ -182,12 +182,12 @@ namespace Palaso.Media.Naudio
 			Stopped(this, EventArgs.Empty);
 		}
 */
-		public void BeginRecording(string waveFileName)
+		public virtual void BeginRecording(string waveFileName)
 		{
 			BeginRecording(waveFileName, false);
 		}
 
-		public void BeginRecording(string waveFileName, bool appendToFile)
+		public virtual void BeginRecording(string waveFileName, bool appendToFile)
 		{
 			if (_recordingState != RecordingState.Monitoring)
 			{
@@ -212,7 +212,7 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private byte[] GetAudioBufferToAppendTo(string waveFileName)
+		protected virtual byte[] GetAudioBufferToAppendTo(string waveFileName)
 		{
 			using (var stream = new WaveFileReader(waveFileName))
 			{
@@ -227,7 +227,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
-		public void Stop()
+		public virtual void Stop()
 		{
 			if (_recordingState == RecordingState.Recording)
 			{
@@ -238,7 +238,7 @@ namespace Palaso.Media.Naudio
 			TransitionFromRecordingToMonitoring();
 		}
 
-		private void TryGetVolumeControl()
+		protected virtual void TryGetVolumeControl()
 		{
 			int waveInDeviceNumber = _waveIn.DeviceNumber;
 			if (Environment.OSVersion.Version.Major >= 6) // Vista and over
@@ -283,36 +283,28 @@ namespace Palaso.Media.Naudio
 
 		}
 
-		public double MicrophoneLevel
+		public virtual double MicrophoneLevel
 		{
-			get
-			{
-				return _microphoneLevel;
-			}
+			get { return _microphoneLevel; }
 			set
 			{
 				_microphoneLevel = value;
 				if (_volumeControl != null)
-				{
 					_volumeControl.Percent = value;
-				}
 			}
 		}
 
-		public RecordingState RecordingState
+		public virtual RecordingState RecordingState
 		{
-			get
-			{
-				return _recordingState;
-			}
-			private set
+			get { return _recordingState; }
+			protected set
 			{
 				_recordingState = value;
 				Debug.WriteLine("recorder state--> " + value.ToString());
 			}
 		}
 
-		void waveIn_DataAvailable(object sender, WaveInEventArgs e)
+		protected virtual void waveIn_DataAvailable(object sender, WaveInEventArgs e)
 		{
  /*original from codeplex
   byte[] buffer = e.Buffer;
@@ -364,7 +356,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
-		private void WriteToFile(byte[] buffer, int bytesRecorded)
+		protected virtual void WriteToFile(byte[] buffer, int bytesRecorded)
 		{
 			//REVIEW: why does this max time even exist?  I don't see that it affects buffer size
 			long maxFileLength = _recordingFormat.AverageBytesPerSecond * 60 * _maxMinutes;
