@@ -107,7 +107,8 @@ namespace Palaso.Media.Naudio
 			if (_waveIn != null)
 			{
 				_waveIn.DataAvailable -= waveIn_DataAvailable;
-				_waveIn.Dispose();
+				try { _waveIn.Dispose(); }
+				catch { }
 				_waveIn = null;
 			}
 		}
