@@ -386,7 +386,9 @@ namespace Palaso.Reporting
 			 {
 				 //We have more than one report of dieing while logging an exception.
 				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-				 _details.Text += "Was try to log the exception: " + error.Message + Environment.NewLine;
+				 _details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
+				 _details.Text += "Recent events:" + Environment.NewLine;
+				 _details.Text += Logger.MinorEventsLog;
 			 }
 
 			 ShowReportDialogIfAppropriate(owningForm);
