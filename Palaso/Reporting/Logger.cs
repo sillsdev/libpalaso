@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.IO;
 
 
 namespace Palaso.Reporting
@@ -304,24 +305,33 @@ namespace Palaso.Reporting
 				contents.AppendLine(m_minorEvents.ToString());
 
 			}
-			RestartMinorEvents();
 			StartAppendingToLog();
 
 			return contents.ToString();
 		}
 
-		private static string LogPath
+		/// <summary>
+		/// added this for a case of a catastrophic error so bad I couldn't get the means of finding out what just happened
+		/// </summary>
+		public static string MinorEventsLog
+		{
+			get { return Singleton.m_minorEvents.ToString(); }
+		}
+
+		/// <summary>
+		/// the place on disk where we are storing the log
+		/// </summary>
+		public static string LogPath
 		{
 			get
 			{
-				if(string.IsNullOrEmpty(_actualLogPath))
+				if (string.IsNullOrEmpty(_actualLogPath))
 				{
 					SetActualLogPath("Log.txt");
 				}
 				return _actualLogPath;
 			}
 		}
-
 		public static Logger Singleton
 		{
 			get { return _singleton; }
@@ -411,6 +421,33 @@ namespace Palaso.Reporting
 #endif
 			}
 
+		}
+
+		/// <summary>
+		/// if you're working with unmanaged code and get a System.AccessViolationException, well you're toast, and anything
+		/// that requires UI is gonna freeze up.  So call this instead
+		/// </summary>
+		public static void ShowUserATextFileRelatedToCatastrophicError(Exception reallyBadException)
+		{
+			//did this special because we don't have an event loop to drive the error reporting dialog if Application.Run() dies
+			Debug.WriteLine(Logger.LogText);
+			string tempFileName = TempFile.WithExtension(".txt").Path;
+			using(var writer = File.CreateText(tempFileName))
+			{
+				writer.WriteLine("Please report to "+ErrorReport.EmailAddress);
+				writer.WriteLine("No really. Please. This kind of error is super hard to track down.");
+				writer.WriteLine();
+				writer.WriteLine(reallyBadException.Message);
+				writer.WriteLine(reallyBadException.StackTrace);
+				writer.WriteLine();
+				writer.WriteLine(LogText);
+				writer.WriteLine();
+				writer.WriteLine("Details of recent events:");
+				writer.WriteLine(MinorEventsLog);
+				writer.Flush();
+				writer.Close();
+			}
+			Process.Start(tempFileName);
 		}
 	}
 }
