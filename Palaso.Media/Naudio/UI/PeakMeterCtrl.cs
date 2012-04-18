@@ -444,6 +444,7 @@ namespace Palaso.Media.Naudio.UI
 			}
 			return _animationTimer.Change(period, period);
 		}
+
 		protected bool StopAnimation()
 		{
 			bool result = false;
@@ -456,10 +457,9 @@ namespace Palaso.Media.Naudio.UI
 					_animationTimer = null;
 					result = true;
 				}
-				catch (Exception)
-				{
-				}
+				catch { }
 			}
+
 			return result;
 		}
 
@@ -468,29 +468,10 @@ namespace Palaso.Media.Naudio.UI
 			Stop();
 			base.OnHandleDestroyed(e);
 		}
+
 		protected override void OnBackColorChanged(EventArgs e)
 		{
 			Refresh();
-		}
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			// Calling the base class OnPaint
-			base.OnPaint(e);
-
-			Graphics g = e.Graphics;
-			Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
-			Brush backColorBrush = new SolidBrush(this.BackColor);
-
-			g.FillRectangle(backColorBrush, rect);
-			//rect.Inflate(-this.Margin.Left, -this.Margin.Top);
-			if (MeterStyle == PeakMeterStyle.PMS_Horizontal)
-			{
-				DrawHorzBand(g, rect);
-			}
-			else
-			{
-				DrawVertBand(g, rect);
-			}
 		}
 
 		protected void TimerCallback(Object thisObject)
@@ -498,25 +479,18 @@ namespace Palaso.Media.Naudio.UI
 			try
 			{
 				// refresh now!
-				Control thisControl = thisObject as Control;
+				var thisControl = thisObject as Control;
 				if (thisControl != null && thisControl.IsHandleCreated)
-				{
 					thisControl.Invoke(new MethodInvoker(Refresh));
-				}
 				else
-				{
 					return;
-				}
 			}
-			catch (Exception)
-			{
-				// just ignore
-			}
+			catch { }
 
-			int nDecValue  = _MaxRangeValue / _LEDCount;
+			int nDecValue = _MaxRangeValue / _LEDCount;
 			bool noUpdate = true;
 
-			Monitor.Enter(this._meterData);
+			Monitor.Enter(_meterData);
 			for (int i = 0; i < _meterData.Length; i++)
 			{
 				PeakMeterData pm = _meterData[i];
@@ -546,14 +520,32 @@ namespace Palaso.Media.Naudio.UI
 				// re-assign PeakMeterData
 				_meterData[i] = pm;
 			}
-			Monitor.Exit(this._meterData);
+
+			Monitor.Exit(_meterData);
 
 			if (noUpdate) // Stop timer if no more data but do not reset ID
-			{
 				StopAnimation();
+		}
+
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			// Calling the base class OnPaint
+			base.OnPaint(e);
+
+			var rc = ClientRectangle;
+
+			using (var br = new SolidBrush(BackColor))
+			{
+				e.Graphics.FillRectangle(br, rc);
+
+				if (MeterStyle == PeakMeterStyle.PMS_Horizontal)
+					DrawHorzBand(e.Graphics);
+				else
+					DrawVertBand(e.Graphics);
 			}
 		}
-		protected void DrawHorzBand(Graphics g, Rectangle rect)
+
+		protected void DrawHorzBand(Graphics g)
 		{
 			int nMaxRange = (_MedRangeValue == 0) ? Math.Abs(_MaxRangeValue - _MinRangeValue) : _MaxRangeValue;
 			int nVertBands = (_LEDCount > 1 ? _LEDCount : (nMaxRange * DecrementPercent) / 100);
@@ -566,205 +558,223 @@ namespace Palaso.Media.Naudio.UI
 				nMedVertLimit = Math.Abs(_MinRangeValue) * nVertBands / nMaxRange;
 				nMinVertLimit = 0;
 			}
-			Size size = new Size(rect.Width/_BandsCount, rect.Height/nVertBands);
-			Rectangle rcBand = new Rectangle(rect.Location, size);
+
+			var rc = ClientRectangle;
+			var bandSize = new Size(rc.Width / _BandsCount, rc.Height / nVertBands);
+			var bandRect = new Rectangle(rc.Location, bandSize);
 
 			// Draw band from bottom
-			rcBand.Offset(0, rect.Height-size.Height);
-			int xDecal = (_BandsCount>1 ? cxyMargin : 0);
+			bandRect.Offset(0, rc.Height - bandSize.Height);
+			int xDecal = (_BandsCount > 1 ? cxyMargin : 0);
 			//int yDecal = 0;
 
-			Color gridPenColor = (this.ShowGrid ? GridColor : BackColor);
-			Pen gridPen = new Pen(gridPenColor);
-			Pen fallPen = new Pen( this.FalloffColor );
+			var gridPen = new Pen(ShowGrid ? GridColor : BackColor);
+			var fallPen = new Pen(FalloffColor);
 
-			for(int nHorz=0; nHorz < _BandsCount; nHorz++)
+			for (int band = 0; band < _BandsCount; band++)
 			{
-				int nValue = _meterData[nHorz].Value;
-				int nVertValue = nValue*nVertBands/nMaxRange;
-				Rectangle rcPrev = rcBand;
+				int nValue = _meterData[band].Value;
+				int nVertValue = nValue * nVertBands / nMaxRange;
+				var prevBandRect = bandRect;
 
-				for(int nVert=0; nVert < nVertBands; nVert++)
+				for (int nVert = 0; nVert < nVertBands; nVert++)
 				{
 					// Find color based on range value
-					Color colorBand = gridPenColor;
+					var bandColor = gridPen.Color;
 
 					// Draw grid line (level) bar
-					if ( this.ShowGrid && (nVert == nMinVertLimit || nVert == nMedVertLimit || nVert == (nVertBands-1)))
+					if (ShowGrid && (nVert == nMinVertLimit || nVert == nMedVertLimit || nVert == (nVertBands-1)))
 					{
 						Point []points = new Point[2];
-						points[0].X = rcBand.Left;
-						points[0].Y = rcBand.Top + (rcBand.Height>>1);
-						points[1].X = rcBand.Right;
+						points[0].X = bandRect.Left;
+						points[0].Y = bandRect.Top + (bandRect.Height>>1);
+						points[1].X = bandRect.Right;
 						points[1].Y = points[0].Y;
 						g.DrawPolygon(gridPen, points);
 					}
 
-					if ( _MedRangeValue == 0 )
+					if (_MedRangeValue == 0)
 					{
 						int nVertStart = nMedVertLimit+nVertValue;
 						if ( InRange(nVert, nVertStart, nMedVertLimit-1) )
-							colorBand = this.ColorNormal;
-						else if ( nVert >= nMedVertLimit && InRange(nVert, nMedVertLimit, nVertStart) )
-							colorBand = this.ColorHigh;
-						else {
-							colorBand = (nVert < nMedVertLimit) ? this.ColorNormalBack : this.ColorHighBack;
+							bandColor = ColorNormal;
+						else if (nVert >= nMedVertLimit && InRange(nVert, nMedVertLimit, nVertStart))
+							bandColor = ColorHigh;
+						else
+							bandColor = (nVert < nMedVertLimit) ? ColorNormalBack : ColorHighBack;
+					}
+					else if (nVertValue < nVert)
+					{
+						if (ShowGrid && ColoredGrid)
+						{
+							if (InRange(nVert, 0, nMinVertLimit))
+								bandColor = ColorNormalBack;
+							else if (InRange(nVert, nMinVertLimit+1, nMedVertLimit))
+								bandColor = ColorMediumBack;
+							else if (InRange(nVert, nMedVertLimit+1, nMaxVertLimit))
+								bandColor = ColorHighBack;
 						}
 					}
-					else if ( nVertValue < nVert )
+					else
 					{
-						if ( this.ShowGrid && this.ColoredGrid )
-						{
-							if ( InRange(nVert, 0, nMinVertLimit) )
-								colorBand = this.ColorNormalBack;
-							else if ( InRange(nVert, nMinVertLimit+1, nMedVertLimit) )
-								colorBand = this.ColorMediumBack;
-							else if ( InRange(nVert, nMedVertLimit+1, nMaxVertLimit) )
-								colorBand = this.ColorHighBack;
-						}
-					} else {
 						if (nValue == 0)
 						{
-							if (this.ShowGrid && this.ColoredGrid)
-								colorBand = this.ColorNormalBack;
+							if (ShowGrid && ColoredGrid)
+								bandColor = ColorNormalBack;
 						}
-						else if ( InRange(nVert, 0, nMinVertLimit) )
-							colorBand = this.ColorNormal;
-						else if ( InRange(nVert, nMinVertLimit+1, nMedVertLimit) )
-							colorBand = this.ColorMedium;
-						else if ( InRange(nVert, nMedVertLimit+1, nMaxVertLimit) )
-							colorBand = this.ColorHigh;
+						else if (InRange(nVert, 0, nMinVertLimit))
+							bandColor = ColorNormal;
+						else if (InRange(nVert, nMinVertLimit+1, nMedVertLimit))
+							bandColor = ColorMedium;
+						else if (InRange(nVert, nMedVertLimit+1, nMaxVertLimit))
+							bandColor = ColorHigh;
 					}
 
-					if (colorBand != this.BackColor)
+					if (bandColor != BackColor)
 					{
-						SolidBrush fillBrush = new SolidBrush(colorBand);
-						if (this._LEDCount > 1)
-							rcBand.Inflate(-cxyMargin, -cxyMargin);
-						g.FillRectangle(fillBrush, rcBand.Left, rcBand.Top, rcBand.Width+1, rcBand.Height);
-						if (this._LEDCount > 1)
-							rcBand.Inflate(cxyMargin, cxyMargin);
+						using (var fillBrush = new SolidBrush(bandColor))
+						{
+							if (_LEDCount > 1)
+								bandRect.Inflate(-cxyMargin, -cxyMargin);
+
+							g.FillRectangle(fillBrush, bandRect.Left, bandRect.Top, bandRect.Width + 1, bandRect.Height);
+
+							if (_LEDCount > 1)
+								bandRect.Inflate(cxyMargin, cxyMargin);
+						}
 					}
-					rcBand.Offset(0, -size.Height);
+
+					bandRect.Offset(0, -bandSize.Height);
 				}
 
 				// Draw falloff effect
-				if (this.FalloffEffect && this.IsActive)
+				if (FalloffEffect && IsActive)
 				{
-					int nMaxHeight = size.Height*nVertBands;
-					Point []points = new Point[2];
-					points[0].X = rcPrev.Left + xDecal;
-					points[0].Y = rcPrev.Bottom - (_meterData[nHorz].Falloff * nMaxHeight) / _MaxRangeValue;
-					points[1].X = rcPrev.Right - xDecal;
+					int nMaxHeight = bandSize.Height*nVertBands;
+					var points = new Point[2];
+					points[0].X = prevBandRect.Left + xDecal;
+					points[0].Y = prevBandRect.Bottom - (_meterData[band].Falloff * nMaxHeight) / _MaxRangeValue;
+					points[1].X = prevBandRect.Right - xDecal;
 					points[1].Y = points[0].Y;
 					g.DrawPolygon(fallPen, points);
 				}
 
 				// Move to Next Horizontal band
-				rcBand.Offset(size.Width, size.Height * nVertBands);
+				bandRect.Offset(bandSize.Width, bandSize.Height * nVertBands);
 			}
+
+			gridPen.Dispose();
+			fallPen.Dispose();
 		}
-		protected void DrawVertBand(Graphics g, Rectangle rect)
+
+		protected void DrawVertBand(Graphics g)
 		{
 			int nMaxRange = (_MedRangeValue == 0) ? Math.Abs(_MaxRangeValue - _MinRangeValue) : _MaxRangeValue;
-			int nHorzBands = (_LEDCount > 1 ? _LEDCount : (nMaxRange * DecrementPercent) / 100);
-			int nMinHorzLimit = _MinRangeValue*nHorzBands/nMaxRange;
-			int nMedHorzLimit = _MedRangeValue*nHorzBands/nMaxRange;
-			int nMaxHorzLimit = nHorzBands;
+			int numberOfLeds = (_LEDCount > 1 ? _LEDCount : (nMaxRange * DecrementPercent) / 100);
+			int nMinHorzLimit = _MinRangeValue * numberOfLeds/nMaxRange;
+			int nMedHorzLimit = _MedRangeValue * numberOfLeds/nMaxRange;
+			int nMaxHorzLimit = numberOfLeds;
 
 			if ( _MedRangeValue == 0 )
 			{
-				nMedHorzLimit = Math.Abs(_MinRangeValue)*nHorzBands/nMaxRange;
+				nMedHorzLimit = Math.Abs(_MinRangeValue)*numberOfLeds/nMaxRange;
 				nMinHorzLimit = 0;
 			}
 
-			Size size = new Size(rect.Width/nHorzBands, rect.Height/_BandsCount);
-			Rectangle rcBand = new Rectangle(rect.Location, size);
+			var rc = ClientRectangle;
+			var bandSize = new Size(rc.Width / numberOfLeds, rc.Height / _BandsCount);
+			var bandRect = new Rectangle(rc.Location, bandSize);
 
 			// Draw band from top
-			rcBand.Offset(0, rect.Height-size.Height*_BandsCount);
+			bandRect.Offset(0, rc.Height - bandSize.Height * _BandsCount);
 			//int xDecal = 0;
 			int yDecal = (_BandsCount>1 ? cxyMargin : 0);
 
-			Color gridPenColor = (this.ShowGrid ? GridColor : BackColor);
-			Pen gridPen = new Pen(gridPenColor);
-			Pen fallPen = new Pen( this.FalloffColor );
+			var gridPen = new Pen(ShowGrid ? GridColor : BackColor);
+			var fallPen = new Pen(FalloffColor );
 
-			for(int nVert=0; nVert < _BandsCount; nVert++)
+			for (int band = 0; band < _BandsCount; band++)
 			{
-				int nValue = _meterData[nVert].Value;
-				int nHorzValue = nValue*nHorzBands/nMaxRange;
-				Rectangle rcPrev = rcBand;
+				int dataValue = _meterData[band].Value;
+				int nHorzValue = dataValue * numberOfLeds / nMaxRange;
+				var rcPrev = bandRect;
 
-				for(int nHorz=0; nHorz < nHorzBands; nHorz++)
+				for (int bands = 0; bands < numberOfLeds; bands++)
 				{
 					// Find color based on range value
-					Color colorBand = gridPenColor;
+					var colorBand = gridPen.Color;
 
-					if ( this.ShowGrid && (nHorz == nMinHorzLimit || nHorz == nMedHorzLimit || nHorz == (nHorzBands-1)))
+					if (ShowGrid && (bands == nMinHorzLimit || bands == nMedHorzLimit || bands == (numberOfLeds-1)))
 					{
-						Point []points = new Point[2];
-						points[0].X = rcBand.Left + (rcBand.Width>>1);
-						points[0].Y = rcBand.Top;
+						var points = new Point[2];
+						points[0].X = bandRect.Left + (bandRect.Width >> 1);
+						points[0].Y = bandRect.Top;
 						points[1].X = points[0].X;
-						points[1].Y = rcBand.Bottom;
+						points[1].Y = bandRect.Bottom;
 						g.DrawPolygon(gridPen, points);
 					}
 
 					if (_MedRangeValue == 0)
 					{
 						int nHorzStart = nMedHorzLimit+nHorzValue;
-						if ( InRange(nHorz, nHorzStart, nMedHorzLimit-1) )
-							colorBand = this.ColorNormal;
-						else if ( nHorz >= nMedHorzLimit && InRange(nHorz, nMedHorzLimit, nHorzStart) )
-							colorBand = this.ColorHigh;
-						else {
-							colorBand = (nHorz < nMedHorzLimit) ? this.ColorNormalBack : this.ColorHighBack;
+
+						if (InRange(bands, nHorzStart, nMedHorzLimit - 1))
+							colorBand = ColorNormal;
+						else if ( bands >= nMedHorzLimit && InRange(bands, nMedHorzLimit, nHorzStart))
+							colorBand = ColorHigh;
+						else
+							colorBand = (bands < nMedHorzLimit) ? ColorNormalBack : ColorHighBack;
+					}
+					else if (nHorzValue < bands)
+					{
+						if (ShowGrid && ColoredGrid)
+						{
+							if  (InRange(bands, 0, nMinHorzLimit))
+								colorBand = ColorNormalBack;
+							else if (InRange(bands, nMinHorzLimit + 1, nMedHorzLimit))
+								colorBand = ColorMediumBack;
+							else if (InRange(bands, nMedHorzLimit + 1, nMaxHorzLimit))
+								colorBand = ColorHighBack;
 						}
 					}
-					else if ( nHorzValue < nHorz )
+					else
 					{
-						if ( this.ShowGrid && this.ColoredGrid )
+						if (dataValue == 0)
 						{
-							if ( InRange(nHorz, 0, nMinHorzLimit) )
-								colorBand = this.ColorNormalBack;
-							else if ( InRange(nHorz, nMinHorzLimit+1, nMedHorzLimit) )
-								colorBand = this.ColorMediumBack;
-							else if ( InRange(nHorz, nMedHorzLimit+1, nMaxHorzLimit) )
-								colorBand = this.ColorHighBack;
+							if (ShowGrid && ColoredGrid)
+								colorBand = ColorNormalBack;
 						}
-					} else {
-						if (nValue == 0)
-						{
-							if (this.ShowGrid && this.ColoredGrid)
-								colorBand = this.ColorNormalBack;
-						}
-						else if (InRange(nHorz, 0, nMinHorzLimit))
-							colorBand = this.ColorNormal;
-						else if ( InRange(nHorz, nMinHorzLimit+1, nMedHorzLimit) )
-							colorBand = this.ColorMedium;
-						else if ( InRange(nHorz, nMedHorzLimit+1, nMaxHorzLimit) )
-							colorBand = this.ColorHigh;
+						else if (InRange(bands, 0, nMinHorzLimit))
+							colorBand = ColorNormal;
+						else if ( InRange(bands, nMinHorzLimit + 1, nMedHorzLimit) )
+							colorBand = ColorMedium;
+						else if ( InRange(bands, nMedHorzLimit + 1, nMaxHorzLimit) )
+							colorBand = ColorHigh;
 					}
 
-					if (colorBand != this.BackColor)
+					if (colorBand != BackColor)
 					{
-						SolidBrush fillBrush = new SolidBrush(colorBand);
-						if (this._LEDCount > 1)
-							rcBand.Inflate(-cxyMargin, -cxyMargin);
-						g.FillRectangle(fillBrush, rcBand.Left, rcBand.Top, rcBand.Width, rcBand.Height+1);
-						if (this._LEDCount > 1)
-							rcBand.Inflate(cxyMargin, cxyMargin);
+						using (var fillBrush = new SolidBrush(colorBand))
+						{
+							if (_LEDCount > 1)
+								bandRect.Inflate(-cxyMargin, -cxyMargin);
+
+							g.FillRectangle(fillBrush, bandRect.Left, bandRect.Top, bandRect.Width, bandRect.Height + 1);
+
+							if (_LEDCount > 1)
+								bandRect.Inflate(cxyMargin, cxyMargin);
+						}
 					}
-					rcBand.Offset(size.Width, 0);
+
+					bandRect.Offset(bandSize.Width, 0);
 				}
 
 				// Draw falloff effect
-				if (this.FalloffEffect && this.IsActive)
+				if (FalloffEffect && IsActive)
 				{
-					int nMaxWidth = size.Width * nHorzBands;
-					Point[] points = new Point[2];
-					points[0].X = rcPrev.Left + (_meterData[nVert].Falloff * nMaxWidth) / _MaxRangeValue;
+					int nMaxWidth = bandSize.Width * numberOfLeds;
+					var points = new Point[2];
+					points[0].X = rcPrev.Left + (_meterData[band].Falloff * nMaxWidth) / _MaxRangeValue;
 					points[0].Y = rcPrev.Top + yDecal;
 					points[1].X = points[0].X;
 					points[1].Y = rcPrev.Bottom - yDecal;
@@ -772,8 +782,11 @@ namespace Palaso.Media.Naudio.UI
 				}
 
 				// Move to Next Vertical band
-				rcBand.Offset(-size.Width*nHorzBands, size.Height);
+				bandRect.Offset(-bandSize.Width * numberOfLeds, bandSize.Height);
 			}
+
+			gridPen.Dispose();
+			fallPen.Dispose();
 		}
 	}
 
