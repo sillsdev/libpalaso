@@ -51,11 +51,8 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static bool AddDelegate(CancelExceptionHandlingEventHandler errorHandlerDelegate)
 		{
-			if (errorHandlerDelegate == null)
-				return false;
-
-			Init();
-			return _singleton._errorHandlerDelegates.Add(errorHandlerDelegate);
+			return (errorHandlerDelegate != null && _singleton != null &&
+				_singleton._errorHandlerDelegates.Add(errorHandlerDelegate));
 		}
 
 		/// ------------------------------------------------------------------------------------
