@@ -10,6 +10,8 @@ namespace Palaso.WritingSystems
 	{
 		//previously, we were spending huge amounts of time during sorting, just calculating this, using a regex
 		private string SortingName;
+		private string _code;
+		public string InvariantLowerCaseCode;
 
 		public Iso639LanguageCode(string code, string name, string iso3Code)
 		{
@@ -29,7 +31,18 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string Code { get; set; }    //Iso 639-1 code or Iso 639-3 code if former is not available
+		public string Code
+		{
+			get { return _code; }
+			set
+			{
+				_code = value;
+				//profiling showed ToLowerInvariant() was taking up to 6% of Bloom startup time, so now we cache it
+				InvariantLowerCaseCode = _code.ToLowerInvariant();
+			}
+		}
+
+		//Iso 639-1 code or Iso 639-3 code if former is not available
 
 		public string ISO3Code { get; set; }
 
