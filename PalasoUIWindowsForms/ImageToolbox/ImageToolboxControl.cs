@@ -21,6 +21,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private readonly ImageList _toolImages;
 		private Control _currentControl;
 		private PalasoImage _imageInfo;
+		private ListViewItem _cropToolListItem;
 
 		public ImageToolboxControl()
 		{
@@ -100,24 +101,51 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 		}
 
-		private void AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
+		private ListViewItem AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
 		{
 			_toolImages.Images.Add(bitmap);
 			_toolImages.Images.SetKeyName(_toolImages.Images.Count - 1, imageKey);
 
 			var item= new ListViewItem(label);
 			item.ImageKey = imageKey;
+
 			item.Tag = makeControl;
 			this._toolListView.Items.Add(item);
+			return item;
 		}
+
+		bool _inIndexChanging	;
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+
+			if (_inIndexChanging)
+				return;
+
 			try
 			{
+				_inIndexChanging = true;
 
 				if (_toolListView.SelectedItems.Count == 0)
 					return;
+
+				ListViewItem selectedItem = _toolListView.SelectedItems[0];
+
+
+				if (selectedItem.Tag == _currentControl)
+					return;
+
+				bool haveImage = !(ImageInfo == null || ImageInfo.Image == null);
+
+				//don't let them select crop (don't have a cheap way of 'disabling' a list item, sigh)
+
+				if (!haveImage && selectedItem == _cropToolListItem)
+				{
+					_cropToolListItem.Selected = false;
+					_toolListView.Items[0].Selected = true;
+					return;
+				}
+
 				if (_currentControl != null)
 				{
 					GetImageFromCurrentControl();
@@ -127,14 +155,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					_currentControl.Dispose();
 				}
 				System.Func<PalasoImage, Control> fun =
-					(System.Func<PalasoImage, Control>) _toolListView.SelectedItems[0].Tag;
+					(System.Func<PalasoImage, Control>) selectedItem.Tag;
 				_currentControl = fun(ImageInfo);
 
 				_currentControl.Dock = DockStyle.Fill;
 				_panelForControls.Controls.Add(_currentControl);
 
 				IImageToolboxControl imageToolboxControl = ((IImageToolboxControl) _currentControl);
-				if(ImageInfo.Image!=null)
+				if (ImageInfo!=null && ImageInfo.Image != null)
 				{
 					imageToolboxControl.SetImage(ImageInfo);
 				}
@@ -145,6 +173,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
 																 "Sorry, something went wrong with the ImageToolbox");
+			}
+			finally
+			{
+				_inIndexChanging = false;
 			}
 		}
 
@@ -215,7 +247,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				c.SetIntialSearchString(InitialSearchString);
 				return c;
 			});
-			AddControl("Crop", ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
+			_cropToolListItem = AddControl("Crop", ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
