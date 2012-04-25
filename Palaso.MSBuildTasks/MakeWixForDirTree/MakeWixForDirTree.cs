@@ -167,6 +167,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				// write out components into a group
 				XmlElement elemGroup = doc.CreateElement("ComponentGroup", XMLNS);
 				elemGroup.SetAttribute("Id", _componentGroupId);
+
 				elemFrag.AppendChild(elemGroup);
 
 				AddComponentRefsToDom(doc, elemGroup);
@@ -180,6 +181,21 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			}
 
 			return !HasLoggedErrors;
+		}
+
+		/// <summary>
+		/// Though the guid-tracking *should* get stuff uninstalled, sometimes it does. So as an added precaution, delete the files on install and uninstall.
+		/// Note that the *.* here should uninstall even files that were in the previous install but not this one.
+		/// </summary>
+		/// <param name="elemFrag"></param>
+		private void InsertFileDeletionInstruction(XmlElement elemFrag)
+		{
+			//awkwardly, wix only allows this in <component>, not <directory>. Further, the directory deletion equivalent (RemoveFolder) can only delete completely empty folders.
+			var node = elemFrag.OwnerDocument.CreateElement("RemoveFile", XMLNS);
+			node.SetAttribute("Id", "_"+Guid.NewGuid().ToString().Replace("-",""));
+			node.SetAttribute("On", "both");//both = install time and uninstall time "uninstall");
+			node.SetAttribute("Name", "*.*");
+			elemFrag.AppendChild(node);
 		}
 
 		private void WriteDomToFile(XmlDocument doc)
@@ -409,7 +425,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 
 			elemComp.AppendChild(elemFile);
-
+			InsertFileDeletionInstruction(elemComp);
 			m_components.Add(id);
 
 			// check whether the file is newer

@@ -114,10 +114,29 @@
 	<Compile Include="Progress\ProgressDialogTests.cs" />
 	<Compile Include="Progress\TransformWithProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<EmbeddedResource Include="SettingsProtection\DialogWithLinkToSettings.resx">
+	  <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="SettingsProtection\DialogWithSomeSettings.resx">
+	  <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="SuperToolTip\SuperToolTipTestForm.resx">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<Compile Include="SettingsProtection\DialogWithLinkToSettings.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SettingsProtection\DialogWithLinkToSettings.Designer.cs">
+	  <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+	</Compile>
+	<Compile Include="SettingsProtection\DialogWithSomeSettings.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SettingsProtection\DialogWithSomeSettings.Designer.cs">
+	  <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
+	</Compile>
+	<Compile Include="SettingsProtection\SettingsProtectionUITests.cs" />
 	<Compile Include="SpellChecking\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
 	  <SubType>Form</SubType>
@@ -152,7 +171,6 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="ClassDiagram1.cd" />
 	<None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>

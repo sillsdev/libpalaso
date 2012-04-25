@@ -25,7 +25,7 @@ namespace Palaso.Tests.Xml
 		[Test]
 		public void Empty_String_Pathname_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new FastXmlElementSplitter(null));
+			Assert.Throws<ArgumentException>(() => new FastXmlElementSplitter(string.Empty));
 		}
 
 		[Test]

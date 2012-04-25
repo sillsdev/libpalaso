@@ -110,6 +110,7 @@
 	<Compile Include="Migration\XslMigratorTests.cs" />
 	<Compile Include="Misc\GuardAgainstReentry.cs" />
 	<Compile Include="Network\RobustNetworkOperation.Tests.cs" />
+	<Compile Include="Progress\MultiProgressTests.cs" />
 	<Compile Include="Progress\ProgressIndicatorTests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
@@ -167,6 +168,7 @@
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
+	<Compile Include="Xml\XmlWriterExtensionsTests.cs" />
 	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
 	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />

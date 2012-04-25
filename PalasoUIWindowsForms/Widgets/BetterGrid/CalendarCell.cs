@@ -22,7 +22,7 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 			var ctrl = DataGridView.EditingControl as CalendarEditingControl;
 
 			if (Value != null && Value.GetType() == typeof(DateTime))
-				ctrl.Value = (DateTime)Value;
+				ctrl.Value = ((DateTime)Value < ctrl.MinDate ? DateTime.Now.Date : (DateTime)Value);
 		}
 
 		/// ------------------------------------------------------------------------------------

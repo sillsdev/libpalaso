@@ -355,7 +355,7 @@ namespace Palaso.Lift.Options
 
 		public bool MergeByKey(OptionRefCollection incoming)
 		{
-			List<OptionRef> combined = new List<OptionRef>(_members);
+			var combined = new List<OptionRef>(_members);
 			foreach (OptionRef optionRef in incoming.Members)
 			{
 				var match = this.FindByKey(optionRef.Key);

@@ -19,7 +19,7 @@ namespace TestApp
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "hello");
+			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem connecting to the Internet.\r\nWarning: This machine does not have a live network connection.\r\nConnection attempt failed.");
 		}
 
 		private void button2_Click(object sender, EventArgs e)

@@ -158,6 +158,7 @@ namespace Palaso.Reporting
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Problem Notification";
+			this.TopMost = true;
 			((System.ComponentModel.ISupportInitialize)(this._icon)).EndInit();
 			this.tableLayout.ResumeLayout(false);
 			this.tableLayout.PerformLayout();

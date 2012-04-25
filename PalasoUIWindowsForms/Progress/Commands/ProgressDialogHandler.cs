@@ -10,35 +10,41 @@ namespace Palaso.UI.WindowsForms.Progress.Commands
 	public class ProgressDialogHandler
 	{
 		private ProgressDialog _progressDialog;
-		private readonly System.Windows.Forms.Form _parentForm;
+		private readonly Form _parentForm;
 		private readonly AsyncCommand _currentCommand;
 		public event EventHandler Finished;
 
-		public ProgressDialogHandler(System.Windows.Forms.Form parentForm, BasicCommand  command)
+		public ProgressDialogHandler(Form parentForm, BasicCommand  command)
+			: this(parentForm, command, "From Handler for: " + command.GetType())
+		{
+		}
+
+		public ProgressDialogHandler(Form parentForm, BasicCommand command, string progressTitleText)
 		{
 			_parentForm = parentForm;
 			_currentCommand = command;
-			command.InitializeCallback = new InitializeProgressCallback(InitializeProgress);
-			command.ProgressCallback = new ProgressCallback(UpdateProgress);
-			command.PrimaryStatusTextCallback = new StatusCallback(UpdateStatus1);
-			command.SecondaryStatusTextCallback = new StatusCallback(UpdateOverview);
+			command.InitializeCallback = InitializeProgress;
+			command.ProgressCallback = UpdateProgress;
+			command.PrimaryStatusTextCallback = UpdateStatus1;
+			command.SecondaryStatusTextCallback = UpdateOverview;
 
-			_currentCommand.BeginCancel += new EventHandler(OnCommand_BeginCancel);
-			_currentCommand.EnabledChanged += new EventHandler(OnCommand_EnabledChanged);
-			_currentCommand.Error += new ErrorEventHandler(OnCommand_Error);
-			_currentCommand.Finish += new EventHandler(OnCommand_Finish);
+			_currentCommand.BeginCancel += OnCommand_BeginCancel;
+			_currentCommand.EnabledChanged += OnCommand_EnabledChanged;
+			_currentCommand.Error += OnCommand_Error;
+			_currentCommand.Finish += OnCommand_Finish;
 
-			_progressDialog = new ProgressDialog();
-			_progressDialog.Text = "From Handler for"+command.GetType().ToString();
-			_progressDialog.CancelRequested += new EventHandler(_progressDialog_Cancelled);
-			_progressDialog.Owner = parentForm ;
+			_progressDialog = new ProgressDialog
+								{
+									Text = progressTitleText
+								};
+			_progressDialog.CancelRequested += _progressDialog_Cancelled;
+			_progressDialog.Owner = parentForm;
 			_progressDialog.CanCancel = true;
 			//we don't yet have any actual background-safe stuff, but this dialog
 			//doesn't seem to work (no progress) if it's called modally
 			//_progressDialog.ShowDialog();
 			//_progressDialog.DelayShow() <-- this one makes it come up only if the command turns out to be slow
 			_progressDialog.Show();
-
 		}
 
 		/// <summary>

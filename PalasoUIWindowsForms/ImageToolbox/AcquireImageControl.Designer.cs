@@ -148,6 +148,7 @@
 			//
 			// AcquireImageControl
 			//
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._messageLabel);
@@ -157,6 +158,8 @@
 			this.Name = "AcquireImageControl";
 			this.Size = new System.Drawing.Size(556, 409);
 			this.Load += new System.EventHandler(this.AcquireImageControl_Load);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.OnDragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.AcquireImageControl_DragEnter);
 			this.toolStrip1.ResumeLayout(false);
 			this.toolStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this._pictureBox)).EndInit();

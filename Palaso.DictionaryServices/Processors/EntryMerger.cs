@@ -7,7 +7,7 @@ namespace Palaso.DictionaryServices.Processors
 {
 	public class EntryMerger
 	{
-		public static bool TryMergeEntries(LexEntry entry1, LexEntry entry2, IProgress progress)
+		public static bool TryMergeEntries(LexEntry entry1, LexEntry entry2, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			if (!entry1.LexicalForm.CanBeUnifiedWith(entry2.LexicalForm))
 			{
@@ -15,7 +15,7 @@ namespace Palaso.DictionaryServices.Processors
 				return false;
 			}
 
-			if (!SenseMerger.TryMergeProperties(entry1, entry2, "entries for "+entry1.ToString(), progress))
+			if (!SenseMerger.TryMergeProperties(entry1, entry2, traitsWithMultiplicity, "entries for "+entry1.ToString(), progress))
 				return false;
 
 			// at this point, we're committed to doing the merge
@@ -25,7 +25,7 @@ namespace Palaso.DictionaryServices.Processors
 			var senses = entry2.Senses.ToArray();
 			foreach (var sense in senses)
 			{
-				MergeOrAddSense(entry1, sense,progress);
+				MergeOrAddSense(entry1, sense, traitsWithMultiplicity, progress);
 			}
 
 			if (entry2.ModificationTime > entry1.ModificationTime)
@@ -38,7 +38,7 @@ namespace Palaso.DictionaryServices.Processors
 		}
 
 
-		private static void MergeOrAddSense(LexEntry targetEntry, LexSense incomingSense, IProgress progress)
+		private static void MergeOrAddSense(LexEntry targetEntry, LexSense incomingSense, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			if (targetEntry.Senses.Count == 0)
 			{
@@ -49,7 +49,7 @@ namespace Palaso.DictionaryServices.Processors
 				if (targetEntry.Senses.Count == 1)
 				{
 					var targetSense = targetEntry.Senses[0];
-					if (SenseMerger.TryMergeSenseWithSomeExistingSense(targetSense, incomingSense,progress))
+					if (SenseMerger.TryMergeSenseWithSomeExistingSense(targetSense, incomingSense, traitsWithMultiplicity, progress))
 					{
 						//it was merged in
 						return;

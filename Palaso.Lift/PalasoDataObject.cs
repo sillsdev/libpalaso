@@ -325,20 +325,35 @@ namespace Palaso.Lift
 
 
 		/// <summary>
-		/// Copy a property from some other object, e.g., when merging senses
+		/// Merge in a property from some other object, e.g., when merging senses
 		/// </summary>
-		public void CopyProperty(KeyValuePair<string, object> incoming)
+		public void MergeProperty(KeyValuePair<string, object> incoming)
 		{
-			KeyValuePair<string, object> existing =
-				Properties.Find(
-					delegate(KeyValuePair<string, object> p) { return p.Key == incoming.Key; });
+			KeyValuePair<string, object> existing = Properties.Find(
+				p => p.Key == incoming.Key
+			);
 
-			if (existing.Key == incoming.Key)
+			if (existing.Value is OptionRefCollection)
 			{
-				Properties.Remove(existing);
+				if (existing.Key == incoming.Key)
+				{
+					var optionRefCollection = existing.Value as OptionRefCollection;
+					var incomingRefCollection = incoming.Value as OptionRefCollection;
+					optionRefCollection.MergeByKey(incomingRefCollection);
+				} else
+				{
+					Properties.Add(new KeyValuePair<string, object>(incoming.Key, incoming.Value));
+				}
 			}
+			else
+			{
+				if (existing.Key == incoming.Key)
+				{
+					Properties.Remove(existing);
+				}
 
-			Properties.Add(new KeyValuePair<string, object>(incoming.Key, incoming.Value));
+				Properties.Add(new KeyValuePair<string, object>(incoming.Key, incoming.Value));
+			}
 
 			if(incoming.Value is IParentable)
 				((IParentable)incoming.Value).Parent = this;

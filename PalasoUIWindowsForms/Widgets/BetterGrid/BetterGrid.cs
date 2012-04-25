@@ -404,7 +404,8 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 				GetColumnName(e.ColumnIndex) == "removerow")
 			{
 				RemoveRowAction(e.RowIndex);
-				RowCount--;
+				if (VirtualMode)
+					RowCount--;
 				Invalidate();
 			}
 		}
@@ -614,7 +615,9 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 		protected override void OnCellMouseEnter(DataGridViewCellEventArgs e)
 		{
 			if (e.RowIndex < NewRowIndex && e.RowIndex >= 0 && GetColumnName(e.ColumnIndex) == "removerow")
+			{
 				InvalidateCell(e.ColumnIndex, e.RowIndex);
+			}
 
 			base.OnCellMouseEnter(e);
 		}
@@ -814,6 +817,9 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 				e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
 				e.AdvancedBorderStyle.Right = DataGridViewAdvancedCellBorderStyle.None;
 				e.CellStyle.SelectionBackColor = BackgroundColor;
+
+				if (!VirtualMode)
+					DrawRemoveRowIcon(e);
 			}
 			else if (e.RowIndex == CurrentCellAddress.Y && e.ColumnIndex >= 0 &&
 				Columns[e.ColumnIndex] is DataGridViewCheckBoxColumn)
@@ -847,6 +853,28 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 			{
 				OnDrawFocusRectangle(e);
 			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void DrawRemoveRowIcon(DataGridViewCellPaintingEventArgs e)
+		{
+			var rc = e.CellBounds;
+			e.Handled = true;
+
+			using (var br = new SolidBrush(e.CellStyle.BackColor))
+				e.Graphics.FillRectangle(br, rc);
+
+			var isMouseOverCell = rc.Contains(PointToClient(MousePosition));
+
+			if ((e.RowIndex != CurrentCellAddress.Y && !isMouseOverCell) || e.RowIndex == NewRowIndex)
+				return;
+
+			var img = (isMouseOverCell ? Properties.Resources.RemoveGridRowHot : Properties.Resources.RemoveGridRowNormal);
+			rc.X += (int)Math.Round((rc.Width - img.Width) / 2d, MidpointRounding.AwayFromZero);
+			rc.Y += (int)Math.Round((rc.Height - img.Height) / 2d, MidpointRounding.AwayFromZero);
+			rc.Width = img.Width;
+			rc.Height = img.Height;
+			e.Graphics.DrawImage(img, rc);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -993,6 +1021,12 @@ namespace Palaso.UI.WindowsForms.Widgets.Grid
 		/// ------------------------------------------------------------------------------------
 		protected virtual void OnCurrentRowChanged(EventArgs e)
 		{
+			if (!VirtualMode)
+			{
+				var col = Columns["removerow"];
+				if (col != null)
+					InvalidateColumn(col.Index);
+			}
 			if (CurrentRowChanged != null)
 				CurrentRowChanged(this, EventArgs.Empty);
 		}

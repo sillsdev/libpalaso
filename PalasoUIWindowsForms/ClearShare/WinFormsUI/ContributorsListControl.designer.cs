@@ -31,46 +31,12 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-			this._tableLayout = new System.Windows.Forms.TableLayoutPanel();
-			this._panelGrid = new System.Windows.Forms.Panel();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			this._grid = new Palaso.UI.WindowsForms.Widgets.Grid.BetterGrid();
-			this._buttonDelete = new System.Windows.Forms.Button();
-			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this._tableLayout.SuspendLayout();
-			this._panelGrid.SuspendLayout();
+			this._panelGrid = new System.Windows.Forms.Panel();
 			((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
+			this._panelGrid.SuspendLayout();
 			this.SuspendLayout();
-			//
-			// _tableLayout
-			//
-			this._tableLayout.BackColor = System.Drawing.Color.Transparent;
-			this._tableLayout.ColumnCount = 1;
-			this._tableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this._tableLayout.Controls.Add(this._panelGrid, 0, 0);
-			this._tableLayout.Controls.Add(this._buttonDelete, 0, 1);
-			this._tableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._tableLayout.Location = new System.Drawing.Point(0, 0);
-			this._tableLayout.Margin = new System.Windows.Forms.Padding(0);
-			this._tableLayout.Name = "_tableLayout";
-			this._tableLayout.RowCount = 2;
-			this._tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this._tableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this._tableLayout.Size = new System.Drawing.Size(453, 256);
-			this._tableLayout.TabIndex = 0;
-			//
-			// _panelGrid
-			//
-			this._panelGrid.BackColor = System.Drawing.SystemColors.ControlDark;
-			this._panelGrid.Controls.Add(this._grid);
-			this._panelGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._panelGrid.Location = new System.Drawing.Point(0, 0);
-			this._panelGrid.Margin = new System.Windows.Forms.Padding(0);
-			this._panelGrid.Name = "_panelGrid";
-			this._panelGrid.Padding = new System.Windows.Forms.Padding(1);
-			this._panelGrid.Size = new System.Drawing.Size(453, 225);
-			this._panelGrid.TabIndex = 0;
 			//
 			// _grid
 			//
@@ -82,14 +48,14 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._grid.BackgroundColor = System.Drawing.SystemColors.Window;
 			this._grid.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._grid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-			dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-			dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
-			dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-			dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-			dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-			dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-			this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+			dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+			dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+			dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+			this._grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
 			this._grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this._grid.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._grid.DrawTextBoxEditControlBorder = false;
@@ -109,46 +75,39 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._grid.SelectedRowBackColor = System.Drawing.Color.Empty;
 			this._grid.SelectedRowForeColor = System.Drawing.Color.Empty;
 			this._grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this._grid.Size = new System.Drawing.Size(451, 223);
+			this._grid.Size = new System.Drawing.Size(451, 254);
 			this._grid.TabIndex = 0;
 			this._grid.TextBoxEditControlBorderColor = System.Drawing.Color.Silver;
-			this._grid.VirtualMode = true;
 			//
-			// _buttonDelete
+			// _panelGrid
 			//
-			this._buttonDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._buttonDelete.AutoSize = true;
-			this._buttonDelete.Location = new System.Drawing.Point(378, 230);
-			this._buttonDelete.Margin = new System.Windows.Forms.Padding(3, 5, 0, 0);
-			this._buttonDelete.Name = "_buttonDelete";
-			this._buttonDelete.Size = new System.Drawing.Size(75, 26);
-			this._buttonDelete.TabIndex = 1;
-			this._buttonDelete.Text = "Delete";
-			this._buttonDelete.UseVisualStyleBackColor = true;
-			this._buttonDelete.Click += new System.EventHandler(this.HandleDeleteButtonClicked);
+			this._panelGrid.BackColor = System.Drawing.SystemColors.ControlDark;
+			this._panelGrid.Controls.Add(this._grid);
+			this._panelGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._panelGrid.Location = new System.Drawing.Point(0, 0);
+			this._panelGrid.Margin = new System.Windows.Forms.Padding(0);
+			this._panelGrid.Name = "_panelGrid";
+			this._panelGrid.Padding = new System.Windows.Forms.Padding(1);
+			this._panelGrid.Size = new System.Drawing.Size(453, 256);
+			this._panelGrid.TabIndex = 0;
 			//
 			// ContributorsListControl
 			//
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.Transparent;
-			this.Controls.Add(this._tableLayout);
+			this.Controls.Add(this._panelGrid);
 			this.DoubleBuffered = true;
 			this.Name = "ContributorsListControl";
 			this.Size = new System.Drawing.Size(453, 256);
-			this._tableLayout.ResumeLayout(false);
-			this._tableLayout.PerformLayout();
-			this._panelGrid.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this._grid)).EndInit();
+			this._panelGrid.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private Panel _panelGrid;
-		private System.Windows.Forms.TableLayoutPanel _tableLayout;
 		private BetterGrid _grid;
-		private System.Windows.Forms.Button _buttonDelete;
-		private System.Windows.Forms.ToolTip _toolTip;
+		private Panel _panelGrid;
 	}
 }

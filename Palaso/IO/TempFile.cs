@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Palaso.Progress.LogBox;
 
 namespace Palaso.IO
@@ -18,9 +19,9 @@ namespace Palaso.IO
 			 _path = System.IO.Path.GetTempFileName();
 		}
 
-		public TempFile(bool dontMakeMeAFile)
+		public TempFile(bool dontMakeMeAFileAndDontSetPath)
 		{
-			if(!dontMakeMeAFile)
+			if(!dontMakeMeAFileAndDontSetPath)
 			{
 				_path = System.IO.Path.GetTempFileName();
 			}
@@ -30,6 +31,12 @@ namespace Palaso.IO
 			: this()
 		{
 			File.WriteAllText(_path, contents);
+		}
+
+		public TempFile(string contents, Encoding encoding)
+			: this()
+		{
+			File.WriteAllText(_path, contents, encoding);
 		}
 
 		public TempFile(string[] contentLines)

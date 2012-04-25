@@ -25,7 +25,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			iso639Code = iso639Code.ToLowerInvariant();
 			return _languageCodes.FirstOrDefault(
-				code => code.Code.ToLowerInvariant() == iso639Code
+				code => code.InvariantLowerCaseCode == iso639Code
 				);
 		}
 
@@ -43,7 +43,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			foreach (Iso639LanguageCode lang in _languageCodes)
 			{
 				if (string.IsNullOrEmpty(typedText) // in which case, show all of them
-					|| (lang.Code.ToLowerInvariant().StartsWith(typedText)
+					|| (lang.InvariantLowerCaseCode.StartsWith(typedText)
 						|| lang.Name.ToLowerInvariant().StartsWith(typedText)))
 				{
 					yield return lang;

@@ -29,7 +29,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			//enhance: doesn't tell us all that much.
 			UsageReporter.SendNavigationNotice("ImageToolboxDialog/Ok");
-			DialogResult = DialogResult.OK;
+			DialogResult = (ImageInfo==null || ImageInfo.Image==null)? DialogResult.Cancel : DialogResult.OK;
 			imageToolboxControl1.Closing();
 			Close();
 		}

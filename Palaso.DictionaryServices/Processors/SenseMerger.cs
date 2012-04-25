@@ -9,10 +9,10 @@ namespace Palaso.DictionaryServices.Processors
 {
 	public class SenseMerger
 	{
-		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, IProgress progress)
+		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			//can we unify the properites?
-			if (!TryMergeProperties(targetSense, incomingSense, "senses of " + targetSense.Parent.ToString(), progress))
+			if (!TryMergeProperties(targetSense, incomingSense, traitsWithMultiplicity, "senses of " + targetSense.Parent.ToString(), progress))
 			{
 				return false;
 			}
@@ -29,9 +29,13 @@ namespace Palaso.DictionaryServices.Processors
 			return true;
 		}
 
-		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem, string itemDescriptionForMessage, IProgress progress)
+		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem, string[] traitsWithMultiplicity, string itemDescriptionForMessage, IProgress progress)
 		{
-			var knownMergableOptionCollectionTraits = new string[] { "semantic-domain-ddp4" };
+			var knownMergableOptionCollectionTraits = new[] { "semantic-domain-ddp4" };
+			if (traitsWithMultiplicity == null)
+			{
+				traitsWithMultiplicity = new string[0];
+			}
 
 			foreach (var incomingProperty in incomingItem.Properties)
 			{
@@ -55,6 +59,7 @@ namespace Palaso.DictionaryServices.Processors
 						var clearlyHasMultiplicityGreaterThan1 = (incomingCollection.Count > 1 || targetCollection.Count > 1);
 						var atLeastOneSideIsEmpty = (incomingCollection.Count == 0 || targetCollection.Count == 0);
 						if (knownMergableOptionCollectionTraits.Contains(targetProperty.Key)
+							|| traitsWithMultiplicity.Contains(targetProperty.Key)
 							|| clearlyHasMultiplicityGreaterThan1
 							|| atLeastOneSideIsEmpty)
 						{
@@ -111,7 +116,7 @@ namespace Palaso.DictionaryServices.Processors
 				}
 				else
 				{
-					targetItem.CopyProperty(pair);
+					targetItem.MergeProperty(pair);
 				}
 			}
 			return true;
