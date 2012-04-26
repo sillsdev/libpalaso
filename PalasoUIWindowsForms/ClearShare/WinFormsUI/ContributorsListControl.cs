@@ -323,6 +323,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			if (_grid.IsCurrentCellInEditMode)
 				_grid.EndEdit(DataGridViewDataErrorContexts.RowDeletion);
 
+			if (_msgWindow != null)
+				_msgWindow.Close();
+
 			_grid.Rows.RemoveAt(rowIndex);
 			_grid.CurrentCell = _grid[0, _grid.CurrentCellAddress.Y];
 		}

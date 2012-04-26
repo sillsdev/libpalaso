@@ -110,14 +110,14 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			{
 				double currentOpacity = Opacity;
 
-				if (currentOpacity == 0.001)
+				if (currentOpacity.Equals(0.001))
 					Refresh();
 
 				switch (_state)
 				{
 					case TimerState.FadingIn:
 						Opacity = currentOpacity + 0.05;
-						if (currentOpacity == 1.0)
+						if (currentOpacity.Equals(1.0))
 							_state = TimerState.FadeInComplete;
 						break;
 
@@ -141,7 +141,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 						else
 						{
 							Opacity = currentOpacity - 0.05;
-							if (Opacity == 0)
+							if (Opacity.Equals(0))
 								Close();
 						}
 						break;
@@ -222,6 +222,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				path.AddArc(x, y, kCornerRadius * 2, kCornerRadius * 2, 180, 90);
 
 				path.CloseFigure();
+				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 				e.Graphics.FillPath(SystemBrushes.Info, path);
 				e.Graphics.DrawPath(Pens.Gray, path);
 			}
@@ -261,8 +262,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			_form = new FadingMessageForm(_point);
 			_form.Text = _text;
-			_form.FormClosed += HandleFormClosed;
 			_form.ShowDialog();
+			_thread = null;
+			_form = null;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -274,22 +276,6 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				{
 					_form.Invoke(new MethodInvoker(_form.Close));
 				}
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void HandleFormClosed(object sender, FormClosedEventArgs e)
-		{
-			_form.FormClosed -= HandleFormClosed;
-			_form.Dispose();
-			_form = null;
-			try
-			{
-				_thread.Abort();
-			}
-			catch (ThreadAbortException)
-			{
-				_thread = null;
 			}
 		}
 	}
