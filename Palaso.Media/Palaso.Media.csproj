@@ -104,9 +104,6 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>AudioDeviceIcons.resx</DependentUpon>
 	</Compile>
-	<Compile Include="Naudio\UI\BitmapButton.cs">
-	  <SubType>Component</SubType>
-	</Compile>
 	<Compile Include="Naudio\UI\PeakMeterCtrl.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -147,9 +144,6 @@
 	<EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Naudio\UI\BitmapButton.resx">
-	  <DependentUpon>BitmapButton.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Naudio\UI\RecordingDeviceButton.resx">
 	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>

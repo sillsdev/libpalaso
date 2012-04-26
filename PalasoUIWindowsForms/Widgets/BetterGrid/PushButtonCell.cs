@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
-namespace Palaso.UI.WindowsForms.Widgets.Grid
+namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 {
 	#region SilButtonCell class
 	/// ----------------------------------------------------------------------------------------

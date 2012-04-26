@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.Widgets.Grid;
+using Palaso.UI.WindowsForms.Widgets.BetterGrid;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {

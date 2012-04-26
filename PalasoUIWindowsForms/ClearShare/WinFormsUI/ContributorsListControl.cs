@@ -7,7 +7,7 @@ using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using Palaso.Code;
-using Palaso.UI.WindowsForms.Widgets.Grid;
+using Palaso.UI.WindowsForms.Widgets.BetterGrid;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {

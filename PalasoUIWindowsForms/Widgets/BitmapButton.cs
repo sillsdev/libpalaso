@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
-namespace Palaso.Media.Naudio.UI
+namespace Palaso.UI.WindowsForms.Widgets
 {
 	/// <summary>
 	/// possible button states
@@ -43,7 +43,7 @@ namespace Palaso.Media.Naudio.UI
 		private System.Drawing.Image _ImagePressed               = null;
 		private System.Drawing.Image _ImageMouseOver             = null;
 		private System.Drawing.Image _ImageInactive              = null;
-		private System.Drawing.Color _BorderColor                = System.Drawing.Color.DarkBlue;
+		private System.Drawing.Color _BorderColor = System.Drawing.Color.DarkBlue;
 		private System.Drawing.Color _InnerBorderColor           = System.Drawing.Color.LightGray;
 		private System.Drawing.Color _InnerBorderColor_Focus     = System.Drawing.Color.LightBlue;
 		private System.Drawing.Color _InnerBorderColor_MouseOver = System.Drawing.Color.Gold;
@@ -82,7 +82,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Enable the shadowing of the button text
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("enables the text to cast a shadow"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -95,7 +95,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Enables the dashed focus rectangle
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("enables the focus rectangle"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -109,7 +109,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Enable the shadowing of the image in the button
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("enables the image to cast a shadow"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -122,7 +122,7 @@ namespace Palaso.Media.Naudio.UI
 		/// This specifies the color of image border. Note, this is only valid if ImageBorder is enabled.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Color of the border around the image"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -135,7 +135,7 @@ namespace Palaso.Media.Naudio.UI
 		/// This enables/disables the bordering of the image.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Enables the bordering of the image"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -145,10 +145,23 @@ namespace Palaso.Media.Naudio.UI
 			set{_ImageBorderEnabled = value;}
 		}
 		/// <summary>
+		/// Color of the inner border when the button does not have focus
+		/// </summary>
+		[Browsable(true),
+		Category("Appearance"),
+		Description("Color of the button text when enabled = false"),
+		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
+		]
+		public System.Drawing.Color DisabledTextColor
+		{
+			get;
+			set;
+		}
+		/// <summary>
 		/// Color of the border around the button
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Color of the border around the button"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -161,7 +174,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Color of the inner border when the button has focus
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Color of the inner border when the button has focus"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -174,7 +187,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Color of the inner border when the button does not have focus
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Color of the inner border when the button does not hvae focus"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -187,7 +200,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Color of the inner border when the mouse is over the button.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("color of the inner border when the mouse is over the button"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -200,7 +213,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Stretches the image across the button
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("stretch the impage to the size of the button"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -214,7 +227,7 @@ namespace Palaso.Media.Naudio.UI
 		/// the button elements consist of the image and text.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("padded pixels around the image and text"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -227,7 +240,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Set to true if to offset button elements when button is pressed
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Set to true if to offset image/text when button is pressed"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -242,7 +255,7 @@ namespace Palaso.Media.Naudio.UI
 		/// states do not specify an image, this image is used as a substitute.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Image to be displayed while the button state is in normal state"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -255,7 +268,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Specifies an image to use while the button has focus.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Image to be displayed while the button has focus"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -268,7 +281,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Specifies an image to use while the button is enactive.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Image to be displayed while the button is inactive"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -281,7 +294,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Specifies an image to use while the button is pressed.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Image to be displayed while the button state is pressed"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -298,7 +311,7 @@ namespace Palaso.Media.Naudio.UI
 		/// Specifies an image to use while the mouse is over the button.
 		/// </summary>
 		[Browsable(true),
-		CategoryAttribute("Appearance"),
+		Category("Appearance"),
 		Description("Image to be displayed while the button state is MouseOver"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
@@ -324,6 +337,7 @@ namespace Palaso.Media.Naudio.UI
 			//LoadGraphics();
 
 			ImageAttributes = new ImageAttributes();
+			DisabledTextColor = System.Drawing.Color.DimGray;
 		}
 		/// <summary>
 		/// Clean up any resources being used.
@@ -428,7 +442,7 @@ namespace Palaso.Media.Naudio.UI
 
 			if (FlatStyle == FlatStyle.Flat)
 			{
-				using (var brush = new SolidBrush(SystemColors.ControlLightLight))//todo
+				using (var brush = new SolidBrush(BackColor))
 				{
 					g.FillRectangle(brush,rect);
 				}
@@ -633,10 +647,12 @@ namespace Palaso.Media.Naudio.UI
 			//
 			if(State == BtnState.Inactive)
 			{
-				e.Graphics.DrawString(this.Text,this.Font, new SolidBrush(System.Drawing.Color.White),pt.X+1,pt.Y+1);
-				e.Graphics.DrawString(this.Text,this.Font, new SolidBrush(System.Drawing.Color.FromArgb(50,50,50)),pt.X,pt.Y);
+				using(var solidBrush = new SolidBrush(DisabledTextColor))
+				{
+					e.Graphics.DrawString(this.Text, this.Font, solidBrush, pt.X + 1, pt.Y + 1);
+				}
 			}
-			//
+				//
 			// else, paint the text and text shadow
 			//
 			else
@@ -662,7 +678,10 @@ namespace Palaso.Media.Naudio.UI
 				//
 				// paint text
 				//
-				e.Graphics.DrawString(this.Text,this.Font, new SolidBrush(this.ForeColor),pt.X,pt.Y);
+				using(var solidBrush = new SolidBrush(this.ForeColor))
+				{
+					e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
+				}
 			}
 		}
 		/// <summary>

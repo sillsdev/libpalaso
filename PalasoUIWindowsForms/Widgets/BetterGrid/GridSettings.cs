@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
-namespace Palaso.UI.WindowsForms.Widgets.Grid
+namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
