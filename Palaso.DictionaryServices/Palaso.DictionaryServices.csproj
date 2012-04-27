@@ -103,6 +103,7 @@
 	<Compile Include="Model\LexExampleSentence.cs" />
 	<Compile Include="Model\LexRelation.cs" />
 	<Compile Include="Model\LexSense.cs" />
+	<Compile Include="Processors\EntrySplitter.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="Processors\EntryMerger.cs" />
 	<Compile Include="Processors\HomographMerger.cs" />

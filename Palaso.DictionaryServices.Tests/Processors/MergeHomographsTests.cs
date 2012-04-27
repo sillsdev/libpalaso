@@ -6,7 +6,7 @@ using Palaso.DictionaryServices.Processors;
 using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 
-namespace Palaso.DictionaryServices.Tests.Merging
+namespace Palaso.DictionaryServices.Tests.Processors
 {
 	[TestFixture]
 	public class MergeHomographsTests
