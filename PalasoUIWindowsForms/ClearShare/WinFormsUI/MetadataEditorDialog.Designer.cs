@@ -85,7 +85,7 @@
 			this.Controls.Add(this._metdataEditorControl);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "MetadataEditorDialog";
-			this.Text = "Meta";
+			this.Text = "Done at runtime";
 			this.ResumeLayout(false);
 
 		}
