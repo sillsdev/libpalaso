@@ -22,8 +22,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// </summary>
 		public bool ShowCreator {
 			get { return _metdataEditorControl.ShowCreator; }
-			set { _metdataEditorControl.ShowCreator = value; }
+			set
+			{
+				_metdataEditorControl.ShowCreator = value;
+				Text = value ? "Credit, Copyright, & License" : "Copyright & License";
+			}
 		}
+
 
 		public Metadata Metadata
 		{
