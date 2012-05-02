@@ -166,7 +166,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				var unixPaths = new[]
 									{
-										@"c:\art of reading\images", @"/usr/share/wesay/ArtOfReading/images",
+										@"c:\art of reading\images", @"/usr/share/SIL/ArtOfReading/images",
 										@"/var/share/ArtOfReading/images"
 									};
 
@@ -238,6 +238,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			//look for the folder created by the ArtOfReadingFree installer
 			var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
 			var path = aorInstallerTarget.CombineForPath("index.txt");
+			if (File.Exists(path))
+				return path;
+
+			aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "ArtOfReading");
+			path = aorInstallerTarget.CombineForPath("index.txt");
 			if (File.Exists(path))
 				return path;
 
