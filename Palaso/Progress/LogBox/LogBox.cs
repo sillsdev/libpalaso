@@ -29,9 +29,12 @@ namespace Palaso.Progress.LogBox
 				{
 					try
 					{
-						Clipboard.SetText(_verboseBox.Text);
-						MessageBox.Show(
-							"Information on what happened has been copied to your clipboard. Please email it to the developers of the program you are using.");
+						if (!string.IsNullOrEmpty(_verboseBox.Text))
+						{
+							Clipboard.SetText(_verboseBox.Text);
+							MessageBox.Show(
+								"Information on what happened has been copied to your clipboard. Please email it to the developers of the program you are using.");
+						}
 					}
 					catch (Exception)
 					{
@@ -355,7 +358,10 @@ namespace Palaso.Progress.LogBox
 		{
 #if MONO
 //at least on Xubuntu, getting some rtf on the clipboard would mean that when you pasted, you'd see rtf
-			Clipboard.SetText(_verboseBox.Text);
+			if (!string.IsNullOrEmpty(_verboseBox.Text))
+			{
+				Clipboard.SetText(_verboseBox.Text);
+			}
 #else
 			var data = new DataObject();
 			data.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);
