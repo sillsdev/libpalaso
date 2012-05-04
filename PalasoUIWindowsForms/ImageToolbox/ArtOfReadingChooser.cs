@@ -17,9 +17,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public ArtOfReadingChooser()
 		{
 			InitializeComponent();
+			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
 		}
-
-
 
 		public void Dispose()
 		{
