@@ -18,6 +18,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			InitializeComponent();
 			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
+			_searchResultStats.Text = "";
 		}
 
 		public void Dispose()
@@ -54,21 +55,31 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			Cursor.Current = Cursors.WaitCursor;
 			_searchButton.Enabled = false;
+
 			try
 			{
 				_thumbnailViewer.Clear();
 				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
 				{
-					IEnumerable<object> results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text);
+					bool foundExactMatches;
+					IEnumerable<object> results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches);
 					if (results.Count() == 0)
 					{
 						_messageLabel.Visible = true;
+						_searchResultStats.Text = "Found no matching images";
 					}
 					else
 					{
 						_messageLabel.Visible = false;
 						_thumbnailViewer.LoadItems(_imageCollection.GetPathsFromResults(results, true));
+						_searchResultStats.Text = string.Format("Found {0} images", results.Count());
+						if (!foundExactMatches)
+							_searchResultStats.Text += string.Format(" with names close to {0}.", _searchTermsBox.Text);
 					}
+				}
+				else
+				{
+
 				}
 
 			}
@@ -130,6 +141,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				e.SuppressKeyPress = true;
 				_searchButton_Click(sender, null);
+			}
+			else
+			{
+				_searchResultStats.Text = "";
 			}
 		}
 

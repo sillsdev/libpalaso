@@ -36,6 +36,7 @@
 			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
 			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
+			this._searchResultStats = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -115,7 +116,7 @@
 			this._thumbnailViewer.Location = new System.Drawing.Point(12, 39);
 			this._thumbnailViewer.MultiSelect = false;
 			this._thumbnailViewer.Name = "_thumbnailViewer";
-			this._thumbnailViewer.Size = new System.Drawing.Size(372, 273);
+			this._thumbnailViewer.Size = new System.Drawing.Size(372, 261);
 			this._thumbnailViewer.TabIndex = 2;
 			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
 			this._thumbnailViewer.ThumbNailSize = 95;
@@ -126,10 +127,21 @@
 			//
 			this.localizationHelper1.Parent = this;
 			//
+			// _searchResultStats
+			//
+			this._searchResultStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._searchResultStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+			this._searchResultStats.Location = new System.Drawing.Point(9, 303);
+			this._searchResultStats.Name = "_searchResultStats";
+			this._searchResultStats.Size = new System.Drawing.Size(375, 22);
+			this._searchResultStats.TabIndex = 12;
+			this._searchResultStats.Text = "~Search Result Stats";
+			//
 			// ArtOfReadingChooser
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._searchResultStats);
 			this.Controls.Add(this.betterLinkLabel1);
 			this.Controls.Add(this._messageLabel);
 			this.Controls.Add(this._searchButton);
@@ -154,5 +166,6 @@
 		private Widgets.BetterLabel _messageLabel;
 		private i18n.LocalizationHelper localizationHelper1;
 		private Widgets.BetterLinkLabel betterLinkLabel1;
+		private System.Windows.Forms.Label _searchResultStats;
 	}
 }

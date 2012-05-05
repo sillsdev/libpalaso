@@ -48,10 +48,10 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 		}
 
-		public IEnumerable<object> GetMatchingPictures(string keywords)
+		public IEnumerable<object> GetMatchingPictures(string keywords, out bool foundExactMatches)
 		{
 			keywords = GetCleanedUpSearchString(keywords);
-			return GetMatchingPictures(keywords.SplitTrimmed(' '));
+			return GetMatchingPictures(keywords.SplitTrimmed(' '), out foundExactMatches);
 		}
 
 		public string GetCleanedUpSearchString(string keywords)
@@ -115,24 +115,30 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 		}
 
-		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords)
+		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords, out bool foundExactMatches)
 		{
-			List<string> pictures = new List<string>();
+			var pictures = new List<string>();
+			foundExactMatches = false;
 			foreach (var term in keywords)
 			{
-				List<string> picturesForThisKey = new List<string>();
+				List<string> picturesForThisKey;
 
+				//first, try for exact matches
 				if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
 				{
 					pictures.AddRange(picturesForThisKey);
+					foundExactMatches = true;
 				}
+				//then look  for approximate matches
 				else
 				{
+					foundExactMatches = false;
+					var kMaxEditDistance = 1;
 					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
 					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
 																										  term,
-																										  ApproximateMatcherOptions.None
-																											);
+																										  ApproximateMatcherOptions.None,
+																										  kMaxEditDistance);
 
 					if (matches != null && matches.Count > 0)
 					{

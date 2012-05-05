@@ -31,7 +31,8 @@ namespace PalasoUIWindowsForms.Tests.ImageGallery
 		[Test]
 		public void GetMatchingPictures_OnKeyWordHasManyMatches_GetManyMatches()
 		{
-			var matches = _artCollection.GetMatchingPictures("duck");
+			bool foundExactMatches;
+			var matches = _artCollection.GetMatchingPictures("duck", out foundExactMatches);
 			Assert.Less(30, matches.Count());
 		}
 
@@ -46,7 +47,8 @@ namespace PalasoUIWindowsForms.Tests.ImageGallery
 		[Test]
 		public void GetMatchingPictures_OnKeyWordHasTwoMatches_GetTwoMatches()
 		{
-			var matches = _artCollection.GetMatchingPictures("xyz");
+			bool foundExactMatches;
+			var matches = _artCollection.GetMatchingPictures("xyz", out foundExactMatches);
 			Assert.AreEqual(0, matches.Count());
 		}
 
@@ -62,26 +64,29 @@ namespace PalasoUIWindowsForms.Tests.ImageGallery
 		[Test]
 		public void GetMatchingPictures_TwoKeyWords_GetMatchesOnBoth()
 		{
-			var duckMatches = _artCollection.GetMatchingPictures("duck");
-			var bothMatches = _artCollection.GetMatchingPictures("duck sheep");
+			bool foundExactMatches;
+			var duckMatches = _artCollection.GetMatchingPictures("duck", out foundExactMatches);
+			var bothMatches = _artCollection.GetMatchingPictures("duck sheep", out foundExactMatches);
 			Assert.Greater(bothMatches.Count(), duckMatches.Count());
 		}
 
 		[Test]
 		public void GetMatchingPictures_WordsFollowedByPunctuation_StillMatches()
 		{
-			var duckMatches = _artCollection.GetMatchingPictures("duck, blah");
+			bool foundExactMatches;
+			var duckMatches = _artCollection.GetMatchingPictures("duck, blah", out foundExactMatches);
 			Assert.Less(0, duckMatches.Count());
 		}
 
 		[Test]
 		public void GetMatchingPictures_KeyWordsMatchSamePicture_PictureOnlyListedOnce()
 		{
-			var batMatches = _artCollection.GetMatchingPictures("bat");
-			var bothMatches = _artCollection.GetMatchingPictures("bat bat");
+			bool foundExactMatches;
+			var batMatches = _artCollection.GetMatchingPictures("bat", out foundExactMatches);
+			var bothMatches = _artCollection.GetMatchingPictures("bat bat", out foundExactMatches);
 			Assert.AreEqual(bothMatches.Count(), batMatches.Count());
 
-			bothMatches = _artCollection.GetMatchingPictures("bat animal");
+			bothMatches = _artCollection.GetMatchingPictures("bat animal", out foundExactMatches);
 			List<string> found = new List<string>();
 			foreach (var s in bothMatches)
 			{
