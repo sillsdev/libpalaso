@@ -128,6 +128,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			if(e.KeyCode  ==Keys.Enter)
 			{
+				e.SuppressKeyPress = true;
 				_searchButton_Click(sender, null);
 			}
 		}
