@@ -8,6 +8,7 @@ using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Linq;
 using Palaso.Extensions;
+using Palaso.Text;
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
@@ -117,14 +118,31 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords)
 		{
 			List<string> pictures = new List<string>();
-			foreach (var key in keywords)
+			foreach (var term in keywords)
 			{
 				List<string> picturesForThisKey = new List<string>();
 
-				if (_wordToPartialPathIndex.TryGetValue(key, out picturesForThisKey))
+				if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
 				{
 					pictures.AddRange(picturesForThisKey);
 				}
+				else
+				{
+					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
+					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
+																										  term,
+																										  ApproximateMatcherOptions.None
+																											);
+
+					if (matches != null && matches.Count > 0)
+					{
+						foreach (var keyValuePair in matches)
+						{
+							pictures.AddRange(keyValuePair.Value);
+						}
+					}
+				}
+
 			}
 			var results = new List<object>();
 			pictures.Distinct().ForEach(p => results.Add(p));
