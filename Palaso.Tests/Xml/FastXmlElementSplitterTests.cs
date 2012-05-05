@@ -134,6 +134,56 @@ namespace Palaso.Tests.Xml
 		}
 
 		[Test]
+		public void MismatchedOptionalTagThrows()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata>
+<optional />
+<rt guid='emptyElement1'/>
+<rt guid='normalElement'>
+	<randomElement />
+</rt>
+<rt guid='emptyElement2' />
+</classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, "badfirsttag", "rt"));
+		}
+
+		[Test]
+		public void MismatchedMainTagThrows()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata>
+<rt guid='emptyElement1'/>
+<rt guid='normalElement'>
+	<randomElement />
+</rt>
+<rt guid='emptyElement2' />
+</classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, null, "notag"));
+		}
+
+		[Test]
+		public void MismatchedOptionalAndMainTagThrows()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata>
+<optional />
+<rt guid='emptyElement1'/>
+<rt guid='normalElement'>
+	<randomElement />
+</rt>
+<rt guid='emptyElement2' />
+</classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, "badfirsttag", "notag"));
+		}
+
+		[Test]
 		public void Can_Find_Good_FieldWorks_Records()
 		{
 			const string hasRecordsInput =

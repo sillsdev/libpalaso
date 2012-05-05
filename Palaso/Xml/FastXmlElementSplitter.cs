@@ -232,6 +232,14 @@ namespace Palaso.Xml
 					{
 						results.Add(reader.ReadOuterXml());
 					}
+					else
+					{
+						// Prevents an infinite loop.
+						var msg = string.Format("Can't find{0} main record with element name '{1}'",
+							firstElementMarker == null ? "" : string.Format(" optional element name '{0}' or", firstElementMarker),
+							recordMarker);
+						throw new ArgumentException(msg);
+					}
 				}
 			}
 
