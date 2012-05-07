@@ -47,7 +47,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 		/// <returns>DialogResult.Cancel if the challenge fails, otherwise whatever the settingsLaunchingFunction returns.</returns>
 		public DialogResult LaunchSettingsIfAppropriate(Func<DialogResult> settingsLaunchingFunction)
 		{
-			if (SettingsProtectionSingleton.Configuration.RequirePassword)
+			if (SettingsProtectionSingleton.Settings.RequirePassword)
 			{
 				using (var dlg = new SettingsPasswordDialog(SettingsProtectionSingleton.FactoryPassword, SettingsPasswordDialog.Mode.Challenge))
 				{
@@ -66,7 +66,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 				return;
 
 			var keys = (Keys.Control | Keys.Shift);
-			_customSettingsControl.Visible = !SettingsProtectionSingleton.Configuration.NormallyHidden
+			_customSettingsControl.Visible = !SettingsProtectionSingleton.Settings.NormallyHidden
 				|| ((Control.ModifierKeys & keys) == keys);
 		}
 

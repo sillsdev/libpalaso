@@ -13,11 +13,11 @@ namespace Palaso.UI.WindowsForms.SettingProtection {
 
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
-	public sealed partial class ProtectionConfiguration : global::System.Configuration.ApplicationSettingsBase {
+	public sealed partial class SettingsProtectionSettings : global::System.Configuration.ApplicationSettingsBase {
 
-		private static ProtectionConfiguration defaultInstance = ((ProtectionConfiguration)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new ProtectionConfiguration())));
+		private static SettingsProtectionSettings defaultInstance = ((SettingsProtectionSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new SettingsProtectionSettings())));
 
-		public static ProtectionConfiguration Default {
+		public static SettingsProtectionSettings Default {
 			get {
 				return defaultInstance;
 			}

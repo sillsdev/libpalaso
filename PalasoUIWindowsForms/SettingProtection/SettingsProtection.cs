@@ -9,12 +9,12 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 {
 	public class SettingsProtectionSingleton
 	{
-		private ProtectionConfiguration config;
+		private SettingsProtectionSettings config;
 		private static SettingsProtectionSingleton _singleton;
 
 		private SettingsProtectionSingleton()
 		{
-			config = ProtectionConfiguration.Default;
+			config = SettingsProtectionSettings.Default;
 
 			//bring in settings from any previous version
 			if (config.NeedUpgrade)
@@ -52,7 +52,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 			}
 		}
 
-		public static ProtectionConfiguration Configuration
+		public static SettingsProtectionSettings Settings
 		{
 			get
 			{
