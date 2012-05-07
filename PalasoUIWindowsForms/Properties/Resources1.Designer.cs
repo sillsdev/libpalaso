@@ -144,6 +144,20 @@ namespace Palaso.UI.WindowsForms.Properties {
 			}
 		}
 
+		internal static System.Drawing.Bitmap search18x18 {
+			get {
+				object obj = ResourceManager.GetObject("search18x18", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap search22x22 {
+			get {
+				object obj = ResourceManager.GetObject("search22x22", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		internal static System.Drawing.Bitmap settings16x16 {
 			get {
 				object obj = ResourceManager.GetObject("settings16x16", resourceCulture);

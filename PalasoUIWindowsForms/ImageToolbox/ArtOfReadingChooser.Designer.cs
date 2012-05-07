@@ -30,7 +30,6 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this._searchButton = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
 			this._searchTermsBox = new System.Windows.Forms.TextBox();
 			this.betterLinkLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
@@ -43,27 +42,19 @@
 			// _searchButton
 			//
 			this._searchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-			this._searchButton.Location = new System.Drawing.Point(278, 3);
+			this._searchButton.Image = global::Palaso.UI.WindowsForms.Properties.Resources.search18x18;
+			this._searchButton.Location = new System.Drawing.Point(175, 25);
 			this._searchButton.Name = "_searchButton";
-			this._searchButton.Size = new System.Drawing.Size(106, 26);
+			this._searchButton.Size = new System.Drawing.Size(48, 28);
 			this._searchButton.TabIndex = 1;
-			this._searchButton.Text = "~&Search";
+			this._searchButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this._searchButton.UseVisualStyleBackColor = true;
 			this._searchButton.Click += new System.EventHandler(this._searchButton_Click);
-			//
-			// label1
-			//
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-			this.label1.Location = new System.Drawing.Point(9, 8);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(91, 28);
-			this.label1.TabIndex = 3;
-			this.label1.Text = "~Search Words";
 			//
 			// _searchTermsBox
 			//
 			this._searchTermsBox.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._searchTermsBox.Location = new System.Drawing.Point(106, 5);
+			this._searchTermsBox.Location = new System.Drawing.Point(12, 25);
 			this._searchTermsBox.Name = "_searchTermsBox";
 			this._searchTermsBox.Size = new System.Drawing.Size(157, 24);
 			this._searchTermsBox.TabIndex = 0;
@@ -113,10 +104,10 @@
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this._thumbnailViewer.CanLoad = false;
 			this._thumbnailViewer.CaptionMethod = null;
-			this._thumbnailViewer.Location = new System.Drawing.Point(12, 39);
+			this._thumbnailViewer.Location = new System.Drawing.Point(12, 55);
 			this._thumbnailViewer.MultiSelect = false;
 			this._thumbnailViewer.Name = "_thumbnailViewer";
-			this._thumbnailViewer.Size = new System.Drawing.Size(372, 261);
+			this._thumbnailViewer.Size = new System.Drawing.Size(372, 245);
 			this._thumbnailViewer.TabIndex = 2;
 			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
 			this._thumbnailViewer.ThumbNailSize = 95;
@@ -145,7 +136,6 @@
 			this.Controls.Add(this.betterLinkLabel1);
 			this.Controls.Add(this._messageLabel);
 			this.Controls.Add(this._searchButton);
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this._searchTermsBox);
 			this.Controls.Add(this._thumbnailViewer);
 			this.Name = "ArtOfReadingChooser";
@@ -161,7 +151,6 @@
 
 		private ImageGallery.ThumbnailViewer _thumbnailViewer;
 		private System.Windows.Forms.Button _searchButton;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox _searchTermsBox;
 		private Widgets.BetterLabel _messageLabel;
 		private i18n.LocalizationHelper localizationHelper1;

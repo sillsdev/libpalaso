@@ -57,6 +57,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._toolListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)));
+			this._toolListView.BackColor = System.Drawing.SystemColors.Control;
+			this._toolListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			listViewGroup1.Header = "test";
 			listViewGroup1.Name = "listViewGroup1";
 			this._toolListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
@@ -87,7 +89,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Controls.Add(this._editLink);
 			this.panel1.Controls.Add(this._invitationToMetadataPanel);
 			this.panel1.Controls.Add(this._metadataDisplayControl);
@@ -102,7 +103,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._editLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._editLink.AutoSize = true;
 			this._editLink.LinkColor = System.Drawing.Color.Black;
-			this._editLink.Location = new System.Drawing.Point(12, 471);
+			this._editLink.Location = new System.Drawing.Point(12, 473);
 			this._editLink.Name = "_editLink";
 			this._editLink.Size = new System.Drawing.Size(34, 13);
 			this._editLink.TabIndex = 9;
@@ -116,7 +117,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._invitationToMetadataPanel.Controls.Add(this._copyExemplarMetadata);
 			this._invitationToMetadataPanel.Controls.Add(this.betterLabel1);
 			this._invitationToMetadataPanel.Controls.Add(this._editMetadataLink);
-			this._invitationToMetadataPanel.Location = new System.Drawing.Point(7, 318);
+			this._invitationToMetadataPanel.Location = new System.Drawing.Point(9, 320);
 			this._invitationToMetadataPanel.Name = "_invitationToMetadataPanel";
 			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 146);
 			this._invitationToMetadataPanel.TabIndex = 8;
@@ -170,9 +171,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._metadataDisplayControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this._metadataDisplayControl.Location = new System.Drawing.Point(7, 296);
+			this._metadataDisplayControl.Location = new System.Drawing.Point(7, 298);
 			this._metadataDisplayControl.Name = "_metadataDisplayControl";
-			this._metadataDisplayControl.Size = new System.Drawing.Size(251, 172);
+			this._metadataDisplayControl.Size = new System.Drawing.Size(253, 172);
 			this._metadataDisplayControl.TabIndex = 6;
 			//
 			// _currentImageBox
@@ -183,7 +184,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._currentImageBox.Location = new System.Drawing.Point(7, 0);
 			this._currentImageBox.MinimumSize = new System.Drawing.Size(251, 245);
 			this._currentImageBox.Name = "_currentImageBox";
-			this._currentImageBox.Size = new System.Drawing.Size(251, 245);
+			this._currentImageBox.Size = new System.Drawing.Size(253, 245);
 			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this._currentImageBox.TabIndex = 5;
 			this._currentImageBox.TabStop = false;

@@ -202,6 +202,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				file.SaveFile(temp);
 				temp = ConvertToPngOrJpegIfNotAlready(temp);
 				_pictureBox.Load(temp);
+				_currentImage = PalasoImage.FromFile(temp);
 				File.Delete(temp);
 				if (ImageChanged != null)
 					ImageChanged.Invoke(this, null);

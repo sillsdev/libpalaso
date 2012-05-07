@@ -63,7 +63,6 @@
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			palasoImage1.Image = null;
 			palasoImage1.MetadataLocked = false;
 			this.imageToolboxControl1.ImageInfo = palasoImage1;

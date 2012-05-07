@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -148,15 +150,24 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 		}
 
+		private new bool DesignMode
+		{
+			get
+			{
+				return (base.DesignMode || GetService(typeof(IDesignerHost)) != null) ||
+					(LicenseManager.UsageMode == LicenseUsageMode.Designtime);
+			}
+		}
+
 		private void ArtOfReadingChooser_Load(object sender, EventArgs e)
 		{
-			if (InSomeoneElesesDesignMode)
+			if (DesignMode)
 				return;
 
 			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
 			if (_imageCollection == null)
 			{
-				label1.Visible = _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
+				//label1.Visible = _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
 				_messageLabel.Visible = true;
 				_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
 				_messageLabel.Text = @"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet.";
