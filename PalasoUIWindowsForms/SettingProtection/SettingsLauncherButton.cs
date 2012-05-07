@@ -5,19 +5,19 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 {
 	/// <summary>
 	/// This control will hide & challenge for a password, as appropriate.
-	/// You can also make a custom control which fits better for your application, and use the SettingsLauncherHelper just like this does.
+	/// You can also make a custom control which fits better for your application, and use the SettingsProtectionHelper just like this does.
 	/// </summary>
 	public partial class SettingsLauncherButton : UserControl
 	{
-		private SettingsLauncherHelper _helper;
+		private SettingsProtectionHelper _helper;
 
 		public SettingsLauncherButton()
 		{
 			this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 			InitializeComponent();
 
-			_helper = new SettingsLauncherHelper(this.Container);
-			_helper.CustomSettingsControl = this;
+			_helper = new SettingsProtectionHelper(this.Container);
+			_helper.ManageComponent(this);
 		}
 
 		/// <summary>

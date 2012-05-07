@@ -297,11 +297,11 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
-	<Compile Include="SettingProtection\SettingsLauncherHelper.cs">
+	<Compile Include="SettingProtection\SettingsProtectionHelper.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="SettingProtection\SettingsLauncherHelper.Designer.cs">
-	  <DependentUpon>SettingsLauncherHelper.cs</DependentUpon>
+	<Compile Include="SettingProtection\SettingsProtectionHelper.Designer.cs">
+	  <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SettingProtection\SettingsPasswordDialog.cs">
 	  <SubType>Form</SubType>
@@ -613,8 +613,8 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingsLauncherHelper.resx">
-	  <DependentUpon>SettingsLauncherHelper.cs</DependentUpon>
+	<EmbeddedResource Include="SettingProtection\SettingsProtectionHelper.resx">
+	  <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="SettingProtection\SettingsPasswordDialog.resx">
 	  <DependentUpon>SettingsPasswordDialog.cs</DependentUpon>

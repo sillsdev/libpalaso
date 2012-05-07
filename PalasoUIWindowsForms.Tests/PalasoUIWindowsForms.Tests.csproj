@@ -116,6 +116,7 @@
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<EmbeddedResource Include="SettingsProtection\DialogWithLinkToSettings.resx">
 	  <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="SettingsProtection\DialogWithSomeSettings.resx">
 	  <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>

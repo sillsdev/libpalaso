@@ -29,13 +29,18 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DialogWithLinkToSettings));
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this._customSettingsButton = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
-			this._settingsLauncherHelper = new Palaso.UI.WindowsForms.SettingProtection.SettingsLauncherHelper(this.components);
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this._toolStripButtonToHide = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
 			this.settingsLauncherButton1 = new Palaso.UI.WindowsForms.SettingProtection.SettingsLauncherButton();
+			this._settingsProtectionHelper = new Palaso.UI.WindowsForms.SettingProtection.SettingsProtectionHelper(this.components);
+			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
 			//
 			// label1
@@ -81,9 +86,38 @@
 			this.label4.AutoSize = true;
 			this.label4.Location = new System.Drawing.Point(151, 147);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(327, 13);
+			this.label4.Size = new System.Drawing.Size(330, 13);
 			this.label4.TabIndex = 7;
-			this.label4.Text = "<-- Custom Settings launcher which uses a SettingsLauncherHelper ";
+			this.label4.Text = "<-- Custom Settings launcher which uses a SettingsProtectionHelper ";
+			//
+			// toolStrip1
+			//
+			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this._toolStripButtonToHide,
+			this.toolStripButton2});
+			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip1.Name = "toolStrip1";
+			this.toolStrip1.Size = new System.Drawing.Size(509, 25);
+			this.toolStrip1.TabIndex = 9;
+			this.toolStrip1.Text = "toolStrip1";
+			//
+			// _toolStripButtonToHide
+			//
+			this._toolStripButtonToHide.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this._toolStripButtonToHide.Image = ((System.Drawing.Image)(resources.GetObject("_toolStripButtonToHide.Image")));
+			this._toolStripButtonToHide.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this._toolStripButtonToHide.Name = "_toolStripButtonToHide";
+			this._toolStripButtonToHide.Size = new System.Drawing.Size(56, 22);
+			this._toolStripButtonToHide.Text = "Hide Me";
+			//
+			// toolStripButton2
+			//
+			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton2.Name = "toolStripButton2";
+			this.toolStripButton2.Size = new System.Drawing.Size(51, 22);
+			this.toolStripButton2.Text = "Not me";
 			//
 			// settingsLauncherButton1
 			//
@@ -99,6 +133,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(509, 191);
+			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.settingsLauncherButton1);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
@@ -107,6 +142,8 @@
 			this.Controls.Add(this.label1);
 			this.Name = "DialogWithLinkToSettings";
 			this.Text = "DialogWithLinkToSettings";
+			this.toolStrip1.ResumeLayout(false);
+			this.toolStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -116,10 +153,13 @@
 
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
-		private Palaso.UI.WindowsForms.SettingProtection.SettingsLauncherHelper _settingsLauncherHelper;
+		private Palaso.UI.WindowsForms.SettingProtection.SettingsProtectionHelper _settingsProtectionHelper;
 		private System.Windows.Forms.Button _customSettingsButton;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
 		private Palaso.UI.WindowsForms.SettingProtection.SettingsLauncherButton settingsLauncherButton1;
+		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStripButton _toolStripButtonToHide;
+		private System.Windows.Forms.ToolStripButton toolStripButton2;
 	}
 }

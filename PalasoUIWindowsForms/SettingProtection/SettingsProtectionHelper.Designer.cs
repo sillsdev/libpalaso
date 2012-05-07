@@ -1,6 +1,6 @@
 ﻿namespace Palaso.UI.WindowsForms.SettingProtection
 {
-	partial class SettingsLauncherHelper
+	partial class SettingsProtectionHelper
 	{
 		/// <summary>
 		/// Required designer variable.
