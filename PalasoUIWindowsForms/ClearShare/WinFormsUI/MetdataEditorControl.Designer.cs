@@ -100,7 +100,7 @@
 			this._illustratorLabel.Name = "_illustratorLabel";
 			this._illustratorLabel.Size = new System.Drawing.Size(57, 15);
 			this._illustratorLabel.TabIndex = 5;
-			this._illustratorLabel.Text = "Illustrator";
+			this._illustratorLabel.Text = "Creator";
 			//
 			// panel1
 			//
