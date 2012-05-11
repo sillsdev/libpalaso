@@ -1,0 +1,1747 @@
+#region Copyright and EULA notices
+
+/* *************************************************
+
+Original Programmer: Rajesh Lal(connectrajesh@hotmail.com)
+Date: 06/25/06
+Company Info: www.irajesh.com
+Explorer Tree
+----------------------------------------------------------------
+Original copyright © Rajesh Lal, 2006-2007
+Email connectrajesh@hotmail.com
+
+Author Quartz (Rajesh Lal - connectrajesh@hotmail.com)
+
+The program is FREE for any personal or non-commercial usage. In the case of
+modifying and/or redistributing the code it's obligate to retain
+the original copyright notice.  It is not allowed to create your
+own commercial products on the basis of the program or any parts
+of it.
+
+Please, contact me for purchase/ modification and redistribution with, remarks, ideas, etc.
+also check the EULA.txt for User agreement
+www.irajesh.com
+
+----------------------------------------------------------------
+Original End User License Agreement:
+
+General Source Code - User Licence
+
+The following agreement applies to a software product "FolderBrowserControl"
+
+This is a legal agreement (hereafter "Agreement") between you, either an
+individual or an entity, as the buyer of the source code (hereafter
+"Recipient") and Rajesh Lal the author of the product. (hereafter "Author").
+
+NON-DISCLOSURE AND LICENCE AGREEMENT FOR FolderBrowserControl
+
+1. GRANT OF LICENCE.
+
+Author grants Recipient a limited, non-exclusive, nontransferable, royalty-free
+licence to use the Product and its source code.
+
+Recipient may not sell, rent, transfer or disclose source code of the software
+product or derivative work of the software product to the third party without
+written permission from the Author.
+
+Recipient may not use source code for development commercially competitive product
+to Author's Work.
+
+Recipient shall not use Author's name, logo or trademarks to market Recipient's
+resulting software components or applications without express written consent
+from the Author.
+
+2. TERM OF AGREEMENT.
+
+The term of this Agreement shall commence at the date Recipient purchases the
+Product.
+
+3. MAINTENANCE.
+
+The Author is not obligated to provide maintenance or technical support to Recipient
+for the Product licensed under this Agreement.
+
+4. DISCLAIMER OF WARRANTIES.
+
+To the maximum extent permitted by applicable law, the Product is provided
+"as is" and without warranties of any kind, whether express or implied,
+including but not limited to the implied warranties of merchantability or
+fitness for a particular purpose. The entire risk arising out of the use or
+installation of the Product, if any, remains with Recipient.
+
+5. EXCLUSION OF INCIDENTAL, CONSEQUENTIAL AND CERTAIN OTHER DAMAGES.
+
+To the maximum extent permitted by applicable law, in no event shall
+Author be liable for any special, incidental, indirect, consequential or
+punitive damages whatsoever arising out of or in any way related to the use of
+or the inability to use the Product.
+
+6. LIMITATION OF LIABILITY AND REMEDIES.
+
+To the maximum extent permitted by applicable law, any liability of the Author will
+be limited exclusively to a refund of the purchase price.
+
+
+7. GOVERNING LAW.
+
+This Agreement shall be construed and controlled by the laws of the
+United States. Exclusive jurisdiction and venue for all matters relating to
+this Agreement shall be in courts located in the United States. The Recipient
+consents to such jurisdiction and venue.
+
+8. ENTIRE AGREEMENT.
+
+This Agreement constitutes the complete and exclusive agreement between the Author
+and Recipient with respect to the subject matter hereof and supersedes all
+prior oral or written understandings, communications or agreements not
+specifically incorporated herein. This Agreement may not be modified except in
+a writing duly signed by an authorised representative of the Author and Recipient.
+
+Should you have any questions concerning this Agreement, please contact
+the Author.
+
+**************************************************/
+
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.IO;
+
+namespace Palaso.UI.WindowsForms.FolderBrowserControl
+{
+	/// <summary>
+	/// A form control for browsing folders on all disk drives and network nodes.
+	/// </summary>
+	[ToolboxBitmapAttribute(typeof (FolderBrowserControl), "tree.gif"), DefaultEvent("PathChanged")]
+	public class FolderBrowserControl : UserControl
+	{
+		#region Control declarations
+
+		private TreeView m_treeFolders; // tree represenation of all folders
+		private TextBox m_textBoxFolderPath; // text box containing current folder path
+
+		private ImageList m_imageListFolderTreeViewImages; // collection of icons for folder treeview
+
+		private Button m_buttonRefreshTree; // button to redraw folder tree
+		private Button m_buttonGo; // button to "enter" path in address bar
+		private Button m_buttonHome; // button to navigate directly to folder of this .exe
+		private Button m_buttonBack; // button to navigate directly to previous folder
+		private Button m_buttonNext; // button to navigate to next folder
+		private Button m_buttonUp; // button to navigate to current folder parent
+		private Button m_buttonAddShortcut; // button to add a shortcut to a frequently-used folder
+		private Button m_buttonInfo; // (unused) button to bring up info
+		private GroupBox m_groupBoxToolBar; // groupbox container for all the buttons listed above
+
+		private ToolTip m_toolTip; // magic container for all tooltips
+
+		private ContextMenu m_contextMenuShortcut; // a context menu that works on user's shortcut folders
+		private MenuItem m_menuItemShortCutRemoval; // context menu item to remove a user's shortcut folder
+
+		private IContainer components; // silly thing that .NET seems to like
+
+		#endregion
+
+		#region Boolean properties to control which sub-controls and special folders the user can see
+
+		// Flag to indicate if the My Documents folder should be available:
+		private bool m_showMyDocuments = true;
+
+		public bool ShowMyDocuments
+		{
+			get { return m_showMyDocuments; }
+			set
+			{
+				m_showMyDocuments = value;
+				Refresh();
+			}
+		}
+
+		// Flag to indicate if the My Favorites folder should be available:
+		private bool m_showMyFavorites = true;
+
+		public bool ShowMyFavorites
+		{
+			get { return m_showMyFavorites; }
+			set
+			{
+				m_showMyFavorites = value;
+				Refresh();
+			}
+		}
+
+		// Flag to indicate if the My Network folder should be available:
+		private bool m_showMyNetwork = true;
+
+		public bool ShowMyNetwork
+		{
+			get { return m_showMyNetwork; }
+			set
+			{
+				m_showMyNetwork = value;
+				Refresh();
+			}
+		}
+
+		// Flag to indicate if the Address Bar should be visible:
+		public bool ShowAddressbar { get; set; }
+
+		// Falg to indicate if the Tool Bar buttons should be available:
+		public bool ShowToolbar { get; set; }
+
+		#endregion
+
+		#region General properties
+
+		private string m_selectedPath = "home"; // The text of the current folder path; this pseudonym also allowed
+
+		[
+			Category("Appearance"),
+			Description("Text of current folder path")
+		]
+		public string SelectedPath
+		{
+			get { return m_selectedPath; }
+			set
+			{
+				m_selectedPath = value;
+				Invalidate();
+			}
+		}
+
+		#endregion
+
+		#region Custom event declarations
+
+		// Define an event for when the user has selected a different folder path, to be used by consumer of this control:
+		public delegate void PathChangedEventHandler(object sender, EventArgs e);
+		private PathChangedEventHandler m_pathChangedEvent = delegate { };
+		public event PathChangedEventHandler PathChanged
+		{
+			add { m_pathChangedEvent = (PathChangedEventHandler) Delegate.Combine(m_pathChangedEvent, value); }
+			remove { m_pathChangedEvent = (PathChangedEventHandler) Delegate.Remove(m_pathChangedEvent, value); }
+		}
+
+		// Define an event for when the selection history needs to be updated:
+		private delegate void PathSelectionHistoryEventHandler(string path);
+		private event PathSelectionHistoryEventHandler HistoryChangeEventHandler = delegate { };
+
+		#endregion
+
+		private TreeNode m_treeNodeMyComputer; // special node in folder tree
+		private TreeNode m_treeNodeRootNode; // placeholder for root node in folder tree
+
+		private List<string> m_selectionHistory; // List of folders the user has selected
+		private int m_selectionHistoryIndex; // Position in history list when going back or forth.
+
+		#region Dummy treeview-node name declarations
+
+		private const string DummyMicrosoftWindowsNetworkName = "DummyMicrosoftWindowsNetworkName";
+		private const string DummyMyComputerChildName = "DummyMyComputerChildName";
+		private const string DummyEntireNetworkChildName = "DummyEntireNetworkChildName";
+
+		#endregion
+
+		#region Special folder name declarations
+
+		private const string DesktopFolderName = "Desktop";
+		private const string MicrosoftWindowsNetworkFolderName = "Microsoft Windows Network";
+		private const string MyComputerFolderName = "My Computer";
+		private const string MyDocumentsFolderName = "My Documents";
+		private const string MyNetworkPlacesFolderName = "My Network Places";
+		private const string EntireNetworkFolderName = "Entire Network";
+		private const string MyFavoritesFolderName = "My Favorites";
+
+		#endregion
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public FolderBrowserControl()
+		{
+			// This call is required by the Windows.Forms Form Designer.
+			InitializeComponent();
+
+			ClearHistoryList();
+		}
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (components != null)
+				{
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+
+		#region Component Designer generated code
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FolderBrowserControl));
+			this.m_buttonRefreshTree = new System.Windows.Forms.Button();
+			this.m_textBoxFolderPath = new System.Windows.Forms.TextBox();
+			this.m_buttonGo = new System.Windows.Forms.Button();
+			this.m_treeFolders = new System.Windows.Forms.TreeView();
+			this.m_imageListFolderTreeViewImages = new System.Windows.Forms.ImageList(this.components);
+			this.m_buttonHome = new System.Windows.Forms.Button();
+			this.m_buttonBack = new System.Windows.Forms.Button();
+			this.m_buttonNext = new System.Windows.Forms.Button();
+			this.m_buttonUp = new System.Windows.Forms.Button();
+			this.m_toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.m_buttonAddShortcut = new System.Windows.Forms.Button();
+			this.m_buttonInfo = new System.Windows.Forms.Button();
+			this.m_contextMenuShortcut = new System.Windows.Forms.ContextMenu();
+			this.m_menuItemShortCutRemoval = new System.Windows.Forms.MenuItem();
+			this.m_groupBoxToolBar = new System.Windows.Forms.GroupBox();
+			this.m_groupBoxToolBar.SuspendLayout();
+			this.SuspendLayout();
+			//
+			// m_buttonRefreshTree
+			//
+			this.m_buttonRefreshTree.BackColor = System.Drawing.Color.White;
+			this.m_buttonRefreshTree.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonRefreshTree.FlatAppearance.BorderSize = 0;
+			this.m_buttonRefreshTree.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonRefreshTree.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonRefreshTree.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonRefreshTree.Image")));
+			this.m_buttonRefreshTree.Location = new System.Drawing.Point(88, 0);
+			this.m_buttonRefreshTree.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonRefreshTree.Name = "m_buttonRefreshTree";
+			this.m_buttonRefreshTree.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonRefreshTree.TabIndex = 62;
+			this.m_toolTip.SetToolTip(this.m_buttonRefreshTree, "Refresh Explorer Tree");
+			this.m_buttonRefreshTree.UseVisualStyleBackColor = false;
+			this.m_buttonRefreshTree.Click += new System.EventHandler(this.OnRefreshButtonClick);
+			//
+			// m_textBoxFolderPath
+			//
+			this.m_textBoxFolderPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.m_textBoxFolderPath.Location = new System.Drawing.Point(0, 21);
+			this.m_textBoxFolderPath.Name = "m_textBoxFolderPath";
+			this.m_textBoxFolderPath.Size = new System.Drawing.Size(220, 20);
+			this.m_textBoxFolderPath.TabIndex = 61;
+			this.m_toolTip.SetToolTip(this.m_textBoxFolderPath, "Current directory");
+			this.m_textBoxFolderPath.TextChanged += new System.EventHandler(this.OnTextBoxFolderPathTextChanged);
+			this.m_textBoxFolderPath.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxFolderPathKeyUp);
+			//
+			// m_buttonGo
+			//
+			this.m_buttonGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.m_buttonGo.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonGo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonGo.ForeColor = System.Drawing.Color.White;
+			this.m_buttonGo.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonGo.Image")));
+			this.m_buttonGo.Location = new System.Drawing.Point(216, 21);
+			this.m_buttonGo.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonGo.Name = "m_buttonGo";
+			this.m_buttonGo.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonGo.TabIndex = 60;
+			this.m_toolTip.SetToolTip(this.m_buttonGo, "Go to the directory");
+			this.m_buttonGo.Click += new System.EventHandler(this.OnGoButtonClick);
+			//
+			// m_treeFolders
+			//
+			this.m_treeFolders.AllowDrop = true;
+			this.m_treeFolders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.m_treeFolders.BackColor = System.Drawing.Color.White;
+			this.m_treeFolders.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawAll;
+			this.m_treeFolders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.m_treeFolders.ImageIndex = 0;
+			this.m_treeFolders.ImageList = this.m_imageListFolderTreeViewImages;
+			this.m_treeFolders.Location = new System.Drawing.Point(0, 42);
+			this.m_treeFolders.Name = "m_treeFolders";
+			this.m_treeFolders.SelectedImageIndex = 2;
+			this.m_treeFolders.ShowLines = false;
+			this.m_treeFolders.ShowRootLines = false;
+			this.m_treeFolders.Size = new System.Drawing.Size(240, 294);
+			this.m_treeFolders.TabIndex = 59;
+			this.m_treeFolders.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.OnFolderTreeViewAfterExpand);
+			this.m_treeFolders.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.OnFolderTreeViewDrawNode);
+			this.m_treeFolders.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.OnFolderTreeViewBeforeSelect);
+			this.m_treeFolders.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnFolderTreeViewAfterSelect);
+			this.m_treeFolders.DoubleClick += new System.EventHandler(this.OnFolderTreeViewDoubleClick);
+			this.m_treeFolders.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnFolderTreeViewMouseUp);
+			//
+			// m_imageListFolderTreeViewImages
+			//
+			this.m_imageListFolderTreeViewImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_imageListFolderTreeViewImages.ImageStream")));
+			this.m_imageListFolderTreeViewImages.TransparentColor = System.Drawing.Color.Transparent;
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(0, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(1, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(2, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(3, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(4, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(5, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(6, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(7, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(8, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(9, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(10, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(11, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(12, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(13, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(14, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(15, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(16, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(17, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(18, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(19, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(20, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(21, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(22, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(23, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(24, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(25, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(26, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(27, "");
+			this.m_imageListFolderTreeViewImages.Images.SetKeyName(28, "");
+			//
+			// m_buttonHome
+			//
+			this.m_buttonHome.BackColor = System.Drawing.Color.White;
+			this.m_buttonHome.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonHome.FlatAppearance.BorderSize = 0;
+			this.m_buttonHome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonHome.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonHome.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonHome.Image")));
+			this.m_buttonHome.Location = new System.Drawing.Point(110, 0);
+			this.m_buttonHome.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonHome.Name = "m_buttonHome";
+			this.m_buttonHome.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonHome.TabIndex = 63;
+			this.m_toolTip.SetToolTip(this.m_buttonHome, "Application Directory");
+			this.m_buttonHome.UseVisualStyleBackColor = false;
+			this.m_buttonHome.Click += new System.EventHandler(this.OnHomeButtonClick);
+			//
+			// m_buttonBack
+			//
+			this.m_buttonBack.BackColor = System.Drawing.Color.White;
+			this.m_buttonBack.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonBack.FlatAppearance.BorderSize = 0;
+			this.m_buttonBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonBack.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonBack.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonBack.Image")));
+			this.m_buttonBack.Location = new System.Drawing.Point(22, 0);
+			this.m_buttonBack.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonBack.Name = "m_buttonBack";
+			this.m_buttonBack.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonBack.TabIndex = 64;
+			this.m_toolTip.SetToolTip(this.m_buttonBack, "Backward");
+			this.m_buttonBack.UseVisualStyleBackColor = false;
+			this.m_buttonBack.Click += new System.EventHandler(this.OnBackButtonClick);
+			//
+			// m_buttonNext
+			//
+			this.m_buttonNext.BackColor = System.Drawing.Color.White;
+			this.m_buttonNext.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonNext.FlatAppearance.BorderSize = 0;
+			this.m_buttonNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonNext.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonNext.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonNext.Image")));
+			this.m_buttonNext.Location = new System.Drawing.Point(44, 0);
+			this.m_buttonNext.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonNext.Name = "m_buttonNext";
+			this.m_buttonNext.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonNext.TabIndex = 65;
+			this.m_toolTip.SetToolTip(this.m_buttonNext, "Forward");
+			this.m_buttonNext.UseVisualStyleBackColor = false;
+			this.m_buttonNext.Click += new System.EventHandler(this.OnNextButtonClick);
+			//
+			// m_buttonUp
+			//
+			this.m_buttonUp.BackColor = System.Drawing.Color.White;
+			this.m_buttonUp.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonUp.FlatAppearance.BorderSize = 0;
+			this.m_buttonUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonUp.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonUp.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonUp.Image")));
+			this.m_buttonUp.Location = new System.Drawing.Point(66, 0);
+			this.m_buttonUp.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonUp.Name = "m_buttonUp";
+			this.m_buttonUp.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonUp.TabIndex = 67;
+			this.m_toolTip.SetToolTip(this.m_buttonUp, "Parent Directory");
+			this.m_buttonUp.UseVisualStyleBackColor = false;
+			this.m_buttonUp.Click += new System.EventHandler(this.OnUpButtonClick);
+			//
+			// m_buttonAddShortcut
+			//
+			this.m_buttonAddShortcut.BackColor = System.Drawing.Color.White;
+			this.m_buttonAddShortcut.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonAddShortcut.FlatAppearance.BorderSize = 0;
+			this.m_buttonAddShortcut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonAddShortcut.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonAddShortcut.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonAddShortcut.Image")));
+			this.m_buttonAddShortcut.Location = new System.Drawing.Point(0, 0);
+			this.m_buttonAddShortcut.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonAddShortcut.Name = "m_buttonAddShortcut";
+			this.m_buttonAddShortcut.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonAddShortcut.TabIndex = 70;
+			this.m_toolTip.SetToolTip(this.m_buttonAddShortcut, "Add a shortcut to the currently-selected folder in the frequently-used folders section");
+			this.m_buttonAddShortcut.UseVisualStyleBackColor = false;
+			this.m_buttonAddShortcut.Click += new System.EventHandler(this.OnAddButtonClick);
+			//
+			// m_buttonInfo
+			//
+			this.m_buttonInfo.BackColor = System.Drawing.Color.White;
+			this.m_buttonInfo.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.m_buttonInfo.FlatAppearance.BorderSize = 0;
+			this.m_buttonInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.m_buttonInfo.ForeColor = System.Drawing.Color.Transparent;
+			this.m_buttonInfo.Image = ((System.Drawing.Image)(resources.GetObject("m_buttonInfo.Image")));
+			this.m_buttonInfo.Location = new System.Drawing.Point(132, 0);
+			this.m_buttonInfo.Margin = new System.Windows.Forms.Padding(0);
+			this.m_buttonInfo.Name = "m_buttonInfo";
+			this.m_buttonInfo.Size = new System.Drawing.Size(20, 20);
+			this.m_buttonInfo.TabIndex = 71;
+			this.m_toolTip.SetToolTip(this.m_buttonInfo, "About folder browser control");
+			this.m_buttonInfo.UseVisualStyleBackColor = false;
+			this.m_buttonInfo.Visible = false;
+			this.m_buttonInfo.Click += new System.EventHandler(this.OnInfoButtonClick);
+			//
+			// m_contextMenuShortcut
+			//
+			this.m_contextMenuShortcut.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.m_menuItemShortCutRemoval});
+			//
+			// m_menuItemShortCutRemoval
+			//
+			this.m_menuItemShortCutRemoval.Index = 0;
+			this.m_menuItemShortCutRemoval.Text = "Remove Shortcut";
+			this.m_menuItemShortCutRemoval.Click += new System.EventHandler(this.OnShortCutRemovalMenuItemClick);
+			//
+			// m_groupBoxToolBar
+			//
+			this.m_groupBoxToolBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.m_groupBoxToolBar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonInfo);
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonRefreshTree);
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonHome);
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonBack);
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonNext);
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonUp);
+			this.m_groupBoxToolBar.Controls.Add(this.m_buttonAddShortcut);
+			this.m_groupBoxToolBar.ForeColor = System.Drawing.SystemColors.Window;
+			this.m_groupBoxToolBar.Location = new System.Drawing.Point(0, 0);
+			this.m_groupBoxToolBar.Margin = new System.Windows.Forms.Padding(0);
+			this.m_groupBoxToolBar.Name = "m_groupBoxToolBar";
+			this.m_groupBoxToolBar.Padding = new System.Windows.Forms.Padding(0);
+			this.m_groupBoxToolBar.Size = new System.Drawing.Size(240, 20);
+			this.m_groupBoxToolBar.TabIndex = 71;
+			this.m_groupBoxToolBar.TabStop = false;
+			this.m_groupBoxToolBar.Paint += new System.Windows.Forms.PaintEventHandler(this.OnGroupBoxPaint);
+			//
+			// FolderBrowserControl
+			//
+			this.BackColor = System.Drawing.Color.White;
+			this.Controls.Add(this.m_buttonGo);
+			this.Controls.Add(this.m_textBoxFolderPath);
+			this.Controls.Add(this.m_treeFolders);
+			this.Controls.Add(this.m_groupBoxToolBar);
+			this.Name = "FolderBrowserControl";
+			this.Size = new System.Drawing.Size(240, 336);
+			this.Load += new System.EventHandler(this.OnFolderBrowserControlLoad);
+			this.m_groupBoxToolBar.ResumeLayout(false);
+			this.ResumeLayout(false);
+			this.PerformLayout();
+
+		}
+
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// Wipes folder treeview and user's selection history. then builds a fresh folder tree.
+		/// </summary>
+		public void ResetTree()
+		{
+			ClearHistoryList();
+
+			m_treeFolders.Nodes.Clear();
+			SetCurrentPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+			FillTreeViewWithFolders();
+		}
+
+		/// <summary>
+		/// Redisplays entire control, typically because an outside entity has tweaked the properties to
+		/// say what should be visible.
+		/// </summary>
+		public void ResetControl()
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			// Redo the buttons, toolbar, etc:
+			DisplaySelectedControls();
+
+			// Redo the folder treeview:
+			ResetTree();
+
+			ClearHistoryList();
+
+			SetCurrentPath("home");
+			Cursor.Current = Cursors.Default;
+			ExpandMyComputerNode();
+		}
+
+		public void SetInitialPath(string path)
+		{
+			ClearHistoryList();
+			SetCurrentPath(path);
+			HistoryChangeEventHandler(SelectedPath);
+			ExpandTreeToMatchTextbox();
+		}
+
+		/// <summary>
+		/// Makes sure the correct buttons, toolbars etc are displayed, and adjusts positions
+		/// of visible controls for best fit.
+		/// </summary>
+		public void DisplaySelectedControls()
+		{
+			if ((!ShowAddressbar) && (!ShowToolbar))
+			{
+				m_treeFolders.Top = 0;
+				m_textBoxFolderPath.Visible = false;
+				m_buttonGo.Visible = false;
+				m_groupBoxToolBar.Visible = false;
+				m_treeFolders.Height = Height;
+			}
+			else
+			{
+				if (ShowToolbar && (!ShowAddressbar))
+				{
+					m_treeFolders.Top = 21;
+					m_textBoxFolderPath.Visible = false;
+					m_buttonGo.Visible = false;
+					m_treeFolders.Height = Height - 21;
+					m_groupBoxToolBar.Visible = true;
+				}
+				else if (ShowAddressbar && (!ShowToolbar))
+				{
+					m_treeFolders.Top = 21;
+					m_textBoxFolderPath.Top = 0;
+					m_buttonGo.Top = 0;
+					m_textBoxFolderPath.Visible = true;
+					m_buttonGo.Visible = true;
+					m_treeFolders.Height = Height - 21;
+					m_groupBoxToolBar.Visible = false;
+				}
+				else
+				{
+					m_treeFolders.Top = 42;
+					m_textBoxFolderPath.Visible = true;
+					m_buttonGo.Visible = true;
+					m_textBoxFolderPath.Top = 21;
+					m_buttonGo.Top = 21;
+					m_groupBoxToolBar.Visible = true;
+					m_treeFolders.Height = Height - 42;
+				}
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Sets the folder path text both, after doing a few checks.
+		/// </summary>
+		/// <param name="strPath"></param>
+		private void SetCurrentPath(string strPath)
+		{
+			SelectedPath = strPath;
+
+			// The pseudonym "home" is allowed, and means the path of our .exe:
+			if (String.Compare(strPath, "home") == 0)
+				m_textBoxFolderPath.Text = Application.StartupPath;
+			else
+			{
+				// Set the proposed folder if it exists, otherwise use our .exe's path:
+				m_textBoxFolderPath.Text = Directory.Exists(strPath) ? strPath : Application.StartupPath;
+			}
+		}
+
+		/// <summary>
+		/// Loads the topmost nodes of the folder tree view with folders.
+		/// The lower layers are not filled until user clicks "+" buttons
+		/// to reveal them. Very efficient.
+		/// </summary>
+		private void FillTreeViewWithFolders()
+		{
+			// Start with a clean slate:
+			m_treeFolders.Nodes.Clear();
+
+			// Desktop node:
+			var treeNodeDesktop = new TreeNode
+									{
+										Tag = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+										Text = DesktopFolderName,
+										ImageIndex = 10,
+										SelectedImageIndex = 10
+									};
+
+			m_treeFolders.Nodes.Add(treeNodeDesktop);
+			m_treeNodeRootNode = treeNodeDesktop;
+
+			if (ShowMyDocuments)
+			{
+				// Add My Documents and Desktop folder node:
+				var treeNodeMyDocuments = new TreeNode
+											{
+												Tag = Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+												Text = MyDocumentsFolderName,
+												ImageIndex = 9,
+												SelectedImageIndex = 9
+											};
+				treeNodeDesktop.Nodes.Add(treeNodeMyDocuments);
+				AddChildFolders(treeNodeMyDocuments);
+			}
+
+			// My Computer node:
+			m_treeNodeMyComputer = new TreeNode
+									{
+										Tag = MyComputerFolderName,
+										Text = MyComputerFolderName,
+										ImageIndex = 12,
+										SelectedImageIndex = 12
+									};
+			treeNodeDesktop.Nodes.Add(m_treeNodeMyComputer);
+
+			// Dummy child node for My Computer (to make "+" box appear):
+			var treeNodePlaceholder = new TreeNode
+										{
+											Tag = DummyMyComputerChildName,
+											Text = DummyMyComputerChildName,
+											ImageIndex = 12,
+											SelectedImageIndex = 12
+										};
+			m_treeNodeMyComputer.Nodes.Add(treeNodePlaceholder);
+
+			if (ShowMyNetwork)
+			{
+				// My Network Places node:
+				var treeNodeMyNetwork = new TreeNode
+											{
+												Tag = MyNetworkPlacesFolderName,
+												Text = MyNetworkPlacesFolderName,
+												ImageIndex = 13,
+												SelectedImageIndex = 13
+											};
+				treeNodeDesktop.Nodes.Add(treeNodeMyNetwork);
+
+				var treeNodeEntireNetwork = new TreeNode
+												{
+													Tag = EntireNetworkFolderName,
+													Text = EntireNetworkFolderName,
+													ImageIndex = 14,
+													SelectedImageIndex = 14
+												};
+				treeNodeMyNetwork.Nodes.Add(treeNodeEntireNetwork);
+
+				// Dummy child node for Entire Network (to make "+" box appear):
+				var treeNodeNetwork = new TreeNode
+										{
+											Tag = DummyEntireNetworkChildName,
+											Text = DummyEntireNetworkChildName,
+											ImageIndex = 15,
+											SelectedImageIndex = 15
+										};
+				treeNodeEntireNetwork.Nodes.Add(treeNodeNetwork);
+			}
+
+			if (ShowMyFavorites)
+			{
+				var treeNodeMyFavorites = new TreeNode
+											{
+												Tag = Environment.GetFolderPath(Environment.SpecialFolder.Favorites),
+												Text = MyFavoritesFolderName,
+												ImageIndex = 26,
+												SelectedImageIndex = 26
+											};
+				treeNodeDesktop.Nodes.Add(treeNodeMyFavorites);
+				AddChildFolders(treeNodeMyFavorites);
+			}
+
+			// Fill the next levels in the Desktop node:
+			AddChildAndGrandchildFolders(treeNodeDesktop);
+		}
+
+		/// <summary>
+		/// Fills in the child and grandchild levels of subfolders of the given folder.
+		/// </summary>
+		/// <param name="currentFolder">A folder somewhere in the folder treeview</param>
+		private static void AddChildAndGrandchildFolders(TreeNode currentFolder)
+		{
+			// This could take a while:
+			Cursor.Current = Cursors.WaitCursor;
+
+			// Get first level of subfolders (direct children):
+			AddChildFolders(currentFolder);
+
+			// Get grandchildren of current folder so user can see there are
+			// more folders underneath current folder:
+			foreach (TreeNode node in currentFolder.Nodes)
+			{
+				if (currentFolder.Text == DesktopFolderName)
+				{
+					if ((node.Text != MyDocumentsFolderName)
+						&& (node.Text != MyComputerFolderName)
+						&& (node.Text != MicrosoftWindowsNetworkFolderName)
+						&& (node.Text != MyNetworkPlacesFolderName))
+					{
+						AddChildFolders(node);
+					}
+				}
+				else
+				{
+					AddChildFolders(node);
+				}
+			}
+
+			Cursor.Current = Cursors.Default;
+		}
+
+		/// <summary>
+		/// Fills in the child level of subfolders of the given folder.
+		/// </summary>
+		/// <param name="currentFolder">A folder somewhere in the folder treeview</param>
+		private static void AddChildFolders(TreeNode currentFolder)
+		{
+			try
+			{
+				var folderList = Directory.GetDirectories(currentFolder.Tag.ToString());
+
+				// Rudimentary check to see if we've already processed this folder node:
+				if (folderList.Length == currentFolder.Nodes.Count)
+					return;
+
+				Array.Sort(folderList);
+
+				// Add to the currentFolder's children each folder's path from folderList:
+				foreach (var path in folderList)
+				{
+					var node = new TreeNode {Tag = path, Text = Path.GetFileName(path) ?? "", ImageIndex = 1};
+					currentFolder.Nodes.Add(node);
+				}
+			}
+			catch (Exception)
+			{
+				return;
+			}
+		}
+
+		#region Methods for filling in special-folder nodes in treeview
+
+		/// <summary>
+		/// Adds servers etc to the treeview node previously identified as a child of the Microsoft Windows Network node.
+		/// </summary>
+		/// <param name="microsoftWindowsNetworkChildNode"></param>
+		private static void ExpandMicrosoftWindowsNetworkChildNode(TreeNode microsoftWindowsNetworkChildNode)
+		{
+			// Check if the first child node is our dummy placeholder:
+			if (microsoftWindowsNetworkChildNode.FirstNode.Text == DummyMicrosoftWindowsNetworkName)
+			{
+				// Remove dummy and add real data:
+				microsoftWindowsNetworkChildNode.FirstNode.Remove();
+
+				var serverPath = microsoftWindowsNetworkChildNode.Text;
+
+				var servers = new ServerEnum(ServerEnum.ResourceScope.RESOURCE_GLOBALNET,
+					ServerEnum.ResourceType.RESOURCETYPE_DISK, ServerEnum.ResourceUsage.RESOURCEUSAGE_ALL,
+					ServerEnum.ResourceDisplayType.RESOURCEDISPLAYTYPE_SERVER, serverPath);
+
+				foreach (string server in servers)
+				{
+					if (server.EndsWith("-share"))
+						continue;
+
+					var serverNode = new TreeNode
+										{
+											Tag = server,
+											Text = server.Substring(2),
+											ImageIndex = 12,
+											SelectedImageIndex = 12
+										};
+					microsoftWindowsNetworkChildNode.Nodes.Add(serverNode);
+
+					// Look for child (share) servers:
+					foreach (var shareServer in servers.Cast<string>().Where(shareServer => shareServer.EndsWith("-share")))
+					{
+						if (server.Length <= shareServer.Length)
+						{
+							try
+							{
+								if (shareServer.StartsWith(server + Path.DirectorySeparatorChar))
+								{
+									var childServerNode = new TreeNode
+															{
+																Tag = shareServer.Substring(0, shareServer.Length - 6),  // Server name minus "-share"
+																Text = shareServer.Substring(server.Length + 1, shareServer.Length - server.Length - 7),
+																ImageIndex = 28,
+																SelectedImageIndex = 28
+															};
+									serverNode.Nodes.Add(childServerNode);
+								}
+							}
+							catch (ArgumentOutOfRangeException)
+							{
+							}
+						}
+					} // Next child server
+				} // Next server
+			} //End if first child node is our dummy placeholder
+		}
+
+		/// <summary>
+		/// Adds servers etc to the treeview node previously identified as the Entire Network node.
+		/// </summary>
+		/// <param name="entireNetworkNode"></param>
+		private static void ExpandEntireNetworkNode(TreeNode entireNetworkNode)
+		{
+			// First test that we haven't already expanded this node, by seeing if the first node
+			// is our dummy placeholder:
+			if (entireNetworkNode.FirstNode.Text != DummyEntireNetworkChildName)
+				return;
+
+			entireNetworkNode.FirstNode.Remove();
+
+			var servers = new ServerEnum(ServerEnum.ResourceScope.RESOURCE_GLOBALNET,
+				ServerEnum.ResourceType.RESOURCETYPE_DISK, ServerEnum.ResourceUsage.RESOURCEUSAGE_ALL,
+				ServerEnum.ResourceDisplayType.RESOURCEDISPLAYTYPE_NETWORK, "");
+
+			foreach (string server in servers)
+			{
+				var serverNameBeforeBar = server.Substring(0, server.IndexOf("|", 1));
+
+				if (server.IndexOf("NETWORK", 1) > 0)
+				{
+					var networkNode = new TreeNode
+										{
+											Tag = serverNameBeforeBar,
+											Text = serverNameBeforeBar,
+											ImageIndex = 15,
+											SelectedImageIndex = 15
+										};
+					entireNetworkNode.Nodes.Add(networkNode);
+				}
+				else
+				{
+					var myNetworkNode = new TreeNode
+											{
+												Tag = serverNameBeforeBar,
+												Text = serverNameBeforeBar,
+												ImageIndex = 16,
+												SelectedImageIndex = 16
+											};
+					entireNetworkNode.LastNode.Nodes.Add(myNetworkNode);
+
+					// Add dummy placeholder node for Micorosoft Windows Network (to make "+" box appear):
+					var dummyNode = new TreeNode
+										{
+											Tag = DummyMicrosoftWindowsNetworkName,
+											Text = DummyMicrosoftWindowsNetworkName,
+											ImageIndex = 12,
+											SelectedImageIndex = 12
+										};
+					myNetworkNode.Nodes.Add(dummyNode);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Adds drives and folders to the folder treeview node previously identified as the My Computer node.
+		/// </summary>
+		private void ExpandMyComputerNode()
+		{
+			// Check that the node has not already been expanded. The initial unexpanded state is
+			// that there is only one child, which has the Tag and Text equal to DummyMyComputerChildName:
+			var treeNodeCount = m_treeNodeMyComputer.GetNodeCount(true);
+			if (treeNodeCount >= 2)
+				return;
+			if (treeNodeCount > 0)
+			{
+				if (m_treeNodeMyComputer.FirstNode.Tag.ToString() != DummyMyComputerChildName
+					|| m_treeNodeMyComputer.FirstNode.Text != DummyMyComputerChildName)
+				{
+					return;
+				}
+
+				// Remove dummy placeholder (first child):
+				m_treeNodeMyComputer.FirstNode.Remove();
+			}
+
+			// Iterate of all logical drives on user's computer:
+			var logicalDrives = Environment.GetLogicalDrives();
+
+			foreach (var drive in logicalDrives)
+			{
+				// Make a new node for each drive:
+				var logicalDriveNode = new TreeNode {Tag = drive, Text = drive};
+
+				// Determine which icon to display, according to drive type:
+				switch (Win32.GetDriveType(drive))
+				{
+					case 2:
+						logicalDriveNode.ImageIndex = 17;
+						logicalDriveNode.SelectedImageIndex = 17;
+						break;
+					case 3:
+						logicalDriveNode.ImageIndex = 0;
+						logicalDriveNode.SelectedImageIndex = 0;
+						break;
+					case 4:
+						logicalDriveNode.ImageIndex = 8;
+						logicalDriveNode.SelectedImageIndex = 8;
+						break;
+					case 5:
+						logicalDriveNode.ImageIndex = 7;
+						logicalDriveNode.SelectedImageIndex = 7;
+						break;
+					default:
+						logicalDriveNode.ImageIndex = 0;
+						logicalDriveNode.SelectedImageIndex = 0;
+						break;
+				}
+
+				// Add in the new drive's node:
+				m_treeNodeMyComputer.Nodes.Add(logicalDriveNode);
+
+				// Add child folders into tree:
+				if (Directory.Exists(drive))
+				{
+					foreach (var folderPath in Directory.GetDirectories(drive))
+					{
+						var node = new TreeNode {Tag = folderPath, Text = Path.GetFileName(folderPath) ?? "", ImageIndex = 1};
+						logicalDriveNode.Nodes.Add(node);
+					}
+				}
+
+				m_treeNodeMyComputer.Expand();
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Attempts to expand the folder tree to reveal the last folder element in the textbox path.
+		/// Assumes the textbox path is under My Computer.
+		/// </summary>
+		private void ExpandTreeToMatchTextbox()
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			// Make sure we have at least the initial data under the My Computer node:
+			ExpandMyComputerNode();
+
+			// Expand the tree all the way down the path in the textbox:
+			ExpandTreeFromPath(m_treeNodeMyComputer, m_textBoxFolderPath.Text);
+
+			Cursor.Current = Cursors.Default;
+		}
+
+		/// <summary>
+		/// Recursively expands folder tree to reveal entire given Path.
+		/// </summary>
+		/// <param name="lastExpandedFolderNode">The last folder node to have been expanded so far</param>
+		/// <param name="path">Full text path that is to be expanded in tree</param>
+		private static void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path)
+		{
+			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
+			// we will work entirely in lower case:
+			var lowerCasePath = path.ToLower();
+
+			// Search all subfolder nodes for one which gets us further along the lowerCasePath:
+			foreach (TreeNode subfolderNode in lastExpandedFolderNode.Nodes)
+			{
+				// Get full path (in lower case) of current subfolder:
+				var subfolderPath = subfolderNode.Tag.ToString().ToLower();
+
+				// If we haven't gotten all the way along lowerCasePath, make a copy of
+				// subfolderPath with a trailing backslash:
+				string subfolderPathBackslash = subfolderPath;
+				if (!subfolderPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				{
+					if (lowerCasePath.Length > subfolderPathBackslash.Length)
+						subfolderPathBackslash = subfolderPath + Path.DirectorySeparatorChar;
+				}
+
+				// See if the current path is matched by the current subfolder (as far as it goes):
+				if (lowerCasePath.StartsWith(subfolderPathBackslash))
+				{
+					// It does match, so expand this subfolder node:
+					subfolderNode.TreeView.Focus();
+					subfolderNode.EnsureVisible();
+					subfolderNode.Expand();
+
+					// If the current subfolder has any child folders, recurse to see if any of
+					// them need expanding:
+					if (subfolderNode.Nodes.Count >= 1)
+					{
+						ExpandTreeFromPath(subfolderNode, lowerCasePath);
+						return;
+					}
+					// If we've gone all the way through the given path, then we're done:
+					if (lowerCasePath == subfolderPath)
+					{
+						// Base case:
+						subfolderNode.TreeView.SelectedNode = subfolderNode;
+						return;
+					}
+
+					// Sanity check: have we already gone too far?
+					if (subfolderPathBackslash.StartsWith(lowerCasePath))
+						return;
+				}
+			}
+			// Base case:
+			lastExpandedFolderNode.TreeView.SelectedNode = lastExpandedFolderNode;
+			return;
+		}
+
+		/// <summary>
+		/// Adds the given path to the root node in the folder treeview, so it looks
+		/// like a shortcut.
+		/// </summary>
+		/// <param name="name">Name of folder</param>
+		/// <param name="path">Full path of folder</param>
+		private void AddFolderShortcut(string name, string path)
+		{
+			// Special image with index 18 only used in shortcuts:
+			var shortcutNode = new TreeNode {Tag = path, Text = name, ImageIndex = 18, SelectedImageIndex = 18};
+
+			m_treeNodeRootNode.Nodes.Add(shortcutNode);
+
+			AddChildFolders(shortcutNode);
+
+			shortcutNode.TreeView.SelectedNode = shortcutNode;
+			shortcutNode.EnsureVisible();
+			shortcutNode.TreeView.Focus();
+		}
+
+		#region General control event handlers
+
+		/// <summary>
+		/// Response to FolderBrowserControl Load event, occurs before the control becomes visible for the first time.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderBrowserControlLoad(object sender, EventArgs e)
+		{
+			// Load up the tree view:
+			FillTreeViewWithFolders();
+
+			ClearHistoryList();
+
+			// Set the text in the folder text box:
+			SetCurrentPath(Directory.Exists(m_selectedPath) ? m_selectedPath : "home");
+
+			// Force selection and display of current folder in tree view:
+			ExpandTreeToMatchTextbox();
+
+			// Make sure correct buttons and other controls are displayed:
+			DisplaySelectedControls();
+
+			HistoryChangeEventHandler += AddToSelectionHistoryList;
+			HistoryChangeEventHandler(m_selectedPath);
+		}
+
+		/// <summary>
+		/// Event Handler for when Shortcut context menu item "Remove Shortcut" is clicked.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnShortCutRemovalMenuItemClick(object sender, EventArgs e)
+		{
+			// Check that we're really on a shortcut by testing the image index for our special number:
+			if (m_treeFolders.SelectedNode.ImageIndex == 18)
+				m_treeFolders.SelectedNode.Remove();
+		}
+
+		/// <summary>
+		/// Hack to remove irritating inner border from GroupBoxes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="p"></param>
+		private void OnGroupBoxPaint(object sender, PaintEventArgs p)
+		{
+			var groupBox = (GroupBox)sender;
+			p.Graphics.Clear(groupBox.BackColor);
+		}
+
+		#endregion
+
+		#region Folder Path textbox event handlers
+
+		/// <summary>
+		/// Event handler for when the text changes in the Folder Path textbox.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnTextBoxFolderPathTextChanged(object sender, EventArgs e)
+		{
+			// Check that the proposed folder exists, then set the new selection:
+			if (Directory.Exists(m_textBoxFolderPath.Text))
+			{
+				SelectedPath = m_textBoxFolderPath.Text;
+
+				// Raise our custom event, so the consumer of this control can respond:
+				m_pathChangedEvent(this, EventArgs.Empty);
+
+				HistoryChangeEventHandler(SelectedPath);
+			}
+		}
+
+		/// <summary>
+		/// Event handler for when a keyboard key is released in the Folder Path textbox.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnTextBoxFolderPathKeyUp(object sender, KeyEventArgs e)
+		{
+			// If the user just released the Enter key, show the textbox path's location in the tree
+			if (e.KeyValue == 13)
+			{
+				ExpandTreeToMatchTextbox();
+				m_textBoxFolderPath.Focus();
+			}
+		}
+
+		#endregion
+
+		#region TreeView event handlers
+
+		/// <summary>
+		/// Handles AfterSelect event in folder tree view. Occurs after a tree node is selected.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderTreeViewAfterSelect(object sender, TreeViewEventArgs e)
+		{
+			var selectedNode = e.Node;
+
+			// Set the path textbox text to match the selection, unless it is one of the fancy folders:
+			if ((selectedNode.Text != MyComputerFolderName)
+				&& (selectedNode.Text != MyNetworkPlacesFolderName)
+				&& (selectedNode.Text != EntireNetworkFolderName))
+			{
+				m_textBoxFolderPath.Text = selectedNode.Tag.ToString();
+			}
+		}
+
+		/// <summary>
+		/// Handles AfterExpand event in folder tree view. Occurs after the tree node is expanded.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderTreeViewAfterExpand(object sender, TreeViewEventArgs e)
+		{
+			// This could take some time:
+			Cursor.Current = Cursors.WaitCursor;
+
+			var expandedNode = e.Node;
+
+			// If there is a colon in the expanded node's folder name, then it is a regular folder on a (mapped) drive:
+			if (expandedNode.Text.Contains(":"))
+			{
+				AddChildAndGrandchildFolders(expandedNode);
+			}
+			else
+			{
+				// Check if microsoftWindowsNetworkChildNode is one of several special folders:
+				if ((expandedNode.Text == DesktopFolderName)
+					|| (expandedNode.Text == MicrosoftWindowsNetworkFolderName)
+					|| (expandedNode.Text == MyComputerFolderName)
+					|| (expandedNode.Text == MyNetworkPlacesFolderName)
+					|| (expandedNode.Text == EntireNetworkFolderName)
+					|| ((expandedNode.Parent != null) && (expandedNode.Parent.Text == MicrosoftWindowsNetworkFolderName)))
+				{
+					if ((expandedNode.Text == MyComputerFolderName) && (expandedNode.GetNodeCount(true) < 2))
+						ExpandMyComputerNode();
+
+					else if ((expandedNode.Text == EntireNetworkFolderName))
+						ExpandEntireNetworkNode(expandedNode);
+
+					else if ((expandedNode.Parent != null) && (expandedNode.Parent.Text == MicrosoftWindowsNetworkFolderName))
+						ExpandMicrosoftWindowsNetworkChildNode(expandedNode);
+				} // End if microsoftWindowsNetworkChildNode is one of several special folders
+				else
+				{
+					AddChildAndGrandchildFolders(expandedNode);
+				}
+			}
+			Cursor.Current = Cursors.Default;
+		}
+
+		/// <summary>
+		/// Handles DoubleClick event in folder tree view. Occurs when the control is double-clicked.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderTreeViewDoubleClick(object sender, EventArgs e)
+		{
+			// TODO: This method may be entirely redundant. It doesn't seem to do anything that isn't done by OnFolderTreeViewAfterExpand
+			if (!m_treeFolders.SelectedNode.IsExpanded)
+				m_treeFolders.SelectedNode.Collapse();
+			else
+			{
+				AddChildAndGrandchildFolders(m_treeFolders.SelectedNode);
+			}
+		}
+
+		/// <summary>
+		/// Handles MouseUp event in folder tree view. Adds folder selection to selection history.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderTreeViewMouseUp(object sender, MouseEventArgs e)
+		{
+			// If user is on a custom folder shortcut, then releasing the right button brings up
+			// the shortcuts context menu (but only if folder already selected):
+			if (m_treeFolders.SelectedNode != null)
+			{
+				// 18 is a special image index only used in shortcuts:
+				if ((m_treeFolders.SelectedNode.ImageIndex == 18) && (e.Button == MouseButtons.Right))
+					m_contextMenuShortcut.Show(m_treeFolders, new Point(e.X, e.Y));
+			}
+		}
+
+		/// <summary>
+		/// Event handler for when a node is about to be selected in our Folders treeview.
+		/// We need this so we can highlight the selected node even when the tree
+		/// is not in focus.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderTreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
+		{
+			if (m_treeFolders.SelectedNode != null)
+				m_treeFolders.SelectedNode.ForeColor = Color.Black;
+			e.Node.ForeColor = Color.Blue;
+		}
+
+		/// <summary>
+		/// Event handler for when a node is to be drawn in our Folders treeview.
+		/// We need this so we can highlight the selected node even when the tree
+		/// is not in focus.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnFolderTreeViewDrawNode(object sender, DrawTreeNodeEventArgs e)
+		{
+			if (((e.State & TreeNodeStates.Selected) != 0) && (!m_treeFolders.Focused))
+				e.Node.ForeColor = Color.Blue;
+			else
+				e.DrawDefault = true;
+		}
+
+		#endregion
+
+		#region Button event handlers
+
+		/// <summary>
+		/// Event handler for when Go button is clicked.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnGoButtonClick(object sender, EventArgs e)
+		{
+			ExpandTreeToMatchTextbox();
+		}
+
+		/// <summary>
+		/// Handler for Click event of Refresh button.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnRefreshButtonClick(object sender, EventArgs e)
+		{
+			ResetControl();
+		}
+
+		/// <summary>
+		/// Event handler for when Home button is clicked.
+		/// Changes folder selection to pre-defined "home" folder.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnHomeButtonClick(object sender, EventArgs e)
+		{
+			SetCurrentPath("home");
+			ExpandMyComputerNode();
+
+			// Expand folder tree to reveal selected folder:
+			ExpandTreeToMatchTextbox();
+		}
+
+		/// <summary>
+		/// Event handler for when Next button is clicked.
+		/// Changes folder selection to next folder in selection history.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnNextButtonClick(object sender, EventArgs e)
+		{
+			HistoryChangeEventHandler -= AddToSelectionHistoryList;
+
+			// Remember the current path selection:
+			string storedPath = m_textBoxFolderPath.Text;
+
+			// Move to next path in selection history:
+			var nextPath = GetHistoryListNextEntry();
+			if (nextPath != null)
+				m_textBoxFolderPath.Text = nextPath;
+
+			// If the path actually changed, then expand the folder tree to the new path:
+			if (storedPath != m_textBoxFolderPath.Text)
+				ExpandTreeToMatchTextbox();
+
+			HistoryChangeEventHandler += AddToSelectionHistoryList;
+		}
+
+		/// <summary>
+		/// Event handler for when Back button is clicked.
+		/// Changes folder selection to next folder in selection history.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnBackButtonClick(object sender, EventArgs e)
+		{
+			HistoryChangeEventHandler -= AddToSelectionHistoryList;
+
+			// Remember the current path selection:
+			string storedPath = m_textBoxFolderPath.Text;
+
+			// Move to previous path in selection history:
+			var previousPath = GetHistoryListPreviousEntry();
+			if (previousPath != null)
+				m_textBoxFolderPath.Text = previousPath;
+
+			// If the path actually changed, then expand the folder tree to the new path:
+			if (storedPath != m_textBoxFolderPath.Text)
+				ExpandTreeToMatchTextbox();
+
+			HistoryChangeEventHandler += AddToSelectionHistoryList;
+		}
+
+		/// <summary>
+		/// Event handler for when Up button is clicked.
+		/// Changes folder selection to parent folder of current selection.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnUpButtonClick(object sender, EventArgs e)
+		{
+			// Get current selected folder's path:
+			var currentFolder = new DirectoryInfo(m_textBoxFolderPath.Text);
+
+			// Get current selected folder's parent:
+			var parentFolder = currentFolder.Parent;
+
+			if (parentFolder == null)
+				return;
+
+			if (!parentFolder.Exists)
+				return;
+
+			// Change selection to parent folder:
+			m_textBoxFolderPath.Text = parentFolder.FullName;
+			ExpandTreeToMatchTextbox();
+		}
+
+		/// <summary>
+		/// Event handler for when Add button is clicked.
+		/// Adds a user-defined shortcut to a folder which user selects from tradational
+		/// Folder Browser dialog. (Yuck!)
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnAddButtonClick(object sender, EventArgs e)
+		{
+			if (Directory.Exists(SelectedPath))
+			{
+				var selectedPath = SelectedPath;
+				var folderName = Path.GetFileName(selectedPath);
+
+				AddFolderShortcut(folderName, selectedPath);
+			}
+		}
+
+		/// <summary>
+		/// Event handler for when the Info button is pressed.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnInfoButtonClick(object sender, EventArgs e)
+		{
+			// TODO: Add own code.
+		}
+
+		#endregion
+
+		#region Methods to deal with user's selection history
+
+		/// <summary>
+		/// Create a new path-selection history list.
+		/// </summary>
+		private void ClearHistoryList()
+		{
+			m_selectionHistory = new List<string>();
+			m_selectionHistoryIndex = -1;
+		}
+
+		/// <summary>
+		/// Returns the user's previously-selected path.
+		/// </summary>
+		/// <returns></returns>
+		private string GetHistoryListPreviousEntry()
+		{
+			if (m_selectionHistoryIndex > 0)
+			{
+				m_selectionHistoryIndex--;
+				return m_selectionHistory[m_selectionHistoryIndex];
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns the next path that the user navigated back from.
+		/// </summary>
+		/// <returns></returns>
+		private string GetHistoryListNextEntry()
+		{
+			if (m_selectionHistoryIndex < m_selectionHistory.Count - 1)
+			{
+				m_selectionHistoryIndex++;
+				return m_selectionHistory[m_selectionHistoryIndex];
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Adds a given path to the selected-path history list.
+		/// </summary>
+		/// <param name="path"></param>
+		private void AddToSelectionHistoryList(string path)
+		{
+			// To avoid the possibility of adding a path ending with a backslash when the
+			// current history entry is the same but without a backslash, we will remove trailing
+			// backslashes first:
+			while (path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				path = path.Substring(0, path.Length - 1);
+
+			// Don't add a path if it is the same (case-insensitive) as the current entry in the history list:
+			// TODO: case-insentive search won't do for Linux (but case-sensitive search won't do for Windows).
+			if (m_selectionHistoryIndex >= 0 && m_selectionHistoryIndex < m_selectionHistory.Count)
+				if (string.Compare(m_selectionHistory[m_selectionHistoryIndex], path, true) == 0)
+					return;
+
+			// Guard against an empty list or when we're pointing at the last item:
+			if (m_selectionHistoryIndex < m_selectionHistory.Count - 1)
+				m_selectionHistory.RemoveRange(m_selectionHistoryIndex + 1, m_selectionHistory.Count - m_selectionHistoryIndex - 1);
+
+			m_selectionHistory.Add(path);
+
+			m_selectionHistoryIndex = m_selectionHistory.Count - 1;
+		}
+
+		#endregion
+	}
+
+	#region Windows shell functions
+
+	public class Win32
+	{
+		[DllImport("kernel32")]
+		public static extern uint GetDriveType(string lpRootPathName);
+	}
+
+	#endregion
+
+	#region Class to deal with enumeration of network servers
+
+	/// <summary>
+	/// Class to deal with enumeration of network servers.
+	/// </summary>
+	public class ServerEnum : IEnumerable
+	{
+		enum ErrorCodes
+		{
+			NO_ERROR = 0,
+			ERROR_NO_MORE_ITEMS = 259
+		};
+
+		public enum ResourceScope
+		{
+			RESOURCE_CONNECTED = 1,
+			RESOURCE_GLOBALNET,
+			RESOURCE_REMEMBERED,
+			RESOURCE_RECENT,
+			RESOURCE_CONTEXT
+		};
+
+		public enum ResourceType
+		{
+			RESOURCETYPE_ANY,
+			RESOURCETYPE_DISK,
+			RESOURCETYPE_PRINT,
+			RESOURCETYPE_RESERVED
+		};
+
+		[Flags]
+		public enum ResourceUsage
+		{
+			RESOURCEUSAGE_CONNECTABLE = 0x00000001,
+			RESOURCEUSAGE_CONTAINER = 0x00000002,
+			RESOURCEUSAGE_NOLOCALDEVICE = 0x00000004,
+			RESOURCEUSAGE_SIBLING = 0x00000008,
+			RESOURCEUSAGE_ATTACHED = 0x00000010,
+			RESOURCEUSAGE_ALL = (RESOURCEUSAGE_CONNECTABLE | RESOURCEUSAGE_CONTAINER | RESOURCEUSAGE_ATTACHED),
+		};
+
+		public enum ResourceDisplayType
+		{
+			RESOURCEDISPLAYTYPE_GENERIC,
+			RESOURCEDISPLAYTYPE_DOMAIN,
+			RESOURCEDISPLAYTYPE_SERVER,
+			RESOURCEDISPLAYTYPE_SHARE,
+			RESOURCEDISPLAYTYPE_FILE,
+			RESOURCEDISPLAYTYPE_GROUP,
+			RESOURCEDISPLAYTYPE_NETWORK,
+			RESOURCEDISPLAYTYPE_ROOT,
+			RESOURCEDISPLAYTYPE_SHAREADMIN,
+			RESOURCEDISPLAYTYPE_DIRECTORY,
+			RESOURCEDISPLAYTYPE_TREE,
+			RESOURCEDISPLAYTYPE_NDSCONTAINER
+		};
+
+// ReSharper disable ConvertToConstant.Local
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+// ReSharper disable RedundantDefaultFieldInitializer
+#pragma warning disable 169
+		[StructLayout(LayoutKind.Sequential)]
+		private class NetResource
+		{
+			public ResourceScope dwScope = 0;
+			public ResourceType dwType = 0;
+			public ResourceDisplayType dwDisplayType = 0;
+			public ResourceUsage dwUsage = 0;
+			public string lpLocalName = null;
+			public string lpRemoteName = null;
+			public string lpComment = null;
+			public string lpProvider = null;
+		};
+#pragma warning restore 169
+// ReSharper restore RedundantDefaultFieldInitializer
+// ReSharper restore FieldCanBeMadeReadOnly.Local
+// ReSharper restore ConvertToConstant.Local
+
+		private readonly ArrayList m_aData = new ArrayList();
+
+		public int Count
+		{
+			get { return m_aData.Count; }
+		}
+
+		[DllImport("Mpr.dll", EntryPoint = "WNetOpenEnumA", CallingConvention = CallingConvention.Winapi)]
+		private static extern ErrorCodes WNetOpenEnum(ResourceScope dwScope, ResourceType dwType,
+			ResourceUsage dwUsage, NetResource p, out IntPtr lphEnum);
+
+		[DllImport("Mpr.dll", EntryPoint = "WNetCloseEnum", CallingConvention = CallingConvention.Winapi)]
+		private static extern ErrorCodes WNetCloseEnum(IntPtr hEnum);
+
+		[DllImport("Mpr.dll", EntryPoint = "WNetEnumResourceA", CallingConvention = CallingConvention.Winapi)]
+		private static extern ErrorCodes WNetEnumResource(IntPtr hEnum, ref uint lpcCount, IntPtr buffer,
+			ref uint lpBufferSize);
+
+		private void EnumerateServers(NetResource pRsrc, ResourceScope scope, ResourceType type,
+			ResourceUsage usage, ResourceDisplayType displayType, string kPath)
+		{
+			uint bufferSize = 16384;
+			var buffer = Marshal.AllocHGlobal((int)bufferSize);
+			IntPtr handle;
+			uint cEntries = 1;
+			var serverenum = false;
+
+			var result = WNetOpenEnum(scope, type, usage, pRsrc, out handle);
+
+			if (result == ErrorCodes.NO_ERROR)
+			{
+				do
+				{
+					result = WNetEnumResource(handle, ref cEntries, buffer, ref	bufferSize);
+
+					if ((result == ErrorCodes.NO_ERROR))
+					{
+						Marshal.PtrToStructure(buffer, pRsrc);
+
+						if (kPath == "")
+						{
+							if ((pRsrc.dwDisplayType == displayType) || (pRsrc.dwDisplayType == ResourceDisplayType.RESOURCEDISPLAYTYPE_DOMAIN))
+								m_aData.Add(pRsrc.lpRemoteName + "|" + pRsrc.dwDisplayType);
+
+							if ((pRsrc.dwUsage & ResourceUsage.RESOURCEUSAGE_CONTAINER) == ResourceUsage.RESOURCEUSAGE_CONTAINER)
+								if ((pRsrc.dwDisplayType == displayType))
+									EnumerateServers(pRsrc, scope, type, usage, displayType, kPath);
+						}
+						else
+						{
+							if (pRsrc.dwDisplayType == displayType)
+							{
+								m_aData.Add(pRsrc.lpRemoteName);
+								EnumerateServers(pRsrc, scope, type, usage, displayType, kPath);
+								serverenum = true;
+							}
+							if (!serverenum)
+							{
+								if (pRsrc.dwDisplayType == ResourceDisplayType.RESOURCEDISPLAYTYPE_SHARE)
+									m_aData.Add(pRsrc.lpRemoteName + "-share");
+							}
+							else
+								serverenum = false;
+
+							if ((kPath.IndexOf(pRsrc.lpRemoteName) >= 0) || (String.Compare(pRsrc.lpRemoteName, "Microsoft Windows Network") == 0))
+								EnumerateServers(pRsrc, scope, type, usage, displayType, kPath);
+						}
+					}
+					else if (result != ErrorCodes.ERROR_NO_MORE_ITEMS)
+						break;
+				} while (result != ErrorCodes.ERROR_NO_MORE_ITEMS);
+
+				WNetCloseEnum(handle);
+			}
+			Marshal.FreeHGlobal(buffer);
+		}
+
+		public ServerEnum(ResourceScope scope, ResourceType type, ResourceUsage usage, ResourceDisplayType displayType, string kPath)
+		{
+			var netRoot = new NetResource();
+			EnumerateServers(netRoot, scope, type, usage, displayType, kPath);
+		}
+
+		public IEnumerator GetEnumerator()
+		{
+			return m_aData.GetEnumerator();
+		}
+	}
+
+	#endregion
+}

@@ -180,6 +180,9 @@
 	<Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
 	</Compile>
+	<Compile Include="FolderBrowserControl\FolderBrowserControl.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
 	<Compile Include="HotSpot\HotSpot.cs" />
 	<Compile Include="HotSpot\HotSpotProvider.cs" />
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
@@ -553,6 +556,10 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="FolderBrowserControl\FolderBrowserControl.resx">
+	  <DependentUpon>FolderBrowserControl.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
