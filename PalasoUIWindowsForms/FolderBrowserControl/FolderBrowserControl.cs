@@ -384,7 +384,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			//
 			// _imageListFolderTreeViewImages
 			//
-			this._imageListFolderTreeViewImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("_imageListFolderTreeViewImages.ImageStream")));
+			this._imageListFolderTreeViewImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this._imageListFolderTreeViewImages.ImageSize = new System.Drawing.Size(16, 16);
+			this._imageListFolderTreeViewImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this._imageListFolderTreeViewImages.TransparentColor = System.Drawing.Color.Transparent;
 			//
 			// _buttonHome
