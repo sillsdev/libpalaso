@@ -192,8 +192,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		// Flag to indicate if the Address Bar should be visible:
 		public bool ShowAddressbar { get; set; }
 
-		// Falg to indicate if the Tool Bar buttons should be available:
+		// Flag to indicate if the Tool Bar buttons should be available:
 		public bool ShowToolbar { get; set; }
+
+		// Flag to indicate if the Go button should be available:
+		public bool ShowGoButton { get; set; }
 
 		#endregion
 
@@ -269,6 +272,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			InitializeComponent();
 
 			ClearHistoryList();
+
+			// The Go Button is largely redundant, since new functionality responds in real time to textbox changes:
+			ShowGoButton = false;
 		}
 
 		/// <summary>
@@ -552,9 +558,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			ClearHistoryList();
 
-			_treeFolders.Nodes.Clear();
-			SetCurrentPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 			FillTreeViewWithFolders();
+			SetCurrentPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 		}
 
 		/// <summary>
@@ -616,7 +621,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					_textBoxFolderPath.Top = 0;
 					_buttonGo.Top = 0;
 					_textBoxFolderPath.Visible = true;
-					_buttonGo.Visible = true;
+					_textBoxFolderPath.Width = ShowGoButton ? _treeFolders.Width - 20 : _treeFolders.Width;
+					_buttonGo.Visible = ShowGoButton;
 					_treeFolders.Height = Height - 21;
 					_groupBoxToolBar.Visible = false;
 				}
@@ -624,8 +630,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				{
 					_treeFolders.Top = 42;
 					_textBoxFolderPath.Visible = true;
-					_buttonGo.Visible = true;
+					_buttonGo.Visible = ShowGoButton;
 					_textBoxFolderPath.Top = 21;
+					_textBoxFolderPath.Width = ShowGoButton ? _treeFolders.Width - 20 : _treeFolders.Width;
 					_buttonGo.Top = 21;
 					_groupBoxToolBar.Visible = true;
 					_treeFolders.Height = Height - 42;
@@ -816,7 +823,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					currentFolder.Nodes.Add(node);
 				}
 			}
-			catch (Exception)
+			catch (Exception) // Typically because access is denied to the current folder.
 			{
 				return;
 			}
@@ -1001,10 +1008,16 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				// Add child folders into tree:
 				if (Directory.Exists(drive))
 				{
-					foreach (var folderPath in Directory.GetDirectories(drive))
+					try
 					{
-						var node = new TreeNode {Tag = folderPath, Text = Path.GetFileName(folderPath) ?? "", ImageIndex = 1};
-						logicalDriveNode.Nodes.Add(node);
+						foreach (var folderPath in Directory.GetDirectories(drive))
+						{
+							var node = new TreeNode {Tag = folderPath, Text = Path.GetFileName(folderPath) ?? "", ImageIndex = 1};
+							logicalDriveNode.Nodes.Add(node);
+						}
+					}
+					catch (Exception) // Typically because access is denied to the drive.
+					{
 					}
 				}
 
