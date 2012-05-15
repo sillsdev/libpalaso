@@ -641,7 +641,7 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void GatherData()
 		{
-			_details += "\r\nTo Reproduce: " + m_reproduce.Text + "\r\n";
+			_details.Text += "\r\nTo Reproduce: " + m_reproduce.Text + "\r\n";
 		}
 
 		 public void Report(Exception error, Form owningForm)
@@ -671,26 +671,26 @@ namespace Palaso.Reporting
 			 if (!string.IsNullOrEmpty(message))
 			 {
 				Console.WriteLine ("Message (not an exception): " + message);
-				_details += "Message (not an exception): " + message + Environment.NewLine;
-				_details += Environment.NewLine;
+				_details.Text += "Message (not an exception): " + message + Environment.NewLine;
+				_details.Text += Environment.NewLine;
 			 }
 			if (!string.IsNullOrEmpty(messageBeforeStack))
 			 {
 				Console.WriteLine (messageBeforeStack);
-				 _details += messageBeforeStack;
-				 _details += Environment.NewLine;
+				 _details.Text += messageBeforeStack;
+				 _details.Text += Environment.NewLine;
 			 }
 
 			 Exception innerMostException = null;
-			 _details += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+			 _details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
 			Console.WriteLine(ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException));
 
 			 //if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
 			 //we want the developer to read.
 			 if (innerMostException != null)
 			 {
-				 _details += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
-								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details;
+				 _details.Text += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
+								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
 				Console.WriteLine ("Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
 								  "\r\n\r\nFull, hierarchical exception contents:\r\n");
 			 }
@@ -698,7 +698,7 @@ namespace Palaso.Reporting
 			 AddErrorReportingPropertiesToDetails();
 
 
-			 Debug.WriteLine(_details);
+			 Debug.WriteLine(_details.Text);
 			 if (innerMostException != null)
 			 {
 				 error = innerMostException;
@@ -713,13 +713,13 @@ namespace Palaso.Reporting
 			 {
 				 //We have more than one report of dieing while logging an exception.
 				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
-				 _details += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
 				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
-				 _details += "Was trying to log the exception: " + error.Message + Environment.NewLine;
+				 _details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
 				Console.WriteLine ("Recent events:");
-				 _details += "Recent events:" + Environment.NewLine;
+				 _details.Text += "Recent events:" + Environment.NewLine;
 				Console.WriteLine (Logger.MinorEventsLog);
-				 _details += Logger.MinorEventsLog;
+				 _details.Text += Logger.MinorEventsLog;
 			 }
 
 			 ShowReportDialogIfAppropriate(owningForm);
@@ -730,23 +730,23 @@ namespace Palaso.Reporting
 			 PrepareDialog();
 			 _notificationText.Text = message;
 
-			_details += "Message (not an exception): " + message + Environment.NewLine;
+			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
 			Console.WriteLine ("Message (not an exception): " + message);
-			 _details += Environment.NewLine;
+			 _details.Text += Environment.NewLine;
 			 if(!string.IsNullOrEmpty(messageBeforeStack))
 			 {
-				_details += messageBeforeStack;
-				_details += Environment.NewLine;
+				_details.Text += messageBeforeStack;
+				_details.Text += Environment.NewLine;
 				Console.WriteLine(messageBeforeStack);
 			 }
-			_details += "--Stack--"+ Environment.NewLine;;
+			_details.Text += "--Stack--"+ Environment.NewLine;;
 			Console.WriteLine ("--Stack--");
-			 _details += stackTrace.ToString() + Environment.NewLine; ;
+			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
 			Console.WriteLine (stackTrace.ToString());
 
 			 AddErrorReportingPropertiesToDetails();
 
-			 Debug.WriteLine(_details);
+			 Debug.WriteLine(_details.Text);
 
 
 			 try
@@ -757,7 +757,7 @@ namespace Palaso.Reporting
 			 {
 				 //We have more than one report of dieing while logging an exception.
 				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
-				 _details += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
 			 }
 
 			 ShowReportDialogIfAppropriate(owningForm);
@@ -766,26 +766,26 @@ namespace Palaso.Reporting
 		 private void AddErrorReportingPropertiesToDetails()
 		 {
 
-			 _details += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
+			 _details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
 			Console.WriteLine("--Error Reporting Properties--");
 			 foreach (string label in ErrorReport.Properties.Keys)
 			 {
-				 _details += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
+				 _details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
 				Console.WriteLine(label + ": " + ErrorReport.Properties[label]);
 			 }
 
-			 _details += Environment.NewLine+"--Log--"+Environment.NewLine;
+			 _details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
 			Console.WriteLine ("--Log--");
 			 try
 			 {
-				 _details += Logger.LogText;
+				 _details.Text += Logger.LogText;
 				Console.WriteLine (Logger.LogText);
 			 }
 			 catch (Exception err)
 			 {
 				 //We have more than one report of dieing while logging an exception.
 				Console.WriteLine ("****Could not read from log: " + err.Message);
-				 _details += "****Could not read from log: " + err.Message + Environment.NewLine;
+				 _details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
 			 }
 		 }
 
@@ -834,7 +834,7 @@ namespace Palaso.Reporting
 			 }
 			 else //the test environment already prohibits dialogs but will save the contents of assertions in some log.
 			 {
-				 Debug.Fail(_details);
+				 Debug.Fail(_details.Text);
 			 }
 
 
@@ -859,7 +859,7 @@ namespace Palaso.Reporting
 			}
 			GatherData();
 
-		   // Clipboard.SetDataObject(_details, true);
+		   // Clipboard.SetDataObject(_details.Text, true);
 
 			if (SelectedMethod.Method())
 			{
@@ -876,9 +876,9 @@ namespace Palaso.Reporting
 		 {
 			if (ErrorReport.EmailAddress != null)
 			{
-				_details = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details);
+				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
 			}
-			Clipboard.SetDataObject(_details, true);
+			Clipboard.SetDataObject(_details.Text, true);
 			 return true;
 		 }
 
@@ -890,7 +890,7 @@ namespace Palaso.Reporting
 				 var emailMessage = emailProvider.CreateMessage();
 				 emailMessage.To.Add(ErrorReport.EmailAddress);
 				 emailMessage.Subject = ErrorReport.EmailSubject;
-				 emailMessage.Body = _details;
+				 emailMessage.Body = _details.Text;
 				 if (emailMessage.Send(emailProvider))
 				 {
 					 CloseUp();
@@ -913,7 +913,7 @@ namespace Palaso.Reporting
 				 emailMessage.Subject = ErrorReport.EmailSubject;
 				 if (Environment.OSVersion.Platform == PlatformID.Unix)
 				 {
-					 emailMessage.Body = _details;
+					 emailMessage.Body = _details.Text;
 				 }
 				 else
 				 {
