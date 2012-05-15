@@ -1176,6 +1176,27 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			{
 				SelectedPath = _textBoxFolderPath.Text;
 
+				// Remove this method from event handlers of the folder text box, prior to some manual tweaking:
+				_textBoxFolderPath.TextChanged -= OnTextBoxFolderPathTextChanged;
+
+				// Remember current selection position:
+				var selectionStart = _textBoxFolderPath.SelectionStart;
+
+				// Make sure the typed-in (or pasted) folder is selected and visible in the treeview.
+				// (This has some side effects):
+				ExpandTreeToMatchTextbox();
+
+				// Undo side effect of trimming backslashes off of end of path, by restoring initial text:
+				_textBoxFolderPath.Text = SelectedPath;
+				// Undo side effect of focusing on treeview:
+				_textBoxFolderPath.Focus();
+				// Undo side effect of selecting entire path string when re-focusing on textbox:
+				_textBoxFolderPath.SelectionStart = selectionStart;
+				_textBoxFolderPath.SelectionLength = 0;
+
+				// Restore this method to event handlers of folder text box:
+				_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
+
 				// Raise our custom event, so the consumer of this control can respond:
 				_pathChangedEvent(this, EventArgs.Empty);
 
