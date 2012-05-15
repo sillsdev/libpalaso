@@ -1031,7 +1031,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// Attempts to expand the folder tree to reveal the last folder element in the textbox path.
 		/// Assumes the textbox path is under My Computer.
 		/// </summary>
-		private void ExpandTreeToMatchTextbox()
+		/// <param name="focusTree">Whether or not treeview should gain focus</param>
+		private void ExpandTreeToMatchTextbox(bool focusTree = true)
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
@@ -1039,7 +1040,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			ExpandMyComputerNode();
 
 			// Expand the tree all the way down the path in the textbox:
-			ExpandTreeFromPath(_treeNodeMyComputer, _textBoxFolderPath.Text);
+			ExpandTreeFromPath(_treeNodeMyComputer, _textBoxFolderPath.Text, focusTree);
 
 			Cursor.Current = Cursors.Default;
 		}
@@ -1049,7 +1050,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// </summary>
 		/// <param name="lastExpandedFolderNode">The last folder node to have been expanded so far</param>
 		/// <param name="path">Full text path that is to be expanded in tree</param>
-		private static void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path)
+		/// <param name="focusTree">Whether or not treeview should gain focus</param>
+		private static void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree = true)
 		{
 			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
 			// we will work entirely in lower case:
@@ -1074,15 +1076,16 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				if (lowerCasePath.StartsWith(subfolderPathBackslash))
 				{
 					// It does match, so expand this subfolder node:
-					subfolderNode.TreeView.Focus();
 					subfolderNode.EnsureVisible();
 					subfolderNode.Expand();
+					if (focusTree)
+						subfolderNode.TreeView.Focus();
 
 					// If the current subfolder has any child folders, recurse to see if any of
 					// them need expanding:
 					if (subfolderNode.Nodes.Count >= 1)
 					{
-						ExpandTreeFromPath(subfolderNode, lowerCasePath);
+						ExpandTreeFromPath(subfolderNode, lowerCasePath, focusTree);
 						return;
 					}
 					// If we've gone all the way through the given path, then we're done:
@@ -1192,20 +1195,12 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				// Remove this method from event handlers of the folder text box, prior to some manual tweaking:
 				_textBoxFolderPath.TextChanged -= OnTextBoxFolderPathTextChanged;
 
-				// Remember current selection position:
-				var selectionStart = _textBoxFolderPath.SelectionStart;
-
 				// Make sure the typed-in (or pasted) folder is selected and visible in the treeview.
-				// (This has some side effects):
-				ExpandTreeToMatchTextbox();
+				// Pass in "false" to make sure the textbox does not lose focus to the treeview:
+				ExpandTreeToMatchTextbox(false);
 
 				// Undo side effect of trimming backslashes off of end of path, by restoring initial text:
 				_textBoxFolderPath.Text = SelectedPath;
-				// Undo side effect of focusing on treeview:
-				_textBoxFolderPath.Focus();
-				// Undo side effect of selecting entire path string when re-focusing on textbox:
-				_textBoxFolderPath.SelectionStart = selectionStart;
-				_textBoxFolderPath.SelectionLength = 0;
 
 				// Restore this method to event handlers of folder text box:
 				_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
