@@ -229,9 +229,13 @@
 	</Compile>
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
-	<Compile Include="Reporting\ExceptionReportingDialog.cs">
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Reporting\ExceptionReportingDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Reporting\PalasoErrorDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Reporting\ExceptionReportingDialog.cs" />
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ProblemNotificationDialog.cs">
 	  <SubType>Form</SubType>
@@ -383,8 +387,12 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
+	<EmbeddedResource Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Reporting\ExceptionReportingDialog.resx">
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Reporting\PalasoErrorDialog.resx">
+	  <DependentUpon>PalasoErrorDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
