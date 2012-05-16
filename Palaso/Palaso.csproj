@@ -145,6 +145,7 @@
 	<Compile Include="Email\MailToEmailProvider.cs" />
 	<Compile Include="Email\MapiEmailProvider.cs" />
 	<Compile Include="Email\MAPIHelper.cs" />
+	<Compile Include="Email\LinuxEmailProvider.cs" />
 	<Compile Include="Email\ThunderbirdEmailProvider.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
