@@ -304,8 +304,19 @@ namespace Palaso.Reporting
 
 				string dir = Directory.GetParent(Application.ExecutablePath).FullName;
 
-				Process.Start(Path.Combine(dir, "PalasoError.exe"), commandLineArgs);
-				 s_doIgnoreReport = false;
+				var p = new Process
+				{
+					StartInfo =
+					{
+						FileName = Path.Combine(dir, "PalasoError.exe"),
+						Arguments = commandLineArgs,
+						UseShellExecute = true,
+						ErrorDialog = true
+					}
+				};
+
+				p.Start();
+				s_doIgnoreReport = false;
 
 				if (_isLethal)
 				{
