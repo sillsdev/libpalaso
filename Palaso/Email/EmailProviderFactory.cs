@@ -15,6 +15,10 @@ namespace Palaso.Email
 				{
 					return new ThunderbirdEmailProvider();
 				}
+				if (File.Exists("/usr/bin/xdg-email"))
+				{
+					return new LinuxEmailProvider();
+				}
 				return new MailToEmailProvider();
 			}
 			return new MapiEmailProvider();
