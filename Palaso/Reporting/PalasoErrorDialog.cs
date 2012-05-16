@@ -27,12 +27,14 @@ namespace Palaso.Reporting
 		 private Button _privacyNoticeButton;
 		 private Label _emailAddress;
 		private static bool s_doIgnoreReport = false;
+		private string _errorFileName;
 
 		#endregion
 
 		public PalasoErrorDialog(bool isLethal, string errorFileName, string emailAddress, string emailSubject)
 		{
 			_isLethal = isLethal;
+			_errorFileName = errorFileName;
 			ErrorReport.EmailAddress = emailAddress;
 			ErrorReport.EmailSubject = emailSubject;
 			PrepareDialog();
@@ -361,6 +363,7 @@ namespace Palaso.Reporting
 			 }
 			 catch (Exception)
 			 {
+				Console.WriteLine("First attempt at creating email failed");
 				 //swallow it and go to the alternate method
 			 }
 
@@ -375,7 +378,12 @@ namespace Palaso.Reporting
 				 emailMessage.Subject = ErrorReport.EmailSubject;
 				 if (Environment.OSVersion.Platform == PlatformID.Unix)
 				 {
-					 emailMessage.Body = _details.Text;
+					string tempdirPath = Path.GetDirectoryName(_errorFileName);
+					string tempFileName = Path.Combine (tempdirPath, "Report.txt");
+
+					File.WriteAllText(tempFileName, _details.Text);
+					 emailMessage.Body = "The error is in the attached file.\n\n<Please give a quick explanation for the developers here>";
+					emailMessage.AttachmentFilePath.Add(tempFileName);
 				 }
 				 else
 				 {

@@ -12,12 +12,25 @@ namespace Palaso.Email
 			return new EmailMessage();
 		}
 
+	static string ToLiteral(string input)
+	{
+		var writer = new System.IO.StringWriter();
+		Microsoft.CSharp.CSharpCodeProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
+		provider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), writer, null);
+		return writer.GetStringBuilder().ToString();
+	}
 		public bool SendMessage(IEmailMessage message)
 		{
 			string body = message.Body;
 			string subject = message.Subject;
 			var recipientTo = message.To;
 			var toBuilder = new StringBuilder();
+
+			if (body.Contains (",") || body.Contains ("'"))
+			{
+				// these characters cause problems with the command line arguments
+				return false;
+			}
 
 			for (int i = 0; i < recipientTo.Count; ++i)
 			{
@@ -40,7 +53,7 @@ namespace Palaso.Email
 				// DG: attachments untested with xdg-email
 				// review CP: throw if AttachmentFilePath.Count > 0 ?
 				// review CP: throw if file not present?
-				string attachments = String.Format("file://{0}", message.AttachmentFilePath[0]);
+				string attachments = String.Format(FormatStringAttachFile, message.AttachmentFilePath[0]);
 				commandLine = String.Format(
 					FormatStringWithAttachments,
 					toBuilder, subject, attachments, body
@@ -58,11 +71,11 @@ namespace Palaso.Email
 				}
 			};
 
-			p.Start();
+			return p.Start();
 			// Always return true. The false from p.Start may only indicate that the email client
 			// was already open.
 			// DG: This may be different with xdg-email
-			return true;
+			//return true;
 		}
 
 		protected virtual string EmailCommand
@@ -85,7 +98,15 @@ namespace Palaso.Email
 		{
 			get
 			{
-				return "--subject '{1}' --body '{2}' --attach {0}";
+				return "--subject '{1}' --body '{3}' --attach '{2}' {0}";
+			}
+		}
+
+		protected virtual string FormatStringAttachFile
+		{
+			get
+			{
+				return "{0}";
 			}
 		}
 	}

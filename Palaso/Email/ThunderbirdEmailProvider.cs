@@ -25,5 +25,14 @@ namespace Palaso.Email
 				return "-compose \"to='{0}',subject='{1}',attachment='{2}',body='{3}'\"";
 			}
 		}
+
+		protected virtual string FormatStringAttachFile
+		{
+			get
+			{
+				return "file://{0}";
+			}
+		}
+
 	}
 }

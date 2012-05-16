@@ -11,13 +11,13 @@ namespace Palaso.Email
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
-				if (ThunderbirdIsDefault())
-				{
-					return new ThunderbirdEmailProvider();
-				}
 				if (File.Exists("/usr/bin/xdg-email"))
 				{
 					return new LinuxEmailProvider();
+				}
+				if (ThunderbirdIsDefault())
+				{
+					return new ThunderbirdEmailProvider();
 				}
 				return new MailToEmailProvider();
 			}
