@@ -231,7 +231,11 @@ namespace Palaso.Reporting
 		 {
 			 _methodCombo.Items.Clear();
 			 _methodCombo.Items.Add(new ReportingMethod("Send using my email program", "&Email", "mapiWithPopup", SendViaEmail));
+#if !MONO
+			// DG May 2012: doesn't stay on clipboard after app closes on mono so not using it
 			 _methodCombo.Items.Add(new ReportingMethod("Copy to clipboard", "&Copy", "clipboard", PutOnClipboard));
+#endif
+			 _methodCombo.Items.Add(new ReportingMethod("Open as text file", "&Open", "textfile", OpenTextFile));
 		 }
 
 		 class ReportingMethod
@@ -343,6 +347,20 @@ namespace Palaso.Reporting
 				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
 			}
 			Clipboard.SetDataObject(_details.Text, true);
+			 return true;
+		 }
+
+		 private bool OpenTextFile()
+		 {
+			if (ErrorReport.EmailAddress != null)
+			{
+				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
+			}
+			string tempdirPath = Path.GetDirectoryName(_errorFileName);
+			string tempFileName = Path.Combine (tempdirPath, "Report.txt");
+
+			File.WriteAllText(tempFileName, _details.Text);
+			Process.Start(tempFileName);
 			 return true;
 		 }
 
