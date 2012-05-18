@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.FolderBrowserControl;
 using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
@@ -31,7 +32,26 @@ namespace PalasoUIWindowsForms.TestApp
 			Directory.CreateDirectory(tempPath);
 			try
 			{
-				Application.Run(new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem));
+				//Application.Run(new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem));
+				var testForm = new Form {Width = 300, Height = 500};
+
+				var browser = new FolderBrowserControl
+								{
+									Width = testForm.ClientSize.Width,
+									Height = testForm.ClientSize.Height,
+									ShowAddressbar = true,
+									ShowMyDocuments = true,
+									ShowMyFavorites = true,
+									ShowMyNetwork = true,
+									ShowToolbar = true,
+									//ShowGoButton = true,
+									Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+								};
+
+				testForm.Controls.Add(browser);
+				testForm.ShowDialog();
+
+
 			}
 			catch (Exception)
 			{

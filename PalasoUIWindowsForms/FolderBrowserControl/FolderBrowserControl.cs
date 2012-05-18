@@ -271,6 +271,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
 
+			// Add in some event handlers that we want to be able to remove and re-add at will,
+			// so we have had to stop the Visual Studio Designer from managing them:
+			_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
+			_treeFolders.AfterSelect += OnFolderTreeViewAfterSelect;
+
 			ClearHistoryList();
 
 			// The Go Button is largely redundant, since new functionality responds in real time to textbox changes:
@@ -345,7 +350,6 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			this._textBoxFolderPath.Size = new System.Drawing.Size(220, 20);
 			this._textBoxFolderPath.TabIndex = 61;
 			this._toolTip.SetToolTip(this._textBoxFolderPath, "Current directory");
-			this._textBoxFolderPath.TextChanged += new System.EventHandler(this.OnTextBoxFolderPathTextChanged);
 			this._textBoxFolderPath.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxFolderPathKeyUp);
 			//
 			// _buttonGo
@@ -384,7 +388,6 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			this._treeFolders.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.OnFolderTreeViewAfterExpand);
 			this._treeFolders.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.OnFolderTreeViewDrawNode);
 			this._treeFolders.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.OnFolderTreeViewBeforeSelect);
-			this._treeFolders.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnFolderTreeViewAfterSelect);
 			this._treeFolders.DoubleClick += new System.EventHandler(this.OnFolderTreeViewDoubleClick);
 			this._treeFolders.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnFolderTreeViewMouseUp);
 			//
@@ -588,7 +591,6 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			ClearHistoryList();
 			SetCurrentPath(path);
 			HistoryChangeEventHandler(SelectedPath);
-			ExpandTreeToMatchTextbox();
 		}
 
 		/// <summary>
@@ -1020,9 +1022,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					{
 					}
 				}
-
-				_treeNodeMyComputer.Expand();
 			}
+			_treeNodeMyComputer.Expand();
 		}
 
 		#endregion
@@ -1051,7 +1052,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="lastExpandedFolderNode">The last folder node to have been expanded so far</param>
 		/// <param name="path">Full text path that is to be expanded in tree</param>
 		/// <param name="focusTree">Whether or not treeview should gain focus</param>
-		private static void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree = true)
+		private void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree = true)
 		{
 			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
 			// we will work entirely in lower case:
@@ -1092,7 +1093,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					if (lowerCasePath == subfolderPath)
 					{
 						// Base case:
-						subfolderNode.TreeView.SelectedNode = subfolderNode;
+						SelectFolderTreeNodeManually(subfolderNode);
 						return;
 					}
 
@@ -1101,9 +1102,46 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 						return;
 				}
 			}
+
+			// Manually select the last node we expanded:
+			SelectFolderTreeNodeManually(lastExpandedFolderNode);
+
 			// Base case:
-			lastExpandedFolderNode.TreeView.SelectedNode = lastExpandedFolderNode;
 			return;
+		}
+
+		/// <summary>
+		/// Call this method to select a node in the Folder tree when you don't want
+		/// any events fired as a consequence.
+		/// </summary>
+		/// <param name="node">The _treeFolders node to select</param>
+		private void SelectFolderTreeNodeManually(TreeNode node)
+		{
+			// Prevent the TreeView event handler firing when we manually select a node:
+			_treeFolders.AfterSelect -= OnFolderTreeViewAfterSelect;
+
+			// Select the node:
+			_treeFolders.SelectedNode = node;
+
+			// Reinstate the TreeView event handler:
+			_treeFolders.AfterSelect += OnFolderTreeViewAfterSelect;
+		}
+
+		/// <summary>
+		/// Call this method to set the folder path textbox when you don't want any
+		/// events fired as a consequence.
+		/// </summary>
+		/// <param name="path">The path string to put in the textbox</param>
+		void SetFolderPathTextBoxManually(string path)
+		{
+			// Prevent the textbox event handler firing:
+			_textBoxFolderPath.TextChanged -= OnTextBoxFolderPathTextChanged;
+
+			_textBoxFolderPath.Text = path;
+
+			// Reinstate the textbox event handler:
+			_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
+
 		}
 
 		/// <summary>
@@ -1142,9 +1180,6 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			// Set the text in the folder text box:
 			SetCurrentPath(Directory.Exists(_selectedPath) ? _selectedPath : "home");
-
-			// Force selection and display of current folder in tree view:
-			ExpandTreeToMatchTextbox();
 
 			// Make sure correct buttons and other controls are displayed:
 			DisplaySelectedControls();
@@ -1192,18 +1227,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			{
 				SelectedPath = _textBoxFolderPath.Text;
 
-				// Remove this method from event handlers of the folder text box, prior to some manual tweaking:
-				_textBoxFolderPath.TextChanged -= OnTextBoxFolderPathTextChanged;
-
 				// Make sure the typed-in (or pasted) folder is selected and visible in the treeview.
 				// Pass in "false" to make sure the textbox does not lose focus to the treeview:
 				ExpandTreeToMatchTextbox(false);
-
-				// Undo side effect of trimming backslashes off of end of path, by restoring initial text:
-				_textBoxFolderPath.Text = SelectedPath;
-
-				// Restore this method to event handlers of folder text box:
-				_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
 
 				// Raise our custom event, so the consumer of this control can respond:
 				_pathChangedEvent(this, EventArgs.Empty);
@@ -1245,7 +1271,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				&& (selectedNode.Text != MyNetworkPlacesFolderName)
 				&& (selectedNode.Text != EntireNetworkFolderName))
 			{
-				_textBoxFolderPath.Text = selectedNode.Tag.ToString();
+				SetFolderPathTextBoxManually(selectedNode.Tag.ToString());
 			}
 		}
 
