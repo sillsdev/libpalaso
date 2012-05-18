@@ -1262,6 +1262,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				SetFolderPathTextBoxManually(selectedNode.Tag.ToString());
 				SelectedPath = _textBoxFolderPath.Text;
 				HistoryChangeEventHandler(selectedNode.Tag.ToString());
+
+				// Raise our custom event, so the consumer of this control can respond:
+				_pathChangedEvent(this, EventArgs.Empty);
 			}
 		}
 
