@@ -202,21 +202,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 		#region General properties
 
-		private string _selectedPath = "home"; // The text of the current folder path; this pseudonym also allowed
-
 		[
 			Category("Appearance"),
 			Description("Text of current folder path")
 		]
-		public string SelectedPath
-		{
-			get { return _selectedPath; }
-			set
-			{
-				_selectedPath = value;
-				Invalidate();
-			}
-		}
+		public string SelectedPath { get; set; }
 
 		#endregion
 
@@ -1177,15 +1167,13 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			FillTreeViewWithFolders();
 
 			ClearHistoryList();
+			HistoryChangeEventHandler += AddToSelectionHistoryList;
 
 			// Set the text in the folder text box:
-			SetCurrentPath(Directory.Exists(_selectedPath) ? _selectedPath : "home");
+			SetCurrentPath(Directory.Exists(SelectedPath) ? SelectedPath : "home");
 
 			// Make sure correct buttons and other controls are displayed:
 			DisplaySelectedControls();
-
-			HistoryChangeEventHandler += AddToSelectionHistoryList;
-			HistoryChangeEventHandler(_selectedPath);
 		}
 
 		/// <summary>
@@ -1272,6 +1260,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				&& (selectedNode.Text != EntireNetworkFolderName))
 			{
 				SetFolderPathTextBoxManually(selectedNode.Tag.ToString());
+				SelectedPath = _textBoxFolderPath.Text;
+				HistoryChangeEventHandler(selectedNode.Tag.ToString());
 			}
 		}
 
@@ -1506,10 +1496,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			if (Directory.Exists(SelectedPath))
 			{
-				var selectedPath = SelectedPath;
-				var folderName = Path.GetFileName(selectedPath);
-
-				AddFolderShortcut(folderName, selectedPath);
+				var folderName = Path.GetFileName(SelectedPath);
+				AddFolderShortcut(folderName, SelectedPath);
 			}
 		}
 
