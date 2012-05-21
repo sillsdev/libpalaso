@@ -1,3 +1,6 @@
+// Original code copied with permission from The Code Project:
+// http://www.codeproject.com/Articles/14570/A-Windows-Explorer-in-a-user-control
+
 #region Copyright and EULA notices
 
 /* *************************************************
@@ -1008,7 +1011,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 							logicalDriveNode.Nodes.Add(node);
 						}
 					}
-					catch (Exception) // Typically because access is denied to the drive.
+					// We catch all exceptions here. An exception is typically thrown because
+					// access is denied to a folder. It is estimated that this happens relatively
+					// infrequently and thus exception catching is more efficient than testing for
+					// our user's access privileges on every single folder.
+					catch (Exception)
 					{
 					}
 				}
@@ -1027,7 +1034,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
-			// Make sure we have at least the initial data under the My Computer node:
+			// Make sure we see at least the initial data under the My Computer node:
 			ExpandMyComputerNode();
 
 			// Expand the tree all the way down the path in the textbox:
@@ -1046,6 +1053,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
 			// we will work entirely in lower case:
+			// TODO: This may be a flawed approach in Linux
 			var lowerCasePath = path.ToLower();
 
 			// Search all subfolder nodes for one which gets us further along the lowerCasePath:
@@ -1089,7 +1097,10 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 					// Sanity check: have we already gone too far?
 					if (subfolderPathBackslash.StartsWith(lowerCasePath))
+					{
+						// Base case:
 						return;
+					}
 				}
 			}
 
@@ -1319,7 +1330,6 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="e"></param>
 		private void OnFolderTreeViewDoubleClick(object sender, EventArgs e)
 		{
-			// TODO: This method may be entirely redundant. It doesn't seem to do anything that isn't done by OnFolderTreeViewAfterExpand
 			if (!_folderTreeView.SelectedNode.IsExpanded)
 				_folderTreeView.SelectedNode.Collapse();
 			else
@@ -1511,7 +1521,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="e"></param>
 		private void OnInfoButtonClick(object sender, EventArgs e)
 		{
-			// TODO: Add own code.
+			// We don't currently support this.
 		}
 
 		#endregion
