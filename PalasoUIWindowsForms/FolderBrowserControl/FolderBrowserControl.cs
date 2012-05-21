@@ -124,25 +124,25 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 	{
 		#region Control declarations
 
-		private TreeView _treeFolders; // tree represenation of all folders
-		private TextBox _textBoxFolderPath; // text box containing current folder path
+		private TreeView _folderTreeView; // tree represenation of all folders
+		private TextBox _folderPathTextBox; // text box containing current folder path
 
-		private ImageList _imageListFolderTreeViewImages; // collection of icons for folder treeview
+		private ImageList _folderTreeViewImages; // collection of icons for folder treeview
 
-		private Button _buttonRefreshTree; // button to redraw folder tree
-		private Button _buttonGo; // button to "enter" path in address bar
-		private Button _buttonHome; // button to navigate directly to folder of this .exe
-		private Button _buttonBack; // button to navigate directly to previous folder
-		private Button _buttonNext; // button to navigate to next folder
-		private Button _buttonUp; // button to navigate to current folder parent
-		private Button _buttonAddShortcut; // button to add a shortcut to a frequently-used folder
-		private Button _buttonInfo; // (unused) button to bring up info
-		private GroupBox _groupBoxToolBar; // groupbox container for all the buttons listed above
+		private Button _refreshTreeButton; // button to redraw folder tree
+		private Button _goButton; // button to "enter" path in address bar
+		private Button _homeButton; // button to navigate directly to folder of this .exe
+		private Button _backButton; // button to navigate directly to previous folder
+		private Button _nextButton; // button to navigate to next folder
+		private Button _upButton; // button to navigate to current folder parent
+		private Button _addShortcutButton; // button to add a shortcut to a frequently-used folder
+		private Button _infoButton; // (unused) button to bring up info
+		private GroupBox _toolBarGroupBox; // groupbox container for all the buttons listed above
 
 		private ToolTip _toolTip; // magic container for all tooltips
 
-		private ContextMenu _contextMenuShortcut; // a context menu that works on user's shortcut folders
-		private MenuItem _menuItemShortCutRemoval; // context menu item to remove a user's shortcut folder
+		private ContextMenu _shortcutContextMenu; // a context menu that works on user's shortcut folders
+		private MenuItem _shortCutRemovalMenuItem; // context menu item to remove a user's shortcut folder
 
 		private IContainer components; // silly thing that .NET seems to like
 
@@ -263,8 +263,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			// Add in some event handlers that we want to be able to remove and re-add at will,
 			// so we have had to stop the Visual Studio Designer from managing them:
-			_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
-			_treeFolders.AfterSelect += OnFolderTreeViewAfterSelect;
+			_folderPathTextBox.TextChanged += OnFolderPathTextChanged;
+			_folderTreeView.AfterSelect += OnFolderTreeViewAfterSelect;
 
 			ClearHistoryList();
 
@@ -296,245 +296,245 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FolderBrowserControl));
-			this._buttonRefreshTree = new System.Windows.Forms.Button();
-			this._textBoxFolderPath = new System.Windows.Forms.TextBox();
-			this._buttonGo = new System.Windows.Forms.Button();
-			this._treeFolders = new System.Windows.Forms.TreeView();
-			this._imageListFolderTreeViewImages = new System.Windows.Forms.ImageList(this.components);
-			this._buttonHome = new System.Windows.Forms.Button();
-			this._buttonBack = new System.Windows.Forms.Button();
-			this._buttonNext = new System.Windows.Forms.Button();
-			this._buttonUp = new System.Windows.Forms.Button();
+			this._refreshTreeButton = new System.Windows.Forms.Button();
+			this._folderPathTextBox = new System.Windows.Forms.TextBox();
+			this._goButton = new System.Windows.Forms.Button();
+			this._folderTreeView = new System.Windows.Forms.TreeView();
+			this._folderTreeViewImages = new System.Windows.Forms.ImageList(this.components);
+			this._homeButton = new System.Windows.Forms.Button();
+			this._backButton = new System.Windows.Forms.Button();
+			this._nextButton = new System.Windows.Forms.Button();
+			this._upButton = new System.Windows.Forms.Button();
 			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this._buttonAddShortcut = new System.Windows.Forms.Button();
-			this._buttonInfo = new System.Windows.Forms.Button();
-			this._contextMenuShortcut = new System.Windows.Forms.ContextMenu();
-			this._menuItemShortCutRemoval = new System.Windows.Forms.MenuItem();
-			this._groupBoxToolBar = new System.Windows.Forms.GroupBox();
-			this._groupBoxToolBar.SuspendLayout();
+			this._addShortcutButton = new System.Windows.Forms.Button();
+			this._infoButton = new System.Windows.Forms.Button();
+			this._shortcutContextMenu = new System.Windows.Forms.ContextMenu();
+			this._shortCutRemovalMenuItem = new System.Windows.Forms.MenuItem();
+			this._toolBarGroupBox = new System.Windows.Forms.GroupBox();
+			this._toolBarGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			//
-			// _buttonRefreshTree
+			// _refreshTreeButton
 			//
-			this._buttonRefreshTree.BackColor = System.Drawing.Color.White;
-			this._buttonRefreshTree.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonRefreshTree.FlatAppearance.BorderSize = 0;
-			this._buttonRefreshTree.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonRefreshTree.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonRefreshTree.Image = ((System.Drawing.Image)(resources.GetObject("_buttonRefreshTree.Image")));
-			this._buttonRefreshTree.Location = new System.Drawing.Point(88, 0);
-			this._buttonRefreshTree.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonRefreshTree.Name = "_buttonRefreshTree";
-			this._buttonRefreshTree.Size = new System.Drawing.Size(20, 20);
-			this._buttonRefreshTree.TabIndex = 62;
-			this._toolTip.SetToolTip(this._buttonRefreshTree, "Refresh Explorer Tree");
-			this._buttonRefreshTree.UseVisualStyleBackColor = false;
-			this._buttonRefreshTree.Click += new System.EventHandler(this.OnRefreshButtonClick);
+			this._refreshTreeButton.BackColor = System.Drawing.Color.White;
+			this._refreshTreeButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._refreshTreeButton.FlatAppearance.BorderSize = 0;
+			this._refreshTreeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._refreshTreeButton.ForeColor = System.Drawing.Color.Transparent;
+			this._refreshTreeButton.Image = ((System.Drawing.Image)(resources.GetObject("_refreshTreeButton.Image")));
+			this._refreshTreeButton.Location = new System.Drawing.Point(88, 0);
+			this._refreshTreeButton.Margin = new System.Windows.Forms.Padding(0);
+			this._refreshTreeButton.Name = "_refreshTreeButton";
+			this._refreshTreeButton.Size = new System.Drawing.Size(20, 20);
+			this._refreshTreeButton.TabIndex = 62;
+			this._toolTip.SetToolTip(this._refreshTreeButton, "Refresh Explorer Tree");
+			this._refreshTreeButton.UseVisualStyleBackColor = false;
+			this._refreshTreeButton.Click += new System.EventHandler(this.OnRefreshButtonClick);
 			//
-			// _textBoxFolderPath
+			// _folderPathTextBox
 			//
-			this._textBoxFolderPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			this._folderPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._textBoxFolderPath.Location = new System.Drawing.Point(0, 21);
-			this._textBoxFolderPath.Name = "_textBoxFolderPath";
-			this._textBoxFolderPath.Size = new System.Drawing.Size(220, 20);
-			this._textBoxFolderPath.TabIndex = 61;
-			this._toolTip.SetToolTip(this._textBoxFolderPath, "Current directory");
-			this._textBoxFolderPath.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxFolderPathKeyUp);
+			this._folderPathTextBox.Location = new System.Drawing.Point(0, 21);
+			this._folderPathTextBox.Name = "_folderPathTextBox";
+			this._folderPathTextBox.Size = new System.Drawing.Size(220, 20);
+			this._folderPathTextBox.TabIndex = 61;
+			this._toolTip.SetToolTip(this._folderPathTextBox, "Current directory");
+			this._folderPathTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxFolderPathKeyUp);
 			//
-			// _buttonGo
+			// _goButton
 			//
-			this._buttonGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this._buttonGo.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonGo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonGo.ForeColor = System.Drawing.Color.White;
-			this._buttonGo.Image = ((System.Drawing.Image)(resources.GetObject("_buttonGo.Image")));
-			this._buttonGo.Location = new System.Drawing.Point(216, 21);
-			this._buttonGo.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonGo.Name = "_buttonGo";
-			this._buttonGo.Size = new System.Drawing.Size(20, 20);
-			this._buttonGo.TabIndex = 60;
-			this._toolTip.SetToolTip(this._buttonGo, "Go to the directory");
-			this._buttonGo.Click += new System.EventHandler(this.OnGoButtonClick);
+			this._goButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this._goButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._goButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._goButton.ForeColor = System.Drawing.Color.White;
+			this._goButton.Image = ((System.Drawing.Image)(resources.GetObject("_goButton.Image")));
+			this._goButton.Location = new System.Drawing.Point(216, 21);
+			this._goButton.Margin = new System.Windows.Forms.Padding(0);
+			this._goButton.Name = "_goButton";
+			this._goButton.Size = new System.Drawing.Size(20, 20);
+			this._goButton.TabIndex = 60;
+			this._toolTip.SetToolTip(this._goButton, "Go to the directory");
+			this._goButton.Click += new System.EventHandler(this.OnGoButtonClick);
 			//
-			// _treeFolders
+			// _folderTreeView
 			//
-			this._treeFolders.AllowDrop = true;
-			this._treeFolders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this._folderTreeView.AllowDrop = true;
+			this._folderTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._treeFolders.BackColor = System.Drawing.Color.White;
-			this._treeFolders.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawAll;
-			this._treeFolders.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._treeFolders.ImageIndex = 0;
-			this._treeFolders.ImageList = this._imageListFolderTreeViewImages;
-			this._treeFolders.Location = new System.Drawing.Point(0, 42);
-			this._treeFolders.Name = "_treeFolders";
-			this._treeFolders.SelectedImageIndex = 2;
-			this._treeFolders.ShowLines = false;
-			this._treeFolders.ShowRootLines = false;
-			this._treeFolders.Size = new System.Drawing.Size(240, 294);
-			this._treeFolders.TabIndex = 59;
-			this._treeFolders.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.OnFolderTreeViewAfterExpand);
-			this._treeFolders.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.OnFolderTreeViewDrawNode);
-			this._treeFolders.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.OnFolderTreeViewBeforeSelect);
-			this._treeFolders.DoubleClick += new System.EventHandler(this.OnFolderTreeViewDoubleClick);
-			this._treeFolders.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnFolderTreeViewMouseUp);
+			this._folderTreeView.BackColor = System.Drawing.Color.White;
+			this._folderTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawAll;
+			this._folderTreeView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._folderTreeView.ImageIndex = 0;
+			this._folderTreeView.ImageList = this._folderTreeViewImages;
+			this._folderTreeView.Location = new System.Drawing.Point(0, 42);
+			this._folderTreeView.Name = "_folderTreeView";
+			this._folderTreeView.SelectedImageIndex = 2;
+			this._folderTreeView.ShowLines = false;
+			this._folderTreeView.ShowRootLines = false;
+			this._folderTreeView.Size = new System.Drawing.Size(240, 294);
+			this._folderTreeView.TabIndex = 59;
+			this._folderTreeView.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.OnFolderTreeViewAfterExpand);
+			this._folderTreeView.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.OnFolderTreeViewDrawNode);
+			this._folderTreeView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.OnFolderTreeViewBeforeSelect);
+			this._folderTreeView.DoubleClick += new System.EventHandler(this.OnFolderTreeViewDoubleClick);
+			this._folderTreeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnFolderTreeViewMouseUp);
 			//
-			// _imageListFolderTreeViewImages
+			// _folderTreeViewImages
 			//
-			this._imageListFolderTreeViewImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this._imageListFolderTreeViewImages.ImageSize = new System.Drawing.Size(16, 16);
-			this._imageListFolderTreeViewImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-			this._imageListFolderTreeViewImages.TransparentColor = System.Drawing.Color.Transparent;
+			this._folderTreeViewImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this._folderTreeViewImages.ImageSize = new System.Drawing.Size(16, 16);
+			this._folderTreeViewImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+			this._folderTreeViewImages.TransparentColor = System.Drawing.Color.Transparent;
 			//
-			// _buttonHome
+			// _homeButton
 			//
-			this._buttonHome.BackColor = System.Drawing.Color.White;
-			this._buttonHome.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonHome.FlatAppearance.BorderSize = 0;
-			this._buttonHome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonHome.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonHome.Image = ((System.Drawing.Image)(resources.GetObject("_buttonHome.Image")));
-			this._buttonHome.Location = new System.Drawing.Point(110, 0);
-			this._buttonHome.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonHome.Name = "_buttonHome";
-			this._buttonHome.Size = new System.Drawing.Size(20, 20);
-			this._buttonHome.TabIndex = 63;
-			this._toolTip.SetToolTip(this._buttonHome, "Application Directory");
-			this._buttonHome.UseVisualStyleBackColor = false;
-			this._buttonHome.Click += new System.EventHandler(this.OnHomeButtonClick);
+			this._homeButton.BackColor = System.Drawing.Color.White;
+			this._homeButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._homeButton.FlatAppearance.BorderSize = 0;
+			this._homeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._homeButton.ForeColor = System.Drawing.Color.Transparent;
+			this._homeButton.Image = ((System.Drawing.Image)(resources.GetObject("_homeButton.Image")));
+			this._homeButton.Location = new System.Drawing.Point(110, 0);
+			this._homeButton.Margin = new System.Windows.Forms.Padding(0);
+			this._homeButton.Name = "_homeButton";
+			this._homeButton.Size = new System.Drawing.Size(20, 20);
+			this._homeButton.TabIndex = 63;
+			this._toolTip.SetToolTip(this._homeButton, "Application Directory");
+			this._homeButton.UseVisualStyleBackColor = false;
+			this._homeButton.Click += new System.EventHandler(this.OnHomeButtonClick);
 			//
-			// _buttonBack
+			// _backButton
 			//
-			this._buttonBack.BackColor = System.Drawing.Color.White;
-			this._buttonBack.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonBack.FlatAppearance.BorderSize = 0;
-			this._buttonBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonBack.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonBack.Image = ((System.Drawing.Image)(resources.GetObject("_buttonBack.Image")));
-			this._buttonBack.Location = new System.Drawing.Point(22, 0);
-			this._buttonBack.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonBack.Name = "_buttonBack";
-			this._buttonBack.Size = new System.Drawing.Size(20, 20);
-			this._buttonBack.TabIndex = 64;
-			this._toolTip.SetToolTip(this._buttonBack, "Backward");
-			this._buttonBack.UseVisualStyleBackColor = false;
-			this._buttonBack.Click += new System.EventHandler(this.OnBackButtonClick);
+			this._backButton.BackColor = System.Drawing.Color.White;
+			this._backButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._backButton.FlatAppearance.BorderSize = 0;
+			this._backButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._backButton.ForeColor = System.Drawing.Color.Transparent;
+			this._backButton.Image = ((System.Drawing.Image)(resources.GetObject("_backButton.Image")));
+			this._backButton.Location = new System.Drawing.Point(22, 0);
+			this._backButton.Margin = new System.Windows.Forms.Padding(0);
+			this._backButton.Name = "_backButton";
+			this._backButton.Size = new System.Drawing.Size(20, 20);
+			this._backButton.TabIndex = 64;
+			this._toolTip.SetToolTip(this._backButton, "Backward");
+			this._backButton.UseVisualStyleBackColor = false;
+			this._backButton.Click += new System.EventHandler(this.OnBackButtonClick);
 			//
-			// _buttonNext
+			// _nextButton
 			//
-			this._buttonNext.BackColor = System.Drawing.Color.White;
-			this._buttonNext.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonNext.FlatAppearance.BorderSize = 0;
-			this._buttonNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonNext.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonNext.Image = ((System.Drawing.Image)(resources.GetObject("_buttonNext.Image")));
-			this._buttonNext.Location = new System.Drawing.Point(44, 0);
-			this._buttonNext.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonNext.Name = "_buttonNext";
-			this._buttonNext.Size = new System.Drawing.Size(20, 20);
-			this._buttonNext.TabIndex = 65;
-			this._toolTip.SetToolTip(this._buttonNext, "Forward");
-			this._buttonNext.UseVisualStyleBackColor = false;
-			this._buttonNext.Click += new System.EventHandler(this.OnNextButtonClick);
+			this._nextButton.BackColor = System.Drawing.Color.White;
+			this._nextButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._nextButton.FlatAppearance.BorderSize = 0;
+			this._nextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._nextButton.ForeColor = System.Drawing.Color.Transparent;
+			this._nextButton.Image = ((System.Drawing.Image)(resources.GetObject("_nextButton.Image")));
+			this._nextButton.Location = new System.Drawing.Point(44, 0);
+			this._nextButton.Margin = new System.Windows.Forms.Padding(0);
+			this._nextButton.Name = "_nextButton";
+			this._nextButton.Size = new System.Drawing.Size(20, 20);
+			this._nextButton.TabIndex = 65;
+			this._toolTip.SetToolTip(this._nextButton, "Forward");
+			this._nextButton.UseVisualStyleBackColor = false;
+			this._nextButton.Click += new System.EventHandler(this.OnNextButtonClick);
 			//
-			// _buttonUp
+			// _upButton
 			//
-			this._buttonUp.BackColor = System.Drawing.Color.White;
-			this._buttonUp.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonUp.FlatAppearance.BorderSize = 0;
-			this._buttonUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonUp.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonUp.Image = ((System.Drawing.Image)(resources.GetObject("_buttonUp.Image")));
-			this._buttonUp.Location = new System.Drawing.Point(66, 0);
-			this._buttonUp.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonUp.Name = "_buttonUp";
-			this._buttonUp.Size = new System.Drawing.Size(20, 20);
-			this._buttonUp.TabIndex = 67;
-			this._toolTip.SetToolTip(this._buttonUp, "Parent Directory");
-			this._buttonUp.UseVisualStyleBackColor = false;
-			this._buttonUp.Click += new System.EventHandler(this.OnUpButtonClick);
+			this._upButton.BackColor = System.Drawing.Color.White;
+			this._upButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._upButton.FlatAppearance.BorderSize = 0;
+			this._upButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._upButton.ForeColor = System.Drawing.Color.Transparent;
+			this._upButton.Image = ((System.Drawing.Image)(resources.GetObject("_upButton.Image")));
+			this._upButton.Location = new System.Drawing.Point(66, 0);
+			this._upButton.Margin = new System.Windows.Forms.Padding(0);
+			this._upButton.Name = "_upButton";
+			this._upButton.Size = new System.Drawing.Size(20, 20);
+			this._upButton.TabIndex = 67;
+			this._toolTip.SetToolTip(this._upButton, "Parent Directory");
+			this._upButton.UseVisualStyleBackColor = false;
+			this._upButton.Click += new System.EventHandler(this.OnUpButtonClick);
 			//
-			// _buttonAddShortcut
+			// _addShortcutButton
 			//
-			this._buttonAddShortcut.BackColor = System.Drawing.Color.White;
-			this._buttonAddShortcut.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonAddShortcut.FlatAppearance.BorderSize = 0;
-			this._buttonAddShortcut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonAddShortcut.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonAddShortcut.Image = ((System.Drawing.Image)(resources.GetObject("_buttonAddShortcut.Image")));
-			this._buttonAddShortcut.Location = new System.Drawing.Point(0, 0);
-			this._buttonAddShortcut.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonAddShortcut.Name = "_buttonAddShortcut";
-			this._buttonAddShortcut.Size = new System.Drawing.Size(20, 20);
-			this._buttonAddShortcut.TabIndex = 70;
-			this._toolTip.SetToolTip(this._buttonAddShortcut, "Add a shortcut to the currently-selected folder in the frequently-used folders section");
-			this._buttonAddShortcut.UseVisualStyleBackColor = false;
-			this._buttonAddShortcut.Click += new System.EventHandler(this.OnAddButtonClick);
+			this._addShortcutButton.BackColor = System.Drawing.Color.White;
+			this._addShortcutButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._addShortcutButton.FlatAppearance.BorderSize = 0;
+			this._addShortcutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._addShortcutButton.ForeColor = System.Drawing.Color.Transparent;
+			this._addShortcutButton.Image = ((System.Drawing.Image)(resources.GetObject("_addShortcutButton.Image")));
+			this._addShortcutButton.Location = new System.Drawing.Point(0, 0);
+			this._addShortcutButton.Margin = new System.Windows.Forms.Padding(0);
+			this._addShortcutButton.Name = "_addShortcutButton";
+			this._addShortcutButton.Size = new System.Drawing.Size(20, 20);
+			this._addShortcutButton.TabIndex = 70;
+			this._toolTip.SetToolTip(this._addShortcutButton, "Add a shortcut to the currently-selected folder in the frequently-used folders section");
+			this._addShortcutButton.UseVisualStyleBackColor = false;
+			this._addShortcutButton.Click += new System.EventHandler(this.OnAddButtonClick);
 			//
-			// _buttonInfo
+			// _infoButton
 			//
-			this._buttonInfo.BackColor = System.Drawing.Color.White;
-			this._buttonInfo.Cursor = System.Windows.Forms.Cursors.Hand;
-			this._buttonInfo.FlatAppearance.BorderSize = 0;
-			this._buttonInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._buttonInfo.ForeColor = System.Drawing.Color.Transparent;
-			this._buttonInfo.Image = ((System.Drawing.Image)(resources.GetObject("_buttonInfo.Image")));
-			this._buttonInfo.Location = new System.Drawing.Point(132, 0);
-			this._buttonInfo.Margin = new System.Windows.Forms.Padding(0);
-			this._buttonInfo.Name = "_buttonInfo";
-			this._buttonInfo.Size = new System.Drawing.Size(20, 20);
-			this._buttonInfo.TabIndex = 71;
-			this._toolTip.SetToolTip(this._buttonInfo, "About folder browser control");
-			this._buttonInfo.UseVisualStyleBackColor = false;
-			this._buttonInfo.Visible = false;
-			this._buttonInfo.Click += new System.EventHandler(this.OnInfoButtonClick);
+			this._infoButton.BackColor = System.Drawing.Color.White;
+			this._infoButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this._infoButton.FlatAppearance.BorderSize = 0;
+			this._infoButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._infoButton.ForeColor = System.Drawing.Color.Transparent;
+			this._infoButton.Image = ((System.Drawing.Image)(resources.GetObject("_infoButton.Image")));
+			this._infoButton.Location = new System.Drawing.Point(132, 0);
+			this._infoButton.Margin = new System.Windows.Forms.Padding(0);
+			this._infoButton.Name = "_infoButton";
+			this._infoButton.Size = new System.Drawing.Size(20, 20);
+			this._infoButton.TabIndex = 71;
+			this._toolTip.SetToolTip(this._infoButton, "About folder browser control");
+			this._infoButton.UseVisualStyleBackColor = false;
+			this._infoButton.Visible = false;
+			this._infoButton.Click += new System.EventHandler(this.OnInfoButtonClick);
 			//
-			// _contextMenuShortcut
+			// _shortcutContextMenu
 			//
-			this._contextMenuShortcut.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-			this._menuItemShortCutRemoval});
+			this._shortcutContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this._shortCutRemovalMenuItem});
 			//
-			// _menuItemShortCutRemoval
+			// _shortCutRemovalMenuItem
 			//
-			this._menuItemShortCutRemoval.Index = 0;
-			this._menuItemShortCutRemoval.Text = "Remove Shortcut";
-			this._menuItemShortCutRemoval.Click += new System.EventHandler(this.OnShortCutRemovalMenuItemClick);
+			this._shortCutRemovalMenuItem.Index = 0;
+			this._shortCutRemovalMenuItem.Text = "Remove Shortcut";
+			this._shortCutRemovalMenuItem.Click += new System.EventHandler(this.OnShortCutRemovalMenuItemClick);
 			//
-			// _groupBoxToolBar
+			// _toolBarGroupBox
 			//
-			this._groupBoxToolBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			this._toolBarGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._groupBoxToolBar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this._groupBoxToolBar.Controls.Add(this._buttonInfo);
-			this._groupBoxToolBar.Controls.Add(this._buttonRefreshTree);
-			this._groupBoxToolBar.Controls.Add(this._buttonHome);
-			this._groupBoxToolBar.Controls.Add(this._buttonBack);
-			this._groupBoxToolBar.Controls.Add(this._buttonNext);
-			this._groupBoxToolBar.Controls.Add(this._buttonUp);
-			this._groupBoxToolBar.Controls.Add(this._buttonAddShortcut);
-			this._groupBoxToolBar.ForeColor = System.Drawing.SystemColors.Window;
-			this._groupBoxToolBar.Location = new System.Drawing.Point(0, 0);
-			this._groupBoxToolBar.Margin = new System.Windows.Forms.Padding(0);
-			this._groupBoxToolBar.Name = "_groupBoxToolBar";
-			this._groupBoxToolBar.Padding = new System.Windows.Forms.Padding(0);
-			this._groupBoxToolBar.Size = new System.Drawing.Size(240, 20);
-			this._groupBoxToolBar.TabIndex = 71;
-			this._groupBoxToolBar.TabStop = false;
-			this._groupBoxToolBar.Paint += new System.Windows.Forms.PaintEventHandler(this.OnGroupBoxPaint);
+			this._toolBarGroupBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+			this._toolBarGroupBox.Controls.Add(this._infoButton);
+			this._toolBarGroupBox.Controls.Add(this._refreshTreeButton);
+			this._toolBarGroupBox.Controls.Add(this._homeButton);
+			this._toolBarGroupBox.Controls.Add(this._backButton);
+			this._toolBarGroupBox.Controls.Add(this._nextButton);
+			this._toolBarGroupBox.Controls.Add(this._upButton);
+			this._toolBarGroupBox.Controls.Add(this._addShortcutButton);
+			this._toolBarGroupBox.ForeColor = System.Drawing.SystemColors.Window;
+			this._toolBarGroupBox.Location = new System.Drawing.Point(0, 0);
+			this._toolBarGroupBox.Margin = new System.Windows.Forms.Padding(0);
+			this._toolBarGroupBox.Name = "_toolBarGroupBox";
+			this._toolBarGroupBox.Padding = new System.Windows.Forms.Padding(0);
+			this._toolBarGroupBox.Size = new System.Drawing.Size(240, 20);
+			this._toolBarGroupBox.TabIndex = 71;
+			this._toolBarGroupBox.TabStop = false;
+			this._toolBarGroupBox.Paint += new System.Windows.Forms.PaintEventHandler(this.OnGroupBoxPaint);
 			//
 			// FolderBrowserControl
 			//
 			this.BackColor = System.Drawing.Color.White;
-			this.Controls.Add(this._buttonGo);
-			this.Controls.Add(this._textBoxFolderPath);
-			this.Controls.Add(this._treeFolders);
-			this.Controls.Add(this._groupBoxToolBar);
+			this.Controls.Add(this._goButton);
+			this.Controls.Add(this._folderPathTextBox);
+			this.Controls.Add(this._folderTreeView);
+			this.Controls.Add(this._toolBarGroupBox);
 			this.Name = "FolderBrowserControl";
 			this.Size = new System.Drawing.Size(240, 336);
 			this.Load += new System.EventHandler(this.OnFolderBrowserControlLoad);
-			this._groupBoxToolBar.ResumeLayout(false);
+			this._toolBarGroupBox.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -591,43 +591,43 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			if ((!ShowAddressbar) && (!ShowToolbar))
 			{
-				_treeFolders.Top = 0;
-				_textBoxFolderPath.Visible = false;
-				_buttonGo.Visible = false;
-				_groupBoxToolBar.Visible = false;
-				_treeFolders.Height = Height;
+				_folderTreeView.Top = 0;
+				_folderPathTextBox.Visible = false;
+				_goButton.Visible = false;
+				_toolBarGroupBox.Visible = false;
+				_folderTreeView.Height = Height;
 			}
 			else
 			{
 				if (ShowToolbar && (!ShowAddressbar))
 				{
-					_treeFolders.Top = 21;
-					_textBoxFolderPath.Visible = false;
-					_buttonGo.Visible = false;
-					_treeFolders.Height = Height - 21;
-					_groupBoxToolBar.Visible = true;
+					_folderTreeView.Top = 21;
+					_folderPathTextBox.Visible = false;
+					_goButton.Visible = false;
+					_folderTreeView.Height = Height - 21;
+					_toolBarGroupBox.Visible = true;
 				}
 				else if (ShowAddressbar && (!ShowToolbar))
 				{
-					_treeFolders.Top = 21;
-					_textBoxFolderPath.Top = 0;
-					_buttonGo.Top = 0;
-					_textBoxFolderPath.Visible = true;
-					_textBoxFolderPath.Width = ShowGoButton ? _treeFolders.Width - 20 : _treeFolders.Width;
-					_buttonGo.Visible = ShowGoButton;
-					_treeFolders.Height = Height - 21;
-					_groupBoxToolBar.Visible = false;
+					_folderTreeView.Top = 21;
+					_folderPathTextBox.Top = 0;
+					_goButton.Top = 0;
+					_folderPathTextBox.Visible = true;
+					_folderPathTextBox.Width = ShowGoButton ? _folderTreeView.Width - 20 : _folderTreeView.Width;
+					_goButton.Visible = ShowGoButton;
+					_folderTreeView.Height = Height - 21;
+					_toolBarGroupBox.Visible = false;
 				}
 				else
 				{
-					_treeFolders.Top = 42;
-					_textBoxFolderPath.Visible = true;
-					_buttonGo.Visible = ShowGoButton;
-					_textBoxFolderPath.Top = 21;
-					_textBoxFolderPath.Width = ShowGoButton ? _treeFolders.Width - 20 : _treeFolders.Width;
-					_buttonGo.Top = 21;
-					_groupBoxToolBar.Visible = true;
-					_treeFolders.Height = Height - 42;
+					_folderTreeView.Top = 42;
+					_folderPathTextBox.Visible = true;
+					_goButton.Visible = ShowGoButton;
+					_folderPathTextBox.Top = 21;
+					_folderPathTextBox.Width = ShowGoButton ? _folderTreeView.Width - 20 : _folderTreeView.Width;
+					_goButton.Top = 21;
+					_toolBarGroupBox.Visible = true;
+					_folderTreeView.Height = Height - 42;
 				}
 			}
 		}
@@ -644,11 +644,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			// The pseudonym "home" is allowed, and means the path of our .exe:
 			if (String.Compare(strPath, "home") == 0)
-				_textBoxFolderPath.Text = Application.StartupPath;
+				_folderPathTextBox.Text = Application.StartupPath;
 			else
 			{
 				// Set the proposed folder if it exists, otherwise use our .exe's path:
-				_textBoxFolderPath.Text = Directory.Exists(strPath) ? strPath : Application.StartupPath;
+				_folderPathTextBox.Text = Directory.Exists(strPath) ? strPath : Application.StartupPath;
 			}
 		}
 
@@ -660,7 +660,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		private void FillTreeViewWithFolders()
 		{
 			// Start with a clean slate:
-			_treeFolders.Nodes.Clear();
+			_folderTreeView.Nodes.Clear();
 
 			// Desktop node:
 			var treeNodeDesktop = new TreeNode
@@ -671,7 +671,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 										SelectedImageIndex = 10
 									};
 
-			_treeFolders.Nodes.Add(treeNodeDesktop);
+			_folderTreeView.Nodes.Add(treeNodeDesktop);
 			_treeNodeRootNode = treeNodeDesktop;
 
 			if (ShowMyDocuments)
@@ -1031,7 +1031,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			ExpandMyComputerNode();
 
 			// Expand the tree all the way down the path in the textbox:
-			ExpandTreeFromPath(_treeNodeMyComputer, _textBoxFolderPath.Text, focusTree);
+			ExpandTreeFromPath(_treeNodeMyComputer, _folderPathTextBox.Text, focusTree);
 
 			Cursor.Current = Cursors.Default;
 		}
@@ -1104,17 +1104,17 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// Call this method to select a node in the Folder tree when you don't want
 		/// any events fired as a consequence.
 		/// </summary>
-		/// <param name="node">The _treeFolders node to select</param>
+		/// <param name="node">The _folderTreeView node to select</param>
 		private void SelectFolderTreeNodeManually(TreeNode node)
 		{
 			// Prevent the TreeView event handler firing when we manually select a node:
-			_treeFolders.AfterSelect -= OnFolderTreeViewAfterSelect;
+			_folderTreeView.AfterSelect -= OnFolderTreeViewAfterSelect;
 
 			// Select the node:
-			_treeFolders.SelectedNode = node;
+			_folderTreeView.SelectedNode = node;
 
 			// Reinstate the TreeView event handler:
-			_treeFolders.AfterSelect += OnFolderTreeViewAfterSelect;
+			_folderTreeView.AfterSelect += OnFolderTreeViewAfterSelect;
 		}
 
 		/// <summary>
@@ -1125,12 +1125,12 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		void SetFolderPathTextBoxManually(string path)
 		{
 			// Prevent the textbox event handler firing:
-			_textBoxFolderPath.TextChanged -= OnTextBoxFolderPathTextChanged;
+			_folderPathTextBox.TextChanged -= OnFolderPathTextChanged;
 
-			_textBoxFolderPath.Text = path;
+			_folderPathTextBox.Text = path;
 
 			// Reinstate the textbox event handler:
-			_textBoxFolderPath.TextChanged += OnTextBoxFolderPathTextChanged;
+			_folderPathTextBox.TextChanged += OnFolderPathTextChanged;
 
 		}
 
@@ -1184,8 +1184,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		private void OnShortCutRemovalMenuItemClick(object sender, EventArgs e)
 		{
 			// Check that we're really on a shortcut by testing the image index for our special number:
-			if (_treeFolders.SelectedNode.ImageIndex == 18)
-				_treeFolders.SelectedNode.Remove();
+			if (_folderTreeView.SelectedNode.ImageIndex == 18)
+				_folderTreeView.SelectedNode.Remove();
 		}
 
 		/// <summary>
@@ -1208,12 +1208,12 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void OnTextBoxFolderPathTextChanged(object sender, EventArgs e)
+		private void OnFolderPathTextChanged(object sender, EventArgs e)
 		{
 			// Check that the proposed folder exists, then set the new selection:
-			if (Directory.Exists(_textBoxFolderPath.Text))
+			if (Directory.Exists(_folderPathTextBox.Text))
 			{
-				SelectedPath = _textBoxFolderPath.Text;
+				SelectedPath = _folderPathTextBox.Text;
 
 				// Make sure the typed-in (or pasted) folder is selected and visible in the treeview.
 				// Pass in "false" to make sure the textbox does not lose focus to the treeview:
@@ -1237,7 +1237,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			if (e.KeyValue == 13)
 			{
 				ExpandTreeToMatchTextbox();
-				_textBoxFolderPath.Focus();
+				_folderPathTextBox.Focus();
 			}
 		}
 
@@ -1260,7 +1260,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				&& (selectedNode.Text != EntireNetworkFolderName))
 			{
 				SetFolderPathTextBoxManually(selectedNode.Tag.ToString());
-				SelectedPath = _textBoxFolderPath.Text;
+				SelectedPath = _folderPathTextBox.Text;
 				HistoryChangeEventHandler(selectedNode.Tag.ToString());
 
 				// Raise our custom event, so the consumer of this control can respond:
@@ -1320,11 +1320,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		private void OnFolderTreeViewDoubleClick(object sender, EventArgs e)
 		{
 			// TODO: This method may be entirely redundant. It doesn't seem to do anything that isn't done by OnFolderTreeViewAfterExpand
-			if (!_treeFolders.SelectedNode.IsExpanded)
-				_treeFolders.SelectedNode.Collapse();
+			if (!_folderTreeView.SelectedNode.IsExpanded)
+				_folderTreeView.SelectedNode.Collapse();
 			else
 			{
-				AddChildAndGrandchildFolders(_treeFolders.SelectedNode);
+				AddChildAndGrandchildFolders(_folderTreeView.SelectedNode);
 			}
 		}
 
@@ -1337,11 +1337,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			// If user is on a custom folder shortcut, then releasing the right button brings up
 			// the shortcuts context menu (but only if folder already selected):
-			if (_treeFolders.SelectedNode != null)
+			if (_folderTreeView.SelectedNode != null)
 			{
 				// 18 is a special image index only used in shortcuts:
-				if ((_treeFolders.SelectedNode.ImageIndex == 18) && (e.Button == MouseButtons.Right))
-					_contextMenuShortcut.Show(_treeFolders, new Point(e.X, e.Y));
+				if ((_folderTreeView.SelectedNode.ImageIndex == 18) && (e.Button == MouseButtons.Right))
+					_shortcutContextMenu.Show(_folderTreeView, new Point(e.X, e.Y));
 			}
 		}
 
@@ -1354,8 +1354,8 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="e"></param>
 		private void OnFolderTreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
 		{
-			if (_treeFolders.SelectedNode != null)
-				_treeFolders.SelectedNode.ForeColor = Color.Black;
+			if (_folderTreeView.SelectedNode != null)
+				_folderTreeView.SelectedNode.ForeColor = Color.Black;
 			e.Node.ForeColor = Color.Blue;
 		}
 
@@ -1368,7 +1368,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="e"></param>
 		private void OnFolderTreeViewDrawNode(object sender, DrawTreeNodeEventArgs e)
 		{
-			if (((e.State & TreeNodeStates.Selected) != 0) && (!_treeFolders.Focused))
+			if (((e.State & TreeNodeStates.Selected) != 0) && (!_folderTreeView.Focused))
 				e.Node.ForeColor = Color.Blue;
 			else
 				e.DrawDefault = true;
@@ -1424,15 +1424,15 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			HistoryChangeEventHandler -= AddToSelectionHistoryList;
 
 			// Remember the current path selection:
-			string storedPath = _textBoxFolderPath.Text;
+			string storedPath = _folderPathTextBox.Text;
 
 			// Move to next path in selection history:
 			var nextPath = GetHistoryListNextEntry();
 			if (nextPath != null)
-				_textBoxFolderPath.Text = nextPath;
+				_folderPathTextBox.Text = nextPath;
 
 			// If the path actually changed, then expand the folder tree to the new path:
-			if (storedPath != _textBoxFolderPath.Text)
+			if (storedPath != _folderPathTextBox.Text)
 				ExpandTreeToMatchTextbox();
 
 			HistoryChangeEventHandler += AddToSelectionHistoryList;
@@ -1449,15 +1449,15 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			HistoryChangeEventHandler -= AddToSelectionHistoryList;
 
 			// Remember the current path selection:
-			string storedPath = _textBoxFolderPath.Text;
+			string storedPath = _folderPathTextBox.Text;
 
 			// Move to previous path in selection history:
 			var previousPath = GetHistoryListPreviousEntry();
 			if (previousPath != null)
-				_textBoxFolderPath.Text = previousPath;
+				_folderPathTextBox.Text = previousPath;
 
 			// If the path actually changed, then expand the folder tree to the new path:
-			if (storedPath != _textBoxFolderPath.Text)
+			if (storedPath != _folderPathTextBox.Text)
 				ExpandTreeToMatchTextbox();
 
 			HistoryChangeEventHandler += AddToSelectionHistoryList;
@@ -1472,7 +1472,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		private void OnUpButtonClick(object sender, EventArgs e)
 		{
 			// Get current selected folder's path:
-			var currentFolder = new DirectoryInfo(_textBoxFolderPath.Text);
+			var currentFolder = new DirectoryInfo(_folderPathTextBox.Text);
 
 			// Get current selected folder's parent:
 			var parentFolder = currentFolder.Parent;
@@ -1484,7 +1484,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				return;
 
 			// Change selection to parent folder:
-			_textBoxFolderPath.Text = parentFolder.FullName;
+			_folderPathTextBox.Text = parentFolder.FullName;
 			ExpandTreeToMatchTextbox();
 		}
 
