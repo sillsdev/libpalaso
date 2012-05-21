@@ -1030,7 +1030,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// Assumes the textbox path is under My Computer.
 		/// </summary>
 		/// <param name="focusTree">Whether or not treeview should gain focus</param>
-		private void ExpandTreeToMatchTextbox(bool focusTree = true)
+		private void ExpandTreeToMatchTextbox(bool focusTree)
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
@@ -1049,7 +1049,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="lastExpandedFolderNode">The last folder node to have been expanded so far</param>
 		/// <param name="path">Full text path that is to be expanded in tree</param>
 		/// <param name="focusTree">Whether or not treeview should gain focus</param>
-		private void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree = true)
+		private void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree)
 		{
 			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
 			// we will work entirely in lower case:
@@ -1247,7 +1247,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			// If the user just released the Enter key, show the textbox path's location in the tree
 			if (e.KeyValue == 13)
 			{
-				ExpandTreeToMatchTextbox();
+				ExpandTreeToMatchTextbox(true);
 				_folderPathTextBox.Focus();
 			}
 		}
@@ -1395,7 +1395,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="e"></param>
 		private void OnGoButtonClick(object sender, EventArgs e)
 		{
-			ExpandTreeToMatchTextbox();
+			ExpandTreeToMatchTextbox(true);
 		}
 
 		/// <summary>
@@ -1420,7 +1420,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			ExpandMyComputerNode();
 
 			// Expand folder tree to reveal selected folder:
-			ExpandTreeToMatchTextbox();
+			ExpandTreeToMatchTextbox(true);
 		}
 
 		/// <summary>
@@ -1443,7 +1443,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			// If the path actually changed, then expand the folder tree to the new path:
 			if (storedPath != _folderPathTextBox.Text)
-				ExpandTreeToMatchTextbox();
+				ExpandTreeToMatchTextbox(true);
 
 			HistoryChangeEventHandler += AddToSelectionHistoryList;
 		}
@@ -1468,7 +1468,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			// If the path actually changed, then expand the folder tree to the new path:
 			if (storedPath != _folderPathTextBox.Text)
-				ExpandTreeToMatchTextbox();
+				ExpandTreeToMatchTextbox(true);
 
 			HistoryChangeEventHandler += AddToSelectionHistoryList;
 		}
@@ -1495,7 +1495,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			// Change selection to parent folder:
 			_folderPathTextBox.Text = parentFolder.FullName;
-			ExpandTreeToMatchTextbox();
+			ExpandTreeToMatchTextbox(true);
 		}
 
 		/// <summary>
