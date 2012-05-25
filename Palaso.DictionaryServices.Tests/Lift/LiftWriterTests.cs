@@ -888,7 +888,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				string result = session.StringBuilder.ToString();
 				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-					String.Format("//entry[@dateCreated=\"{0}\"]", entry.CreationTime.ToString("yyyy-MM-ddThh:mm:ssZ"))
+					String.Format("//entry[@dateCreated=\"{0}\"]", entry.CreationTime.ToString("yyyy-MM-ddTHH:mm:ssZ"))
 				);
 			}
 		}
@@ -906,7 +906,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				string result = session.StringBuilder.ToString();
 				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-					String.Format("//entry[@dateModified=\"{0}\"]", entry.ModificationTime.ToString("yyyy-MM-ddThh:mm:ssZ"))
+					String.Format("//entry[@dateModified=\"{0}\"]", entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ"))
 				);
 			}
 		}
