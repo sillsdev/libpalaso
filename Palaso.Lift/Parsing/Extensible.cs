@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using Palaso.Extensions;
 
 namespace Palaso.Lift.Parsing
 {
@@ -20,11 +21,11 @@ namespace Palaso.Lift.Parsing
 		//private List<Annotation> _annotations;
 
 		///<summary></summary>
-		static public string LiftTimeFormatWithTimeZone = "yyyy-MM-ddTHH:mm:sszzzz";
+		public const string LiftTimeFormatWithTimeZone = DateTimeExtensions.TimeFormatWithTimeZone;
 		///<summary></summary>
-		static public string LiftTimeFormatNoTimeZone = "yyyy-MM-ddTHH:mm:ssZ";
+		public const string LiftTimeFormatNoTimeZone = DateTimeExtensions.TimeFormatNoTimeZone;
 		///<summary></summary>
-		static public string LiftDateOnlyFormat = "yyyy-MM-dd";
+		public const string LiftDateOnlyFormat = "yyyy-MM-dd";
 
 		///<summary>
 		/// Constructor.

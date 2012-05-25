@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using Palaso.Progress.LogBox;
 
 namespace Palaso.Extensions
 {
 	public static class DateTimeExtensions
 	{
-		 static public string TimeFormatWithTimeZone = "yyyy-MM-ddTHH:mm:sszzzz";
-		static public string TimeFormatNoTimeZone = "yyyy-MM-ddTHH:mm:ssZ";
-		static public string DateOnlyFormat = "yyyy-MM-dd";
+		public const string TimeFormatWithTimeZone = "yyyy-MM-ddTHH:mm:sszzzz";
+		public const string TimeFormatNoTimeZone = "yyyy-MM-ddTHH:mm:ssZ";
+		public const string DateOnlyFormat = "yyyy-MM-dd";
 
 		public static string ToISO8601DateAndUTCTimeString(this DateTime  when)
 		{
