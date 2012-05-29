@@ -18,7 +18,7 @@ namespace Palaso.DictionaryServices.Lift
 {
 	public class LiftWriter : ILiftWriter<LexEntry>
 	{
-		public const string LiftDateTimeFormat = "yyyy-MM-ddThh:mm:ssZ";
+		public const string LiftDateTimeFormat = DateTimeExtensions.TimeFormatNoTimeZone;
 		private readonly XmlWriter _writer;
 		private readonly Dictionary<string, int> _allIdsExportedSoFar;
 
