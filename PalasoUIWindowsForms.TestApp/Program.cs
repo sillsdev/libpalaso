@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
@@ -19,6 +20,19 @@ namespace PalasoUIWindowsForms.TestApp
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+
+#if  TESTING_FolderBrowserControl
+			var form = new Form();
+			var browser = new Palaso.UI.WindowsForms.FolderBrowserControl.FolderBrowserControl();
+			browser.Location = new Point(0,0);
+			browser.Width = form.ClientSize.Width;
+			browser.Height = form.ClientSize.Height;
+			browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			browser.ShowDrivesOnlyWhenNetworked = false;
+			browser.ShowAddressbar = true;
+			form.Controls.Add(browser);
+			form.ShowDialog();
+#endif
 
 #if  TESTING_ISOLookup
 			var dialog = new LookupISOCodeDialog();

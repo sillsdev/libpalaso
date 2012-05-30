@@ -192,6 +192,19 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			}
 		}
 
+		// Flag to indicate if drives A: through Z: should only appear if they are mapped drives:
+		private bool _showOnlyMappedDrives;
+
+		public bool ShowOnlyMappedDrives
+		{
+			get { return _showOnlyMappedDrives; }
+			set
+			{
+				_showOnlyMappedDrives = value;
+				Refresh();
+			}
+		}
+
 		// Flag to indicate if the Address Bar should be visible:
 		public bool ShowAddressbar { get; set; }
 
@@ -969,25 +982,33 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			foreach (var drive in logicalDrives)
 			{
+				var driveType = Win32.GetDriveType(drive);
+
+				if (_showOnlyMappedDrives)
+				{
+					if (driveType != 4) // DRIVE_REMOTE
+						continue;
+				}
+
 				// Make a new node for each drive:
 				var logicalDriveNode = new TreeNode {Tag = drive, Text = drive};
 
 				// Determine which icon to display, according to drive type:
-				switch (Win32.GetDriveType(drive))
+				switch (driveType)
 				{
-					case 2:
+					case 2: // DRIVE_REMOVABLE
 						logicalDriveNode.ImageIndex = 17;
 						logicalDriveNode.SelectedImageIndex = 17;
 						break;
-					case 3:
+					case 3: // DRIVE_FIXED
 						logicalDriveNode.ImageIndex = 0;
 						logicalDriveNode.SelectedImageIndex = 0;
 						break;
-					case 4:
+					case 4: // DRIVE_REMOTE
 						logicalDriveNode.ImageIndex = 8;
 						logicalDriveNode.SelectedImageIndex = 8;
 						break;
-					case 5:
+					case 5: // DRIVE_CDROM
 						logicalDriveNode.ImageIndex = 7;
 						logicalDriveNode.SelectedImageIndex = 7;
 						break;
