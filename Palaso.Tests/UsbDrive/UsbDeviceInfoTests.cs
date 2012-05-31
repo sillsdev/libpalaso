@@ -83,6 +83,15 @@ namespace Palaso.Tests.UsbDrive
 		[Test]
 		[Category("RequiresUSB")]
 		[Category("SkipOnTeamCity")]
+		public void GetDrives_3DrivesArePluggedIn_DrivesAreReturned()
+		{
+			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.AreEqual(3, usbDrives.Count);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
@@ -108,6 +117,17 @@ namespace Palaso.Tests.UsbDrive
 			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void IsReady_3DrivesAreMounted_ReturnsTrue()
+		{
+			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.IsTrue(usbDrives[0].IsReady);
+			Assert.IsTrue(usbDrives[1].IsReady);
+			Assert.IsTrue(usbDrives[2].IsReady);
 		}
 
 		[Test]
