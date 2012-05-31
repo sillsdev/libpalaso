@@ -48,7 +48,35 @@ namespace Palaso.UsbDrive
 		public ulong AvailableFreeSpace{get; set;}
 	}
 
+	public interface IRetrieveUsbDriveInfo
+	{
+		List<IUsbDriveInfo> GetDrives();
+	}
+	public class RetrieveUsbDriveInfo : IRetrieveUsbDriveInfo
+	{
+		public List<IUsbDriveInfo> GetDrives()
+		{
+			return UsbDriveInfo.GetDrives();
+		}
+	}
 
+	/// <summary>
+	/// This class allows tests to set up pretend usb drives
+	/// </summary>
+	public class RetrieveUsbDriveInfoForTests : IRetrieveUsbDriveInfo
+	{
+		private readonly List<IUsbDriveInfo> _driveInfos;
+
+		public RetrieveUsbDriveInfoForTests(List<IUsbDriveInfo> driveInfos)
+		{
+			_driveInfos = driveInfos;
+		}
+
+		public List<IUsbDriveInfo> GetDrives()
+		{
+			return _driveInfos;
+		}
+	}
 
 	[CLSCompliant (false)]
 	public abstract class UsbDriveInfo : IUsbDriveInfo
