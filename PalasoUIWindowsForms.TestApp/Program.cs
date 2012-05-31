@@ -28,7 +28,7 @@ namespace PalasoUIWindowsForms.TestApp
 			browser.Width = form.ClientSize.Width;
 			browser.Height = form.ClientSize.Height;
 			browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			browser.ShowDrivesOnlyWhenNetworked = false;
+			browser.ShowOnlyMappedDrives = true;
 			browser.ShowAddressbar = true;
 			form.Controls.Add(browser);
 			form.ShowDialog();
