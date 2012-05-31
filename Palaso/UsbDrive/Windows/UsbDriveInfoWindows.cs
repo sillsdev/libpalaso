@@ -31,6 +31,16 @@ namespace Palaso.UsbDrive.Windows
 			}
 		}
 
+		public override string VolumeLabel
+		{
+			get
+			{
+				//We use a ulong because that's what linux uses
+				return  (ulong)_driveInfo.VolumeLabel;
+			}
+		}
+
+
 		public override ulong TotalSize
 		{
 			get

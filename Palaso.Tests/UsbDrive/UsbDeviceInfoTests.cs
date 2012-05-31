@@ -39,7 +39,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void GetDrives_1Drive_DrivesAreReturned()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(1, usbDrives.Count);
 		}
 
@@ -76,7 +76,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void GetDrives_2DrivesArePluggedIn_DrivesAreReturned()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(2, usbDrives.Count);
 		}
 
@@ -85,7 +85,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void GetDrives_3DrivesArePluggedIn_DrivesAreReturned()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(3, usbDrives.Count);
 		}
 
@@ -94,7 +94,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(_drive0.DriveSize, usbDrives[0].TotalSize);
 			Assert.AreEqual(_drive1.DriveSize, usbDrives[1].TotalSize);
 		}
@@ -104,7 +104,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(_drive0.Path.FullName, usbDrives[0].RootDirectory.FullName);
 			Assert.AreEqual(_drive1.Path.FullName, usbDrives[1].RootDirectory.FullName);
 		}
@@ -114,7 +114,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void IsReady_2DrivesAreMounted_ReturnsTrue()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 		}
@@ -124,7 +124,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void IsReady_3DrivesAreMounted_ReturnsTrue()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 			Assert.IsTrue(usbDrives[2].IsReady);
@@ -135,7 +135,7 @@ namespace Palaso.Tests.UsbDrive
 		[Category("SkipOnTeamCity")]
 		public void IsReady_2DrivesAreNotMounted_ReturnsFalse()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.IsFalse(usbDrives[0].IsReady);
 			Assert.IsFalse(usbDrives[1].IsReady);
 		}
