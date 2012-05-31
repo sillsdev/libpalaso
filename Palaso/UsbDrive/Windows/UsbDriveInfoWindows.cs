@@ -35,8 +35,7 @@ namespace Palaso.UsbDrive.Windows
 		{
 			get
 			{
-				//We use a ulong because that's what linux uses
-				return  (ulong)_driveInfo.VolumeLabel;
+				return  _driveInfo.VolumeLabel;
 			}
 		}
 
@@ -59,9 +58,9 @@ namespace Palaso.UsbDrive.Windows
 			}
 		}
 
-		public new static List<UsbDriveInfo> GetDrives()
+		public new static List<IUsbDriveInfo> GetDrives()
 		{
-			var drives = new List<UsbDriveInfo>();
+			var drives = new List<IUsbDriveInfo>();
 			using (var driveSearcher = new ManagementObjectSearcher(
 				"SELECT Caption, DeviceID FROM Win32_DiskDrive WHERE InterfaceType='USB'")
 			)
