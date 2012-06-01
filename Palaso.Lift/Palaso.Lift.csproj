@@ -166,16 +166,32 @@
 	</BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl" />
-	<EmbeddedResource Include="Migration\LIFT-0.11-0.12.xsl" />
-	<EmbeddedResource Include="Migration\LIFT-0.12-0.13.xsl" />
-	<EmbeddedResource Include="Migration\ReverseLIFT-0.13-0.12.xsl" />
+	<EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl">
+	  <LogicalName>Palaso.Lift.Migration.LIFT-0.10-0.11.xsl</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Migration\LIFT-0.11-0.12.xsl">
+	  <LogicalName>Palaso.Lift.Migration.LIFT-0.11-0.12.xsl</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Migration\LIFT-0.12-0.13.xsl">
+	  <LogicalName>Palaso.Lift.Migration.LIFT-0.12-0.13.xsl</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Migration\ReverseLIFT-0.13-0.12.xsl">
+	  <LogicalName>Palaso.Lift.Migration.ReverseLIFT-0.13-0.12.xsl</LogicalName>
+	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="Validation\lift-0.10.rng" />
-	<EmbeddedResource Include="Validation\lift-0.11.rng" />
-	<EmbeddedResource Include="Validation\lift-0.12.rng" />
-	<EmbeddedResource Include="Validation\lift.rng" />
+	<EmbeddedResource Include="Validation\lift-0.10.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift-0.10.rng</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Validation\lift-0.11.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift-0.11.rng</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Validation\lift-0.12.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift-0.12.rng</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Validation\lift.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift.rng</LogicalName>
+	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="canonicalizeLift.xsl" />
