@@ -71,16 +71,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
-	</Reference>
-	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
-	</Reference>
-  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
 	  <SpecificVersion>False</SpecificVersion>
@@ -110,14 +101,6 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\irrKlang.NET2.0.dll</HintPath>
-	</Reference>
-	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\NAudio.dll</HintPath>
-	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Data" />
