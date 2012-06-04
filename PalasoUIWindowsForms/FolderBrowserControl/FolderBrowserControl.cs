@@ -656,22 +656,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="strPath"></param>
 		private void SetCurrentPath(string strPath)
 		{
-			if (strPath == null)
-				strPath = "";
-
 			SelectedPath = strPath;
 
-			if (strPath.Length == 0)
-			{
-				_folderPathTextBox.Text = "";
-				SelectFolderTreeNodeManually(_treeNodeRootNode);
-				_treeNodeRootNode.Expand();
-			}
-			else if (String.Compare(strPath, "home") == 0)
-			{
-				// The pseudonym "home" is allowed, and means the path of our .exe:
+			// The pseudonym "home" is allowed, and means the path of our .exe:
+			if (String.Compare(strPath, "home") == 0)
 				_folderPathTextBox.Text = Application.StartupPath;
-			}
 			else
 			{
 				// Set the proposed folder if it exists, otherwise use our .exe's path:
@@ -842,7 +831,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					currentFolder.Nodes.Add(node);
 				}
 			}
-			catch // For those exceptional cases when we can't read a folder.
+			catch (Exception) // Typically because access is denied to the current folder.
 			{
 				return;
 			}
@@ -1043,7 +1032,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 							logicalDriveNode.Nodes.Add(node);
 						}
 					}
-					catch // For those exceptional cases when we can't read a drive.
+					// We catch all exceptions here. An exception is typically thrown because
+					// access is denied to a folder. It is estimated that this happens relatively
+					// infrequently and thus exception catching is more efficient than testing for
+					// our user's access privileges on every single folder.
+					catch (Exception)
 					{
 					}
 				}
@@ -1209,7 +1202,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			HistoryChangeEventHandler += AddToSelectionHistoryList;
 
 			// Set the text in the folder text box:
-			SetCurrentPath(SelectedPath);
+			SetCurrentPath(Directory.Exists(SelectedPath) ? SelectedPath : "home");
 
 			// Make sure correct buttons and other controls are displayed:
 			DisplaySelectedControls();
