@@ -148,29 +148,20 @@ namespace Palaso.IO
 
 		/// <summary>
 		/// Return subdirectories of <paramref name="path"/> that are not system or hidden.
+		/// There are some cases where our call to Directory.GetDirectories() throws.
+		/// For example, when the access permissions on a folder are set so that it can't be read.
+		/// Another possible example may be Windows Backup files, which apparently look like directories.
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
 		/// <returns>Zero or more directory names that are not system or hidden.</returns>
+		/// <exception cref="System.UnauthorizedAccessException ">E.g. when the user does not have read permission.</exception>
 		public static string[] GetSafeDirectories(string path)
 		{
-			try
-			{
 				return (from directoryName in Directory.GetDirectories(path)
 						let dirInfo = new DirectoryInfo(directoryName)
 						where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
 						where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
 						select directoryName).ToArray();
-			}
-			catch
-			{
-				// There are some exceptional cases where Directory.GetDirectories() throws.
-				// Exhaustive tests have not been carried out, but one case may be
-				// Windows Backup files, which apparently look like directories.
-				// Another case is where the access permissions on a folder are set
-				// so that it can't be read.
-				// There may be others, too...
-				return new string[] { };
-			}
 		}
 
 		/// <summary>

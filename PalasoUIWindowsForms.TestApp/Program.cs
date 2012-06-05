@@ -28,10 +28,11 @@ namespace PalasoUIWindowsForms.TestApp
 			browser.Width = form.ClientSize.Width;
 			browser.Height = form.ClientSize.Height;
 			browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			browser.ShowOnlyMappedDrives = true;
+			browser.ShowOnlyMappedDrives = false;
 			browser.ShowAddressbar = true;
 			form.Controls.Add(browser);
 			form.ShowDialog();
+			return;
 #endif
 
 #if  TESTING_ISOLookup
