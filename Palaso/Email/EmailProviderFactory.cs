@@ -28,7 +28,7 @@ namespace Palaso.Email
 
 		public static IEmailProvider AlternateEmailProvider()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			if (Environment.OSVersion.Platform == PlatformID.Unix && !ThunderbirdIsDefault() && !File.Exists("/usr/bin/xdg-email"))
 			{
 				return null;
 			}
