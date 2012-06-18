@@ -1,7 +1,7 @@
-// Original code copied with permission from The Code Project:
+// Based on code copied with permission from The Code Project:
 // http://www.codeproject.com/Articles/14570/A-Windows-Explorer-in-a-user-control
 
-#region Copyright and EULA notices
+#region Original Copyright and EULA notices
 
 /* *************************************************
 
@@ -354,7 +354,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			this._folderPathTextBox.Location = new System.Drawing.Point(0, 21);
 			this._folderPathTextBox.Name = "_folderPathTextBox";
 			this._folderPathTextBox.Size = new System.Drawing.Size(220, 20);
-			this._folderPathTextBox.TabIndex = 61;
+			this._folderPathTextBox.TabIndex = 1;
 			this._toolTip.SetToolTip(this._folderPathTextBox, "Current directory");
 			this._folderPathTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnTextBoxFolderPathKeyUp);
 			//
@@ -587,7 +587,6 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 			ClearHistoryList();
 
-			SetCurrentPath("home");
 			Cursor.Current = Cursors.Default;
 			ExpandMyComputerNode();
 		}
@@ -656,15 +655,23 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="strPath"></param>
 		private void SetCurrentPath(string strPath)
 		{
+			if (strPath == null)
+				strPath = "";
+
 			SelectedPath = strPath;
 
-			// The pseudonym "home" is allowed, and means the path of our .exe:
-			if (String.Compare(strPath, "home") == 0)
-				_folderPathTextBox.Text = Application.StartupPath;
+			if (strPath.Length == 0)
+			{
+				_folderPathTextBox.Text = "";
+				SelectFolderTreeNodeManually(_treeNodeRootNode);
+				_treeNodeRootNode.Expand();
+			}
 			else
 			{
-				// Set the proposed folder if it exists, otherwise use our .exe's path:
-				_folderPathTextBox.Text = Directory.Exists(strPath) ? strPath : Application.StartupPath;
+				// Set the proposed folder if it exists, otherwise use user's personal folder path:
+				_folderPathTextBox.Text = Directory.Exists(strPath)
+											? strPath
+											: Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 			}
 		}
 
@@ -831,9 +838,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					currentFolder.Nodes.Add(node);
 				}
 			}
-			catch (Exception) // Typically because access is denied to the current folder.
+			catch (UnauthorizedAccessException)
 			{
-				return;
+				return; // We don't care if we can't read a folder; we'll just go on to the next one.
 			}
 		}
 
@@ -1032,12 +1039,9 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 							logicalDriveNode.Nodes.Add(node);
 						}
 					}
-					// We catch all exceptions here. An exception is typically thrown because
-					// access is denied to a folder. It is estimated that this happens relatively
-					// infrequently and thus exception catching is more efficient than testing for
-					// our user's access privileges on every single folder.
-					catch (Exception)
+					catch (UnauthorizedAccessException)
 					{
+						// We don't care if we can't read a folder; we'll just go on to the next one.
 					}
 				}
 			}
@@ -1072,31 +1076,35 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		/// <param name="focusTree">Whether or not treeview should gain focus</param>
 		private void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree)
 		{
+#if MONO
+			var usefulPath = path;
+#else
 			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
 			// we will work entirely in lower case:
-			// TODO: This may be a flawed approach in Linux
-			var lowerCasePath = path.ToLower();
-
+			var usefulPath = path.ToLower();
+#endif
 			// Search all subfolder nodes for one which gets us further along the lowerCasePath:
 			foreach (TreeNode subfolderNode in lastExpandedFolderNode.Nodes)
 			{
+#if MONO
+				// Get full path of current subfolder:
+				var subfolderPath = subfolderNode.Tag.ToString();
+#else
 				// Get full path (in lower case) of current subfolder:
 				var subfolderPath = subfolderNode.Tag.ToString().ToLower();
-
+#endif
 				// If we haven't gotten all the way along lowerCasePath, make a copy of
 				// subfolderPath with a trailing backslash:
 				string subfolderPathBackslash = subfolderPath;
 				if (!subfolderPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
 				{
-					if (lowerCasePath.Length > subfolderPathBackslash.Length)
+					if (usefulPath.Length > subfolderPathBackslash.Length)
 						subfolderPathBackslash = subfolderPath + Path.DirectorySeparatorChar;
 				}
 
 				// See if the current path is matched by the current subfolder (as far as it goes):
-				if (lowerCasePath.StartsWith(subfolderPathBackslash))
+				if (usefulPath.StartsWith(subfolderPathBackslash))
 				{
-					// It does match, so expand this subfolder node:
-					subfolderNode.EnsureVisible();
 					subfolderNode.Expand();
 					if (focusTree)
 						subfolderNode.TreeView.Focus();
@@ -1105,11 +1113,11 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					// them need expanding:
 					if (subfolderNode.Nodes.Count >= 1)
 					{
-						ExpandTreeFromPath(subfolderNode, lowerCasePath, focusTree);
+						ExpandTreeFromPath(subfolderNode, usefulPath, focusTree);
 						return;
 					}
 					// If we've gone all the way through the given path, then we're done:
-					if (lowerCasePath == subfolderPath)
+					if (usefulPath == subfolderPath)
 					{
 						// Base case:
 						SelectFolderTreeNodeManually(subfolderNode);
@@ -1117,7 +1125,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 					}
 
 					// Sanity check: have we already gone too far?
-					if (subfolderPathBackslash.StartsWith(lowerCasePath))
+					if (subfolderPathBackslash.StartsWith(usefulPath))
 					{
 						// Base case:
 						return;
@@ -1202,7 +1210,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			HistoryChangeEventHandler += AddToSelectionHistoryList;
 
 			// Set the text in the folder text box:
-			SetCurrentPath(Directory.Exists(SelectedPath) ? SelectedPath : "home");
+			SetCurrentPath(SelectedPath);
 
 			// Make sure correct buttons and other controls are displayed:
 			DisplaySelectedControls();
@@ -1233,7 +1241,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 		#endregion
 
-		#region Folder Path textbox event handlers
+		#region Folder path textbox event handlers
 
 		/// <summary>
 		/// Event handler for when the text changes in the Folder Path textbox.
@@ -1431,13 +1439,13 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 
 		/// <summary>
 		/// Event handler for when Home button is clicked.
-		/// Changes folder selection to pre-defined "home" folder.
+		/// Changes folder selection to user's personal folder folder.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnHomeButtonClick(object sender, EventArgs e)
 		{
-			SetCurrentPath("home");
+			Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 			ExpandMyComputerNode();
 
 			// Expand folder tree to reveal selected folder:
