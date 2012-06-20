@@ -562,18 +562,18 @@ namespace Palaso.WritingSystems.Collation
 		{
 			string data = GetTextData(reader);
 			StringBuilder rule = new StringBuilder(20*data.Length);
-			bool escapeNeedsClosing = false;
 			for (int i = 0; i < data.Length; i++)
 			{
+				bool escapeNeedsClosing = false;
 				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i), ref escapeNeedsClosing);
+				if (escapeNeedsClosing)
+					icuData += ('\'');
 				rule.AppendFormat(" {0} {1}{2}", op, icuData, GetVariableTopString(icuData, ref variableTop));
 				if (Char.IsSurrogate(data, i))
 				{
 					i++;
 				}
 			}
-			if (escapeNeedsClosing)
-				rule.Append('\'');
 			return rule.ToString();
 		}
 

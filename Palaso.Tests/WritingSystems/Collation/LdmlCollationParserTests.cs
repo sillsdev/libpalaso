@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
@@ -495,6 +495,13 @@ namespace Palaso.Tests.WritingSystems.Collation
 			_collationXml = "<rules><reset>k'w'</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
 			Assert.AreEqual("& k''w''", icu);
+		}
+
+		[Test]
+		public void IcuComplexIcRuleWithMultipleEscapableChars_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset><last_tertiary_ignorable/></reset><ic>-()ʼ</ic></rules>";
+			Assert.AreEqual("& [last tertiary ignorable] = '-' = '(' = ')' = ʼ", LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml));
 		}
 
 		[Test]
