@@ -51,7 +51,7 @@
 			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(3, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(280, 230);
+			this._listView.Size = new System.Drawing.Size(231, 231);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -71,13 +71,13 @@
 			//
 			this._searchText.Location = new System.Drawing.Point(6, 3);
 			this._searchText.Name = "_searchText";
-			this._searchText.Size = new System.Drawing.Size(277, 20);
+			this._searchText.Size = new System.Drawing.Size(228, 20);
 			this._searchText.TabIndex = 0;
 			//
 			// _aboutISO639_1
 			//
 			this._aboutISO639_1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutISO639_1.Location = new System.Drawing.Point(0, 273);
+			this._aboutISO639_1.Location = new System.Drawing.Point(0, 274);
 			this._aboutISO639_1.Name = "_aboutISO639_1";
 			this._aboutISO639_1.Size = new System.Drawing.Size(196, 14);
 			this._aboutISO639_1.TabIndex = 2;
@@ -88,7 +88,7 @@
 			// _aboutISO639_3Link
 			//
 			this._aboutISO639_3Link.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutISO639_3Link.Location = new System.Drawing.Point(0, 301);
+			this._aboutISO639_3Link.Location = new System.Drawing.Point(0, 302);
 			this._aboutISO639_3Link.Name = "_aboutISO639_3Link";
 			this._aboutISO639_3Link.Size = new System.Drawing.Size(196, 14);
 			this._aboutISO639_3Link.TabIndex = 3;
@@ -104,7 +104,7 @@
 			//
 			this.pictureBox1.BackColor = System.Drawing.Color.White;
 			this.pictureBox1.Image = global::Palaso.UI.WindowsForms.Properties.Resources.search18x18;
-			this.pictureBox1.Location = new System.Drawing.Point(263, 5);
+			this.pictureBox1.Location = new System.Drawing.Point(214, 4);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(18, 18);
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -121,7 +121,7 @@
 			this.Controls.Add(this._aboutISO639_1);
 			this.Controls.Add(this._aboutISO639_3Link);
 			this.Name = "LookupISOControl";
-			this.Size = new System.Drawing.Size(298, 319);
+			this.Size = new System.Drawing.Size(245, 320);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);

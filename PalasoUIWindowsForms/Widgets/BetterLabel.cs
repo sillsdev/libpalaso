@@ -11,9 +11,30 @@ namespace Palaso.UI.WindowsForms.Widgets
 	/// </summary>
 	public partial class BetterLabel : TextBox
 	{
+		private Brush _textBrush;
+		private Brush _backgroundBrush;
+		private Size _originalSize;
+
 		public BetterLabel()
 		{
+			Font = SystemFonts.MessageBoxFont;//sets the default, which can then be customized in the designer
 			InitializeComponent();
+			ReadOnly = true;
+			Enabled = false;
+			SetStyle(ControlStyles.UserPaint,true);
+			_backgroundBrush = new SolidBrush(BackColor);
+			_textBrush = new SolidBrush(ForeColor);
+			_originalSize = Size;
+		}
+
+		/// <summary>
+		/// we custom draw so that we can be ReadOnly without being necessarily grey
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			e.Graphics.FillRectangle(_backgroundBrush,DisplayRectangle);
+			e.Graphics.DrawString(this.Text, this.Font, _textBrush,this.DisplayRectangle);
 		}
 
 		//make it transparent
@@ -23,6 +44,9 @@ namespace Palaso.UI.WindowsForms.Widgets
 			{
 				if (DesignMode)
 					return;
+
+				if (BackColor != SystemColors.Control && BackColor != Color.White)
+					return; //they want a weird background color, so don't track the parent
 				Control backgroundColorSource = FindForm();
 				if (backgroundColorSource == null)
 				{   //if we can't get the form, the next best thing is our container (e.g., a table)
@@ -44,8 +68,23 @@ namespace Palaso.UI.WindowsForms.Widgets
 		private void BetterLabel_TextChanged(object sender, System.EventArgs e)
 		{
 			//this is apparently dangerous to do in the constructor
-			Font =  SystemFonts.MessageBoxFont;
+			//Font = new Font(SystemFonts.MessageBoxFont.FontFamily, Font.Size, Font.Style);
+		}
 
+		private void BetterLabel_ForeColorChanged(object sender, EventArgs e)
+		{
+			if (_textBrush != null)
+				_textBrush.Dispose();
+
+			_textBrush = new SolidBrush(ForeColor);
+		}
+
+		private void BetterLabel_BackColorChanged(object sender, EventArgs e)
+		{
+			if (_backgroundBrush != null)
+				_backgroundBrush.Dispose();
+
+			_backgroundBrush = new SolidBrush(BackColor);
 		}
 	}
 
