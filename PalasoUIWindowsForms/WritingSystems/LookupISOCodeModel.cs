@@ -4,12 +4,11 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
-	///<summary>
-	/// Basically just handles selecting from likely options, based on what you type
-	///</summary>
 	public class LookupIsoCodeModel
 	{
 		private readonly IList<Iso639LanguageCode> _languageCodes;
+		private Iso639LanguageCode _selectedWritingSystem;
+
 
 		public LookupIsoCodeModel()
 		{
@@ -48,6 +47,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					yield return lang;
 				}
+			}
+		}
+
+
+		public Iso639LanguageCode ISOCodeAndName;
+
+		public string ISOCode
+		{
+			get
+			{
+				if (ISOCodeAndName == null)
+					return string.Empty;
+				return ISOCodeAndName.Code;
 			}
 		}
 	}
