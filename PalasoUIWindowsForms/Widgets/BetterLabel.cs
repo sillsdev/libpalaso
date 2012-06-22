@@ -13,18 +13,15 @@ namespace Palaso.UI.WindowsForms.Widgets
 	{
 		private Brush _textBrush;
 		private Brush _backgroundBrush;
-		private Size _originalSize;
 
 		public BetterLabel()
 		{
-			Font = SystemFonts.MessageBoxFont;//sets the default, which can then be customized in the designer
 			InitializeComponent();
 			ReadOnly = true;
 			Enabled = false;
 			SetStyle(ControlStyles.UserPaint,true);
 			_backgroundBrush = new SolidBrush(BackColor);
 			_textBrush = new SolidBrush(ForeColor);
-			_originalSize = Size;
 		}
 
 		/// <summary>
@@ -69,6 +66,8 @@ namespace Palaso.UI.WindowsForms.Widgets
 		{
 			//this is apparently dangerous to do in the constructor
 			//Font = new Font(SystemFonts.MessageBoxFont.FontFamily, Font.Size, Font.Style);
+			if(Font==SystemFonts.DefaultFont)
+				Font = SystemFonts.MessageBoxFont;//sets the default, which can then be customized in the designer
 		}
 
 		private void BetterLabel_ForeColorChanged(object sender, EventArgs e)
@@ -92,8 +91,16 @@ namespace Palaso.UI.WindowsForms.Widgets
 	{
 		public BetterLinkLabel()
 		{
-			ReadOnly = true;
+			ReadOnly = false;
+			Enabled = true;
 			this.MouseEnter += new EventHandler(BetterLinkLabel_MouseEnter);
+			SetStyle(ControlStyles.UserPaint, false);
+			EnabledChanged+=new EventHandler(BetterLinkLabel_EnabledChanged);
+		}
+
+		private void BetterLinkLabel_EnabledChanged(object sender, EventArgs e)
+		{
+
 		}
 
 		void BetterLinkLabel_MouseEnter(object sender, EventArgs e)

@@ -33,10 +33,9 @@
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this._searchText = new System.Windows.Forms.TextBox();
-			this._aboutISO639_1 = new System.Windows.Forms.LinkLabel();
-			this._aboutISO639_3Link = new System.Windows.Forms.LinkLabel();
 			this._searchTimer = new System.Windows.Forms.Timer(this.components);
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this._cannotFindLanguageLink = new System.Windows.Forms.LinkLabel();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -51,7 +50,7 @@
 			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(3, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(231, 231);
+			this._listView.Size = new System.Drawing.Size(231, 230);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -74,28 +73,6 @@
 			this._searchText.Size = new System.Drawing.Size(228, 20);
 			this._searchText.TabIndex = 0;
 			//
-			// _aboutISO639_1
-			//
-			this._aboutISO639_1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutISO639_1.Location = new System.Drawing.Point(0, 274);
-			this._aboutISO639_1.Name = "_aboutISO639_1";
-			this._aboutISO639_1.Size = new System.Drawing.Size(196, 14);
-			this._aboutISO639_1.TabIndex = 2;
-			this._aboutISO639_1.TabStop = true;
-			this._aboutISO639_1.Text = "About Language 639-1 Codes";
-			this._aboutISO639_1.Click += new System.EventHandler(this.OnAboutLink639_1_Click);
-			//
-			// _aboutISO639_3Link
-			//
-			this._aboutISO639_3Link.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutISO639_3Link.Location = new System.Drawing.Point(0, 302);
-			this._aboutISO639_3Link.Name = "_aboutISO639_3Link";
-			this._aboutISO639_3Link.Size = new System.Drawing.Size(196, 14);
-			this._aboutISO639_3Link.TabIndex = 3;
-			this._aboutISO639_3Link.TabStop = true;
-			this._aboutISO639_3Link.Text = "About Language 639-3 Codes";
-			this._aboutISO639_3Link.Click += new System.EventHandler(this.OnAbout639_3_Clicked);
-			//
 			// _searchTimer
 			//
 			this._searchTimer.Tick += new System.EventHandler(this._searchTimer_Tick);
@@ -111,17 +88,28 @@
 			this.pictureBox1.TabIndex = 11;
 			this.pictureBox1.TabStop = false;
 			//
+			// _cannotFindLanguageLink
+			//
+			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._cannotFindLanguageLink.AutoSize = true;
+			this._cannotFindLanguageLink.Location = new System.Drawing.Point(10, 270);
+			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
+			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
+			this._cannotFindLanguageLink.TabIndex = 12;
+			this._cannotFindLanguageLink.TabStop = true;
+			this._cannotFindLanguageLink.Text = "Can\'t find your language?";
+			this._cannotFindLanguageLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._cannotFindLanguageLink_LinkClicked);
+			//
 			// LookupISOControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._cannotFindLanguageLink);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this._listView);
 			this.Controls.Add(this._searchText);
-			this.Controls.Add(this._aboutISO639_1);
-			this.Controls.Add(this._aboutISO639_3Link);
 			this.Name = "LookupISOControl";
-			this.Size = new System.Drawing.Size(245, 320);
+			this.Size = new System.Drawing.Size(245, 291);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
@@ -135,9 +123,8 @@
 		private System.Windows.Forms.ColumnHeader columnHeader1;
 		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.TextBox _searchText;
-		private System.Windows.Forms.LinkLabel _aboutISO639_1;
-		private System.Windows.Forms.LinkLabel _aboutISO639_3Link;
 		private System.Windows.Forms.Timer _searchTimer;
 		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.LinkLabel _cannotFindLanguageLink;
 	}
 }

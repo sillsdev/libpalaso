@@ -36,7 +36,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _okButton
 			//
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._okButton.Location = new System.Drawing.Point(132, 364);
+			this._okButton.Location = new System.Drawing.Point(88, 364);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 1;
@@ -48,7 +48,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._cancelButton.Location = new System.Drawing.Point(213, 364);
+			this._cancelButton.Location = new System.Drawing.Point(169, 364);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 2;
@@ -61,9 +61,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._lookupISOControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
+			this._lookupISOControl.ISOCode = "";
 			this._lookupISOControl.Location = new System.Drawing.Point(12, 12);
 			this._lookupISOControl.Name = "_lookupISOControl";
-			this._lookupISOControl.Size = new System.Drawing.Size(289, 346);
+			this._lookupISOControl.Size = new System.Drawing.Size(255, 346);
 			this._lookupISOControl.TabIndex = 0;
 			this._lookupISOControl.ReadinessChanged += new System.EventHandler(this._lookupISOControl_Changed);
 			this._lookupISOControl.DoubleClicked += new System.EventHandler(this.OnChooserDoubleClicked);
@@ -74,7 +75,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(313, 399);
+			this.ClientSize = new System.Drawing.Size(279, 399);
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._lookupISOControl);
 			this.Controls.Add(this._okButton);

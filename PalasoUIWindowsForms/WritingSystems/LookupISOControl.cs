@@ -55,16 +55,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				UpdateReadiness();
 		}
 
-		private void OnAboutLink639_1_Click(object sender, EventArgs e)
-		{
-			System.Diagnostics.Process.Start("http://www.infoterm.info/standardization/iso_639_1_2002.php");
-		}
-
-		private void OnAbout639_3_Clicked(object sender, EventArgs e)
-		{
-			System.Diagnostics.Process.Start("http://www.sil.org/iso639-3/");
-		}
-
 		/// <summary>
 		/// ideally, people dispose of controls properly, so that this isn't needed
 		/// But if you're a dialog using and you can't rely on your caller disposing
@@ -120,6 +110,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (DoubleClicked != null)
 			{
 				DoubleClicked(this, null);
+			}
+		}
+
+		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			using (var dlg = new CannotFindMyLanguageDialog())
+			{
+				dlg.ShowDialog();
 			}
 		}
 	}
