@@ -179,8 +179,8 @@ namespace Palaso.WritingSystems
 			ValidIso3166Regions.Sort(IanaSubtag.CompareByDescription);
 			ValidRegisteredVariants.Sort(IanaSubtag.CompareByDescription);
 
-			// Add Unlisted Language
-			ValidIso639LanguageCodes.Insert(0, new Iso639LanguageCode("qaa", "Language Not Listed", String.Empty));
+			// Add Unlisted Language at the end
+			ValidIso639LanguageCodes.Insert(ValidIso639LanguageCodes.Count, new Iso639LanguageCode("qaa", "Language Not Listed", String.Empty));
 
 			// To help people find Latin as a script tag
 			ValidIso15924Scripts.Insert(0, new Iso15924Script("Roman (Latin)", "Latn"));
