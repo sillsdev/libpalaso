@@ -151,6 +151,7 @@
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
 	<Compile Include="Extensions\ByteArrayExtensions.cs" />
+	<Compile Include="Extensions\ControlExtensions.cs" />
 	<Compile Include="Extensions\DateTimeExtensions.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
 	<Compile Include="Extensions\IEnumberableExtensions.cs" />
