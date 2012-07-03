@@ -89,6 +89,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//  return Image.FromFile(path);
 
 			//following work-around from http://support.microsoft.com/kb/309482
+
+
+			//NB: we have one report of this dying with "out of memory": http://jira.palaso.org/issues/browse/BL-199
+			//Currently, the caller should catch the exception and deal with it
 			using (var fs = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read))
 			{
 				return Image.FromStream(fs);

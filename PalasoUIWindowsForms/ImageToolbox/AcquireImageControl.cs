@@ -87,10 +87,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
-					_currentImage = PalasoImage.FromFile(dlg.FileDlgFileName);
-					_pictureBox.Image = _currentImage.Image;
 					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileDlgFileName);
 					ImageToolboxSettings.Default.Save();
+
+					try
+					{
+						_currentImage = PalasoImage.FromFile(dlg.FileDlgFileName);
+					}
+					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+					{
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.");
+						return;
+					}
+					_pictureBox.Image = _currentImage.Image;
 					if (ImageChanged != null)
 						ImageChanged.Invoke(this, null);
 				}

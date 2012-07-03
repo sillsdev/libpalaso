@@ -102,7 +102,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		}
 		public void AddRow(string label)
 		{
-			var control = new BetterLabel() { Text = label };
+			var control = new BetterLabel() { Text = label, Width=this.Width };
 			_table.Controls.Add(control);
 			_table.SetColumnSpan(control,2);
 			_table.RowCount++;
