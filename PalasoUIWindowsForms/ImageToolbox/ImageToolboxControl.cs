@@ -265,6 +265,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
+			_imageInfo.SaveUpdatedMetadataIfItMakesSense();
 		}
 	}
 

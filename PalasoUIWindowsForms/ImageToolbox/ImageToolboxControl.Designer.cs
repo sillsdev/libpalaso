@@ -145,6 +145,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel1.Enabled = false;
 			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.betterLabel1.Location = new System.Drawing.Point(0, 6);
 			this.betterLabel1.Multiline = true;

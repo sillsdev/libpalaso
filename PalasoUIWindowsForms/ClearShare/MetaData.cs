@@ -499,6 +499,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public void LoadFromStoredExemplar(FileCategory category)
 		{
 			LoadXmpFile(GetExemplarPath(category));
+			HasChanges = true;
 		}
 
 		/// <summary>
