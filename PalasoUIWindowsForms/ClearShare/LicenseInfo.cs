@@ -56,7 +56,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override string ToString()
 		{
-			return "No License";
+			return "";
 		}
 
 		public override string Url
