@@ -141,6 +141,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			return i;
 		}
 
+		/// <summary>
+		/// will be set if this was created using FromFile
+		/// </summary>
+		public string OriginalFilePath
+		{
+			get { return _pathForSavingMetadataChanges; }
+		}
+
 		/*
 		 *
 		[Test]
