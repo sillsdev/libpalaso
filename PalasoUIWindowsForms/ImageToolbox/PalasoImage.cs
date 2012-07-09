@@ -1,11 +1,15 @@
-﻿using System.Drawing;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using Palaso.Code;
 using Palaso.UI.WindowsForms.ClearShare;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
-	public class PalasoImage
+	public class PalasoImage : IDisposable
+
 	{
 		public Metadata Metadata;
 
@@ -18,6 +22,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// and enters metadata, we want to store that metadata in the original.  That's the only reason we store this path.
 		/// </summary>
 		private static string _pathForSavingMetadataChanges;
+
+		public bool Disposed;
 
 		public PalasoImage()
 		{
@@ -140,6 +146,62 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				Assert.IsFalse(incoming.MetadataLocked);
 			}
 		}*/
+
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (Disposed)
+				return;
+
+			if (disposing)
+			{
+				Disposed = true;
+				if (Image != null)
+				{
+					Image.Dispose();
+					Image = null;
+				}
+			}
+		}
+
+		~PalasoImage()
+		{
+			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
+			{
+				Debug.Assert(Disposed,"PalasoImage wasn't disposed of properly ****");
+			}
+		}
 	}
 
 

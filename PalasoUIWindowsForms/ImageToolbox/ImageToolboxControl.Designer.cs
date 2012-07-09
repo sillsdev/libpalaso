@@ -19,6 +19,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if (disposing)
 			{
 				_toolImages.Dispose();
+				if (ImageInfo!=null)
+				{
+					ImageInfo.Disposed = true;
+					ImageInfo.Dispose();
+				}
 				if (components != null)
 				{
 

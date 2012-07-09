@@ -70,6 +70,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						_currentImageBox.Image = value.Image;
 						SetupMetaDataControls(value.Metadata);
 					}
+					if(_imageInfo!=null)
+					{
+						_imageInfo.Dispose();
+					}
 					_imageInfo = value;
 				}
 				catch (Exception e)
