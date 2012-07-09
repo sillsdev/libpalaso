@@ -49,7 +49,28 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 
-		public Image Image { get; set; }
+		private Image _image;
+		public Image Image
+		{
+			get
+			{
+				ThrowIfDisposedOfAlready();
+				return _image;
+			}
+			set
+			{
+				if(_image!=null)
+				{
+					_image.Dispose();
+				}
+				_image = value;
+			}
+		}
+
+		private void ThrowIfDisposedOfAlready()
+		{
+			Guard.Against(Disposed, "This PalasoImage was used after being disposed of.");
+		}
 
 		/// <summary>
 		/// Really, just the name, not the path.  Use if you want to save the image somewhere.
@@ -72,7 +93,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// <param name="path"></param>
 		public void Save(string path)
 		{
-		   Image.Save(path);
+			ThrowIfDisposedOfAlready();
+			Image.Save(path);
 			Metadata.Write();
 		}
 
@@ -82,7 +104,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
-			if(Metadata!=null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+			ThrowIfDisposedOfAlready();
+			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
 			{
 				Metadata.Write(_pathForSavingMetadataChanges);
 				Metadata.HasChanges = false;
@@ -186,20 +209,24 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			if (disposing)
 			{
-				Disposed = true;
+				string imageLabel = _image==null? "no-image":"with-image";
+				Debug.WriteLine("Disposing PalasoImage "+imageLabel);
 				if (Image != null)
 				{
 					Image.Dispose();
 					Image = null;
 				}
+				Disposed = true;
 			}
 		}
 
 		~PalasoImage()
 		{
-			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
+			if (_image!=null && //Todo: it would be nice if we were water tight, but at the moment, if there was not image, we don't really care
+				!Disposed && LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
 			{
-				Debug.Assert(Disposed,"PalasoImage wasn't disposed of properly ****");
+				string imageLabel = _image == null ? "no-image" : "with-image";
+				Debug.Assert(Disposed, "PalasoImage wasn't disposed of properly: " + imageLabel);
 			}
 		}
 	}

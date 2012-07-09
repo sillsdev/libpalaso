@@ -75,6 +75,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						_imageInfo.Dispose();
 					}
 					_imageInfo = value;
+					GC.Collect();//having trouble reliably tracking down a PalasoImage which is not being disposed of.
 				}
 				catch (Exception e)
 				{
