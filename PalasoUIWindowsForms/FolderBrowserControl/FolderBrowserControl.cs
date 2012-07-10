@@ -840,22 +840,21 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 				{
 					var folderList = Directory.GetDirectories(currentFolder.Tag.ToString());
 
-					// Rudimentary checks to see if we need to process this folder node:
-					if (folderList.Length == 0)
+					// Rudimentary check to see if we've already processed this folder node:
+					if (folderList.Length == currentFolder.Nodes.Count)
 						return;
-					// check if this node already has these entries (already been processed)
-					if ((from object node in currentFolder.Nodes select node as TreeNode).Any(existingNode => existingNode.Tag == folderList[0]))
-					{
-						return;
-					}
 
 					Array.Sort(folderList);
 
 					// Add to the currentFolder's children each folder's path from folderList:
 					foreach (var path in folderList)
 					{
-						var node = new TreeNode { Tag = path, Text = Path.GetFileName(path) ?? "", ImageIndex = 1 };
-						currentFolder.Nodes.Add(node);
+						var testDup = currentFolder.Nodes.Find(path, false);
+						if(testDup.Length == 0)
+						{
+							var node = new TreeNode { Name = path, Tag = path, Text = Path.GetFileName(path) ?? "", ImageIndex = 1 };
+							currentFolder.Nodes.Add(node);
+						}
 					}
 				}
 			}
