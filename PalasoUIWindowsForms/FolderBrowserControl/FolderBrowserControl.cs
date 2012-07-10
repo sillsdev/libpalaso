@@ -798,10 +798,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			{
 				if (currentFolder.Text == DesktopFolderName)
 				{
-					if ((node.Text != MyDocumentsFolderName)
-						&& (node.Text != MyComputerFolderName)
-						&& (node.Text != MicrosoftWindowsNetworkFolderName)
-						&& (node.Text != MyNetworkPlacesFolderName))
+					if (!IsSpecialNode(node))
 					{
 						AddChildFolders(node);
 					}
@@ -816,6 +813,22 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		}
 
 		/// <summary>
+		/// This method will check if a given treenode is one of the specially handled ones
+		/// </summary>
+		/// <param name="node"></param>
+		/// <returns></returns>
+		private static bool IsSpecialNode(TreeNode node)
+		{
+			return (node.Text == MyDocumentsFolderName)
+				   || (node.Text == MyComputerFolderName)
+				   || (node.Text == MicrosoftWindowsNetworkFolderName)
+				   || (node.Text == MyNetworkPlacesFolderName)
+				   || (node.Text == EntireNetworkFolderName)
+				   || (node.Parent != null && node.Parent.Text == MicrosoftWindowsNetworkFolderName)
+				   || (node.Tag.ToString().Contains("\\\\") && node.Tag.ToString().LastIndexOf('\\') <= 1); //can't use \\computername to find shares, they must be clicked on directly.
+		}
+
+		/// <summary>
 		/// Fills in the child level of subfolders of the given folder.
 		/// </summary>
 		/// <param name="currentFolder">A folder somewhere in the folder treeview</param>
@@ -823,19 +836,27 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			try
 			{
-				var folderList = Directory.GetDirectories(currentFolder.Tag.ToString());
-
-				// Rudimentary check to see if we've already processed this folder node:
-				if (folderList.Length == currentFolder.Nodes.Count)
-					return;
-
-				Array.Sort(folderList);
-
-				// Add to the currentFolder's children each folder's path from folderList:
-				foreach (var path in folderList)
+				if(!IsSpecialNode(currentFolder))
 				{
-					var node = new TreeNode {Tag = path, Text = Path.GetFileName(path) ?? "", ImageIndex = 1};
-					currentFolder.Nodes.Add(node);
+					var folderList = Directory.GetDirectories(currentFolder.Tag.ToString());
+
+					// Rudimentary checks to see if we need to process this folder node:
+					if (folderList.Length == 0)
+						return;
+					// check if this node already has these entries (already been processed)
+					if ((from object node in currentFolder.Nodes select node as TreeNode).Any(existingNode => existingNode.Tag == folderList[0]))
+					{
+						return;
+					}
+
+					Array.Sort(folderList);
+
+					// Add to the currentFolder's children each folder's path from folderList:
+					foreach (var path in folderList)
+					{
+						var node = new TreeNode { Tag = path, Text = Path.GetFileName(path) ?? "", ImageIndex = 1 };
+						currentFolder.Nodes.Add(node);
+					}
 				}
 			}
 			catch (UnauthorizedAccessException)
@@ -1295,9 +1316,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			var selectedNode = e.Node;
 
 			// Set the path textbox text to match the selection, unless it is one of the fancy folders:
-			if ((selectedNode.Text != MyComputerFolderName)
-				&& (selectedNode.Text != MyNetworkPlacesFolderName)
-				&& (selectedNode.Text != EntireNetworkFolderName))
+			if (!IsSpecialNode(selectedNode))
 			{
 				SetFolderPathTextBoxManually(selectedNode.Tag.ToString());
 				SelectedPath = _folderPathTextBox.Text;
@@ -1328,25 +1347,27 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 			else
 			{
 				// Check if microsoftWindowsNetworkChildNode is one of several special folders:
-				if ((expandedNode.Text == DesktopFolderName)
-					|| (expandedNode.Text == MicrosoftWindowsNetworkFolderName)
-					|| (expandedNode.Text == MyComputerFolderName)
-					|| (expandedNode.Text == MyNetworkPlacesFolderName)
-					|| (expandedNode.Text == EntireNetworkFolderName)
-					|| ((expandedNode.Parent != null) && (expandedNode.Parent.Text == MicrosoftWindowsNetworkFolderName)))
+				switch(expandedNode.Text)
 				{
-					if ((expandedNode.Text == MyComputerFolderName) && (expandedNode.GetNodeCount(true) < 2))
-						ExpandMyComputerNode();
-
-					else if ((expandedNode.Text == EntireNetworkFolderName))
+					case MyComputerFolderName:
+						if (expandedNode.GetNodeCount(true) < 2)
+						{
+							ExpandMyComputerNode();
+						}
+						break;
+					case EntireNetworkFolderName:
 						ExpandEntireNetworkNode(expandedNode);
-
-					else if ((expandedNode.Parent != null) && (expandedNode.Parent.Text == MicrosoftWindowsNetworkFolderName))
-						ExpandMicrosoftWindowsNetworkChildNode(expandedNode);
-				} // End if microsoftWindowsNetworkChildNode is one of several special folders
-				else
-				{
-					AddChildAndGrandchildFolders(expandedNode);
+						break;
+					default:
+						if (expandedNode.Parent != null && expandedNode.Parent.Text == MicrosoftWindowsNetworkFolderName)
+						{
+							ExpandMicrosoftWindowsNetworkChildNode(expandedNode);
+						}
+						else
+						{
+							AddChildAndGrandchildFolders(expandedNode);
+						}
+						break;
 				}
 			}
 			Cursor.Current = Cursors.Default;
