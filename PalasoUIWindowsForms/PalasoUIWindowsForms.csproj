@@ -259,11 +259,11 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>LicenseLogos.resx</DependentUpon>
 	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.cs">
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.Designer.cs">
-	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.Designer.cs">
+	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
@@ -609,8 +609,8 @@
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\MetdataEditorControl.resx">
-	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
+	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
+	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
