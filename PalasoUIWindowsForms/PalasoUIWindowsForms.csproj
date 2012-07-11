@@ -233,6 +233,9 @@
 	<Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.Designer.cs">
 	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\OpenFileDialogWithViews.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -256,17 +259,11 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>LicenseLogos.resx</DependentUpon>
 	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.cs">
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.Designer.cs">
-	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ExtendedFileDialog.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ExtendedFileDialog.designer.cs">
-	  <DependentUpon>ExtendedFileDialog.cs</DependentUpon>
+	<Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.Designer.cs">
+	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
@@ -612,11 +609,8 @@
 	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\MetdataEditorControl.resx">
-	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ExtendedFileDialog.resx">
-	  <DependentUpon>ExtendedFileDialog.cs</DependentUpon>
+	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
+	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
