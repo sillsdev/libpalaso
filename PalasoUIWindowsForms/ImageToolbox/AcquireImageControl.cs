@@ -5,8 +5,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using CustomControls;
-using Palaso.UI.WindowsForms.FileDialogExtender;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -41,8 +39,42 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void OnGetFromFileSystemClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.SingleImage);
+//#if MONO
+//			            using (var dlg = new OpenFileDialog())
+//            {
+//                if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
+//                {
+//                    dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+//                }
+//                else
+//                {
+//                    dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
+//                }
+//
+//                dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+//                dlg.Multiselect = false;
+//                dlg.AutoUpgradeEnabled = true;
+//				if (DialogResult.OK == dlg.ShowDialog())
+//                {
+//                    _currentImage = PalasoImage.FromFile(dlg.FileName);
+//                    _pictureBox.Image = _currentImage.Image;
+//                    ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
+//                    ImageToolboxSettings.Default.Save();
+//                    if (ImageChanged != null)
+//                        ImageChanged.Invoke(this, null);
+//                }
+//			}
+//#else
 #if MONO
-						using (var dlg = new OpenFileDialog())
+			using (var dlg = new OpenFileDialog())
+#else
+			//The primary thing this OpenFileDialogEx buys us is that with the standard one, there's
+			//no way pre-set, what "view" the user gets. With the standard dialog,
+			//we had complaints that a user had to change the view to show icons *each time* they used this.
+			//Now, OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
+
+			using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
+#endif
 			{
 				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 				{
@@ -50,49 +82,20 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				else
 				{
-					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
+					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
 				}
 
-				dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-				dlg.Multiselect = false;
-				dlg.AutoUpgradeEnabled = true;
+				//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+				dlg.Filter = "picture files(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
-					_currentImage = PalasoImage.FromFile(dlg.FileName);
-					_pictureBox.Image = _currentImage.Image;
 					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
-					ImageToolboxSettings.Default.Save();
-					if (ImageChanged != null)
-						ImageChanged.Invoke(this, null);
-				}
-			}
-#else
-			//The primary thing this ExtendedFileDialog buys us is that with the standard one, there's
-			//no way to preserve, let alone pre-set, what "view" the user gets. With the standard dialog,
-			//We had complaints that a user had to change the view to show icons *each time* they used this.
-			using (var dlg = new ExtendedFileDialog())
-			{
-				dlg.FileDlgDefaultViewMode = FolderViewMode.Thumbnails;
-				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
-				{
-					dlg.FileDlgInitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-				}
-				else
-				{
-					dlg.FileDlgInitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
-				}
-
-				//NB: dissallowed because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-				dlg.FileDlgFilter = "picture files(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-
-				if (DialogResult.OK == dlg.ShowDialog())
-				{
-					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileDlgFileName);
 					ImageToolboxSettings.Default.Save();
 
 					try
 					{
-						_currentImage = PalasoImage.FromFile(dlg.FileDlgFileName);
+						_currentImage = PalasoImage.FromFile(dlg.FileName);
 					}
 					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
 					{
@@ -104,7 +107,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						ImageChanged.Invoke(this, null);
 				}
 			}
-#endif
 		}
 
 		private void OpenFileFromDrag(string path)

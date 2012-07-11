@@ -233,6 +233,9 @@
 	<Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.Designer.cs">
 	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
 	</Compile>
+	<Compile Include="ImageToolbox\OpenFileDialogWithViews.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -261,12 +264,6 @@
 	</Compile>
 	<Compile Include="ClearShare\WinFormsUI\MetdataEditorControl.Designer.cs">
 	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ExtendedFileDialog.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ExtendedFileDialog.designer.cs">
-	  <DependentUpon>ExtendedFileDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\PalasoImage.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
@@ -614,9 +611,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\WinFormsUI\MetdataEditorControl.resx">
 	  <DependentUpon>MetdataEditorControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ExtendedFileDialog.resx">
-	  <DependentUpon>ExtendedFileDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
