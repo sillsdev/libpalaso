@@ -32,7 +32,7 @@
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._minimallyCompleteCheckTimer = new System.Windows.Forms.Timer(this.components);
-			this._metdataEditorControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetdataEditorControl();
+			this._metadataEditorControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetadataEditorControl();
 			this.SuspendLayout();
 			//
 			// _okButton
@@ -66,12 +66,12 @@
 			//
 			// _metdataEditorControl
 			//
-			this._metdataEditorControl.Location = new System.Drawing.Point(-1, 0);
-			this._metdataEditorControl.Metadata = null;
-			this._metdataEditorControl.Name = "_metdataEditorControl";
-			this._metdataEditorControl.ShowCreator = false;
-			this._metdataEditorControl.Size = new System.Drawing.Size(338, 505);
-			this._metdataEditorControl.TabIndex = 0;
+			this._metadataEditorControl.Location = new System.Drawing.Point(-1, 0);
+			this._metadataEditorControl.Metadata = null;
+			this._metadataEditorControl.Name = "_metadataEditorControl";
+			this._metadataEditorControl.ShowCreator = false;
+			this._metadataEditorControl.Size = new System.Drawing.Size(338, 505);
+			this._metadataEditorControl.TabIndex = 0;
 			//
 			// MetadataEditorDialog
 			//
@@ -82,7 +82,7 @@
 			this.ControlBox = false;
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);
-			this.Controls.Add(this._metdataEditorControl);
+			this.Controls.Add(this._metadataEditorControl);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "MetadataEditorDialog";
 			this.Text = "Done at runtime";
@@ -92,7 +92,7 @@
 
 		#endregion
 
-		private MetdataEditorControl _metdataEditorControl;
+		private MetadataEditorControl _metadataEditorControl;
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Button _cancelButton;
 		private System.Windows.Forms.Timer _minimallyCompleteCheckTimer;

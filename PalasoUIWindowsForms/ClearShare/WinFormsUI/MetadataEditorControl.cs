@@ -3,12 +3,12 @@ using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
-	public partial class MetdataEditorControl : UserControl
+	public partial class MetadataEditorControl : UserControl
 	{
 		private Metadata _metadata;
 		private bool _settingUp;
 
-		public MetdataEditorControl()
+		public MetadataEditorControl()
 		{
 			InitializeComponent();
 
@@ -142,6 +142,11 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			var customLicense = _metadata.License as CustomLicense;
 			if(customLicense!=null)
 				customLicense.RightsStatement = _customLicenseDescription.Text;
+		}
+
+		private void _copyrightBy_TabIndexChanged(object sender, EventArgs e)
+		{
+
 		}
 
 		/*       private PalasoImage _image;

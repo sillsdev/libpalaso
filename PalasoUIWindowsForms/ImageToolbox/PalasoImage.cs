@@ -11,7 +11,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	public class PalasoImage : IDisposable
 
 	{
-		public Metadata Metadata;
+		private Metadata _metadata;
+
+		public Metadata Metadata
+		{
+			get { return _metadata; }
+			set
+			{
+				_metadata = value;
+				_metadata.HasChanges = true; //i.e., we *do* want to save this to disk when we get a chance
+			}
+		}
 
 		/// <summary>
 		/// generally, when we load an image, we can happily forget where it came from, becuase

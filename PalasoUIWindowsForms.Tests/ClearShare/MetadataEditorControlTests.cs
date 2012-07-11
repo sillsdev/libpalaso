@@ -21,7 +21,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			m.Creator = "you";
 			m.AttributionUrl = "http://google.com";
 			m.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
-			var c = new MetdataEditorControl();
+			var c = new MetadataEditorControl();
 			c.Metadata = m;
 			var dlg = new Form();
 			dlg.Height = c.Height;
@@ -38,7 +38,25 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			m.Creator = "you";
 			m.AttributionUrl = "http://google.com";
 			m.License = new NullLicense();
-			var c = new MetdataEditorControl();
+			var c = new MetadataEditorControl();
+			c.Metadata = m;
+			var dlg = new Form();
+			dlg.Height = c.Height;
+			dlg.Width = c.Width + 20;
+			c.Dock = DockStyle.Fill;
+			dlg.Controls.Add(c);
+			dlg.ShowDialog();
+		}
+
+		[Test, Ignore("By Hand")]
+		public void ShowControl_NoLicense()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "copyright me";
+			m.Creator = "you";
+			m.AttributionUrl = "http://google.com";
+			m.License = new NullLicense();
+			var c = new MetadataEditorControl();
 			c.Metadata = m;
 			var dlg = new Form();
 			dlg.Height = c.Height;

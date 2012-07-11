@@ -1,6 +1,6 @@
 ﻿namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
-	partial class MetdataEditorControl
+	partial class MetadataEditorControl
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -38,6 +38,7 @@
 			this._noDerivates = new System.Windows.Forms.RadioButton();
 			this._derivatives = new System.Windows.Forms.RadioButton();
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._nonCommercial = new System.Windows.Forms.RadioButton();
 			this._commercial = new System.Windows.Forms.RadioButton();
 			this._licenseImage = new System.Windows.Forms.PictureBox();
@@ -47,7 +48,6 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this._customLicense = new System.Windows.Forms.RadioButton();
 			this._customLicenseDescription = new System.Windows.Forms.TextBox();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -70,7 +70,8 @@
 			this._copyrightBy.Location = new System.Drawing.Point(173, 47);
 			this._copyrightBy.Name = "_copyrightBy";
 			this._copyrightBy.Size = new System.Drawing.Size(128, 23);
-			this._copyrightBy.TabIndex = 1;
+			this._copyrightBy.TabIndex = 2;
+			this._copyrightBy.TabIndexChanged += new System.EventHandler(this._copyrightBy_TabIndexChanged);
 			this._copyrightBy.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
 			//
 			// label2
@@ -98,7 +99,7 @@
 			this._illustratorLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._illustratorLabel.Location = new System.Drawing.Point(12, 21);
 			this._illustratorLabel.Name = "_illustratorLabel";
-			this._illustratorLabel.Size = new System.Drawing.Size(57, 15);
+			this._illustratorLabel.Size = new System.Drawing.Size(46, 15);
 			this._illustratorLabel.TabIndex = 5;
 			this._illustratorLabel.Text = "Creator";
 			//
@@ -110,7 +111,7 @@
 			this.panel1.Location = new System.Drawing.Point(60, 212);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(222, 67);
-			this.panel1.TabIndex = 1;
+			this.panel1.TabIndex = 3;
 			//
 			// _shareAlike
 			//
@@ -160,6 +161,22 @@
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(229, 65);
 			this.panel2.TabIndex = 20;
+			//
+			// betterLabel1
+			//
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel1.Enabled = false;
+			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
+			this.betterLabel1.Multiline = true;
+			this.betterLabel1.Name = "betterLabel1";
+			this.betterLabel1.ReadOnly = true;
+			this.betterLabel1.Size = new System.Drawing.Size(392, 20);
+			this.betterLabel1.TabIndex = 0;
+			this.betterLabel1.TabStop = false;
+			this.betterLabel1.Text = "Allow commercial uses of your work?";
 			//
 			// _nonCommercial
 			//
@@ -213,7 +230,7 @@
 			this._unknownLicense.Location = new System.Drawing.Point(43, 331);
 			this._unknownLicense.Name = "_unknownLicense";
 			this._unknownLicense.Size = new System.Drawing.Size(250, 17);
-			this._unknownLicense.TabIndex = 2;
+			this._unknownLicense.TabIndex = 4;
 			this._unknownLicense.TabStop = true;
 			this._unknownLicense.Text = "Contact the copyright holder for any permissions";
 			this._unknownLicense.UseVisualStyleBackColor = true;
@@ -225,7 +242,7 @@
 			this._copyrightYear.Location = new System.Drawing.Point(104, 47);
 			this._copyrightYear.Name = "_copyrightYear";
 			this._copyrightYear.Size = new System.Drawing.Size(38, 23);
-			this._copyrightYear.TabIndex = 2;
+			this._copyrightYear.TabIndex = 1;
 			this._copyrightYear.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
 			//
 			// label1
@@ -257,29 +274,15 @@
 			this._customLicenseDescription.Multiline = true;
 			this._customLicenseDescription.Name = "_customLicenseDescription";
 			this._customLicenseDescription.Size = new System.Drawing.Size(219, 83);
-			this._customLicenseDescription.TabIndex = 27;
+			this._customLicenseDescription.TabIndex = 3;
 			this._customLicenseDescription.TextChanged += new System.EventHandler(this._customLicenseDescription_TextChanged);
-			//
-			// betterLabel1
-			//
-			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
-			this.betterLabel1.Multiline = true;
-			this.betterLabel1.Name = "betterLabel1";
-			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(392, 20);
-			this.betterLabel1.TabIndex = 0;
-			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "Allow commercial uses of your work?";
 			//
 			// betterLabel2
 			//
 			this.betterLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel2.Enabled = false;
 			this.betterLabel2.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.betterLabel2.Location = new System.Drawing.Point(59, 192);
 			this.betterLabel2.Multiline = true;
@@ -309,7 +312,7 @@
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this._illustrator);
 			this.Controls.Add(this._illustratorLabel);
-			this.Name = "MetdataEditorControl";
+			this.Name = "MetadataEditorControl";
 			this.Size = new System.Drawing.Size(338, 481);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
