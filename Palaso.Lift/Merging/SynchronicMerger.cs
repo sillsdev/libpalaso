@@ -230,9 +230,12 @@ namespace Palaso.Lift.Merging
 			   throw new ArgumentException("pathToBaseLiftFile must be a full path, not just a file name. Path was "+pathToBaseLiftFile);
 		   }
 			// ReSharper disable AssignNullToNotNullAttribute
-			DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(pathToBaseLiftFile));
+			var di = new DirectoryInfo(Path.GetDirectoryName(pathToBaseLiftFile));
 			// ReSharper restore AssignNullToNotNullAttribute
-			return di.GetFiles("*"+ExtensionOfIncrementalFiles, SearchOption.TopDirectoryOnly);
+			var files = di.GetFiles("*"+ExtensionOfIncrementalFiles, SearchOption.TopDirectoryOnly);
+			//files comes back unsorted, sort by creation time before returning.
+			Array.Sort(files, new Comparison<FileInfo>((a, b) => a.CreationTime.CompareTo(b.CreationTime)));
+			return files;
 		}
 
 		static private void TestWriting(XmlWriter w)

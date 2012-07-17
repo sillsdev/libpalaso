@@ -93,13 +93,13 @@ namespace Palaso.Lift.Tests.Merging
 			FileInfo[] files = SynchronicMerger.GetPendingUpdateFiles(Path.Combine(_directory, _baseLiftFileName));
 
 			XmlDocument doc = MergeAndGetResult(true, _directory, files);
-			Assert.AreEqual(6, doc.SelectNodes("//entry").Count);
-			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one']").Count);
-			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='two']").Count);
-			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='twoblatblat']").Count);
-			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='four']").Count);
-			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='fourChangedFirstAddition']").Count);
-			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='six']").Count);
+			Assert.AreEqual(6, doc.SelectNodes("//entry").Count, "Should have been 6 entries");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one']").Count, "should have been one entry with id of one");
+			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='two']").Count, "should not have been any entries with id of two");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='twoblatblat']").Count, "should have had one entry with id twoblatblat");
+			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='four']").Count, "should have been no entries with id four");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='fourChangedFirstAddition']").Count, "should have been one entry with id 'forchangedfirstaddition'");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='six']").Count, "should have been one entry with id of 6");
 		}
 
 		private static readonly string s_LiftData1 =
