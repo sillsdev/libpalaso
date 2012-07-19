@@ -183,6 +183,7 @@
 	<Compile Include="FolderBrowserControl\FolderBrowserControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
+	<Compile Include="FontHelper.cs" />
 	<Compile Include="HotSpot\HotSpot.cs" />
 	<Compile Include="HotSpot\HotSpotProvider.cs" />
 	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
