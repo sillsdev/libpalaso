@@ -102,10 +102,28 @@ namespace Palaso.UI.WindowsForms.ClearShare
 					value = null;
 				if (value != _copyrightNotice)
 					HasChanges = true;
-				_copyrightNotice = value;
+				_copyrightNotice = FixArtOfReadingCopyrightProblem(value);
 				if (!String.IsNullOrEmpty(_copyrightNotice))
 					IsEmpty = false;
+
 			}
+		}
+
+		/// <summary>
+		/// Somehow we shipped art of reading with a copyright which read:
+		/// "Copyright, SIL International 2009. This work is licensed under a Creative Commons Attribution-NoDeriv" and so forth.
+		/// This trims that off.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private string FixArtOfReadingCopyrightProblem(string value)
+		{
+			if(string.IsNullOrEmpty(value))
+				return string.Empty;
+			var startOfProblem = value.IndexOf("This work");
+			if (startOfProblem == -1)
+				return value;
+			return value.Substring(0, startOfProblem);
 		}
 
 		private string _creator;
@@ -200,15 +218,17 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+
 		private static Dictionary<string, string> GetImageProperites(string path)
 		{
 			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
 			var args = new StringBuilder();
+			args.Append("-charset cp65001 ");//utf-8
 			foreach (var assignment in MetadataAssignments)
 			{
 				args.Append(" " + assignment.Switch + " ");
 			}
-			var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path), Path.GetDirectoryName(path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
 #if DEBUG
 			Debug.WriteLine("reading");
 			Debug.WriteLine(args.ToString());
@@ -311,6 +331,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 
 		private string _path;
+		private static Encoding _commandLineEncoding = Encoding.UTF8;
 
 		public void Write()
 		{
@@ -335,9 +356,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
+			arguments.Append("-charset cp65001 ");//utf-8
 			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", path);
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(_path), 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 
 
@@ -448,13 +470,14 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				File.Delete(path);
 
 			StringBuilder arguments = new StringBuilder();
+			arguments.Append("-charset cp65001 ");//utf-8
 			arguments.AppendFormat("-o \"{0}\"", path);
 			AddAssignmentArguments(arguments);
 
 			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 
 			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
 
 		}
 
@@ -480,8 +503,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 					tempImage.Save(temp.Path);
 				}
 				StringBuilder arguments = new StringBuilder();
+				arguments.Append("-charset cp65001 ");//utf-8
 				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", path, temp.Path);
-				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
 				LoadProperties(temp.Path, this);
 			}
 
@@ -515,6 +539,26 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		static public bool HaveStoredExemplar(FileCategory category)
 		{
 			return File.Exists(GetExemplarPath(category));
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="ideal_iso639LanguageCode">e.g. "en" or "fr"</param>
+		/// <returns></returns>
+		public string GetSummaryParagraph(string ideal_iso639LanguageCode)
+		{
+			var b = new StringBuilder();
+			b.AppendLine("Creator: " + Creator);
+			b.AppendLine(CopyrightNotice);
+			if(!string.IsNullOrEmpty(CollectionName))
+				b.AppendLine(CollectionName);
+			if (!string.IsNullOrEmpty(CollectionUri))
+				b.AppendLine(CollectionUri);
+			if (!string.IsNullOrEmpty(License.Url))
+				b.AppendLine(License.Url);
+			b.AppendLine(License.GetDescription(ideal_iso639LanguageCode));
+			return b.ToString();
 		}
 
 		/// <summary>

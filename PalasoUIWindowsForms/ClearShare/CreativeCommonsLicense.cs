@@ -174,18 +174,18 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			string s="";
 
 			if(CommercialUseAllowed)
-				s+="You are free to make commercial use of this book. ";
+				s+="You are free to make commercial use of this work. ";
 			else
 				s += "You may not use this work for commercial purposes. ";
 
 			if(DerivativeRule == DerivativeRules.Derivatives)
-				s += "You are free to adapt, remix, copy, distribute, and transmit this book. ";
+				s += "You are free to adapt, remix, copy, distribute, and transmit this work. ";
 
 			if (DerivativeRule == DerivativeRules.NoDerivatives)
-				s += "You may not alter, transform, or build upon this book without permission. ";
+				s += "You may not alter, transform, or build upon this work without permission. ";
 
 			if (DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
-				s += "You may adapt or build upon this book, but you may distribute the resulting work only under the same or similar license to this one.";
+				s += "You may adapt or build upon this work, but you may distribute the resulting work only under the same or similar license to this one.";
 
 			if (AttributionRequired)
 				s += "You must attribute the work in the manner specified by the author. ";

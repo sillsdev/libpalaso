@@ -16,7 +16,16 @@ namespace Palaso.CommandLineProcessing
 	{
 		public static int TimeoutSecondsOverrideForUnitTests = 10000;
 
+		/// <summary>
+		/// This one doesn't attemtp to influence the encoding used
+		/// </summary>
 		public static ExecutionResult Run(string exePath, string arguments, string fromDirectory, int secondsBeforeTimeOut, IProgress progress)
+		{
+			return Run(exePath, arguments, null, fromDirectory, secondsBeforeTimeOut, progress);
+		}
+
+
+		public static ExecutionResult Run(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress)
 		{
 			ExecutionResult result = new ExecutionResult();
 			Process process = new Process();
@@ -27,6 +36,10 @@ namespace Palaso.CommandLineProcessing
 			process.StartInfo.WorkingDirectory = fromDirectory;
 			process.StartInfo.FileName = exePath;
 			process.StartInfo.Arguments = arguments;
+			if(encoding!=null)
+			{
+				process.StartInfo.StandardOutputEncoding = encoding;
+			}
 
 			try
 			{
