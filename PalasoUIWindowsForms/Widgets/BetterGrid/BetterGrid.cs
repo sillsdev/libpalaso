@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -25,6 +26,11 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public event DataGridViewCellPaintingEventHandler DrawFocusRectangle;
 
+		public delegate void GetWaterMarkRectHandler(object sender,
+			Rectangle adjustedClientRect, ref Rectangle rcProposed);
+
+		public event GetWaterMarkRectHandler GetWaterMarkRect;
+
 		private const string kDropDownStyle = "DropDown";
 
 		protected Action<int> RemoveRowAction;
@@ -32,6 +38,10 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 
 		protected Image _removeRowImageNormal;
 		protected Image _removeRowImageHot;
+		protected bool _isDirty;
+		protected bool _paintWaterMark;
+		protected bool _showWaterMarkWhenDirty;
+		protected string _waterMark = "!";
 		protected int _prevRowIndex = -1;
 
 		/// ------------------------------------------------------------------------------------
@@ -80,7 +90,18 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		[Browsable(false)]
 		[DefaultValue(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public virtual bool IsDirty { get; set; }
+		public bool IsDirty
+		{
+			get { return _isDirty; }
+			set
+			{
+				_isDirty = value;
+				_paintWaterMark = (value && _showWaterMarkWhenDirty);
+
+				if (_showWaterMarkWhenDirty)
+					Invalidate();
+			}
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -169,6 +190,83 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 
 		#endregion
 
+		#region Watermark handling methods
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets a value indicating whether or not a water mark is shown when the grid
+		/// is dirty.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ShowWaterMarkWhenDirty
+		{
+			get { return _showWaterMarkWhenDirty; }
+			set
+			{
+				_showWaterMarkWhenDirty = value;
+				_paintWaterMark = (value && _isDirty);
+				Invalidate();
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the character displayed as the water mark.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string WaterMark
+		{
+			get { return _waterMark; }
+			set
+			{
+				_waterMark = value;
+				if (_paintWaterMark)
+					Invalidate();
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the rectangle in which the watermark is drawn.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private Rectangle WaterMarkRectangle
+		{
+			get
+			{
+				Rectangle rc;
+				int clientWidth = ClientSize.Width;
+
+				if (Rows.Count > 0 && Columns.Count > 0 && FirstDisplayedCell != null)
+				{
+					// Determine whether or not the vertical scroll bar is showing.
+					int visibleRows = Rows.GetRowCount(DataGridViewElementStates.Visible);
+					rc = GetCellDisplayRectangle(0, FirstDisplayedCell.RowIndex, false);
+					if (rc.Height * visibleRows >= ClientSize.Height)
+						clientWidth -= SystemInformation.VerticalScrollBarWidth;
+				}
+
+				// Modify the client rectangle so it doesn't
+				// include the vertical scroll bar width.
+				rc = ClientRectangle;
+				rc.Width = (int)(clientWidth * 0.5f);
+				rc.Height = (int)(rc.Height * 0.5f);
+				rc.X = (clientWidth - rc.Width) / 2;
+				rc.Y = (ClientRectangle.Height - rc.Height) / 2;
+
+				// Get the rectangle from subscribers if there are any.
+				// If not, then just return a rectangle centered in the grid.
+				if (GetWaterMarkRect != null)
+				{
+					Rectangle rcAdjustedClientRect = ClientRectangle;
+					rcAdjustedClientRect.Width = clientWidth;
+					GetWaterMarkRect(this, rcAdjustedClientRect, ref rc);
+				}
+
+				return rc;
+			}
+		}
+		#endregion
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Update the water mark when the grid changes size.
@@ -176,9 +274,22 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnSizeChanged(EventArgs e)
 		{
+			bool paintWaterMark = _paintWaterMark;
+
+			if (_paintWaterMark)
+			{
+				// Clear previous water mark.
+				_paintWaterMark = false;
+				Invalidate();
+			}
+
 			base.OnSizeChanged(e);
 
-			if (Focused && PaintFullRowFocusRectangle &&
+			_paintWaterMark = paintWaterMark;
+			if (_paintWaterMark)
+				Invalidate(WaterMarkRectangle);
+
+			if (!_paintWaterMark && Focused && PaintFullRowFocusRectangle &&
 				CurrentCellAddress.Y >= 0 && CurrentCellAddress.Y < RowCount)
 			{
 				InvalidateRow(CurrentCellAddress.Y);
@@ -221,7 +332,20 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnScroll(ScrollEventArgs e)
 		{
+			bool paintWaterMark = _paintWaterMark;
+
+			if (_paintWaterMark)
+			{
+				// Clear previous water mark.
+				_paintWaterMark = false;
+				Invalidate();
+			}
+
 			base.OnScroll(e);
+
+			_paintWaterMark = paintWaterMark;
+			if (_paintWaterMark)
+				Invalidate(WaterMarkRectangle);
 
 			// This chunk of code takes care of painting problems when scrolling and a full
 			// row focus rectangle is being drawn. The problems are:
@@ -254,13 +378,54 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Paints a water mark when the results are stale (i.e. the query settings have been
+		/// changed since the results were shown).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			base.OnPaint(e);
+
+			if (!_paintWaterMark || string.IsNullOrEmpty(_waterMark))
+				return;
+
+			Rectangle rc = WaterMarkRectangle;
+			GraphicsPath path = new GraphicsPath();
+			FontFamily family = FontFamily.GenericSerif;
+
+			// Find the first font size equal to or smaller than 256 that
+			// fits in the water mark rectangle.
+			for (int size = 256; size >= 0; size -= 2)
+			{
+				using (Font fnt = FontHelper.MakeFont(family.Name, size, FontStyle.Bold))
+				{
+					int height = TextRenderer.MeasureText(_waterMark, fnt).Height;
+					if (height < rc.Height)
+					{
+						using (StringFormat sf = GetStringFormat(true))
+							path.AddString(_waterMark, family, (int)FontStyle.Bold, size, rc, sf);
+
+						break;
+					}
+				}
+			}
+
+			path.AddEllipse(rc);
+
+			using (SolidBrush br = new SolidBrush(Color.FromArgb(35, DefaultCellStyle.ForeColor)))
+				e.Graphics.FillRegion(br, new Region(path));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// When a cell is in the edit mode and all the text in the edit control is selected,
 		/// pressing the home key changes the cell to the first cell in the row and pressing
-		/// the end key changes the cell to the last cell in the row. This seems counter
+		/// the end key changes the cell to the last cell in the row. This seems counter-
 		/// intuitive. I would expect the cursor to move to the beginning or end of the text
 		/// within the edit control, therefore, this method will trap those two keys and
 		/// force this desired behavior, then eat the key message as though it wasn't
 		/// dispatched.
+		/// Also, handle up and down keys specially when editing in a multi-line text box.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -316,11 +481,15 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected bool ProcessUpKey(TextBox txtBox)
 		{
-			// Don't override the default behavior if all the text is selected.
-			if (txtBox.SelectedText == txtBox.Text)
+			// Don't override the default behavior if all the text is selected or not multi-line.
+			if (txtBox.SelectedText == txtBox.Text || !txtBox.Multiline)
 				return false;
 
-			Point pt = txtBox.GetPositionFromCharIndex(txtBox.SelectionStart);
+			int selectionPosition = txtBox.SelectionStart;
+			// Getting the position after the very last character doesn't work.
+			if (selectionPosition == txtBox.Text.Length && selectionPosition > 0)
+				selectionPosition--;
+			Point pt = txtBox.GetPositionFromCharIndex(selectionPosition);
 
 			if (pt.Y == 0)
 				return false;
@@ -339,15 +508,18 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected bool ProcessDownKey(TextBox txtBox)
 		{
-			// Don't override the default behavior if all the text is selected.
-			if (txtBox.SelectedText == txtBox.Text)
+			// Don't override the default behavior if all the text is selected or not multi-line.
+			if (txtBox.SelectedText == txtBox.Text || !txtBox.Multiline)
 				return false;
 
 			int chrIndex = txtBox.SelectionStart;
-			Point pt = txtBox.GetPositionFromCharIndex(txtBox.SelectionStart);
+			Point pt = txtBox.GetPositionFromCharIndex(chrIndex);
 			pt.Y += TextRenderer.MeasureText("x", txtBox.Font).Height;
-			txtBox.SelectionStart = txtBox.GetCharIndexFromPosition(pt);
-			return (chrIndex != txtBox.SelectionStart);
+			var proposedNewSelection = txtBox.GetCharIndexFromPosition(pt);
+			if (proposedNewSelection <= chrIndex)
+				return false; // Don't let "down" take you *up*. (See SP-220.)
+			txtBox.SelectionStart = proposedNewSelection;
+			return true;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -428,7 +600,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCurrentCellDirtyStateChanged(EventArgs e)
 		{
-			if (!IsDirty)
+			if (!_isDirty)
 				IsDirty  = IsCurrentCellDirty;
 
 			base.OnCurrentCellDirtyStateChanged(e);
@@ -512,7 +684,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		private void HandleEditControlTextBoxPanelPaint(object sender, PaintEventArgs e)
 		{
-			var pnl = sender as Panel;
+			var pnl = (Panel)sender;
 			var txt = pnl.Controls[0];
 
 			if (pnl.Tag == null)
@@ -647,9 +819,40 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		#endregion
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Adjusts the rows in the grid by letting the grid calculate the row
+		/// heights automatically, then adds the extra amount specified.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public void AdjustGridRows(int extraAmount)
+		{
+			try
+			{
+				// Sometimes (or maybe always) this throws an exception when
+				// the first row is the only row and is the NewRowIndex row.
+				AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+			}
+			catch { }
+
+			AutoResizeRows();
+
+			if (extraAmount <= 0)
+				return;
+
+			foreach (var row in GetRows())
+				row.Height += extraAmount;
+		}
+
+		/// ------------------------------------------------------------------------------------
 		public IEnumerable<DataGridViewRow> GetRows()
 		{
 			return Rows.Cast<DataGridViewRow>();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public IEnumerable<DataGridViewColumn> GetColumns()
+		{
+			return Columns.Cast<DataGridViewColumn>();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -772,7 +975,13 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 				InvalidateRowInFullRowSelectMode(_prevRowIndex);
 				InvalidateRowInFullRowSelectMode(CurrentCellAddress.Y);
 				_prevRowIndex = CurrentCellAddress.Y;
-				OnCurrentRowChanged(EventArgs.Empty);
+
+				// REVIEW: So far, it seems to work that OnCurrentRowChanged is not
+				// invoked unless the handle is created. It's possible that somewhere
+				// down the road, a client will need it to be invoked before the handle
+				// is created. But I hope not.
+				if (IsHandleCreated && !Disposing)
+					BeginInvoke((Action<EventArgs>)OnCurrentRowChanged, EventArgs.Empty);
 			}
 		}
 
@@ -805,6 +1014,39 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 				e.Value = ((DataGridViewImageColumn)Columns["removerow"]).Image;
 
 			base.OnCellFormatting(e);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Draws the specified text in the middle of the grid using 12 point/bold version
+		/// of the grid's font. The verticalOffset is how far below the middle of the grid's
+		/// client area the message is drawn.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public void DrawMessageInCenterOfGrid(Graphics g, string message, int verticalOffset)
+		{
+			using (var fnt = new Font(Font.FontFamily, 12f, FontStyle.Regular))
+				DrawMessageInCenterOfGrid(g, message, fnt, verticalOffset);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Draws the specified text in the middle of the grid using the specified font. The
+		/// text will be drawn using the gray font. The verticalOffset is how far below the
+		/// middle of the grid's client area the message is drawn.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public void DrawMessageInCenterOfGrid(Graphics g, string message, Font fnt, int verticalOffset)
+		{
+			var rc = ClientRectangle;
+			rc.Height -= (verticalOffset + ColumnHeadersHeight);
+			rc.Y += (verticalOffset + ColumnHeadersHeight);
+			if (HScrollBar != null && HScrollBar.Visible)
+				rc.Height -= HScrollBar.Height;
+
+			TextRenderer.DrawText(g, message, fnt, rc, SystemColors.GrayText,
+				TextFormatFlags.EndEllipsis | TextFormatFlags.HorizontalCenter |
+				TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -848,7 +1090,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 				OnDrawExtendedColumnHeaderRow(e);
 			}
 
-			if (!e.Handled && Focused & PaintFullRowFocusRectangle &&
+			if (!e.Handled && Focused && PaintFullRowFocusRectangle &&
 				SelectionMode == DataGridViewSelectionMode.FullRowSelect)
 			{
 				OnDrawFocusRectangle(e);
@@ -918,12 +1160,28 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// --------------------------------------------------------------------------------------------
 		protected virtual void OnDrawFocusRectangle(DataGridViewCellPaintingEventArgs e)
 		{
+			if (!Focused)
+				return;
+
 			e.Handled = true;
 			var paintParts = e.PaintParts;
-			var rc = e.CellBounds;
 
 			paintParts &= ~DataGridViewPaintParts.Focus;
-			e.Paint(rc, paintParts);
+			e.Paint(e.CellBounds, paintParts);
+
+			DrawFocusRectangleIfFocused(e);
+
+			if (DrawFocusRectangle != null)
+				DrawFocusRectangle(this, e);
+		}
+
+		/// --------------------------------------------------------------------------------------------
+		public void DrawFocusRectangleIfFocused(DataGridViewCellPaintingEventArgs e)
+		{
+			if (!Focused)
+				return;
+
+			var rc = e.CellBounds;
 
 			int rowAboveCurrent = (CurrentCellAddress.Y == FirstDisplayedScrollingRowIndex ?
 				-1 : CurrentCellAddress.Y - 1);
@@ -1296,6 +1554,24 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 				VisualStyleInformation.IsSupportedByOS &&
 				VisualStyleInformation.IsEnabledByUser &&
 				VisualStyleRenderer.IsSupported);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Creates a StringFormat object based on the GenericDefault string format but
+		/// includes vertical centering, EllipsisCharacter trimming and the NoWrap format
+		/// flag. Horizontal alignment is centered when horizontalCenter is true. Otherwise
+		/// horizontal alignment is near.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private static StringFormat GetStringFormat(bool horizontalCenter)
+		{
+			StringFormat sf = (StringFormat)StringFormat.GenericDefault.Clone();
+			sf.Alignment = (horizontalCenter ? StringAlignment.Center : StringAlignment.Near);
+			sf.LineAlignment = StringAlignment.Center;
+			sf.Trimming = StringTrimming.EllipsisCharacter;
+			sf.FormatFlags |= StringFormatFlags.NoWrap;
+			return sf;
 		}
 	}
 }
