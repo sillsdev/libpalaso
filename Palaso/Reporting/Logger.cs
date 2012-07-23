@@ -423,6 +423,12 @@ namespace Palaso.Reporting
 
 		}
 
+		public static void ShowUserTheLogFile()
+		{
+			Singleton.m_out.Flush();
+			Process.Start(LogPath);
+		}
+
 		/// <summary>
 		/// if you're working with unmanaged code and get a System.AccessViolationException, well you're toast, and anything
 		/// that requires UI is gonna freeze up.  So call this instead
