@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Palaso.Properties;
 
 namespace Palaso.Reporting
 {
@@ -57,6 +58,7 @@ namespace Palaso.Reporting
 			_message.ForeColor = ForeColor;
 			_reoccurenceMessage.Font = SystemFonts.MessageBoxFont;
 			_icon.Image = SystemIcons.Warning.ToBitmap();
+			base.Icon = SystemIcons.Warning;
 		}
 
 		/// <summary>
@@ -78,6 +80,8 @@ namespace Palaso.Reporting
 
 		   Text = dialogTitle;
 			_message.Text = message;
+
+
 		}
 
 		private void _acceptButton_Click(object sender, EventArgs e)
@@ -141,6 +145,11 @@ namespace Palaso.Reporting
 				return TextRenderer.MeasureText(g, _message.Text, _message.Font,
 					new Size(_message.ClientSize.Width, 0), flags).Height;
 			}
+		}
+
+		private void ProblemNotificationDialog_Load(object sender, EventArgs e)
+		{
+			TaskBarFlasher.FlashTaskBarButtonUntilFocussed(this);
 		}
 	}
 }

@@ -149,10 +149,10 @@ namespace Palaso.Reporting
 			this.Name = "ProblemNotificationDialog";
 			this.Padding = new System.Windows.Forms.Padding(20, 22, 15, 0);
 			this.ShowIcon = false;
-			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Problem Notification";
 			this.TopMost = true;
+			this.Load += new System.EventHandler(this.ProblemNotificationDialog_Load);
 			((System.ComponentModel.ISupportInitialize)(this._icon)).EndInit();
 			this.tableLayout.ResumeLayout(false);
 			this.tableLayout.PerformLayout();

@@ -246,6 +246,7 @@
 	<Compile Include="Reporting\ReportingStrings.Designer.cs">
 	  <DependentUpon>ReportingStrings.resx</DependentUpon>
 	</Compile>
+	<Compile Include="Reporting\TaskBarFlasher.cs" />
 	<Compile Include="Reporting\UsageEmailDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
