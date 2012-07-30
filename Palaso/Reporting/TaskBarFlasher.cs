@@ -146,8 +146,8 @@ namespace Palaso.Reporting
 				FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_STOP, uint.MaxValue, 0);
 				return FlashWindowEx(ref fi);
 			}
-			return false;
 #endif
+			return false;
 		}
 		/// <summary>
 		/// A boolean value indicating whether the application is running on Windows 2000 or later.
