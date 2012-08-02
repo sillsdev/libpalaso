@@ -122,9 +122,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._invitationToMetadataPanel.Controls.Add(this._copyExemplarMetadata);
 			this._invitationToMetadataPanel.Controls.Add(this.betterLabel1);
 			this._invitationToMetadataPanel.Controls.Add(this._editMetadataLink);
-			this._invitationToMetadataPanel.Location = new System.Drawing.Point(9, 320);
+			this._invitationToMetadataPanel.Location = new System.Drawing.Point(9, 271);
 			this._invitationToMetadataPanel.Name = "_invitationToMetadataPanel";
-			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 146);
+			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 195);
 			this._invitationToMetadataPanel.TabIndex = 8;
 			//
 			// _copyExemplarMetadata

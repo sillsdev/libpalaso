@@ -58,7 +58,7 @@
 			//
 			this.label3.AutoSize = true;
 			this.label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label3.Location = new System.Drawing.Point(13, 75);
+			this.label3.Location = new System.Drawing.Point(12, 132);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(46, 15);
 			this.label3.TabIndex = 9;
@@ -67,9 +67,10 @@
 			// _copyrightBy
 			//
 			this._copyrightBy.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._copyrightBy.Location = new System.Drawing.Point(173, 47);
+			this._copyrightBy.Location = new System.Drawing.Point(104, 76);
+			this._copyrightBy.Multiline = true;
 			this._copyrightBy.Name = "_copyrightBy";
-			this._copyrightBy.Size = new System.Drawing.Size(128, 23);
+			this._copyrightBy.Size = new System.Drawing.Size(197, 47);
 			this._copyrightBy.TabIndex = 2;
 			this._copyrightBy.TabIndexChanged += new System.EventHandler(this._copyrightBy_TabIndexChanged);
 			this._copyrightBy.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
@@ -108,7 +109,7 @@
 			this.panel1.Controls.Add(this._shareAlike);
 			this.panel1.Controls.Add(this._noDerivates);
 			this.panel1.Controls.Add(this._derivatives);
-			this.panel1.Location = new System.Drawing.Point(60, 212);
+			this.panel1.Location = new System.Drawing.Point(59, 269);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(222, 67);
 			this.panel1.TabIndex = 3;
@@ -157,7 +158,7 @@
 			this.panel2.Controls.Add(this.betterLabel1);
 			this.panel2.Controls.Add(this._nonCommercial);
 			this.panel2.Controls.Add(this._commercial);
-			this.panel2.Location = new System.Drawing.Point(60, 115);
+			this.panel2.Location = new System.Drawing.Point(59, 172);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(229, 65);
 			this.panel2.TabIndex = 20;
@@ -206,7 +207,7 @@
 			//
 			// _licenseImage
 			//
-			this._licenseImage.Location = new System.Drawing.Point(57, 285);
+			this._licenseImage.Location = new System.Drawing.Point(56, 342);
 			this._licenseImage.Name = "_licenseImage";
 			this._licenseImage.Size = new System.Drawing.Size(156, 40);
 			this._licenseImage.TabIndex = 21;
@@ -215,7 +216,7 @@
 			// _creativeCommons
 			//
 			this._creativeCommons.AutoSize = true;
-			this._creativeCommons.Location = new System.Drawing.Point(43, 93);
+			this._creativeCommons.Location = new System.Drawing.Point(42, 150);
 			this._creativeCommons.Name = "_creativeCommons";
 			this._creativeCommons.Size = new System.Drawing.Size(113, 17);
 			this._creativeCommons.TabIndex = 22;
@@ -227,7 +228,7 @@
 			// _unknownLicense
 			//
 			this._unknownLicense.AutoSize = true;
-			this._unknownLicense.Location = new System.Drawing.Point(43, 331);
+			this._unknownLicense.Location = new System.Drawing.Point(42, 388);
 			this._unknownLicense.Name = "_unknownLicense";
 			this._unknownLicense.Size = new System.Drawing.Size(250, 17);
 			this._unknownLicense.TabIndex = 4;
@@ -249,7 +250,7 @@
 			//
 			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(149, 50);
+			this.label1.Location = new System.Drawing.Point(80, 79);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(20, 15);
 			this.label1.TabIndex = 25;
@@ -258,7 +259,7 @@
 			// _customLicense
 			//
 			this._customLicense.AutoSize = true;
-			this._customLicense.Location = new System.Drawing.Point(43, 354);
+			this._customLicense.Location = new System.Drawing.Point(42, 411);
 			this._customLicense.Name = "_customLicense";
 			this._customLicense.Size = new System.Drawing.Size(60, 17);
 			this._customLicense.TabIndex = 26;
@@ -270,7 +271,7 @@
 			// _customLicenseDescription
 			//
 			this._customLicenseDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._customLicenseDescription.Location = new System.Drawing.Point(63, 377);
+			this._customLicenseDescription.Location = new System.Drawing.Point(62, 434);
 			this._customLicenseDescription.Multiline = true;
 			this._customLicenseDescription.Name = "_customLicenseDescription";
 			this._customLicenseDescription.Size = new System.Drawing.Size(219, 83);
@@ -284,7 +285,7 @@
 			this.betterLabel2.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel2.Enabled = false;
 			this.betterLabel2.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel2.Location = new System.Drawing.Point(59, 192);
+			this.betterLabel2.Location = new System.Drawing.Point(58, 249);
 			this.betterLabel2.Multiline = true;
 			this.betterLabel2.Name = "betterLabel2";
 			this.betterLabel2.ReadOnly = true;
@@ -293,7 +294,7 @@
 			this.betterLabel2.TabStop = false;
 			this.betterLabel2.Text = "Allow modifications of your work?";
 			//
-			// MetdataEditorControl
+			// MetadataEditorControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -313,7 +314,7 @@
 			this.Controls.Add(this._illustrator);
 			this.Controls.Add(this._illustratorLabel);
 			this.Name = "MetadataEditorControl";
-			this.Size = new System.Drawing.Size(338, 481);
+			this.Size = new System.Drawing.Size(338, 533);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this.panel2.ResumeLayout(false);

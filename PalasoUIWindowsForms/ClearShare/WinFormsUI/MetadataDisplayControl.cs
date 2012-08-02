@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			_table.RowStyles.Clear();
 			if(!string.IsNullOrEmpty(metaData.Creator))
 			{
-				AddRow("Creator", new Label(){Text=metaData.Creator});
+				AddRow("Creator: "+metaData.Creator);
 			}
 			if (!string.IsNullOrEmpty(metaData.CollectionName))
 			{
@@ -60,8 +60,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				}
 				else
 				{
-					var image = new PictureBox() {Image = metaData.License.GetImage()};
-					_table.Controls.Add(image);
+					var licenseImage = metaData.License.GetImage();
+					PictureBox pictureBox = null;
+					if (licenseImage != null)
+					{
+						pictureBox = new PictureBox() {Image = licenseImage};
+						_table.Controls.Add(pictureBox);
+					}
 					if (!string.IsNullOrEmpty(metaData.License.RightsStatement))
 					{
 						AddRow(metaData.License.RightsStatement);
@@ -70,9 +75,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					{
 						AddHyperLink("License Info", metaData.License.Url, 1);
 					}
-					else
+					else if(pictureBox!=null)
 					{
-						_table.SetColumnSpan(image, 2);
+						_table.SetColumnSpan(pictureBox, 2);
 					}
 					_table.RowCount++;
 				}
@@ -102,7 +107,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		}
 		public void AddRow(string label)
 		{
-			var control = new BetterLabel() { Text = label, Width=this.Width };
+			var control = new BetterLabel() {  Width=this.Width, Text = label};//BetterLabel will automatically determine its height
 			_table.Controls.Add(control);
 			_table.SetColumnSpan(control,2);
 			_table.RowCount++;
