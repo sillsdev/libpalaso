@@ -21,7 +21,7 @@ namespace Palaso.Xml
 		public static void AddStyleSheet(this XmlDocument dom, string cssFilePath, string nameSpaceIfDesired)
 		{
 			RemoveStyleSheetIfFound(dom, cssFilePath);//prevent duplicates
-			var head = dom.SelectSingleNodeHonoringDefaultNS("//head");
+			var head = XmlUtils.GetOrCreateElement(dom, "//html", "head"); //dom.SelectSingleNodeHonoringDefaultNS("//head");
 			AddSheet(dom, head, cssFilePath, nameSpaceIfDesired);
 		}
 
