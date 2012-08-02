@@ -38,7 +38,7 @@
 			// _okButton
 			//
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._okButton.Location = new System.Drawing.Point(155, 494);
+			this._okButton.Location = new System.Drawing.Point(155, 514);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 2;
@@ -50,7 +50,7 @@
 			//
 			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._cancelButton.Location = new System.Drawing.Point(246, 494);
+			this._cancelButton.Location = new System.Drawing.Point(246, 514);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 3;
@@ -64,7 +64,7 @@
 			this._minimallyCompleteCheckTimer.Interval = 500;
 			this._minimallyCompleteCheckTimer.Tick += new System.EventHandler(this._minimallyCompleteCheckTimer_Tick);
 			//
-			// _metdataEditorControl
+			// _metadataEditorControl
 			//
 			this._metadataEditorControl.Location = new System.Drawing.Point(-1, 0);
 			this._metadataEditorControl.Metadata = null;
@@ -78,7 +78,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(338, 529);
+			this.ClientSize = new System.Drawing.Size(338, 549);
 			this.ControlBox = false;
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);
