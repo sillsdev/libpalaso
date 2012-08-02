@@ -43,9 +43,6 @@
 			//
 			// BetterLabel
 			//
-			//don't add anchor right here! Visual Studio will then ignore any client's attempt to remove it, because
-			//it assume that's the default (top, left)
-			this.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left))));
 			this.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.Multiline = true;
 			this.ReadOnly = true;
@@ -53,6 +50,7 @@
 			this.TabStop = false;
 			this.BackColorChanged += new System.EventHandler(this.BetterLabel_BackColorChanged);
 			this.ForeColorChanged += new System.EventHandler(this.BetterLabel_ForeColorChanged);
+			this.SizeChanged += new System.EventHandler(this.BetterLabel_SizeChanged);
 			this.TextChanged += new System.EventHandler(this.BetterLabel_TextChanged);
 			this.ParentChanged += new System.EventHandler(this.BetterLabel_ParentChanged);
 			this.ResumeLayout(false);

@@ -13,6 +13,7 @@ namespace Palaso.UI.WindowsForms.Widgets
 	{
 		private Brush _textBrush;
 		private Brush _backgroundBrush;
+		private int _previousWidth=0;
 
 		public BetterLabel()
 		{
@@ -68,6 +69,18 @@ namespace Palaso.UI.WindowsForms.Widgets
 			//Font = new Font(SystemFonts.MessageBoxFont.FontFamily, Font.Size, Font.Style);
 			if(Font==SystemFonts.DefaultFont)
 				Font = SystemFonts.MessageBoxFont;//sets the default, which can then be customized in the designer
+
+			DetermineHeight();
+		}
+
+		private void DetermineHeight()
+		{
+			using (var g = this.CreateGraphics())
+			{
+				var sz = g.MeasureString(Text, this.Font, Width).ToSize();
+				//leave as fixed width
+				Height = sz.Height;
+			}
 		}
 
 		private void BetterLabel_ForeColorChanged(object sender, EventArgs e)
@@ -84,6 +97,15 @@ namespace Palaso.UI.WindowsForms.Widgets
 				_backgroundBrush.Dispose();
 
 			_backgroundBrush = new SolidBrush(BackColor);
+		}
+
+		private void BetterLabel_SizeChanged(object sender, EventArgs e)
+		{
+			if (_previousWidth!=Width)
+			{
+				DetermineHeight();
+				_previousWidth = Width;
+			}
 		}
 	}
 
