@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			Palaso.UI.WindowsForms.ImageToolbox.PalasoImage palasoImage1 = new Palaso.UI.WindowsForms.ImageToolbox.PalasoImage();
+			Palaso.UI.WindowsForms.ClearShare.Metadata metadata1 = new Palaso.UI.WindowsForms.ClearShare.Metadata();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this.imageToolboxControl1 = new Palaso.UI.WindowsForms.ImageToolbox.ImageToolboxControl();
@@ -63,7 +64,16 @@
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			palasoImage1.Image = null;
+			metadata1.AttributionUrl = null;
+			metadata1.CollectionName = null;
+			metadata1.CollectionUri = null;
+			metadata1.CopyrightNotice = null;
+			metadata1.Creator = null;
+			metadata1.HasChanges = true;
+			metadata1.License = null;
+			palasoImage1.Metadata = metadata1;
 			palasoImage1.MetadataLocked = false;
 			this.imageToolboxControl1.ImageInfo = palasoImage1;
 			this.imageToolboxControl1.InitialSearchString = null;
@@ -84,6 +94,7 @@
 			this.MinimumSize = new System.Drawing.Size(732, 432);
 			this.Name = "ImageToolboxDialog";
 			this.ShowIcon = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Image Toolbox";
 			this.ResumeLayout(false);
 
