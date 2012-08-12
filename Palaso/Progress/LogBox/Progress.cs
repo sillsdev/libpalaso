@@ -29,6 +29,10 @@ namespace Palaso.Progress.LogBox
 
 	public class NullProgress : IProgress
 	{
+		public NullProgress()
+		{
+			ProgressIndicator = new NullProgressIndicator();
+		}
 		public void WriteStatus(string message, params object[] args)
 		{
 
@@ -73,6 +77,25 @@ namespace Palaso.Progress.LogBox
 		public virtual bool ErrorEncountered {get;set;}
 
 		public IProgressIndicator ProgressIndicator { get; set; }
+
+		public SynchronizationContext SyncContext { get; set; }
+	}
+
+	public class NullProgressIndicator : IProgressIndicator
+	{
+		public int PercentCompleted { get; set; }
+
+		public void Finish()
+		{
+		}
+
+		public void Initialize()
+		{
+		}
+
+		public void IndicateUnknownProgress()
+		{
+		}
 
 		public SynchronizationContext SyncContext { get; set; }
 	}
