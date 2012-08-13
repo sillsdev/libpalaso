@@ -24,6 +24,54 @@ namespace Palaso.Xml
 		}
 
 		/// <summary>
+		/// Given bytes that represent an xml element, return the values of requested attributes (if they exist).
+		/// </summary>
+		/// <param name="data">Data that is expected to an xml element.</param>
+		/// <param name="attributes">A set of attributes, the values of which are to be returned.</param>
+		/// <returns>A dictionary </returns>
+		public static Dictionary<string, string> GetAttributes(byte[] data, HashSet<string> attributes)
+		{
+			var results = new Dictionary<string, string>(attributes.Count);
+			using (var reader = XmlReader.Create(new MemoryStream(data), CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Fragment)))
+			{
+				reader.MoveToContent();
+				foreach (var attr in attributes)
+				{
+					results.Add(attr, null);
+					if (reader.MoveToAttribute(attr))
+					{
+						results[attr] = reader.Value;
+					}
+				}
+			}
+			return results;
+		}
+
+		/// <summary>
+		/// Given a string that represents an xml element, return the values of requested attributes (if they exist).
+		/// </summary>
+		/// <param name="data">Data that is expected to an xml element.</param>
+		/// <param name="attributes">A set of attributes, the values of which are to be returned.</param>
+		/// <returns>A dictionary </returns>
+		public static Dictionary<string, string> GetAttributes(string data, HashSet<string> attributes)
+		{
+			var results = new Dictionary<string, string>(attributes.Count);
+			using (var reader = XmlReader.Create(new StringReader(data), CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Fragment)))
+			{
+				reader.MoveToContent();
+				foreach (var attr in attributes)
+				{
+					results.Add(attr, null);
+					if (reader.MoveToAttribute(attr))
+					{
+						results[attr] = reader.Value;
+					}
+				}
+			}
+			return results;
+		}
+
+		/// <summary>
 		/// Returns true if value of attrName is 'true' or 'yes' (case ignored)
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>

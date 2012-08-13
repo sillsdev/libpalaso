@@ -201,6 +201,7 @@
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
 	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
+	<Compile Include="Xml\XmlUtilsTests.cs" />
 	<Compile Include="Xml\XmlWriterExtensionsTests.cs" />
 	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
 	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
