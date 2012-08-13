@@ -143,20 +143,9 @@ namespace Palaso.Xml
 			if (string.IsNullOrEmpty(recordMarker))
 				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
 
+			// First call gets the regular records.
 			var results = new List<byte[]>(GetSecondLevelElementBytes(recordMarker));
-			var readerSettings = new XmlReaderSettings
-			{
-				CheckCharacters = false,
-				ConformanceLevel = ConformanceLevel.Document,
-#if NET_4_0 && !__MonoCS__
-				DtdProcessing = DtdProcessing.Parse,
-#else
-				ProhibitDtd = true,
-#endif
-				ValidationType = ValidationType.None,
-				CloseInput = true,
-				IgnoreWhitespace = true
-			};
+			var readerSettings = CanonicalXmlSettings.CreateXmlReaderSettings();
 			var textReader = new XmlTextReader(_pathname)
 			{
 				WhitespaceHandling = WhitespaceHandling.Significant
@@ -164,6 +153,7 @@ namespace Palaso.Xml
 			using (var reader = XmlReader.Create(textReader, readerSettings))
 			{
 				// Try to get the optional first element. Prepend it to 'results', if found.
+				// But, don't mess with the reglar records here.
 				reader.MoveToContent();
 				if (reader.Read() && reader.LocalName == firstElementMarker)
 				{
@@ -199,19 +189,7 @@ namespace Palaso.Xml
 			if (!string.IsNullOrEmpty(firstElementMarker))
 				firstElementMarker = firstElementMarker.Replace("<", null).Replace(">", null);
 			recordMarker = recordMarker.Replace("<", null).Replace(">", null);
-			var readerSettings = new XmlReaderSettings
-			{
-				CheckCharacters = false,
-				ConformanceLevel = ConformanceLevel.Document,
-#if NET_4_0 && !__MonoCS__
-				DtdProcessing = DtdProcessing.Parse,
-#else
-				ProhibitDtd = true,
-#endif
-				ValidationType = ValidationType.None,
-				CloseInput = true,
-				IgnoreWhitespace = true
-			};
+			var readerSettings = CanonicalXmlSettings.CreateXmlReaderSettings();
 			var textReader = new XmlTextReader(_pathname)
 			{
 				WhitespaceHandling = WhitespaceHandling.Significant
@@ -303,7 +281,7 @@ namespace Palaso.Xml
 					var current = inputBytes[i + j];
 					if (EndingWhitespace.ContainsKey(current))
 					{
-						// Got it!
+						// Got it! [Yes, but it may be a nested on that was found.]
 						return i;
 					}
 					if (recordMarkerAsBytes[j] != current)

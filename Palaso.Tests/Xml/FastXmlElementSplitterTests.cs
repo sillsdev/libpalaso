@@ -297,12 +297,12 @@ namespace Palaso.Tests.Xml
 			{
 				var enc = Encoding.UTF8;
 				File.WriteAllText(goodPathname, hasRecordsInput, enc);
-				using (var reader = new FastXmlElementSplitter(goodPathname))
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(goodPathname))
 				{
 					bool foundOptionalFirstElement;
-					var elementBytes = reader.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
+					var elementBytes = fastXmlElementSplitter.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
 					Assert.AreEqual(expectedCount, elementBytes.Count);
-					var elementStrings = reader.GetSecondLevelElementStrings(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
+					var elementStrings = fastXmlElementSplitter.GetSecondLevelElementStrings(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
 					Assert.AreEqual(expectedCount, elementStrings.Count);
 					for (var i = 0; i < elementStrings.Count; ++i)
 					{
