@@ -77,7 +77,7 @@ namespace Palaso.Lift.Tests.Merging
 			Assert.AreEqual(4, doc.SelectNodes("//entry").Count);
 		}
 
-		[Test]
+		[Test, Category("KnownMonoIssue")]
 		public void NewEntriesAdded_MultipleFilesSucessiveChanges()
 		{
 			//This test demonstrates that LiftUpdate files are applied in the order they are created when time stamps are used to order the names up the LIFTUpdate files.
