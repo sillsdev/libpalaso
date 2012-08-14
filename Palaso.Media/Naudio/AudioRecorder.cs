@@ -135,7 +135,7 @@ namespace Palaso.Media.Naudio
 				}
 				Debug.Assert(_waveIn == null);
 				_waveIn = new WaveIn();
-				_waveIn.DeviceNumber = SelectedDevice.DeviceNumber;
+				InitializeWaveIn();
 
 				_waveIn.DataAvailable += waveIn_DataAvailable;
 				//_waveIn.RecordingStopped += new EventHandler(waveIn_RecordingStopped);
@@ -158,6 +158,12 @@ namespace Palaso.Media.Naudio
 				CloseWaveIn();
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e, "There was a problem starting up volume monitoring.");
 			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		protected virtual void InitializeWaveIn()
+		{
+			_waveIn.DeviceNumber = SelectedDevice.DeviceNumber;
 		}
 
 		/// <summary>
