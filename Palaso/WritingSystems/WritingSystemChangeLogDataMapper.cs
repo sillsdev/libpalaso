@@ -56,12 +56,18 @@ namespace Palaso.WritingSystems
 
 			if (File.Exists(FilePath))
 			{
-				using (StreamReader streamReader = File.OpenText(FilePath))
+				try
 				{
-					using (XmlReader reader = XmlReader.Create(streamReader, _xmlReadSettings))
+					using (StreamReader streamReader = File.OpenText(FilePath))
 					{
-						ReadLog(reader, log);
+						using (XmlReader reader = XmlReader.Create(streamReader, _xmlReadSettings))
+						{
+							ReadLog(reader, log);
+						}
 					}
+				}catch(FormatException e)   //This exception is thrown when the time format is locale specific. This was the case for a very short time when the log was introduced. (WS-34444)
+				{
+					File.Delete(FilePath);
 				}
 			}
 		}
