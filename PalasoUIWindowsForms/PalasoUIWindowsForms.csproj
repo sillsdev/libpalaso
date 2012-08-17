@@ -409,6 +409,12 @@
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.Designer.cs">
 	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
 	</Compile>
+	<Compile Include="WritingSystems\ConflateWritingSystemsDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="WritingSystems\ConflateWritingSystemsDialog.Designer.cs">
+	  <DependentUpon>ConflateWritingSystemsDialog.cs</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\LookupISOControl.cs">
 	  <SubType>UserControl</SubType>
@@ -671,6 +677,9 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
 	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\ConflateWritingSystemsDialog.resx">
+	  <DependentUpon>ConflateWritingSystemsDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOControl.resx">
 	  <DependentUpon>LookupISOControl.cs</DependentUpon>
