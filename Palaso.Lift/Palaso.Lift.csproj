@@ -141,6 +141,7 @@
 	<Compile Include="Merging\xmldiff\DiffResult.cs" />
 	<Compile Include="Merging\xmldiff\XmlDiff.cs" />
 	<Compile Include="Merging\xmldiff\XmlInput.cs" />
+	<Compile Include="WritingSystemsInLiftFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
