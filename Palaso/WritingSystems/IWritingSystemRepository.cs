@@ -91,7 +91,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Merges two writing systems into one.
 		/// </summary>
-		void Conflate(WritingSystemDefinition wsToConflate, WritingSystemDefinition wsToConflateWith);
+		void Conflate(string wsToConflate, string wsToConflateWith);
 
 		/// <summary>
 		/// Removes the writing system with the specified Store ID from the store.

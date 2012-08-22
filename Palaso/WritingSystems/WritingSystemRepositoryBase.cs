@@ -65,13 +65,13 @@ namespace Palaso.WritingSystems
 			return new LdmlDataMapper();
 		}
 
-		virtual public void Conflate(WritingSystemDefinition wsToConflate, WritingSystemDefinition wsToConflateWith)
+		virtual public void Conflate(string wsToConflate, string wsToConflateWith)
 		{
 			if(WritingSystemConflated != null)
 			{
-				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate.Id, wsToConflateWith.Id));
+				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
 			}
-			Remove(wsToConflate.Id);
+			Remove(wsToConflate);
 		}
 
 		virtual public void Remove(string identifier)

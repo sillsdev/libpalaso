@@ -1058,6 +1058,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public event BeforeConflatedEventHandler BeforeConflated;
 
+		/// <summary>
+		/// Fired when we need to know what writing systems to conflate.
+		/// </summary>
+		public event GetWritingSystemToConflateWithEventHandler GetWritingSystemToConflateWith;
+
 		#endregion
 
 		public InputLanguage FindInputLanguage(string name)
@@ -1099,46 +1104,49 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				BeforeDeleted(this, beforeDeletedEventArgs);
 			}
-			WritingSystemDefinition wsToConflateWith = null;
+
 			if (!beforeDeletedEventArgs.CanDelete)
 			{
-				using (var conflateWsDialog = new ConflateWritingSystemsDialog(CurrentDefinition, WritingSystemDefinitions))
+				var getWritingSystemToConflateWith = new GetWritingSystemToConflateWithEventArgs(CurrentDefinition.Id);
+				if(GetWritingSystemToConflateWith != null)
 				{
-					var dialogResult = conflateWsDialog.ShowDialog();
-					if (dialogResult == DialogResult.Cancel)
-					{
-						return;
-					}
-					wsToConflateWith = conflateWsDialog.WritingSystemToConflateWith;
+					GetWritingSystemToConflateWith(this, getWritingSystemToConflateWith);
+				}
 
-					var beforeConflatedEventArgs = new BeforeConflatedEventArgs(CurrentDefinition.Id, wsToConflateWith.Id);
-					if (BeforeConflated != null)
+				var wsToConflateWith = getWritingSystemToConflateWith.WritingSystemIdToConflateWith;
+				if(String.IsNullOrEmpty(getWritingSystemToConflateWith.WritingSystemIdToConflateWith))
+				{
+					string message = beforeDeletedEventArgs.ErrorMessage ?? "The Writing System is in use.";
+					ErrorReport.NotifyUserOfProblem(String.Format("The '{0}' writing system cannot be deleted. Reason: {1}", CurrentDefinition.Id, message));
+				}
+				var beforeConflatedEventArgs = new BeforeConflatedEventArgs(CurrentDefinition.Id, wsToConflateWith);
+				if (BeforeConflated != null)
+				{
+					BeforeConflated(this, beforeConflatedEventArgs);
+				}
+				if (!beforeConflatedEventArgs.CanConflate)
+				{
+					string message = beforeConflatedEventArgs.ErrorMessage ?? String.Empty;
+					ErrorReport.NotifyUserOfProblem(String.Format("Can not conflate the writing system {0} to {1}. {2}", CurrentDefinition.Id,wsToConflateWith, message));
+					return;
+				}
+				if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+				{
+					if (!String.IsNullOrEmpty(wsToConflateWith))
 					{
-						BeforeConflated(this, beforeConflatedEventArgs);
-					}
-					if (!beforeConflatedEventArgs.CanConflate)
-					{
-						string message = beforeConflatedEventArgs.ErrorMessage ?? String.Empty;
-						ErrorReport.NotifyUserOfProblem(String.Format("The Writing System can not conflate the writing system {0} to {1}. {2}", CurrentDefinition.Id,wsToConflateWith.Id, message));
-						return;
+						_writingSystemRepository.Conflate(CurrentDefinition.Id, wsToConflateWith);
 					}
 				}
 			}
-
-			// new index will be next writing system or previous if this was the last in the list
-			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
-
-			if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+			else
 			{
-				if (wsToConflateWith != null)
-				{
-					_writingSystemRepository.Conflate(CurrentDefinition, wsToConflateWith);
-				}
-				else
+				if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
 				{
 					_writingSystemRepository.Remove(CurrentDefinition.Id);
 				}
 			}
+		// new index will be next writing system or previous if this was the last in the list
+			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
 			CurrentDefinition.MarkedForDeletion = true;
 			_deletedWritingSystemDefinitions.Add(CurrentDefinition);
 			WritingSystemDefinitions.RemoveAt(CurrentIndex);
@@ -1531,5 +1539,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public string WritingSystemIdToConflateWith { get; private set; }
 		public bool CanConflate = true;
 		public string ErrorMessage { get; set; }
+	}
+
+	public delegate void GetWritingSystemToConflateWithEventHandler(object sender, GetWritingSystemToConflateWithEventArgs args);
+
+	public class GetWritingSystemToConflateWithEventArgs : EventArgs
+	{
+		public GetWritingSystemToConflateWithEventArgs(string writingSystemIdToConflate)
+		{
+			WritingSystemIdToConflate = writingSystemIdToConflate;
+		}
+		public string WritingSystemIdToConflate { get; private set; }
+		public string WritingSystemIdToConflateWith { get; set; }
 	}
 }

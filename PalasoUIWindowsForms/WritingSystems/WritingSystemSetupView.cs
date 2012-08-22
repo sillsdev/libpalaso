@@ -36,7 +36,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_treeView.BindToModel(treeModel);
 			_model.SelectionChanged += UpdateHeaders;
 			_model.CurrentItemUpdated += UpdateHeaders;
+			_model.GetWritingSystemToConflateWith += OnGetWritingSystemToConflateWith;
 			UpdateHeaders(null, null);
+		}
+
+		private void OnGetWritingSystemToConflateWith(object sender, GetWritingSystemToConflateWithEventArgs args)
+		{
+			using (var conflateWsDialog = new ConflateWritingSystemsDialog(args.WritingSystemIdToConflate, _model.WritingSystemDefinitions))
+			{
+				var dialogResult = conflateWsDialog.ShowDialog();
+				if (dialogResult == DialogResult.Cancel)
+				{
+					return;
+				}
+				args.WritingSystemIdToConflateWith = conflateWsDialog.WritingSystemToConflateWith;
+			}
 		}
 
 		/// <summary>

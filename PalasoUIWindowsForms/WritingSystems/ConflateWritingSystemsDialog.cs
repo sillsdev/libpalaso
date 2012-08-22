@@ -12,12 +12,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class ConflateWritingSystemsDialog : Form
 	{
-		public ConflateWritingSystemsDialog(WritingSystemDefinition wsToConflate, IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith)
+		public ConflateWritingSystemsDialog(string wsToConflate, IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith)
 		{
 			InitializeComponent();
-			_wsLabel.Text = String.Format(_wsLabel.Text, wsToConflate.ListLabel);
-			_infoTextLabel.Text = String.Format(_infoTextLabel.Text, wsToConflate.ListLabel);
-			_wsSelectionComboBox.Items.AddRange(possibleWritingSystemsToConflateWith.Where(ws => ws != wsToConflate).Select(ws => new WritingSystemDisplayAdapter(ws)).ToArray());
+			_wsLabel.Text = String.Format(_wsLabel.Text, wsToConflate);
+			_infoTextLabel.Text = String.Format(_infoTextLabel.Text, wsToConflate);
+			_wsSelectionComboBox.Items.AddRange(possibleWritingSystemsToConflateWith.Where(ws => ws.Id != wsToConflate).Select(ws => ws.Id).ToArray());
 			_okButton.Click += OnOkClicked;
 			_cancelButton.Click += OnCancelClicked;
 		}
@@ -34,29 +34,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Close();
 		}
 
-		public WritingSystemDefinition WritingSystemToConflateWith
+		public string WritingSystemToConflateWith
 		{
-			get { return ((WritingSystemDisplayAdapter) _wsSelectionComboBox.SelectedItem).WrappedWritingSystem; }
-		}
-
-		private class WritingSystemDisplayAdapter
-		{
-			private WritingSystemDefinition _ws ;
-
-			public WritingSystemDisplayAdapter(WritingSystemDefinition ws)
-			{
-				_ws = ws;
-			}
-
-			public override string ToString()
-			{
-				return _ws.ListLabel;
-			}
-
-			public WritingSystemDefinition WrappedWritingSystem
-			{
-				get { return _ws; }
-			}
+			get { return (string) _wsSelectionComboBox.SelectedItem; }
 		}
 
 	}

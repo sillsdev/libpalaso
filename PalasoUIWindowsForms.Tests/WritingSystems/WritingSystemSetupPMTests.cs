@@ -956,16 +956,38 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			args.CanDelete = false;
 		}
 
+		void OnBeforeConflated_CannotConflate(object sender, BeforeConflatedEventArgs args)
+		{
+			args.CanConflate = false;
+		}
+
 		[Test]
-		public void BeforeDeleted_CannotDelete_ThrowsUserException()
+		public void BeforeDeleted_CannotDeleteCannotConflate_ThrowsUserException()
 		{
 			_model.BeforeDeleted += OnBeforeDeleted_CannotDelete;
+			_model.BeforeConflated += OnBeforeConflated_CannotConflate;
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			Assert.That(EventFired, Is.False);
 
-			Assert.Throws<Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException>(
+			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
 				() => _model.DeleteCurrent()
 			);
+		}
+
+		public void OnGetWritingSystemToConflateWith(object sender, GetWritingSystemToConflateWithEventArgs args)
+		{
+			EventFired = true;
+			args.WritingSystemIdToConflateWith = "en";
+		}
+
+		[Test]
+		public void BeforeDeleted_CannotDelete_FiresGetWritingSystemToConflateWith()
+		{
+			_model.BeforeDeleted += OnBeforeDeleted_CannotDelete;
+			_model.GetWritingSystemToConflateWith += OnGetWritingSystemToConflateWith;
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			_model.DeleteCurrent();
+			Assert.That(EventFired, Is.True);
 		}
 
 		[Test]
