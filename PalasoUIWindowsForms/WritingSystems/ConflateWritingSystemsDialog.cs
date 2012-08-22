@@ -15,20 +15,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public ConflateWritingSystemsDialog(WritingSystemDefinition wsToConflate, IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith)
 		{
 			InitializeComponent();
+			_wsLabel.Text = String.Format(_wsLabel.Text, wsToConflate.ListLabel);
+			_infoTextLabel.Text = String.Format(_infoTextLabel.Text, wsToConflate.ListLabel);
+			_wsSelectionComboBox.Items.AddRange(possibleWritingSystemsToConflateWith.Where(ws => ws != wsToConflate).Select(ws => new WritingSystemDisplayAdapter(ws)).ToArray());
 			_okButton.Click += OnOkClicked;
 			_cancelButton.Click += OnCancelClicked;
-			_wsSelectionComboBox.Items.AddRange(possibleWritingSystemsToConflateWith.Where(ws => ws != wsToConflate).Select(ws => new WritingSystemDisplayAdapter(ws)).ToArray());
 		}
 
 		private void OnCancelClicked(object sender, EventArgs e)
 		{
-			DialogResult = DialogResult.OK;
+			DialogResult = DialogResult.Cancel;
 			Close();
 		}
 
 		private void OnOkClicked(object sender, EventArgs e)
 		{
-			DialogResult = DialogResult.Cancel;
+			DialogResult = DialogResult.OK;
 			Close();
 		}
 
