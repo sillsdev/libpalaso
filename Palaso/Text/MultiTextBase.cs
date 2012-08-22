@@ -326,7 +326,7 @@ namespace Palaso.Text
 			NotifyPropertyChanged(writingSystemId);
 		}
 
-		protected void RemoveLanguageForm(LanguageForm languageForm)
+		public void RemoveLanguageForm(LanguageForm languageForm)
 		{
 			Debug.Assert(Forms.Length > 0);
 			LanguageForm[] forms = new LanguageForm[Forms.Length - 1];
