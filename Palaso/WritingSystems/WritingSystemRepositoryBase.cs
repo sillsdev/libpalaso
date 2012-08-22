@@ -26,6 +26,7 @@ namespace Palaso.WritingSystems
 
 		public event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
 		public event WritingSystemDeleted WritingSystemDeleted;
+		public event WritingSystemConflatedEventHandler WritingSystemConflated;
 
 		/// <summary>
 		/// Constructor, set the CompatibilityMode
@@ -62,6 +63,15 @@ namespace Palaso.WritingSystems
 		virtual protected LdmlDataMapper CreateLdmlAdaptor()
 		{
 			return new LdmlDataMapper();
+		}
+
+		virtual public void Conflate(WritingSystemDefinition wsToConflate, WritingSystemDefinition wsToConflateWith)
+		{
+			if(WritingSystemConflated != null)
+			{
+				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate.Id, wsToConflateWith.Id));
+			}
+			Remove(wsToConflate.Id);
 		}
 
 		virtual public void Remove(string identifier)
@@ -312,6 +322,13 @@ namespace Palaso.WritingSystems
 		}
 		public string OldId { get; private set; }
 		public string NewId { get; private set; }
+	}
+
+	public class WritingSystemConflatedEventArgs:WritingSystemIdChangedEventArgs
+	{
+		public WritingSystemConflatedEventArgs(string oldId, string newId) : base(oldId, newId)
+		{
+		}
 	}
 
 	public class WritingSystemDeletedEventArgs : EventArgs

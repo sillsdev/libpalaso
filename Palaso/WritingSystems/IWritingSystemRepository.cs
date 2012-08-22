@@ -5,6 +5,7 @@ namespace Palaso.WritingSystems
 {
 	public delegate void WritingSystemIdChangedEventHandler(object sender, WritingSystemIdChangedEventArgs e);
 	public delegate void WritingSystemDeleted(object sender, WritingSystemDeletedEventArgs e);
+	public delegate void WritingSystemConflatedEventHandler(object sender, WritingSystemConflatedEventArgs e);
 	public delegate void WritingSystemLoadProblemHandler(IEnumerable<WritingSystemRepositoryProblem> problems);
 
 	///<summary>
@@ -32,9 +33,14 @@ namespace Palaso.WritingSystems
 		event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
 
 		/// <summary>
-		/// Notifies a consuming class of a changed writing system id on Set()
+		/// Notifies a consuming class of a deleted writing system
 		/// </summary>
 		event WritingSystemDeleted WritingSystemDeleted;
+
+		/// <summary>
+		/// Notifies a consuming class of a conflated writing system
+		/// </summary>
+		event WritingSystemConflatedEventHandler WritingSystemConflated;
 
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about
@@ -81,6 +87,11 @@ namespace Palaso.WritingSystems
 		/// once identifying information has been changed in order to save it in the store.
 		/// </summary>
 		WritingSystemDefinition CreateNew();
+
+		/// <summary>
+		/// Merges two writing systems into one.
+		/// </summary>
+		void Conflate(WritingSystemDefinition wsToConflate, WritingSystemDefinition wsToConflateWith);
 
 		/// <summary>
 		/// Removes the writing system with the specified Store ID from the store.
