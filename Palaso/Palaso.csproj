@@ -127,6 +127,8 @@
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
 	<Compile Include="Code\RequireThat.cs" />
+	<Compile Include="CommandLineProcessing\AsyncProcessOutputReader.cs" />
+	<Compile Include="CommandLineProcessing\SynchronousProcessOutputReader.cs" />
 	<Compile Include="Data\DelegateQuery.cs" />
 	<Compile Include="Data\DictionaryEqualityComparer.cs" />
 	<Compile Include="Data\IDataMapper.cs" />
