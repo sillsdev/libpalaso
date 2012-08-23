@@ -16,18 +16,17 @@ namespace Palaso.Lift.Tests
 			private readonly TemporaryFolder _folder;
 			private readonly IO.TempFile _liftFile1;
 
-			public TestEnvironment(string rfctag, string rfctag2 = "x-dontcare")
+			public TestEnvironment(string liftFileContent)
 			{
 				_folder = new TemporaryFolder("WritingSystemsInLiftFileHelper");
 				var pathtoLiftFile1 = Path.Combine(_folder.Path, "test1.lift");
-				_liftFile1 = new IO.TempFile(String.Format(_liftFile1Content, rfctag, rfctag2));
+				_liftFile1 = new IO.TempFile(liftFileContent);
 				_liftFile1.MoveTo(pathtoLiftFile1);
-
 				Helper = new WritingSystemsInLiftFileHelper(WritingSystems, _liftFile1.Path);
 			}
 
 			#region LongFileContent
-			private readonly string _liftFile1Content =
+			public static readonly string LiftFile1Content =
  @"<?xml version='1.0' encoding='utf-8'?>
 <lift
 	version='0.13'
@@ -131,7 +130,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsNonConformantRfcTag_CreatesConformingWritingSystem()
 		{
-			using (var e = new TestEnvironment("bogusws1", "audio"))
+			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "bogusws1", "audio")))
 			{
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				Assert.That(File.Exists(e.GetLdmlFileforWs("qaa-x-bogusws1")));
@@ -148,7 +147,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsNonConformantRfcTag_WSIdChangeLogUpdated()
 		{
-			using (var e = new TestEnvironment("bogusws1", "audio"))
+			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "bogusws1", "audio")))
 			{
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				Assert.That(File.Exists(e.GetLdmlFileforWs("qaa-x-bogusws1")));
@@ -161,7 +160,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsNonConformantRfcTag_UpdatesRfcTagInLiftFile()
 		{
-			using (var environment = new TestEnvironment("bogusws1", "audio"))
+			using (var environment = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "bogusws1", "audio")))
 			{
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				AssertThatXmlIn.File(environment.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='qaa-x-bogusws1']");
@@ -172,7 +171,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsNonConformantRfcTagWithDuplicates_UpdatesRfcTagInLiftFile()
 		{
-			using (var environment = new TestEnvironment("wee", "qaa-x-wee"))
+			using (var environment = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "wee", "qaa-x-wee")))
 			{
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				AssertThatXmlIn.File(environment.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='qaa-x-wee-dupl0']");
@@ -183,7 +182,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsConformantRfcTagWithNoCorrespondingLdml_CreatesLdml()
 		{
-			using (var e = new TestEnvironment("de", "x-dontcare"))
+			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "de", "x-dontcare")))
 			{
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']");
@@ -199,7 +198,7 @@ namespace Palaso.Lift.Tests
 		//This test makes sure that existing Flex private use tags are not changed
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsEntirelyPrivateUseRfcTagThatExistsInRepo_RfcTagIsMigrated()
 		{
-			using (var e = new TestEnvironment("x-custom-Zxxx-x-audio"))
+			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "x-custom-Zxxx-x-audio", "x-dontcare")))
 			{
 				e.WriteContentToLdmlFileInWritingSystemFolderWithName("x-custom-Zxxx-x-audio", LdmlContentForTests.Version0("x-custom", "Zxxx", "", "x-audio"));
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
@@ -213,7 +212,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsEntirelyPrivateUseRfcTagThatDoesNotExistInRepo_RfcTagIsMigrated()
 		{
-			using (var e = new TestEnvironment("x-blah"))
+			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "x-blah", "x-dontcare")))
 			{
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				Assert.That(File.Exists(e.GetLdmlFileforWs("x-blah")), Is.True);
@@ -225,7 +224,7 @@ namespace Palaso.Lift.Tests
 		//This test makes sure that nonexisting private use tags are migrated if necessary
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsAudioTagThatDoesNotExistInRepo_RfcTagIsMigrated()
 		{
-			using (var e = new TestEnvironment("x-audio"))
+			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "x-audio", "x-dontcare")))
 			{
 				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				Assert.That(File.Exists(e.GetLdmlFileforWs("x-audio")), Is.True);
@@ -238,7 +237,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsNonConformantRfcTagWithDuplicatesContainingduplicateMarker_UpdatesRfcTagInLiftFile()
 		{
-			using (var environment = new TestEnvironment("wee-dupl1", "qaa-x-wee-dupl1"))
+			using (var environment = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "wee-dupl1", "qaa-x-wee-dupl1")))
 			{
 				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
 				AssertThatXmlIn.File(environment.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='qaa-x-wee-dupl1']");
