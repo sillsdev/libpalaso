@@ -244,5 +244,98 @@ namespace Palaso.Lift.Tests
 				AssertThatXmlIn.File(environment.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='qaa-x-wee-dupl1-dupl0']");
 			}
 		}
+
+		[Test]
+		public void ReplaceWritingSystemId_OneOfOneFormContainsWritingSystem_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> {{"th", "thai"}};
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using(var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th","de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='thai']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_OneOfTwoFormsContainsOldWritingSystem_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, {"en", "en word"} };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='thai Word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemFirstHasContent_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "de", "" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='thai Word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_SecondOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemSecondHasContent_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "de", "" }, { "th", "thai Word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='thai Word']");
+				// can't test easily for empty: AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveContent_WritingSystemIsReplacedSecondFormIsDeleted()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "de", "de word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='thai Word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveIdenticalContent_WritingSystemIsReplacedSecondFormIsDeleted()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "de word" }, { "de", "de word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
+				//AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
 	}
 }

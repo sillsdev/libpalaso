@@ -35,18 +35,23 @@ namespace Palaso.TestUtilities
 		public static string GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(Dictionary<string, string> writingSystemsToContentMap)
 		{
 			var builder = new StringBuilder();
+			builder.AppendLine();
 			builder.Append(
-@"<entry id='6f5a1f30-ade8-11e0-9f1c-0800200c9a66'>
+@"  <entry id='6f5a1f30-ade8-11e0-9f1c-0800200c9a66'>
 	<lexical-unit>");
+			builder.AppendLine();
 			foreach (var kvp in writingSystemsToContentMap)
 			{
 				builder.AppendFormat(
-@"      <form lang='{0}'>
-		<text>{1}</text>
-	  </form>",kvp.Key, kvp.Value);
+@"        <form lang='{0}'>
+		  <text>{1}</text>
+		</form>", kvp.Key, kvp.Value);
+				builder.AppendLine();
 			}
 			builder.Append(
-@"</entry>");
+@"    </lexical-unit>
+	</entry>");
+			builder.AppendLine();
 			return builder.ToString();
 		}
 	}
