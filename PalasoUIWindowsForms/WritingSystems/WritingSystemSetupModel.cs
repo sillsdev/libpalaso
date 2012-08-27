@@ -1118,6 +1118,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					string message = beforeDeletedEventArgs.ErrorMessage ?? "The Writing System is in use.";
 					ErrorReport.NotifyUserOfProblem(String.Format("The '{0}' writing system cannot be deleted. Reason: {1}", CurrentDefinition.Id, message));
+					return;
 				}
 				var beforeConflatedEventArgs = new BeforeConflatedEventArgs(CurrentDefinition.Id, wsToConflateWith);
 				if (BeforeConflated != null)
