@@ -117,7 +117,4 @@
   <resheader name="writer">
 	<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="_infoTextLabel.Text" xml:space="preserve">
-	<value>The writing system {0} is currently in use and can not be deleted. If you would like to delete this writing system you must either remove all the data associated with it or conflate it with another writing system. To conflate {0} with another writing sytem, please select that writing system from the drop down box below.</value>
-  </data>
 </root>
