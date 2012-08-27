@@ -51,7 +51,6 @@ namespace Palaso.Lift
 			var liftCopier = new LiftCopyStateMachine(reader, writer);
 			try
 			{
-				System.Diagnostics.Process.Start(fileToBeWrittenTo.Path);
 				liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
 				reader.Close();
 				writer.Close();

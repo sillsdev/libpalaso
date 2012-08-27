@@ -333,7 +333,6 @@ namespace Palaso.Lift.Tests
 				e.Helper.ReplaceWritingSystemId("th", "de");
 				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
 				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
-				//AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
 				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
 			}
 		}
