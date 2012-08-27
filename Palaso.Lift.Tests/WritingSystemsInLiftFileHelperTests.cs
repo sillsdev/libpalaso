@@ -336,5 +336,97 @@ namespace Palaso.Lift.Tests
 				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
 			}
 		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoGlossesContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveIdenticalContent_WritingSystemIsReplacedSecondFormIsDeleted()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "de word" }, { "de", "de word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']/text", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_OneOfTwoGlossesContainsOldWritingSystem_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "en", "en word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='thai Word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoGlossesContainsOldWritingSystemOtherContainsNewWritingSystemFirstHasContent_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "de", "" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='thai Word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_SecondOfTwoGlossesContainsOldWritingSystemOtherContainsNewWritingSystemSecondHasContent_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "de", "" }, { "th", "thai Word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='thai Word']");
+				// can't test easily for empty: AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoGlossesContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveContent_WritingSystemIsReplacedSecondFormIsDeleted()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "de", "de word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='thai Word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_ContainsGlossesWithUninvolvedWritingSystems_GlossesAreLeftAlone()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "de", "de word" }, { "en", "en word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='en']/text[text()='en word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/definition/form[@lang='en']/text[text()='eng-mean']");
+			}
+
+		}
 	}
 }

@@ -54,5 +54,49 @@ namespace Palaso.TestUtilities
 			builder.AppendLine();
 			return builder.ToString();
 		}
+
+		public static string GetSingleEntrywithGlossContainingWritingsystemsAndContent(Dictionary<string, string> writingSystemsToContentMap)
+		{
+			var builder = new StringBuilder();
+			builder.AppendLine();
+			builder.Append(
+@"  <entry id='6f5a1f30-ade8-11e0-9f1c-0800200c9a66'>
+	<lexical-unit>
+		<form lang='aiw'>
+		  <text>aiw-lex</text>
+		</form>
+	</lexical-unit>
+	<sense
+		id='b7ccb68f-e16d-40dc-8a60-1102cbc20d00'>");
+		builder.AppendLine();
+			foreach (var kvp in writingSystemsToContentMap)
+			{
+				builder.AppendFormat(
+@"        <gloss
+			lang='{0}'>
+			<text>{1}</text>
+		</gloss>", kvp.Key, kvp.Value);
+				builder.AppendLine();
+			}
+			builder.Append(
+@"            <definition>
+				<form
+					lang='aiw'>
+					<text>aiw-mean</text>
+				</form>
+				<form
+					lang='aiw-Latn'>
+					<text>aiw-mean</text>
+				</form>
+				<form
+					lang='en'>
+					<text>eng-mean</text>
+				</form>
+			</definition>
+		</sense>
+	</entry>");
+			builder.AppendLine();
+			return builder.ToString();
+		}
 	}
 }

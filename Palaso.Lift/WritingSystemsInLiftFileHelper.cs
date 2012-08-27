@@ -51,6 +51,7 @@ namespace Palaso.Lift
 			var liftCopier = new LiftCopyStateMachine(reader, writer);
 			try
 			{
+				//System.Diagnostics.Process.Start(fileToBeWrittenTo.Path);
 				liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
 				reader.Close();
 				writer.Close();
@@ -58,6 +59,7 @@ namespace Palaso.Lift
 				fileToBeWrittenTo.MoveTo(_liftFilePath);
 			}
 			catch (Exception e)
+
 			{
 				reader.Close();
 				writer.Close();
@@ -74,14 +76,14 @@ namespace Palaso.Lift
 
 		private class LiftCopyStateMachine
 		{
-			private class FormBlockCopyStatemachine
+			private class FormOrGlossBlockCopyStatemachine
 			{
 				private readonly XmlReader _reader;
 				private readonly XmlWriter _writer;
 				private States _state;
 				List<string> _formValues = new List<string>();
 
-				public FormBlockCopyStatemachine(XmlReader reader, XmlWriter writer)
+				public FormOrGlossBlockCopyStatemachine(XmlReader reader, XmlWriter writer)
 				{
 					_reader = reader;
 					_writer = writer;
@@ -92,6 +94,72 @@ namespace Palaso.Lift
 					get { return _state; }
 				}
 
+				public void CopyGlossReplacingWritingSystem(string oldId, string newId)
+				{
+					_state = States.FoundGlossElement;
+					while (_state != States.FoundGlossEndElement)
+					{
+						//_writer.Flush();
+						switch (_state)
+						{
+							case States.FoundGlossElement:
+								{
+									if (_reader.GetAttribute("lang") == oldId || _reader.GetAttribute("lang") == newId)
+									{
+										_writer.WriteStartElement(_reader.Name);
+										_writer.WriteAttributeString("lang", newId);
+										_state = States.LogValue;
+									}
+									else
+									{
+										_writer.WriteNodeShallow(_reader);
+										_state = States.CopyToEndOfGloss;
+									}
+									break;
+								}
+							case States.LogValue:
+								if (_reader.NodeType == XmlNodeType.Text)
+								{
+									if (_formValues.Contains(_reader.Value))
+									{
+										_writer.WriteValue("");
+									}
+									else
+									{
+										_formValues.Add(_reader.Value);
+										_writer.WriteNodeShallow(_reader);
+									}
+									_state = States.CopyToEndOfGloss;
+								}
+								else if (_reader.NodeType == XmlNodeType.EndElement && _reader.Name == "gloss")
+								{
+									_writer.WriteNodeShallow(_reader);
+									_state = States.FoundGlossEndElement;
+									return;
+								}
+								else
+								{
+									_writer.WriteNodeShallow(_reader);
+								}
+								break;
+							case States.CopyToEndOfGloss:
+								if (_reader.NodeType == XmlNodeType.EndElement && _reader.Name == "gloss")
+								{
+									_writer.WriteNodeShallow(_reader);
+									_state = States.FoundGlossEndElement;
+									return;
+								}
+								else
+								{
+									_writer.WriteNodeShallow(_reader);
+								}
+								break;
+						}
+						//_writer.Flush();
+						_reader.Read();
+					}
+				}
+
 				public void CopyFormReplacingWritingSystems(string oldId, string newId)
 				{
 					_state = States.FoundFormElement;
@@ -100,7 +168,6 @@ namespace Palaso.Lift
 
 					while (_state != States.EndOfFormBlock)
 					{
-						//_writer.Flush();
 						switch (_state)
 						{
 							case States.FoundFormElement:
@@ -113,7 +180,7 @@ namespace Palaso.Lift
 								else
 								{
 									_writer.WriteNodeShallow(_reader);
-									_state = States.SearchForFormBlock;
+									_state = States.SearchForFormOrGlossBlock;
 									liftCopier = new LiftCopyStateMachine(_reader, _writer);
 									liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
 									_state = liftCopier.State;
@@ -132,7 +199,7 @@ namespace Palaso.Lift
 										_formValues.Add(_reader.Value);
 										_writer.WriteNodeShallow(_reader);
 									}
-									_state = States.SearchForFormBlock;
+									_state = States.SearchForFormOrGlossBlock;
 									liftCopier = new LiftCopyStateMachine(_reader, _writer);
 									liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
 									_state = liftCopier.State;
@@ -141,7 +208,7 @@ namespace Palaso.Lift
 								else if(_reader.NodeType == XmlNodeType.EndElement && _reader.Name == "text")
 								{
 									_writer.WriteNodeShallow(_reader);
-									_state = States.SearchForFormBlock;
+									_state = States.SearchForFormOrGlossBlock;
 									liftCopier = new LiftCopyStateMachine(_reader, _writer);
 									liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
 									_state = liftCopier.State;
@@ -153,7 +220,7 @@ namespace Palaso.Lift
 								}
 								break;
 						}
-						_writer.Flush();
+						//_writer.Flush();
 						_reader.Read();
 					}
 				}
@@ -170,14 +237,17 @@ namespace Palaso.Lift
 
 			protected enum States
 			{
-				SearchForFormBlock,
+				SearchForFormOrGlossBlock,
 				FoundFormElement,
 				FoundFormEndElement,
 				LogValue,
 				EndOfFormBlock,
+				FoundGlossElement,
+				FoundGlossEndElement,
+				CopyToEndOfGloss
 			}
 
-			private States _state = States.SearchForFormBlock;
+			private States _state = States.SearchForFormOrGlossBlock;
 
 			protected States State
 			{
@@ -186,29 +256,37 @@ namespace Palaso.Lift
 
 			public void CopyLiftReplacingWritingSystems(string oldId, string newId)
 			{
-				var formBlockCopier = new FormBlockCopyStatemachine(_reader, _writer);
+				var formBlockCopier = new FormOrGlossBlockCopyStatemachine(_reader, _writer);
 				while(_reader.Read())
 				{
-					_writer.Flush();
+					//_writer.Flush();
 					switch(State)
 					{
-						case States.SearchForFormBlock:
+						case States.SearchForFormOrGlossBlock:
 							//found form block, process it
 							if (_reader.Name == "form" && _reader.NodeType == XmlNodeType.Element)
 							{
 								_state = States.FoundFormElement;
-								formBlockCopier = new FormBlockCopyStatemachine(_reader, _writer);
+								formBlockCopier = new FormOrGlossBlockCopyStatemachine(_reader, _writer);
 								formBlockCopier.CopyFormReplacingWritingSystems(oldId, newId);
 								_state = formBlockCopier.State;
 							}
-								//couldn't find new form block inside current form block
+							//couldn't find new form block inside current form block
 							else if (_reader.Name == "form" && _reader.NodeType == XmlNodeType.EndElement)
 							{
 								_writer.WriteNodeShallow(_reader);
 								_state = States.FoundFormEndElement;
 								return;
 							}
-								//copy anything else
+							//found gloss block, process it
+							else if (_reader.Name == "gloss" && _reader.NodeType == XmlNodeType.Element)
+							{
+								_state = States.FoundGlossElement;
+								formBlockCopier = new FormOrGlossBlockCopyStatemachine(_reader, _writer);
+								formBlockCopier.CopyGlossReplacingWritingSystem(oldId, newId);
+								_state = formBlockCopier.State;
+							}
+							//copy anything else
 							else
 							{
 								_writer.WriteNodeShallow(_reader);
@@ -224,7 +302,20 @@ namespace Palaso.Lift
 							else
 							{
 								_writer.WriteNodeShallow(_reader);
-								_state = States.SearchForFormBlock;
+								_state = States.SearchForFormOrGlossBlock;
+							}
+							break;
+						case States.FoundGlossEndElement:
+							if (_reader.Name == "gloss" && _reader.NodeType == XmlNodeType.Element)
+							{
+								_state = States.FoundGlossElement;
+								formBlockCopier.CopyGlossReplacingWritingSystem(oldId, newId);
+								_state = formBlockCopier.State;
+							}
+							else
+							{
+								_writer.WriteNodeShallow(_reader);
+								_state = States.SearchForFormOrGlossBlock;
 							}
 							break;
 					}
