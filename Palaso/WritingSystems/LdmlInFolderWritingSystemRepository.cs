@@ -287,6 +287,17 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		public override void Conflate(string wsToConflate, string wsToConflateWith)
+		{
+			//conflation involves deleting the old writing system. That deletion should not appear int he log. which is what the "_conflating" is used for
+			_conflating = true;
+			base.Conflate(wsToConflate, wsToConflateWith);
+			_changeLog.LogConflate(wsToConflate, wsToConflateWith);
+			_conflating = false;
+		}
+
+		private bool _conflating = false;
+
 		override public void Remove(string identifier)
 		{
 			//we really need to get it in the trash, else, if was auto-provided,
@@ -309,7 +320,10 @@ namespace Palaso.WritingSystems
 				File.Move(GetFilePathFromIdentifier(identifier), destination);
 			}
 			base.Remove(identifier);
-			_changeLog.LogDelete(identifier);
+			if (!_conflating)
+			{
+				_changeLog.LogDelete(identifier);
+			}
 
 		}
 

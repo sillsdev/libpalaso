@@ -99,6 +99,9 @@ namespace Palaso.WritingSystems
 						case "Change":
 							ReadChangeElement(reader, log);
 							break;
+						case "Merge":
+							ReadMergeElement(reader, log);
+							break;
 						case "Add":
 							ReadAddElement(reader, log);
 							break;
@@ -108,6 +111,36 @@ namespace Palaso.WritingSystems
 					}
 				}
 			}
+		}
+
+		private static void ReadMergeElement(XmlReader reader, WritingSystemChangeLog log)
+		{
+			AssertOnElement(reader, "Merge");
+			string producer = reader.GetAttribute("Producer") ?? string.Empty;
+			string producerVersion = reader.GetAttribute("ProducerVersion") ?? string.Empty;
+			string dateTimeString = reader.GetAttribute("TimeStamp") ?? string.Empty;
+			var dateTime = DateTime.Parse(dateTimeString);
+
+			string from = "";
+			string to = "";
+			while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == "Merge"))
+			{
+				if (reader.IsStartElement())
+				{
+					switch (reader.Name)
+					{
+						case "From":
+							reader.Read(); // get to the text node
+							from = reader.Value;
+							break;
+						case "To":
+							reader.Read(); // get to the text node
+							to = reader.Value;
+							break;
+					}
+				}
+			}
+			log.AddEvent(new WritingSystemLogConflateEvent(from, to){ DateTime = dateTime, Producer = producer, ProducerVersion = producerVersion });
 		}
 
 		private static void ReadChangeElement(XmlReader reader, WritingSystemChangeLog log)
@@ -278,6 +311,11 @@ namespace Palaso.WritingSystems
 					var changeEvent = (WritingSystemLogChangeEvent)logEvent;
 					writer.WriteElementString("From", changeEvent.From);
 					writer.WriteElementString("To", changeEvent.To);
+					break;
+				case "Merge":
+					var conflateEvent = (WritingSystemLogConflateEvent)logEvent;
+					writer.WriteElementString("From", conflateEvent.From);
+					writer.WriteElementString("To", conflateEvent.To);
 					break;
 				case "Delete":
 					var deleteEvent = (WritingSystemLogDeleteEvent)logEvent;

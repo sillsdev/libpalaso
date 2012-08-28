@@ -227,6 +227,30 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Save_WritingSystemIdConflated_ChangeLogUpdatedAndDoesNotContainDelete()
+		{
+			using (var e = new TestEnvironment())
+			{
+				var repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.TestPath, "idchangedtest1"), DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+				var ws = WritingSystemDefinition.Parse("en");
+				repo.Set(ws);
+				repo.Save();
+
+				var ws2 = WritingSystemDefinition.Parse("de");
+				repo.Set(ws2);
+				repo.Save();
+
+				repo.Conflate(ws.Id, ws2.Id);
+				repo.Save();
+
+				string logFilePath = Path.Combine(repo.PathToWritingSystems, "idchangelog.xml");
+				AssertThatXmlIn.File(logFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Merge/From[text()='en']");
+				AssertThatXmlIn.File(logFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Merge/To[text()='de']");
+				AssertThatXmlIn.File(logFilePath).HasNoMatchForXpath("/WritingSystemChangeLog/Changes/Delete/Id[text()='en']");
+			}
+		}
+
+		[Test]
 		public void StoreIDAfterSave_SameAsFileNameWithoutExtension()
 		{
 			using (var environment = new TestEnvironment())
