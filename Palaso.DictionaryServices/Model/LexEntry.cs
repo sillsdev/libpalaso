@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Palaso.Data;
 using Palaso.i18n;
@@ -125,6 +126,13 @@ namespace Palaso.DictionaryServices.Model
 			WireUpChild(_lexicalForm);
 			WireUpList(_senses, "senses");
 			WireUpList(_variants, "variants");
+		}
+
+		public IEnumerable<string> PropertiesInUse
+		{
+			get {
+				return base.PropertiesInUse.Concat(Senses.SelectMany(sense => sense.PropertiesInUse));
+			}
 		}
 
 		public override void SomethingWasModified(string propertyModified)

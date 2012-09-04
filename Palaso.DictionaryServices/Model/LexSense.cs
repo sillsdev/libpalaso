@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Palaso.Lift;
 using Palaso.Reporting;
 
@@ -18,6 +19,7 @@ namespace Palaso.DictionaryServices.Model
 		{
 			public static string PartOfSpeech = "POS";
 			public static string SemanticDomainDdp4 = "semantic-domain-ddp4";
+			public static string SILCAWL = "SILCAWL";
 
 			public static string Definition = "definition";
 			//the lower case here is defined by LIFT standard
@@ -126,6 +128,11 @@ namespace Palaso.DictionaryServices.Model
 		{
 			get { return _id; }
 			set { _id = value; }
+		}
+
+		public IEnumerable<string> PropertiesInUse
+		{
+			get { return base.PropertiesInUse.Concat(ExampleSentences.SelectMany(ex=>ex.PropertiesInUse)); }
 		}
 
 		public override void CleanUpAfterEditting()

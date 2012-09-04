@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Palaso.Lift.Options;
 using Palaso.Reporting;
@@ -43,6 +44,11 @@ namespace Palaso.Lift
 		{
 			_properties = new List<KeyValuePair<string, object>>();
 			_parent = parent;
+		}
+
+		public IEnumerable<string> PropertiesInUse
+		{
+			get { return Properties.Select(prop => prop.Key); }
 		}
 
 		public abstract bool IsEmpty { get; }

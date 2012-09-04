@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
@@ -39,6 +40,137 @@ namespace Palaso.DictionaryServices.Tests.Model
 			_entry.EmptyObjectsRemoved += _entry_EmptyObjectsRemoved;
 			_entry.PropertyChanged += _entry_PropertyChanged;
 			_removed = false;
+		}
+
+		[Test]
+		public void ExampleSentencePropertiesInUse_HasPropertyProp1_ReturnsProp1()
+		{
+			var ex = new LexExampleSentence();
+			ex.GetOrCreateProperty<MultiText>("Prop1");
+			Assert.That(ex.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ExampleSentencePropertiesInUse_HasMultipleProperties_ReturnsProperties()
+		{
+			var ex = new LexExampleSentence();
+			ex.GetOrCreateProperty<MultiText>("Prop1");
+			ex.GetOrCreateProperty<MultiText>("Prop2");
+			Assert.That(ex.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(ex.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LexSensePropertiesInUse_HasPropertyProp1_ReturnsProp1()
+		{
+			var lexSense = new LexSense();
+			lexSense.GetOrCreateProperty<MultiText>("Prop1");
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void LexSensePropertiesInUse_HasMultipleProperties_ReturnsProperties()
+		{
+			var lexSense = new LexSense();
+			lexSense.GetOrCreateProperty<MultiText>("Prop1");
+			lexSense.GetOrCreateProperty<MultiText>("Prop2");
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LexSensePropertiesInUse_SenseAndMulitipleExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
+		{
+			var ex1 = new LexExampleSentence();
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop1");
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop2");
+			var ex2 = new LexExampleSentence();
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop1");
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop2");
+			var lexSense = new LexSense();
+			lexSense.GetOrCreateProperty<MultiText>("Prop1");
+			lexSense.GetOrCreateProperty<MultiText>("Prop2");
+			lexSense.ExampleSentences.Add(ex1);
+			lexSense.ExampleSentences.Add(ex2);
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex1Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex1Prop2"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex2Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex2Prop2"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(6));
+		}
+
+		[Test]
+		public void LexEntryPropertiesInUse_HasPropertyProp1_ReturnsProp1()
+		{
+			var entry = new LexEntry();
+			entry.GetOrCreateProperty<MultiText>("Prop1");
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void LexEntryPropertiesInUse_HasMultipleProperties_ReturnsProperties()
+		{
+			var entry = new LexEntry();
+			entry.GetOrCreateProperty<MultiText>("Prop1");
+			entry.GetOrCreateProperty<MultiText>("Prop2");
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LexEntryPropertiesInUse_EntryandMultipleSensesAndExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
+		{
+			var ex1 = new LexExampleSentence();
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop1");
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop2");
+
+			var ex2 = new LexExampleSentence();
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop1");
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop2");
+
+			var ex3 = new LexExampleSentence();
+			ex3.GetOrCreateProperty<MultiText>("Ex3Prop1");
+			ex3.GetOrCreateProperty<MultiText>("Ex3Prop2");
+
+			var lexSense1 = new LexSense();
+			lexSense1.GetOrCreateProperty<MultiText>("Se1Prop1");
+			lexSense1.GetOrCreateProperty<MultiText>("Se1Prop2");
+
+			var lexSense2 = new LexSense();
+			lexSense2.GetOrCreateProperty<MultiText>("Se2Prop1");
+			lexSense2.GetOrCreateProperty<MultiText>("Se2Prop2");
+
+			var entry = new LexEntry();
+			entry.GetOrCreateProperty<MultiText>("Prop1");
+			entry.GetOrCreateProperty<MultiText>("Prop2");
+
+			entry.Senses.Add(lexSense1);
+			entry.Senses.Add(lexSense2);
+			lexSense1.ExampleSentences.Add(ex1);
+			lexSense1.ExampleSentences.Add(ex2);
+			lexSense2.ExampleSentences.Add(ex3);
+
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex1Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex1Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex2Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex2Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex3Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex3Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se1Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se1Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se2Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se2Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(12));
 		}
 
 		[Test]
