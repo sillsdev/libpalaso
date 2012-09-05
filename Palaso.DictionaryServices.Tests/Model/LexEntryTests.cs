@@ -48,7 +48,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 			var ex = new LexExampleSentence();
 			ex.GetOrCreateProperty<MultiText>("Prop1");
 			Assert.That(ex.PropertiesInUse, Contains.Item("Prop1"));
-			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(1));
+			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(3));
 		}
 
 		[Test]
@@ -59,7 +59,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 			ex.GetOrCreateProperty<MultiText>("Prop2");
 			Assert.That(ex.PropertiesInUse, Contains.Item("Prop1"));
 			Assert.That(ex.PropertiesInUse, Contains.Item("Prop2"));
-			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(2));
+			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(4));
 		}
 
 		[Test]
@@ -102,7 +102,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex2Prop2"));
 			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
 			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop2"));
-			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(6));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(10));
 		}
 
 		[Test]
@@ -170,7 +170,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 			Assert.That(entry.PropertiesInUse, Contains.Item("Se2Prop2"));
 			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
 			Assert.That(entry.PropertiesInUse, Contains.Item("Prop2"));
-			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(12));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(18));
 		}
 
 		[Test]

@@ -6,8 +6,6 @@ namespace Palaso.DictionaryServices.Model
 {
 	public sealed class LexExampleSentence: PalasoDataObject
 	{
-		private readonly MultiText _sentence;
-		private readonly MultiText _translation;
 		private string _translationType;
 
 		//!!What!! Is this done this way so that we don't end up storing
@@ -28,9 +26,10 @@ namespace Palaso.DictionaryServices.Model
 
 		public LexExampleSentence(PalasoDataObject parent): base(parent)
 		{
-			_sentence = new MultiText(this);
-			_translation = new MultiText(this);
-
+			var sentence = GetOrCreateProperty<MultiText>(WellKnownProperties.ExampleSentence);
+			sentence.Parent = this;
+			var translation = GetOrCreateProperty<MultiText>(WellKnownProperties.Translation);
+			translation.Parent = this;
 			WireUpEvents();
 		}
 
@@ -40,21 +39,14 @@ namespace Palaso.DictionaryServices.Model
 		/// </summary>
 		public LexExampleSentence(): this(null) {}
 
-		protected override void WireUpEvents()
-		{
-			base.WireUpEvents();
-			WireUpChild(_sentence);
-			WireUpChild(_translation);
-		}
-
 		public MultiText Sentence
 		{
-			get { return _sentence; }
+			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.ExampleSentence); }
 		}
 
 		public MultiText Translation
 		{
-			get { return _translation; }
+			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Translation); }
 		}
 
 		public override bool IsEmpty

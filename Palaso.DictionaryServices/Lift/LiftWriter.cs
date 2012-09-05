@@ -597,6 +597,7 @@ namespace Palaso.DictionaryServices.Lift
 
 			WriteMultiTextNoWrapper(LexExampleSentence.WellKnownProperties.ExampleSentence,
 									example.Sentence);
+			propertiesAlreadyOutput.Add(LexExampleSentence.WellKnownProperties.ExampleSentence);
 			//  WriteMultiWithWrapperIfNonEmpty(LexExampleSentence.WellKnownProperties.Translation, "translation", example.Translation);
 
 			if (!MultiTextBase.IsEmpty(example.Translation))
@@ -611,6 +612,7 @@ namespace Palaso.DictionaryServices.Lift
 
 				AddMultitextForms(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
 				Writer.WriteEndElement();
+				propertiesAlreadyOutput.Add(LexExampleSentence.WellKnownProperties.Translation);
 			}
 
 			if (ShouldOutputProperty(LexExampleSentence.WellKnownProperties.ExampleSentence))

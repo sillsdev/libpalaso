@@ -960,10 +960,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				example.Sentence["red"] = "red sunset tonight";
 				example.Translation["green"] = "blah blah";
 				session.LiftWriter.Add(example);
+				var outPut = session.OutputString();
 				AssertEqualsCanonicalString(
-					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>",
-					session.OutputString()
-				);
+					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>", outPut);
 			}
 		}
 
