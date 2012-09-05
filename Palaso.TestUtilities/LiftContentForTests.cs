@@ -19,7 +19,7 @@ namespace Palaso.TestUtilities
 	<sense>
 		<grammatical-info value='n'/>
 		<definition><form lang='{1}'><text>blah blah blah blah</text></form></definition>
-		<example lang='{0}'><text>and example of lah blah blah blah</text></example>
+		<example><form lang='{0}'><text>and example of lah blah blah blah</text></form></example>
 	</sense>
 </entry>", id1, id2);
 		}
