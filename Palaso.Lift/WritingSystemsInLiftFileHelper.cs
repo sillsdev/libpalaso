@@ -49,24 +49,11 @@ namespace Palaso.Lift
 			var reader = XmlReader.Create(_liftFilePath, Xml.CanonicalXmlSettings.CreateXmlReaderSettings());
 			var writer = XmlWriter.Create(fileToBeWrittenTo.Path, Xml.CanonicalXmlSettings.CreateXmlWriterSettings());
 			var liftCopier = new LiftCopyStateMachine(reader, writer);
-			try
-			{
-				//System.Diagnostics.Process.Start(fileToBeWrittenTo.Path);
-				liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
-				reader.Close();
-				writer.Close();
-				File.Delete(_liftFilePath);
-				fileToBeWrittenTo.MoveTo(_liftFilePath);
-			}
-			catch (Exception e)
-
-			{
-				reader.Close();
-				writer.Close();
-				ErrorReport.NotifyUserOfProblem(e.Message + " " + fileToBeWrittenTo.Path);
-			}
-
-
+			liftCopier.CopyLiftReplacingWritingSystems(oldId, newId);
+			reader.Close();
+			writer.Close();
+			File.Delete(_liftFilePath);
+			fileToBeWrittenTo.MoveTo(_liftFilePath);
 		}
 
 		public void CreateNonExistentWritingSystemsFoundInFile()
