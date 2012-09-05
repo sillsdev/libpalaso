@@ -409,11 +409,11 @@
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.Designer.cs">
 	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WritingSystems\ConflateWritingSystemsDialog.cs">
+	<Compile Include="WritingSystems\DeleteInputSystemDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="WritingSystems\ConflateWritingSystemsDialog.Designer.cs">
-	  <DependentUpon>ConflateWritingSystemsDialog.cs</DependentUpon>
+	<Compile Include="WritingSystems\DeleteInputSystemDialog.Designer.cs">
+	  <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
 	<Compile Include="WritingSystems\LookupISOControl.cs">
@@ -678,8 +678,8 @@
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
 	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\ConflateWritingSystemsDialog.resx">
-	  <DependentUpon>ConflateWritingSystemsDialog.cs</DependentUpon>
+	<EmbeddedResource Include="WritingSystems\DeleteInputSystemDialog.resx">
+	  <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\LookupISOControl.resx">
 	  <DependentUpon>LookupISOControl.cs</DependentUpon>

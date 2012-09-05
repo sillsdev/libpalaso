@@ -36,20 +36,28 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_treeView.BindToModel(treeModel);
 			_model.SelectionChanged += UpdateHeaders;
 			_model.CurrentItemUpdated += UpdateHeaders;
-			_model.GetWritingSystemToConflateWith += OnGetWritingSystemToConflateWith;
+			_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted += OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted;
 			UpdateHeaders(null, null);
 		}
 
-		private void OnGetWritingSystemToConflateWith(object sender, GetWritingSystemToConflateWithEventArgs args)
+		private void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
 		{
-			using (var conflateWsDialog = new ConflateWritingSystemsDialog(args.WritingSystemIdToConflate, _model.WritingSystemDefinitions))
+			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions))
 			{
-				var dialogResult = conflateWsDialog.ShowDialog();
-				if (dialogResult == DialogResult.Cancel)
+				var dialogResult = deleteDialog.ShowDialog();
+				switch(deleteDialog.Choice)
 				{
-					return;
+					case DeleteInputSystemDialog.Choices.Cancel:
+						args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing;
+						break;
+					case DeleteInputSystemDialog.Choices.Merge:
+						args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Conflate;
+						args.WritingSystemIdToConflateWith = deleteDialog.WritingSystemToConflateWith;
+						break;
+					case DeleteInputSystemDialog.Choices.Delete:
+						args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Delete;
+						break;
 				}
-				args.WritingSystemIdToConflateWith = conflateWsDialog.WritingSystemToConflateWith;
 			}
 		}
 
