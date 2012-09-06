@@ -9,6 +9,16 @@ namespace Palaso.Xml
 {
 	public static class XmlNodeExtensions
 	{
+		/// <summary>
+		/// this is safe to use with foreach, unlike SelectNodes
+		/// </summary>
+		public static XmlNodeList SafeSelectNodesWithParms(this XmlNode node, string path, params object[] args)
+		{
+			var x = node.SelectNodes(string.Format(path, args));
+			if (x == null)
+				return new NullXMlNodeList();
+			return x;
+		}
 
 		/// <summary>
 		/// this is safe to use with foreach, unlike SelectNodes
