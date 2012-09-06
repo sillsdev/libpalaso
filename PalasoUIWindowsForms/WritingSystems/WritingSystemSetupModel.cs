@@ -1053,10 +1053,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		/// <summary>
 		/// Fired when the user chooses to "Conflate" a writing systems but before the WS is deleted in the repo.
-		/// Used to notify the consuming application of a conflation, and process a boolean response
+		/// Used to notify the consuming application of a conflation and process a boolean response
 		/// from the app as to whether it can conflate the WS or not (i.e. the WS is in use)
 		/// </summary>
 		public event AskIfOkToConflateEventHandler AskIfOkToConflateWritingSystems;
+
+		/// <summary>
+		/// Fired when the user chooses to "Delete" a writing systems but before the WS is deleted in the repo.
+		/// Used to notify the consuming application of a deletion and process a boolean response
+		/// from the app as to whether it can delete the WS or not (i.e. the WS is in use)
+		/// </summary>
+		public event AskIfOkToDeleteEventHandler AskIfOkToDeleteWritingSystems;
 
 		/// <summary>
 		/// Fired when we need to know what writing systems to conflate.
@@ -1115,9 +1122,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				switch(whatToDo.WhatToDo)
 				{
-					case WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing:
+					case WhatToDos.Nothing:
 							return;
-					case WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Conflate:
+					case WhatToDos.Conflate:
 						var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
 							var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.Id,
 																					   wsToConflateWith);
@@ -1142,12 +1149,45 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 								}
 							}
 						break;
-					case WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Delete:
+					case WhatToDos.Delete:
+						var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
+						if (AskIfOkToDeleteWritingSystems != null)
+						{
+							AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
+						}
+						if (!okToDeleteEventArgs.CanDelete)
+						{
+							string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
+							ErrorReport.NotifyUserOfProblem(
+								String.Format("Can not delete the writing system {0}. {1}",
+											  CurrentDefinition.Id, message));
+							return;
+						}
 						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
 						{
 							_writingSystemRepository.Remove(CurrentDefinition.Id);
 						}
 						break;
+				}
+			}
+			else
+			{
+				var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
+				if (AskIfOkToDeleteWritingSystems != null)
+				{
+					AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
+				}
+				if (!okToDeleteEventArgs.CanDelete)
+				{
+					string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
+					ErrorReport.NotifyUserOfProblem(
+						String.Format("Can not delete the writing system {0}. {1}",
+									  CurrentDefinition.Id, message));
+					return;
+				}
+				if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+				{
+					_writingSystemRepository.Remove(CurrentDefinition.Id);
 				}
 			}
 		// new index will be next writing system or previous if this was the last in the list
@@ -1546,22 +1586,29 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public string ErrorMessage { get; set; }
 	}
 
+	public delegate void AskIfOkToDeleteEventHandler(object sender, AskIfOkToDeleteEventArgs args);
+
+	public class AskIfOkToDeleteEventArgs : EventArgs
+	{
+		public AskIfOkToDeleteEventArgs(string writingSystemIdToDelete)
+		{
+			WritingSystemIdToDelete = writingSystemIdToDelete;
+		}
+		public string WritingSystemIdToDelete { get; private set; }
+		public bool CanDelete = true;
+		public string ErrorMessage { get; set; }
+	}
+
 	public delegate void DecideWhatToDoWithDataInWritingSystemToBeDeleteEventHandler(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args);
 
 	public class WhatToDoWithDataInWritingSystemToBeDeletedEventArgs : EventArgs
 	{
-		public enum WhatToDos
-		{
-			Nothing,
-			Conflate,
-			Delete
-		}
-
 		private string _writingSystemIdToConflateWith;
 
 		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(string writingSystemIdToDelete)
 		{
 			WritingSystemIdToDelete = writingSystemIdToDelete;
+			WhatToDo = WhatToDos.Delete;
 		}
 
 		public WhatToDos WhatToDo { get; set; }
@@ -1578,5 +1625,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			set { _writingSystemIdToConflateWith = value; }
 		}
+	}
+
+	public enum WhatToDos
+	{
+		Nothing,
+		Conflate,
+		Delete
 	}
 }

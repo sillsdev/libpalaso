@@ -48,21 +48,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				if (dialogResult != DialogResult.OK)
 				{
-					args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing;
+					args.WhatToDo = WhatToDos.Nothing;
 				}
 				else
 				{
 					switch (deleteDialog.Choice)
 					{
 						case DeleteInputSystemDialog.Choices.Cancel:
-							args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing;
+							args.WhatToDo = WhatToDos.Nothing;
 							break;
 						case DeleteInputSystemDialog.Choices.Merge:
-							args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Conflate;
+							args.WhatToDo = WhatToDos.Conflate;
 							args.WritingSystemIdToConflateWith = deleteDialog.WritingSystemToConflateWith;
 							break;
 						case DeleteInputSystemDialog.Choices.Delete:
-							args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Delete;
+							args.WhatToDo = WhatToDos.Delete;
 							break;
 					}
 				}
