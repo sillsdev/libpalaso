@@ -170,6 +170,7 @@
 			//
 			this._helpButton.AutoSize = true;
 			this._helpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this._helpButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._helpButton.Image = ((System.Drawing.Image)(resources.GetObject("_helpButton.Image")));
 			this._helpButton.Location = new System.Drawing.Point(239, 3);
 			this._helpButton.Name = "_helpButton";
@@ -188,7 +189,7 @@
 			this.ClientSize = new System.Drawing.Size(357, 160);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Name = "DeleteInputSystemDialog";
-			this.Text = "Delete Input Systems";
+			this.Text = "Delete Input System";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this._selectionTable.ResumeLayout(false);

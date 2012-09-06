@@ -45,18 +45,26 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions))
 			{
 				var dialogResult = deleteDialog.ShowDialog();
-				switch(deleteDialog.Choice)
+
+				if (dialogResult != DialogResult.OK)
 				{
-					case DeleteInputSystemDialog.Choices.Cancel:
-						args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing;
-						break;
-					case DeleteInputSystemDialog.Choices.Merge:
-						args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Conflate;
-						args.WritingSystemIdToConflateWith = deleteDialog.WritingSystemToConflateWith;
-						break;
-					case DeleteInputSystemDialog.Choices.Delete:
-						args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Delete;
-						break;
+					args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing;
+				}
+				else
+				{
+					switch (deleteDialog.Choice)
+					{
+						case DeleteInputSystemDialog.Choices.Cancel:
+							args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Nothing;
+							break;
+						case DeleteInputSystemDialog.Choices.Merge:
+							args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Conflate;
+							args.WritingSystemIdToConflateWith = deleteDialog.WritingSystemToConflateWith;
+							break;
+						case DeleteInputSystemDialog.Choices.Delete:
+							args.WhatToDo = WhatToDoWithDataInWritingSystemToBeDeletedEventArgs.WhatToDos.Delete;
+							break;
+					}
 				}
 			}
 		}

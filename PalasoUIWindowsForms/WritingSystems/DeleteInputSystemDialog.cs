@@ -23,6 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 									   IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith)
 		{
 			InitializeComponent();
+
 			_deleteRadioButton.Text = String.Format(_deleteRadioButton.Text, wsToDelete);
 			_mergeRadioButton.Text = String.Format(_mergeRadioButton.Text, wsToDelete);
 			_wsSelectionComboBox.Items.AddRange(
@@ -44,6 +45,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if(_mergeRadioButton.Checked)
 			{
+				DialogResult = DialogResult.OK;
 				Choice = Choices.Merge;
 				_wsSelectionComboBox.Enabled = true;
 				_okButton.Text = "&Merge";
@@ -54,6 +56,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if(_deleteRadioButton.Checked)
 			{
+				DialogResult = DialogResult.OK;
 				Choice = Choices.Delete;
 				_wsSelectionComboBox.Enabled = false;
 				_okButton.Text = "&Delete";
@@ -65,6 +68,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnCancelClicked(object sender, EventArgs e)
 		{
+			DialogResult = DialogResult.Cancel;
 			Choice = Choices.Cancel;
 			Close();
 		}
