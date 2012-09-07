@@ -92,7 +92,17 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 				grid.Columns[col.Id].Visible = col.Visible;
 
 				if (col.Width >= 0)
-					grid.Columns[col.Id].Width = col.Width;
+				{
+					if (grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.None ||
+						grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.NotSet)
+					{
+						grid.Columns[col.Id].Width = col.Width;
+					}
+					else if (grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.Fill)
+					{
+						grid.Columns[col.Id].FillWeight = col.Width;
+					}
+				}
 
 				if (col.DisplayIndex < 0)
 					grid.Columns[col.Id].DisplayIndex = 0;
