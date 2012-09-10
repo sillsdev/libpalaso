@@ -75,7 +75,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 
 			gridSettings.Columns = (from c in grid.Columns.Cast<DataGridViewColumn>()
 									select new GridColumnSettings { Id = c.Name,
-										Width = c.Width, FillWeight = c.FillWeight, Visible = c.Visible,
+										Width = c.Width, Visible = c.Visible,
 										DisplayIndex = c.DisplayIndex }).ToArray();
 
 			return gridSettings;
@@ -91,15 +91,17 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 
 				grid.Columns[col.Id].Visible = col.Visible;
 
-				if (col.Width >= 0 &&
-					(grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.None ||
-					grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.NotSet))
+				if (col.Width >= 0)
 				{
-					grid.Columns[col.Id].Width = col.Width;
-				}
-				else if (col.FillWeight > 0 && grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.Fill)
-				{
-					grid.Columns[col.Id].FillWeight = col.FillWeight;
+					if (grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.None ||
+						grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.NotSet)
+					{
+						grid.Columns[col.Id].Width = col.Width;
+					}
+					else if (grid.Columns[col.Id].AutoSizeMode == DataGridViewAutoSizeColumnMode.Fill)
+					{
+						grid.Columns[col.Id].FillWeight = col.Width;
+					}
 				}
 
 				if (col.DisplayIndex < 0)
@@ -132,9 +134,6 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		[XmlAttribute("width")]
 		public int Width { get; set; }
 		/// ------------------------------------------------------------------------------------
-		[XmlAttribute("fillWeight")]
-		public float FillWeight { get; set; }
-		/// ------------------------------------------------------------------------------------
 		[XmlAttribute("displayIndex")]
 		public int DisplayIndex { get; set; }
 
@@ -143,7 +142,6 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		{
 			Visible = true;
 			Width = -1;
-			FillWeight = 0;
 			DisplayIndex = -1;
 		}
 	}
