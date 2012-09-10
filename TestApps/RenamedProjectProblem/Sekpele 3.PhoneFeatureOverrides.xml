@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfPhoneInfo>
+   <PhoneInfo Phone="tʃ">
+	<BMask>763968451351308905</BMask>
+	<AMasks>
+	  <unsignedLong>557445</unsignedLong>
+	  <unsignedLong>0</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="d̪">
+	<BMask>766219152723103785</BMask>
+	<AMasks>
+	  <unsignedLong>32841</unsignedLong>
+	  <unsignedLong>0</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="j̃">
+	<BMask>1627604177453935194</BMask>
+	<AMasks>
+	  <unsignedLong>2163721</unsignedLong>
+	  <unsignedLong>0</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="w̃">
+	<BMask>1627674288567159129</BMask>
+	<AMasks>
+	  <unsignedLong>69273609</unsignedLong>
+	  <unsignedLong>0</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="ĩ">
+	<BMask>1627604177453935190</BMask>
+	<AMasks>
+	  <unsignedLong>68719542282</unsignedLong>
+	  <unsignedLong>67108864</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="ɪ̃">
+	<BMask>2780525682060782166</BMask>
+	<AMasks>
+	  <unsignedLong>141733986314</unsignedLong>
+	  <unsignedLong>67108864</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="ɛ̃">
+	<BMask>2780525407182850710</BMask>
+	<AMasks>
+	  <unsignedLong>1101659176970</unsignedLong>
+	  <unsignedLong>67108864</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="ã">
+	<BMask>2780595775927027350</BMask>
+	<AMasks>
+	  <unsignedLong>4400194060298</unsignedLong>
+	  <unsignedLong>67108864</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+  <PhoneInfo Phone="ɔ̃">
+	<BMask>2780595793174006166</BMask>
+	<AMasks>
+	  <unsignedLong>1133871431690</unsignedLong>
+	  <unsignedLong>33554432</unsignedLong>
+	</AMasks>
+  </PhoneInfo>
+</ArrayOfPhoneInfo>

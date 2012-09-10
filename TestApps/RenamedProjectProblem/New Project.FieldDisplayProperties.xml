@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FieldDisplayProps>
+  <PaFieldDisplayProperties name="Phonetic">
+	<font Name="Doulos SIL" Size="13" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>true</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>0</displayIndexInGrid>
+	<displayIndexInRecView>0</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Phonemic">
+	<font Name="Doulos SIL" Size="13" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>1</displayIndexInGrid>
+	<displayIndexInRecView>1</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Tone">
+	<font Name="Doulos SIL" Size="13" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>2</displayIndexInGrid>
+	<displayIndexInRecView>2</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Gloss">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>true</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>3</displayIndexInGrid>
+	<displayIndexInRecView>3</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Gloss-Secondary">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>4</displayIndexInGrid>
+	<displayIndexInRecView>4</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Gloss-Other">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>5</displayIndexInGrid>
+	<displayIndexInRecView>5</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Orthographic">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>6</displayIndexInGrid>
+	<displayIndexInRecView>6</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="PartOfSpeech">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>true</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>7</displayIndexInGrid>
+	<displayIndexInRecView>7</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="CVPattern">
+	<font Name="Doulos SIL" Size="13" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>8</displayIndexInGrid>
+	<displayIndexInRecView>8</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="FreeFormTranslation">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>9</displayIndexInGrid>
+	<displayIndexInRecView>9</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Reference">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>true</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>10</displayIndexInGrid>
+	<displayIndexInRecView>10</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="NoteBookReference">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>11</displayIndexInGrid>
+	<displayIndexInRecView>11</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Dialect">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>12</displayIndexInGrid>
+	<displayIndexInRecView>12</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="EthnologueId">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>13</displayIndexInGrid>
+	<displayIndexInRecView>13</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="LanguageName">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>14</displayIndexInGrid>
+	<displayIndexInRecView>14</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Region">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>15</displayIndexInGrid>
+	<displayIndexInRecView>15</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Country">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>16</displayIndexInGrid>
+	<displayIndexInRecView>16</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Family">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>17</displayIndexInGrid>
+	<displayIndexInRecView>17</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Transcriber">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>18</displayIndexInGrid>
+	<displayIndexInRecView>18</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="SpeakerName">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>19</displayIndexInGrid>
+	<displayIndexInRecView>19</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="SpeakerGender">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>20</displayIndexInGrid>
+	<displayIndexInRecView>20</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Note">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>21</displayIndexInGrid>
+	<displayIndexInRecView>21</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Date">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>22</displayIndexInGrid>
+	<displayIndexInRecView>22</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="DataSource">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>false</visibleInRecView>
+	<displayIndexInGrid>23</displayIndexInGrid>
+	<displayIndexInRecView>23</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="DataSourcePath">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>false</visibleInRecView>
+	<displayIndexInGrid>24</displayIndexInGrid>
+	<displayIndexInRecView>24</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="AudioFile">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>true</visibleInRecView>
+	<displayIndexInGrid>25</displayIndexInGrid>
+	<displayIndexInRecView>25</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Audio File Offset">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>false</visibleInRecView>
+	<displayIndexInGrid>-1</displayIndexInGrid>
+	<displayIndexInRecView>-1</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="Audio File Length">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>false</visibleInRecView>
+	<displayIndexInGrid>-1</displayIndexInGrid>
+	<displayIndexInRecView>-1</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+  <PaFieldDisplayProperties name="GUID">
+	<font Name="Segoe UI" Size="9" Bold="false" Italic="false" />
+	<rightToLeft>false</rightToLeft>
+	<visibleInGrid>false</visibleInGrid>
+	<visibleInRecView>false</visibleInRecView>
+	<displayIndexInGrid>-1</displayIndexInGrid>
+	<displayIndexInRecView>-1</displayIndexInRecView>
+	<widthInGrid>-1</widthInGrid>
+  </PaFieldDisplayProperties>
+</FieldDisplayProps>

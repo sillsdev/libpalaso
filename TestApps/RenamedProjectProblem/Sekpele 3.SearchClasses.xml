@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SearchClasses>
+  <SearchClass Name="ExPhoneClass_Alv_tdnrth" SearchClassType="Phones">
+	<Pattern>{t,d,n,r,tʰ}</Pattern>
+  </SearchClass>
+  <SearchClass Name="ExArtFtrsClass_VclssPlosives" SearchClassType="Articulatory">
+	<Pattern>[[Plosive][Voiceless]]</Pattern>
+  </SearchClass>
+  <SearchClass Name="ExArtFtrsClass_BilabORLabDent" SearchClassType="Articulatory">
+	<Pattern>{[Bilabial],[Labiodental]}</Pattern>
+  </SearchClass>
+  <SearchClass Name="ExBinFtrsClass+high+syll" SearchClassType="Binary">
+	<Pattern>[[+high][+syll]]</Pattern>
+  </SearchClass>
+  <SearchClass Name="ExBinFtrsClass+antOR+LAB" SearchClassType="Binary">
+	<Pattern>{[+ant],[+LAB]}</Pattern>
+  </SearchClass>
+</SearchClasses>

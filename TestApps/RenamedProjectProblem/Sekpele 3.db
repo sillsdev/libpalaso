@@ -1,0 +1,609 @@
+﻿\_sh v3.0  400  PhoneticData
+
+\ref 0001
+\ge body
+\gn corps
+\sf Sound_files\0001body.wav
+\ph asuaʔ
+\plph asuaʔ
+\ps N
+
+\ref 0002
+\ge skin (of man)
+\gn peau (d’homme)
+\sf Sound_files\0002skin.wav
+\ph asuaʔ ɛtu kukuə
+\plph asuaʔ ɛtu ɛkuə
+\ps N
+
+\ref 0003
+\ge head
+\gn tête
+\sf Sound_files\0003head.wav
+\ph disi
+\plph esi
+\ps N
+
+\ref 0004
+\ge forehead
+\gn front
+\sf Sound_files\0004forehead.wav
+\ph letumɛʔ
+\plph atumɛʔ
+\ps N
+
+\ref 0005
+\ge face
+\gn visage
+\sf Sound_files\0005face.wav
+\ph anamiʔ
+\plph anamiʔ
+\ps N
+
+\ref 0006
+\ge eye
+\gn œil
+\sf Sound_files\0006eye.wav
+\ph dinamiʔ
+\plph anamiʔ
+\ps N
+
+\ref 0007
+\ge eyebrow
+\gn sourcil
+\sf Sound_files\0007eyebrow.wav
+\ph kʌnansə
+\plph ɡɨnansə
+\ps N
+
+\ref 0008
+\ge eyelid
+\gn paupière
+\sf Sound_files\0008eyelid.wav
+\ph ɛnamituka(t/d)oʔ
+\plph ɛnamituka(t/d)oʔ
+\ps N
+
+\ref 0009
+\ge eyelash
+\gn cil
+\sf Sound_files\0009eyelash.wav
+\ph onansə
+\plph binansə
+\ps N
+
+\ref 0010
+\ge pupil (of eye)
+\gn pupille
+\sf Sound_files\0010pupil.wav
+\ph dinambɛʔ
+\plph ɛnambɛʔ
+\ps N
+
+\ref 0011
+\ge nose
+\gn nez
+\sf Sound_files\0011nose.wav
+\ph lɛ̃w̃ɔ̃
+\plph ãw̃ɔ̃
+\ps N
+
+\ref 0012
+\ge bridge (of nose)
+\gn arête, dos du nez
+\sf Sound_files\0012bridge.wav
+\ph lɛ̃w̃ɔ̃ to o(t/d)eʔ
+\plph ãw̃ɔ̃ to ka(t/d)eʔ
+\ps N
+
+\ref 0013
+\ge ear
+\gn oreille
+\sf Sound_files\0013ear.wav
+\ph ko(t/d)oʔ
+\plph a(t/d)oʔ
+\ps N
+
+\ref 0014
+\ge cheek
+\gn joue
+\sf Sound_files\0014cheek.wav
+\ph ko(t/d)o-siʔ
+\plph a(t/d)o-siʔ
+\ps N
+
+\ref 0015
+\ge mouth
+\gn bouche
+\sf Sound_files\0015mouth.wav
+\ph kɛj̃ɛ̃ʔ
+\plph ɲj̃ɛ̃ʔ
+\ps N
+
+\ref 0016
+\ge lip
+\gn lèvre
+\sf Sound_files\0016lip.wav
+\ph kɛj̃ɛ̃ʔ flɔʔ
+\plph ɲj̃ɛ̃ʔ flɔʔ
+\ps N
+
+\ref 0017
+\ge tongue
+\gn langue
+\sf Sound_files\0017tongue.wav
+\ph odjakamiʔ
+\plph kadjakamiʔ
+\ps N
+
+\ref 0018
+\ge tooth
+\gn dent
+\sf Sound_files\0018tooth.wav
+\ph lɛ̃j̃ĩʔ
+\plph ãj̃ĩʔ
+\ps N
+
+\ref 0019
+\ge molar tooth
+\gn molaire
+\sf Sound_files\0019molar_tooth.wav
+\ph lɛ̃j̃i səndeʔ
+\plph ãj̃i səndeʔ
+\ps N
+
+\ref 0020
+\ge palate
+\gn palais (de la bouche)
+\sf Sound_files\0020palate.wav
+\ph kɛj̃ɛ̃ kɛmja(t/d)oka(t/d)oʔ
+\plph ɲj̃ɛ̃ kɛmja(t/d)oka(t/d)oʔ
+\ps N
+
+\ref 0021
+\ge jaw
+\gn mâchoire
+\sf Sound_files\0021jaw.wav
+\ph kalʊaʔ
+\plph nlʊaʔ
+\ps N
+
+\ref 0022
+\ge chin
+\gn menton
+\sf Sound_files\0022chin.wav
+\ph sikpĭlibiʔ
+\plph ekpĭlibiʔ
+\ps N
+
+\ref 0023
+\ge neck
+\gn cou
+\sf Sound_files\0023neck.wav
+\ph simuʌʔ
+\plph bimuʌʔ
+\ps N
+
+\ref 0024
+\ge nape of neck
+\gn nuque
+\sf Sound_files\0024nape_of_neck.wav
+\ph kasulomaʔ
+\plph nsulomaʔ
+\ps N
+
+\ref 0025
+\ge throat
+\gn gorge
+\sf Sound_files\0025throat.wav
+\ph ɔkwɛ
+\plph kakwɛ
+\ps N
+
+\ref 0026
+\ge voice box, larynx, Adam’s apple
+\gn larynx, pomme d’Adam
+\sf Sound_files\0026voice_box.wav
+\ph lɛkwɛnlolobiʔ
+\plph kakwɛnlolobiʔ
+\ps N
+
+\ref 0027
+\ge hair (of head)
+\gn cheveux (de tête)
+\sf Sound_files\0027hair.wav
+\ph ɔw̃ɔ̃niʔ
+\plph sɛw̃ɔ̃niʔ
+\ps N
+
+\ref 0028
+\ge beard
+\gn barbe
+\sf Sound_files\0028beard.wav
+\ph ukpi
+\plph kekpi
+\ps N
+
+\ref 0029
+\ge hair (of body)
+\gn poil (du corps)
+\sf Sound_files\0029hair.wav
+\ph ɛswa(t/d)obisə
+\plph ɛswa(t/d)obisə
+\ps N
+
+\ref 0030
+\ge tuft, lock (of hair)
+\gn touffe, mèche (de cheveux)
+\sf Sound_files\0030tuft.wav
+\ph sɔnĭ(t/d)o ekelbiʔ
+\plph sɔnĭ(t/d)o akelbiʔ
+\ps N
+
+\ref 0031
+\ge shoulder
+\gn épaule
+\sf Sound_files\0031shoulder.wav
+\ph lɛmɔkɔsiʔ
+\plph amɔkɔsiʔ
+\ps N
+
+\ref 0032
+\ge shoulder blade
+\gn omoplate
+\sf Sound_files\0032shoulder_blade.wav
+\ph lɛmɔkɔsiʔ kobiʔ
+\plph amɔkɔsiʔ kobiʔ
+\ps N
+
+\ref 0033
+\ge chest
+\gn poitrine
+\sf Sound_files\0033chest.wav
+\ph lɛkɔsibiʔ
+\plph akɔsibiʔ
+\ps N
+
+\ref 0034
+\ge breast
+\gn sein, mamelle
+\sf Sound_files\0034breast.wav
+\ph lɛmɪ̃ʔ
+\plph amɪ̃ʔ
+\ps N
+
+\ref 0035
+\ge side (of body)
+\gn côté (du corps), flanc
+\sf Sound_files\0035side.wav
+\ph asɔ(t/d)o kutʃə
+\plph asɔ(t/d)o etʃə
+\ps N
+
+\ref 0036
+\ge waist
+\gn taille
+\sf Sound_files\0036waist.wav
+\ph ŋkɛ
+\plph ŋkɛ
+\ps N
+
+\ref 0037
+\ge navel
+\gn nombril
+\sf Sound_files\0037navel.wav
+\ph sɛkɔ̃
+\plph bɛkɔ̃
+\ps N
+
+\ref 0038
+\ge umbilical cord
+\gn cordon ombilical
+\sf Sound_files\0038umbilical_cord.wav
+\ph sɛkɔ(t/d)o ukwə
+\plph sɛkɔ(t/d)o kəkwə
+\ps N
+
+\ref 0039
+\ge abdomen (external)
+\gn ventre, abdomen (externe)
+\sf Sound_files\0039abdomen.wav
+\ph kafu
+\plph ɱfu
+\ps N
+
+\ref 0040
+\ge stomach (internal)
+\gn estomac, ventre (interne)
+\sf Sound_files\0040stomach.wav
+\ph kafu kɛmi̯ɛʔ
+\plph ɱfu kɛmi̯ɛʔ
+\ps N
+
+\ref 0041
+\ge womb
+\gn utérus
+\sf Sound_files\0041womb.wav
+\ph obikasiakɔʔ
+\plph bebikasiakɔʔ
+\ps N
+
+\ref 0042
+\ge back
+\gn dos
+\sf Sound_files\0042back.wav
+\ph kamaʔ
+\plph mmaʔ
+\ps N
+
+\ref 0044
+\ge buttock
+\gn fesse
+\sf Sound_files\0044buttock.wav
+\ph ditiŋke
+\plph etiŋke
+\ps N
+
+\ref 0101
+\ge urine
+\gn urine
+\sf Sound_files\0101urine.wav
+\ph kəsuʔ
+\plph nsuʔ
+\ps N
+
+\ref 0106
+\ge breathe
+\gn respirer
+\sf Sound_files\0106breathe.wav
+\ph wɔnɔ
+\ps V
+
+\ref 0107
+\ge yawn
+\gn bâiller
+\sf Sound_files\0107yawn.wav
+\ph wula
+\ps V
+
+\ref 0108
+\ge snore
+\gn ronfler
+\sf Sound_files\0108snore.wav
+\ph tɛ akɔnɔnɔ
+\ps V
+
+\ref 0110
+\ge blow (with mouth)
+\gn souffler
+\sf Sound_files\0110blow.wav
+\ph ifə ofiabi̯e
+
+\ref 0111
+\ge spit
+\gn cracher
+\sf Sound_files\0111spit.wav
+\ph tufə
+\ps V
+
+\ref 0112
+\ge cough (v)
+\gn tousser
+\sf Sound_files\0112cough.wav
+\ph kɔsɪ ɔkɔ
+\ps V
+
+\ref 0114
+\ge hiccough (n)
+\gn hoquet
+\sf Sound_files\0114hiccough.wav
+\ph fiŋkə
+
+\ref 0115
+\ge sneeze (v)
+\gn éternuer
+\sf Sound_files\0115sneeze.wav
+\ph ĩsi̯ə
+
+\ref 0116
+\ge groan (with pain)
+\gn gémir (de douleur)
+\sf Sound_files\0116groan.wav
+\ph kwɛ̃
+\ps V
+
+\ref 0118
+\ge palpitate (of heart)
+\gn palpiter, battre très fort (coeur)
+\sf Sound_files\0118palpitate.wav
+\ph sɔ
+\ps V
+
+\ref 0122
+\ge shiver, tremble
+\gn frissonner, trembler
+\sf Sound_files\0122shiver.wav
+\ph tiŋɡə kpakpakpa
+\ps V
+
+\ref 0127
+\ge faint
+\gn s’évanouir
+\sf Sound_files\0127faint.wav
+\ph kpësïkpi
+\ps V
+
+\ref 0131
+\ge see
+\gn voir
+\sf Sound_files\0131see.wav
+\ph jə
+\ps V
+
+\ref 0133
+\ge look at, watch
+\gn regarder
+\sf Sound_files\0133look_at.wav
+\ph ɡbe
+\ps V
+
+\ref 0134
+\ge hear
+\gn entendre
+\sf Sound_files\0134hear.wav
+\ph nɔ̃
+\ps V
+
+\ref 0135
+\ge listen
+\gn écouter
+\sf Sound_files\0135listen.wav
+\ph tʃoko(t/d)o
+\ps V
+
+\ref 0136
+\ge smell (v)
+\gn sentir (par le nez)
+\sf Sound_files\0136smell.wav
+\ph jaanɔ
+\ps V
+
+\ref 0138
+\ge touch, feel (active)
+\gn toucher
+\sf Sound_files\0138touch.wav
+\ph tidi
+\ps V
+
+\ref 0139
+\ge taste
+\gn goûter
+\sf Sound_files\0139taste.wav
+\ph diad̪e
+\ps V
+
+\ref 0140
+\ge eat
+\gn manger
+\sf Sound_files\0140eat.wav
+\ph ɗi
+\ps V
+
+\ref 0141
+\ge bite (v)
+\gn mordre
+\sf Sound_files\0141bite.wav
+\ph nə
+\ps V
+
+\ref 0142
+\ge crunch
+\gn croquer
+\sf Sound_files\0142crunch.wav
+\ph jɪmɪ
+\ps V
+
+\ref 0145
+\ge swallow
+\gn avaler
+\sf Sound_files\0145swallow.wav
+\ph mɪnɪ
+\ps V
+
+\ref 0148
+\ge suck
+\gn sucer
+\sf Sound_files\0148suck.wav
+\ph fjɔ̃
+\ps V
+
+\ref 0149
+\ge drink
+\gn boire
+\sf Sound_files\0149drink.wav
+\ph nə
+\ps V
+
+\ref 0150
+\ge sit
+\gn s’asseoir
+\sf Sound_files\0150sit.wav
+\ph siʌ
+\ps V
+
+\ref 0154
+\ge walk
+\gn marcher
+\sf Sound_files\0154walk.wav
+\ph jɛ
+\ps V
+
+\ref 0155
+\ge step (v)
+\gn faire un pas
+\sf Sound_files\0155step.wav
+\ph mʌŋkle
+\ps V
+
+\ref 0156
+\ge stumble
+\gn trébucher, broncher
+\sf Sound_files\0156stumble.wav
+\ph buteko
+\ps V
+
+\ref 0157
+\ge limp
+\gn boiter
+\sf Sound_files\0157limp.wav
+\ph tʃɛkɛlɛ
+\ps V
+
+\ref 0158
+\ge crawl
+\gn ramper, marcher à quatre pattes
+\sf Sound_files\0158crawl.wav
+\ph kpe
+\ps V
+
+\ref 0159
+\ge run
+\gn courir
+\sf Sound_files\0159run.wav
+\ph tʃetʃi
+\ps V
+
+\ref 0160
+\ge swim
+\gn nager
+\sf Sound_files\0160swim.wav
+\ph ke
+\ps V
+
+\ref 0161
+\ge jump (v)
+\gn sauter
+\sf Sound_files\0161jump.wav
+\ph sa
+\ps V
+
+\ref 0162
+\ge kick
+\gn donner un coup de pied
+\sf Sound_files\0162kick.wav
+\ph ta
+\ps V
+
+\ref 0163
+\ge stamp (with foot)
+\gn trépigner, taper du pied
+\sf Sound_files\0163stamp.wav
+\ph se
+\ps V
+
+\ref 0165
+\ge wave (hand as a greeting) (v)
+\gn faire signe de la main
+\sf Sound_files\0165wave.wav
+\ph wĩj̃ã
+\ps V

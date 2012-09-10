@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PaProject version="3.3.0">
+  <name>New Project</name>
+  <Transcriber>Rod Casali with modifications for training purposes.</Transcriber>
+  <SpeakerName />
+  <Comments>Data source: Somevi Cyprian Kudjo, Sekpele speaker from eastern Ghana. This data was collected in 2005. This data has been modified for training purposes (for example, uncertain phone groups have been added and tone has been removed).</Comments>
+  <IgnoreUndefinedCharsInSearches>true</IgnoreUndefinedCharsInSearches>
+  <DataSources>
+	<DataSource>
+	  <DataSourceFile>C:\Users\Adam\Documents\Phonology Assistant\Training Projects\Sekpele 3\Sekpele 3.db</DataSourceFile>
+	  <ParseType>PhoneticOnly</ParseType>
+	  <Type>Unknown</Type>
+	  <SkipLoading>false</SkipLoading>
+	  <TotalLinesInFile>609</TotalLinesInFile>
+	  <ToolboxSortField>Reference</ToolboxSortField>
+	  <Editor />
+	  <FieldMappings />
+	</DataSource>
+	<DataSource>
+	  <DataSourceFile>C:\Users\Adam\Documents\Phonology Assistant\Training Projects\Sekpele 3\Sekpele 3 plural nouns.db</DataSourceFile>
+	  <ParseType>PhoneticOnly</ParseType>
+	  <Type>Unknown</Type>
+	  <SkipLoading>false</SkipLoading>
+	  <TotalLinesInFile>309</TotalLinesInFile>
+	  <ToolboxSortField>Reference</ToolboxSortField>
+	  <Editor />
+	  <FieldMappings />
+	</DataSource>
+  </DataSources>
+  <ShowUndefinedCharsDlg>true</ShowUndefinedCharsDlg>
+  <DataCorpusVwSortOptions>
+	<SortType>POA</SortType>
+	<SaveManuallySetSortOptions>false</SaveManuallySetSortOptions>
+	<AdvSortOrder>
+	  <int>1</int>
+	  <int>0</int>
+	  <int>2</int>
+	</AdvSortOrder>
+	<AdvRlOptions>
+	  <boolean>true</boolean>
+	  <boolean>false</boolean>
+	  <boolean>false</boolean>
+	</AdvRlOptions>
+	<sortFields>
+	  <field name="Phonetic" ascending="true" />
+	</sortFields>
+  </DataCorpusVwSortOptions>
+  <SearchVwSortOptions>
+	<SortType>POA</SortType>
+	<SaveManuallySetSortOptions>false</SaveManuallySetSortOptions>
+	<AdvSortOrder>
+	  <int>1</int>
+	  <int>0</int>
+	  <int>2</int>
+	</AdvSortOrder>
+	<AdvRlOptions>
+	  <boolean>true</boolean>
+	  <boolean>false</boolean>
+	  <boolean>false</boolean>
+	</AdvRlOptions>
+	<sortFields>
+	  <field name="Phonetic" ascending="true" />
+	</sortFields>
+  </SearchVwSortOptions>
+  <DistributionChartVwSortOptions>
+	<SortType>POA</SortType>
+	<SaveManuallySetSortOptions>false</SaveManuallySetSortOptions>
+	<AdvSortOrder>
+	  <int>1</int>
+	  <int>0</int>
+	  <int>2</int>
+	</AdvSortOrder>
+	<AdvRlOptions>
+	  <boolean>true</boolean>
+	  <boolean>false</boolean>
+	  <boolean>false</boolean>
+	</AdvRlOptions>
+	<sortFields>
+	  <field name="Phonetic" ascending="true" />
+	</sortFields>
+  </DistributionChartVwSortOptions>
+  <CIEOptions IdenticalType="Both">
+	<SearchQuery version="2">
+	  <IsPatternRegExpression>false</IsPatternRegExpression>
+	  <ShowAllOccurrences>true</ShowAllOccurrences>
+	  <IncludeAllUncertainPossibilities>false</IncludeAllUncertainPossibilities>
+	  <IgnoreDiacritics>false</IgnoreDiacritics>
+	  <IgnoredStressChars>',-,.,|,ˈ,ˌ,‖,‿,</IgnoredStressChars>
+	  <IgnoredToneChars>˥˧,˧˩,˦˥˦,˩˨,˦˥,˥˩,˩˥,²,³,¹,˥,˦,˧,˨,˩,̀,́,̂,̄,̋,̌,̏,᷄,᷅,᷈,⁴,⁵,⁶,⁷,⁸,⁹,↑,↓,↗,↘,</IgnoredToneChars>
+	  <IgnoredLengthChars>:,ː,ˑ,̆,</IgnoredLengthChars>
+	  <CompleteIgnoredList>
+		<string>˦˥˦</string>
+		<string>˥˧</string>
+		<string>˧˩</string>
+		<string>˩˨</string>
+		<string>˦˥</string>
+		<string>˥˩</string>
+		<string>˩˥</string>
+		<string>²</string>
+		<string>³</string>
+		<string>¹</string>
+		<string>˥</string>
+		<string>˦</string>
+		<string>˧</string>
+		<string>˨</string>
+		<string>˩</string>
+		<string>̀</string>
+		<string>́</string>
+		<string>̂</string>
+		<string>̄</string>
+		<string>̋</string>
+		<string>̌</string>
+		<string>̏</string>
+		<string>᷄</string>
+		<string>᷅</string>
+		<string>᷈</string>
+		<string>⁴</string>
+		<string>⁵</string>
+		<string>⁶</string>
+		<string>⁷</string>
+		<string>⁸</string>
+		<string>⁹</string>
+		<string>↑</string>
+		<string>↓</string>
+		<string>↗</string>
+		<string>↘</string>
+		<string>'</string>
+		<string>-</string>
+		<string>.</string>
+		<string>|</string>
+		<string>ˈ</string>
+		<string>ˌ</string>
+		<string>‖</string>
+		<string>‿</string>
+		<string>:</string>
+		<string>ː</string>
+		<string>ˑ</string>
+		<string>̆</string>
+	  </CompleteIgnoredList>
+	</SearchQuery>
+  </CIEOptions>
+  <CVPatternInfoList>
+	<CVPatternInfo Phone="'" Type="StressSyllable" />
+	<CVPatternInfo Phone="ˈ" Type="StressSyllable" />
+	<CVPatternInfo Phone="ˌ" Type="StressSyllable" />
+	<CVPatternInfo Phone="|" Type="StressSyllable" />
+	<CVPatternInfo Phone="‖" Type="StressSyllable" />
+	<CVPatternInfo Phone="." Type="StressSyllable" />
+	<CVPatternInfo Phone="-" Type="StressSyllable" />
+	<CVPatternInfo Phone="‿" Type="StressSyllable" />
+	<CVPatternInfo Phone="ː" Type="Length" />
+	<CVPatternInfo Phone="ˑ" Type="Length" />
+	<CVPatternInfo Phone="̆" Type="Length" />
+	<CVPatternInfo Phone="̃" Type="NotApplicable" />
+	<CVPatternInfo Phone="ʔ" Type="NotApplicable" />
+  </CVPatternInfoList>
+  <GridLayoutInfo>
+	<GridLines>Single</GridLines>
+	<ColHeaderHeight>34</ColHeaderHeight>
+	<SaveReorderedCols>true</SaveReorderedCols>
+	<SaveAdjustedColHeaderHeight>true</SaveAdjustedColHeaderHeight>
+	<SaveAdjustedColWidths>true</SaveAdjustedColWidths>
+	<AutoAdjustPhoneticCol>true</AutoAdjustPhoneticCol>
+	<AutoAjustedMaxWidth>200</AutoAjustedMaxWidth>
+  </GridLayoutInfo>
+</PaProject>

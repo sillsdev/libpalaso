@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ambiguousSequences>
+  <sequence literal="kp" unit="true" primaryBase="p" generated="false" />
+  <sequence literal="ɡb" unit="true" primaryBase="b" generated="false" />
+  <sequence literal="tʃ" unit="true" primaryBase="ʃ" generated="false" />
+</ambiguousSequences>

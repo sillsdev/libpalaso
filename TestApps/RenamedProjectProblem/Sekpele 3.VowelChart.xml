@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PhoneChart RowHeaderWidth="81" ColumnHeaderHeight="32" RowSplitPosition="71" ColumnSplitPosition="22" ShowUncertainPhones="false">
+  <ColHeadings>
+	<Heading text="Front" SubHeadingsVisible="false" Group="0">
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="" SubHeadingsVisible="false" Group="0">
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="Central" SubHeadingsVisible="false" Group="0">
+	  <SubHeading />
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="" SubHeadingsVisible="false" Group="0">
+	  <SubHeading />
+	</Heading>
+	<Heading text="Back" SubHeadingsVisible="false" Group="0">
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+  </ColHeadings>
+  <RowHeadings>
+	<Heading text="Close" SubHeadingsVisible="false" Group="0">
+	  <SubHeading />
+	  <SubHeading />
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="" SubHeadingsVisible="false" Group="1">
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="Close-mid" SubHeadingsVisible="false" Group="2">
+	  <SubHeading />
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="" SubHeadingsVisible="false" Group="3">
+	  <SubHeading />
+	</Heading>
+	<Heading text="Open-mid" SubHeadingsVisible="false" Group="4">
+	  <SubHeading />
+	  <SubHeading />
+	</Heading>
+	<Heading text="" SubHeadingsVisible="false" Group="5">
+	  <SubHeading />
+	</Heading>
+	<Heading text="Open" SubHeadingsVisible="false" Group="6">
+	  <SubHeading />
+	</Heading>
+	<Heading text="Other" SubHeadingsVisible="false" Group="7">
+	  <SubHeading />
+	</Heading>
+  </RowHeadings>
+  <Phones>
+	<Phone text="i" Visible="true" Row="0" Column="0" Group="0">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ï" Visible="true" Row="1" Column="0" Group="0">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ĩ" Visible="true" Row="2" Column="0" Group="0">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ĭ" Visible="true" Row="3" Column="0" Group="0">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="i̯e" Visible="true" Row="6" Column="0" Group="2">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="e" Visible="true" Row="7" Column="0" Group="2">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ë" Visible="true" Row="8" Column="0" Group="2">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ɛ" Visible="true" Row="9" Column="0" Group="3">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="i̯ɛ" Visible="true" Row="10" Column="0" Group="4">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ɛ̃" Visible="true" Row="11" Column="0" Group="4">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="a" Visible="true" Row="12" Column="0" Group="5">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ã" Visible="true" Row="13" Column="0" Group="6">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ɪ" Visible="true" Row="4" Column="2" Group="1">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ɪ̃" Visible="true" Row="5" Column="2" Group="1">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ə" Visible="true" Row="8" Column="5" Group="2">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="i̯ə" Visible="true" Row="9" Column="5" Group="3">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ʊ" Visible="true" Row="4" Column="7" Group="1">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ʌ" Visible="true" Row="9" Column="8" Group="3">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="u" Visible="true" Row="0" Column="9" Group="0">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="o" Visible="true" Row="6" Column="9" Group="2">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ɔ" Visible="true" Row="9" Column="9" Group="3">
+	  <SiblingUncertainties />
+	</Phone>
+	<Phone text="ɔ̃" Visible="true" Row="10" Column="9" Group="4">
+	  <SiblingUncertainties />
+	</Phone>
+  </Phones>
+</PhoneChart>

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Media", "Palaso.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugMono|Any CPU = DebugMono|Any CPU
+		Release|Any CPU = Release|Any CPU
+		ReleaseMono|Any CPU = ReleaseMono|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.DebugMono|Any CPU.ActiveCfg = DebugMono|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.DebugMono|Any CPU.Build.0 = DebugMono|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.ReleaseMono|Any CPU.ActiveCfg = ReleaseMono|Any CPU
+		{66B3504A-3B4E-45CB-903A-A9A75B22EF68}.ReleaseMono|Any CPU.Build.0 = ReleaseMono|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
