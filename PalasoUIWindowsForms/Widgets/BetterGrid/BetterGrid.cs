@@ -479,7 +479,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// IP up one line rather than moving to the previous row.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		protected bool ProcessUpKey(TextBox txtBox)
+		protected virtual bool ProcessUpKey(TextBox txtBox)
 		{
 			// Don't override the default behavior if all the text is selected or not multi-line.
 			if (txtBox.SelectedText == txtBox.Text || !txtBox.Multiline)
@@ -506,7 +506,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// IP down one line rather than moving to the next row.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		protected bool ProcessDownKey(TextBox txtBox)
+		protected virtual bool ProcessDownKey(TextBox txtBox)
 		{
 			// Don't override the default behavior if all the text is selected or not multi-line.
 			if (txtBox.SelectedText == txtBox.Text || !txtBox.Multiline)
