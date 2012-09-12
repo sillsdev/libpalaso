@@ -14,6 +14,7 @@ namespace Palaso.Tests.WritingSystems
 		private WritingSystemDefinition _writingSystem;
 		private WritingSystemIdChangedEventArgs _writingSystemIdChangedEventArgs;
 		private WritingSystemDeletedEventArgs _writingSystemDeletedEventArgs;
+		private WritingSystemConflatedEventArgs _writingSystemConflatedEventArgs;
 
 		public IWritingSystemRepository RepositoryUnderTest
 		{
@@ -37,6 +38,7 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest = CreateNewStore();
 			_writingSystemIdChangedEventArgs = null;
 			_writingSystemDeletedEventArgs = null;
+			_writingSystemConflatedEventArgs = null;
 		}
 
 		[TearDown]
@@ -47,11 +49,62 @@ namespace Palaso.Tests.WritingSystems
 		{
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = new WritingSystemDefinition();
+			var ws2 = new WritingSystemDefinition();
 			ws2.Language = "two";
 			RepositoryUnderTest.Set(ws2);
 
 			Assert.AreEqual(2, RepositoryUnderTest.Count);
+		}
+
+		[Test]
+		public void Conflate_TwoWritingSystemsOneIsConflatedIntoOther_OneWritingSystemRemains()
+		{
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Conflate("en", "de");
+			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
+			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
+		}
+
+		[Test]
+		public void Conflate_WritingSystemsIsConflated_FiresWritingSystemsIsConflatedEvent()
+		{
+			RepositoryUnderTest.WritingSystemConflated += OnWritingSystemConflated;
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Conflate("en", "de");
+			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
+			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
+			Assert.That(_writingSystemConflatedEventArgs, Is.Not.Null);
+			Assert.That(_writingSystemConflatedEventArgs.OldId, Is.EqualTo("en"));
+			Assert.That(_writingSystemConflatedEventArgs.NewId, Is.EqualTo("de"));
+		}
+
+		[Test]
+		public void Conflate_WritingSystemsIsConflated_FiresWritingSystemsIsDeletedEventIsNotFired()
+		{
+			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Conflate("en", "de");
+			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
+			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
+			Assert.That(_writingSystemDeletedEventArgs, Is.Null);
+		}
+
+		private void OnWritingSystemConflated(object sender, WritingSystemConflatedEventArgs e)
+		{
+			_writingSystemConflatedEventArgs = e;
+		}
+
+		[Test]
+		public void Remove_TwoWritingSystemsOneIsDeleted_OneWritingSystemRemains()
+		{
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
+			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Remove("en");
+			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
+			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
 		}
 
 		[Test]

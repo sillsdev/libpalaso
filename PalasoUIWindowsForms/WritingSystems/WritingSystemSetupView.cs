@@ -13,6 +13,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class WritingSystemSetupView : UserControl
 	{
 		private WritingSystemSetupModel _model;
+		public event EventHandler UserWantsHelpWithDeletingWritingSystems;
 
 		public WritingSystemSetupView()
 		{
@@ -36,20 +37,48 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_treeView.BindToModel(treeModel);
 			_model.SelectionChanged += UpdateHeaders;
 			_model.CurrentItemUpdated += UpdateHeaders;
-			_model.GetWritingSystemToConflateWith += OnGetWritingSystemToConflateWith;
+			_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted += OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted;
 			UpdateHeaders(null, null);
 		}
 
-		private void OnGetWritingSystemToConflateWith(object sender, GetWritingSystemToConflateWithEventArgs args)
+		private void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
 		{
-			using (var conflateWsDialog = new ConflateWritingSystemsDialog(args.WritingSystemIdToConflate, _model.WritingSystemDefinitions))
+			//If no one is listening for the help button we won't offer it to the user
+			bool showHelpButton = UserWantsHelpWithDeletingWritingSystems != null;
+			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions, showHelpButton))
 			{
-				var dialogResult = conflateWsDialog.ShowDialog();
-				if (dialogResult == DialogResult.Cancel)
+				deleteDialog.HelpWithDeletingWritingSystemsButtonClickedEvent +=
+					OnHelpWithDeletingWritingSystemsButtonClicked;
+				var dialogResult = deleteDialog.ShowDialog();
+
+				if (dialogResult != DialogResult.OK)
 				{
-					return;
+					args.WhatToDo = WhatToDos.Nothing;
 				}
-				args.WritingSystemIdToConflateWith = conflateWsDialog.WritingSystemToConflateWith;
+				else
+				{
+					switch (deleteDialog.Choice)
+					{
+						case DeleteInputSystemDialog.Choices.Cancel:
+							args.WhatToDo = WhatToDos.Nothing;
+							break;
+						case DeleteInputSystemDialog.Choices.Merge:
+							args.WhatToDo = WhatToDos.Conflate;
+							args.WritingSystemIdToConflateWith = deleteDialog.WritingSystemToConflateWith;
+							break;
+						case DeleteInputSystemDialog.Choices.Delete:
+							args.WhatToDo = WhatToDos.Delete;
+							break;
+					}
+				}
+			}
+		}
+
+		private void OnHelpWithDeletingWritingSystemsButtonClicked(object sender, EventArgs e)
+		{
+			if(UserWantsHelpWithDeletingWritingSystems != null)
+			{
+				UserWantsHelpWithDeletingWritingSystems(sender, e);
 			}
 		}
 

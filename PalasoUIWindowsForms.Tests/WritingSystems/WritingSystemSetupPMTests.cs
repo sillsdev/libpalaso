@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
+using System.Linq;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
@@ -17,12 +18,78 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		IWritingSystemRepository _writingSystemRepository;
 		string _testFilePath;
 
-		private bool EventFired { get; set; }
+		private class DeleteCurrentTestEnvironment:IDisposable
+		{
+
+			public bool AskIfDataExistsInWritingSystemToBeDeletedFired { get; private set; }
+			public bool AskIfOkToConflateWritingSystemsFired { get; private set; }
+			public bool AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired { get; private set; }
+			public bool AskIfOkToDeleteWritingSystemFired { get; private set; }
+
+			public void OnAskIfDataExistsInWritingSystemToBeDeleted_NoData(object sender, AskIfDataExistsInWritingSystemToBeDeletedEventArgs args)
+			{
+				AskIfDataExistsInWritingSystemToBeDeletedFired = true;
+				args.ProjectContainsDataInWritingSystemToBeDeleted = false;
+			}
+
+			public void OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists(object sender, AskIfDataExistsInWritingSystemToBeDeletedEventArgs args)
+			{
+				AskIfDataExistsInWritingSystemToBeDeletedFired = true;
+				args.ProjectContainsDataInWritingSystemToBeDeleted = true;
+			}
+
+			public void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
+			{
+				AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired = true;
+				args.WhatToDo = WhatToDos.Delete;
+			}
+
+			public void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
+			{
+				AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired = true;
+				args.WhatToDo = WhatToDos.Conflate;
+				args.WritingSystemIdToConflateWith = "de";
+			}
+
+			public void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
+			{
+				AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired = true;
+				args.WhatToDo = WhatToDos.Nothing;
+			}
+
+			public void OnAskIfOkToConflateWritingSystems_No(object sender, AskIfOkToConflateEventArgs args)
+			{
+				AskIfOkToConflateWritingSystemsFired = true;
+				args.CanConflate = false;
+			}
+
+			public void OnAskIfOkToConflateWritingSystems_Yes(object sender, AskIfOkToConflateEventArgs args)
+			{
+				AskIfOkToConflateWritingSystemsFired = true;
+				args.CanConflate = true;
+			}
+
+			public void OnAskIfOkToDeleteWritingSystem_Yes(object sender, AskIfOkToDeleteEventArgs args)
+			{
+				AskIfOkToDeleteWritingSystemFired = true;
+				args.CanDelete = true;
+			}
+
+			public void OnAskIfOkToDeleteWritingSystem_No(object sender, AskIfOkToDeleteEventArgs args)
+			{
+				AskIfOkToDeleteWritingSystemFired = true;
+				args.CanDelete = false;
+			}
+
+			public void Dispose()
+			{
+				//do nothing
+			}
+		}
 
 		[SetUp]
 		public void Setup()
 		{
-			EventFired = false;
 			ErrorReport.IsOkToInteractWithUser = false;
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
 
@@ -76,24 +143,31 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void DeleteCurrent_NoLongerInList()
 		{
-			_model.AddNew();
-			_model.CurrentISO = "pt";
-			_model.AddNew();
-			_model.CurrentISO = "de";
-			_model.AddNew();
-			_model.CurrentISO = "th";
-			_model.BeforeDeleted += OnBeforeDeleted_CanDelete;
-			var writingSystems = new List<string>();
-			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
+			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				writingSystems.Insert(0, _model.CurrentISO);
-			}
-			string deletedWritingSystem = writingSystems[1];
-			_model.CurrentIndex = 1;
-			_model.DeleteCurrent();
-			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
-			{
-				Assert.AreNotEqual(deletedWritingSystem, _model.CurrentISO);
+				_model.AddNew();
+				_model.CurrentISO = "pt";
+				_model.AddNew();
+				_model.CurrentISO = "de";
+				_model.AddNew();
+				_model.CurrentISO = "th";
+				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
+				var writingSystems = new List<string>();
+				for (_model.CurrentIndex = _model.WritingSystemCount - 1;
+					 _model.HasCurrentSelection;
+					 _model.CurrentIndex--)
+				{
+					writingSystems.Insert(0, _model.CurrentISO);
+				}
+				string deletedWritingSystem = writingSystems[1];
+				_model.CurrentIndex = 1;
+				_model.DeleteCurrent();
+				for (_model.CurrentIndex = _model.WritingSystemCount - 1;
+					 _model.HasCurrentSelection;
+					 _model.CurrentIndex--)
+				{
+					Assert.AreNotEqual(deletedWritingSystem, _model.CurrentISO);
+				}
 			}
 		}
 
@@ -178,13 +252,16 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		[Test]
 		public void Event_Delete_TriggersOnAddDelete()
 		{
-			_model.AddNew();
-			_model.CurrentISO = "pt";
-			bool eventTriggered = false;
-			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
-			_model.BeforeDeleted += OnBeforeDeleted_CanDelete;
-			_model.DeleteCurrent();
-			Assert.IsTrue(eventTriggered);
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AddNew();
+				_model.CurrentISO = "pt";
+				bool eventTriggered = false;
+				_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
+				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
+				_model.DeleteCurrent();
+				Assert.IsTrue(eventTriggered);
+			}
 		}
 
 		[Test]
@@ -936,68 +1013,249 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void BeforeDeleted_EventFires_HandlerIsRun()
+		public void DeleteCurrent_AskIfDataExistsInWritingSystemToBeDeletedFires()
 		{
-			_model.BeforeDeleted += OnBeforeDeleted_CanDelete;
-			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			Assert.That(EventFired, Is.False);
-			_model.DeleteCurrent();
-			Assert.That(EventFired, Is.True);
-		}
-
-		void OnBeforeDeleted_CanDelete(object sender, BeforeDeletedEventArgs args)
-		{
-			EventFired = true;
-			args.CanDelete = true;
-		}
-
-		void OnBeforeDeleted_CannotDelete(object sender, BeforeDeletedEventArgs args)
-		{
-			args.CanDelete = false;
-		}
-
-		void OnBeforeConflated_CannotConflate(object sender, BeforeConflatedEventArgs args)
-		{
-			args.CanConflate = false;
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.That(e.AskIfDataExistsInWritingSystemToBeDeletedFired, Is.False);
+				_model.DeleteCurrent();
+				Assert.That(e.AskIfDataExistsInWritingSystemToBeDeletedFired, Is.True);
+			}
 		}
 
 		[Test]
-		public void BeforeDeleted_CannotDeleteCannotConflate_ThrowsUserException()
+		public void DeleteCurrent_NoDataInProjectAndAllowedToDelete_WritingSystemIsDeleted()
 		{
-			_model.BeforeDeleted += OnBeforeDeleted_CannotDelete;
-			_model.BeforeConflated += OnBeforeConflated_CannotConflate;
-			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			Assert.That(EventFired, Is.False);
-
-			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => _model.DeleteCurrent()
-			);
-		}
-
-		public void OnGetWritingSystemToConflateWith(object sender, GetWritingSystemToConflateWithEventArgs args)
-		{
-			EventFired = true;
-			args.WritingSystemIdToConflateWith = "en";
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				_model.Save();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+				_model.DeleteCurrent();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
+			}
 		}
 
 		[Test]
-		public void BeforeDeleted_CannotDelete_FiresGetWritingSystemToConflateWith()
+		public void DeleteCurrent_NoDataInProjectAndNotAllowedToDelete_ThrowsUserException()
 		{
-			_model.BeforeDeleted += OnBeforeDeleted_CannotDelete;
-			_model.GetWritingSystemToConflateWith += OnGetWritingSystemToConflateWith;
-			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			_model.DeleteCurrent();
-			Assert.That(EventFired, Is.True);
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_No;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+					() => _model.DeleteCurrent()
+					);
+			}
 		}
 
 		[Test]
-		public void BeforeDeleted_BeforeDeleteisUnhandled_DeleteIsNotInterrupted()
+		public void DeleteCurrent_DataInProjectAndUserChoosesToConflateButCannotConflate_ThrowsUserException()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
+				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_No;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+
+				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+					() => _model.DeleteCurrent()
+					);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToConflateAndCanConflate_Deleted()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
+				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_Yes;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+				_model.DeleteCurrent();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToConflateAndNoOneListeningToCanConflate_Deletes()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+				_model.DeleteCurrent();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToDeleteButNotAllowedToDelete_ThrowsUserException()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_No;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+
+				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
+					() => _model.DeleteCurrent()
+					);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToDeleteAndCanDelete_Deletes()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+				_model.DeleteCurrent();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToDeleteAndNoOneListeningToCanDelete_Deletes()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+				_model.DeleteCurrent();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserCancels_NothingHappens()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+				_model.DeleteCurrent();
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_AskIfDataExistsInWritingSystemToBeDeletedIsUnhandled_DeleteIsNotInterrupted()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(1));
 			Assert.That("pt", Is.EqualTo(_model.CurrentDefinition.Id));
 			_model.DeleteCurrent();
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndNoOneListeningToUserChoiceEvent_OkToDeleteIsFired()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes; //just need a listener to verifiy that it did fire
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				_model.DeleteCurrent();
+				Assert.That(e.AskIfOkToDeleteWritingSystemFired, Is.True);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProject_AskUserWhatToDoWithDataInWritingSystemToBeDeletedFires()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				_model.DeleteCurrent();
+				Assert.That(e.AskIfDataExistsInWritingSystemToBeDeletedFired, Is.True);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_NoDataInProject_AskUserWhatToDoWithDataInWritingSystemToBeDeletedNotFiredButOkToDeleteFired()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;  //just need a listener to verifiy that it didn't fire
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes; //just need a listener to verifiy that it did fire
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				_model.DeleteCurrent();
+				Assert.That(e.AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired, Is.False);
+				Assert.That(e.AskIfOkToDeleteWritingSystemFired, Is.True);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToConflate_OkToConflateFired()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
+				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_Yes; //just need a listener to verifiy that it did fire
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				_model.DeleteCurrent();
+				Assert.That(e.AskIfOkToConflateWritingSystemsFired, Is.True);
+			}
+		}
+
+		[Test]
+		public void DeleteCurrent_DataInProjectAndUserChoosesToDelete_OkToDeleteFired()
+		{
+			using (var e = new DeleteCurrentTestEnvironment())
+			{
+				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
+					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
+				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
+				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes; //just need a listener to verifiy that it did fire
+				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+				_model.DeleteCurrent();
+				Assert.That(e.AskIfOkToDeleteWritingSystemFired, Is.True);
+			}
 		}
 
 		[Test]
