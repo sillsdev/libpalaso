@@ -50,11 +50,6 @@ namespace Palaso.WritingSystems
 			return true;
 		}
 
-		public void LogMerge(string oldId, string newId)
-		{
-			throw new NotImplementedException();
-		}
-
 		public string GetChangeFor(string id)
 		{
 			if (_logEvents.Count(c => (c.Type == "Change" || c.Type == "Merge") && ((WritingSystemLogChangeEvent)c).From.Equals(id)) != 1)

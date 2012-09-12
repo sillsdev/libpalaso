@@ -27,6 +27,7 @@ namespace Palaso.WritingSystems
 		public event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
 		public event WritingSystemDeleted WritingSystemDeleted;
 		public event WritingSystemConflatedEventHandler WritingSystemConflated;
+		protected bool Conflating{ get; private set; }
 
 		/// <summary>
 		/// Constructor, set the CompatibilityMode
@@ -67,11 +68,13 @@ namespace Palaso.WritingSystems
 
 		virtual public void Conflate(string wsToConflate, string wsToConflateWith)
 		{
+			Conflating = true;
 			if(WritingSystemConflated != null)
 			{
 				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
 			}
 			Remove(wsToConflate);
+			Conflating = false;
 		}
 
 		virtual public void Remove(string identifier)
@@ -88,7 +91,7 @@ namespace Palaso.WritingSystems
 			//??? Do we really delete or just mark for deletion?
 			_writingSystems.Remove(identifier);
 			_writingSystemsToIgnore.Remove(identifier);
-			if (WritingSystemDeleted != null)
+			if (!Conflating && WritingSystemDeleted != null)
 			{
 				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(identifier));
 			}

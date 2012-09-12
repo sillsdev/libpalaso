@@ -484,31 +484,5 @@ namespace Palaso.Lift.Tests
 				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry", 2);
 			}
 		}
-
-		[Test]
-		public void DeleteWritingSystemId()
-		{
-			using (var e = new TestEnvironment(File.ReadAllText("C:\\Users\\tim\\Desktop\\nan.lift")))
-			{
-				var sw = new System.Diagnostics.Stopwatch();
-				sw.Start();
-				e.Helper.DeleteWritingSystemId("nan-hant");
-				sw.Stop();
-				Assert.That(sw.Elapsed, Is.EqualTo(0));
-			}
-		}
-
-		[Test]
-		public void ReplaceWritingSystemId()
-		{
-			using (var e = new TestEnvironment(File.ReadAllText("C:\\Users\\tim\\Desktop\\nan.lift")))
-			{
-				var sw = new System.Diagnostics.Stopwatch();
-				sw.Start();
-				e.Helper.ReplaceWritingSystemId("nan-hant", "de");
-				sw.Stop();
-				Assert.That(sw.Elapsed, Is.EqualTo(0));
-			}
-		}
 	}
 }

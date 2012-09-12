@@ -645,6 +645,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void Conflate_ChangelogRecordsChange()
+		{
+			using(var e = new TestEnvironment())
+			{
+				e.Collection.Set(WritingSystemDefinition.Parse("de"));
+				e.Collection.Set(WritingSystemDefinition.Parse("en"));
+				e.Collection.Conflate("de", "en");
+				Assert.That(e.Collection.WritingSystemIdHasChangedTo("de"), Is.EqualTo("en"));
+			}
+		}
+
+		[Test]
 		//This is not really a problem, but it would be nice if the file were made consistant. So make we will make them run it through the migrator, which they should be using anyway.
 		public void Constructor_LdmlFolderStoreContainsInconsistentlyNamedFile_HasExpectedProblem()
 		{
