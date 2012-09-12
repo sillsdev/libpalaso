@@ -45,7 +45,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if(_mergeRadioButton.Checked)
 			{
-				DialogResult = DialogResult.OK;
 				Choice = Choices.Merge;
 				_wsSelectionComboBox.Enabled = true;
 				_okButton.Text = "&Merge";
@@ -56,7 +55,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if(_deleteRadioButton.Checked)
 			{
-				DialogResult = DialogResult.OK;
 				Choice = Choices.Delete;
 				_wsSelectionComboBox.Enabled = false;
 				_okButton.Text = "&Delete";
@@ -75,6 +73,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnOkClicked(object sender, EventArgs e)
 		{
+			DialogResult = DialogResult.OK;
 			Close();
 		}
 
