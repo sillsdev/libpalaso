@@ -144,6 +144,7 @@
 	<EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Naudio\UI\RecordingDeviceButton.resx">
 	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>
@@ -226,6 +227,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\HeadSet.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\ExternalAudioDevice.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
