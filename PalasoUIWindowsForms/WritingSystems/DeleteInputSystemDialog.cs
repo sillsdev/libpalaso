@@ -19,11 +19,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Delete
 		}
 
+		public event EventHandler HelpWithDeletingWritingSystemsButtonClickedEvent;
+
 		public DeleteInputSystemDialog(string wsToDelete,
-									   IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith)
+									   IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith, bool showHelpButton)
 		{
 			InitializeComponent();
-
+			if (!showHelpButton)
+			{
+				_helpButton.Hide();
+			}
 			_deleteRadioButton.Text = String.Format(_deleteRadioButton.Text, wsToDelete);
 			_mergeRadioButton.Text = String.Format(_mergeRadioButton.Text, wsToDelete);
 			_wsSelectionComboBox.Items.AddRange(
@@ -38,7 +43,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_cancelButton.Click += OnCancelClicked;
 			_deleteRadioButton.CheckedChanged += OnDeleteRadioButtonCheckedChanged;
 			_mergeRadioButton.CheckedChanged += OnMergeRadioButtonCheckedChanged;
+			_helpButton.Click += OnCustomHelpButtonClicked;
 			_deleteRadioButton.Checked = true;
+		}
+
+		private void OnCustomHelpButtonClicked(object sender, EventArgs e)
+		{
+			if (HelpWithDeletingWritingSystemsButtonClickedEvent != null)
+			{
+				HelpWithDeletingWritingSystemsButtonClickedEvent(this, e);
+			}
 		}
 
 		private void OnMergeRadioButtonCheckedChanged(object sender, EventArgs e)

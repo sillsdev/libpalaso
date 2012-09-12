@@ -13,6 +13,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class WritingSystemSetupView : UserControl
 	{
 		private WritingSystemSetupModel _model;
+		public event EventHandler UserWantsHelpWithDeletingWritingSystems;
 
 		public WritingSystemSetupView()
 		{
@@ -42,8 +43,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
 		{
-			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions))
+			//If no one is listening for the help button we won't offer it to the user
+			bool showHelpButton = UserWantsHelpWithDeletingWritingSystems != null;
+			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions, showHelpButton))
 			{
+				deleteDialog.HelpWithDeletingWritingSystemsButtonClickedEvent +=
+					OnHelpWithDeletingWritingSystemsButtonClicked;
 				var dialogResult = deleteDialog.ShowDialog();
 
 				if (dialogResult != DialogResult.OK)
@@ -66,6 +71,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 							break;
 					}
 				}
+			}
+		}
+
+		private void OnHelpWithDeletingWritingSystemsButtonClicked(object sender, EventArgs e)
+		{
+			if(UserWantsHelpWithDeletingWritingSystems != null)
+			{
+				UserWantsHelpWithDeletingWritingSystems(sender, e);
 			}
 		}
 
