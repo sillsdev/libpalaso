@@ -307,7 +307,7 @@ namespace Palaso.Lift.Tests
 		}
 
 		[Test]
-		public void ReplaceWritingSystemId_FirstOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveContent_WritingSystemIsReplacedSecondFormIsDeleted()
+		public void ReplaceWritingSystemId_FirstOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveContent_WritingSystemIsReplaced()
 		{
 			var ws2Content = new Dictionary<string, string> { { "th", "thai Word" }, { "de", "de word" } };
 			var liftFileContent =
@@ -331,8 +331,8 @@ namespace Palaso.Lift.Tests
 			using (var e = new TestEnvironment(liftFileContent))
 			{
 				e.Helper.ReplaceWritingSystemId("th", "de");
-				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
-				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 1);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']", 1);
 				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
 			}
 		}
@@ -346,8 +346,8 @@ namespace Palaso.Lift.Tests
 			using (var e = new TestEnvironment(liftFileContent))
 			{
 				e.Helper.ReplaceWritingSystemId("th", "de");
-				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']/text", 2);
-				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']/text", 1);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='de word']", 1);
 				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
 			}
 		}
