@@ -32,13 +32,13 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this._selectionTable = new System.Windows.Forms.TableLayoutPanel();
 			this._wsSelectionComboBox = new System.Windows.Forms.ComboBox();
+			this._helpButton = new System.Windows.Forms.Button();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this._radioTable = new System.Windows.Forms.TableLayoutPanel();
 			this._deleteRadioButton = new System.Windows.Forms.RadioButton();
 			this._mergeRadioButton = new System.Windows.Forms.RadioButton();
-			this._helpButton = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
 			this._selectionTable.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
@@ -88,6 +88,17 @@
 			this._wsSelectionComboBox.Name = "_wsSelectionComboBox";
 			this._wsSelectionComboBox.Size = new System.Drawing.Size(230, 21);
 			this._wsSelectionComboBox.TabIndex = 2;
+			//
+			// _helpButton
+			//
+			this._helpButton.AutoSize = true;
+			this._helpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this._helpButton.Image = ((System.Drawing.Image)(resources.GetObject("_helpButton.Image")));
+			this._helpButton.Location = new System.Drawing.Point(239, 3);
+			this._helpButton.Name = "_helpButton";
+			this._helpButton.Size = new System.Drawing.Size(22, 22);
+			this._helpButton.TabIndex = 3;
+			this._helpButton.UseVisualStyleBackColor = true;
 			//
 			// tableLayoutPanel3
 			//
@@ -165,18 +176,6 @@
 			this._mergeRadioButton.TabStop = true;
 			this._mergeRadioButton.Text = "Merge all {0} data with:";
 			this._mergeRadioButton.UseVisualStyleBackColor = true;
-			//
-			// _helpButton
-			//
-			this._helpButton.AutoSize = true;
-			this._helpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this._helpButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._helpButton.Image = ((System.Drawing.Image)(resources.GetObject("_helpButton.Image")));
-			this._helpButton.Location = new System.Drawing.Point(239, 3);
-			this._helpButton.Name = "_helpButton";
-			this._helpButton.Size = new System.Drawing.Size(22, 22);
-			this._helpButton.TabIndex = 3;
-			this._helpButton.UseVisualStyleBackColor = true;
 			//
 			// DeleteInputSystemDialog
 			//
