@@ -56,6 +56,7 @@ namespace Palaso.Media.Naudio
 		protected RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
 		protected PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
 		protected double _prevRecordedTime;
+		private int _numberOfLatentBuffersToIncludeInRecording;
 
 		public SampleAggregator SampleAggregator { get; protected set; }
 		public RecordingDevice SelectedDevice { get; set; }
@@ -76,7 +77,6 @@ namespace Palaso.Media.Naudio
 			SampleAggregator = new SampleAggregator();
 			SampleAggregator.MaximumCalculated += delegate
 			{
-				//var peakLevel = Math.Max(e.MaxSample, Math.Abs(e.MinSample));
 				_peakLevelEventArgs.Level = SampleAggregator.maxValue;
 				PeakLevelChanged.Invoke(this, _peakLevelEventArgs);
 			};
@@ -138,7 +138,6 @@ namespace Palaso.Media.Naudio
 				InitializeWaveIn();
 
 				_waveIn.DataAvailable += waveIn_DataAvailable;
-				//_waveIn.RecordingStopped += new EventHandler(waveIn_RecordingStopped);
 				_waveIn.WaveFormat = _recordingFormat;
 				try
 				{
@@ -166,9 +165,11 @@ namespace Palaso.Media.Naudio
 			_waveIn.DeviceNumber = SelectedDevice.DeviceNumber;
 		}
 
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// as far as naudio is concerned, we are still "recording", but we aren't writing this file anymore
 		/// </summary>
+		/// ------------------------------------------------------------------------------------
 		protected virtual void TransitionFromRecordingToMonitoring()
 		{
 			RecordedTime = TimeSpan.FromSeconds((double)_writer.Length / _writer.WaveFormat.AverageBytesPerSecond);
@@ -177,23 +178,13 @@ namespace Palaso.Media.Naudio
 			Stopped.Invoke(this, EventArgs.Empty);
 		}
 
-/*        void waveIn_RecordingStopped(object sender, EventArgs e)
-		{
-			RecordedTime = TimeSpan.FromSeconds((double)_writer.Length / _writer.WaveFormat.AverageBytesPerSecond);
-			RecordingState = RecordingState.Monitoring;
-			if (_writer != null)
-			{
-				_writer.Dispose();
-				_writer = null;
-			}
-			Stopped(this, EventArgs.Empty);
-		}
-*/
+		/// ------------------------------------------------------------------------------------
 		public virtual void BeginRecording(string waveFileName)
 		{
 			BeginRecording(waveFileName, false);
 		}
 
+		/// ------------------------------------------------------------------------------------
 		public virtual void BeginRecording(string waveFileName, bool appendToFile)
 		{
 			if (_recordingState != RecordingState.Monitoring)
@@ -239,10 +230,14 @@ namespace Palaso.Media.Naudio
 			if (_recordingState == RecordingState.Recording)
 			{
 				RecordingState = RecordingState.RequestedStop;
-				//_waveIn.StopRecording();
+				// Don't stop because we'll lose any buffer(s) that have not been processed.
+				// Then when we re-start, NAudio can crash because the buffers for which it has
+				// queued messages will be disposed
+				//   _waveIn.StopRecording();
+				_numberOfLatentBuffersToIncludeInRecording = 1;
+				if (_waveIn.BufferMilliseconds <= 150)
+					_numberOfLatentBuffersToIncludeInRecording += Math.Min(_waveIn.NumberOfBuffers - 1, 150 / _waveIn.BufferMilliseconds);
 			}
-
-			TransitionFromRecordingToMonitoring();
 		}
 
 		protected virtual void TryGetVolumeControl()
@@ -313,6 +308,7 @@ namespace Palaso.Media.Naudio
 
 		protected virtual void waveIn_DataAvailable(object sender, WaveInEventArgs e)
 		{
+
  /*original from codeplex
   byte[] buffer = e.Buffer;
 			int bytesRecorded = e.BytesRecorded;
@@ -360,6 +356,13 @@ namespace Palaso.Media.Naudio
 				_prevRecordedTime = currRecordedTime;
 				_recProgressEventArgs.RecordedLength = TimeSpan.FromSeconds(currRecordedTime);
 				RecordingProgress.Invoke(this, _recProgressEventArgs);
+			}
+
+			if (RecordingState == RecordingState.RequestedStop)
+			{
+				_numberOfLatentBuffersToIncludeInRecording--;
+				if (_numberOfLatentBuffersToIncludeInRecording <= 0)
+					TransitionFromRecordingToMonitoring();
 			}
 		}
 
