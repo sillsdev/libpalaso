@@ -85,7 +85,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 										  IpaStatus = IpaStatusChoices.Ipa,
 										  Keyboard = Palaso.UI.WindowsForms.Keyboarding.KeyboardController.GetIpaKeyboardIfAvailable()
 									  };
-			this.Label = string.Format("IPA writing system for {0}", _templateDefinition.LanguageName);
+			this.Label = string.Format("IPA input system for {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -110,7 +110,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		public OtherSuggestion(WritingSystemDefinition primary)
 		{
 			_templateDefinition = primary.Clone();
-			this.Label = string.Format("other writing system for {0}", _templateDefinition.LanguageName);
+			this.Label = string.Format("other input system for {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{

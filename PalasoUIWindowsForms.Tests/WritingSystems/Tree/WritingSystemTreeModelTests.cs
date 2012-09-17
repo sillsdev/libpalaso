@@ -231,7 +231,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 				e.SetDefinitionsInStore(new[] {etr});
 				var model = e.CreateModel();
 				model.Suggestor.SuggestIpa = true;
-				AssertTreeNodeLabels(model, "Edolo", "+Add IPA writing system for Edolo", "", "Add Language");
+				AssertTreeNodeLabels(model, "Edolo", "+Add IPA input system for Edolo", "", "Add Language");
 			}
 		}
 

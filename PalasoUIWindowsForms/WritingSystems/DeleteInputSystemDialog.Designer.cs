@@ -163,7 +163,7 @@
 			this._deleteRadioButton.Size = new System.Drawing.Size(155, 17);
 			this._deleteRadioButton.TabIndex = 0;
 			this._deleteRadioButton.TabStop = true;
-			this._deleteRadioButton.Text = "Delete all data written in {0}";
+			this._deleteRadioButton.Text = "Delete all data stored in {0}";
 			this._deleteRadioButton.UseVisualStyleBackColor = true;
 			//
 			// _mergeRadioButton

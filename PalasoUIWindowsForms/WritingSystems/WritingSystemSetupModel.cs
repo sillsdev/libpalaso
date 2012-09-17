@@ -1136,7 +1136,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 							{
 								string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
 								ErrorReport.NotifyUserOfProblem(
-									String.Format("Can not conflate the writing system {0} to {1}. {2}",
+									String.Format("Can not conflate the input system {0} to {1}. {2}",
 												  CurrentDefinition.Id,
 												  wsToConflateWith, message));
 								return;
@@ -1159,7 +1159,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						{
 							string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
 							ErrorReport.NotifyUserOfProblem(
-								String.Format("Can not delete the writing system {0}. {1}",
+								String.Format("Can not delete the input system {0}. {1}",
 											  CurrentDefinition.Id, message));
 							return;
 						}
@@ -1181,7 +1181,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
 					ErrorReport.NotifyUserOfProblem(
-						String.Format("Can not delete the writing system {0}. {1}",
+						String.Format("Can not delete the input system {0}. {1}",
 									  CurrentDefinition.Id, message));
 					return;
 				}
@@ -1226,7 +1226,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (!_usingRepository)
 			{
-				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+				throw new InvalidOperationException("Unable to add new input system definition when there is no store.");
 			}
 			WritingSystemDefinition ws=null;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
