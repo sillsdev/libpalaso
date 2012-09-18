@@ -497,8 +497,20 @@ namespace Palaso.Text
 			return true;
 		}
 
+		public override bool Equals(Object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof(MultiTextBase)) return false;
+			return Equals((MultiTextBase)obj);
+		}
+
 		public bool Equals(MultiTextBase other)
 		{
+			if (other == null)
+			{
+				return false;
+			}
 			if (other.Count != Count)
 			{
 				return false;
