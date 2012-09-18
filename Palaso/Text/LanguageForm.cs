@@ -1,6 +1,7 @@
 using System;
 using System.Xml.Serialization;
 using Palaso.Annotations;
+using Palaso.Code;
 
 
 namespace Palaso.Text
@@ -9,7 +10,7 @@ namespace Palaso.Text
 	/// A LanguageForm is a unicode string plus the id of its writing system
 	/// </summary>
    // [ReflectorType("alt")]
-	public class LanguageForm : Annotatable, IComparable<LanguageForm>
+	public class LanguageForm : Annotatable, IComparable<LanguageForm>, IClonableGeneric<LanguageForm>
 	{
 		private string _writingSystemId;
 		private string _form;
@@ -32,6 +33,17 @@ namespace Palaso.Text
 			_parent = parent;
 			_writingSystemId = writingSystemId;
 			_form =  form;
+		}
+
+		/// <summary>
+		/// Copy Constructor
+		/// </summary>
+		/// <param name="annotatable"></param>
+		public LanguageForm(LanguageForm languageForm): base(languageForm)
+		{
+			_writingSystemId = languageForm._writingSystemId;
+			_form = languageForm._form;
+
 		}
 
 
@@ -100,6 +112,11 @@ namespace Palaso.Text
 			}
 			int formOrder = this.Form.CompareTo(other.Form);
 			return formOrder;
+		}
+
+		public LanguageForm Clone()
+		{
+			return new LanguageForm(this);
 		}
 	}
 }

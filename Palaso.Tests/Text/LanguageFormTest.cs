@@ -2,10 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
+using Palaso.Annotations;
+using Palaso.Tests.Code;
 using Palaso.Text;
 
 namespace Palaso.Tests.Text
 {
+	[TestFixture]
+	public class LanguageFormIClonableGenericTests:IClonableGenericTests<LanguageForm>
+	{
+		public override LanguageForm CreateNewClonable()
+		{
+			return new LanguageForm();
+		}
+
+		public override string ExceptionList
+		{
+			get {  return "|_parent|"; }
+		}
+
+		public override Dictionary<Type, object> DefaultValuesForTypes
+		{
+			get { return new Dictionary<Type, object>
+							 {
+								 {typeof(string), "string"},
+								 {typeof(Annotation), new Annotation()}
+							 }; }
+		}
+	}
+
 	[TestFixture]
 	public class LanguageFormTest
 	{

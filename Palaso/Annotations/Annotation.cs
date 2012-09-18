@@ -14,7 +14,7 @@ namespace Palaso.Annotations
 
 		public Annotatable(Annotatable annotatable)
 		{
-			_annotation = new Annotation(annotatable._annotation);
+			_annotation = annotatable._annotation == null ? null : new Annotation(annotatable._annotation);
 		}
 
 		[XmlAttribute("starred")]
