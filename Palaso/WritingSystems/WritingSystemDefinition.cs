@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Palaso.Code;
 using Palaso.WritingSystems.Collation;
 
 namespace Palaso.WritingSystems
@@ -19,7 +20,7 @@ namespace Palaso.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition
+	public class WritingSystemDefinition : IClonableGeneric<WritingSystemDefinition>
 	{
 		public enum SortRulesType
 		{

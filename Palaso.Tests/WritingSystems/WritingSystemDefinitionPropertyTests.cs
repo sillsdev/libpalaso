@@ -3,10 +3,44 @@ using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using Palaso.Data;
+using Palaso.Tests.Code;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
 {
+	public class WritingSystemDefinitionIClonableGenericTests : IClonableGenericTests<WritingSystemDefinition>
+	{
+		public override WritingSystemDefinition CreateNewClonable()
+		{
+			return new WritingSystemDefinition();
+		}
+
+		public override string ExceptionList
+		{
+			get { return "|Modified|MarkedForDeletion|StoreID|_collator|"; }
+		}
+
+		public override Dictionary<Type, object> DefaultValuesForTypes
+		{
+			get
+			{
+				var valuesToSet = new Dictionary<Type, object>
+									  {
+										  {typeof (float), 3.14f},
+										  {typeof (bool), true},
+										  {typeof (string), "Foo"},
+										  {typeof (DateTime), DateTime.Now},
+										  {
+											  typeof (WritingSystemDefinition.SortRulesType),
+											  WritingSystemDefinition.SortRulesType.CustomICU
+										  },
+										  {typeof (RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "test")}
+									  };
+				return valuesToSet;
+			}
+		}
+	}
+
 	[TestFixture]
 	public class WritingSystemDefinitionPropertyTests
 	{
