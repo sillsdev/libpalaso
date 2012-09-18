@@ -1,11 +1,38 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Palaso.Lift;
 using Palaso.Lift.Parsing;
 using NUnit.Framework;
+using Palaso.Lift.Tests;
+using Palaso.Tests.Code;
+using Palaso.Text;
 
 namespace WeSay.LexicalModel.Tests.Foundation
 {
+	public class MultiTextIClonableGenericTests:IClonableGenericTests<MultiText>
+	{
+		public override MultiText CreateNewClonable()
+		{
+			return new MultiText();
+		}
+
+		public override string ExceptionList
+		{
+			get { return "|_parent|PropertyChanged|"; }
+		}
+
+		public override Dictionary<Type, object> DefaultValuesForTypes
+		{
+			get { return new Dictionary<Type, object>
+							 {
+								 //{typeof(PalasoDataObject), new TestClass(null)}
+								 {typeof(List<string>), new List<string>{"one", "two"}},
+								 {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
+							 }; }
+		}
+	}
+
 	// ReSharper disable InconsistentNaming
 	[TestFixture]
 	public class MultiTextTests

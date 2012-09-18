@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Palaso.Code;
 using Palaso.Lift.Parsing;
 using Palaso.Text;
 using Palaso.Extensions;
@@ -20,7 +21,7 @@ namespace Palaso.Lift
 	//NO: we haven't been able to do a reasonalbly compact xml representation except with custom deserializer
 	//[ReflectorType("multiText")]
 	[XmlInclude(typeof (LanguageForm))]
-	public class MultiText: MultiTextBase, IParentable, IReportEmptiness, IXmlSerializable
+	public class MultiText: MultiTextBase, IParentable, IReportEmptiness, IXmlSerializable, IClonableGeneric<MultiText>
 	{
 		private PalasoDataObject _parent;
 		public List<string> EmbeddedXmlElements = new List<string>();
@@ -34,6 +35,15 @@ namespace Palaso.Lift
 		}
 
 		public MultiText() {}
+
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
+		/// <param name="multiText"></param>
+		public MultiText(MultiText multiText):base(multiText)
+		{
+			EmbeddedXmlElements = new List<string>(multiText.EmbeddedXmlElements);
+		}
 
 		/// <summary>
 		/// We added this pesky "backreference" solely to enable fast
@@ -310,6 +320,11 @@ namespace Palaso.Lift
 		public bool ContainsEqualForm(string form, string writingSystemId)
 		{
 			return null != this.Forms.FirstOrDefault(f=> f.WritingSystemId ==writingSystemId && f.Form == form);
+		}
+
+		public MultiText Clone()
+		{
+			return new MultiText(this);
 		}
 	}
 }
