@@ -269,6 +269,195 @@ namespace WeSay.LexicalModel.Tests.Foundation
 MultiText.StripMarkers(null));
 		}
 
+		[Test]
+		public void Equals_FirstHasFewerEmbeddedXmlElements_False()
+		{
+			var x = new MultiText();
+			x.EmbeddedXmlElements.Add("string1");
+			var y = new MultiText();
+			y.EmbeddedXmlElements.Add("string1");
+			y.EmbeddedXmlElements.Add("string2");
+			Assert.IsFalse(x.Equals(y));
+			Assert.IsFalse(y.Equals(x));
+		}
+
+		[Test]
+		public void Equals_FirstHasMoreEmbeddedXmlElements_False()
+		{
+			var x = new MultiText();
+			x.EmbeddedXmlElements.Add("string1");
+			x.EmbeddedXmlElements.Add("string2");
+			var y = new MultiText();
+			y.EmbeddedXmlElements.Add("string1");
+			Assert.IsFalse(x.Equals(y));
+			Assert.IsFalse(y.Equals(x));
+		}
+
+		[Test]
+		public void Equals_DifferentEmbeddedXmlElements_False()
+		{
+			var x = new MultiText();
+			x.EmbeddedXmlElements.Add("string1");
+			var y = new MultiText();
+			y.EmbeddedXmlElements.Add("string2");
+			Assert.IsFalse(x.Equals(y));
+			Assert.IsFalse(y.Equals(x));
+		}
+
+		[Test]
+		public void ObjectEquals_FirstHasFewerEmbeddedXmlElements_False()
+		{
+			var x = new MultiText();
+			x.EmbeddedXmlElements.Add("string1");
+			var y = new MultiText();
+			y.EmbeddedXmlElements.Add("string1");
+			y.EmbeddedXmlElements.Add("string2");
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_FirstHasMoreEmbeddedXmlElements_False()
+		{
+			var x = new MultiText();
+			x.EmbeddedXmlElements.Add("string1");
+			x.EmbeddedXmlElements.Add("string2");
+			var y = new MultiText();
+			y.EmbeddedXmlElements.Add("string1");
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentEmbeddedXmlElements_False()
+		{
+			var x = new MultiText();
+			x.EmbeddedXmlElements.Add("string1");
+			var y = new MultiText();
+			y.EmbeddedXmlElements.Add("string2");
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentNumberOfForms_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			x["ws2"] = "test";
+			var y = new MultiText();
+			y["ws"] = "test";
+			Assert.IsFalse(x.Equals((object)y));
+			Assert.IsFalse(y.Equals((object)x));
+		}
+
+		[Test]
+		public void ObjectEquals_SameContent_True()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			MultiText y = new MultiText();
+			y.MergeIn(x);
+			Assert.IsTrue(x.Equals((object)y));
+			Assert.IsTrue(y.Equals((object)x));
+		}
+
+		[Test]
+		public void ObjectEquals_Identity_True()
+		{
+			var x = new MultiText();
+			Assert.IsTrue(x.Equals((object)x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentValues_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			var y = new MultiText();
+			y["ws"] = "test1";
+			Assert.IsFalse(x.Equals((object)y));
+			Assert.IsFalse(y.Equals((object)x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentWritingSystems_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			var y = new MultiText();
+			y["ws1"] = "test";
+			Assert.IsFalse(x.Equals((object)y));
+			Assert.IsFalse(y.Equals((object)x));
+		}
+
+		[Test]
+		public void ObjectEquals_Null_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			Assert.IsFalse(x.Equals((object)null));
+		}
+
+		[Test]
+		public void Equals_Null_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			Assert.IsFalse(x.Equals(null));
+		}
+
+		[Test]
+		public void Equals_DifferentNumberOfForms_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			x["ws2"] = "test";
+			var y = new MultiText();
+			y["ws"] = "test";
+			Assert.IsFalse(x.Equals(y));
+			Assert.IsFalse(y.Equals(x));
+		}
+
+		[Test]
+		public void Equals_SameContent_True()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			var y = new MultiText();
+			y.MergeIn(x);
+			Assert.IsTrue(x.Equals(y));
+			Assert.IsTrue(y.Equals(x));
+		}
+
+		[Test]
+		public void Equals_Identity_True()
+		{
+			var x = new MultiText();
+			Assert.IsTrue(x.Equals(x));
+		}
+
+		[Test]
+		public void Equals_DifferentValues_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			var y = new MultiText();
+			y["ws"] = "test1";
+			Assert.IsFalse(x.Equals(y));
+			Assert.IsFalse(y.Equals(x));
+		}
+
+		[Test]
+		public void Equals_DifferentWritingSystems_False()
+		{
+			var x = new MultiText();
+			x["ws"] = "test";
+			var y = new MultiText();
+			y["ws1"] = "test";
+			Assert.IsFalse(x.Equals(y));
+			Assert.IsFalse(y.Equals(x));
+		}
 	}
 	// ReSharper restore InconsistentNaming
 }

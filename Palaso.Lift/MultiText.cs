@@ -326,5 +326,30 @@ namespace Palaso.Lift
 		{
 			return new MultiText(this);
 		}
+
+		public override bool Equals(Object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof(MultiText)) return false;
+			return Equals((MultiText)obj);
+		}
+
+		public bool Equals(MultiText multiText)
+		{
+			if(multiText == null)
+			{
+				return false;
+			}
+			if(EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count)
+			{
+				return false;
+			}
+			if(!EmbeddedXmlElements.SequenceEqual(multiText.EmbeddedXmlElements))
+			{
+				return false;
+			}
+			return base.Equals(multiText);
+		}
 	}
 }
