@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -6,11 +7,36 @@ using System.Xml.Serialization;
 //using Exortech.NetReflector;
 using NUnit.Framework;
 using System.ComponentModel;
+using Palaso.Tests.Code;
 using Palaso.Text;
 using System.Collections;
 
 namespace Palaso.Tests.Text
 {
+	[TestFixture]
+	public class MultiTextBaseIClonableGenericTests:IClonableGenericTests<MultiTextBase>
+	{
+		public override MultiTextBase CreateNewClonable()
+		{
+			return new MultiTextBase();
+		}
+
+		public override string ExceptionList
+		{
+			get { return "|PropertyChanged|"; }
+		}
+
+		public override Dictionary<Type, object> DefaultValuesForTypes
+		{
+			get
+			{
+				return new Dictionary<Type, object>
+							 {
+								 {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
+							 }; }
+			}
+	}
+
 	[TestFixture]
 	public class MultiTextBaseTests
 	{

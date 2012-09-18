@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml.Serialization;
+using Palaso.Code;
 using Palaso.Text;
 
 namespace Palaso.Text
 {
-	public class MultiTextBase : INotifyPropertyChanged, IComparable
+	public class MultiTextBase : INotifyPropertyChanged, IComparable, IClonableGeneric<MultiTextBase>
 	{
 		/// <summary>
 		/// We have this pesky "backreference" solely to enable fast
@@ -43,6 +45,14 @@ namespace Palaso.Text
 			_forms = new LanguageForm[0];
 		}
 
+		/// <summary>
+		/// CopyConstructor
+		/// </summary>
+		/// <param name="multiTextBase"></param>
+		public MultiTextBase(MultiTextBase multiTextBase)
+		{
+			_forms = multiTextBase._forms.Select(form=>form.Clone()).ToArray();
+		}
 
 
 		public void Add(Object objectFromSerializer) {}
@@ -394,6 +404,11 @@ namespace Palaso.Text
 				}
 			}
 			return 0;
+		}
+
+		public MultiTextBase Clone()
+		{
+			return new MultiTextBase(this);
 		}
 
 		public override string ToString()
