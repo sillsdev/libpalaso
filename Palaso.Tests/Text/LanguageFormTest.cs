@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
 using Palaso.Annotations;
 using Palaso.Tests.Code;
@@ -34,8 +33,8 @@ namespace Palaso.Tests.Text
 	[TestFixture]
 	public class LanguageFormTest
 	{
-		LanguageForm _languageFormToCompare = null;
-		LanguageForm _languageForm = null;
+		LanguageForm _languageFormToCompare;
+		LanguageForm _languageForm;
 
 		[SetUp]
 		public void Setup()
@@ -129,6 +128,102 @@ namespace Palaso.Tests.Text
 			_languageFormToCompare.WritingSystemId = "de";
 			_languageFormToCompare.Form = "Word2";
 			Assert.AreEqual(1, _languageForm.CompareTo(_languageFormToCompare));
+		}
+
+		[Test]
+		public void Equals_SameObject_True()
+		{
+			var form = new LanguageForm();
+			Assert.That(form.Equals(form), Is.True);
+		}
+
+		[Test]
+		public void Equals_OneStarredOtherIsNot_False()
+		{
+			var form1 = new LanguageForm();
+			var form2 = new LanguageForm();
+			form1.IsStarred = true;
+			Assert.That(form1.Equals(form2), Is.False);
+		}
+
+		[Test]
+		public void Equals_OneContainsWritingSystemOtherDoesNot_False()
+		{
+			var form1 = new LanguageForm{WritingSystemId = "en"};
+			var form2 = new LanguageForm{WritingSystemId = "de"};
+			Assert.That(form1.Equals(form2), Is.False);
+		}
+
+		[Test]
+		public void Equals_OneContainsFormInWritingSystemOtherDoesNot_False()
+		{
+			var form1 = new LanguageForm { WritingSystemId = "en", Form = "form1"};
+			var form2 = new LanguageForm { WritingSystemId = "en", Form = "form2" };
+			Assert.That(form1.Equals(form2), Is.False);
+		}
+
+		[Test]
+		public void Equals_StarredWritingSystemAndFormAreIdentical_True()
+		{
+			var form1 = new LanguageForm { IsStarred = true, WritingSystemId = "en", Form = "form1" };
+			var form2 = new LanguageForm { IsStarred = true, WritingSystemId = "en", Form = "form1" };
+			Assert.That(form1.Equals(form2), Is.True);
+		}
+
+		[Test]
+		public void Equals_Null_False()
+		{
+			var form1 = new LanguageForm { IsStarred = true, WritingSystemId = "en", Form = "form1" };
+			LanguageForm form2 = null;
+			Assert.That(form1.Equals(form2), Is.False);
+		}
+
+		[Test]
+		public void ObjectEquals_SameObject_True()
+		{
+			var form = new LanguageForm();
+			Assert.That(form.Equals((object) form), Is.True);
+		}
+
+		[Test]
+		public void ObjectEquals_OneStarredOtherIsNot_False()
+		{
+			var form1 = new LanguageForm();
+			var form2 = new LanguageForm();
+			form1.IsStarred = true;
+			Assert.That(form1.Equals((object)form2), Is.False);
+		}
+
+		[Test]
+		public void ObjectEquals_OneContainsWritingSystemOtherDoesNot_False()
+		{
+			var form1 = new LanguageForm { WritingSystemId = "en" };
+			var form2 = new LanguageForm { WritingSystemId = "de" };
+			Assert.That(form1.Equals((object)form2), Is.False);
+		}
+
+		[Test]
+		public void ObjectEquals_OneContainsFormInWritingSystemOtherDoesNot_False()
+		{
+			var form1 = new LanguageForm { WritingSystemId = "en", Form = "form1" };
+			var form2 = new LanguageForm { WritingSystemId = "en", Form = "form2" };
+			Assert.That(form1.Equals((object)form2), Is.False);
+		}
+
+		[Test]
+		public void ObjectEquals_StarredWritingSystemAndFormAreIdentical_True()
+		{
+			var form1 = new LanguageForm { IsStarred = true, WritingSystemId = "en", Form = "form1" };
+			var form2 = new LanguageForm { IsStarred = true, WritingSystemId = "en", Form = "form1" };
+			Assert.That(form1.Equals((object)form2), Is.True);
+		}
+
+		[Test]
+		public void ObjectEquals_Null_False()
+		{
+			var form1 = new LanguageForm { IsStarred = true, WritingSystemId = "en", Form = "form1" };
+			LanguageForm form2 = null;
+			Assert.That(form1.Equals((object)form2), Is.False);
 		}
 	}
 }

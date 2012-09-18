@@ -78,10 +78,20 @@ namespace Palaso.Text
 			get { return _parent; }
 		}
 
-		#region IEquatable<LanguageForm> Members
+		public override bool Equals(object other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (other.GetType() != typeof(LanguageForm)) return false;
+			return Equals((LanguageForm)other);
+		}
 
 		public bool Equals(LanguageForm other)
 		{
+			if(other == null)
+			{
+				return false;
+			}
 			if (IsStarred != other.IsStarred)
 			{
 				return false;
@@ -96,8 +106,6 @@ namespace Palaso.Text
 			}
 			return true;
 		}
-
-		#endregion
 
 		public int CompareTo(LanguageForm other)
 		{
