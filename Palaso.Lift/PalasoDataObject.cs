@@ -5,13 +5,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Palaso.Code;
 using Palaso.Lift.Options;
 using Palaso.Reporting;
 using Palaso.Text;
 
 namespace Palaso.Lift
 {
-	public interface IParentable
+	public interface IPalasoDataObjectProperty : IClonableGeneric<IPalasoDataObjectProperty>
 	{
 		PalasoDataObject Parent { set; }
 	}
@@ -38,11 +39,11 @@ namespace Palaso.Lift
 		/// </summary>
 		private PalasoDataObject _parent;
 
-		private List<KeyValuePair<string, object>> _properties;
+		private List<KeyValuePair<string, IPalasoDataObjectProperty>> _properties;
 
 		protected PalasoDataObject(PalasoDataObject parent)
 		{
-			_properties = new List<KeyValuePair<string, object>>();
+			_properties = new List<KeyValuePair<string, IPalasoDataObjectProperty>>();
 			_parent = parent;
 		}
 
@@ -66,13 +67,13 @@ namespace Palaso.Lift
 			}
 		}
 
-		public List<KeyValuePair<string, object>> Properties
+		public List<KeyValuePair<string, IPalasoDataObjectProperty>> Properties
 		{
 			get
 			{
 				if (_properties == null)
 				{
-					_properties = new List<KeyValuePair<string, object>>();
+					_properties = new List<KeyValuePair<string, IPalasoDataObjectProperty>>();
 					NotifyPropertyChanged("properties dictionary");
 				}
 
@@ -84,7 +85,7 @@ namespace Palaso.Lift
 		{
 			get
 			{
-				foreach (KeyValuePair<string, object> pair in _properties)
+				foreach (KeyValuePair<string, IPalasoDataObjectProperty> pair in _properties)
 				{
 					if (!IsPropertyEmpty(pair.Value))
 					{
@@ -98,16 +99,7 @@ namespace Palaso.Lift
 		public bool HasPropertiesForPurposesOfDeletion
 		{
 			get
-			{
-				foreach (KeyValuePair<string, object> pair in _properties)
-				{
-					if (!IsPropertyEmptyForPurposesOfDeletion(pair.Value))
-					{
-						return true;
-					}
-				}
-				return false;
-			}
+			{ return _properties.Any(pair => !IsPropertyEmptyForPurposesOfDeletion(pair.Value)); }
 		}
 
 		#region INotifyPropertyChanged Members
@@ -282,7 +274,7 @@ namespace Palaso.Lift
 		}
 
 		public TContents GetOrCreateProperty<TContents>(string fieldName)
-			where TContents : class, IParentable, new()
+			where TContents : class, IPalasoDataObjectProperty, new()
 		{
 			TContents value = GetProperty<TContents>(fieldName);
 			if (value != null)
@@ -292,7 +284,7 @@ namespace Palaso.Lift
 
 			TContents newGuy = new TContents();
 			//Properties.Add(fieldName, newGuy);
-			Properties.Add(new KeyValuePair<string, object>(fieldName, newGuy));
+			Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>(fieldName, newGuy));
 			newGuy.Parent = this;
 
 			//temp hack until mt's use parents for notification
@@ -304,6 +296,18 @@ namespace Palaso.Lift
 			return newGuy;
 		}
 
+		//protected void AddProperty(string fieldName, IParentable field)
+		//{
+		//    Properties.Add(new KeyValuePair<string, object>(fieldName, field));
+		//    field.Parent = this;
+
+		//    //temp hack until mt's use parents for notification
+		//    if (field is MultiText)
+		//    {
+		//        WireUpChild((INotifyPropertyChanged)field);
+		//    }
+		//}
+
 		/// <summary>
 		/// Will return null if not found
 		/// </summary>
@@ -312,9 +316,7 @@ namespace Palaso.Lift
 		public TContents GetProperty<TContents>(string fieldName) where TContents : class
 			//, IParentable
 		{
-			KeyValuePair<string, object> found =
-				Properties.Find(
-					delegate(KeyValuePair<string, object> p) { return p.Key == fieldName; });
+			KeyValuePair<string, IPalasoDataObjectProperty> found = Properties.Find(p => p.Key == fieldName);
 			if (found.Key == fieldName)
 			{
 				Debug.Assert(found.Value is  TContents, "Currently we assume that there is only a single type of object for a given name.");
@@ -333,9 +335,9 @@ namespace Palaso.Lift
 		/// <summary>
 		/// Merge in a property from some other object, e.g., when merging senses
 		/// </summary>
-		public void MergeProperty(KeyValuePair<string, object> incoming)
+		public void MergeProperty(KeyValuePair<string, IPalasoDataObjectProperty> incoming)
 		{
-			KeyValuePair<string, object> existing = Properties.Find(
+			KeyValuePair<string, IPalasoDataObjectProperty> existing = Properties.Find(
 				p => p.Key == incoming.Key
 			);
 
@@ -348,7 +350,7 @@ namespace Palaso.Lift
 					optionRefCollection.MergeByKey(incomingRefCollection);
 				} else
 				{
-					Properties.Add(new KeyValuePair<string, object>(incoming.Key, incoming.Value));
+					Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>(incoming.Key, incoming.Value));
 				}
 			}
 			else
@@ -358,11 +360,10 @@ namespace Palaso.Lift
 					Properties.Remove(existing);
 				}
 
-				Properties.Add(new KeyValuePair<string, object>(incoming.Key, incoming.Value));
+				Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>(incoming.Key, incoming.Value));
 			}
 
-			if(incoming.Value is IParentable)
-				((IParentable)incoming.Value).Parent = this;
+			incoming.Value.Parent = this;
 
 			//temp hack until mt's use parents for notification
 			if (incoming.Value is MultiText)
@@ -408,9 +409,7 @@ namespace Palaso.Lift
 		/// <param name="propertyName"></param>
 		public void ClearFlag(string propertyName)
 		{
-			KeyValuePair<string, object> found =
-				Properties.Find(
-					delegate(KeyValuePair<string, object> p) { return p.Key == propertyName; });
+			KeyValuePair<string, IPalasoDataObjectProperty> found = Properties.Find(p => p.Key == propertyName);
 			if (found.Key == propertyName)
 			{
 				_properties.Remove(found);
@@ -486,7 +485,7 @@ namespace Palaso.Lift
 		}
 	}
 
-	public class EmbeddedXmlCollection: IParentable
+	public class EmbeddedXmlCollection: IPalasoDataObjectProperty
 	{
 		private List<string> _values;
 		private PalasoDataObject _parent;
@@ -505,6 +504,11 @@ namespace Palaso.Lift
 		{
 			get { return _values; }
 			set { _values = value; }
+		}
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			throw new NotImplementedException();
 		}
 
 		public override string ToString()
