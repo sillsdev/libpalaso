@@ -29,6 +29,7 @@ namespace Palaso.Media.Naudio
 		RecordingDevice SelectedDevice { get; set; }
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }
+		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
 		event EventHandler Stopped;
 		WaveFormat RecordingFormat { get; set; }
 		TimeSpan RecordedTime { get; }
@@ -56,21 +57,29 @@ namespace Palaso.Media.Naudio
 		protected RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
 		protected PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
 		protected double _prevRecordedTime;
-		private int _numberOfLatentBuffersToIncludeInRecording;
 
 		public SampleAggregator SampleAggregator { get; protected set; }
 		public RecordingDevice SelectedDevice { get; set; }
 		public TimeSpan RecordedTime { get; set; }
 
-		public event EventHandler<PeakLevelEventArgs> PeakLevelChanged = delegate { };
-		public event EventHandler<RecordingProgressEventArgs> RecordingProgress = delegate { };
-		public event EventHandler RecordingStarted = delegate { };
-		public event EventHandler Stopped = delegate { };
+		private int _bufferSize = -1;
+		private int _bufferCount = -1;
+		private bool _waveInBuffersChanged;
+		private DateTime _recordingStartTime;
+		private DateTime _recordingStopTime;
 
+		public event EventHandler<PeakLevelEventArgs> PeakLevelChanged;
+		public event EventHandler<RecordingProgressEventArgs> RecordingProgress;
+		public event EventHandler RecordingStarted;
+		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
+		public event EventHandler Stopped;
+
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="maxMinutes">REVIW: why does this max time even exist?  I don't see that it affects buffer size</param>
+		/// ------------------------------------------------------------------------------------
 		public AudioRecorder(int maxMinutes)
 		{
 			_maxMinutes = maxMinutes;
@@ -78,7 +87,8 @@ namespace Palaso.Media.Naudio
 			SampleAggregator.MaximumCalculated += delegate
 			{
 				_peakLevelEventArgs.Level = SampleAggregator.maxValue;
-				PeakLevelChanged.Invoke(this, _peakLevelEventArgs);
+				if (PeakLevelChanged != null)
+					PeakLevelChanged.BeginInvoke(this, _peakLevelEventArgs, null, null);
 			};
 
 			RecordingFormat = new WaveFormat(44100, 1);
@@ -123,6 +133,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
 		public virtual void BeginMonitoring()
 		{
 			Debug.Assert(_waveIn == null, "only call this once");
@@ -163,6 +174,35 @@ namespace Palaso.Media.Naudio
 		protected virtual void InitializeWaveIn()
 		{
 			_waveIn.DeviceNumber = SelectedDevice.DeviceNumber;
+			if (_bufferCount > 0)
+				_waveIn.NumberOfBuffers = _bufferCount;
+			if (_bufferSize > 0)
+				_waveIn.BufferMilliseconds = _bufferSize;
+			_waveInBuffersChanged = false;
+
+			// Get the defaults (or previous values)
+			_bufferCount = _waveIn.NumberOfBuffers;
+			_bufferSize = _waveIn.BufferMilliseconds;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int NumberOfBuffers
+		{
+			set
+			{
+				_bufferCount = value;
+				_waveInBuffersChanged = true;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int BufferMilliseconds
+		{
+			set
+			{
+				_bufferSize = value;
+				_waveInBuffersChanged = true;
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -175,7 +215,8 @@ namespace Palaso.Media.Naudio
 			RecordedTime = TimeSpan.FromSeconds((double)_writer.Length / _writer.WaveFormat.AverageBytesPerSecond);
 			RecordingState = RecordingState.Monitoring;
 			CloseWriter();
-			Stopped.Invoke(this, EventArgs.Empty);
+			if (Stopped != null)
+				Stopped(this, EventArgs.Empty);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -192,6 +233,13 @@ namespace Palaso.Media.Naudio
 				throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
 			}
 
+			if (_waveInBuffersChanged)
+			{
+				CloseWaveIn();
+				RecordingState = RecordingState.Stopped;
+				BeginMonitoring();
+			}
+
 			if (_writer != null)
 				CloseWriter();
 
@@ -204,9 +252,11 @@ namespace Palaso.Media.Naudio
 				_writer.Write(buffer, 0, buffer.Length);
 			}
 
+			_recordingStartTime = DateTime.Now;
 			_prevRecordedTime = 0d;
 			RecordingState = RecordingState.Recording;
-			RecordingStarted.Invoke(this, EventArgs.Empty);
+			if (RecordingStarted != null)
+				RecordingStarted(this, EventArgs.Empty);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -225,21 +275,21 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
 		public virtual void Stop()
 		{
 			if (_recordingState == RecordingState.Recording)
 			{
+				_recordingStopTime = DateTime.Now;
 				RecordingState = RecordingState.RequestedStop;
 				// Don't stop because we'll lose any buffer(s) that have not been processed.
 				// Then when we re-start, NAudio can crash because the buffers for which it has
 				// queued messages will be disposed
 				//   _waveIn.StopRecording();
-				_numberOfLatentBuffersToIncludeInRecording = 1;
-				if (_waveIn.BufferMilliseconds <= 150)
-					_numberOfLatentBuffersToIncludeInRecording += Math.Min(_waveIn.NumberOfBuffers - 1, 150 / _waveIn.BufferMilliseconds);
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
 		protected virtual void TryGetVolumeControl()
 		{
 			int waveInDeviceNumber = _waveIn.DeviceNumber;
@@ -285,6 +335,7 @@ namespace Palaso.Media.Naudio
 
 		}
 
+		/// ------------------------------------------------------------------------------------
 		public virtual double MicrophoneLevel
 		{
 			get { return _microphoneLevel; }
@@ -296,6 +347,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
 		public virtual RecordingState RecordingState
 		{
 			get { return _recordingState; }
@@ -306,6 +358,7 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
 		protected virtual void waveIn_DataAvailable(object sender, WaveInEventArgs e)
 		{
 
@@ -355,17 +408,21 @@ namespace Palaso.Media.Naudio
 			{
 				_prevRecordedTime = currRecordedTime;
 				_recProgressEventArgs.RecordedLength = TimeSpan.FromSeconds(currRecordedTime);
-				RecordingProgress.Invoke(this, _recProgressEventArgs);
+				if (RecordingProgress != null)
+					RecordingProgress.BeginInvoke(this, _recProgressEventArgs, null, null);
 			}
 
 			if (RecordingState == RecordingState.RequestedStop)
 			{
-				_numberOfLatentBuffersToIncludeInRecording--;
-				if (_numberOfLatentBuffersToIncludeInRecording <= 0)
+				if (DateTime.Now > _recordingStopTime.AddSeconds(2) ||
+					_recordingStartTime.AddSeconds(currRecordedTime) >= _recordingStopTime)
+				{
 					TransitionFromRecordingToMonitoring();
+				}
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
 		protected virtual void WriteToFile(byte[] buffer, int bytesRecorded)
 		{
 			//REVIEW: why does this max time even exist?  I don't see that it affects buffer size
