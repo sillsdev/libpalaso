@@ -388,7 +388,7 @@ namespace Palaso.DictionaryServices.Lift
 		private void WriteCustomProperties(PalasoDataObject item,
 										   ICollection<string> propertiesAlreadyOutput)
 		{
-			foreach (KeyValuePair<string, object> pair in item.Properties)
+			foreach (KeyValuePair<string, IPalasoDataObjectProperty> pair in item.Properties)
 			{
 				if (propertiesAlreadyOutput.Contains(pair.Key))
 				{

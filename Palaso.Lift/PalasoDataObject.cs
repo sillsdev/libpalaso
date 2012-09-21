@@ -296,17 +296,17 @@ namespace Palaso.Lift
 			return newGuy;
 		}
 
-		//protected void AddProperty(string fieldName, IParentable field)
-		//{
-		//    Properties.Add(new KeyValuePair<string, object>(fieldName, field));
-		//    field.Parent = this;
+		protected void AddProperty(string fieldName, IPalasoDataObjectProperty field)
+		{
+			Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>(fieldName, field));
+			field.Parent = this;
 
-		//    //temp hack until mt's use parents for notification
-		//    if (field is MultiText)
-		//    {
-		//        WireUpChild((INotifyPropertyChanged)field);
-		//    }
-		//}
+			//temp hack until mt's use parents for notification
+			if (field is MultiText)
+			{
+				WireUpChild((INotifyPropertyChanged)field);
+			}
+		}
 
 		/// <summary>
 		/// Will return null if not found
@@ -485,7 +485,7 @@ namespace Palaso.Lift
 		}
 	}
 
-	public class EmbeddedXmlCollection: IPalasoDataObjectProperty
+	public class EmbeddedXmlCollection: IPalasoDataObjectProperty, IClonableGeneric<EmbeddedXmlCollection>
 	{
 		private List<string> _values;
 		private PalasoDataObject _parent;
@@ -507,6 +507,13 @@ namespace Palaso.Lift
 		}
 
 		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new EmbeddedXmlCollection();
+			clone._values.AddRange(_values);
+			return clone;
+		}
+
+		EmbeddedXmlCollection IClonableGeneric<EmbeddedXmlCollection>.Clone()
 		{
 			throw new NotImplementedException();
 		}

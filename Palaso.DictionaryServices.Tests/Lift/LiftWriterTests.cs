@@ -1555,7 +1555,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				);
 
 				var relations = new LexRelationCollection();
-				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+				sense.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>("relations", relations));
 
 				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "one", sense));
 				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "two", sense));
@@ -1612,7 +1612,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				);
 
 				var relations = new LexRelationCollection();
-				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+				sense.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>("relations", relations));
 
 				var lexRelation = new LexRelation(synonymRelationType.ID, "one", sense);
 				lexRelation.EmbeddedXmlElements.Add("<trait name='x' value='X'/>");
