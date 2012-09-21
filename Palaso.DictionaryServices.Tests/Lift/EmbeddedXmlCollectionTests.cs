@@ -18,7 +18,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		public override string ExceptionList
 		{
-			//We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
 			get { return "|_parent|"; }
 		}
 

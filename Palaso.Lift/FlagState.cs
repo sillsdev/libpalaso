@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Palaso.Code;
 using Palaso.UiBindings;
 
 namespace Palaso.Lift
@@ -6,7 +7,7 @@ namespace Palaso.Lift
 	/// <summary>
 	/// Holds a boolean value for, for example, a checkbox
 	/// </summary>
-	public class FlagState: IParentable, IValueHolder<bool>, IReportEmptiness
+	public class FlagState: IPalasoDataObjectProperty, IValueHolder<bool>, IReportEmptiness
 	{
 		/// <summary>
 		/// This "backreference" is used to notify the parent of changes.
@@ -77,5 +78,12 @@ namespace Palaso.Lift
 		public void RemoveEmptyStuff() {}
 
 		#endregion
+
+		public virtual IPalasoDataObjectProperty Clone()
+		{
+			var clone = new FlagState();
+			clone._isChecked = _isChecked;
+			return clone;
+		}
 	}
 }

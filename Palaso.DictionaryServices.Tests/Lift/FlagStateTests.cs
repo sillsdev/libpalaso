@@ -18,12 +18,20 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		public override string ExceptionList
 		{
-			get { return ""; }
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			//PropertyChanged: No good way to clone eventhandlers
+			get { return "|_parent|PropertyChanged|"; }
 		}
 
 		public override Dictionary<Type, object> DefaultValuesForTypes
 		{
-			get { return new Dictionary<Type, object>(); }
+			get
+			{
+				return new Dictionary<Type, object>
+						   {
+							   {typeof(bool), true}
+						   };
+			}
 		}
 	}
 
