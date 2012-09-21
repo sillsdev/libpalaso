@@ -48,7 +48,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			{
 				AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired = true;
 				args.WhatToDo = WhatToDos.Conflate;
-				args.WritingSystemIdToConflateWith = "de";
+				args.WritingSystemIdToConflateWith = WritingSystemDefinition.Parse("de");
 			}
 
 			public void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
@@ -151,7 +151,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 				_model.CurrentISO = "de";
 				_model.AddNew();
 				_model.CurrentISO = "th";
-				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
 				var writingSystems = new List<string>();
 				for (_model.CurrentIndex = _model.WritingSystemCount - 1;
 					 _model.HasCurrentSelection;
@@ -258,7 +257,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 				_model.CurrentISO = "pt";
 				bool eventTriggered = false;
 				_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
-				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
 				_model.DeleteCurrent();
 				Assert.IsTrue(eventTriggered);
 			}
@@ -1013,24 +1011,10 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void DeleteCurrent_AskIfDataExistsInWritingSystemToBeDeletedFires()
-		{
-			using (var e = new DeleteCurrentTestEnvironment())
-			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
-				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(e.AskIfDataExistsInWritingSystemToBeDeletedFired, Is.False);
-				_model.DeleteCurrent();
-				Assert.That(e.AskIfDataExistsInWritingSystemToBeDeletedFired, Is.True);
-			}
-		}
-
-		[Test]
 		public void DeleteCurrent_NoDataInProjectAndAllowedToDelete_WritingSystemIsDeleted()
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 				_model.Save();
@@ -1045,7 +1029,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted += e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_No;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 				Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
@@ -1059,8 +1042,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_No;
@@ -1077,8 +1058,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_Yes;
@@ -1094,8 +1073,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
@@ -1110,8 +1087,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_No;
@@ -1128,8 +1103,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
@@ -1145,8 +1118,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
@@ -1161,8 +1132,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
@@ -1187,8 +1156,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes; //just need a listener to verifiy that it did fire
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 				_model.DeleteCurrent();
@@ -1201,28 +1168,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
-				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				_model.DeleteCurrent();
-				Assert.That(e.AskIfDataExistsInWritingSystemToBeDeletedFired, Is.True);
-			}
-		}
-
-		[Test]
-		public void DeleteCurrent_NoDataInProject_AskUserWhatToDoWithDataInWritingSystemToBeDeletedNotFiredButOkToDeleteFired()
-		{
-			using (var e = new DeleteCurrentTestEnvironment())
-			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_NoData;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
-					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;  //just need a listener to verifiy that it didn't fire
-				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes; //just need a listener to verifiy that it did fire
+					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 				_model.DeleteCurrent();
-				Assert.That(e.AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired, Is.False);
-				Assert.That(e.AskIfOkToDeleteWritingSystemFired, Is.True);
+				Assert.That(e.AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired, Is.True);
 			}
 		}
 
@@ -1231,8 +1181,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_Yes; //just need a listener to verifiy that it did fire
@@ -1247,8 +1195,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			using (var e = new DeleteCurrentTestEnvironment())
 			{
-				_model.AskIfDataExistsInWritingSystemToBeDeleted +=
-					e.OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists;
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes; //just need a listener to verifiy that it did fire

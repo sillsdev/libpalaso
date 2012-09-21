@@ -21,7 +21,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public event EventHandler HelpWithDeletingWritingSystemsButtonClickedEvent;
 
-		public DeleteInputSystemDialog(string wsToDelete,
+		public DeleteInputSystemDialog(WritingSystemDefinition wsToDelete,
 									   IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith, bool showHelpButton)
 		{
 			InitializeComponent();
@@ -29,10 +29,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_helpButton.Hide();
 			}
-			_deleteRadioButton.Text = String.Format(_deleteRadioButton.Text, wsToDelete);
-			_mergeRadioButton.Text = String.Format(_mergeRadioButton.Text, wsToDelete);
+			_deleteRadioButton.Text = String.Format(_deleteRadioButton.Text, DisplayName(wsToDelete));
+			_mergeRadioButton.Text = String.Format(_mergeRadioButton.Text, DisplayName(wsToDelete));
 			_wsSelectionComboBox.Items.AddRange(
-				possibleWritingSystemsToConflateWith.Where(ws => ws.Id != wsToDelete).Select(ws => ws.Id).ToArray());
+				possibleWritingSystemsToConflateWith.Where(ws => ws != wsToDelete).Select(ws=>new WritingSystemDisplayAdaptor(ws)).ToArray());
 			Choice = Choices.Delete;
 			if (_wsSelectionComboBox.Items.Count > 0)
 			{
@@ -45,6 +45,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_mergeRadioButton.CheckedChanged += OnMergeRadioButtonCheckedChanged;
 			_helpButton.Click += OnCustomHelpButtonClicked;
 			_deleteRadioButton.Checked = true;
+		}
+
+		private static string DisplayName(WritingSystemDefinition ws)
+		{
+			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.Id);
 		}
 
 		private void OnCustomHelpButtonClicked(object sender, EventArgs e)
@@ -91,10 +96,29 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Close();
 		}
 
-		public string WritingSystemToConflateWith
+		public WritingSystemDefinition WritingSystemToConflateWith
 		{
-			get { return (string) _wsSelectionComboBox.SelectedItem; }
+			get { return ((WritingSystemDisplayAdaptor) _wsSelectionComboBox.SelectedItem).AdaptedWs; }
 		}
 
+		private class WritingSystemDisplayAdaptor
+		{
+			private WritingSystemDefinition _wsToAdapt;
+
+			public WritingSystemDisplayAdaptor(WritingSystemDefinition wsToAdapt)
+			{
+				_wsToAdapt = wsToAdapt;
+			}
+
+			public override string ToString()
+			{
+				return DisplayName(_wsToAdapt);
+			}
+
+			public WritingSystemDefinition AdaptedWs
+			{
+				get { return _wsToAdapt; }
+			}
+		}
 	}
 }
