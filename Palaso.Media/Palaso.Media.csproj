@@ -94,6 +94,7 @@
 	<Compile Include="Naudio\AudioPlayer.cs" />
 	<Compile Include="Naudio\AudioRecorder.cs" />
 	<Compile Include="FFmpegRunner.cs" />
+	<Compile Include="Naudio\FileWriterThread.cs" />
 	<Compile Include="Naudio\IAudioPlayer.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
 	<Compile Include="MediaInfo.cs" />
