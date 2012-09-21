@@ -51,6 +51,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 				DoGripDrag();
 			}
 			Invalidate();
+			CheckForInvalidImage();
 		}
 
 		private void DoGripDrag()
@@ -127,7 +128,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 				if (value == null)
 					return;
 
-				_originalImage = value.Image;
+				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
+				//so we better keep our own.
+				_originalImage = (Image) value.Image.Clone();
 				_image = value;
 
 				CalculateSourceImageArea();
@@ -139,6 +142,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 				}
 
 				Invalidate();
+				CheckForInvalidImage();
 			}
 		}
 
@@ -212,9 +216,30 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			return Math.Min(hProportion, vProportion);
 		}
 
+		/// <summary>
+		/// this came out of a long debugging session, decided to leave it around in case of regression
+		/// </summary>
+		/// <returns>false unless there's a problem</returns>
+		protected bool CheckForInvalidImage()
+		{
+			try
+			{
+				var test = _originalImage.Height;
+			}
+			catch (Exception e)
+			{
+				Palaso.Reporting.ErrorReport.ReportNonFatalExceptionWithMessage(e,"Regression: ImageCropper: originalImage is hosed.");
+				return true;
+			}
+			return false;
+		}
+
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			if (_image == null || _sourceImageArea.Width == 0)
+				return;
+
+			if (CheckForInvalidImage())
 				return;
 
 			try
@@ -291,6 +316,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			_startOfDrag = default(Point);
 			if(ImageChanged !=null)
 				ImageChanged.Invoke(this,null);
+
+			CheckForInvalidImage();
 		}
 
 //        public void CheckBug()
@@ -329,6 +356,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 				if (bmp == null)
 					throw new ArgumentException("No valid bitmap");
 
+				CheckForInvalidImage();
+
 				//NB: this worked for tiff and png, but would crash with Out Of Memory for jpegs.
 				//This may be because I closed the stream? THe doc says you have to keep that stream open.
 				// return bmp.Clone(selection, _image.PixelFormat);
@@ -356,16 +385,20 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			else
 			{
 				Image = image;
+				CheckForInvalidImage();
 			}
 		}
 
 		public PalasoImage GetImage()
 		{
+			CheckForInvalidImage();
 			Image x = GetCroppedImage();
 			if (x == null)
 				return null;
 			//we want to retain the metdata of the PalasoImage we started with; we just want to update its actual image
 			_image.Image = x;
+
+			CheckForInvalidImage();
 			return _image;
 		}
 
