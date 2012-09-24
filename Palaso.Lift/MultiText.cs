@@ -332,8 +332,8 @@ namespace Palaso.Lift
 			if (ReferenceEquals(null, multiText)) return false;
 			if (ReferenceEquals(this, multiText)) return true;
 			if(EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count) return false;
-			if(!EmbeddedXmlElements.SequenceEqual(multiText.EmbeddedXmlElements)) return false;
-			if (!Forms.SequenceEqual(multiText.Forms)) return false;
+			if(!EmbeddedXmlElements.OrderBy(x=>x).SequenceEqual(multiText.EmbeddedXmlElements.OrderBy(x=>x))) return false;
+			if (!Forms.OrderBy(x=>x).SequenceEqual(multiText.Forms.OrderBy(x=>x))) return false;
 			return true;
 		}
 	}

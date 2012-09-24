@@ -459,9 +459,7 @@ namespace Palaso.WritingSystems
 
 		public override bool Equals(Object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (RFC5646Tag)) return false;
+			if (!(obj is RFC5646Tag)) return false;
 			return Equals((RFC5646Tag) obj);
 		}
 

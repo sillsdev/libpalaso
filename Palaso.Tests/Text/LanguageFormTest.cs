@@ -8,15 +8,16 @@ using Palaso.Text;
 namespace Palaso.Tests.Text
 {
 	[TestFixture]
-	public class LanguageFormIClonableGenericTests:IClonableGenericTests<LanguageForm>
+	public class LanguageFormIClonableGenericTests:IClonableGenericTests<Annotatable>
 	{
-		public override LanguageForm CreateNewClonable()
+		public override Annotatable CreateNewClonable()
 		{
 			return new LanguageForm();
 		}
 
 		public override string ExceptionList
 		{
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
 			get {  return "|_parent|"; }
 		}
 

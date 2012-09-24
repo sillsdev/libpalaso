@@ -39,7 +39,7 @@ namespace Palaso.Text
 		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected LanguageForm[] _forms;
+		private LanguageForm[] _forms;
 		public MultiTextBase()
 		{
 			_forms = new LanguageForm[0];
