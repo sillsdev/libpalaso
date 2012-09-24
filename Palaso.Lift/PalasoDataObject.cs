@@ -435,6 +435,20 @@ namespace Palaso.Lift
 		{
 			return name + "-xml";
 		}
+
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is PalasoDataObject)) return false;
+			return Equals((PalasoDataObject)obj);
+		}
+
+		public bool Equals(PalasoDataObject other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if(!Properties.All(keyValuePair => other.Properties.Any(p => keyValuePair.Key == p.Key && p.Value.Equals(keyValuePair.Value)))) return false;
+			return true;
+		}
 	}
 
 	public interface IReportEmptiness
@@ -485,7 +499,7 @@ namespace Palaso.Lift
 		}
 	}
 
-	public class EmbeddedXmlCollection: IPalasoDataObjectProperty, IClonableGeneric<EmbeddedXmlCollection>
+	public class EmbeddedXmlCollection: IPalasoDataObjectProperty
 	{
 		private List<string> _values;
 		private PalasoDataObject _parent;
@@ -511,11 +525,6 @@ namespace Palaso.Lift
 			var clone = new EmbeddedXmlCollection();
 			clone._values.AddRange(_values);
 			return clone;
-		}
-
-		EmbeddedXmlCollection IClonableGeneric<EmbeddedXmlCollection>.Clone()
-		{
-			throw new NotImplementedException();
 		}
 
 		public override string ToString()

@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
 using Palaso.Reporting;
 
 namespace Palaso.DictionaryServices.Model
 {
-	public sealed class LexSense: PalasoDataObject
+	public sealed class LexSense: PalasoDataObject, IClonableGeneric<LexSense>
 	{
 		//private readonly SenseGlossMultiText _gloss;
 		private readonly BindingList<LexExampleSentence> _exampleSentences;
@@ -169,6 +170,46 @@ namespace Palaso.DictionaryServices.Model
 				Logger.WriteMinorEvent("Empty example removed");
 				OnEmptyObjectsRemoved();
 			}
+		}
+
+		public LexSense Clone()
+		{
+			var clone = new LexSense();
+			foreach (var exampleSentenceToClone in _exampleSentences)
+			{
+				clone._exampleSentences.Add(exampleSentenceToClone.Clone());
+			}
+			foreach (var note in _notes)
+			{
+				clone._notes.Add((LexNote) note.Clone());
+			}
+			foreach (var lexReversal in Reversals)
+			{
+				clone.Reversals.Add((LexReversal) lexReversal.Clone());
+			}
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (obj.GetType() != typeof(LexSense)) return false;
+			return Equals((LexSense)obj);
+		}
+
+		public bool Equals(LexSense other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			//The various components may appear in a different order which is fine. So we sort them here so that we can run SequenceEqual (which cares about order) over them.
+			if (!_exampleSentences.OrderBy(x=>x).SequenceEqual(other._exampleSentences.OrderBy(x=>x))) return false;
+			if (!_notes.OrderBy(x=>x).SequenceEqual(other._notes.OrderBy(x=>x))) return false;
+			if (!Reversals.OrderBy(x=>x).SequenceEqual(other.Reversals.OrderBy(x=>x))) return false;
+			if (!base.Equals(other)) return false;
+			return true;
 		}
 	}
 }

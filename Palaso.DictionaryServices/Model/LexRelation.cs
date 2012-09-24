@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
+using Palaso.Text;
 using Palaso.UiBindings;
 
 namespace Palaso.DictionaryServices.Model
@@ -47,7 +50,7 @@ namespace Palaso.DictionaryServices.Model
 		}
 	}
 
-	public class LexRelation: IParentable,
+	public class LexRelation: IPalasoDataObjectProperty,
 							  IValueHolder<string>,
 							  IReferenceContainer,
 							  IReportEmptiness,
@@ -199,9 +202,18 @@ namespace Palaso.DictionaryServices.Model
 		public List<LexField> Fields { get; private set; }
 
 		#endregion
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new LexRelation(_fieldId, _targetId, null);
+			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
+			clone.Traits.AddRange(Traits.Select(t => t.Clone()));
+			clone.Fields.AddRange(Fields.Select(f => (LexField)f.Clone()));
+			return clone;
+		}
 	}
 
-	public class LexRelationCollection: IParentable, IReportEmptiness
+	public class LexRelationCollection: IPalasoDataObjectProperty, IReportEmptiness
 	{
 		private PalasoDataObject _parent;
 		private List<LexRelation> _relations = new List<LexRelation>();
@@ -296,5 +308,11 @@ namespace Palaso.DictionaryServices.Model
 		}
 
 		#endregion
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new LexRelationCollection();
+			return Clone();
+		}
 	}
 }

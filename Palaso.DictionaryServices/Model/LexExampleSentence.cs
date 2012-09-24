@@ -1,15 +1,20 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
 
 namespace Palaso.DictionaryServices.Model
 {
-	public sealed class LexExampleSentence: PalasoDataObject
+	public sealed class LexExampleSentence: PalasoDataObject, IClonableGeneric<LexExampleSentence>
 	{
 		private string _translationType;
 
 		//!!What!! Is this done this way so that we don't end up storing
 		//  the data in the object database?
+		//Answer:
+		//This was done to avoid magic strings for property retrieval That way we can say
+		//lexSentence.GetProperty<MultiText>(LexExampleSentence.WellKnownProperties.ExampleSentence) instead of lexSentence.GetProperty<MultiText>("ExampleSentence") --TA 9/24/2012
 		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
 		{
 			public static string ExampleSentence = "ExampleSentence";
@@ -61,6 +66,35 @@ namespace Palaso.DictionaryServices.Model
 		{
 			get { return _translationType; }
 			set { _translationType = value; }
+		}
+
+		public LexExampleSentence Clone()
+		{
+			var clone = new LexExampleSentence();
+			clone._translationType = _translationType;
+			//We clear the properties here because ExampleSentence comes with ExampleSentence and ExampleTranslation properties on construction
+			//and it's just easier to treat them like any other property on clone
+			clone.Properties.Clear();
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (obj.GetType() != typeof(LexExampleSentence)) return false;
+			return Equals((LexExampleSentence)obj);
+		}
+
+		public bool Equals(LexExampleSentence other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (_translationType != other._translationType) return false;
+			if (!Properties.All(p => other.Properties.Any(p1 => p1.Key == p.Key && p1.Value.Equals( p.Value)))) return false;
+			return true;
 		}
 	}
 }

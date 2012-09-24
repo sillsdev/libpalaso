@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
+using Palaso.Lift;
 using Palaso.Tests.Code;
 
 namespace Palaso.DictionaryServices.Tests.Model
@@ -18,9 +19,11 @@ namespace Palaso.DictionaryServices.Tests.Model
 
 		public override string ExceptionList
 		{
-			//no good way to to test wether all the wiring has been cloned
-			//parents shouldn't be cloned... usueally the clone is happening top down in the Lexentry tree and copying the parent would break the tree structure
-			get { return "|_listEventHelpers|_parent|"; }
+			//_listEventHelpers: No good way to clone eventhandlers
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			//PropertyChanged: No good way to clone eventhandlers
+			//EmptyObjectsRemoved: No good way to clone eventhandlers. The parent should be taking care of this rather than the clone() method.
+			get { return "|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
 		}
 
 		public override Dictionary<Type, object> DefaultValuesForTypes
@@ -28,19 +31,15 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get
 			{
 				var listKvp =
-					new List<KeyValuePair<string, object>>(new[]
+					new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]
 															   {
-																   new KeyValuePair<string, object>("one",
-																									new LexExampleSentence
-																										()),
-																   new KeyValuePair<string, object>("two",
-																									new LexExampleSentence
-																										())
+																   new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+																   new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())
 															   });
 				return new Dictionary<Type, object>
 							 {
 								 {typeof(string), "a string!"},
-								 {typeof(List<KeyValuePair<string, object>>), listKvp}
+								 {typeof(List<KeyValuePair<string, IPalasoDataObjectProperty>>), listKvp}
 							 };
 			}
 		}

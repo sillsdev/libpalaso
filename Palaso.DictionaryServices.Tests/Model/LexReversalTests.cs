@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Tests.Code;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Model
 {
@@ -19,12 +20,22 @@ namespace Palaso.DictionaryServices.Tests.Model
 
 		public override string ExceptionList
 		{
-			get { return ""; }
+			//PropertyChanged: No good way to clone eventhandlers
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			get { return "|_parent|PropertyChanged|"; }
 		}
 
 		public override Dictionary<Type, object> DefaultValuesForTypes
 		{
-			get { return new Dictionary<Type, object>(); }
+			get
+			{
+				return new Dictionary<Type, object>
+						   {
+							   {typeof(string), "Yet another string!"},
+								 {typeof(List<string>), new List<string>{"one", "two"}},
+								 {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
+						   };
+			}
 		}
 	}
 }

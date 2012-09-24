@@ -1,9 +1,10 @@
 using System.ComponentModel;
+using Palaso.Code;
 using Palaso.UiBindings;
 
 namespace Palaso.Lift
 {
-	public class PictureRef: IParentable, IValueHolder<string>, IReportEmptiness
+	public class PictureRef: IPalasoDataObjectProperty, IValueHolder<string>, IReportEmptiness
 	{
 		private string _fileName;
 		private MultiText _caption;
@@ -80,5 +81,13 @@ namespace Palaso.Lift
 		public void RemoveEmptyStuff() {}
 
 		#endregion
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new PictureRef();
+			clone._fileName = _fileName;
+			clone._caption = _caption == null ? null:(MultiText) _caption.Clone();
+			return clone;
+		}
 	}
 }
