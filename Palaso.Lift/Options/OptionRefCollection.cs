@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Linq;
+using Palaso.Code;
 
 namespace Palaso.Lift.Options
 {
 	/// <summary>
 	/// Used to refer to this option from a field
 	/// </summary>
-	public class OptionRefCollection: IParentable,
+	public class OptionRefCollection : IPalasoDataObjectProperty,
 									  INotifyPropertyChanged,
-									  // ICollection<string>,
 									  IReportEmptiness,
 									  IComparable
 	{
@@ -22,13 +22,13 @@ namespace Palaso.Lift.Options
 		/// This "backreference" is used to notify the parent of changes.
 		/// IParentable gives access to this during explicit construction.
 		/// </summary>
-		private IReceivePropertyChangeNotifications _whomToNotify;
+		private IReceivePropertyChangeNotifications _parent;
 
 		public OptionRefCollection(): this(null) {}
 
-		public OptionRefCollection(IReceivePropertyChangeNotifications whomToNotify)
+		public OptionRefCollection(IReceivePropertyChangeNotifications parent)
 		{
-			_whomToNotify = whomToNotify;
+			_parent = parent;
 			//_keys = new List<string>();
 			_members = new BindingList<OptionRef>();
 			_members.ListChanged += _members_ListChanged;
@@ -145,7 +145,7 @@ namespace Palaso.Lift.Options
 
 		public PalasoDataObject Parent
 		{
-			set { _whomToNotify = value; }
+			set { _parent = value; }
 		}
 
 		#endregion
@@ -160,7 +160,10 @@ namespace Palaso.Lift.Options
 			}
 
 			//tell our parent
-			_whomToNotify.NotifyPropertyChanged("option");
+			if (_parent != null)
+			{
+				_parent.NotifyPropertyChanged("option");
+			}
 		}
 
 		/// <summary>
@@ -291,7 +294,7 @@ namespace Palaso.Lift.Options
 		//                {
 		//                    OptionRef or = new OptionRef();
 		//                    or.Key = key;
-		//                    or.Parent = (PalasoDataObject) _whomToNotify ;
+		//                    or.Parent = (PalasoDataObject) _parent ;
 		//
 		//                    _optionRefProxyList.Add(or);
 		//                }
@@ -379,6 +382,16 @@ namespace Palaso.Lift.Options
 				_members.Add(optionRef);
 			}
 			return true;
+		}
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new OptionRefCollection();
+			foreach (var memberToClone in _members)
+			{
+				clone._members.Add((OptionRef) memberToClone.Clone());
+			}
+			return clone;
 		}
 	}
 }

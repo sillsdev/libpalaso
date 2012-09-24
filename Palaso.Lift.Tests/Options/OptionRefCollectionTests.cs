@@ -1,12 +1,41 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using Palaso.Lift;
 using Palaso.Lift.Options;
-
 using NUnit.Framework;
+using Palaso.Tests.Code;
 
-namespace Palaso.LexicalModel.Tests
+namespace Palaso.Lift.Tests.Options
 {
+	[TestFixture]
+	public class OptionRefCollectionIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	{
+		public override IPalasoDataObjectProperty CreateNewClonable()
+		{
+			return new OptionRefCollection();
+		}
+
+		public override string ExceptionList
+		{
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			//PropertyChanged: No good way to clone eventhandlers
+			get { return "|_parent|PropertyChanged|"; }
+		}
+
+		public override Dictionary<Type, object> DefaultValuesForTypes
+		{
+			get
+			{
+				var optionRefBindingList = new BindingList<OptionRef> {new OptionRef("option")};
+				return new Dictionary<Type, object>
+						   {
+							   {typeof(BindingList<OptionRef>), optionRefBindingList}
+						   };
+			}
+		}
+	}
+
 	[TestFixture]
 	public class OptionRefCollectionTests : IReceivePropertyChangeNotifications
 	{
