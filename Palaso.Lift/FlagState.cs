@@ -85,5 +85,10 @@ namespace Palaso.Lift
 			clone._isChecked = _isChecked;
 			return clone;
 		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

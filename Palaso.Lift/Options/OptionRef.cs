@@ -196,6 +196,11 @@ namespace Palaso.Lift.Options
 			return clone;
 		}
 
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override string ToString()
 		{
 			return Value;

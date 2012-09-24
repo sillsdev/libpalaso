@@ -211,6 +211,11 @@ namespace Palaso.DictionaryServices.Model
 			clone.Fields.AddRange(Fields.Select(f => (LexField)f.Clone()));
 			return clone;
 		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class LexRelationCollection: IPalasoDataObjectProperty, IReportEmptiness
@@ -313,6 +318,11 @@ namespace Palaso.DictionaryServices.Model
 		{
 			var clone = new LexRelationCollection();
 			return Clone();
+		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

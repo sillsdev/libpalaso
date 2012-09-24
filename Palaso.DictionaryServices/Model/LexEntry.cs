@@ -144,6 +144,11 @@ namespace Palaso.DictionaryServices.Model
 			return clone;
 		}
 
+		public bool Equals(LexEntry other)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override string ToString()
 		{
 			//hack

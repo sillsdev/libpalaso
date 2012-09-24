@@ -527,6 +527,11 @@ namespace Palaso.Lift
 			return clone;
 		}
 
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override string ToString()
 		{
 			var builder = new StringBuilder();

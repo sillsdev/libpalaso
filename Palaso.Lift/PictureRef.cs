@@ -89,5 +89,10 @@ namespace Palaso.Lift
 			clone._caption = _caption == null ? null:(MultiText) _caption.Clone();
 			return clone;
 		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

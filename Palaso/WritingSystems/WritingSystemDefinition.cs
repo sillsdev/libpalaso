@@ -1046,6 +1046,11 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
+		public bool Equals(WritingSystemDefinition other)
+		{
+			throw new NotImplementedException();
+		}
+
 		private void UpdateIdFromRfcTag()
 		{
 			_id = Bcp47Tag;

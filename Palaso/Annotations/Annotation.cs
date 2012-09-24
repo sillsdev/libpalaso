@@ -43,6 +43,11 @@ namespace Palaso.Annotations
 			clone._annotation = _annotation == null ? null : _annotation.Clone();
 			return clone;
 		}
+
+		public bool Equals(Annotatable other)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	/// <summary>

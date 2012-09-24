@@ -321,6 +321,11 @@ namespace Palaso.Lift
 			return clone;
 		}
 
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override bool Equals(Object obj)
 		{
 			if (obj.GetType() != typeof(MultiText)) return false;
