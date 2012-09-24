@@ -7,6 +7,7 @@ using Palaso.Code;
 
 namespace Palaso.Tests.Code
 {
+
 	public abstract class IClonableGenericTests<T> where T:IClonableGeneric<T>
 	{
 		public abstract T CreateNewClonable();
@@ -19,7 +20,8 @@ namespace Palaso.Tests.Code
 		[Test]
 		public void CloneCopiesAllNeededMembers()
 		{
-			var type = typeof (T);
+			var clonable = CreateNewClonable();
+			var type = clonable.GetType();
 			IEnumerable<FieldInfo> fieldInfos = new List<FieldInfo>();
 			while(type!=null){
 				fieldInfos = fieldInfos.Concat(type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public));
@@ -38,7 +40,6 @@ namespace Palaso.Tests.Code
 				{
 					continue;
 				}
-				var clonable = CreateNewClonable();
 				if (DefaultValuesForTypes.ContainsKey(fieldInfo.FieldType))
 				{
 					fieldInfo.SetValue(clonable, DefaultValuesForTypes[fieldInfo.FieldType]);
@@ -47,7 +48,7 @@ namespace Palaso.Tests.Code
 				{
 					Assert.Fail("Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.", fieldInfo.FieldType.Name, fieldName);
 				}
-				var theClone = clonable.Clone();
+				var theClone = Convert.ChangeType(clonable.Clone(), clonable.GetType());
 				if (fieldInfo.GetValue(clonable).GetType() != typeof(string))  //strings are special in .net so we won't worry about checking them here.
 				{
 					Assert.AreNotSame(fieldInfo.GetValue(clonable), fieldInfo.GetValue(theClone),

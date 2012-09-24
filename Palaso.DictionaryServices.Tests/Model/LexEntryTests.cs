@@ -1,13 +1,97 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Tests.Code;
 
 namespace Palaso.DictionaryServices.Tests.Model
 {
+	[TestFixture]
+	public class LexEntryClonableGenericTests:IClonableGenericTests<LexEntry>
+	{
+		public override LexEntry CreateNewClonable()
+		{
+			return new LexEntry();
+		}
+
+		public override string ExceptionList
+		{
+			//_guid: should not be identical to the original
+			//_id: relies on guid and should also not be identical to original
+			//_creationTime: we want the creation time of the clone.. not the original
+			//_modificationTime: the clone is brand new. We don't care when the original was last modified.
+			//_isDirty|_isBeingDeleted|_modificationTimeIsLocked: all management stuff that shouldn't need to be cloned
+			//_listEventHelpers: No good way to clone eventhandlers
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			//EmptyObjectsRemoved: No good way to clone eventhandlers. The parent should be taking care of this rather than the clone() method.
+			get { return "|_guid|_id|_creationTime|_modificationTime|_isDirty|_isBeingDeleted|_modifiedTimeIsLocked|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
+		}
+
+		public override Dictionary<Type, object> DefaultValuesForTypes
+		{
+			get
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("en", "multitext");
+				var senseBindingList = new BindingList<LexSense> {new LexSense{Id = "sense1"}, new LexSense{Id="sense2"}};
+				var variants = new BindingList<LexVariant> {new LexVariant()};
+				var notes = new BindingList<LexNote> {new LexNote("yp"), new LexNote("jmel")};
+				var pronunciations = new BindingList<LexPhonetic> {new LexPhonetic(), new LexPhonetic()};
+				var etymology = new BindingList<LexEtymology> { new LexEtymology("one", "eins") };
+				var listKvp = new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]
+															   {
+																   new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+																   new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())
+															   });
+				return new Dictionary<Type, object>
+							 {
+								 {typeof(MultiText),  multiText},
+								 {typeof(string), "text"},
+								 {typeof(int), 42},
+								 {typeof(BindingList<LexSense>), senseBindingList},
+								 {typeof(BindingList<LexVariant>), variants},
+								 {typeof(BindingList<LexNote>), notes},
+								 {typeof(BindingList<LexPhonetic>), pronunciations},
+								 {typeof(BindingList<LexEtymology>), etymology},
+								 {typeof(bool), true},
+								 {typeof(List<KeyValuePair<string, IPalasoDataObjectProperty>>), listKvp}
+							 };
+			}
+		}
+
+		[Test]
+		public void Clone_NewGuidIsCreatedAndNotZeros()
+		{
+			var entry = new LexEntry();
+			var entry2 = entry.Clone();
+			Assert.That(entry.Guid, Is.Not.EqualTo(entry2.Guid));
+			Assert.That(entry.Guid, Is.Not.EqualTo(Guid.Empty));
+		}
+
+		[Test]
+		public void Clone_ClonedEntryHasId_NewIdIsCreatedForNewEntry()
+		{
+			var entry = new LexEntry();
+			entry.LexicalForm.SetAlternative("en","form");
+			entry.GetOrCreateId(true);
+			var entry2 = entry.Clone();
+			Assert.That(entry2.Id, Is.Not.EqualTo(entry.Id));
+			Assert.That(entry2.Id, Is.Not.Null);
+		}
+
+		[Test]
+		public void Clone_ClonedEntryHasNoId_NoIdIsCreatedForNewEntry()
+		{
+			var entry = new LexEntry();
+			var entry2 = entry.Clone();
+			Assert.That(entry.Id, Is.EqualTo(entry2.Id));
+		}
+	}
+
 	[TestFixture]
 	public class LexEntryTests
 	{

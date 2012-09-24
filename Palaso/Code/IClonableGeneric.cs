@@ -12,5 +12,6 @@ namespace Palaso.Code
 		/// </summary>
 		/// <returns></returns>
 		T Clone();
+		//bool Equals(T other);
 	}
 }

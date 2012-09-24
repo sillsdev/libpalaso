@@ -32,7 +32,6 @@ namespace WeSay.LexicalModel.Tests.Foundation
 			{
 				return new Dictionary<Type, object>
 							 {
-								 //{typeof(PalasoDataObject), new TestClass(null)}
 								 {typeof(List<string>), new List<string>{"one", "two"}},
 								 {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
 							 };

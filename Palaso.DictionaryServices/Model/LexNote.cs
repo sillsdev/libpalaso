@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.Code;
@@ -39,8 +40,24 @@ namespace Palaso.DictionaryServices.Model
 			clone.Traits = new List<LexTrait>(Traits.Select(t => t.Clone()));
 			clone.Fields = new List<LexField>(Fields.Select(t => (LexField) t.Clone()));
 			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
-			clone._forms = _forms.Select(f => (LanguageForm) f.Clone()).ToArray();
+			clone.Forms = Forms.Select(f => (LanguageForm)f.Clone()).ToArray();
 			return clone;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (obj.GetType() != typeof(LexNote)) return false;
+			return Equals((LexNote)obj);
+		}
+
+		public bool Equals(LexNote other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!Traits.SequenceEqual(other.Traits)) return false;
+			if (!Fields.SequenceEqual(other.Fields)) return false;
+			if (!base.Equals(other)) return false;
+			return true;
 		}
 	}
 }

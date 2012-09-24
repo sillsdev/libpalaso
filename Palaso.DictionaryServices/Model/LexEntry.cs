@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Palaso.Code;
 using Palaso.Data;
 using Palaso.i18n;
 using Palaso.Lift;
@@ -18,7 +19,7 @@ namespace Palaso.DictionaryServices.Model
 	/// some languages/dictionaries, these will be indistinguishable from "words".
 	/// In others, words are made up of lexical entries.
 	/// </summary>
-	public class LexEntry: PalasoDataObject
+	public class LexEntry: PalasoDataObject, IClonableGeneric<LexEntry>
 	{
 		private MultiText _lexicalForm;
 		private Guid _guid;
@@ -105,6 +106,44 @@ namespace Palaso.DictionaryServices.Model
 			ModifiedTimeIsLocked = false;
 		}
 
+		public LexEntry Clone()
+		{
+			var clone = new LexEntry();
+			clone._lexicalForm = (MultiText) _lexicalForm.Clone();
+			//_lexicalForm and Guid must have been set before _id is set
+			if(_id != null)
+			{
+				clone.GetOrCreateId(false);
+			}
+			clone.OrderForRoundTripping = _orderForRoundTripping;
+			clone._orderInFile = _orderInFile;
+			foreach (var senseToClone in _senses)
+			{
+				clone._senses.Add(senseToClone.Clone());
+			}
+			foreach (var lexVariantToClone in Variants)
+			{
+				clone.Variants.Add((LexVariant) lexVariantToClone.Clone());
+			}
+			foreach (var lexNoteToClone in Notes)
+			{
+				clone.Notes.Add((LexNote) lexNoteToClone.Clone());
+			}
+			foreach (var pronunciationToClone in _pronunciations)
+			{
+				clone._pronunciations.Add((LexPhonetic) pronunciationToClone.Clone());
+			}
+			foreach (var etymologyToClone in _etymologies)
+			{
+				clone._etymologies.Add((LexEtymology)etymologyToClone.Clone());
+			}
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
 		public override string ToString()
 		{
 			//hack
@@ -178,6 +217,8 @@ namespace Palaso.DictionaryServices.Model
 
 			return _id;
 		}
+
+
 
 		/// <summary>
 		///
