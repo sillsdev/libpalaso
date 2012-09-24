@@ -10,7 +10,7 @@ using Palaso.Text;
 
 namespace Palaso.Text
 {
-	public class MultiTextBase : INotifyPropertyChanged, IComparable, IClonableGeneric<MultiTextBase>
+	public class MultiTextBase : INotifyPropertyChanged, IComparable
 	{
 		/// <summary>
 		/// We have this pesky "backreference" solely to enable fast
@@ -39,21 +39,11 @@ namespace Palaso.Text
 		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private LanguageForm[] _forms;
+		protected LanguageForm[] _forms;
 		public MultiTextBase()
 		{
 			_forms = new LanguageForm[0];
 		}
-
-		/// <summary>
-		/// CopyConstructor
-		/// </summary>
-		/// <param name="multiTextBase"></param>
-		public MultiTextBase(MultiTextBase multiTextBase)
-		{
-			_forms = multiTextBase._forms.Select(form=>form.Clone()).ToArray();
-		}
-
 
 		public void Add(Object objectFromSerializer) {}
 
@@ -404,11 +394,6 @@ namespace Palaso.Text
 				}
 			}
 			return 0;
-		}
-
-		public MultiTextBase Clone()
-		{
-			return new MultiTextBase(this);
 		}
 
 		public override string ToString()

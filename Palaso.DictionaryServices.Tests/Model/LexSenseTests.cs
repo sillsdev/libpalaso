@@ -26,14 +26,20 @@ namespace Palaso.DictionaryServices.Tests.Model
 		{
 			get
 			{
-				var bindingList = new BindingList<LexExampleSentence>
+				var sentenceBindingList = new BindingList<LexExampleSentence>
 									  {
 										  new LexExampleSentence {TranslationType = "sentence1"},
 										  new LexExampleSentence {TranslationType = "sentence2"}
 									  };
+				var noteBindingList = new BindingList<LexNote>
+										  {
+											  new LexNote("a note"),
+											  new LexNote("another note!")
+										  };
 				return new Dictionary<Type, object>
 						   {
-							   {typeof(BindingList<LexExampleSentence>), bindingList}
+							   {typeof(BindingList<LexExampleSentence>), sentenceBindingList},
+							   {typeof(BindingList<LexNote>), noteBindingList}
 						   };
 			}
 		}

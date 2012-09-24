@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Model
 {
@@ -20,7 +23,7 @@ namespace Palaso.DictionaryServices.Model
 			Fields = new List<LexField>();
 		}
 
-		public LexNote(string type)
+		public LexNote(string type):this()
 		{
 			Type = type;
 		}
@@ -30,5 +33,14 @@ namespace Palaso.DictionaryServices.Model
 		public List<LexField> Fields { get; private set; }
 		#endregion
 
+		public override IPalasoDataObjectProperty Clone()
+		{
+			var clone = new LexNote(Type);
+			clone.Traits = new List<LexTrait>(Traits.Select(t => t.Clone()));
+			clone.Fields = new List<LexField>(Fields.Select(t => (LexField) t.Clone()));
+			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
+			clone._forms = _forms.Select(f => (LanguageForm) f.Clone()).ToArray();
+			return clone;
+		}
 	}
 }

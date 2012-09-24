@@ -10,26 +10,33 @@ using Palaso.Text;
 
 namespace WeSay.LexicalModel.Tests.Foundation
 {
-	public class MultiTextIClonableGenericTests:IClonableGenericTests<MultiText>
+
+	[TestFixture]
+	public class MultiTextAsPalasoDataObjectPropertyIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
 	{
-		public override MultiText CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewClonable()
 		{
 			return new MultiText();
 		}
 
 		public override string ExceptionList
 		{
+			//PropertyChanged: No good way to clone eventhandlers
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
 		public override Dictionary<Type, object> DefaultValuesForTypes
 		{
-			get { return new Dictionary<Type, object>
+			get
+			{
+				return new Dictionary<Type, object>
 							 {
 								 //{typeof(PalasoDataObject), new TestClass(null)}
 								 {typeof(List<string>), new List<string>{"one", "two"}},
 								 {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
-							 }; }
+							 };
+			}
 		}
 	}
 
