@@ -94,7 +94,7 @@
 	<Compile Include="Lift\PictureRefTests.cs" />
 	<Compile Include="Model\LexEtymologyTests.cs" />
 	<Compile Include="Model\LexExampleSentenceTests.cs" />
-	<Compile Include="Model\LexFieldTests.cs" />
+	<Compile Include="Model\LexTraitTests.cs" />
 	<Compile Include="Model\LexNoteTests.cs" />
 	<Compile Include="Model\LexPhoneticTests.cs" />
 	<Compile Include="Model\LexReversalTests.cs" />
