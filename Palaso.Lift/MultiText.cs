@@ -21,7 +21,7 @@ namespace Palaso.Lift
 	//NO: we haven't been able to do a reasonalbly compact xml representation except with custom deserializer
 	//[ReflectorType("multiText")]
 	[XmlInclude(typeof (LanguageForm))]
-	public class MultiText: MultiTextBase, IParentable, IReportEmptiness, IXmlSerializable, IClonableGeneric<MultiText>
+	public class MultiText : MultiTextBase, IPalasoDataObjectProperty, IReportEmptiness, IXmlSerializable
 	{
 		private PalasoDataObject _parent;
 		public List<string> EmbeddedXmlElements = new List<string>();
@@ -35,15 +35,6 @@ namespace Palaso.Lift
 		}
 
 		public MultiText() {}
-
-		/// <summary>
-		/// Copy constructor
-		/// </summary>
-		/// <param name="multiText"></param>
-		public MultiText(MultiText multiText):base(multiText)
-		{
-			EmbeddedXmlElements = new List<string>(multiText.EmbeddedXmlElements);
-		}
 
 		/// <summary>
 		/// We added this pesky "backreference" solely to enable fast
@@ -322,34 +313,28 @@ namespace Palaso.Lift
 			return null != this.Forms.FirstOrDefault(f=> f.WritingSystemId ==writingSystemId && f.Form == form);
 		}
 
-		public MultiText Clone()
+		public virtual IPalasoDataObjectProperty Clone()
 		{
-			return new MultiText(this);
+			var clone = new MultiText();
+			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
+			clone.Forms = Forms.Select(f => (LanguageForm) f.Clone()).ToArray();
+			return clone;
 		}
 
 		public override bool Equals(Object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
 			if (obj.GetType() != typeof(MultiText)) return false;
 			return Equals((MultiText)obj);
 		}
 
 		public bool Equals(MultiText multiText)
 		{
-			if(multiText == null)
-			{
-				return false;
-			}
-			if(EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count)
-			{
-				return false;
-			}
-			if(!EmbeddedXmlElements.SequenceEqual(multiText.EmbeddedXmlElements))
-			{
-				return false;
-			}
-			return base.Equals(multiText);
+			if (ReferenceEquals(null, multiText)) return false;
+			if (ReferenceEquals(this, multiText)) return true;
+			if(EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count) return false;
+			if(!EmbeddedXmlElements.SequenceEqual(multiText.EmbeddedXmlElements)) return false;
+			if (!Forms.SequenceEqual(multiText.Forms)) return false;
+			return true;
 		}
 	}
 }

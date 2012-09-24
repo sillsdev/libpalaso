@@ -10,7 +10,7 @@ namespace Palaso.Text
 	/// A LanguageForm is a unicode string plus the id of its writing system
 	/// </summary>
    // [ReflectorType("alt")]
-	public class LanguageForm : Annotatable, IComparable<LanguageForm>, IClonableGeneric<LanguageForm>
+	public class LanguageForm : Annotatable, IComparable<LanguageForm>
 	{
 		private string _writingSystemId;
 		private string _form;
@@ -34,18 +34,6 @@ namespace Palaso.Text
 			_writingSystemId = writingSystemId;
 			_form =  form;
 		}
-
-		/// <summary>
-		/// Copy Constructor
-		/// </summary>
-		/// <param name="annotatable"></param>
-		public LanguageForm(LanguageForm languageForm): base(languageForm)
-		{
-			_writingSystemId = languageForm._writingSystemId;
-			_form = languageForm._form;
-
-		}
-
 
 		//[ReflectorProperty("ws", Required = true)]
 		[XmlAttribute("ws")]
@@ -122,9 +110,13 @@ namespace Palaso.Text
 			return formOrder;
 		}
 
-		public LanguageForm Clone()
+		public override Annotatable Clone()
 		{
-			return new LanguageForm(this);
+			var clone = new LanguageForm();
+			clone._writingSystemId = _writingSystemId;
+			clone._form = _form;
+			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			return clone;
 		}
 	}
 }

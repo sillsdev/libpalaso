@@ -8,14 +8,9 @@ namespace Palaso.Annotations
 {
 	public class Annotatable : IAnnotatable, IClonableGeneric<Annotatable>
 	{
-		private Annotation _annotation;
+		protected Annotation _annotation;
 
 		public Annotatable(){}
-
-		public Annotatable(Annotatable annotatable)
-		{
-			_annotation = annotatable._annotation == null ? null : new Annotation(annotatable._annotation);
-		}
 
 		[XmlAttribute("starred")]
 		public bool IsStarred
@@ -42,9 +37,11 @@ namespace Palaso.Annotations
 			}
 		}
 
-		public Annotatable Clone()
+		public virtual Annotatable Clone()
 		{
-			return new Annotatable(this);
+			var clone = new Annotatable();
+			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			return clone;
 		}
 	}
 
