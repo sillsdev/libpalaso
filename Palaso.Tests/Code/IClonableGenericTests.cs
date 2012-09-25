@@ -89,15 +89,17 @@ namespace Palaso.Tests.Code
 		}
 
 		[Test]
-		public void Equal_AllMembersAreConsidered()
+		//x.Equals(y) && y.Equals(x) where x!= y
+		public void Equal_OneFieldDiffers_ReturnsFalse()
 		{
-			var item = CreateNewClonable();
-			var unequalItem = CreateNewClonable();
-			Assert.That(item.Equals(unequalItem));
-			var fieldInfos = GetAllFields(item);
+			var itemToGetFieldsFrom = CreateNewClonable();
+			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
 
 			foreach (var fieldInfo in fieldInfos)
 			{
+				var item = CreateNewClonable();
+				var unequalItem = CreateNewClonable();
+				Assert.That(item, Is.EqualTo(unequalItem), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
@@ -121,7 +123,101 @@ namespace Palaso.Tests.Code
 				}
 				fieldInfo.SetValue(item, defaultValue.DefaultValue);
 				fieldInfo.SetValue(unequalItem, defaultValue.NotEqualDefaultValue);
-				Assert.AreNotEqual(item, unequalItem, "Field \"{0}\" makes no difference to Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreNotEqual(item, unequalItem, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreNotEqual(unequalItem, item, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+			}
+		}
+
+		[Test]
+		//x.Equals(y) && y.Equals(x) where x==y
+		public void Equal_ItemsAreEqual_ReturnsTrue()
+		{
+			var itemToGetFieldsFrom = CreateNewClonable();
+			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
+
+			foreach (var fieldInfo in fieldInfos)
+			{
+				var item = CreateNewClonable();
+				var unequalItem = CreateNewClonable();
+				Assert.That(item, Is.EqualTo(unequalItem), "The two items were not equal on creation. You may need to override Equals(object other).");
+				var fieldName = fieldInfo.Name;
+				if (fieldInfo.Name.Contains("<"))
+				{
+					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
+					fieldName = splitResult[1];
+				}
+				if (ExceptionList.Contains("|" + fieldName + "|"))
+				{
+					continue;
+				}
+				DefaultValues defaultValue = null;
+				try
+				{
+					defaultValue = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
+				}
+				catch (InvalidOperationException e)
+				{
+					Assert.Fail(
+						"Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.",
+						fieldInfo.FieldType.Name, fieldName);
+				}
+				fieldInfo.SetValue(item, defaultValue.DefaultValue);
+				fieldInfo.SetValue(unequalItem, defaultValue.DefaultValue);
+				Assert.AreEqual(item, unequalItem, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreEqual(unequalItem, item, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+			}
+		}
+
+		[Test]
+		//x.Equals(default) && y.Equals(default) (y/x are left on their default values)
+		//though x.Equals(null) is better form, many fields and properties are set to seomthing besides null on construction and can never be null (short of reflection as we do below). So By testing
+		//against the original value rather than null, we save ourselves a lot of boilerplate in the Equals method.
+		public void Equal_SecondFieldIsNull_ReturnsFalse()
+		{
+			var itemToGetFieldsFrom = CreateNewClonable();
+			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
+
+			foreach (var fieldInfo in fieldInfos)
+			{
+				var itemWithFieldToChange = CreateNewClonable();
+				var itemWithDefaultField = CreateNewClonable();
+				Assert.That(itemWithFieldToChange, Is.EqualTo(itemWithDefaultField), "The two items were not equal on creation. You may need to override Equals(object other).");
+				var fieldName = fieldInfo.Name;
+				if (fieldInfo.Name.Contains("<"))
+				{
+					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
+					fieldName = splitResult[1];
+				}
+				if (ExceptionList.Contains("|" + fieldName + "|"))
+				{
+					continue;
+				}
+				DefaultValues defaultValue = null;
+				try
+				{
+					defaultValue = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
+				}
+				catch (InvalidOperationException e)
+				{
+					Assert.Fail(
+						"Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.",
+						fieldInfo.FieldType.Name, fieldName);
+				}
+				//This conditional is here in case the DefaultValue is identical to the fields default value.
+				//That way developers who inherit this test case don't have to worry about what the fields default value is.
+				//It also works around an issue with bool values. If you have two fields that are initialized with different
+				//values (i.e. one is true and the other false) this will ensure that the value is chosen which is not equal
+				//to the default value and the test therefor has a chance of succeeding.
+				if (defaultValue.DefaultValue.Equals(fieldInfo.GetValue(itemWithDefaultField)))
+				{
+					fieldInfo.SetValue(itemWithFieldToChange, defaultValue.NotEqualDefaultValue);
+				}
+				else
+				{
+					fieldInfo.SetValue(itemWithFieldToChange, defaultValue.DefaultValue);
+				}
+				Assert.AreNotEqual(itemWithFieldToChange, itemWithDefaultField, "Field \"{0}\" is not evaluated in Equals(T other) or the DefaultValue is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreNotEqual(itemWithDefaultField, itemWithFieldToChange, "Field \"{0}\" is not evaluated in Equals(T other) or the DefaultValue is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
 			}
 		}
 	}
