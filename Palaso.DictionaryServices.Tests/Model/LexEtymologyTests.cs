@@ -25,23 +25,25 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var m = new MultiText();
-				m.SetAlternative("en", "en form");
-				var traits = new List<LexTrait> { new LexTrait("trait1", "very important") };
-				var fields = new List<LexField> { new LexField("trivial") };
-				var xml = new List<string> {"xml", "moreXml"};
-				return new Dictionary<Type, object>
+				return new List<DefaultValues>
 						   {
-							   {typeof(string), "Hark! A string!"},
-							   {typeof(MultiText), m},
-							   {typeof(List<LexTrait>), traits},
-							   {typeof(List<LexField>), fields},
-							   {typeof(List<string>), xml},
-							   {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
+							   new DefaultValues("to be", "!(to be)"),
+							   new DefaultValues(new[] {new LanguageForm("en", "en_form", null)},
+												 new[] {new LanguageForm("de", "de_form", null)}),
+							   new DefaultValues(
+								   new MultiText {Forms = new[] {new LanguageForm("en", "en_form", null)}},
+								   new MultiText {Forms = new[] {new LanguageForm("de", "de_form", null)}}),
+							   new DefaultValues(
+								   new List<LexTrait> {new LexTrait("one", "eins"), new LexTrait("two", "zwei")},
+								   new List<LexTrait> {new LexTrait("three", "drei"), new LexTrait("four", "vier")}),
+							   new DefaultValues(
+								   new List<LexField> {new LexField("one"), new LexField("two")},
+								   new List<LexField> {new LexField("three"), new LexField("four")}),
+							   new DefaultValues(new List<string> {"to", "be"}, new List<string> {"!", "to", "be"})
 						   };
 			}
 		}

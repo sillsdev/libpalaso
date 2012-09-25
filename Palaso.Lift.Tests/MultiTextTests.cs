@@ -26,14 +26,14 @@ namespace WeSay.LexicalModel.Tests.Foundation
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
+				return new List<DefaultValues>
 							 {
-								 {typeof(List<string>), new List<string>{"one", "two"}},
-								 {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
+								 new DefaultValues(new List<string>{"to", "be"}, new List<string>{"!","to","be"}),
+								 new DefaultValues(new []{new LanguageForm("en", "en_form", null)}, new []{new LanguageForm("de", "de_form", null)})
 							 };
 			}
 		}

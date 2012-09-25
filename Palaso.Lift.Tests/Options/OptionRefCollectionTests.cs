@@ -23,15 +23,14 @@ namespace Palaso.Lift.Tests.Options
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var optionRefBindingList = new BindingList<OptionRef> {new OptionRef("option")};
-				return new Dictionary<Type, object>
-						   {
-							   {typeof(BindingList<OptionRef>), optionRefBindingList}
-						   };
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues(new BindingList<OptionRef> {new OptionRef("option")}, new BindingList<OptionRef> {new OptionRef("not an option")})
+							 };
 			}
 		}
 	}

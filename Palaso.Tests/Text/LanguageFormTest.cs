@@ -21,12 +21,12 @@ namespace Palaso.Tests.Text
 			get {  return "|_parent|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
-			get { return new Dictionary<Type, object>
+			get { return new List<DefaultValues>
 							 {
-								 {typeof(string), "string"},
-								 {typeof(Annotation), new Annotation()}
+								 new DefaultValues("string", "not string"),
+								 new DefaultValues(new Annotation{IsOn = false}, new Annotation{IsOn = true})
 							 }; }
 		}
 	}

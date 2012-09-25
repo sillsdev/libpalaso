@@ -205,8 +205,8 @@ namespace Palaso.DictionaryServices.Model
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
 			//The various components may appear in a different order which is fine. So we sort them here so that we can run SequenceEqual (which cares about order) over them.
-			if (!_exampleSentences.OrderBy(x=>x).SequenceEqual(other._exampleSentences.OrderBy(x=>x))) return false;
-			if (!_notes.OrderBy(x=>x).SequenceEqual(other._notes.OrderBy(x=>x))) return false;
+			if (!_exampleSentences.SequenceEqual(other._exampleSentences)) return false;
+			if (!_notes.SequenceEqual(other._notes)) return false;
 			if (!Reversals.OrderBy(x=>x).SequenceEqual(other.Reversals.OrderBy(x=>x))) return false;
 			if (!base.Equals(other)) return false;
 			return true;

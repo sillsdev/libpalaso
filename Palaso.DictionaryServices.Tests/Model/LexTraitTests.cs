@@ -23,14 +23,14 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return ""; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
-						   {
-							   {typeof(string), "To Be!"}
-						   };
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues("to be", "!(to be)")
+							 };
 			}
 		}
 	}
@@ -55,17 +55,19 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var traits = new List<LexTrait> {new LexTrait("one", "eins"), new LexTrait("two", "zwei")};
-				return new Dictionary<Type, object>
+				return new List<DefaultValues>
 						   {
-							   {typeof(string), "a string"},
-							   {typeof(List<string>), new List<string>{"one", "two"}},
-							   {typeof(List<LexTrait>), traits},
-							   {typeof(LanguageForm[]), new []{new LanguageForm("en", "en_form", null)}}
+							   new DefaultValues("to be", "!(to be)"),
+							   new DefaultValues(new[] {new LanguageForm("en", "en_form", null)},
+												 new[] {new LanguageForm("de", "de_form", null)}),
+							   new DefaultValues(
+								   new List<LexTrait> {new LexTrait("one", "eins"), new LexTrait("two", "zwei")},
+								   new List<LexTrait> {new LexTrait("three", "drei"), new LexTrait("four", "vier")}),
+							   new DefaultValues(new List<string> {"to", "be"}, new List<string> {"!", "to", "be"})
 						   };
 			}
 		}

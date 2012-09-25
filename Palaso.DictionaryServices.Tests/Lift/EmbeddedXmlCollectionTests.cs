@@ -22,14 +22,14 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			get { return "|_parent|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
-						   {
-							   {typeof (List<string>), new List<string> {"one", "two"}}
-						   };
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues("to be", "!(to be)")
+							 };
 			}
 		}
 	}

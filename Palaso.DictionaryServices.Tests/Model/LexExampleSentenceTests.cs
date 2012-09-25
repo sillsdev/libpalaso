@@ -10,7 +10,7 @@ using Palaso.Tests.Code;
 namespace Palaso.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexExampleSentenceIClonableGenericTests:IClonableGenericTests<LexExampleSentence>
+	public class LexExampleSentenceIClonableGenericTests : IClonableGenericTests<LexExampleSentence>
 	{
 		public override LexExampleSentence CreateNewClonable()
 		{
@@ -26,27 +26,27 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var listKvp =
-					new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]
-															   {
-																   new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
-																   new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())
-															   });
-				return new Dictionary<Type, object>
+				return new List<DefaultValues>
 							 {
-								 {typeof(string), "a string!"},
-								 {typeof(List<KeyValuePair<string, IPalasoDataObjectProperty>>), listKvp}
+								 new DefaultValues(
+									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
+											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
+									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
+											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())})),
+								 new DefaultValues("to be", "!(to be)")
 							 };
 			}
 		}
-	}
 
-	[TestFixture]
-	public class LexExampleSentenceTests
-	{
+		[TestFixture]
+		public class LexExampleSentenceTests
+		{
+		}
 	}
 }

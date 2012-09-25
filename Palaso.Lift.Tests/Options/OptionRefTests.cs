@@ -24,16 +24,16 @@ namespace Palaso.Lift.Tests
 			get { return "|_parent|_suspendNotification|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
-						   {
-							   {typeof(string), "Hark!"},
-							   {typeof(List<string>), new List<string>{"what's", "up", "dog?!"}},
-							   {typeof(Annotation), new Annotation()}
-						   };
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues("to be", "!(to be)"),
+								 new DefaultValues(new List<string>{"to", "be"}, new List<string>{"!","to","be"}),
+								 new DefaultValues(new Annotation{IsOn = false}, new Annotation{IsOn = true})
+							 };
 			}
 		}
 	}

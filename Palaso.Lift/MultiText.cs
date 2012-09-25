@@ -321,9 +321,9 @@ namespace Palaso.Lift
 			return clone;
 		}
 
-		public bool Equals(IPalasoDataObjectProperty other)
+		public virtual bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new NotImplementedException();
+			return Equals((MultiText) other);
 		}
 
 		public override bool Equals(Object obj)

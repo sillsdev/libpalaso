@@ -21,13 +21,13 @@ namespace Palaso.Tests.Annotations
 			get { return ""; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
+				return new List<DefaultValues>
 							 {
-								 {typeof(Annotation), new Annotation()}
+								 new DefaultValues(new Annotation{IsOn = false}, new Annotation{IsOn = true})
 							 };
 			}
 		}
@@ -46,13 +46,13 @@ namespace Palaso.Tests.Annotations
 			get { return ""; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
+				return new List<DefaultValues>
 							 {
-								 {typeof(int), 42}
+								 new DefaultValues(42, 7)
 							 };
 			}
 		}

@@ -25,17 +25,20 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				return new Dictionary<Type, object>
-						   {
-							   {typeof(List<string>), new List<string>{"one", "two"}},
-							   {typeof(string), "stringing along..."},
-							   {typeof(List<LexTrait>), new List<LexTrait>{new LexTrait("trait1", "very important")}},
-							   {typeof(List<LexField>), new List<LexField>{new LexField("trivial")}}
-						   };
+				return new List<DefaultValues>
+							 {
+								new DefaultValues(
+									new List<LexTrait> { new LexTrait("one", "eins"), new LexTrait("two", "zwei") },
+									new List<LexTrait> { new LexTrait("three", "drei"), new LexTrait("four", "vier") }),
+								new DefaultValues(
+									new List<LexField> { new LexField("one"), new LexField("two") },
+									new List<LexField> { new LexField("three"), new LexField("four") }),
+								new DefaultValues(new List<string>{"to", "be"}, new List<string>{"!","to","be"})
+							 };
 			}
 		}
 	}

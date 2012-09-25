@@ -7,6 +7,7 @@ using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.Tests.Code;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Model
 {
@@ -31,35 +32,41 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_guid|_id|_creationTime|_modificationTime|_isDirty|_isBeingDeleted|_modifiedTimeIsLocked|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var multiText = new MultiText();
-				multiText.SetAlternative("en", "multitext");
-				var senseBindingList = new BindingList<LexSense> {new LexSense{Id = "sense1"}, new LexSense{Id="sense2"}};
-				var variants = new BindingList<LexVariant> {new LexVariant()};
-				var notes = new BindingList<LexNote> {new LexNote("yp"), new LexNote("jmel")};
-				var pronunciations = new BindingList<LexPhonetic> {new LexPhonetic(), new LexPhonetic()};
-				var etymology = new BindingList<LexEtymology> { new LexEtymology("one", "eins") };
-				var listKvp = new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]
-															   {
-																   new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
-																   new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())
-															   });
-				return new Dictionary<Type, object>
-							 {
-								 {typeof(MultiText),  multiText},
-								 {typeof(string), "text"},
-								 {typeof(int), 42},
-								 {typeof(BindingList<LexSense>), senseBindingList},
-								 {typeof(BindingList<LexVariant>), variants},
-								 {typeof(BindingList<LexNote>), notes},
-								 {typeof(BindingList<LexPhonetic>), pronunciations},
-								 {typeof(BindingList<LexEtymology>), etymology},
-								 {typeof(bool), true},
-								 {typeof(List<KeyValuePair<string, IPalasoDataObjectProperty>>), listKvp}
-							 };
+				return new List<DefaultValues>
+						   {
+							   new DefaultValues("to be", "!(to be)"),
+							   new DefaultValues(42, 7),
+							   new DefaultValues(
+									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null)}},
+									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null)}}),
+							   new DefaultValues(
+								   new MultiText {Forms = new[] {new LanguageForm("en", "en_form", null)}},
+								   new MultiText {Forms = new[] {new LanguageForm("de", "de_form", null)}}),
+							   new DefaultValues(
+								   new BindingList<LexSense> {new LexSense{Id = "sense1"}, new LexSense{Id="sense2"}},
+								   new BindingList<LexSense> {new LexSense{Id = "sense3"}, new LexSense{Id="sense4"}}
+								   ),
+							   new DefaultValues(
+								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
+								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"!", "to", "be"})}}),
+							   new DefaultValues(new BindingList<LexNote> {new LexNote("note"), new LexNote("music")}, new BindingList<LexNote> {new LexNote("take no note"), new LexNote("heavy metal")}),
+							   new DefaultValues(
+								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
+								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"not", "to", "be"})}}),
+							   new DefaultValues(new BindingList<LexEtymology> { new LexEtymology("one", "eins") }, new BindingList<LexEtymology> { new LexEtymology("two", "zwei") }),
+							   new DefaultValues(true, false),
+							   new DefaultValues(
+									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
+											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
+									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
+											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}))
+						   };
 			}
 		}
 

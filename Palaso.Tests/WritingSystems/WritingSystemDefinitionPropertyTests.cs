@@ -20,23 +20,20 @@ namespace Palaso.Tests.WritingSystems
 			get { return "|Modified|MarkedForDeletion|StoreID|_collator|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var valuesToSet = new Dictionary<Type, object>
-									  {
-										  {typeof (float), 3.14f},
-										  {typeof (bool), true},
-										  {typeof (string), "Foo"},
-										  {typeof (DateTime), DateTime.Now},
-										  {
-											  typeof (WritingSystemDefinition.SortRulesType),
-											  WritingSystemDefinition.SortRulesType.CustomICU
-										  },
-										  {typeof (RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "test")}
-									  };
-				return valuesToSet;
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues(3.14f, 2.72f),
+								 new DefaultValues(true, false),
+								 new DefaultValues("to be", "!(to be)"),
+								 new DefaultValues(DateTime.Now, DateTime.MinValue),
+								 new DefaultValues(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),
+								 new DefaultValues(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de"))
+							 };
 			}
 		}
 	}

@@ -66,6 +66,11 @@ namespace Palaso.DictionaryServices.Model
 			return clone;
 		}
 
+		public override bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals((LexField) other);
+		}
+
 		public override bool Equals(Object obj)
 		{
 			if (obj.GetType() != typeof(LexField)) return false;

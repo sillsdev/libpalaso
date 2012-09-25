@@ -5,6 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using Palaso.Lift;
 using Palaso.Tests.Code;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {
@@ -23,17 +24,17 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		public override Dictionary<Type, object> DefaultValuesForTypes
+		protected override List<DefaultValues> DefaultValuesForTypes
 		{
 			get
 			{
-				var multiText = new MultiText();
-				multiText.SetAlternative("en", "en text");
-				return new Dictionary<Type, object>
-						   {
-							   {typeof(string), "Hark! A string!"},
-							   {typeof(MultiText), multiText}
-						   };
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues("to be", "!(to be)"),
+								 new DefaultValues(
+									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null), }},
+									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null), }})
+							 };
 			}
 		}
 	}
