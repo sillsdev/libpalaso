@@ -425,8 +425,8 @@ namespace Palaso.Progress.LogBox
 			Console.Write("                          ".Substring(0, indent*2));
 			Console.WriteLine(GenericProgress.SafeFormat(message, args));
 #else
-			Debug.Write("                          ".Substring(0, indent * 2));
-			Debug.WriteLine(GenericProgress.SafeFormat(message, args));
+			Console.Write("                          ".Substring(0, indent * 2));
+			Console.WriteLine(GenericProgress.SafeFormat(message, args));
 #endif
 		}
 
