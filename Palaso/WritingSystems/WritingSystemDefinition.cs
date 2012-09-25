@@ -1046,9 +1046,31 @@ namespace Palaso.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is WritingSystemDefinition)) return false;
+			return Equals((WritingSystemDefinition)obj);
+		}
+
 		public bool Equals(WritingSystemDefinition other)
 		{
-			throw new NotImplementedException();
+			if (!_rfcTag.Equals(other._rfcTag)) return false;
+			if ((_languageName != null && !_languageName.Equals(other._languageName)) || (other._languageName != null && !other._languageName.Equals(_languageName))) return false;
+			if ((_abbreviation != null && !_abbreviation.Equals(other._abbreviation)) || (other._abbreviation != null && !other._abbreviation.Equals(_abbreviation))) return false;
+			if ((_versionNumber != null && !_versionNumber.Equals(other._versionNumber)) || (other._versionNumber != null && !other._versionNumber.Equals(_versionNumber))) return false;
+			if ((_versionDescription != null && !_versionDescription.Equals(other._versionDescription)) || (other._versionDescription != null && !other._versionDescription.Equals(_versionDescription))) return false;
+			if ((_defaultFontName != null && !_defaultFontName.Equals(other._defaultFontName)) || (other._defaultFontName != null && !other._defaultFontName.Equals(_defaultFontName))) return false;
+			if ((_keyboard != null && !_keyboard.Equals(other._keyboard)) || (other._keyboard != null && !other._keyboard.Equals(_keyboard))) return false;
+			if ((_sortRules != null && !_sortRules.Equals(other._sortRules)) || (other._sortRules != null && !other._sortRules.Equals(_sortRules))) return false;
+			if ((_spellCheckingId != null && !_spellCheckingId.Equals(other._spellCheckingId)) || (other._spellCheckingId != null && !other._spellCheckingId.Equals(_spellCheckingId))) return false;
+			if ((_nativeName != null && !_nativeName.Equals(other._nativeName)) || (other._nativeName != null && !other._nativeName.Equals(_nativeName))) return false;
+			if ((_id != null && !_id.Equals(other._id)) || (other._id != null && !other._id.Equals(_id))) return false;
+			if (!_isUnicodeEncoded.Equals(other._isUnicodeEncoded)) return false;
+			if (!_dateModified.Equals(other._dateModified)) return false;
+			if (!_defaultFontSize.Equals(other._defaultFontSize)) return false;
+			if (!SortUsing.Equals(other.SortUsing)) return false;
+			if (!_rightToLeftScript.Equals(other._rightToLeftScript)) return false;
+			return true;
 		}
 
 		private void UpdateIdFromRfcTag()

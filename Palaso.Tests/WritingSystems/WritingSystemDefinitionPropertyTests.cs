@@ -28,7 +28,7 @@ namespace Palaso.Tests.WritingSystems
 				return new List<DefaultValues>
 							 {
 								 new DefaultValues(3.14f, 2.72f),
-								 new DefaultValues(true, false),
+								 new DefaultValues(false, true),
 								 new DefaultValues("to be", "!(to be)"),
 								 new DefaultValues(DateTime.Now, DateTime.MinValue),
 								 new DefaultValues(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),

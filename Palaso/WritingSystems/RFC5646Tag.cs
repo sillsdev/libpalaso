@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Palaso.Code;
 using Palaso.Data;
 
 namespace Palaso.WritingSystems
@@ -12,9 +13,9 @@ namespace Palaso.WritingSystems
 	/// - does not support singletons other than "x-"
 	/// - does not support grandfathered, regular or irregular tags
 	/// </summary>
-	internal class RFC5646Tag : Object
+	internal class RFC5646Tag : Object, IClonableGeneric<RFC5646Tag>
 	{
-		internal class SubTag
+		internal class SubTag: IClonableGeneric<SubTag>
 		{
 			private List<string> _subTagParts;
 
@@ -130,6 +131,22 @@ namespace Palaso.WritingSystems
 				}
 			}
 
+			public SubTag Clone()
+			{
+				return new SubTag(this);
+			}
+
+			public override bool Equals(object other)
+			{
+				if (!(other is SubTag)) return false;
+				return Equals((SubTag) other);
+			}
+
+			public bool Equals(SubTag other)
+			{
+				if (!_subTagParts.SequenceEqual(other._subTagParts)) return false;
+				return true;
+			}
 		}
 
 		private string _language = "";
@@ -165,6 +182,7 @@ namespace Palaso.WritingSystems
 			_region = rhs._region;
 			_variant = new SubTag(rhs._variant);
 			_privateUse = new SubTag(rhs._privateUse);
+			_requiresValidTag = rhs._requiresValidTag;
 		}
 
 		private void Validate()
@@ -463,6 +481,11 @@ namespace Palaso.WritingSystems
 			return Equals((RFC5646Tag) obj);
 		}
 
+		public RFC5646Tag Clone()
+		{
+			return new RFC5646Tag(this);
+		}
+
 		public bool Equals(RFC5646Tag other)
 		{
 			if (ReferenceEquals(null, other)) return false;
@@ -472,7 +495,8 @@ namespace Palaso.WritingSystems
 			bool regionsAreEqual = Equals(other.Region, Region);
 			bool variantsArEqual = Equals(other.Variant, Variant);
 			bool privateUseArEqual = Equals(other.PrivateUse, PrivateUse);
-			return languagesAreEqual && scriptsAreEqual && regionsAreEqual && variantsArEqual && privateUseArEqual;
+			bool requiresValidTagIsEqual = Equals(other._requiresValidTag, _requiresValidTag);
+			return languagesAreEqual && scriptsAreEqual && regionsAreEqual && variantsArEqual && privateUseArEqual && requiresValidTagIsEqual;
 		}
 
 		public override int GetHashCode()

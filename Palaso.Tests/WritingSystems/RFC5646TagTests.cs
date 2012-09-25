@@ -1,10 +1,68 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Palaso.Data;
+using Palaso.Tests.Code;
 using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration;
 
 namespace Palaso.Tests.WritingSystems
 {
+	[TestFixture]
+	internal class SubTagIClonableGenericTests : IClonableGenericTests<RFC5646Tag.SubTag>
+	{
+		public override RFC5646Tag.SubTag CreateNewClonable()
+		{
+			return new RFC5646Tag.SubTag();
+		}
+
+		public override string ExceptionList
+		{
+			get { return ""; }
+		}
+
+		protected override List<DefaultValues> DefaultValuesForTypes
+		{
+			get
+			{
+				return new List<DefaultValues>
+							{
+								new DefaultValues(new List<string>{"en"}, new List<string>{"de"})
+							};
+			}
+		}
+	}
+
+	[TestFixture]
+	internal class RFC5646IClonableGenericTests:IClonableGenericTests<RFC5646Tag>
+	{
+		public override RFC5646Tag CreateNewClonable()
+		{
+			return new RFC5646Tag();
+		}
+
+		public override string ExceptionList
+		{
+			get { return ""; }
+		}
+
+		protected override List<DefaultValues> DefaultValuesForTypes
+		{
+			get
+			{
+				var subtag = new RFC5646Tag.SubTag();
+				subtag.AddToSubtag("de");
+				var unEqualSubtag = new RFC5646Tag.SubTag();
+				unEqualSubtag.AddToSubtag("en");
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues("to be", "!(to be)"),
+								 new DefaultValues(subtag, unEqualSubtag),
+								 new DefaultValues(false, true)
+							 }; }
+		}
+	}
+
 	[TestFixture]
 	public class RFC5646TagTests
 	{
