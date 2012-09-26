@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Media;
 using System.Windows.Forms;
 using Palaso.Reporting;
 
@@ -9,6 +11,11 @@ namespace Palaso.Media
 	public partial class ShortSoundFieldControl : UserControl
 	{
 		private ISimpleAudioSession _recorder;
+		// Use a standard SoundPlayer for playback. Although IrrKlang can do this with its own sounds,
+		// it can't handle as wide a range of sounds recorded using other means.
+		private SoundPlayer _player;
+		BackgroundWorker m_worker;
+		private bool IsPlaying { get; set; }
 		private string _path;
 		private string _deleteButtonInstructions = "Delete this recording.";
 
@@ -96,6 +103,8 @@ namespace Palaso.Media
 			{
 				_path = value;
 				_recorder = AudioFactory.AudioSession(Path);
+				// This is OK even if it does not exist, but it must exist before we try to play it.
+				_player = new SoundPlayer(Path);
 				toolTip1.SetToolTip(_deleteButton, _deleteButtonInstructions +"\r\n"+_path);
 				UpdateScreen();
 			}
@@ -121,9 +130,9 @@ namespace Palaso.Media
 			_recordButton.Enabled = _deleteButton.Enabled = !PlayOnly && mouseIsWithin;
 			_recordButton.FlatAppearance.BorderSize = mouseOverRecordButton ? 1 : 0;
 
-			_playButton.Enabled = mouseIsWithin && !_recorder.IsPlaying;
+			_playButton.Enabled = mouseIsWithin && !IsPlaying;
 
-			_playButton.Visible = exists && (_recorder.IsPlaying || _recorder.CanPlay);
+			_playButton.Visible = exists && !_recorder.IsRecording;
 			_deleteButton.Visible = mouseIsWithin && exists && !PlayOnly;
 
 			 bool mouseOverDeleteButton = RectangleToScreen(_deleteButton.Bounds).Contains(MousePosition);
@@ -250,15 +259,39 @@ namespace Palaso.Media
 
 		private void OnClickPlay(object sender, MouseEventArgs e)
 		{
-			if (_recorder != null && File.Exists(Path)) //avoid crashes in situations where play should not have been available
+			if (_player != null && File.Exists(Path) && !IsPlaying) //avoid crashes in situations where play should not have been available
 			{
-				_recorder.Play();
+				//_recorder.Play();
+				// I (JohnT) don't think any synchronization is needed here. The main thread accesses m_worker only here,
+				// between creating it and starting the thread. It cannot access it again, since IsPlaying is true,
+				// until the worker thread disposes the worker, sets it to null, and clears IsPlaying.
+				// Similarly, the main thread sets IsPlaying only when it is false, which means no other thread is active.
+				// Once it is set true, it can only be modified by the worker thread.
+				// There may be some uncertainty about whether reading it gets the old or new value around the time
+				// when the worker thread terminates, but that only affects the exact millisecond at which we re-enable the play button.
+				IsPlaying = true;
+				m_worker = new BackgroundWorker();
+				m_worker.DoWork += PlaySoundInBackground;
+				m_worker.RunWorkerAsync();
 			}
 			else
 			{
 				Debug.Assert(_recorder != null && File.Exists(Path), "The play button should not be enabled, there is nothing to play.");
 			}
 			UpdateScreen();
+		}
+
+		/// <summary>
+		/// Delegate to play the sound in the background.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void PlaySoundInBackground(object sender, DoWorkEventArgs e)
+		{
+			_player.PlaySync(); // We use PlaySync in a thread so we can find out when it is done.
+			m_worker.Dispose();
+			m_worker = null;
+			IsPlaying = false; // doing this last should prevent any contention for m_worker.
 		}
 	}
 }
