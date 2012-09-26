@@ -36,6 +36,10 @@ namespace Palaso.DictionaryServices.Tests.Model
 		{
 			get
 			{
+				var sense = new LexSense();
+				sense.AddRelationTarget("rel", "targ");
+				var unequalSense = new LexSense();
+				unequalSense.AddRelationTarget("rel2", "targ2");
 				return new List<DefaultValues>
 						   {
 							   new DefaultValues("to be", "!(to be)"),
@@ -44,11 +48,8 @@ namespace Palaso.DictionaryServices.Tests.Model
 									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null)}},
 									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null)}}),
 							   new DefaultValues(
-								   new MultiText {Forms = new[] {new LanguageForm("en", "en_form", null)}},
-								   new MultiText {Forms = new[] {new LanguageForm("de", "de_form", null)}}),
-							   new DefaultValues(
-								   new BindingList<LexSense> {new LexSense{Id = "sense1"}, new LexSense{Id="sense2"}},
-								   new BindingList<LexSense> {new LexSense{Id = "sense3"}, new LexSense{Id="sense4"}}
+								   new BindingList<LexSense> {sense},
+								   new BindingList<LexSense> {unequalSense}
 								   ),
 							   new DefaultValues(
 								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
@@ -64,8 +65,8 @@ namespace Palaso.DictionaryServices.Tests.Model
 											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
 											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
 									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
-											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
-											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}))
+											new KeyValuePair<string, IPalasoDataObjectProperty>("three", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("four", new LexNote())}))
 						   };
 			}
 		}

@@ -44,7 +44,7 @@ namespace Palaso.DictionaryServices.Model
 			clone.Gloss = (MultiText)Gloss.Clone();
 			clone.Comment = (MultiText)Comment.Clone();
 			clone.Traits = new List<LexTrait>(Traits.Select(t=>t.Clone()));
-			clone.Fields = new List<LexField>(Fields.Select(f=>(LexField) f.Clone()));
+			clone.Fields = new List<LexField>(Fields.Select(f => (LexField)f.Clone()));
 			//copies from MultiText
 			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
 			clone.Forms = Forms.Select(f => (LanguageForm) f.Clone()).ToArray();
@@ -64,8 +64,10 @@ namespace Palaso.DictionaryServices.Model
 			if (!base.Equals(other)) return false;
 			if (!Gloss.Equals(other.Gloss)) return false;
 			if (!Comment.Equals(other.Comment)) return false;
-			if (!Traits.OrderBy(x => x).SequenceEqual(other.Traits.OrderBy(x => x))) return false;
-			if (!Fields.OrderBy(x => x).SequenceEqual(other.Fields.OrderBy(x => x))) return false;
+			if (!Traits.SequenceEqual(other.Traits)) return false; //order matters because we expose a list interface
+			if (!Fields.SequenceEqual(other.Fields)) return false; //order matters because we expose a list interface
+			if (!Type.Equals(other.Type)) return false;
+			if (!Source.Equals(other.Source)) return false;
 			return true;
 		}
 	}

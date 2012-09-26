@@ -32,6 +32,7 @@ namespace Palaso.Tests.Code
 		// Put any fields to ignore in this string surrounded by "|"
 		public abstract string ExceptionList { get; }
 
+		//This should be a list of unequal values for each type used by the fields of he object under test
 		protected abstract List<DefaultValues> DefaultValuesForTypes { get; }
 
 		[Test]
@@ -219,6 +220,20 @@ namespace Palaso.Tests.Code
 				Assert.AreNotEqual(itemWithFieldToChange, itemWithDefaultField, "Field \"{0}\" is not evaluated in Equals(T other) or the DefaultValue is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
 				Assert.AreNotEqual(itemWithDefaultField, itemWithFieldToChange, "Field \"{0}\" is not evaluated in Equals(T other) or the DefaultValue is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
 			}
+		}
+
+		public class SpecialEqualityValuesForField
+		{
+			public SpecialEqualityValuesForField(string fieldName, object value, object equalValue)
+			{
+				FieldName = fieldName;
+				Value = value;
+				EqualValue = equalValue;
+			}
+
+			public string FieldName { get; private set; }
+			public object Value { get; private set; }
+			public object EqualValue { get; private set; }
 		}
 	}
 }

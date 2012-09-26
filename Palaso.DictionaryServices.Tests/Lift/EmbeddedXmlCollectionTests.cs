@@ -28,7 +28,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				return new List<DefaultValues>
 							 {
-								 new DefaultValues("to be", "!(to be)")
+								 new DefaultValues("to be", "!(to be)"),
+								new DefaultValues(new List<string>{"to", "be"}, new List<string>{"!","to","be"})
 							 };
 			}
 		}

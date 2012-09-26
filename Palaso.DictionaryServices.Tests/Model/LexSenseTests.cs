@@ -59,8 +59,8 @@ namespace Palaso.DictionaryServices.Tests.Model
 											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
 											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
 									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
-											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
-											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}))
+											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexField("type")),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexField("type2"))}))
 							 };
 			}
 		}

@@ -57,6 +57,7 @@ namespace Palaso.DictionaryServices.Model
 			if (!Traits.SequenceEqual(other.Traits)) return false;
 			if (!Fields.SequenceEqual(other.Fields)) return false;
 			if (!base.Equals(other)) return false;
+			if (!Type.Equals(other.Type)) return false;
 			return true;
 		}
 	}

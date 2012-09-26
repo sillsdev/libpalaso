@@ -80,7 +80,8 @@ namespace Palaso.DictionaryServices.Model
 		public bool Equals(LexField other)
 		{
 			if (!base.Equals(other)) return false;
-			if (Type != other.Type) return false;
+			if (!Type.Equals(other.Type)) return false;
+			if (!Traits.SequenceEqual(other.Traits)) return false;
 			return true;
 		}
 	}

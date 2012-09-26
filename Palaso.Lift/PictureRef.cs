@@ -90,9 +90,21 @@ namespace Palaso.Lift
 			return clone;
 		}
 
+		public override bool Equals(object other)
+		{
+			return Equals((PictureRef) other);
+		}
+
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new System.NotImplementedException();
+			return Equals((PictureRef)other);
+		}
+
+		public bool Equals(PictureRef other)
+		{
+			if ((_fileName != null && !_fileName.Equals(other._fileName)) || (other._fileName != null && !other._fileName.Equals(_fileName))) return false;
+			if ((_caption != null && !_caption.Equals(other._caption)) || (other._caption != null && !other._caption.Equals(_caption))) return false;
+			return true;
 		}
 	}
 }

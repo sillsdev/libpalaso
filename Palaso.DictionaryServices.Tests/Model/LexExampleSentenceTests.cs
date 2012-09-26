@@ -37,8 +37,8 @@ namespace Palaso.DictionaryServices.Tests.Model
 											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
 											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
 									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
-											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
-											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())})),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("three", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("four", new LexNote())})),
 								 new DefaultValues("to be", "!(to be)")
 							 };
 			}

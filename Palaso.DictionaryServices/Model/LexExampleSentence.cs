@@ -92,8 +92,8 @@ namespace Palaso.DictionaryServices.Model
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			if (_translationType != other._translationType) return false;
-			if (!Properties.All(p => other.Properties.Any(p1 => p1.Key == p.Key && p1.Value.Equals( p.Value)))) return false;
+			if (!base.Equals(other)) return false;
+			if ((_translationType != null && !_translationType.Equals(other._translationType)) || (other._translationType != null && !other._translationType.Equals(_translationType))) return false;
 			return true;
 		}
 	}

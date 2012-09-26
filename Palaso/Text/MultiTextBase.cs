@@ -492,21 +492,9 @@ namespace Palaso.Text
 
 		public bool Equals(MultiTextBase other)
 		{
-			if (other == null)
-			{
-				return false;
-			}
-			if (other.Count != Count)
-			{
-				return false;
-			}
-			foreach (LanguageForm form in other)
-			{
-				if (!ContainsEqualForm(form))
-				{
-					return false;
-				}
-			}
+			if (other == null) return false;
+			if (other.Count != Count) return false;
+			if (!_forms.SequenceEqual(other.Forms)) return false;
 			return true;
 		}
 

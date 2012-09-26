@@ -446,7 +446,7 @@ namespace Palaso.Lift
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			if(!Properties.All(keyValuePair => other.Properties.Any(p => keyValuePair.Key == p.Key && p.Value.Equals(keyValuePair.Value)))) return false;
+			if (!_properties.SequenceEqual(other._properties)) return false;
 			return true;
 		}
 	}
@@ -527,9 +527,20 @@ namespace Palaso.Lift
 			return clone;
 		}
 
+		public override bool Equals(object other)
+		{
+			return Equals((EmbeddedXmlCollection)other);
+		}
+
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new NotImplementedException();
+			return Equals((EmbeddedXmlCollection) other);
+		}
+
+		public bool Equals(EmbeddedXmlCollection other)
+		{
+			if (!_values.SequenceEqual(other._values)) return false; //order is relevant
+			return true;
 		}
 
 		public override string ToString()

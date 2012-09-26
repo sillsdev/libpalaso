@@ -31,6 +31,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 			{
 				return new List<DefaultValues>
 							 {
+								new DefaultValues("to be", "!(to be)"),
 								new DefaultValues(
 									new List<LexTrait> { new LexTrait("one", "eins"), new LexTrait("two", "zwei") },
 									new List<LexTrait> { new LexTrait("three", "drei"), new LexTrait("four", "vier") }),
@@ -38,6 +39,35 @@ namespace Palaso.DictionaryServices.Tests.Model
 									new List<LexField> { new LexField("one"), new LexField("two") },
 									new List<LexField> { new LexField("three"), new LexField("four") }),
 								new DefaultValues(new List<string>{"to", "be"}, new List<string>{"!","to","be"})
+							 };
+			}
+		}
+	}
+
+	[TestFixture]
+	public class LexRelationCollectionIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	{
+		public override IPalasoDataObjectProperty CreateNewClonable()
+		{
+			return new LexRelationCollection();
+		}
+
+		public override string ExceptionList
+		{
+			//PropertyChanged: No good way to clone eventhandlers
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			get { return "|_parent|PropertyChanged|"; }
+		}
+
+		protected override List<DefaultValues> DefaultValuesForTypes
+		{
+			get
+			{
+				return new List<DefaultValues>
+							 {
+								 new DefaultValues(
+									new List<LexRelation> { new LexRelation("id", "target", null) },
+									new List<LexRelation> { new LexRelation("!id", "!target", null) }),
 							 };
 			}
 		}

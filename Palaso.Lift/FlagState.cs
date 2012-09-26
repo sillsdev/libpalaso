@@ -86,9 +86,20 @@ namespace Palaso.Lift
 			return clone;
 		}
 
+		public override bool Equals(object other)
+		{
+			return Equals((FlagState) other);
+		}
+
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new System.NotImplementedException();
+			return Equals((FlagState)other);
+		}
+
+		public bool Equals(FlagState other)
+		{
+			if (!_isChecked.Equals(other._isChecked)) return false;
+			return true;
 		}
 	}
 }

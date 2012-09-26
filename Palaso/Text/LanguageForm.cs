@@ -76,22 +76,11 @@ namespace Palaso.Text
 
 		public bool Equals(LanguageForm other)
 		{
-			if(other == null)
-			{
-				return false;
-			}
-			if (IsStarred != other.IsStarred)
-			{
-				return false;
-			}
-			if (WritingSystemId != other.WritingSystemId)
-			{
-				return false;
-			}
-			if(Form != other.Form)
-			{
-				return false;
-			}
+			if(other == null) return false;
+			if (!IsStarred.Equals(other.IsStarred)) return false;
+			if ((WritingSystemId != null && !WritingSystemId.Equals(other.WritingSystemId)) || (other.WritingSystemId != null && !other.WritingSystemId.Equals(WritingSystemId))) return false;
+			if ((Form != null && !Form.Equals(other.Form)) || (other.Form != null && !other.Form.Equals(Form))) return false;
+			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
 			return true;
 		}
 

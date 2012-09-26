@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Palaso.Annotations;
 using Palaso.Code;
 using Palaso.UiBindings;
@@ -198,7 +199,7 @@ namespace Palaso.Lift.Options
 
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new NotImplementedException();
+			return Equals((OptionRef) other);
 		}
 
 		public override string ToString()
@@ -218,10 +219,8 @@ namespace Palaso.Lift.Options
 			if (ReferenceEquals(this, other)) return true;
 			if (Key != other.Key) return false;
 			//we are doing a reference comparison here in case it's null
-			if (!(_annotation == _annotation))
-			{
-				if (_annotation.Equals(other._annotation)) return false;
-			}
+			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
+			if (!EmbeddedXmlElements.SequenceEqual(other.EmbeddedXmlElements)) return false;
 			return true;
 		}
 	}

@@ -44,7 +44,8 @@ namespace Palaso.DictionaryServices.Model
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
 			if (!base.Equals(other)) return false;
-
+			if (!Traits.SequenceEqual(other.Traits)) return false;
+			if (!Fields.SequenceEqual(other.Fields)) return false;
 			return true;
 		}
 	}

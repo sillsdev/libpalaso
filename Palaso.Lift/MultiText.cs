@@ -328,6 +328,7 @@ namespace Palaso.Lift
 
 		public override bool Equals(Object obj)
 		{
+			if (obj == null) return false;
 			if (obj.GetType() != typeof(MultiText)) return false;
 			return Equals((MultiText)obj);
 		}
@@ -336,9 +337,9 @@ namespace Palaso.Lift
 		{
 			if (ReferenceEquals(null, multiText)) return false;
 			if (ReferenceEquals(this, multiText)) return true;
-			if(EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count) return false;
-			if(!EmbeddedXmlElements.OrderBy(x=>x).SequenceEqual(multiText.EmbeddedXmlElements.OrderBy(x=>x))) return false;
-			if (!Forms.OrderBy(x=>x).SequenceEqual(multiText.Forms.OrderBy(x=>x))) return false;
+			if (EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count) return false;
+			if (!EmbeddedXmlElements.SequenceEqual(multiText.EmbeddedXmlElements)) return false;
+			if (!base.Equals(multiText)) return false;
 			return true;
 		}
 	}

@@ -394,9 +394,23 @@ namespace Palaso.Lift.Options
 			return clone;
 		}
 
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is OptionRefCollection)) return false;
+			return Equals((OptionRefCollection)obj);
+		}
+
+		public bool Equals(OptionRefCollection other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!_members.SequenceEqual(other._members)) return false;
+			return true;
+		}
+
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new NotImplementedException();
+			return Equals((object) other);
 		}
 	}
 }

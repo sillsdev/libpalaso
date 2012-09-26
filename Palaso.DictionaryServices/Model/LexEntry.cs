@@ -144,9 +144,24 @@ namespace Palaso.DictionaryServices.Model
 			return clone;
 		}
 
-		public bool Equals(LexEntry other)
+		public override bool Equals(object other)
 		{
-			throw new NotImplementedException();
+			if (!(other is LexEntry)) return false;
+			return Equals((LexEntry) other);
+		}
+
+		public bool Equals(LexEntry other)
+		{//if ((_languageName != null && !_languageName.Equals(other._languageName)) || (other._languageName != null && !other._languageName.Equals(_languageName))) return false;
+			if (!_lexicalForm.Equals(other._lexicalForm)) return false;
+			if (!_orderForRoundTripping.Equals(other._orderForRoundTripping)) return false;
+			if (!_orderInFile.Equals(other._orderInFile)) return false;
+			if (!_senses.SequenceEqual(other._senses)) return false;
+			if (!_variants.SequenceEqual(other._variants)) return false;
+			if (!_notes.SequenceEqual(other._notes)) return false;
+			if (!_pronunciations.SequenceEqual(other._pronunciations)) return false;
+			if (!_etymologies.SequenceEqual(other._etymologies)) return false;
+			if (!base.Equals(other)) return false;
+			return true;
 		}
 
 		public override string ToString()

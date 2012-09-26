@@ -44,9 +44,18 @@ namespace Palaso.Annotations
 			return clone;
 		}
 
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is Annotatable)) return false;
+			return Equals((Annotatable)obj);
+		}
+
 		public bool Equals(Annotatable other)
 		{
-			throw new NotImplementedException();
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
+			return true;
 		}
 	}
 
@@ -89,9 +98,7 @@ namespace Palaso.Annotations
 
 		public override bool Equals(Object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof(Annotation)) return false;
+			if (!(obj is Annotation)) return false;
 			return Equals((Annotation)obj);
 		}
 
@@ -99,8 +106,8 @@ namespace Palaso.Annotations
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			bool statusAreEqual = Equals(other._status, _status);
-			return statusAreEqual;
+			if(!IsOn.Equals(other.IsOn)) return false;
+			return true;
 		}
 	}
 }

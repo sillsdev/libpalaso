@@ -214,7 +214,25 @@ namespace Palaso.DictionaryServices.Model
 
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new NotImplementedException();
+			return Equals((LexRelation) other);
+		}
+
+		public override bool Equals(object other)
+		{
+			if (!(other is IPalasoDataObjectProperty)) return false;
+			return Equals((IPalasoDataObjectProperty)other);
+		}
+
+		public bool Equals(LexRelation other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!EmbeddedXmlElements.SequenceEqual(other.EmbeddedXmlElements)) return false;
+			if ((_fieldId != null && !_fieldId.Equals(other._fieldId)) || (other._fieldId != null && !other._fieldId.Equals(_fieldId))) return false;
+			if ((_targetId != null && !_targetId.Equals(other._targetId)) || (other._targetId != null && !other._targetId.Equals(_targetId))) return false;
+			if (!Traits.SequenceEqual(other.Traits)) return false;
+			if (!Fields.SequenceEqual(other.Fields)) return false;
+			return true;
 		}
 	}
 
@@ -317,12 +335,28 @@ namespace Palaso.DictionaryServices.Model
 		public IPalasoDataObjectProperty Clone()
 		{
 			var clone = new LexRelationCollection();
-			return Clone();
+			clone._relations = new List<LexRelation>(_relations);
+			return clone;
 		}
 
-		public bool Equals(IPalasoDataObjectProperty other)
+		public virtual bool Equals(IPalasoDataObjectProperty other)
 		{
-			throw new NotImplementedException();
+			return Equals((object)other);
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (obj == null) return false;
+			if (obj.GetType() != typeof(LexRelationCollection)) return false;
+			return Equals((LexRelationCollection)obj);
+		}
+
+		public bool Equals(LexRelationCollection other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!_relations.SequenceEqual(other._relations)) return false;
+			return true;
 		}
 	}
 }
