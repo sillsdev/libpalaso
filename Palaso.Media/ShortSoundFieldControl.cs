@@ -162,6 +162,19 @@ namespace Palaso.Media
 
 		private void OnDeleteClick(object sender, EventArgs e)
 		{
+
+			// If the whole control is rather narrow, the delete button may well occupy the same location as the play button.
+			// Although the play button is on top, when the sound is playing, the play button is disabled.
+			// It seems then to be possible to click the delete button right through the play button,
+			// unexpectedly deleting the sound!
+			var me = e as MouseEventArgs; // typically it is when the user clicked the button
+			if (me != null)
+			{
+				var where = PointToClient(_deleteButton.PointToScreen(me.Location)); // relative to the whole control
+				if (_playButton.Bounds.Contains(where))
+					return;
+			}
+
 			if(File.Exists(_path))
 			{
 				File.Delete(_path);
