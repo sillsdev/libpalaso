@@ -106,7 +106,7 @@ namespace Palaso.DictionaryServices.Processors
 					{
 						if (otherSense == sense) // Don't try and compare with ourself.
 							continue;
-						if (sensesToRemove.Contains(otherSense))
+						if (sensesToRemove.Any(s=>s == otherSense))
 							continue;
 						if (!SenseMerger.TryMergeSenseWithSomeExistingSense(sense, otherSense, traitsWithMultiplicity, progress))
 							continue;
