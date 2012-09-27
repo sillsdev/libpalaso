@@ -236,43 +236,5 @@ namespace Palaso.Tests.Code
 			var iEquatableUnderTest = CreateNewClonable();
 			Assert.That(iEquatableUnderTest.Equals(null), Is.False);
 		}
-
-		[Test]
-		public void GetHashCode_OneFieldDiffers_NotEqual()
-		{
-			var itemToGetFieldsFrom = CreateNewClonable();
-			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
-
-			foreach (var fieldInfo in fieldInfos)
-			{
-				var item = CreateNewClonable();
-				var unequalItem = CreateNewClonable();
-				Assert.That(item.GetHashCode(), Is.EqualTo(unequalItem.GetHashCode()), "The two items did not have the same hashcode on creation");
-				var fieldName = fieldInfo.Name;
-				if (fieldInfo.Name.Contains("<"))
-				{
-					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
-					fieldName = splitResult[1];
-				}
-				if (ExceptionList.Contains("|" + fieldName + "|"))
-				{
-					continue;
-				}
-				ValuesToSet valueToSet = null;
-				try
-				{
-					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
-				}
-				catch (InvalidOperationException e)
-				{
-					Assert.Fail(
-						"Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.",
-						fieldInfo.FieldType.Name, fieldName);
-				}
-				fieldInfo.SetValue(item, valueToSet.ValueToSet);
-				fieldInfo.SetValue(unequalItem, valueToSet.NotEqualValueToSet);
-				Assert.AreNotEqual(item.GetHashCode(), unequalItem.GetHashCode(), "Field \"{0}\" Has no effect on the hashcode. Please update GetHashCode() or add the field name to the ExceptionList property.", fieldName);
-			}
-		}
 	}
 }
