@@ -67,53 +67,6 @@ namespace Palaso.DictionaryServices.Processors
 			repo.SaveItem(newEntry);
 		}
 
-		/// <summary>
-		/// it can happen that within a single entry, you can have mergable senses.
-		/// </summary>
-		private static void MergeSensesWithinEntries(LiftLexEntryRepository repo, string[] traitsWithMultiplicity, IProgress progress)
-		{
-			var ids = new List<RepositoryId>(repo.GetAllItems());
-			foreach (var id in ids)
-			{
-				if (progress.CancelRequested)
-				{
-					throw new OperationCanceledException("User cancelled");
-				}
-				var entry = repo.GetItem(id);
-				var senses = entry.Senses.ToArray();
-				if(senses.Length < 2)
-				{
-					continue;
-				}
-				var sensesToRemove = new List<LexSense>();
-				foreach (var sense in entry.Senses)
-				{
-					if (sensesToRemove.Contains(sense))
-						continue;
-					foreach (var otherSense in entry.Senses)
-					{
-						if (otherSense == sense) // Don't try and compare with ourself.
-							continue;
-						if (sensesToRemove.Contains(otherSense))
-							continue;
-						if (!SenseMerger.TryMergeSenseWithSomeExistingSense(sense, otherSense, traitsWithMultiplicity, progress))
-							continue;
-						sensesToRemove.Add(otherSense);
-					}
-				}
-				foreach (var sense in sensesToRemove)
-				{
-					entry.Senses.Remove(sense);
-					entry.IsDirty = true;
-				}
-				if (entry.IsDirty)
-				{
-					repo.SaveItem(entry);
-				}
-			}
-		}
-
-
 		private class Counter
 		{
 			public Counter(string id)

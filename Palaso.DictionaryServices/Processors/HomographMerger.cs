@@ -100,13 +100,13 @@ namespace Palaso.DictionaryServices.Processors
 				var sensesToRemove = new List<LexSense>();
 				foreach (var sense in entry.Senses)
 				{
-					if (sensesToRemove.Contains(sense))
+					if (sensesToRemove.Any(s=>ReferenceEquals(s, sense)))
 						continue;
 					foreach (var otherSense in entry.Senses)
 					{
-						if (otherSense == sense) // Don't try and compare with ourself.
+						if (ReferenceEquals(otherSense, sense)) // Don't try and compare with ourself.
 							continue;
-						if (sensesToRemove.Any(s=>s == otherSense))
+						if (sensesToRemove.Any(s => ReferenceEquals(s, sense)))
 							continue;
 						if (!SenseMerger.TryMergeSenseWithSomeExistingSense(sense, otherSense, traitsWithMultiplicity, progress))
 							continue;
