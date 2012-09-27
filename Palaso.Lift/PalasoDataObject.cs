@@ -539,6 +539,7 @@ namespace Palaso.Lift
 
 		public bool Equals(EmbeddedXmlCollection other)
 		{
+			if (other == null) return false;
 			if (!_values.SequenceEqual(other._values)) return false; //order is relevant
 			return true;
 		}

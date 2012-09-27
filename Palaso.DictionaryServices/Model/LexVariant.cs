@@ -40,7 +40,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexVariant)) return false;
+			if (!(obj is LexVariant)) return false;
 			return Equals((LexVariant)obj);
 		}
 

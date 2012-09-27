@@ -35,7 +35,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexPhonetic)) return false;
+			if (!(obj is LexPhonetic)) return false;
 			return Equals((LexPhonetic)obj);
 		}
 

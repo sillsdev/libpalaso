@@ -222,18 +222,19 @@ namespace Palaso.Tests.Code
 			}
 		}
 
-		public class SpecialEqualityValuesForField
+		[Test]
+		public void Equals_OtherIsNull_ReturnsFalse()
 		{
-			public SpecialEqualityValuesForField(string fieldName, object value, object equalValue)
-			{
-				FieldName = fieldName;
-				Value = value;
-				EqualValue = equalValue;
-			}
+			var iEquatableUnderTest = CreateNewClonable();
+			IEquatable<T> nullObject = null;
+			Assert.That(iEquatableUnderTest.Equals((T) nullObject), Is.False);
+		}
 
-			public string FieldName { get; private set; }
-			public object Value { get; private set; }
-			public object EqualValue { get; private set; }
+		[Test]
+		public void ObjectEquals_OtherIsNull_ReturnsFalse()
+		{
+			var iEquatableUnderTest = CreateNewClonable();
+			Assert.That(iEquatableUnderTest.Equals(null), Is.False);
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexNote)) return false;
+			if (!(obj is LexNote)) return false;
 			return Equals((LexNote)obj);
 		}
 

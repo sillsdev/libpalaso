@@ -144,6 +144,7 @@ namespace Palaso.WritingSystems
 
 			public bool Equals(SubTag other)
 			{
+				if (other == null) return false;
 				if (!_subTagParts.SequenceEqual(other._subTagParts)) return false;
 				return true;
 			}

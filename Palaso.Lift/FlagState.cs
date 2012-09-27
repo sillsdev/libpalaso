@@ -98,6 +98,7 @@ namespace Palaso.Lift
 
 		public bool Equals(FlagState other)
 		{
+			if (other == null) return false;
 			if (!_isChecked.Equals(other._isChecked)) return false;
 			return true;
 		}

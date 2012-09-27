@@ -107,6 +107,7 @@ namespace Palaso.Annotations
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
 			if(!IsOn.Equals(other.IsOn)) return false;
+			if (!_status.Equals(other._status)) return false;
 			return true;
 		}
 	}

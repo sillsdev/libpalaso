@@ -151,7 +151,8 @@ namespace Palaso.DictionaryServices.Model
 		}
 
 		public bool Equals(LexEntry other)
-		{//if ((_languageName != null && !_languageName.Equals(other._languageName)) || (other._languageName != null && !other._languageName.Equals(_languageName))) return false;
+		{
+			if (other == null) return false;
 			if (!_lexicalForm.Equals(other._lexicalForm)) return false;
 			if (!_orderForRoundTripping.Equals(other._orderForRoundTripping)) return false;
 			if (!_orderInFile.Equals(other._orderInFile)) return false;

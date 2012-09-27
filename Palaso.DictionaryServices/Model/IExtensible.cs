@@ -31,7 +31,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexTrait)) return false;
+			if (!(obj is LexTrait)) return false;
 			return Equals((LexTrait)obj);
 		}
 
@@ -73,7 +73,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexField)) return false;
+			if (!(obj is LexField)) return false;
 			return Equals((LexField)obj);
 		}
 

@@ -53,7 +53,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexEtymology)) return false;
+			if (!(obj is LexEtymology)) return false;
 			return Equals((LexEtymology)obj);
 		}
 

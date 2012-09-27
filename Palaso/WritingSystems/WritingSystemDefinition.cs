@@ -1054,6 +1054,7 @@ namespace Palaso.WritingSystems
 
 		public bool Equals(WritingSystemDefinition other)
 		{
+			if (other == null) return false;
 			if (!_rfcTag.Equals(other._rfcTag)) return false;
 			if ((_languageName != null && !_languageName.Equals(other._languageName)) || (other._languageName != null && !other._languageName.Equals(_languageName))) return false;
 			if ((_abbreviation != null && !_abbreviation.Equals(other._abbreviation)) || (other._abbreviation != null && !other._abbreviation.Equals(_abbreviation))) return false;

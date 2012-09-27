@@ -31,7 +31,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexReversal)) return false;
+			if (!(obj is LexReversal)) return false;
 			return Equals((LexReversal) obj);
 		}
 

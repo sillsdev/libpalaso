@@ -196,7 +196,7 @@ namespace Palaso.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (obj.GetType() != typeof(LexSense)) return false;
+			if (!(obj is LexSense)) return false;
 			return Equals((LexSense)obj);
 		}
 

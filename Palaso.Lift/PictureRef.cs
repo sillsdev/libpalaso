@@ -102,6 +102,7 @@ namespace Palaso.Lift
 
 		public bool Equals(PictureRef other)
 		{
+			if (other == null) return false;
 			if ((_fileName != null && !_fileName.Equals(other._fileName)) || (other._fileName != null && !other._fileName.Equals(_fileName))) return false;
 			if ((_caption != null && !_caption.Equals(other._caption)) || (other._caption != null && !other._caption.Equals(_caption))) return false;
 			return true;

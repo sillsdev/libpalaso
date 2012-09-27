@@ -5,13 +5,12 @@ using System.Text;
 
 namespace Palaso.Code
 {
-	public interface IClonableGeneric<T>
+	public interface IClonableGeneric<T>:IEquatable<T>
 	{
 		/// <summary>
 		/// Deepclone
 		/// </summary>
 		/// <returns></returns>
 		T Clone();
-		bool Equals(T other);
 	}
 }
