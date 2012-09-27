@@ -21,13 +21,13 @@ namespace Palaso.Tests.WritingSystems
 			get { return ""; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							{
-								new DefaultValues(new List<string>{"en"}, new List<string>{"de"})
+								new ValuesToSet(new List<string>{"en"}, new List<string>{"de"})
 							};
 			}
 		}
@@ -46,7 +46,7 @@ namespace Palaso.Tests.WritingSystems
 			get { return ""; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
@@ -54,11 +54,11 @@ namespace Palaso.Tests.WritingSystems
 				subtag.AddToSubtag("de");
 				var unEqualSubtag = new RFC5646Tag.SubTag();
 				unEqualSubtag.AddToSubtag("en");
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues("to be", "!(to be)"),
-								 new DefaultValues(subtag, unEqualSubtag),
-								 new DefaultValues(false, true)
+								 new ValuesToSet("to be", "!(to be)"),
+								 new ValuesToSet(subtag, unEqualSubtag),
+								 new ValuesToSet(false, true)
 							 }; }
 		}
 	}

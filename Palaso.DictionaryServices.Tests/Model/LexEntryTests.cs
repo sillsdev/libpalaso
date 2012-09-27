@@ -32,7 +32,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_guid|_id|_creationTime|_modificationTime|_isDirty|_isBeingDeleted|_modifiedTimeIsLocked|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
@@ -40,27 +40,27 @@ namespace Palaso.DictionaryServices.Tests.Model
 				sense.AddRelationTarget("rel", "targ");
 				var unequalSense = new LexSense();
 				unequalSense.AddRelationTarget("rel2", "targ2");
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 						   {
-							   new DefaultValues("to be", "!(to be)"),
-							   new DefaultValues(42, 7),
-							   new DefaultValues(
+							   new ValuesToSet("to be", "!(to be)"),
+							   new ValuesToSet(42, 7),
+							   new ValuesToSet(
 									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null)}},
 									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null)}}),
-							   new DefaultValues(
+							   new ValuesToSet(
 								   new BindingList<LexSense> {sense},
 								   new BindingList<LexSense> {unequalSense}
 								   ),
-							   new DefaultValues(
+							   new ValuesToSet(
 								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
 								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"!", "to", "be"})}}),
-							   new DefaultValues(new BindingList<LexNote> {new LexNote("note"), new LexNote("music")}, new BindingList<LexNote> {new LexNote("take no note"), new LexNote("heavy metal")}),
-							   new DefaultValues(
+							   new ValuesToSet(new BindingList<LexNote> {new LexNote("note"), new LexNote("music")}, new BindingList<LexNote> {new LexNote("take no note"), new LexNote("heavy metal")}),
+							   new ValuesToSet(
 								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
 								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"not", "to", "be"})}}),
-							   new DefaultValues(new BindingList<LexEtymology> { new LexEtymology("one", "eins") }, new BindingList<LexEtymology> { new LexEtymology("two", "zwei") }),
-							   new DefaultValues(true, false),
-							   new DefaultValues(
+							   new ValuesToSet(new BindingList<LexEtymology> { new LexEtymology("one", "eins") }, new BindingList<LexEtymology> { new LexEtymology("two", "zwei") }),
+							   new ValuesToSet(true, false),
+							   new ValuesToSet(
 									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
 											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
 											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),

@@ -21,12 +21,12 @@ namespace Palaso.Tests.Text
 			get {  return "|_parent|"; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
-			get { return new List<DefaultValues>
+			get { return new List<ValuesToSet>
 							 {
-								 new DefaultValues("string", "not string"),
-								 new DefaultValues(new Annotation{IsOn = false}, new Annotation{IsOn = true})
+								 new ValuesToSet("string", "not string"),
+								 new ValuesToSet(new Annotation{IsOn = false}, new Annotation{IsOn = true})
 							 }; }
 		}
 	}

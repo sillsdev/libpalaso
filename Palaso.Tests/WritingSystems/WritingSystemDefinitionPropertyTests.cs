@@ -21,18 +21,18 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues(3.14f, 2.72f),
-								 new DefaultValues(false, true),
-								 new DefaultValues("to be", "!(to be)"),
-								 new DefaultValues(DateTime.Now, DateTime.MinValue),
-								 new DefaultValues(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),
-								 new DefaultValues(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de"))
+								 new ValuesToSet(3.14f, 2.72f),
+								 new ValuesToSet(false, true),
+								 new ValuesToSet("to be", "!(to be)"),
+								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
+								 new ValuesToSet(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),
+								 new ValuesToSet(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de"))
 							 };
 			}
 		}

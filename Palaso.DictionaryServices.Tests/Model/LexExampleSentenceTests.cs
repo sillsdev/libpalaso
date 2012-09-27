@@ -26,20 +26,20 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues(
+								 new ValuesToSet(
 									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
 											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
 											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
 									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
 											new KeyValuePair<string, IPalasoDataObjectProperty>("three", new LexNote()),
 											new KeyValuePair<string, IPalasoDataObjectProperty>("four", new LexNote())})),
-								 new DefaultValues("to be", "!(to be)")
+								 new ValuesToSet("to be", "!(to be)")
 							 };
 			}
 		}

@@ -21,13 +21,13 @@ namespace Palaso.Tests.Annotations
 			get { return ""; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues(new Annotation{IsOn = false}, new Annotation{IsOn = true})
+								 new ValuesToSet(new Annotation{IsOn = false}, new Annotation{IsOn = true})
 							 };
 			}
 		}
@@ -46,13 +46,13 @@ namespace Palaso.Tests.Annotations
 			get { return ""; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues(42, 7)
+								 new ValuesToSet(42, 7)
 							 };
 			}
 		}

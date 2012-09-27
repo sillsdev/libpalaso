@@ -24,14 +24,14 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues("to be", "!(to be)"),
-								 new DefaultValues(
+								 new ValuesToSet("to be", "!(to be)"),
+								 new ValuesToSet(
 									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null), }},
 									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null), }})
 							 };

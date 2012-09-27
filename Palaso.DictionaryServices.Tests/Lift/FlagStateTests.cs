@@ -23,13 +23,13 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								 new DefaultValues(true, false)
+								 new ValuesToSet(true, false)
 							 };
 			}
 		}

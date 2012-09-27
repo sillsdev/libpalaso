@@ -25,15 +25,15 @@ namespace Palaso.DictionaryServices.Tests.Model
 			get { return "|_parent|PropertyChanged|"; }
 		}
 
-		protected override List<DefaultValues> DefaultValuesForTypes
+		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
-				return new List<DefaultValues>
+				return new List<ValuesToSet>
 							 {
-								new DefaultValues("to be", "!(to be)"),
-								new DefaultValues(new List<string>{"to", "be"}, new List<string>{"!","to","be"}),
-								new DefaultValues(new []{new LanguageForm("en", "en_form", null)}, new []{new LanguageForm("de", "de_form", null)})
+								new ValuesToSet("to be", "!(to be)"),
+								new ValuesToSet(new List<string>{"to", "be"}, new List<string>{"!","to","be"}),
+								new ValuesToSet(new []{new LanguageForm("en", "en_form", null)}, new []{new LanguageForm("de", "de_form", null)})
 							 };
 			}
 		}
