@@ -62,6 +62,7 @@ namespace Palaso.CommandLineProcessing
 
 			var end = DateTime.Now.AddSeconds(secondsBeforeTimeOut);
 
+
 			//nb: at one point I (jh) tried adding !_process.HasExited, but that made things less stable.
 			while (MoreToRead())
 			{
@@ -69,7 +70,7 @@ namespace Palaso.CommandLineProcessing
 					return false;
 
 				Thread.Sleep(100);
-				if (DateTime.Now > end)
+				if (secondsBeforeTimeOut>0 && DateTime.Now > end)
 				{
 					if (_outputReader != null)
 						_outputReader.Abort();

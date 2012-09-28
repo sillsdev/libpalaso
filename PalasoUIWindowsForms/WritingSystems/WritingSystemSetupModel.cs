@@ -1045,13 +1045,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public event EventHandler CurrentItemUpdated;
 
 		/// <summary>
-		/// Fired when the user clicks "Delete" but before the WS is deleted in the repo.
-		/// Used to notify the consuming application of a deletion, and process a boolean response
-		/// from the app as to whether it can delete the WS or not (i.e. the WS is in use)
-		/// </summary>
-		public event AskIfDataExistsInWritingSystemToBeDeletedEventHandler AskIfDataExistsInWritingSystemToBeDeleted;
-
-		/// <summary>
 		/// Fired when the user chooses to "Conflate" a writing systems but before the WS is deleted in the repo.
 		/// Used to notify the consuming application of a conflation and process a boolean response
 		/// from the app as to whether it can conflate the WS or not (i.e. the WS is in use)
@@ -1106,91 +1099,62 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new InvalidOperationException("Unable to delete current selection when there is no current selection.");
 			}
 
-			var dataExistsEventArgs = new AskIfDataExistsInWritingSystemToBeDeletedEventArgs(CurrentDefinition.Id);
-			if (AskIfDataExistsInWritingSystemToBeDeleted != null)
+			var whatToDo = new WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(CurrentDefinition);
+			if(AskUserWhatToDoWithDataInWritingSystemToBeDeleted != null)
 			{
-				AskIfDataExistsInWritingSystemToBeDeleted(this, dataExistsEventArgs);
+				AskUserWhatToDoWithDataInWritingSystemToBeDeleted(this, whatToDo);
 			}
 
-			if (dataExistsEventArgs.ProjectContainsDataInWritingSystemToBeDeleted)
+			switch(whatToDo.WhatToDo)
 			{
-				var whatToDo = new WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(CurrentDefinition.Id);
-				if(AskUserWhatToDoWithDataInWritingSystemToBeDeleted != null)
-				{
-					AskUserWhatToDoWithDataInWritingSystemToBeDeleted(this, whatToDo);
-				}
-
-				switch(whatToDo.WhatToDo)
-				{
-					case WhatToDos.Nothing:
-							return;
-					case WhatToDos.Conflate:
-						var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
-							var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.Id,
-																					   wsToConflateWith);
-							if (AskIfOkToConflateWritingSystems != null)
-							{
-								AskIfOkToConflateWritingSystems(this, okToConflateEventArgs);
-							}
-							if (!okToConflateEventArgs.CanConflate)
-							{
-								string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
-								ErrorReport.NotifyUserOfProblem(
-									String.Format("Can not conflate the input system {0} to {1}. {2}",
-												  CurrentDefinition.Id,
-												  wsToConflateWith, message));
-								return;
-							}
-							if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
-							{
-								if (!String.IsNullOrEmpty(wsToConflateWith))
-								{
-									_writingSystemRepository.Conflate(CurrentDefinition.Id, wsToConflateWith);
-								}
-							}
-						break;
-					case WhatToDos.Delete:
-						var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
-						if (AskIfOkToDeleteWritingSystems != null)
+				case WhatToDos.Nothing:
+						return;
+				case WhatToDos.Conflate:
+					var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
+						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.Id,
+																					wsToConflateWith.Id);
+						if (AskIfOkToConflateWritingSystems != null)
 						{
-							AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
+							AskIfOkToConflateWritingSystems(this, okToConflateEventArgs);
 						}
-						if (!okToDeleteEventArgs.CanDelete)
+						if (!okToConflateEventArgs.CanConflate)
 						{
-							string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
+							string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
 							ErrorReport.NotifyUserOfProblem(
-								String.Format("Can not delete the input system {0}. {1}",
-											  CurrentDefinition.Id, message));
+								String.Format("Can not conflate the input system {0} to {1}. {2}",
+												CurrentDefinition.Id,
+												wsToConflateWith, message));
 							return;
 						}
 						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
 						{
-							_writingSystemRepository.Remove(CurrentDefinition.Id);
+							if (wsToConflateWith != null)
+							{
+								_writingSystemRepository.Conflate(CurrentDefinition.Id, wsToConflateWith.Id);
+							}
 						}
-						break;
-				}
+					break;
+				case WhatToDos.Delete:
+					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
+					if (AskIfOkToDeleteWritingSystems != null)
+					{
+						AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
+					}
+					if (!okToDeleteEventArgs.CanDelete)
+					{
+						string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
+						ErrorReport.NotifyUserOfProblem(
+							String.Format("Can not delete the input system {0}. {1}",
+											CurrentDefinition.Id, message));
+						return;
+					}
+					if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+					{
+						_writingSystemRepository.Remove(CurrentDefinition.Id);
+					}
+					break;
 			}
-			else
-			{
-				var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
-				if (AskIfOkToDeleteWritingSystems != null)
-				{
-					AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
-				}
-				if (!okToDeleteEventArgs.CanDelete)
-				{
-					string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
-					ErrorReport.NotifyUserOfProblem(
-						String.Format("Can not delete the input system {0}. {1}",
-									  CurrentDefinition.Id, message));
-					return;
-				}
-				if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
-				{
-					_writingSystemRepository.Remove(CurrentDefinition.Id);
-				}
-			}
-		// new index will be next writing system or previous if this was the last in the list
+			// new index will be next writing system or previous if this was the last in the list
 			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
 			CurrentDefinition.MarkedForDeletion = true;
 			_deletedWritingSystemDefinitions.Add(CurrentDefinition);
@@ -1603,23 +1567,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 	public class WhatToDoWithDataInWritingSystemToBeDeletedEventArgs : EventArgs
 	{
-		private string _writingSystemIdToConflateWith;
+		private WritingSystemDefinition _writingSystemIdToConflateWith;
 
-		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(string writingSystemIdToDelete)
+		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(WritingSystemDefinition writingSystemIdToDelete)
 		{
 			WritingSystemIdToDelete = writingSystemIdToDelete;
 			WhatToDo = WhatToDos.Delete;
 		}
 
 		public WhatToDos WhatToDo { get; set; }
-		public string WritingSystemIdToDelete { get; private set; }
-		public string WritingSystemIdToConflateWith
+		public WritingSystemDefinition WritingSystemIdToDelete { get; private set; }
+		public WritingSystemDefinition WritingSystemIdToConflateWith
 		{
 			get
 			{
 				if(WhatToDo==WhatToDos.Nothing || WhatToDo==WhatToDos.Delete)
 				{
-					return "";
+					return null;
 				}
 				return _writingSystemIdToConflateWith;
 			}

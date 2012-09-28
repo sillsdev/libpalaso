@@ -60,7 +60,7 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(270, 121);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(274, 125);
 			this.tableLayoutPanel1.TabIndex = 0;
 			//
 			// _selectionTable
@@ -78,7 +78,7 @@
 			this._selectionTable.Name = "_selectionTable";
 			this._selectionTable.RowCount = 1;
 			this._selectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this._selectionTable.Size = new System.Drawing.Size(264, 28);
+			this._selectionTable.Size = new System.Drawing.Size(268, 32);
 			this._selectionTable.TabIndex = 0;
 			//
 			// _wsSelectionComboBox
@@ -91,12 +91,11 @@
 			//
 			// _helpButton
 			//
-			this._helpButton.AutoSize = true;
 			this._helpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._helpButton.Image = ((System.Drawing.Image)(resources.GetObject("_helpButton.Image")));
 			this._helpButton.Location = new System.Drawing.Point(239, 3);
 			this._helpButton.Name = "_helpButton";
-			this._helpButton.Size = new System.Drawing.Size(22, 22);
+			this._helpButton.Size = new System.Drawing.Size(26, 26);
 			this._helpButton.TabIndex = 3;
 			this._helpButton.UseVisualStyleBackColor = true;
 			//
@@ -110,18 +109,18 @@
 			this.tableLayoutPanel3.Controls.Add(this._cancelButton, 1, 0);
 			this.tableLayoutPanel3.Controls.Add(this._okButton, 0, 0);
 			this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 89);
+			this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 93);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
 			this.tableLayoutPanel3.RowCount = 1;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(264, 29);
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(268, 29);
 			this.tableLayoutPanel3.TabIndex = 1;
 			//
 			// _cancelButton
 			//
 			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._cancelButton.Location = new System.Drawing.Point(186, 3);
+			this._cancelButton.Location = new System.Drawing.Point(190, 3);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 0;
@@ -132,7 +131,7 @@
 			//
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this._okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this._okButton.Location = new System.Drawing.Point(105, 3);
+			this._okButton.Location = new System.Drawing.Point(109, 3);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 1;
@@ -152,7 +151,7 @@
 			this._radioTable.RowCount = 2;
 			this._radioTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._radioTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this._radioTable.Size = new System.Drawing.Size(161, 46);
+			this._radioTable.Size = new System.Drawing.Size(159, 46);
 			this._radioTable.TabIndex = 2;
 			//
 			// _deleteRadioButton
@@ -160,7 +159,7 @@
 			this._deleteRadioButton.AutoSize = true;
 			this._deleteRadioButton.Location = new System.Drawing.Point(3, 3);
 			this._deleteRadioButton.Name = "_deleteRadioButton";
-			this._deleteRadioButton.Size = new System.Drawing.Size(155, 17);
+			this._deleteRadioButton.Size = new System.Drawing.Size(153, 17);
 			this._deleteRadioButton.TabIndex = 0;
 			this._deleteRadioButton.TabStop = true;
 			this._deleteRadioButton.Text = "Delete all data stored in {0}";
@@ -186,13 +185,15 @@
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.CancelButton = this._cancelButton;
 			this.ClientSize = new System.Drawing.Size(357, 160);
+			this.ControlBox = false;
 			this.Controls.Add(this.tableLayoutPanel1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "DeleteInputSystemDialog";
 			this.Text = "Delete Input System";
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this._selectionTable.ResumeLayout(false);
-			this._selectionTable.PerformLayout();
 			this.tableLayoutPanel3.ResumeLayout(false);
 			this._radioTable.ResumeLayout(false);
 			this._radioTable.PerformLayout();

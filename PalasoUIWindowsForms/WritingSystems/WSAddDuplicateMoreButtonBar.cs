@@ -68,9 +68,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_duplicateMenuItem.Enabled = enabled;
 			if(enabled)
 			{
-				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", _model.CurrentDefinition.ListLabel);
-				_deleteMenuItem.Text = string.Format("Delete {0}", _model.CurrentDefinition.ListLabel);
-				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", _model.CurrentDefinition.ListLabel);
+				var label = _model.CurrentDefinition == null ? "" : _model.CurrentDefinition.ListLabel;
+				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", label);
+				_deleteMenuItem.Text = string.Format("Delete {0}...", label);
+				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", label);
 			}
 			_deleteMenuItem.Enabled = enabled;
 		}

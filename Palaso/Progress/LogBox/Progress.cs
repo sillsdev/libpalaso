@@ -425,8 +425,8 @@ namespace Palaso.Progress.LogBox
 			Console.Write("                          ".Substring(0, indent*2));
 			Console.WriteLine(GenericProgress.SafeFormat(message, args));
 #else
-			Debug.Write("                          ".Substring(0, indent * 2));
-			Debug.WriteLine(GenericProgress.SafeFormat(message, args));
+			Console.Write("                          ".Substring(0, indent * 2));
+			Console.WriteLine(GenericProgress.SafeFormat(message, args));
 #endif
 		}
 
@@ -695,6 +695,7 @@ namespace Palaso.Progress.LogBox
 		}
 		public void WriteException(Exception error)
 		{
+			LastException = error;
 			ErrorEncountered = true;
 		}
 		public void WriteError(string message, params object[] args)
@@ -708,6 +709,7 @@ namespace Palaso.Progress.LogBox
 		public bool CancelRequested { get; set; }
 		public bool WarningEncountered { get; set; }
 		public bool ErrorEncountered { get; set; }
+		public Exception LastException { get; set; }
 		public IProgressIndicator ProgressIndicator { get; set; }
 		public string LastStatus { get; private set; }
 		public string LastWarning { get; private set; }

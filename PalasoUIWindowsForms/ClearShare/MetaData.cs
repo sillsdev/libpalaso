@@ -221,34 +221,53 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		private static Dictionary<string, string> GetImageProperites(string path)
 		{
-			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
-			var args = new StringBuilder();
-			args.Append("-charset cp65001 ");//utf-8
-			foreach (var assignment in MetadataAssignments)
-			{
-				args.Append(" " + assignment.Switch + " ");
-			}
-			var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
-#if DEBUG
-			Debug.WriteLine("reading");
-			Debug.WriteLine(args.ToString());
-			Debug.WriteLine(result.StandardError);
-			Debug.WriteLine(result.StandardOutput);
-#endif
-			var lines = result.StandardOutput.SplitTrimmed('\n');
 			var values = new Dictionary<string, string>();
-			foreach (var line in lines)
+			try
 			{
-				var parts = line.SplitTrimmed(':');
-				if (parts.Count < 2)
-					continue;
+				var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+				var args = new StringBuilder();
+				args.Append("-charset cp65001 "); //utf-8
+				foreach (var assignment in MetadataAssignments)
+				{
+					args.Append(" " + assignment.Switch + " ");
+				}
+				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
+												   _commandLineEncoding, Path.GetDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
+												   new NullProgress());
+				if(result.DidTimeOut)
+				{
+					Palaso.Reporting.ErrorReport.ReportNonFatalExceptionWithMessage(new Exception(), "The program which reads metadata (e.g. copyright) from the image: " +
+																	 path+" ran out of time.");
+					return values;
+				}
 
-				//recombine any parts of the value which had a colon (like a url does)
-				string value = parts[1];
-				for (int i = 2; i < parts.Count; ++i)
-					value = value + ":" + parts[i];
+#if DEBUG
+				Debug.WriteLine("reading");
+				Debug.WriteLine(args.ToString());
+				Debug.WriteLine(result.StandardError);
+				Debug.WriteLine(result.StandardOutput);
+#endif
+				var lines = result.StandardOutput.SplitTrimmed('\n');
 
-				values.Add(parts[0].ToLower(), value);
+				foreach (var line in lines)
+				{
+					var parts = line.SplitTrimmed(':');
+					if (parts.Count < 2)
+						continue;
+
+					//recombine any parts of the value which had a colon (like a url does)
+					string value = parts[1];
+					for (int i = 2; i < parts.Count; ++i)
+						value = value + ":" + parts[i];
+
+					values.Add(parts[0].ToLower(), value);
+				}
+			}
+			catch (Exception error)
+			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
+																 "The program had trouble checking the metadata in the image: " +
+																 path);
 			}
 			return values;
 		}

@@ -71,6 +71,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				if(_image!=null)
 				{
+					_image.Tag = "**** Disposed by palasoImage";
 					_image.Dispose();
 				}
 				_image = value;
