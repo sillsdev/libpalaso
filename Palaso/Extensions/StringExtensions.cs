@@ -107,7 +107,7 @@ namespace Palaso.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
-		public static string SanitizeFilename(string input, char errorChar)
+		public static string SanitizeFilename(this string input, char errorChar)
 		{
 			var invalidFilenameChars = System.IO.Path.GetInvalidFileNameChars();
 			Array.Sort(invalidFilenameChars);
@@ -119,7 +119,7 @@ namespace Palaso.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
-		public static string SanitizePath(string input, char errorChar)
+		public static string SanitizePath(this string input, char errorChar)
 		{
 			var invalidPathChars = System.IO.Path.GetInvalidPathChars();
 			Array.Sort(invalidPathChars);
