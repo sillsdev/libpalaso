@@ -90,7 +90,8 @@ namespace Palaso.Media.Naudio
 		public void Stop()
 		{
 			_finished = true;
-			_thread.Join();
+			while (!_thread.Join(3))
+				System.Windows.Forms.Application.DoEvents();
 		}
 
 		/// ------------------------------------------------------------------------------------
