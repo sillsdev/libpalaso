@@ -31,7 +31,7 @@ namespace Palaso.DictionaryServices.Processors
 
 		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem, string[] traitsWithMultiplicity, string itemDescriptionForMessage, IProgress progress)
 		{
-			var knownMergableOptionCollectionTraits = new[] { "semantic-domain-ddp4" };
+			var knownMergableOptionCollectionTraits = new[] { LexSense.WellKnownProperties.SemanticDomainDdp4 };
 			if (traitsWithMultiplicity == null)
 			{
 				traitsWithMultiplicity = new string[0];
