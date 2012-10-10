@@ -332,7 +332,7 @@ namespace Palaso.Media.Naudio.UI
 
 
 		// support for thread-safe version
-		private delegate bool SetDataDelegate(int[] arrayValue, int offset, int size);
+		private delegate void SetDataDelegate(int[] arrayValue, int offset, int size);
 		/// <summary>
 		/// Set meter band value
 		/// </summary>
@@ -340,7 +340,7 @@ namespace Palaso.Media.Naudio.UI
 		/// <param name="offset">Starting offset position</param>
 		/// <param name="size">Number of values to set</param>
 		/// <returns></returns>
-		public bool SetData(int[] arrayValue, int offset, int size)
+		public void SetData(int[] arrayValue, int offset, int size)
 		{
 			if (arrayValue == null)
 				throw new ArgumentNullException("arrayValue");
@@ -350,9 +350,9 @@ namespace Palaso.Media.Naudio.UI
 			if (this.InvokeRequired)
 			{
 				SetDataDelegate setDelegate = new SetDataDelegate(this.SetData);
-				return (bool)this.Invoke(setDelegate, arrayValue, offset, size);
+				this.Invoke(setDelegate, arrayValue, offset, size);
+				return;
 			}
-			bool isRunning = this.IsActive;
 
 			Monitor.Enter(this._meterData);
 
@@ -386,8 +386,6 @@ namespace Palaso.Media.Naudio.UI
 			{
 				Refresh();
 			}
-
-			return isRunning;
 		}
 		#endregion
 
@@ -481,7 +479,7 @@ namespace Palaso.Media.Naudio.UI
 				// refresh now!
 				var thisControl = thisObject as Control;
 				if (thisControl != null && thisControl.IsHandleCreated)
-					thisControl.Invoke(new MethodInvoker(Refresh));
+					thisControl.BeginInvoke(new MethodInvoker(Refresh));
 				else
 					return;
 			}
