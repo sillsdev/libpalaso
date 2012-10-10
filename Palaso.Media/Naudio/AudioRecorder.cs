@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using NAudio;
 using NAudio.Wave;
 using NAudio.Mixer;
@@ -219,7 +220,6 @@ namespace Palaso.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		protected virtual void TransitionFromRecordingToMonitoring()
 		{
-			RecordingState = RecordingState.Stopping;
 			_fileWriterThread.Stop();
 			RecordedTime = _fileWriterThread.RecordedTimeInSeconds;
 			_fileWriterThread = null;
@@ -364,26 +364,12 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public virtual bool IsRecording
-		{
-			get
-			{
-				return _recordingState == RecordingState.Recording ||
-					_recordingState == RecordingState.RequestedStop ||
-					_recordingState == RecordingState.Stopping;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
 		public virtual RecordingState RecordingState
 		{
 			get { return _recordingState; }
 			protected set
 			{
-				lock (this)
-				{
-					_recordingState = value;
-				}
+				_recordingState = value;
 				Debug.WriteLine("recorder state--> " + value.ToString());
 			}
 		}

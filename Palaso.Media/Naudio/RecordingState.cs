@@ -5,7 +5,6 @@
 		Stopped,
 		Monitoring,
 		Recording,
-		RequestedStop,
-		Stopping,
+		RequestedStop
 	}
 }
