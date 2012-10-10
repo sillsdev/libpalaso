@@ -330,9 +330,6 @@ namespace Palaso.Media.Naudio.UI
 			Refresh();
 		}
 
-
-		// support for thread-safe version
-		private delegate void SetDataDelegate(int[] arrayValue, int offset, int size);
 		/// <summary>
 		/// Set meter band value
 		/// </summary>
@@ -347,10 +344,9 @@ namespace Palaso.Media.Naudio.UI
 			if (arrayValue.Length < (offset + size))
 				throw new ArgumentOutOfRangeException("arrayValue");
 
-			if (this.InvokeRequired)
+			if (InvokeRequired)
 			{
-				SetDataDelegate setDelegate = new SetDataDelegate(this.SetData);
-				this.Invoke(setDelegate, arrayValue, offset, size);
+				BeginInvoke((Action<int[], int, int>)SetData, arrayValue, offset, size);
 				return;
 			}
 
