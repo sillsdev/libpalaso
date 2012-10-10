@@ -352,6 +352,16 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
+		public virtual bool IsRecording
+		{
+			get
+			{
+				return RecordingState == RecordingState.Recording ||
+					RecordingState == RecordingState.RequestedStop;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
 		public virtual RecordingState RecordingState
 		{
 			get { return _recordingState; }
