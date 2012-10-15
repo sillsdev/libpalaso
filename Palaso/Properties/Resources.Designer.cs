@@ -63,16 +63,6 @@ namespace Palaso.Properties {
 		/// <summary>
 		///   Looks up a localized resource of type System.Drawing.Bitmap.
 		/// </summary>
-		internal static System.Drawing.Bitmap MenuButtonArrow {
-			get {
-				object obj = ResourceManager.GetObject("MenuButtonArrow", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized resource of type System.Drawing.Bitmap.
-		/// </summary>
 		internal static System.Drawing.Bitmap spy16x16 {
 			get {
 				object obj = ResourceManager.GetObject("spy16x16", resourceCulture);

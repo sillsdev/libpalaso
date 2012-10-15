@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.Progress.LogBox {
+namespace Palaso.UI.WindowsForms.LogBox {
 
 
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

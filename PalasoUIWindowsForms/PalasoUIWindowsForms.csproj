@@ -101,6 +101,10 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+	<None Include="LogBox\LogBoxSettings.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
+	</None>
 	<None Include="SettingProtection\SettingsProtection1.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
@@ -287,6 +291,22 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="LogBox\LogBox.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="LogBox\LogBox.designer.cs">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	</Compile>
+	<Compile Include="LogBox\LogBoxResources.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>LogBoxResources.resx</DependentUpon>
+	</Compile>
+	<Compile Include="LogBox\LogBoxSettings.Designer.cs">
+	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	</Compile>
 	<Compile Include="Progress\ProgressDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -633,6 +653,15 @@
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="LogBox\LogBox.resx">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="LogBox\LogBoxResources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <SubType>Designer</SubType>
+	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -921,6 +950,12 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\search18x18.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\menuButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\MenuButtonArrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

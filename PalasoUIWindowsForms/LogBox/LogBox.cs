@@ -4,8 +4,10 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
+using Palaso.Progress;
+using Palaso.Progress.LogBox;
 
-namespace Palaso.Progress.LogBox
+namespace Palaso.UI.WindowsForms.LogBox
 {
 	public partial class LogBox : UserControl, IProgress
 	{
@@ -183,7 +185,16 @@ namespace Palaso.Progress.LogBox
 					//Debug.Fail("In release build, would have given up writing this message, because the destination control isn't built yet.");
 					return;
 				}
-				box.Invoke(action);
+				if (SyncContext != null)
+				{
+					//Dispatcher.CurrentDispatcher.
+					SyncContext.Post(delegate { action(); }, null);
+				}
+				else
+				{
+					box.Invoke(action);
+				}
+
 			}
 			catch (Exception)
 			{

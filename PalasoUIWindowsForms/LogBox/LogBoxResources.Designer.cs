@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.Progress.LogBox {
+namespace Palaso.UI.WindowsForms.LogBox {
 	using System;
 
 
@@ -39,7 +39,7 @@ namespace Palaso.Progress.LogBox {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.Progress.LogBox.LogBoxResources", typeof(LogBoxResources).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.UI.WindowsForms.LogBox.LogBoxResources", typeof(LogBoxResources).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
@@ -61,38 +61,21 @@ namespace Palaso.Progress.LogBox {
 		}
 
 		/// <summary>
-		///   Looks up a localized string similar to Filename has no content.
+		///   Looks up a localized resource of type System.Drawing.Bitmap.
 		/// </summary>
-		internal static string kFilenameIsEmptyString {
+		internal static System.Drawing.Bitmap menuButton {
 			get {
-				return ResourceManager.GetString("kFilenameIsEmptyString", resourceCulture);
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to Filename has only whitespace.
-		/// </summary>
-		internal static string kFilenameIsOnlyWhitespace {
-			get {
-				return ResourceManager.GetString("kFilenameIsOnlyWhitespace", resourceCulture);
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to Null or empty string..
-		/// </summary>
-		internal static string kNullOrEmptyString {
-			get {
-				return ResourceManager.GetString("kNullOrEmptyString", resourceCulture);
+				object obj = ResourceManager.GetObject("menuButton", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
 
 		/// <summary>
 		///   Looks up a localized resource of type System.Drawing.Bitmap.
 		/// </summary>
-		internal static System.Drawing.Bitmap menuButton {
+		internal static System.Drawing.Bitmap MenuButtonArrow {
 			get {
-				object obj = ResourceManager.GetObject("menuButton", resourceCulture);
+				object obj = ResourceManager.GetObject("MenuButtonArrow", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
