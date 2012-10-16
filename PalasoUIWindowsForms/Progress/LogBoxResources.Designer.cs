@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.UI.WindowsForms.LogBox {
+namespace Palaso.UI.WindowsForms.Progress {
 	using System;
 
 
@@ -39,7 +39,7 @@ namespace Palaso.UI.WindowsForms.LogBox {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.UI.WindowsForms.LogBox.LogBoxResources", typeof(LogBoxResources).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.UI.WindowsForms.Progress.LogBoxResources", typeof(LogBoxResources).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;

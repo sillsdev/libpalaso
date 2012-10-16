@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Palaso.Code;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.CommandLineProcessing
 {
@@ -63,7 +63,7 @@ namespace Palaso.CommandLineProcessing
 						return false;
 
 					Thread.Sleep(100);
-					if (DateTime.Now > end)
+					if (secondsBeforeTimeOut>0 && DateTime.Now > end)
 					{
 						return false;
 					}

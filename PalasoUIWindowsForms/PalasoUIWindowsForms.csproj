@@ -101,7 +101,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="LogBox\LogBoxSettings.settings">
+	<None Include="Progress\LogBoxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
 	</None>
@@ -135,6 +135,7 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
+	<Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
@@ -291,18 +292,18 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
-	<Compile Include="LogBox\LogBox.cs">
+	<Compile Include="Progress\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="LogBox\LogBox.designer.cs">
+	<Compile Include="Progress\LogBox.designer.cs">
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	</Compile>
-	<Compile Include="LogBox\LogBoxResources.Designer.cs">
+	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
 	</Compile>
-	<Compile Include="LogBox\LogBoxSettings.Designer.cs">
+	<Compile Include="Progress\LogBoxSettings.Designer.cs">
 	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -653,11 +654,11 @@
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="LogBox\LogBox.resx">
+	<EmbeddedResource Include="Progress\LogBox.resx">
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="LogBox\LogBoxResources.resx">
+	<EmbeddedResource Include="Progress\LogBoxResources.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <SubType>Designer</SubType>
 	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>

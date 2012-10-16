@@ -9,7 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Palaso.Extensions;
 
-namespace Palaso.Progress.LogBox
+namespace Palaso.Progress
 {
 	public interface IProgress
 	{

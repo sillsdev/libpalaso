@@ -9,7 +9,7 @@ using System.Xml;
 #if USEBYTESASPRIMARY
 using Palaso.Extensions;
 #endif
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.Xml
 {

@@ -3,7 +3,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Palaso.Progress.LogBox;
+using System.Threading;
+using Palaso.Progress;
 
 namespace Palaso.CommandLineProcessing
 {
@@ -14,6 +15,8 @@ namespace Palaso.CommandLineProcessing
 	public class CommandLineRunner
 	{
 		public static int TimeoutSecondsOverrideForUnitTests = 10000;
+		private ProcessOutputReaderBase _processReader;
+		private Process _process;
 
 		/// <summary>
 		/// This one doesn't attemtp to influence the encoding used
@@ -42,29 +45,43 @@ namespace Palaso.CommandLineProcessing
 		/// <returns></returns>
 		public static ExecutionResult Run(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress)
 		{
+			return new CommandLineRunner().Start(exePath, arguments, encoding, fromDirectory, secondsBeforeTimeOut, progress,
+										actionForReportingProgress);
+		}
+
+		public bool Abort(int secondsBeforeTimeout)
+		{
+			_process.Kill();
+			return _process.WaitForExit(secondsBeforeTimeout*1000);
+		}
+
+		/// <summary>
+		/// use this one if you're doing a long running task that you'll have running in a thread, so that you need a way to abort it
+		/// </summary>
+		public ExecutionResult Start(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress)
+		{
 			ExecutionResult result = new ExecutionResult();
-			Process process = new Process();
-			process.StartInfo.RedirectStandardError = true;
-			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.CreateNoWindow = true;
-			process.StartInfo.WorkingDirectory = fromDirectory;
-			process.StartInfo.FileName = exePath;
-			process.StartInfo.Arguments = arguments;
+			_process = new Process();
+			_process.StartInfo.RedirectStandardError = true;
+			_process.StartInfo.RedirectStandardOutput = true;
+			_process.StartInfo.UseShellExecute = false;
+			_process.StartInfo.CreateNoWindow = true;
+			_process.StartInfo.WorkingDirectory = fromDirectory;
+			_process.StartInfo.FileName = exePath;
+			_process.StartInfo.Arguments = arguments;
 			if(encoding!=null)
 			{
-				process.StartInfo.StandardOutputEncoding = encoding;
+				_process.StartInfo.StandardOutputEncoding = encoding;
 			}
-			ProcessOutputReaderBase processReader;
 			if (actionForReportingProgress!=null)
-				processReader = new AsyncProcessOutputReader(process, progress, actionForReportingProgress);
+				_processReader = new AsyncProcessOutputReader(_process, progress, actionForReportingProgress);
 			else
-				processReader = new SynchronousProcessOutputReader(process, progress);
+				_processReader = new SynchronousProcessOutputReader(_process, progress);
 
 			try
 			{
 				Debug.WriteLine("CommandLineRunner Starting at "+DateTime.Now.ToString());
-				process.Start();
+				_process.Start();
 			}
 			catch (Win32Exception error)
 			{
@@ -76,29 +93,31 @@ namespace Palaso.CommandLineProcessing
 
 			bool timedOut = false;
 			Debug.WriteLine("CommandLineRunner Reading at " + DateTime.Now.ToString("HH:mm:ss.ffff"));
-			if (!processReader.Read(secondsBeforeTimeOut))
+			if (!_processReader.Read(secondsBeforeTimeOut))
 			{
 				timedOut = !progress.CancelRequested;
 				try
 				{
-					if (process.HasExited)
+					if (_process.HasExited)
 					{
 						progress.WriteWarning("Process exited, cancelRequested was {0}", progress.CancelRequested);
 					}
 					else
 					{
-						progress.WriteWarning("Killing Process...");
-						process.Kill();
+						if(timedOut)
+							progress.WriteWarning("({0}) Timed Out...", exePath);
+						progress.WriteWarning("Killing Process ({0})", exePath);
+						_process.Kill();
 					}
 				}
 				catch (Exception e)
 				{
 					progress.WriteWarning("Exception while killing process, as though the process reader failed to notice that the process was over: {0}", e.Message);
-					progress.WriteWarning("Process.HasExited={0}", process.HasExited.ToString());
+					progress.WriteWarning("Process.HasExited={0}", _process.HasExited.ToString());
 				}
 			}
-			result.StandardOutput = processReader.StandardOutput;
-			result.StandardError = processReader.StandardError;
+			result.StandardOutput = _processReader.StandardOutput;
+			result.StandardError = _processReader.StandardError;
 
 			if (timedOut)
 			{
@@ -113,7 +132,7 @@ namespace Palaso.CommandLineProcessing
 			}
 			else
 			{
-				result.ExitCode = process.ExitCode;
+				result.ExitCode = _process.ExitCode;
 			}
 			return result;
 		}

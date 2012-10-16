@@ -198,7 +198,7 @@
 	<Compile Include="Progress\IProgressIndicator.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Progress\LogBox\Progress.cs">
+	<Compile Include="Progress\Progress.cs">
 	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Progress\NullProgressState.cs" />
