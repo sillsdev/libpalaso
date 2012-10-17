@@ -107,6 +107,11 @@
 	<Compile Include="ImageToolbox\ImageToolboxTests.cs" />
 	<Compile Include="ClearShare\MetaDataDisplayTests.cs" />
 	<Compile Include="ImageToolbox\PalasoImageTests.cs" />
+	<Compile Include="ImageToolbox\TestImages.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>TestImages.resx</DependentUpon>
+	</Compile>
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
 	<Compile Include="Keyboarding\IBusEnvironmentForTest.cs" />
@@ -115,6 +120,10 @@
 	<Compile Include="Progress\ProgressDialogTests.cs" />
 	<Compile Include="Progress\TransformWithProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<EmbeddedResource Include="ImageToolbox\TestImages.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>TestImages.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
 	<EmbeddedResource Include="SettingsProtection\DialogWithLinkToSettings.resx">
 	  <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -193,6 +202,9 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\logo.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -23,6 +23,8 @@ using System;
 using System.Windows.Forms;
 using System.ComponentModel;
 using Microsoft.Win32;
+using FileDialog = System.Windows.Forms.FileDialog;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace Palaso.UI.WindowsForms.FileDialogExtender
 {
