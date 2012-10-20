@@ -3,12 +3,8 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Interop;
 using Palaso.Code;
-using Palaso.IO;
 using Point = System.Drawing.Point;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
