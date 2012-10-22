@@ -5,6 +5,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using Palaso.Code;
+using Palaso.IO;
+using WIA;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -205,16 +208,21 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				var acquisitionService = new ImageAcquisitionService(deviceKind);
 
-				var file = acquisitionService.Acquire();
-				if (file == null)
+				var wiaImageFile = acquisitionService.Acquire();
+				if (wiaImageFile == null)
 					return;
-				var temp = Path.GetTempFileName();
-				File.Delete(temp);
-				file.SaveFile(temp);
-				temp = ConvertToPngOrJpegIfNotAlready(temp);
-				_pictureBox.Load(temp);
-				_currentImage = PalasoImage.FromFile(temp);
-				File.Delete(temp);
+//                var temp = Path.GetTempFileName();
+//                File.Delete(temp);
+//                file.SaveFile(temp);
+//                temp = ConvertToPngOrJpegIfNotAlready(temp);
+//                _pictureBox.Load(temp);
+//            	_currentImage = PalasoImage.FromFile(temp);
+//                File.Delete(temp);
+
+				var imageFile  = ConvertToPngOrJpegIfNotAlready(wiaImageFile);
+				_currentImage = PalasoImage.FromFile(imageFile);
+				_pictureBox.Image = _currentImage.Image;
+
 				if (ImageChanged != null)
 					ImageChanged.Invoke(this, null);
 			}
@@ -228,7 +236,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image");
 			}
-
 		}
 		#endif
 
@@ -241,6 +248,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_galleryControl.SetIntialSearchTerm(searchTerm);
 		}
 
+		/*
 		/// <summary>
 		/// Bitmaps --> PNG, JPEGs stay as jpegs.
 		/// Will delete the incoming file if it needs to do a conversion.
@@ -253,6 +261,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				if (!ImageFormat.Png.Equals(image.PixelFormat) && !ImageFormat.Jpeg.Equals(image.PixelFormat))
 				{
+					using (var stream = new MemoryStream())
+					{
+						incoming.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+						var oldCropped = cropped;
+						cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
+						oldCropped.Dispose();
+						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
+					}
+
 					outgoing = Path.GetTempFileName();
 					image.Save(outgoing, ImageFormat.Png);
 				}
@@ -270,6 +287,37 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 			return outgoing;
+		}
+		*/
+
+
+		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
+		{
+			Image acquiredImage;//with my scanner, always a .bmp
+
+			var imageBytes = (byte[])wiaImageFile.FileData.get_BinaryData();
+			if (wiaImageFile.FileExtension==".jpg" || wiaImageFile.FileExtension==".png")
+			{
+				var temp = TempFile.WithExtension(wiaImageFile.FileExtension);
+				wiaImageFile.SaveFile(temp.Path);
+				return temp.Path;
+			}
+
+			using (var stream = new MemoryStream(imageBytes))
+			{
+				//ENHANCE: is there some way to know when we'd rather have a jpeg? E.g. should we do it if it's color?
+				//Like maybe: if not color, then PNG. If color, then make jpg and png, and chose the smaller file.
+
+				var temp = TempFile.WithExtension(".png");
+
+				//DOCS: "You must keep the stream open for the lifetime of the Image."
+				using (acquiredImage = Image.FromStream(stream))
+				{
+					//NB: we do not want to dispose of this, we will be passing back the path
+					acquiredImage.Save(temp.Path, ImageFormat.Png);
+				}
+				return temp.Path;
+			}
 		}
 
 		private enum Modes {Gallery, SingleImage}
