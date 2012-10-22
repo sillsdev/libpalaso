@@ -60,6 +60,7 @@ namespace Palaso.CommandLineProcessing
 		/// </summary>
 		public ExecutionResult Start(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress)
 		{
+			progress.WriteVerbose("running '{0} {1}' from '{2}'", exePath, arguments, fromDirectory);
 			ExecutionResult result = new ExecutionResult();
 			_process = new Process();
 			_process.StartInfo.RedirectStandardError = true;
