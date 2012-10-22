@@ -175,7 +175,6 @@ namespace Palaso.Reporting
 			// _privacyNoticeButton
 			//
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
-			this._privacyNoticeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._privacyNoticeButton.Image = global::Palaso.Properties.Resources.spy16x16;
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
