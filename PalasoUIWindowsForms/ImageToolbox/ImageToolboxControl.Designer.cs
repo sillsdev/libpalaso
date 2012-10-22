@@ -41,6 +41,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
 			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
@@ -53,6 +54,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._copyExemplarMetadata = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._metadataDisplayControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetadataDisplayControl();
+			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.panel1.SuspendLayout();
 			this._invitationToMetadataPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
@@ -228,5 +230,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private System.Windows.Forms.LinkLabel _editMetadataLink;
 		private System.Windows.Forms.LinkLabel _editLink;
 		private Widgets.BetterLinkLabel _copyExemplarMetadata;
+		private System.Windows.Forms.ToolTip _toolTip;
 	}
 }
