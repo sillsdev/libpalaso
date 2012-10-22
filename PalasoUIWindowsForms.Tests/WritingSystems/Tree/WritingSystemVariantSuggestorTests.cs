@@ -34,7 +34,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			Assert.IsTrue(ipa.Keyboard.ToLower().Contains("ipa"));
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetSuggestions_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
@@ -68,7 +68,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		/// <summary>
 		/// For English, it's very unlikely that they'll want to add IPA, in a app like wesay
 		/// </summary>
-		[Test]
+		[Test, Category("KnownMonoIssue")]
 		public void GetSuggestions_MajorWorlLanguage_SuggestsOnlyIfSuppressSuggesstionsForMajorWorldLanguagesIsFalse()
 		{
 			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);

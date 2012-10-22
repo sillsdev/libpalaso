@@ -104,6 +104,11 @@ namespace Palaso.Migration
 					Debug.Fail("(Debug mode only) Couldn't delete the migration folder");
 				}
 			}
+
+			//check if there is anything to migrate. If not, don't do anything
+			if(!Directory.Exists(SourcePath)) return;
+			if (GetLowestVersionInFolder(SourcePath) == ToVersion) return;
+
 			// Backup current folder to backup path under backup root
 			CopyDirectory(SourcePath, BackupPath, MigrationPath);
 
@@ -174,7 +179,7 @@ namespace Palaso.Migration
 				lowestVersoinInFolder1 = lowestVersionInFolder;
 			}
 
-			// Delete all tbe files in SourcePath matching SearchPattern
+			// Delete all the files in SourcePath matching SearchPattern
 			foreach (var filePath in Directory.GetFiles(SourcePath, SearchPattern))
 			{
 				File.Delete(filePath);

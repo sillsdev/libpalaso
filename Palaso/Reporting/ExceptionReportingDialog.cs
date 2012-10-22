@@ -175,7 +175,6 @@ namespace Palaso.Reporting
 			// _privacyNoticeButton
 			//
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
-			this._privacyNoticeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._privacyNoticeButton.Image = global::Palaso.Properties.Resources.spy16x16;
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
@@ -685,13 +684,13 @@ namespace Palaso.Reporting
 		 private void _privacyNoticeButton_Click(object sender, EventArgs e)
 		 {
 			MessageBox.Show(
-				@"If you don’t care who reads your bug report, you can skip this notice.
+				@"If you donï¿½t care who reads your bug report, you can skip this notice.
 
-When you submit a crash report or other issue, the contents of your email go in our issue tracking system, “jira”, which is available via the web at http://jira.palso.org/issues. This is the normal way to handle issues in an open-source project.
+When you submit a crash report or other issue, the contents of your email go in our issue tracking system, ï¿½jiraï¿½, which is available via the web at http://jira.palso.org/issues. This is the normal way to handle issues in an open-source project.
 
 Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
 
-However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don’t want the issue in our issue tracking system. If need be, we’ll make some kind of sanitized place-holder for your issue so that we don’t lose it.
+However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you donï¿½t want the issue in our issue tracking system. If need be, weï¿½ll make some kind of sanitized place-holder for your issue so that we donï¿½t lose it.
 ");
 		 }
 
