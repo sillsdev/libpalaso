@@ -134,7 +134,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
+				() => KeyboardController.ActivateKeyboard("Nonexistent Keyboard")
 			);
 		}
 
@@ -233,7 +233,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindowForFocus();
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.ActivateKeyboard("Nonexistant Keyboard")
+				() => KeyboardController.ActivateKeyboard("Nonexistent Keyboard")
 			);
 		}
 	}

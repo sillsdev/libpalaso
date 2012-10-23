@@ -66,7 +66,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			using (var e = new IBusEnvironmentForTest(true))
 			{
 				Assert.Throws<ArgumentOutOfRangeException>(
-					() => IBusAdaptor.ActivateKeyboard("Nonexistant Keyboard")
+					() => IBusAdaptor.ActivateKeyboard("Nonexistent Keyboard")
 					);
 			}
 		}
