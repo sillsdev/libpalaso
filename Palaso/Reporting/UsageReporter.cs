@@ -582,16 +582,17 @@ namespace Palaso.Reporting
 
 			var sb = new StringBuilder();
 			if (!string.IsNullOrEmpty(messageUserSaw))
-				sb.Append(theCommandOrOtherContext + "|");
-			sb.Append(s_singleton._mostRecentArea + "|");
-
+				sb.Append(messageUserSaw + "|");
+			if (error != null)
+				sb.Append(error.Message + "|");
+			if(s_singleton._mostRecentArea!=null)
+				sb.Append(s_singleton._mostRecentArea + "|");
 			if (!string.IsNullOrEmpty(theCommandOrOtherContext))
 				sb.Append(theCommandOrOtherContext + "|");
 			if (wasFatal)
 				sb.Append(" fatal |");
 			if (error != null)
 			{
-				sb.Append(error.Message + "|");
 				if(error.InnerException!=null)
 					sb.Append("Inner: "+error.InnerException.Message + "|");
 				sb.Append(error.StackTrace);
