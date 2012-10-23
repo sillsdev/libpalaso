@@ -360,14 +360,10 @@ namespace Palaso.Reporting
 			return x;
 		}
 
-		public static void ReportFatalException(Exception e)
+		public static void ReportFatalException(Exception error)
 		{
-			ExceptionReportingDialog.ReportException(e, null);
-		}
-
-		public static void ReportFatalException(Exception e, Form parentForm)
-		{
-			ExceptionReportingDialog.ReportException(e, parentForm);
+			UsageReporter.ReportException(true, null, error, null);
+			ExceptionReportingDialog.ReportException(error, null);
 		}
 
 		/// <summary>
@@ -396,6 +392,8 @@ namespace Palaso.Reporting
 			{
 				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
 			}
+
+			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
 		}
 
 		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
@@ -492,6 +490,7 @@ namespace Palaso.Reporting
 					throw new NonFatalExceptionWouldHaveBeenMessageShownToUserException(exception);
 				}
 			}
+			 UsageReporter.ReportException(false, null, exception, null);
 		}
 
 		/// <summary>

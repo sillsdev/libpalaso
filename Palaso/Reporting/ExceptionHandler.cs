@@ -172,6 +172,8 @@ namespace Palaso.Reporting
 		{
 			try
 			{
+				UsageReporter.ReportException(false, null, exception, null);
+
 				// To disable displaying a message box, put
 				// <add key="ShowUI" value="False"/>
 				// in the <appSettings> section of the .config file (see MSDN for details).

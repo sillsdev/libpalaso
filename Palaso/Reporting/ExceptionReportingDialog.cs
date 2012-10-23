@@ -285,6 +285,7 @@ namespace Palaso.Reporting
 			{
 				dlg.Report(error, parent);
 			}
+
 		}
 
 		internal static void ReportMessage(string message, StackTrace stack, bool isLethal)
@@ -329,18 +330,6 @@ namespace Palaso.Reporting
 
 		 public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
 		 {
-			 try
-			 {
-				 if(!string.IsNullOrEmpty(message))
-					UsageReporter.ReportExceptionString(message);
-				 else if(error!=null)
-					 UsageReporter.ReportException(error);
-			 }
-			 catch
-			 {
-				 //swallow
-			 }
-
 			 PrepareDialog();
 			 if(!string.IsNullOrEmpty(message))
 				 _notificationText.Text = message;
