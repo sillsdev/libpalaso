@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows.Forms;
 using Palaso.Code;
 using Palaso.IO;
+using Palaso.Reporting;
 using WIA;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
@@ -188,6 +189,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_scannerButton.Checked = true;
 			SetImage(null);
 			SetMode(Modes.SingleImage);
+			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
 			#endif
 		}
@@ -197,8 +199,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			SetMode(Modes.SingleImage);
 			SetImage(null);
 			_cameraButton.Checked = true;
+			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
 			#endif
+
 		}
 	  #if !MONO
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
@@ -211,13 +215,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				var wiaImageFile = acquisitionService.Acquire();
 				if (wiaImageFile == null)
 					return;
-//                var temp = Path.GetTempFileName();
-//                File.Delete(temp);
-//                file.SaveFile(temp);
-//                temp = ConvertToPngOrJpegIfNotAlready(temp);
-//                _pictureBox.Load(temp);
-//            	_currentImage = PalasoImage.FromFile(temp);
-//                File.Delete(temp);
 
 				var imageFile  = ConvertToPngOrJpegIfNotAlready(wiaImageFile);
 				_currentImage = PalasoImage.FromFile(imageFile);
@@ -305,18 +302,37 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			using (var stream = new MemoryStream(imageBytes))
 			{
-				//ENHANCE: is there some way to know when we'd rather have a jpeg? E.g. should we do it if it's color?
-				//Like maybe: if not color, then PNG. If color, then make jpg and png, and chose the smaller file.
+				//Ok, so we want to know if we should save a jpeg (photo) or a png (line art).
+				//Here, we just chose whichever makes for a the smaller file.
+				//Test results
+				//                  PNG             JPG
+				//B&W Drawing       110k            813k
+				//Newspaper photo   1.3M            97k
+				//Little doodle     1.7k            11k
 
-				var temp = TempFile.WithExtension(".png");
+				//NB: we do not want to dispose of these, because we will be passing back the path of one
+				//(and will manually delete the other)
+				TempFile jpeg = TempFile.WithExtension(".jpg");
+				TempFile png = TempFile.WithExtension(".png");
 
-				//DOCS: "You must keep the stream open for the lifetime of the Image."
+				//DOCS: "You must keep the stream open for the lifetime of the Image."(maybe just true for jpegs)
 				using (acquiredImage = Image.FromStream(stream))
 				{
-					//NB: we do not want to dispose of this, we will be passing back the path
-					acquiredImage.Save(temp.Path, ImageFormat.Png);
+					acquiredImage.Save(jpeg.Path, ImageFormat.Jpeg);
+					acquiredImage.Save(png.Path, ImageFormat.Png);
 				}
-				return temp.Path;
+
+				//now return the smaller of the two;
+				if(new FileInfo(jpeg.Path).Length > new FileInfo(png.Path).Length)
+				{
+					File.Delete(jpeg.Path);
+					return png.Path;
+				}
+				else
+				{
+					File.Delete(png.Path);
+					return jpeg.Path;
+				}
 			}
 		}
 

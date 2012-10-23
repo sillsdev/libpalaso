@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using Palaso.Code;
+using Palaso.Reporting;
 using Point = System.Drawing.Point;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
@@ -34,6 +35,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		private const int MarginAroundPicture = GripThickness;
 		private const int MinDistanceBetweenGrips = 20;
+		private bool didReportThatUserCameInHere;
 
 		public ImageCropper()
 		{
@@ -79,6 +81,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 				{
 					grip.UpdateRectangle();
 				}
+			}
+			if(!didReportThatUserCameInHere)
+			{
+				didReportThatUserCameInHere = true;
+				UsageReporter.SendNavigationNotice("ImageToolbox:Cropper");
 			}
 		}
 

@@ -96,6 +96,7 @@
 			this.ShowIcon = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Image Toolbox";
+			this.Load += new System.EventHandler(this.ImageToolboxDialog_Load);
 			this.ResumeLayout(false);
 
 		}
