@@ -53,7 +53,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
-			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date"));
+			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date", null, CalendarCell.UserAction.CellMouseClick));
 
 			col = BetterGrid.CreateTextBoxColumn("comments", "Comments");
 			col.Width = 200;
