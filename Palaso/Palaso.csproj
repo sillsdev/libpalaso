@@ -228,6 +228,7 @@
 	</Compile>
 	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
+	<Compile Include="Reporting\ConsoleErrorReporter.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
 	<Compile Include="Reporting\ErrorReportSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>

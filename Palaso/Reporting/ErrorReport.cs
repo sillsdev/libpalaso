@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -12,8 +13,39 @@ using System.Windows.Forms;
 
 namespace Palaso.Reporting
 {
+	public interface IErrorReporter
+	{
+
+	}
+
 	public class ErrorReport
 	{
+		private static IErrorReporter _errorReporter = new ConsoleErrorReporter();
+
+		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
+		//Not wanting to break existing applications we have now added this class initializer which will
+		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//WinformsErrorReporter from there through Reflection. otherwise we will simply use a console
+		//error reporter
+		static ErrorReport()
+		{
+			Console.WriteLine("Constructing ChangeMe");
+			var topMostAssembly = Assembly.GetEntryAssembly();
+			var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+			var palasoUiWindowsFormsInializeAssemblyName = referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+			if(palasoUiWindowsFormsInializeAssemblyName != null)
+			{
+				var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
+				var interfaceToFind = typeof (IErrorReporter);
+				var typeImplementingInterface =
+					toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
+				foreach (var type in typeImplementingInterface)
+				{
+					_errorReporter = type.GetConstructor(Type.EmptyTypes).Invoke(null) as IErrorReporter;
+				}
+			}
+		}
+
 		protected static string s_emailAddress = null;
 		protected static string s_emailSubject = "Exception Report";
 
