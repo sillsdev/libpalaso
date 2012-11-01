@@ -161,6 +161,7 @@
 	<Compile Include="CustomDropDown.cs">
 	  <SubType>Component</SubType>
 	</Compile>
+	<Compile Include="Extensions\ControlExtensions.cs" />
 	<Compile Include="FileDialogExtender\Enums.cs" />
 	<Compile Include="FileDialogExtender\Extensions.cs" />
 	<Compile Include="FileDialogExtender\FileDialogControlBase.cs">

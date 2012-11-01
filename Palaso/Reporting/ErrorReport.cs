@@ -9,13 +9,25 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
+
 
 namespace Palaso.Reporting
 {
 	public interface IErrorReporter
 	{
 
+	}
+
+	public enum ErrorResult
+	{
+		None,
+		OK,
+		Cancel,
+		Abort,
+		Retry,
+		Ignore,
+		Yes,
+		No
 	}
 
 	public class ErrorReport
@@ -36,6 +48,7 @@ namespace Palaso.Reporting
 			if(palasoUiWindowsFormsInializeAssemblyName != null)
 			{
 				var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
+				//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
 				var interfaceToFind = typeof (IErrorReporter);
 				var typeImplementingInterface =
 					toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
@@ -394,11 +407,6 @@ namespace Palaso.Reporting
 
 		public static void ReportFatalException(Exception e)
 		{
-			ExceptionReportingDialog.ReportException(e, null);
-		}
-
-		public static void ReportFatalException(Exception e, Form parentForm)
-		{
 			ExceptionReportingDialog.ReportException(e, parentForm);
 		}
 
@@ -411,9 +419,9 @@ namespace Palaso.Reporting
 			NotifyUserOfProblem(new ShowAlwaysPolicy(), message, args);
 		}
 
-		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
+		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
 		{
-			return NotifyUserOfProblem(policy, null, default(DialogResult), messageFmt, args);
+			return NotifyUserOfProblem(policy, null, default(ErrorResult), messageFmt, args);
 		}
 
 		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
@@ -423,29 +431,29 @@ namespace Palaso.Reporting
 
 		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
 		{
-			var result = NotifyUserOfProblem(policy, "Details", DialogResult.Yes, messageFmt, args);
-			if (result == DialogResult.Yes)
+			var result = NotifyUserOfProblem(policy, "Details", ErrorResult.Yes, messageFmt, args);
+			if (result == ErrorResult.Yes)
 			{
 				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
 			}
 		}
 
-		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 									string alternateButton1Label,
-									DialogResult resultIfAlternateButtonPressed,
+									ErrorResult resultIfAlternateButtonPressed,
 									string messageFmt,
 									params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
 			if (!policy.ShouldShowMessage(message))
 			{
-				return DialogResult.OK;
+				return ErrorResult.OK;;
 			}
 
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				ErrorReport.s_previousNonFatalMessage = message;
-				return DialogResult.OK;
+				return ErrorResult.OK;
 			}
 			else if (ErrorReport.IsOkToInteractWithUser)
 			{
