@@ -9,13 +9,21 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Palaso.Reporting;
 
 
 namespace Palaso.Reporting
 {
 	public interface IErrorReporter
 	{
-
+		void ReportFatalException(Exception e);
+		ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+										string alternateButton1Label,
+										ErrorResult resultIfAlternateButtonPressed,
+										string message);
+		void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy);
+		void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args);
+		void ReportNonFatalMessageWithStackTrace(string message, params object[] args);
 	}
 
 	public enum ErrorResult
@@ -407,7 +415,7 @@ namespace Palaso.Reporting
 
 		public static void ReportFatalException(Exception e)
 		{
-			ExceptionReportingDialog.ReportException(e, parentForm);
+			_errorReporter.ReportFatalException(e);
 		}
 
 		/// <summary>
@@ -445,33 +453,12 @@ namespace Palaso.Reporting
 									params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
-			if (!policy.ShouldShowMessage(message))
-			{
-				return ErrorResult.OK;;
-			}
-
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
-				ErrorReport.s_previousNonFatalMessage = message;
+				s_previousNonFatalMessage = message;
 				return ErrorResult.OK;
 			}
-			else if (ErrorReport.IsOkToInteractWithUser)
-			{
-				var dlg = new ProblemNotificationDialog(message, UsageReporter.AppNameToUseInDialogs + " Problem")
-				{
-					ReoccurenceMessage = policy.ReoccurenceMessage
-
-				};
-				if(!string.IsNullOrEmpty(alternateButton1Label))
-				{
-					dlg.EnableAlternateButton1(alternateButton1Label, resultIfAlternateButtonPressed);
-				}
-				return dlg.ShowDialog();
-			}
-			else
-			{
-				throw new ProblemNotificationSentToUserException(message);
-			}
+			return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
 		}
 
 		/// <summary>
@@ -516,22 +503,12 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
 		{
-			if(s_justRecordNonFatalMessagesForTesting)
+			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				ErrorReport.s_previousNonFatalException = exception;
 				return;
 			}
-			 if(policy.ShouldShowErrorReportDialog(exception))
-			{
-				if (ErrorReport.IsOkToInteractWithUser)
-				{
-					   ExceptionReportingDialog.ReportException(exception, null, false);
-				}
-				else
-				{
-					throw new NonFatalExceptionWouldHaveBeenMessageShownToUserException(exception);
-				}
-			}
+			_errorReporter.ReportNonFatalException(exception, policy);
 		}
 
 		/// <summary>
