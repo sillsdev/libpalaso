@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Threading;
-
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
+using Palaso.WinForms.LogBox;
 
 namespace Palaso.Progress.LogBox
 {

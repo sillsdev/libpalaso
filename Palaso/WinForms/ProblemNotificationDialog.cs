@@ -1,6 +1,6 @@
 using System;
 using System.Drawing;
-
+using System.Windows.Forms;
 using Palaso.Properties;
 
 namespace Palaso.Reporting

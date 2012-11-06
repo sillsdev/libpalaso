@@ -278,7 +278,7 @@
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
 	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
 	<Compile Include="WinForms\ExceptionReportingDialog.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WinForms\IUserInterfaceMemory.cs">
 	  <SubType>Code</SubType>
@@ -287,7 +287,7 @@
 	  <SubType>Code</SubType>
 	</Compile>
 	<Compile Include="WinForms\LogBox\LogBox.cs">
-	  <SubType>Code</SubType>
+	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WinForms\LogBox\LogBox.designer.cs">
 	  <DependentUpon>LogBox.cs</DependentUpon>
@@ -306,23 +306,23 @@
 	  <SubType>Code</SubType>
 	</Compile>
 	<Compile Include="WinForms\ProblemNotificationDialog.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WinForms\ProblemNotificationDialog.Designer.cs">
 	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WinForms\ProxyCredentialSettings.Designer.cs" />
 	<Compile Include="WinForms\ProxyCredentialsRequestDialog.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WinForms\ProxyCredentialsRequestDialog.designer.cs">
 	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WinForms\SimpleProgressIndicator.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="WinForms\SimpleStatusProgress.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="WinForms\TaskBarFlasher.cs">
 	  <SubType>Code</SubType>
@@ -331,10 +331,10 @@
 	  <SubType>Code</SubType>
 	</Compile>
 	<Compile Include="WinForms\UsageEmailDialog.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WinForms\UserRegistrationDialog.cs">
-	  <SubType>Code</SubType>
+	  <SubType>Form</SubType>
 	</Compile>
 	<Compile Include="WinForms\UserRegistrationDialog.Designer.cs">
 	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>

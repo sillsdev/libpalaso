@@ -1,4 +1,8 @@
-﻿using Palaso.Progress.LogBox;
+﻿using System;
+using System.Threading;
+using System.Windows.Forms;
+using Palaso.Progress;
+using Palaso.Progress.LogBox;
 
 /// <summary>
 /// Just conveys status, not all messages

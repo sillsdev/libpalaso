@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel;
-
+using System.Windows.Forms;
 using Palaso.Email; // TODO: Ideally we wouldn't need this here in the UI.
 
 namespace Palaso.Reporting
