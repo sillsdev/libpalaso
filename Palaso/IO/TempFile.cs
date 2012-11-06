@@ -101,10 +101,10 @@ namespace Palaso.IO
 		{
 			if (filename == null) throw new ArgumentNullException("filename");
 			if (filename == string.Empty)
-				throw new ArgumentException(LogBoxResources.kFilenameIsEmptyString, "filename");
+				throw new ArgumentException(FileRelatedStrings.kFilenameIsEmptyString, "filename");
 			filename = filename.Trim();
 			if (filename == string.Empty)
-				throw new ArgumentException(LogBoxResources.kFilenameIsOnlyWhitespace, "filename");
+				throw new ArgumentException(FileRelatedStrings.kFilenameIsOnlyWhitespace, "filename");
 
 			var pathname = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
 			File.Create(pathname).Close();

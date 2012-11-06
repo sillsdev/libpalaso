@@ -182,7 +182,7 @@ namespace Palaso.Reporting
 				 return s_singleton._appNameToUseInDialogs;
 
 				}
-				return Application.ProductName;
+				return EntryAssembly.ProductName;
 			}
 			set
 			{
@@ -198,7 +198,7 @@ namespace Palaso.Reporting
 				{
 					 return s_singleton._appNameToUseInReporting;
 				}
-				return Application.ProductName;
+				return EntryAssembly.ProductName;
 			}
 			set
 			{

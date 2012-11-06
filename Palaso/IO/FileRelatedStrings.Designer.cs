@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Palaso.WinForms.LogBox {
+namespace Palaso.IO {
 	using System;
 
 
@@ -22,14 +22,14 @@ namespace Palaso.WinForms.LogBox {
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
 	[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-	internal class LogBoxResources {
+	internal class FileRelatedStrings {
 
 		private static global::System.Resources.ResourceManager resourceMan;
 
 		private static global::System.Globalization.CultureInfo resourceCulture;
 
 		[global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal LogBoxResources() {
+		internal FileRelatedStrings() {
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace Palaso.WinForms.LogBox {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.WinForms.LogBox.LogBoxResources", typeof(LogBoxResources).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.IO.FileRelatedStrings", typeof(FileRelatedStrings).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
@@ -60,10 +60,30 @@ namespace Palaso.WinForms.LogBox {
 			}
 		}
 
-		internal static System.Drawing.Bitmap menuButton {
+		/// <summary>
+		///   Looks up a localized string similar to Filename has no content.
+		/// </summary>
+		internal static string kFilenameIsEmptyString {
 			get {
-				object obj = ResourceManager.GetObject("menuButton", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
+				return ResourceManager.GetString("kFilenameIsEmptyString", resourceCulture);
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized string similar to Filename has only whitespace.
+		/// </summary>
+		internal static string kFilenameIsOnlyWhitespace {
+			get {
+				return ResourceManager.GetString("kFilenameIsOnlyWhitespace", resourceCulture);
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized string similar to Null or empty string..
+		/// </summary>
+		internal static string kNullOrEmptyString {
+			get {
+				return ResourceManager.GetString("kNullOrEmptyString", resourceCulture);
 			}
 		}
 	}

@@ -14,7 +14,20 @@ namespace Palaso.Reporting
 
 		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string alternateButton1Label, ErrorResult resultIfAlternateButtonPressed, string message)
 		{
-			throw new NotImplementedException();
+			if (!policy.ShouldShowMessage(message))
+			{
+				return ErrorResult.OK; ;
+			}
+
+			if (ErrorReport.IsOkToInteractWithUser)
+			{
+				Console.WriteLine(String.Format(UsageReporter.AppNameToUseInDialogs + " Problem: " + message));
+				return ErrorResult.OK;
+			}
+			else
+			{
+				throw new ErrorReport.ProblemNotificationSentToUserException(message);
+			}
 		}
 
 		public void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)

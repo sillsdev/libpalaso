@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Windows.Forms;
 using Palaso.Reporting;
 
 namespace Palaso.WinForms
@@ -21,7 +19,7 @@ namespace Palaso.WinForms
 		{
 			if (!policy.ShouldShowMessage(message))
 			{
-				return ErrorResult.OK; ;
+				return ErrorResult.OK;
 			}
 
 			if (ErrorReport.IsOkToInteractWithUser)
@@ -33,9 +31,9 @@ namespace Palaso.WinForms
 				};
 				if (!string.IsNullOrEmpty(alternateButton1Label))
 				{
-					dlg.EnableAlternateButton1(alternateButton1Label, resultIfAlternateButtonPressed);
+					dlg.EnableAlternateButton1(alternateButton1Label, GetDialogResultForErrorResult(resultIfAlternateButtonPressed));
 				}
-				return dlg.ShowDialog();
+				return GetErrorResultForDialogResult(dlg.ShowDialog());
 			}
 			else
 			{
@@ -79,6 +77,76 @@ namespace Palaso.WinForms
 			var s = string.Format(message, args);
 			var stack = new System.Diagnostics.StackTrace(true);
 			ExceptionReportingDialog.ReportMessage(s, stack, false);
+		}
+
+		private static ErrorResult GetErrorResultForDialogResult(DialogResult dialogResult)
+		{
+			ErrorResult errorResult;
+			switch (dialogResult)
+			{
+				case DialogResult.Abort:
+					errorResult = ErrorResult.Abort;
+					break;
+				case DialogResult.Cancel:
+					errorResult = ErrorResult.Cancel;
+					break;
+				case DialogResult.Ignore:
+					errorResult = ErrorResult.Ignore;
+					break;
+				case DialogResult.No:
+					errorResult = ErrorResult.No;
+					break;
+				case DialogResult.None:
+					errorResult = ErrorResult.None;
+					break;
+				case DialogResult.OK:
+					errorResult = ErrorResult.OK;
+					break;
+				case DialogResult.Retry:
+					errorResult = ErrorResult.Retry;
+					break;
+				case DialogResult.Yes:
+					errorResult = ErrorResult.Yes;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(String.Format("Can't convert DialogResult {0} to ErrorResult Type", dialogResult));
+			}
+			return errorResult;
+		}
+
+		private static DialogResult GetDialogResultForErrorResult(ErrorResult errorResult)
+		{
+			DialogResult dialogResult;
+			switch (errorResult)
+			{
+				case ErrorResult.Abort:
+					dialogResult = DialogResult.Abort;
+					break;
+				case ErrorResult.Cancel:
+					dialogResult = DialogResult.Cancel;
+					break;
+				case ErrorResult.Ignore:
+					dialogResult = DialogResult.Ignore;
+					break;
+				case ErrorResult.No:
+					dialogResult = DialogResult.No;
+					break;
+				case ErrorResult.None:
+					dialogResult = DialogResult.None;
+					break;
+				case ErrorResult.OK:
+					dialogResult = DialogResult.OK;
+					break;
+				case ErrorResult.Retry:
+					dialogResult = DialogResult.Retry;
+					break;
+				case ErrorResult.Yes:
+					dialogResult = DialogResult.Yes;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(String.Format("Can't convert ErrorResult {0} to DialogResult Type", errorResult));
+			}
+			return dialogResult;
 		}
 	}
 }

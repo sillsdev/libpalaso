@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 using Palaso.IO;
@@ -340,7 +341,7 @@ namespace Palaso.Reporting
 		private static void SetActualLogPath(string filename)
 		{
 			_actualLogPath = Path.Combine(Path.GetTempPath(),
-										  Path.Combine(Application.CompanyName, UsageReporter.AppNameToUseInReporting));
+										  Path.Combine(EntryAssembly.CompanyName, UsageReporter.AppNameToUseInReporting));
 			Directory.CreateDirectory(_actualLogPath);
 			_actualLogPath = Path.Combine(_actualLogPath, filename);
 		}

@@ -140,7 +140,7 @@ namespace Palaso.IO
 				}
 				else
 				{
-					path = Application.ExecutablePath;
+					path = EntryAssembly.Location;
 				}
 				return Directory.GetParent(path).FullName;
 			}

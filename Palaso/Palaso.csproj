@@ -154,6 +154,7 @@
 	<Compile Include="Email\ThunderbirdEmailProvider.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
+	<Compile Include="EntryAssembly.cs" />
 	<Compile Include="Extensions\ByteArrayExtensions.cs" />
 	<Compile Include="Extensions\DateTimeExtensions.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
@@ -199,6 +200,7 @@
 	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ConsoleErrorReporter.cs" />
+	<Compile Include="Reporting\ConsoleExceptionHandler.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
 	<Compile Include="Reporting\ErrorReportSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>
@@ -286,14 +288,19 @@
 	<Compile Include="WinForms\LabelProgress.cs">
 	  <SubType>Code</SubType>
 	</Compile>
+	<Compile Include="WinForms\LogBox\LogBoxResources.Designer.cs">
+	  <DependentUpon>LogBoxResources.resx</DependentUpon>
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	</Compile>
 	<Compile Include="WinForms\LogBox\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="WinForms\LogBox\LogBox.designer.cs">
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	</Compile>
-	<Compile Include="WinForms\LogBox\LogBoxResources.Designer.cs">
-	  <DependentUpon>LogBoxResources.resx</DependentUpon>
+	<Compile Include="IO\FileRelatedStrings.Designer.cs">
+	  <DependentUpon>FileRelatedStrings.resx</DependentUpon>
 	  <DesignTime>True</DesignTime>
 	  <AutoGen>True</AutoGen>
 	</Compile>
@@ -342,6 +349,7 @@
 	<Compile Include="WinForms\WinFormsErrorReporter.cs">
 	  <SubType>Code</SubType>
 	</Compile>
+	<Compile Include="WinForms\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXml.cs" />
@@ -409,14 +417,19 @@
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="WinForms\LogBox\LogBoxResources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
 	<EmbeddedResource Include="WinForms\LogBox\LogBox.resx">
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\LogBox\LogBoxResources.resx">
+	<EmbeddedResource Include="IO\FileRelatedStrings.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+	  <LastGenOutput>FileRelatedStrings.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WinForms\ProblemNotificationDialog.resx">
 	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>

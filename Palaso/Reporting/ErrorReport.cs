@@ -49,20 +49,23 @@ namespace Palaso.Reporting
 		//error reporter
 		static ErrorReport()
 		{
-			Console.WriteLine("Constructing ChangeMe");
 			var topMostAssembly = Assembly.GetEntryAssembly();
-			var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
-			var palasoUiWindowsFormsInializeAssemblyName = referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
-			if(palasoUiWindowsFormsInializeAssemblyName != null)
+			if (topMostAssembly != null)
 			{
-				var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
-				//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
-				var interfaceToFind = typeof (IErrorReporter);
-				var typeImplementingInterface =
-					toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
-				foreach (var type in typeImplementingInterface)
+				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+				var palasoUiWindowsFormsInializeAssemblyName =
+					referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+				if (palasoUiWindowsFormsInializeAssemblyName != null)
 				{
-					_errorReporter = type.GetConstructor(Type.EmptyTypes).Invoke(null) as IErrorReporter;
+					var palasoUIWinFormsAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
+					//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
+					var interfaceToFind = typeof (IErrorReporter);
+					var typeImplementingInterface =
+						palasoUIWinFormsAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
+					foreach (var type in typeImplementingInterface)
+					{
+						_errorReporter = type.GetConstructor(Type.EmptyTypes).Invoke(null) as IErrorReporter;
+					}
 				}
 			}
 		}

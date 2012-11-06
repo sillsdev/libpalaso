@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.Progress;
+using Palaso.WinForms;
 
 namespace Palaso.Tests.Progress
 {
