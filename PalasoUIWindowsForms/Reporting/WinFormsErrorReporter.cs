@@ -83,7 +83,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 		{
 			var s = string.Format(message, args);
 			var stack = new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s, stack, false);
+			ExceptionReportingDialog.ReportMessage(s, stack, true);
 		}
 
 		private static ErrorResult GetErrorResultForDialogResult(DialogResult dialogResult)

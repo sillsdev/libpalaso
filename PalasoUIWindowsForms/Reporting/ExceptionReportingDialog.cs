@@ -299,6 +299,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 				dlg.Report(message, string.Empty, stack, null);
 			}
 		}
+
 		internal static void ReportMessage(string message, Exception error, bool isLethal)
 		{
 			if (s_doIgnoreReport)

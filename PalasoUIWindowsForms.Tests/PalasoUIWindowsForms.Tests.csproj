@@ -146,6 +146,7 @@
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.Designer.cs">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	</Compile>
+	<Compile Include="TempReportingTests.cs" />
 	<Compile Include="Widgets\PromptTests.cs" />
 	<Compile Include="WritingSystems\LookupIsoCodeModelTests.cs" />
 	<Compile Include="WritingSystems\UITests.cs" />
