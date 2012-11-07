@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -129,6 +130,33 @@ namespace Palaso.CommandLineProcessing
 		public static string MakePathSafeFromEncodingProblems(string path)
 		{
 			return Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+		}
+
+		/// <summary>
+		/// Some command line applications (e.g. exiftool) can handle html-encoded characters in their command arguments
+		/// </summary>
+		/// <remarks>From Rick Strahl at http://www.west-wind.com/weblog/posts/2009/Feb/05/Html-and-Uri-String-Encoding-without-SystemWeb</remarks>
+		public static string HtmlEncodeNonAsciiCharacters(string text)
+		{
+			if (text == null)
+				return null;
+
+			StringBuilder sb = new StringBuilder(text.Length);
+
+			int len = text.Length;
+			for (int i = 0; i < len; i++)
+			{
+				if (text[i] > 159)
+				{
+					// decimal numeric entity
+					sb.Append("&#");
+					sb.Append(((int)text[i]).ToString(CultureInfo.InvariantCulture));
+					sb.Append(";");
+				}
+				else
+					sb.Append(text[i]);
+			}
+			return sb.ToString();
 		}
 
 	}
