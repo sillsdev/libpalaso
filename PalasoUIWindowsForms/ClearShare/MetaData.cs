@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -375,7 +376,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
-			arguments.Append("-charset cp65001 ");//utf-8
+			//doesn't work: arguments.Append("-charset cp65001 ");//utf-8
+			arguments.Append(" -E ");//in AddAssignmentArguments we make the values use html encoded values
 			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", path);
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(_path), 5, new NullProgress());
@@ -411,10 +413,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			{
 				if (assignment.ShouldSetValue(this))
 				{
-					arguments.AppendFormat(" " + assignment.Switch + "=\"" + assignment.GetStringFunction(this) + "\" ");
+					arguments.AppendFormat(" " + assignment.Switch + "=\"" + CommandLineRunner.HtmlEncodeNonAsciiCharacters(assignment.GetStringFunction(this)) + "\" ");
 				}
 			}
 		}
+
+
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()
 		{
@@ -489,7 +493,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				File.Delete(path);
 
 			StringBuilder arguments = new StringBuilder();
-			arguments.Append("-charset cp65001 ");//utf-8
+			//doesn't work: arguments.Append("-charset cp65001 ");//utf-8
+			arguments.Append(" -E ");//in AddAssignmentArguments we make the values use html encoded values
 			arguments.AppendFormat("-o \"{0}\"", path);
 			AddAssignmentArguments(arguments);
 
