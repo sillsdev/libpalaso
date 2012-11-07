@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Reporting;
 
 namespace Palaso.WinForms
 {
-	class WinFormsErrorReporter
+	class WinFormsErrorReporter:IErrorReporter
 	{
 
 		public void ReportFatalException(Exception e)
@@ -12,7 +13,7 @@ namespace Palaso.WinForms
 			ExceptionReportingDialog.ReportException(e, null);
 		}
 
-		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 									string alternateButton1Label,
 									ErrorResult resultIfAlternateButtonPressed,
 									string message)
@@ -44,7 +45,7 @@ namespace Palaso.WinForms
 		/// <summary>
 		/// Allow user to report an exception even though the program doesn't need to exit
 		/// </summary>
-		public static void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
+		public void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
 		{
 			if (policy.ShouldShowErrorReportDialog(exception))
 			{
@@ -62,7 +63,7 @@ namespace Palaso.WinForms
 		/// <summary>
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// </summary>
-		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
+		public void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
 			var s = string.Format(message, args);
 			ExceptionReportingDialog.ReportMessage(s, error, false);
@@ -72,7 +73,14 @@ namespace Palaso.WinForms
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// Use this one only when you don't have an exception (else you're not reporting the exception's message)
 		/// </summary>
-		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
+		public void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
+		{
+			var s = string.Format(message, args);
+			var stack = new System.Diagnostics.StackTrace(true);
+			ExceptionReportingDialog.ReportMessage(s, stack, false);
+		}
+
+		public void ReportFatalMessageWithStackTrace(string message, object[] args)
 		{
 			var s = string.Format(message, args);
 			var stack = new System.Diagnostics.StackTrace(true);

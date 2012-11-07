@@ -83,10 +83,6 @@
 	</None>
   </ItemGroup>
   <ItemGroup>
-	<None Include="WinForms\LogBox\LogBoxSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
-	</None>
 	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
@@ -104,7 +100,6 @@
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />
-	<Reference Include="System.Configuration" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
@@ -112,11 +107,10 @@
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Management" />
 	<Reference Include="System.Security" />
-	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<None Include="app.config" />
 	<None Include="Reporting\ErrorReportSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <Generator>PublicSettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Reporting\app.config" />
@@ -182,6 +176,7 @@
 	<Compile Include="Migration\XmlReaderWriterMigrationStrategy.cs" />
 	<Compile Include="Migration\XPathVersion.cs" />
 	<Compile Include="Migration\XslMigrationStrategy.cs" />
+	<Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
 	<Compile Include="Network\RobustNetworkOperation.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
@@ -211,7 +206,9 @@
 	<Compile Include="Reporting\ExceptionHelper.cs" />
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ReportingSettings.cs" />
-	<Compile Include="Reporting\ReportingStrings.Designer.cs">
+	<Compile Include="Reporting\ReportingStrings1.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
 	  <DependentUpon>ReportingStrings.resx</DependentUpon>
 	</Compile>
 	<Compile Include="Reporting\UsageReporter.cs" />
@@ -279,77 +276,11 @@
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
 	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
-	<Compile Include="WinForms\ExceptionReportingDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WinForms\IUserInterfaceMemory.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="WinForms\LabelProgress.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="WinForms\LogBox\LogBoxResources.Designer.cs">
-	  <DependentUpon>LogBoxResources.resx</DependentUpon>
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	</Compile>
-	<Compile Include="WinForms\LogBox\LogBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WinForms\LogBox\LogBox.designer.cs">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	</Compile>
 	<Compile Include="IO\FileRelatedStrings.Designer.cs">
 	  <DependentUpon>FileRelatedStrings.resx</DependentUpon>
 	  <DesignTime>True</DesignTime>
 	  <AutoGen>True</AutoGen>
 	</Compile>
-	<Compile Include="WinForms\LogBox\LogBoxSettings.Designer.cs">
-	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <AutoGen>True</AutoGen>
-	</Compile>
-	<Compile Include="WinForms\WaitCursor.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="WinForms\ProblemNotificationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WinForms\ProblemNotificationDialog.Designer.cs">
-	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WinForms\ProxyCredentialSettings.Designer.cs" />
-	<Compile Include="WinForms\ProxyCredentialsRequestDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WinForms\ProxyCredentialsRequestDialog.designer.cs">
-	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WinForms\SimpleProgressIndicator.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="WinForms\SimpleStatusProgress.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="WinForms\TaskBarFlasher.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="WinForms\TextBoxProgress.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="WinForms\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WinForms\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WinForms\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WinForms\WinFormsErrorReporter.cs">
-	  <SubType>Code</SubType>
-	</Compile>
-	<Compile Include="WinForms\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXml.cs" />
@@ -405,7 +336,7 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ReportingStrings.resx">
 	  <SubType>Designer</SubType>
-	  <Generator>ResXFileCodeGenerator</Generator>
+	  <Generator>PublicResXFileCodeGenerator</Generator>
 	  <LastGenOutput>ReportingStrings1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Resource.resx">
@@ -413,48 +344,16 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\ExceptionReportingDialog.resx">
-	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\LogBox\LogBoxResources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\LogBox\LogBox.resx">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
 	<EmbeddedResource Include="IO\FileRelatedStrings.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>FileRelatedStrings.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\ProblemNotificationDialog.resx">
-	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\ProxyCredentialsRequestDialog.resx">
-	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WinForms\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
 	<Content Include="Resources\ianaSubtagRegistry.txt" />
-	<None Include="Resources\spy16x16.png" />
 	<Content Include="Resources\TwoToThreeCodes.txt" />
-	<None Include="Resources\MenuButtonArrow.png" />
-	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">

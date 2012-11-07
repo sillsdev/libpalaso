@@ -44,5 +44,10 @@ namespace Palaso.Reporting
 		{
 			throw new NotImplementedException();
 		}
+
+		public void ReportFatalMessageWithStackTrace(string message, object[] args)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

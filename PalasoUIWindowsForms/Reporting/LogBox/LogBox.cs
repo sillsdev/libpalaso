@@ -4,9 +4,10 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
-using Palaso.WinForms.LogBox;
+using Palaso.Progress;
+using Palaso.Progress.LogBox;
 
-namespace Palaso.Progress.LogBox
+namespace Palaso.UI.WindowsForms.Reporting.LogBox
 {
 	public partial class LogBox : UserControl, IProgress
 	{
@@ -377,7 +378,7 @@ namespace Palaso.Progress.LogBox
 		{
 			try
 			{
-				Reporting.ErrorReport.ReportNonFatalMessageWithStackTrace(msg);
+				Palaso.Reporting.ErrorReport.ReportNonFatalMessageWithStackTrace(msg);
 				return true;
 			}
 			catch (Exception)

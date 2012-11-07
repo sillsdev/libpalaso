@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.Extensions
@@ -22,6 +23,24 @@ namespace Palaso.UI.WindowsForms.Extensions
 				control = control.Parent;
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// If the method might be in a different thread, this will do an invoke,
+		/// otherwise it just invokes the action
+		/// </summary>
+		/// <example>InvokeIfRequired(()=>BackgroundColor=Color.Blue);</example>
+		/// <example>((Control)this).InvokeIfRequired(()=>SetChoices(languages));</example>
+		public static void InvokeIfRequired(this Control control, Action action)
+		{
+			if (control.InvokeRequired)
+			{
+				control.Invoke(action);
+			}
+			else
+			{
+				action();
+			}
 		}
 	}
 }

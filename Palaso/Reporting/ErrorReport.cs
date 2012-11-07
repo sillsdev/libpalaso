@@ -24,6 +24,7 @@ namespace Palaso.Reporting
 		void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy);
 		void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args);
 		void ReportNonFatalMessageWithStackTrace(string message, params object[] args);
+		void ReportFatalMessageWithStackTrace(string message, object[] args);
 	}
 
 	public enum ErrorResult
@@ -469,8 +470,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			ExceptionReportingDialog.ReportMessage(s, error, false);
+			_errorReporter.ReportNonFatalExceptionWithMessage(error, message, args);
 		}
 
 		/// <summary>
@@ -479,18 +479,14 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			var stack =  new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s,stack, false);
+			_errorReporter.ReportNonFatalMessageWithStackTrace(message, args);
 		}
 		/// <summary>
 		/// Bring up a "green box" that let's them send in a report, then exit.
 		/// </summary>
 		public static void ReportFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			var stack = new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s, stack, false);
+			_errorReporter.ReportFatalMessageWithStackTrace(message, args);
 		}
 
 		/// <summary>

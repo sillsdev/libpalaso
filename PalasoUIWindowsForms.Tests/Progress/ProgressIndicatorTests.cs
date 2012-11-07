@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Palaso.Progress;
 using Palaso.WinForms;
 
-namespace Palaso.Tests.Progress
+namespace PalasoUIWindowsForms.Tests.Progress
 {
 	[TestFixture]
 	public class MultiPhaseProgressIndicatorTests
