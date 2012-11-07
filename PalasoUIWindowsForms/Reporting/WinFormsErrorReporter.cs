@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Reporting;
 
-namespace Palaso.WinForms
+namespace Palaso.UI.WindowsForms.Reporting
 {
 	class WinFormsErrorReporter:IErrorReporter
 	{

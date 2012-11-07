@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows.Forms;
 using Palaso.Progress;
 
-namespace Palaso.WinForms
+namespace Palaso.UI.WindowsForms.Progress
 {
 	public class SimpleProgressIndicator : ProgressBar, IProgressIndicator
 	{

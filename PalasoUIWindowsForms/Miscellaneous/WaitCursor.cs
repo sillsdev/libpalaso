@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Mime;
 using System.Windows.Forms;
 
-namespace Palaso.WinForms
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	/// ----------------------------------------------------------------------------------------
 	public class WaitCursor

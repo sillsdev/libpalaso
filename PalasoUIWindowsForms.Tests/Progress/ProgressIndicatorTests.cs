@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using Palaso.Progress;
-using Palaso.WinForms;
+using Palaso.UI.WindowsForms.Progress;
 
 namespace PalasoUIWindowsForms.Tests.Progress
 {
@@ -11,7 +11,8 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		public void FivePhase_ProgressesNormally()
 		{
 			var globalIndicator = new SimpleProgressIndicator();
-			var progress = new MultiPhaseProgressIndicator(globalIndicator, 5);
+			var progress = new MultiPhaseProgressIndicator(globalIndicator
+				, 5);
 			progress.Initialize(); // phase 1
 			Assert.That(globalIndicator.Value, Is.EqualTo(0));
 			progress.PercentCompleted = 50;

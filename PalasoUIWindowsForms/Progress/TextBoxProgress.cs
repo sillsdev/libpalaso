@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.Progress.LogBox;
 
-namespace Palaso.WinForms
+namespace Palaso.UI.WindowsForms.Progress
 {
 	public class TextBoxProgress : GenericProgress
 	{

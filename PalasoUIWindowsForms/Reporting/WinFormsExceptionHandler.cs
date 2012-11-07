@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Reporting;
 
-namespace Palaso.WinForms
+namespace Palaso.UI.WindowsForms.Reporting
 {
 	internal class WinFormsExceptionHandler: ExceptionHandler
 	{

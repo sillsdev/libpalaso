@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Miscellaneous;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {

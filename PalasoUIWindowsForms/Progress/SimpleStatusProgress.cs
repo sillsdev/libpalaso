@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Palaso.Progress;
 using Palaso.Progress.LogBox;
 
-namespace Palaso.WinForms
+namespace Palaso.UI.WindowsForms.Progress
 {
-
-
 	public class SimpleStatusProgress : Label, IProgress
 	{
 		public void WriteStatus(string message, params object[] args)

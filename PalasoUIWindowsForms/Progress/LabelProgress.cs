@@ -4,75 +4,80 @@ using System.Windows.Forms;
 using Palaso.Progress;
 using Palaso.Progress.LogBox;
 
-/// <summary>
-/// Just conveys status, not all messages
-/// </summary>
-public class LabelStatus : IProgress
+namespace Palaso.UI.WindowsForms.Progress
 {
-	private Label _box;
-
-	public LabelStatus(Label box)
+	/// <summary>
+	/// Just conveys status, not all messages
+	/// </summary>
+	public class LabelStatus : IProgress
 	{
-		_box = box;
-	}
+		private Label _box;
 
-	public SynchronizationContext SyncContext { get; set; }
-
-	public bool ShowVerbose
-	{
-		set { }
-	}
-	public bool ErrorEncountered { get; set; }
-
-	public IProgressIndicator ProgressIndicator { get; set; }
-
-	public bool CancelRequested { get; set; }
-
-
-	public void WriteStatus(string message, params object[] args)
-	{
-		try
+		public LabelStatus(Label box)
 		{
-			_box.Invoke(new Action(() =>
+			_box = box;
+		}
+
+		public SynchronizationContext SyncContext { get; set; }
+
+		public bool ShowVerbose
+		{
+			set { }
+		}
+
+		public bool ErrorEncountered { get; set; }
+
+		public IProgressIndicator ProgressIndicator { get; set; }
+
+		public bool CancelRequested { get; set; }
+
+
+		public void WriteStatus(string message, params object[] args)
+		{
+			try
 			{
-				_box.Text = GenericProgress.SafeFormat(message + Environment.NewLine, args);
-			}));
+				_box.Invoke(new Action(() =>
+										   {
+											   _box.Text = GenericProgress.SafeFormat(message + Environment.NewLine,
+																					  args);
+										   }));
+			}
+			catch (Exception)
+			{
+
+			}
 		}
-		catch (Exception)
+
+		public void WriteMessage(string message, params object[] args)
 		{
 
 		}
-	}
 
-	public void WriteMessage(string message, params object[] args)
-	{
+		public void WriteMessageWithColor(string colorName, string message, params object[] args)
+		{
 
-	}
+		}
 
-	public void WriteMessageWithColor(string colorName, string message, params object[] args)
-	{
+		public void WriteWarning(string message, params object[] args)
+		{
+		}
 
-	}
+		public void WriteException(Exception error)
+		{
+			WriteError("Error");
+			ErrorEncountered = true;
+		}
 
-	public void WriteWarning(string message, params object[] args)
-	{
-	}
+		public void WriteError(string message, params object[] args)
+		{
+			WriteStatus(message, args);
+			ErrorEncountered = true;
+		}
 
-	public void WriteException(Exception error)
-	{
-		WriteError("Error");
-		ErrorEncountered = true;
-	}
+		public void WriteVerbose(string message, params object[] args)
+		{
 
-	public void WriteError(string message, params object[] args)
-	{
-		WriteStatus(message, args);
-		ErrorEncountered = true;
-	}
-
-	public void WriteVerbose(string message, params object[] args)
-	{
+		}
 
 	}
-
 }
