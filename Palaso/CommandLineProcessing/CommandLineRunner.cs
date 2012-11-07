@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using Palaso.Progress.LogBox;
 
@@ -118,6 +119,18 @@ namespace Palaso.CommandLineProcessing
 			return result;
 		}
 
+		/// <summary>
+		/// On Windows, We can't get unicode over the command-line barrier, so
+		/// instead create 8.3 filename, which, happily, will have no non-english characters
+		/// for any part of the path. This is safe to call from Linux, too
+		/// </summary>
+		/// <remarks>We have this duplicated method here to make this solution more discoverable
+		/// for programmers wondering how to deal with the problem as they use the CommandLineRunner</remarks>
+		public static string MakePathSafeFromEncodingProblems(string path)
+		{
+			return Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+		}
+
 	}
 
 	public class ExecutionResult
@@ -150,4 +163,5 @@ namespace Palaso.CommandLineProcessing
 		public string Results;
 		public IProgress Progress;
 	}
+
 }
