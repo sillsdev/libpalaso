@@ -17,7 +17,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// understand why, but otherwise some exceptions don't get caught).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		private WinFormsExceptionHandler()
+		public WinFormsExceptionHandler()
 		{
 			// Using Application.ThreadException rather than
 			// AppDomain.CurrentDomain.UnhandledException has the advantage that the

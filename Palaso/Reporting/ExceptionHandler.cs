@@ -29,32 +29,54 @@ namespace Palaso.Reporting
 		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
 		//ExceptionHandler from there through Reflection. Otherwise we will simply use a console
 		//exception handler
+		/// <summary>
+		/// Initialize the ExceptionHandler. By default, the exceptionhandler will be initialized with a ConsoleExceptionHandler
+		/// unless he entry assembly uses a dependency on PalasoUIWinForms.dll. In that case we default to the WinFormsExceptionHandler
+		/// </summary>
 		public static void Init()
 		{
 			if (_singleton == null)
 			{
 				var topMostAssembly = Assembly.GetEntryAssembly();
-				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
-				var palasoUiWindowsFormsInializeAssemblyName =
-					referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
-				if (palasoUiWindowsFormsInializeAssemblyName != null)
+				if (topMostAssembly != null)
 				{
-					var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
-					//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
-					var interfaceToFind = typeof (ExceptionHandler);
-					var typeImplementingInterface =
-						toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
-					foreach (var type in typeImplementingInterface)
+					var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+					var palasoUiWindowsFormsInializeAssemblyName =
+						referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+					if (palasoUiWindowsFormsInializeAssemblyName != null)
 					{
-						_singleton = type.GetConstructor(Type.EmptyTypes).Invoke(null) as ExceptionHandler;
+						var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
+						//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
+						var interfaceToFind = typeof (ExceptionHandler);
+						var typeImplementingInterface =
+							toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
+						foreach (var type in typeImplementingInterface)
+						{
+							_singleton = type.GetConstructor(Type.EmptyTypes).Invoke(null) as ExceptionHandler;
+						}
+					}
+					//If we can't find the WinFormsExceptionHandler we'll use the Console
+					if (_singleton == null)
+					{
+						_singleton = new ConsoleExceptionHandler();
 					}
 				}
-				//If we can't find the WinFormsExceptionHandler we'll use the Console
-				if(_singleton == null)
-				{
-					_singleton = new ConsoleExceptionHandler();
-				}
 			}
+			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
+		}
+
+		/// <summary>
+		/// Use this method if you want to use an exeption handler besides the default.
+		/// This method should be called only once
+		/// </summary>
+		/// <param name="handler"></param>
+		public static void Init(ExceptionHandler handler)
+		{
+			if (_singleton == null)
+			{
+				_singleton = handler;
+			}
+			else{throw new InvalidOperationException("An ExceptionHandler has already been set.");}
 		}
 
 		/// ------------------------------------------------------------------------------------
