@@ -71,6 +71,16 @@ namespace Palaso.Reporting
 			}
 		}
 
+		/// <summary>
+		/// Use this method if you want to override the default IErrorReporter.
+		/// This method should be called only once at application startup.
+		/// </summary>
+		/// <param name="handler"></param>
+		public static void SetErrorReporter(IErrorReporter reporter)
+		{
+			_errorReporter = reporter;
+		}
+
 		protected static string s_emailAddress = null;
 		protected static string s_emailSubject = "Exception Report";
 

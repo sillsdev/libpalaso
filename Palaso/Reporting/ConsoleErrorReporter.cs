@@ -66,18 +66,6 @@ namespace Palaso.Reporting
 		{
 			var textToReport = GetErrorStamp(severity);
 
-			try
-			{
-				if (!string.IsNullOrEmpty(message))
-					UsageReporter.ReportExceptionString(message);
-				else if (error != null)
-					UsageReporter.ReportException(error);
-			}
-			catch
-			{
-				//swallow
-			}
-
 			Exception innerMostException = null;
 			textToReport += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
 
@@ -146,17 +134,6 @@ namespace Palaso.Reporting
 				foreach (string label in ErrorReport.Properties.Keys)
 				{
 					properties += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
-				}
-
-				properties += Environment.NewLine + "--Log--" + Environment.NewLine;
-				try
-				{
-					properties += Logger.LogText;
-				}
-				catch (Exception err)
-				{
-					//We have more than one report of dieing while logging an exception.
-					properties += "****Could not read from log: " + err.Message + Environment.NewLine;
 				}
 				return properties;
 			}
