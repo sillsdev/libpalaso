@@ -24,12 +24,20 @@ namespace Palaso.Reporting
 				return ErrorResult.OK;
 			}
 
+
 			if (ErrorReport.IsOkToInteractWithUser)
 			{
-				Console.WriteLine(message);
-				Console.WriteLine(policy.ReoccurenceMessage);
+				if (ErrorReport.IsOkToInteractWithUser)
+				{
+					Console.WriteLine(message);
+					Console.WriteLine(policy.ReoccurenceMessage);
+				}
+				return ErrorResult.OK;
 			}
-			return ErrorResult.OK;
+			else
+			{
+				throw new ErrorReport.ProblemNotificationSentToUserException(message);
+			}
 		}
 
 		public void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
