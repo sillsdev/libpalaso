@@ -125,11 +125,55 @@ namespace Palaso.CommandLineProcessing
 		/// instead create 8.3 filename, which, happily, will have no non-english characters
 		/// for any part of the path. This is safe to call from Linux, too
 		/// </summary>
-		/// <remarks>We have this duplicated method here to make this solution more discoverable
-		/// for programmers wondering how to deal with the problem as they use the CommandLineRunner</remarks>
-		public static string MakePathSafeFromEncodingProblems(string path)
+		public static string MakePathToFileSafeFromEncodingProblems(string path)
 		{
-			return Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+			if(Directory.Exists(path))
+				throw new ArgumentException(string.Format("MakePathToFileSafeFromEncodingProblems() is only for files, but {0} is a directory.",path));
+
+			var safe = "";
+
+			//if the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get the name, then delete it.
+			//NB: this will not yet deal with the problem of creating a directory
+			if(!File.Exists(path))
+			{
+				File.WriteAllText(path,"");
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+				File.Delete(path);
+			}
+			else
+			{
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+			}
+
+			return safe;
+		}
+
+		/// <summary>
+		/// On Windows, We can't get unicode over the command-line barrier, so
+		/// instead create 8.3 filename, which, happily, will have no non-english characters
+		/// for any part of the path. This is safe to call from Linux, too
+		/// </summary>
+		public static string MakePathToDirectorySafeFromEncodingProblems(string path)
+		{
+			if (File.Exists(path))
+				throw new ArgumentException(string.Format("MakePathToDirectorySafeFromEncodingProblems() is only for directories, but {0} is a file.", path));
+
+			var safe = "";
+
+			//if the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get the name, then delete it.
+			//NB: this will not yet deal with the problem of creating a directory
+			if (!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+				Directory.Delete(path);
+			}
+			else
+			{
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+			}
+
+			return safe;
 		}
 
 		/// <summary>
