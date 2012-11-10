@@ -44,7 +44,7 @@ namespace Palaso.Media
 			_thinkWeAreRecording = true;
 			_recorder.ClearRecordedAudioDataBuffer();
 
-			_recorder.StartRecordingBufferedAudio(22000, SampleFormat.Signed16Bit);
+			_recorder.StartRecordingBufferedAudio(22000, SampleFormat.Signed16Bit, 1);
 			//_recorder.StartRecordingBufferedAudio();
 			_startRecordingTime = DateTime.Now;
 
