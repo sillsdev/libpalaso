@@ -10,7 +10,7 @@ using System.Xml;
 using Palaso.Extensions;
 #endif
 using Palaso.IO;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.Xml
 {

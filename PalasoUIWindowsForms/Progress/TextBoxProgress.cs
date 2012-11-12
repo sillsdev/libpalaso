@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.UI.WindowsForms.Progress
 {

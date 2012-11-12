@@ -4,7 +4,7 @@ using System.Linq;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 using Palaso.WritingSystems;
 
 namespace Palaso.DictionaryServices.Processors

@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Processors;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 using Palaso.TestUtilities;
 
 namespace Palaso.DictionaryServices.Tests.Merging

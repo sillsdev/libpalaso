@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {

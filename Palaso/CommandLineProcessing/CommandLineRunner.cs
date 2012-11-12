@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.CommandLineProcessing
 {

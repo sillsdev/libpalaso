@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.IO
 {

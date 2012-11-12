@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using Palaso.CommandLineProcessing;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 
 namespace Palaso.Tests.Progress
