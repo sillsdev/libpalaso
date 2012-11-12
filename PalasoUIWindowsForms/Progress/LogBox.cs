@@ -5,9 +5,9 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
 using Palaso.Progress;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
-namespace Palaso.UI.WindowsForms.Reporting.LogBox
+namespace Palaso.UI.WindowsForms.Progress
 {
 	public partial class LogBox : UserControl, IProgress
 	{

@@ -1,4 +1,4 @@
-﻿namespace Palaso.UI.WindowsForms.Reporting.LogBox
+﻿namespace Palaso.UI.WindowsForms.Progress
 {
 	partial class LogBox
 	{
