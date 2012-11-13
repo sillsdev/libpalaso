@@ -3,7 +3,7 @@ using System.Linq;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.DictionaryServices.Processors
 {

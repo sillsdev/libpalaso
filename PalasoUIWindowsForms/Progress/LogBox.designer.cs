@@ -1,4 +1,4 @@
-﻿namespace Palaso.Progress.LogBox
+﻿namespace Palaso.UI.WindowsForms.Progress
 {
 	partial class LogBox
 	{
@@ -101,7 +101,7 @@
 			this._copyToClipboardMenuItem,
 			this._runDiagnostics,
 			this._chooseFontMenuItem});
-			this._menu.Image = global::Palaso.Properties.Resources.MenuButtonArrow;
+			this._menu.Image = global::Palaso.UI.WindowsForms.Properties.Resources.MenuButtonArrow;
 			this._menu.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this._menu.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
 			this._menu.Name = "_menu";

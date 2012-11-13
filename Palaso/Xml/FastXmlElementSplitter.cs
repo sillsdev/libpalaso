@@ -9,7 +9,8 @@ using System.Xml;
 #if USEBYTESASPRIMARY
 using Palaso.Extensions;
 #endif
-using Palaso.Progress.LogBox;
+using Palaso.IO;
+using Palaso.Progress;
 
 namespace Palaso.Xml
 {
@@ -42,7 +43,7 @@ namespace Palaso.Xml
 		public FastXmlElementSplitter(string pathname)
 		{
 			if (string.IsNullOrEmpty(pathname))
-				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "pathname");
+				throw new ArgumentException(FileRelatedStrings.kNullOrEmptyString, "pathname");
 
 			if (!File.Exists(pathname))
 				throw new FileNotFoundException("File was not found.", "pathname");
@@ -182,7 +183,7 @@ namespace Palaso.Xml
 					.Select(byteResult => EncUtf8.GetString(byteResult)));
 #else
 			if (string.IsNullOrEmpty(recordMarker))
-				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
+				throw new ArgumentException(FileRelatedStrings.kNullOrEmptyString, "recordMarker");
 
 			foundOptionalFirstElement = false;
 			var results = new List<string>(25000);

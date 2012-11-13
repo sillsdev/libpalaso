@@ -1,7 +1,8 @@
 using System;
 using System.Windows.Forms;
+using Palaso.Reporting;
 
-namespace Palaso.Reporting
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	public partial class UserRegistrationDialog : Form
 	{

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Palaso.Progress
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	/// ----------------------------------------------------------------------------------------
 	public class WaitCursor

@@ -49,7 +49,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			_progressLabel.BackColor = Color.Transparent;
 			_overviewLabel.BackColor = Color.Transparent;
 			_startTime = default(DateTime);
-			Text = Reporting.UsageReporter.AppNameToUseInDialogs;
+			Text = Palaso.Reporting.UsageReporter.AppNameToUseInDialogs;
 
 			_statusLabel.Font = SystemFonts.MessageBoxFont;
 			_progressLabel.Font = SystemFonts.MessageBoxFont;

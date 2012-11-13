@@ -1,9 +1,12 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Palaso.Email; // TODO: Ideally we wouldn't need this here in the UI.
+using Palaso.Email;
+using Palaso.Reporting;
 
-namespace Palaso.Reporting
+// TODO: Ideally we wouldn't need this here in the UI.
+
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	/// <summary>
 	/// Summary description for UsageEmailDialog.

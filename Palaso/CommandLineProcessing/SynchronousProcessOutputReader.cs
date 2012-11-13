@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 using ThreadState = System.Threading.ThreadState;
 
 namespace Palaso.CommandLineProcessing

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Windows.Forms;
+
 
 namespace Palaso.Reporting
 {
@@ -182,7 +182,7 @@ namespace Palaso.Reporting
 				 return s_singleton._appNameToUseInDialogs;
 
 				}
-				return Application.ProductName;
+				return EntryAssembly.ProductName;
 			}
 			set
 			{
@@ -198,7 +198,7 @@ namespace Palaso.Reporting
 				{
 					 return s_singleton._appNameToUseInReporting;
 				}
-				return Application.ProductName;
+				return EntryAssembly.ProductName;
 			}
 			set
 			{

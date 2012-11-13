@@ -5,9 +5,9 @@ using System.Windows.Forms;
 using Palaso.Email;
 using Palaso.Reporting;
 
-namespace Palaso.Reporting
+namespace Palaso.UI.WindowsForms.Reporting
 {
-	 public class ExceptionReportingDialog : Form, IDisposable
+	 public class ExceptionReportingDialog : Form
 	{
 		#region Member variables
 
@@ -175,7 +175,7 @@ namespace Palaso.Reporting
 			// _privacyNoticeButton
 			//
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
-			this._privacyNoticeButton.Image = global::Palaso.Properties.Resources.spy16x16;
+			this._privacyNoticeButton.Image = global::Palaso.UI.WindowsForms.Properties.Resources.spy16x16;
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
 			this._privacyNoticeButton.Click += new System.EventHandler(this._privacyNoticeButton_Click);
@@ -299,6 +299,7 @@ namespace Palaso.Reporting
 				dlg.Report(message, string.Empty, stack, null);
 			}
 		}
+
 		internal static void ReportMessage(string message, Exception error, bool isLethal)
 		{
 			if (s_doIgnoreReport)

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Palaso.Progress;
+using Palaso.UI.WindowsForms.Progress;
 
-namespace Palaso.Tests.Progress
+namespace PalasoUIWindowsForms.Tests.Progress
 {
 	[TestFixture]
 	public class MultiPhaseProgressIndicatorTests
@@ -14,7 +11,8 @@ namespace Palaso.Tests.Progress
 		public void FivePhase_ProgressesNormally()
 		{
 			var globalIndicator = new SimpleProgressIndicator();
-			var progress = new MultiPhaseProgressIndicator(globalIndicator, 5);
+			var progress = new MultiPhaseProgressIndicator(globalIndicator
+				, 5);
 			progress.Initialize(); // phase 1
 			Assert.That(globalIndicator.Value, Is.EqualTo(0));
 			progress.PercentCompleted = 50;

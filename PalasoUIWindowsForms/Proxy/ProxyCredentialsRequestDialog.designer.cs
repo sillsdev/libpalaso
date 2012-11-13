@@ -1,4 +1,4 @@
-﻿namespace Palaso.Network
+﻿namespace Palaso.UI.WindowsForms.Proxy
 {
 	partial class ProxyCredentialsRequestDialog
 	{
