@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
 using System.IO;
 using NUnit.Framework;
+using Palaso.CommandLineProcessing;
 using Palaso.IO;
+using Palaso.Progress.LogBox;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.ClearShare;
 
@@ -184,6 +186,25 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
 		{
 			Assert.IsNull(Metadata.FromFile(_tempFile.Path).Creator);
+		}
+
+		[Test,Ignore("Fails due to exiftool bug")]
+		public void ExifToolCreation_InDirectoryWithRussianPath_DoesnotChoke()
+		{
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var arguments = "-Author=\"me\" -o \"abc.xmp\" ";
+
+			using (var folder = new TemporaryFolder("PalasoMetadataTest"))
+			{
+				var result = CommandLineRunner.Run(exifToolPath, arguments, folder.Path, 2, new ConsoleProgress());
+				result.RaiseExceptionIfFailed("test");
+			}
+			//this one fails
+			using (var dangerousFolder = new TemporaryFolder("ффPalasoMetadataTest"))
+			{
+				var result = CommandLineRunner.Run(exifToolPath, arguments, dangerousFolder.Path, 2, new ConsoleProgress());
+				result.RaiseExceptionIfFailed("test");
+			}
 		}
 
 		[Test]
