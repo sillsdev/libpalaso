@@ -45,6 +45,9 @@ namespace Palaso.CommandLineProcessing
 		public static ExecutionResult Run(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress)
 		{
 			ExecutionResult result = new ExecutionResult();
+			result.Arguments = arguments;
+			result.ExePath = exePath;
+
 			Process process = new Process();
 			process.StartInfo.RedirectStandardError = true;
 			process.StartInfo.RedirectStandardOutput = true;
@@ -213,8 +216,25 @@ namespace Palaso.CommandLineProcessing
 		public int ExitCode;
 		public string StandardError;
 		public string StandardOutput;
+		public string ExePath;
+		public string Arguments;
 		public bool DidTimeOut { get { return ExitCode ==  kTimedOut; } }
 		public bool UserCancelled { get { return ExitCode == kCancelled; } }
+
+		public void RaiseExceptionIfFailed(string contextDescription, params object[] originalPath)
+		{
+			if (ExitCode == 0)
+				return;
+
+			var builder = new StringBuilder();
+			builder.AppendLine(string.Format("{0} {1} failed.", ExePath,Arguments));
+			builder.AppendLine("In the context of "+ string.Format(contextDescription, originalPath));
+			builder.AppendLine("StandardError: "+StandardError);
+			builder.AppendLine("StandardOutput: " + StandardOutput);
+			if (DidTimeOut)
+				builder.AppendLine("The operation timed out.");
+			throw new ApplicationException(builder.ToString());
+		}
 	}
 
 	public class UserCancelledException : ApplicationException
