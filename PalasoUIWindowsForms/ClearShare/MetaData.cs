@@ -234,8 +234,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				{
 					args.Append(" " + assignment.Switch + " ");
 				}
+				var directory = Path.GetDirectoryName(path);//NB: this doesn't go out to commandline, so there are no unicode worries
 				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
-												   _commandLineEncoding, GetUnicodeSafeDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
+												   _commandLineEncoding, directory, 20 /*had a possiblefailure at 5: BL-242*/,
 												   new NullProgress());
 				if(result.DidTimeOut)
 				{
@@ -243,6 +244,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 																	 path+" ran out of time.");
 					return values;
 				}
+				result.RaiseExceptionIfFailed("GetImageProperites({0})", path);
 
 #if DEBUG
 				Debug.WriteLine("reading");
@@ -274,13 +276,6 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 			return values;
 		}
-
-		private static string GetUnicodeSafeDirectoryName(string path)
-		{
-			//NB: even if path is already safe, it can become unsafe after GetDirectoryName. So we re-encode it
-			return CommandLineRunner.MakePathToDirectorySafeFromEncodingProblems(Path.GetDirectoryName(path));
-		}
-
 
 		private class MetadataAssignement
 		{
@@ -389,9 +384,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			arguments.Append(" -overwrite_original_in_place "); //we do this becuase we're giving it an 8.3 version of the name (useful when there's non-ascii in the filepath), and without this, exiftool gets messed up when trying to finish up via renaming. This makes it do a copy instead, which works even with the 8.3 names.
 			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", CommandLineRunner.MakePathToFileSafeFromEncodingProblems(path));
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, GetUnicodeSafeDirectoryName(_path), 5, new NullProgress());
+			var directory = Path.GetDirectoryName(path);//NB: this doesn't go out to commandline, so there are no unicode worries
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, directory, 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 
+			result.RaiseExceptionIfFailed("Write({0}",path);
 
 			//-overwrite_original didn't work for this
 			var extra = path + "_original";
@@ -499,18 +496,27 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				File.Delete(path);
 
 			//NO! this will actually create a file with the 8.3 name, which isn't what we want: path = CommandLineRunner.MakePathToFileSafeFromEncodingProblems(path);
+			//In fact I have so far been unable to allow non-ascii characters in the filename.
+			//We can, do however, get non-ascii in the path (e.g. the user's account name). The difference is that
+			//the director already exists, wheras the file doesn't. I've tried pre-creating it, but exiftool then can't
+			//handle overwriting it (no, the various -overwrite_ flags don't work for writing xmp files).
 
 			StringBuilder arguments = new StringBuilder();
 			//doesn't work: arguments.Append("-charset cp65001 ");//utf-8
 			arguments.Append(" -E ");//in AddAssignmentArguments we make the values use html encoded values
-			arguments.AppendFormat("-o \"{0}\"", path);
+
+
+			//we send it in wihtout the whole directory, because that might have non-ascii characters
+			arguments.AppendFormat("-o \"{0}\"", Path.GetFileName(path));
 			AddAssignmentArguments(arguments);
 
 			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 
 			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
-			var safeDirectory = GetUnicodeSafeDirectoryName(path);
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, safeDirectory, 5, new NullProgress());
+			var directory = Path.GetDirectoryName(path);//NB: this doesn't go out to commandline, so there are no unicode worries
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, directory, 5, new NullProgress());
+
+			result.RaiseExceptionIfFailed("SaveXmpFile({0})", path);
 		}
 
 
@@ -539,9 +545,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				}
 				StringBuilder arguments = new StringBuilder();
 				arguments.Append("-charset cp65001 ");//utf-8
-				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", path, temp.Path);
-				var safeDirectory = GetUnicodeSafeDirectoryName(path);
-				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, safeDirectory, 5, new NullProgress());
+				arguments.Append(" -overwrite_original_in_place "); //we do this becuase we're giving it an 8.3 version of the name (useful when there's non-ascii in the filepath), and without this, exiftool gets messed up when trying to finish up via renaming. This makes it do a copy instead, which works even with the 8.3 names.
+				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", CommandLineRunner.MakePathToFileSafeFromEncodingProblems(path), CommandLineRunner.MakePathToFileSafeFromEncodingProblems(temp.Path));
+				var directory =Path.GetDirectoryName(path);//NB: this doesn't go out to commandline, so there are no unicode worries
+				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, directory, 5, new NullProgress());
+				result.RaiseExceptionIfFailed("LoadXmpFile({0})",path);
 				LoadProperties(temp.Path, this);
 			}
 
