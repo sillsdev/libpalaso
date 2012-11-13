@@ -3,7 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using Palaso.CommandLineProcessing;
 using Palaso.IO;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.ClearShare;
 

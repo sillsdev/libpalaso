@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.CommandLineProcessing
 {
