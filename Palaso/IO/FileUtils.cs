@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -163,6 +164,29 @@ namespace Palaso.IO
 			}
 		}
 
+#if !MONO
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		static extern uint GetShortPathName(
+		   [MarshalAs(UnmanagedType.LPTStr)]string lpszLongPath,
+		   [MarshalAs(UnmanagedType.LPTStr)]StringBuilder lpszShortPath,
+		   uint cchBuffer);
+#endif
+
+		/// <summary>
+		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
+		/// will convert them to 8.3 format which is all ascii (and do nothing on Linux).
+		/// </summary>
+		public static string MakePathSafeFromEncodingProblems(string path)
+		{
+#if MONO
+			return path;//Linux doesn't have these problems, far as I know
+#else
+			const int MAXPATH = 260;
+			var shortBuilder = new StringBuilder(MAXPATH);
+			GetShortPathName(path, shortBuilder, (uint)shortBuilder.Capacity);
+			return shortBuilder.ToString();
+#endif
+		}
 
 	}
 }

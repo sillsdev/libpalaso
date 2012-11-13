@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -62,6 +63,9 @@ namespace Palaso.CommandLineProcessing
 		{
 			progress.WriteVerbose("running '{0} {1}' from '{2}'", exePath, arguments, fromDirectory);
 			ExecutionResult result = new ExecutionResult();
+			result.Arguments = arguments;
+			result.ExePath = exePath;
+
 			_process = new Process();
 			_process.StartInfo.RedirectStandardError = true;
 			_process.StartInfo.RedirectStandardOutput = true;
@@ -137,6 +141,92 @@ namespace Palaso.CommandLineProcessing
 			}
 			return result;
 		}
+		/// <summary>
+		/// On Windows, We can't get unicode over the command-line barrier, so
+		/// instead create 8.3 filename, which, happily, will have no non-english characters
+		/// for any part of the path. This is safe to call from Linux, too
+		/// </summary>
+	 public static string MakePathToFileSafeFromEncodingProblems(string path)
+		{
+			if(Directory.Exists(path))
+				throw new ArgumentException(string.Format("MakePathToFileSafeFromEncodingProblems() is only for files, but {0} is a directory.",path));
+
+			var safe = "";
+
+			//if the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get the name, then delete it.
+			//NB: this will not yet deal with the problem of creating a directory
+			if(!File.Exists(path))
+			{
+				File.WriteAllText(path,"");
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+				File.Delete(path);
+			}
+			else
+			{
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+			}
+
+			return safe;
+		}
+
+		/// <summary>
+		/// On Windows, We can't get unicode over the command-line barrier, so
+		/// instead create 8.3 filename, which, happily, will have no non-english characters
+		/// for any part of the path. This is safe to call from Linux, too
+		/// </summary>
+	 public static string MakePathToDirectorySafeFromEncodingProblems(string path)
+		{
+			if (File.Exists(path))
+				throw new ArgumentException(
+					string.Format(
+						"MakePathToDirectorySafeFromEncodingProblems() is only for directories, but {0} is a file.",
+						path));
+
+			var safe = "";
+
+			//if the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get the name, then delete it.
+			//NB: this will not yet deal with the problem of creating a directory
+			if (!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+				Directory.Delete(path);
+			}
+			else
+			{
+				safe = Palaso.IO.FileUtils.MakePathSafeFromEncodingProblems(path);
+			}
+
+			return safe;
+		}
+
+
+		/// <summary>
+		/// Some command line applications (e.g. exiftool) can handle html-encoded characters in their command arguments
+		/// </summary>
+		/// <remarks>From Rick Strahl at http://www.west-wind.com/weblog/posts/2009/Feb/05/Html-and-Uri-String-Encoding-without-SystemWeb</remarks>
+		public static string HtmlEncodeNonAsciiCharacters(string text)
+		{
+			if (text == null)
+				return null;
+
+			StringBuilder sb = new StringBuilder(text.Length);
+
+			int len = text.Length;
+			for (int i = 0; i < len; i++)
+			{
+				if (text[i] > 159)
+				{
+					// decimal numeric entity
+					sb.Append("&#");
+					sb.Append(((int)text[i]).ToString(CultureInfo.InvariantCulture));
+					sb.Append(";");
+				}
+				else
+					sb.Append(text[i]);
+			}
+			return sb.ToString();
+		}
 
 	}
 
@@ -148,9 +238,27 @@ namespace Palaso.CommandLineProcessing
 		public int ExitCode;
 		public string StandardError;
 		public string StandardOutput;
-		public bool DidTimeOut { get { return ExitCode ==  kTimedOut; } }
+		public string ExePath;
+		public string Arguments;
+		public bool DidTimeOut { get { return ExitCode == kTimedOut; } }
 		public bool UserCancelled { get { return ExitCode == kCancelled; } }
+
+		public void RaiseExceptionIfFailed(string contextDescription, params object[] originalPath)
+		{
+			if (ExitCode == 0)
+				return;
+
+			var builder = new StringBuilder();
+			builder.AppendLine(string.Format("{0} {1} failed.", ExePath, Arguments));
+			builder.AppendLine("In the context of " + string.Format(contextDescription, originalPath));
+			builder.AppendLine("StandardError: " + StandardError);
+			builder.AppendLine("StandardOutput: " + StandardOutput);
+			if (DidTimeOut)
+				builder.AppendLine("The operation timed out.");
+			throw new ApplicationException(builder.ToString());
+		}
 	}
+
 
 	public class UserCancelledException : ApplicationException
 	{
@@ -160,8 +268,6 @@ namespace Palaso.CommandLineProcessing
 
 		}
 	}
-
-
 
 	class ReaderArgs
 	{
