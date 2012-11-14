@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
 using Palaso.Progress;
+using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Progress
 {
@@ -413,7 +414,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			try
 			{
-				Reporting.ErrorReport.ReportNonFatalMessageWithStackTrace(msg);
+				ErrorReport.ReportNonFatalMessageWithStackTrace(msg);
 				return true;
 			}
 			catch (Exception)

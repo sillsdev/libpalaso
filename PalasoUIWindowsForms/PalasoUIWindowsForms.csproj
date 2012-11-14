@@ -113,10 +113,6 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
 	</None>
-	<None Include="Progress\LogBoxSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
-	</None>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
@@ -304,16 +300,6 @@
 	<Compile Include="Progress\LogBox.designer.cs">
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Progress\LogBoxResources.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>LogBoxResources.resx</DependentUpon>
-	</Compile>
-	<Compile Include="Progress\LogBoxSettings.Designer.cs">
-	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	</Compile>
 	<Compile Include="Progress\ProgressDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -444,12 +430,6 @@
 	</Compile>
 	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\LabelProgress.cs" />
-	<Compile Include="Progress\LogBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox.designer.cs">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
 	  <AutoGen>True</AutoGen>
@@ -717,11 +697,6 @@
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBoxResources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <SubType>Designer</SubType>
-	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -775,10 +750,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBox.resx">
-	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBoxResources.resx">
