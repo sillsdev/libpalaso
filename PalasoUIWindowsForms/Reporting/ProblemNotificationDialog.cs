@@ -1,9 +1,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.Properties;
+using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Miscellaneous;
 
-namespace Palaso.Reporting
+namespace Palaso.UI.WindowsForms.Reporting
 {
 	public partial class ProblemNotificationDialog : Form
 	{

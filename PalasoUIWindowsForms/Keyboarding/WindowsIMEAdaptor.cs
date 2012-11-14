@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Linq;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -25,12 +26,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				else
 				{
-					Palaso.Reporting.ProblemNotificationDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
+					ProblemNotificationDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
 				}
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
+				ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
 			}
 		}
 
@@ -120,7 +121,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Reporting.ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
+				ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
 			}
 		}
 
@@ -137,7 +138,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Reporting.ProblemNotificationDialog.Show(
+				ProblemNotificationDialog.Show(
 					"There was a problem retrieving the active keyboard in from windows ime."
 				);
 			}

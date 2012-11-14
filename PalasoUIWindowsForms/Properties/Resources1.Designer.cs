@@ -120,6 +120,13 @@ namespace Palaso.UI.WindowsForms.Properties {
 			}
 		}
 
+		internal static System.Drawing.Bitmap MenuButtonArrow {
+			get {
+				object obj = ResourceManager.GetObject("MenuButtonArrow", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
 		/// <summary>
 		///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
 		///&lt;OLAC_doc&gt;
@@ -197,6 +204,13 @@ namespace Palaso.UI.WindowsForms.Properties {
 		internal static System.Drawing.Bitmap settings16x16 {
 			get {
 				object obj = ResourceManager.GetObject("settings16x16", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		internal static System.Drawing.Bitmap spy16x16 {
+			get {
+				object obj = ResourceManager.GetObject("spy16x16", resourceCulture);
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace Palaso.Reporting
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	//from Chris pietschmann http://pietschsoft.com/post/2009/01/26/CSharp-Flash-Window-in-Taskbar-via-Win32-FlashWindowEx.aspx
 	/// <summary>

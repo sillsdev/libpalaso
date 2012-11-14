@@ -5,15 +5,82 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
+using Palaso.Reporting;
+
 
 namespace Palaso.Reporting
 {
+	public interface IErrorReporter
+	{
+		void ReportFatalException(Exception e);
+		ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+										string alternateButton1Label,
+										ErrorResult resultIfAlternateButtonPressed,
+										string message);
+		void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy);
+		void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args);
+		void ReportNonFatalMessageWithStackTrace(string message, params object[] args);
+		void ReportFatalMessageWithStackTrace(string message, object[] args);
+	}
+
+	public enum ErrorResult
+	{
+		None,
+		OK,
+		Cancel,
+		Abort,
+		Retry,
+		Ignore,
+		Yes,
+		No
+	}
+
 	public class ErrorReport
 	{
+		private static IErrorReporter _errorReporter = new ConsoleErrorReporter();
+
+		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
+		//Not wanting to break existing applications we have now added this class initializer which will
+		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//WinformsErrorReporter from there through Reflection. otherwise we will simply use a console
+		//error reporter
+		static ErrorReport()
+		{
+			var topMostAssembly = Assembly.GetEntryAssembly();
+			if (topMostAssembly != null)
+			{
+				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+				var palasoUiWindowsFormsInializeAssemblyName =
+					referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+				if (palasoUiWindowsFormsInializeAssemblyName != null)
+				{
+					var palasoUIWinFormsAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
+					//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
+					var interfaceToFind = typeof (IErrorReporter);
+					var typeImplementingInterface =
+						palasoUIWinFormsAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
+					foreach (var type in typeImplementingInterface)
+					{
+						_errorReporter = type.GetConstructor(Type.EmptyTypes).Invoke(null) as IErrorReporter;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Use this method if you want to override the default IErrorReporter.
+		/// This method should be called only once at application startup.
+		/// </summary>
+		/// <param name="handler"></param>
+		public static void SetErrorReporter(IErrorReporter reporter)
+		{
+			_errorReporter = reporter;
+		}
+
 		protected static string s_emailAddress = null;
 		protected static string s_emailSubject = "Exception Report";
 
@@ -363,7 +430,7 @@ namespace Palaso.Reporting
 		public static void ReportFatalException(Exception error)
 		{
 			UsageReporter.ReportException(true, null, error, null);
-			ExceptionReportingDialog.ReportException(error, null);
+			_errorReporter.ReportFatalException(error);
 		}
 
 		/// <summary>
@@ -375,9 +442,9 @@ namespace Palaso.Reporting
 			NotifyUserOfProblem(new ShowAlwaysPolicy(), message, args);
 		}
 
-		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
+		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
 		{
-			return NotifyUserOfProblem(policy, null, default(DialogResult), messageFmt, args);
+			return NotifyUserOfProblem(policy, null, default(ErrorResult), messageFmt, args);
 		}
 
 		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
@@ -387,8 +454,8 @@ namespace Palaso.Reporting
 
 		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
 		{
-			var result = NotifyUserOfProblem(policy, "Details", DialogResult.Yes, messageFmt, args);
-			if (result == DialogResult.Yes)
+			var result = NotifyUserOfProblem(policy, "Details", ErrorResult.Yes, messageFmt, args);
+			if (result == ErrorResult.Yes)
 			{
 				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
 			}
@@ -396,40 +463,19 @@ namespace Palaso.Reporting
 			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
 		}
 
-		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 									string alternateButton1Label,
-									DialogResult resultIfAlternateButtonPressed,
+									ErrorResult resultIfAlternateButtonPressed,
 									string messageFmt,
 									params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
-			if (!policy.ShouldShowMessage(message))
-			{
-				return DialogResult.OK;
-			}
-
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
-				ErrorReport.s_previousNonFatalMessage = message;
-				return DialogResult.OK;
+				s_previousNonFatalMessage = message;
+				return ErrorResult.OK;
 			}
-			else if (ErrorReport.IsOkToInteractWithUser)
-			{
-				var dlg = new ProblemNotificationDialog(message, UsageReporter.AppNameToUseInDialogs + " Problem")
-				{
-					ReoccurenceMessage = policy.ReoccurenceMessage
-
-				};
-				if(!string.IsNullOrEmpty(alternateButton1Label))
-				{
-					dlg.EnableAlternateButton1(alternateButton1Label, resultIfAlternateButtonPressed);
-				}
-				return dlg.ShowDialog();
-			}
-			else
-			{
-				throw new ProblemNotificationSentToUserException(message);
-			}
+			return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
 		}
 
 		/// <summary>
@@ -437,8 +483,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			ExceptionReportingDialog.ReportMessage(s, error, false);
+			_errorReporter.ReportNonFatalExceptionWithMessage(error, message, args);
 		}
 
 		/// <summary>
@@ -447,18 +492,14 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			var stack =  new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s,stack, false);
+			_errorReporter.ReportNonFatalMessageWithStackTrace(message, args);
 		}
 		/// <summary>
 		/// Bring up a "green box" that let's them send in a report, then exit.
 		/// </summary>
 		public static void ReportFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			var stack = new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s, stack, false);
+			_errorReporter.ReportFatalMessageWithStackTrace(message, args);
 		}
 
 		/// <summary>
@@ -474,22 +515,12 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
 		{
-			if(s_justRecordNonFatalMessagesForTesting)
+			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				ErrorReport.s_previousNonFatalException = exception;
 				return;
 			}
-			 if(policy.ShouldShowErrorReportDialog(exception))
-			{
-				if (ErrorReport.IsOkToInteractWithUser)
-				{
-					   ExceptionReportingDialog.ReportException(exception, null, false);
-				}
-				else
-				{
-					throw new NonFatalExceptionWouldHaveBeenMessageShownToUserException(exception);
-				}
-			}
+			_errorReporter.ReportNonFatalException(exception, policy);
 			 UsageReporter.ReportException(false, null, exception, null);
 		}
 

@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
+
 using Palaso.Extensions;
 
 namespace Palaso.Progress
@@ -503,136 +503,7 @@ namespace Palaso.Progress
 
 	}
 
-	/// <summary>
-	/// Just conveys status, not all messages
-	/// </summary>
-	public class LabelStatus : IProgress
-	{
-		private Label _box;
-
-		public LabelStatus(Label box)
-		{
-			_box = box;
-		}
-
-		public SynchronizationContext SyncContext { get; set; }
-
-		public bool ShowVerbose
-		{
-			set { }
-		}
-		public bool ErrorEncountered { get; set; }
-
-		public IProgressIndicator ProgressIndicator { get; set; }
-
-		public bool CancelRequested { get; set; }
-
-
-		public void WriteStatus(string message, params object[] args)
-		{
-			try
-			{
-				_box.Invoke(new Action(() =>
-				{
-					_box.Text = GenericProgress.SafeFormat(message + Environment.NewLine, args);
-				}));
-			}
-			catch (Exception)
-			{
-
-			}
-		}
-
-		public void WriteMessage(string message, params object[] args)
-		{
-
-		}
-
-		public void WriteMessageWithColor(string colorName, string message, params object[] args)
-		{
-
-		}
-
-		public void WriteWarning(string message, params object[] args)
-		{
-		}
-
-		public void WriteException(Exception error)
-		{
-			WriteError("Error");
-			ErrorEncountered = true;
-		}
-
-		public void WriteError(string message, params object[] args)
-		{
-			WriteStatus(message,args);
-			ErrorEncountered = true;
-		}
-
-		public void WriteVerbose(string message, params object[] args)
-		{
-
-		}
-
-	}
-
-	public class TextBoxProgress : GenericProgress
-	{
-		private RichTextBox _box;
-
-		public TextBoxProgress(RichTextBox box)
-		{
-			_box = box;
-			_box.Multiline = true;
-		}
-
-
-		public override void WriteMessage(string message, params object[] args)
-		{
-			try
-			{
-			 // if (_box.InvokeRequired)
-				_box.Invoke(new Action( ()=>
-				{
-					_box.Text += "                          ".Substring(0, indent * 2);
-					_box.Text += GenericProgress.SafeFormat(message + Environment.NewLine, args);
-				}));
-			}
-			catch (Exception)
-			{
-
-			}
-//            _box.Invoke(new Action<TextBox, int>((box, indentX) =>
-//            {
-//                box.Text += "                          ".Substring(0, indentX * 2);
-//                box.Text += GenericProgress.SafeFormat(message + Environment.NewLine, args);
-//            }), _box, indent);
-		}
-
-		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
-		{
-			WriteMessage(message,args);
-		}
-
-
-		public override void WriteException(Exception error)
-		{
-			WriteError("Exception: ");
-			WriteError(error.Message);
-			WriteError(error.StackTrace);
-			if (error.InnerException != null)
-			{
-				++indent;
-				WriteError("Inner: ");
-				WriteException(error.InnerException);
-				--indent;
-			}
-		}
-
-
-	}
-
-	public class StringBuilderProgress : GenericProgress
+public class StringBuilderProgress : GenericProgress
 	{
 		private StringBuilder _builder = new StringBuilder();
 
@@ -661,70 +532,6 @@ namespace Palaso.Progress
 		{
 			_builder = new StringBuilder();
 		}
-	}
-
-	public class SimpleStatusProgress : Label, IProgress
-	{
-		public void WriteStatus(string message, params object[] args)
-		{
-			string theMessage = GenericProgress.SafeFormat(message, args);
-			LastStatus = theMessage;
-			if (SyncContext != null)
-			{
-				SyncContext.Post(UpdateText, theMessage);
-			}
-			else
-			{
-				Text = theMessage;
-			}
-		}
-
-		private void UpdateText(object state)
-		{
-			Text = state as string;
-		}
-
-		public SynchronizationContext SyncContext { get; set; }
-		public void WriteMessage(string message, params object[] args){}
-		public void WriteMessageWithColor(string colorName, string message, params object[] args){}
-		public void WriteWarning(string message, params object[] args)
-		{
-			WarningEncountered = true;
-			LastWarning = GenericProgress.SafeFormat(message, args);
-			LastStatus = LastWarning;
-		}
-		public void WriteException(Exception error)
-		{
-			LastException = error;
-			ErrorEncountered = true;
-		}
-		public void WriteError(string message, params object[] args)
-		{
-			ErrorEncountered = true;
-			LastError = GenericProgress.SafeFormat(message, args);
-			LastStatus = LastError;
-		}
-		public void WriteVerbose(string message, params object[] args){}
-		public bool ShowVerbose { set {} }
-		public bool CancelRequested { get; set; }
-		public bool WarningEncountered { get; set; }
-		public bool ErrorEncountered { get; set; }
-		public Exception LastException { get; set; }
-		public IProgressIndicator ProgressIndicator { get; set; }
-		public string LastStatus { get; private set; }
-		public string LastWarning { get; private set; }
-		public string LastError { get; private set; }
-		public void Reset()
-		{
-			LastError = "";
-			LastWarning = "";
-			LastStatus = "";
-			CancelRequested = false;
-			WarningEncountered = false;
-			ErrorEncountered = false;
-			WriteStatus("");
-		}
-
 	}
 
 	public class StatusProgress : IProgress
@@ -895,3 +702,4 @@ namespace Palaso.Progress
 
 	}
 }
+

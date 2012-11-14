@@ -5,8 +5,9 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+using Palaso.Network;
 
-namespace Palaso.Network
+namespace Palaso.UI.WindowsForms.Proxy
 {
 	public partial class ProxyCredentialsRequestDialog : Form
 	{

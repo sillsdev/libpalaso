@@ -113,6 +113,10 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
 	</None>
+	<None Include="Progress\LogBoxSettings.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
+	</None>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
@@ -130,8 +134,10 @@
 	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
+	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Security" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
@@ -166,10 +172,10 @@
 	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\Work.cs" />
-	<Compile Include="ControlExtensions.cs" />
 	<Compile Include="CustomDropDown.cs">
 	  <SubType>Component</SubType>
 	</Compile>
+	<Compile Include="Extensions\ControlExtensions.cs" />
 	<Compile Include="FileDialogExtender\Enums.cs" />
 	<Compile Include="FileDialogExtender\Extensions.cs" />
 	<Compile Include="FileDialogExtender\FileDialogControlBase.cs">
@@ -433,6 +439,59 @@
 	<Compile Include="Widgets\Prompt.cs">
 	  <SubType>Component</SubType>
 	</Compile>
+	<Compile Include="Reporting\ExceptionReportingDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
+	<Compile Include="Progress\LabelProgress.cs" />
+	<Compile Include="Progress\LogBox.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="Progress\LogBox.designer.cs">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Progress\LogBoxResources.Designer.cs">
+	  <DependentUpon>LogBoxResources.resx</DependentUpon>
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	</Compile>
+	<Compile Include="Progress\LogBoxSettings.Designer.cs">
+	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	</Compile>
+	<Compile Include="Reporting\ProblemNotificationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
+	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Proxy\ProxyCredentialsRequestDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Proxy\ProxyCredentialsRequestDialog.designer.cs">
+	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Progress\SimpleProgressIndicator.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Progress\SimpleStatusProgress.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
+	<Compile Include="Progress\TextBoxProgress.cs" />
+	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Miscellaneous\WaitCursor.cs" />
+	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
+	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -714,6 +773,35 @@
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
+	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Progress\LogBox.resx">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Progress\LogBoxResources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
+	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
+	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
+	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
 	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
 	</EmbeddedResource>
@@ -957,6 +1045,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\MenuButtonArrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

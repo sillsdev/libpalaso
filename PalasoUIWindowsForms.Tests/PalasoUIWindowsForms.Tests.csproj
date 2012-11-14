@@ -118,6 +118,7 @@
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
+	<Compile Include="Progress\ProgressIndicatorTests.cs" />
 	<Compile Include="Progress\TransformWithProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<EmbeddedResource Include="ImageToolbox\TestImages.resx">

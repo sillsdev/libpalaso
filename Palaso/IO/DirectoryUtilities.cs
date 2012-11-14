@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
-using System.Windows.Forms;
+
 using Palaso.Reporting;
 
 namespace Palaso.IO
@@ -133,7 +134,7 @@ namespace Palaso.IO
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
 		{
 			ErrorReport.NotifyUserOfProblem(error, "{0} was unable to copy the directory\n\n{1}\n\nto\n\n{2}",
-				Application.ProductName, srcDirectory, dstDirectory);
+				EntryAssembly.ProductName, srcDirectory, dstDirectory);
 
 			try
 			{

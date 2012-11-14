@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -93,7 +94,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "The keyboard could not be deactivated using Keyman 6.");
 
 				// review: When in Rome...
-				Palaso.Reporting.ProblemNotificationDialog.Show("There was a problem deactivating keyman 6.");
+				ProblemNotificationDialog.Show("There was a problem deactivating keyman 6.");
 			}
 		}
 
@@ -110,7 +111,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception)
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show("There was a problem looking for a keybaord in keyman 6.");
+				ProblemNotificationDialog.Show("There was a problem looking for a keybaord in keyman 6.");
 			}
 			return false;
 		}
@@ -128,7 +129,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception)
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show(
+				ProblemNotificationDialog.Show(
 					"There was a problem retrieving the active keyboard in keyman 6.");
 			}
 			return null;
@@ -180,7 +181,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
 			if (!keymanLink.Initialize(false))
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show("Keyman6 could not be activated.");
+				ProblemNotificationDialog.Show("Keyman6 could not be activated.");
 				return;
 			}
 			keymanLink.SelectKeymanKeyboard(name, true);

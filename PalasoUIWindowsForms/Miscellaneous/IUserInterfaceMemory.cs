@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
-namespace Palaso.Misc
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	public interface IUserInterfaceMemory
 	{

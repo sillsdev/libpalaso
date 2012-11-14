@@ -41,11 +41,9 @@ namespace Palaso.Xml
 		/// <param name="pathname">Pathname of file to process.</param>
 		public FastXmlElementSplitter(string pathname)
 		{
-			if (string.IsNullOrEmpty(pathname))
-				throw new ArgumentException("Null or empty string", "pathname");
+			if (string.IsNullOrEmpty(pathname)) throw new ArgumentException("Null or empty string", "pathname");
 
-			if (!File.Exists(pathname))
-				throw new FileNotFoundException("File was not found.", "pathname");
+			if (!File.Exists(pathname)) throw new FileNotFoundException("File was not found.", "pathname");
 
 			_pathname = pathname;
 		}
@@ -181,8 +179,7 @@ namespace Palaso.Xml
 				GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
 					.Select(byteResult => EncUtf8.GetString(byteResult)));
 #else
-			if (string.IsNullOrEmpty(recordMarker))
-				throw new ArgumentException("Null or empty string", "recordMarker");
+			if (string.IsNullOrEmpty(recordMarker)) throw new ArgumentException("Null or empty string", "recordMarker");
 
 			foundOptionalFirstElement = false;
 			var results = new List<string>(25000);

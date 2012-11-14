@@ -1,4 +1,4 @@
-namespace Palaso.Reporting
+namespace Palaso.UI.WindowsForms.Miscellaneous
 {
 	partial class UserRegistrationDialog
 	{
