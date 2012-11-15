@@ -52,7 +52,7 @@ namespace Palaso.IO
 			{
 				while (!reader.EndOfStream)
 				{
-					if(regex.IsMatch(reader.ReadLine()))
+					if (regex.IsMatch(reader.ReadLine()))
 					{
 						return true;
 					}
@@ -113,9 +113,9 @@ namespace Palaso.IO
 						((!string.IsNullOrEmpty(backupPath)) && (Path.GetPathRoot(sourcePath) != Path.GetPathRoot(backupPath))))
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
-						if(!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
+						if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
 						{
-							File.Copy(destinationPath,backupPath,true);
+							File.Copy(destinationPath, backupPath, true);
 						}
 						File.Copy(sourcePath, destinationPath, true);
 						File.Delete(sourcePath);
@@ -137,8 +137,8 @@ namespace Palaso.IO
 								Thread.Sleep(100);
 							}
 
-						} while (theProblem!=null && DateTime.Now < giveUpTime);
-						if(theProblem!=null)
+						} while (theProblem != null && DateTime.Now < giveUpTime);
+						if (theProblem != null)
 							throw theProblem;
 					}
 					succeeded = true;
@@ -159,20 +159,19 @@ namespace Palaso.IO
 		{
 			var result = ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Give Up", ErrorResult.No,
 				EntryAssembly.ProductName + " was unable to update the file '" + destinationPath + "'.  Please ensure there is not another copy of this program running, nor any other program that might have that file open, then click the 'OK' button below.\r\nThe error was: \r\n" + error.Message);
-			if(result == ErrorResult.No)
+			if (result == ErrorResult.No)
 			{
 				throw error; // pass it up to the caller
 			}
 		}
 
-
-		#if !MONO
-			[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-			static extern uint GetShortPathName(
-			   [MarshalAs(UnmanagedType.LPTStr)]string lpszLongPath,
-			   [MarshalAs(UnmanagedType.LPTStr)]StringBuilder lpszShortPath,
-			   uint cchBuffer);
-	   #endif
+#if !MONO
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		static extern uint GetShortPathName(
+		   [MarshalAs(UnmanagedType.LPTStr)]string lpszLongPath,
+		   [MarshalAs(UnmanagedType.LPTStr)]StringBuilder lpszShortPath,
+		   uint cchBuffer);
+#endif
 
 		/// <summary>
 		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
@@ -189,5 +188,6 @@ namespace Palaso.IO
 			return shortBuilder.ToString();
 #endif
 		}
+
 	}
 }

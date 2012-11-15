@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using Palaso.Code;
+using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
@@ -125,17 +126,27 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private static Image LoadImageWithoutLocking(string path)
 		{
-			//locks until the image is dispose of some day, which is counter-intuitive to me
-			//  return Image.FromFile(path);
+			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
+							  return Image.FromFile(path);
 
-			//following work-around from http://support.microsoft.com/kb/309482
+						2) Contrary to the docs on Image.FromStream ("You must keep the stream open for the lifetime of the Image."),
+							MSDN http://support.microsoft.com/kb/309482 suggests the following work-around
+							using (var fs = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read))
+							{
+								return Image.FromStream(fs);
+							}
+			*/
 
+			//But note, it's not clear if (2) will very occasionally die with "out of memory": http://jira.palaso.org/issues/browse/BL-199
 
-			//NB: we have one report of this dying with "out of memory": http://jira.palaso.org/issues/browse/BL-199
-			//Currently, the caller should catch the exception and deal with it
-			using (var fs = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read))
+			//3) Just leak a temp file.
+
+			//if(Path.GetExtension(path)==".jpg")
 			{
-				return Image.FromStream(fs);
+				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
+				File.Delete(leakMe.Path);
+				File.Copy(path, leakMe.Path);
+				return Image.FromFile(leakMe.Path);
 			}
 		}
 
