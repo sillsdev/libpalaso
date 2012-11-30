@@ -31,7 +31,6 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -44,6 +43,7 @@
 	<DocumentationFile>..\output\Debug\Palaso.Lift.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -53,6 +53,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -62,6 +63,7 @@
 	<DebugType>full</DebugType>
 	<PlatformTarget>x86</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -70,6 +72,7 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="Commons.Xml.Relaxng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">

@@ -16,7 +16,6 @@
 	</FileUpgradeFlags>
 	<OldToolsVersion>3.5</OldToolsVersion>
 	<UpgradeBackupLocation />
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -27,6 +26,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -35,6 +35,7 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -43,6 +44,7 @@
 	<DebugType>full</DebugType>
 	<PlatformTarget>x86</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -51,6 +53,7 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="Moq, Version=4.0.812.4, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
