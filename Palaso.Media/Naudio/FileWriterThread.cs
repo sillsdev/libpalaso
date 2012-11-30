@@ -24,7 +24,6 @@ namespace Palaso.Media.Naudio
 			_thread = new Thread(ProcessData);
 			_thread.Name = GetType().Name;
 			_thread.Priority = ThreadPriority.BelowNormal;
-			_thread.TrySetApartmentState(ApartmentState.STA);
 			_thread.Start();
 		}
 

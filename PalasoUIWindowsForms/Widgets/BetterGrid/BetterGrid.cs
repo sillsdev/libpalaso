@@ -1335,7 +1335,18 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public static DataGridViewColumn CreateCalendarControlColumn(string name, string headerText)
 		{
-			var col = new CalendarColumn();
+			return CreateCalendarControlColumn(name, headerText, null, CalendarCell.UserAction.BeginEdit);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Creates a calendar control grid column that hosts calendar (date) cells.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static DataGridViewColumn CreateCalendarControlColumn(string name, string headerText,
+			Func<DateTime> getDefaultValue, CalendarCell.UserAction whenToUseDefault)
+		{
+			var col = new CalendarColumn(getDefaultValue, whenToUseDefault);
 			col.HeaderCell.Style.Font = SystemFonts.MenuFont;
 			col.Name = name;
 			col.HeaderText = headerText;

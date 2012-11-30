@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<PublishUrl>publish\</PublishUrl>
 	<Install>true</Install>
 	<InstallFrom>Disk</InstallFrom>
@@ -31,6 +31,7 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -51,6 +52,7 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -94,18 +96,22 @@
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
-	  <EmbedInteropTypes>True</EmbedInteropTypes>
+	  <EmbedInteropTypes>False</EmbedInteropTypes>
 	  <HintPath>..\lib\$(Configuration)\Interop.WIA.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="SettingProtection\SettingsProtection.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>SettingsProtection.Designer.cs</LastGenOutput>
-	</None>
 	<None Include="Progress\LogBoxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
+	</None>
+	<None Include="SettingProtection\SettingsProtection1.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
+	</None>
+	<None Include="SettingProtection\SettingsProtectionSettings.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
 	</None>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
@@ -126,13 +132,12 @@
 	<Reference Include="System" />
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
-	<Reference Include="System.Design" />
 	<Reference Include="System.Drawing" />
-	<Reference Include="System.Drawing.Design" />
 	<Reference Include="System.Security" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
+	<Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
@@ -243,10 +248,10 @@
 	<Compile Include="ImageToolbox\OpenFileDialogWithViews.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
+	<Compile Include="ImageToolbox\ImageToolboxSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>ImageToolbox.settings</DependentUpon>
+	  <DependentUpon>ImageToolboxSettings.settings</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
 	  <SubType>UserControl</SubType>
@@ -289,6 +294,12 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="Progress\LogBox.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="Progress\LogBox.designer.cs">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	</Compile>
 	<Compile Include="Progress\ProgressDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -304,6 +315,11 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>SettingsProtection1.settings</DependentUpon>
+	</Compile>
 	<Compile Include="SettingProtection\SettingsProtectionHelper.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -334,10 +350,10 @@
 	  <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SettingProtection\SettingsProtection.cs" />
-	<Compile Include="SettingProtection\SettingsProtection.Designer.cs">
+	<Compile Include="SettingProtection\SettingsProtectionSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>SettingsProtection.settings</DependentUpon>
+	  <DependentUpon>SettingsProtectionSettings.settings</DependentUpon>
 	</Compile>
 	<Compile Include="SettingProtection\SettingsProtectionLauncherButton.cs">
 	  <SubType>UserControl</SubType>
@@ -414,12 +430,6 @@
 	</Compile>
 	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\LabelProgress.cs" />
-	<Compile Include="Progress\LogBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox.designer.cs">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
 	  <AutoGen>True</AutoGen>
@@ -683,6 +693,10 @@
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="Progress\LogBox.resx">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
 	  <DependentUpon>ProgressDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -736,10 +750,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBox.resx">
-	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBoxResources.resx">
@@ -887,9 +897,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="app.config" />
-	<None Include="ImageToolbox\ImageToolbox.settings">
+	<None Include="ImageToolbox\ImageToolboxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>ImageToolbox.Designer.cs</LastGenOutput>
+	  <LastGenOutput>ImageToolboxSettings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Resources\credits.png" />
   </ItemGroup>

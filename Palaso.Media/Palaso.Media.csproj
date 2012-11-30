@@ -10,7 +10,7 @@
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>Palaso.Media</RootNamespace>
 	<AssemblyName>Palaso.Media</AssemblyName>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<FileUpgradeFlags>
 	</FileUpgradeFlags>
@@ -31,6 +31,7 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -51,6 +52,7 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
