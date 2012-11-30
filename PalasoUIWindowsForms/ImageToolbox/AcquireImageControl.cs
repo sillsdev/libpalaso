@@ -8,7 +8,9 @@ using System.Windows.Forms;
 using Palaso.Code;
 using Palaso.IO;
 using Palaso.Reporting;
+#if !MONO
 using WIA;
+#endif
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -287,7 +289,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 		*/
 
-
+#if !MONO
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{
 			Image acquiredImage;//with my scanner, always a .bmp
@@ -335,6 +337,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 		}
+#endif
 
 		private enum Modes {Gallery, SingleImage}
 		private void SetMode(Modes mode)

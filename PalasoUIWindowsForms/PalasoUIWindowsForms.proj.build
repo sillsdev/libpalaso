@@ -45,7 +45,6 @@
 				<include name="PalasoReporting.dll" />
 				<include name="System.Design.dll" />
 				<include name="NDesk.DBus.dll" />
-				<include name="Interop.WIA.dll" />
 			</references>
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
 				<include name="${build.namespace.dir}/**/*.resources" />
