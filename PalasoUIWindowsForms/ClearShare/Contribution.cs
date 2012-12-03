@@ -59,7 +59,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			get
 			{
 				return (string.IsNullOrEmpty(ContributorName) && Role == null &&
-					ApprovedLicense == null &&  (default(DateTime) == Date) &&
+					ApprovedLicense == null &&
 					string.IsNullOrEmpty(Comments));
 			}
 		}
