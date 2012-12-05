@@ -586,14 +586,14 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
 		{
 			base.OnRowsAdded(e);
-			IsDirty = true;
+			IsDirty |= ContainsFocus;
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
 		{
 			base.OnRowsRemoved(e);
-			IsDirty = true;
+			IsDirty |= ContainsFocus;
 		}
 
 		#region Events and methods for handling DropDown style combo box cells.
