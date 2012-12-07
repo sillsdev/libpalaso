@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
-using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
@@ -45,5 +39,19 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 				}
 			}
 		}
+
+		[Test, Ignore("by hand only")]
+		[STAThread]
+		public void ShowToolboxWith_PreExisting_EnsureRawFormatUnchanged()
+		{
+			Application.EnableVisualStyles();
+			PalasoImage i = PalasoImage.FromImage(TestImages.logo);
+
+			using (var dlg = new ImageToolboxDialog(i, ""))
+				{
+					dlg.ShowDialog();
+					Assert.AreEqual(ImageFormat.Jpeg.Guid, dlg.ImageInfo.Image.RawFormat.Guid);
+	}
+}
 	}
 }

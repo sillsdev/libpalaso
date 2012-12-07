@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Palaso.Progress.LogBox" GeneratedClassName="LogBoxSettings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Palaso.Progress" GeneratedClassName="LogBoxSettings">
   <Profiles />
   <Settings>
 	<Setting Name="FontName" Type="System.String" Scope="User">
