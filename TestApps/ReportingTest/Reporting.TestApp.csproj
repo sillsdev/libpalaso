@@ -59,6 +59,7 @@
 	<RootNamespace>TestApp</RootNamespace>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -72,7 +73,8 @@
 	<Optimize>true</Optimize>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<WarningLevel>4</WarningLevel>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\..\output\$(Configuration)</OutputPath>
@@ -86,7 +88,8 @@
 	<RootNamespace>TestApp</RootNamespace>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<WarningLevel>4</WarningLevel>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7">

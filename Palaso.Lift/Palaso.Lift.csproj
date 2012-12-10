@@ -63,7 +63,8 @@
 	<DebugType>full</DebugType>
 	<PlatformTarget>x86</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -72,7 +73,8 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="Commons.Xml.Relaxng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -83,15 +85,8 @@
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
-	<Reference Include="System.Windows.Forms" />
-	<Reference Include="System.Xml.Linq">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
-	<Reference Include="System.Data.DataSetExtensions">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
-	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
+	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="CommonEnumerations.cs" />
@@ -101,6 +96,7 @@
 	<Compile Include="ILiftReaderWriterProvider.cs" />
 	<Compile Include="ILiftWriter.cs" />
 	<Compile Include="LiftDataMapper.cs" />
+	<Compile Include="LiftSorter.cs" />
 	<Compile Include="Merging\LiftChangeDetector.cs" />
 	<Compile Include="Merging\SynchronicMerger.cs" />
 	<Compile Include="Migration\LiftPreparer.cs" />
