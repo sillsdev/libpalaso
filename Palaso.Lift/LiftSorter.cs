@@ -11,7 +11,6 @@ using Palaso.Xml;
 
 namespace Palaso.Lift
 {
-// TODO: multi-forms.
 	/// <summary>
 	/// <para>Given a lift or lift ranges pathname, sort it and write it back to the same file.</para>
 	///
@@ -23,7 +22,7 @@ namespace Palaso.Lift
 	///
 	/// <para>Besides being sorted, the resulting file will use the canonical xml writer settings defined elsewhere.
 	/// The resulting file ought to make life easier for programs, such as Mercurial,
-	/// as well as for humans who want to compare two or more versions of lift files.</para>
+	/// as well as for humans who want to compare two, or more, versions of lift files.</para>
 	/// </summary>
 	public static class LiftSorter
 	{
@@ -56,11 +55,16 @@ namespace Palaso.Lift
 						}
 						else
 						{
-							SortEntry(element);
-							sortedEntries[element.Attribute("guid").Value] = Utf8.GetBytes(element.ToString());
+							var guidKey = element.Attribute("guid").Value.ToLowerInvariant();
+							if (!sortedEntries.ContainsKey(guidKey))
+							{
+								SortEntry(element);
+								sortedEntries.Add(guidKey, Utf8.GetBytes(element.ToString()));
+							}
 						}
 					}
 				}
+
 				using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
 				{
 					writer.WriteStartDocument();
@@ -96,74 +100,50 @@ namespace Palaso.Lift
 
 			using (var tempFile = new TempFile(File.ReadAllText(liftRangesPathname), Utf8))
 			{
-				var sortedRanges = new SortedDictionary<string, byte[]>(StringComparer.InvariantCultureIgnoreCase);
-				using (var splitter = new FastXmlElementSplitter(tempFile.Path))
-				{
-					// lift-ranges
-					bool hasHeader;
-					foreach (var record in splitter.GetSecondLevelElementStrings(null, "range", out hasHeader))
-					{
-						var rangeElement = XElement.Parse(record);
-						SortAttributes(rangeElement);
-						SortRange(rangeElement);
-						sortedRanges[rangeElement.Attribute("id").Value] = Utf8.GetBytes(rangeElement.ToString());
-					}
-				}
-				using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
-				{
-					writer.WriteStartDocument();
-					writer.WriteStartElement("lift-ranges");
+				var doc = XDocument.Load(liftRangesPathname);
+				SortAttributes(doc.Root);
+				SortRanges(doc.Root);
+				doc.Save(tempFile.Path);
 
-					foreach (var entryElement in sortedRanges.Values)
-					{
-						WriteElement(writer, entryElement);
-					}
-
-					writer.WriteEndElement();
-					writer.WriteEndDocument();
-				}
 				File.Copy(tempFile.Path, liftRangesPathname, true);
 			}
 		}
 
 		private static void SortRange(XElement rangeElement)
 		{
-			var description = rangeElement.Element("description");
-			var label = rangeElement.Element("label");
-			var abbrev = rangeElement.Element("abbrev");
-			var sortedRanges = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			foreach (var rangeElementElement in rangeElement.Elements("range-element"))
+			var sortedChildRanges = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			foreach (var childRangeElement in rangeElement.Elements("range-element").ToList())
 			{
-				sortedRanges.Add(rangeElementElement.Attribute("id").Value, rangeElementElement);
+				SortBasicsOfRangeElement(childRangeElement);
+				sortedChildRanges.Add(childRangeElement.Attribute("id").Value, childRangeElement);
+				childRangeElement.Remove();
 			}
 
+			SortBasicsOfRangeElement(rangeElement);
+
+			foreach (var childRangeElement in sortedChildRanges.Values)
+			{
+				rangeElement.Add(childRangeElement);
+			}
+		}
+
+		private static void SortBasicsOfRangeElement(XElement rangeElement)
+		{
+			var description = rangeElement.Element("description");
+			SortMultiformElement(description);
+			var label = rangeElement.Element("label");
+			SortMultiformElement(label);
+			var abbrev = rangeElement.Element("abbrev");
+			SortMultiformElement(abbrev);
+
 			rangeElement.RemoveNodes();
+
 			if (description != null)
 				rangeElement.Add(description);
 			if (label != null)
 				rangeElement.Add(label);
 			if (abbrev != null)
 				rangeElement.Add(abbrev);
-			foreach (var rangeElementElement in sortedRanges.Values)
-			{
-				SortRangeElementElement(rangeElementElement);
-				rangeElement.Add(rangeElementElement);
-			}
-		}
-
-		private static void SortRangeElementElement(XElement rangeElementElement)
-		{
-			var description = rangeElementElement.Element("description");
-			var label = rangeElementElement.Element("label");
-			var abbrev = rangeElementElement.Element("abbrev");
-
-			rangeElementElement.RemoveNodes();
-			if (description != null)
-				rangeElementElement.Add(description);
-			if (label != null)
-				rangeElementElement.Add(label);
-			if (abbrev != null)
-				rangeElementElement.Add(abbrev);
 		}
 
 		private static void WriteElement(XmlWriter writer, XElement element)
@@ -204,9 +184,12 @@ namespace Palaso.Lift
 			var description = header.Element("description");
 			var ranges = header.Element("ranges");
 			var fields = header.Element("fields");
+
 			header.RemoveNodes();
+
 			if (description != null)
 			{
+				SortMultiformElement(description);
 				header.Add(description);
 			}
 			if (ranges != null)
@@ -214,10 +197,14 @@ namespace Palaso.Lift
 				SortRanges(ranges);
 				header.Add(ranges);
 			}
-			if (fields != null)
+			if (fields == null)
+				return;
+
+			var sortedFields = SortFields(fields, "tag");
+			header.Add(fields);
+			foreach (var field in sortedFields.Values)
 			{
-				SortFields(fields, "tag");
-				header.Add(fields);
+				fields.Add(field);
 			}
 		}
 
@@ -228,174 +215,76 @@ namespace Palaso.Lift
 
 			// Optional, multiple <range> elements. Unordered. Key attr: id
 			var sortedRanges = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			foreach (var rangeElement in rangesParent.Elements("range"))
+			foreach (var rangeElement in rangesParent.Elements("range").ToList())
 			{
+				SortRange(rangeElement);
 				sortedRanges.Add(rangeElement.Attribute("id").Value, rangeElement);
 			}
 
 			rangesParent.RemoveNodes();
+
 			foreach (var rangeElement in sortedRanges.Values)
 			{
 				rangesParent.Add(rangeElement);
 			}
 		}
 
-		private static void SortFields(XElement fieldsParent, string keyAttribute)
+		private static SortedDictionary<string, XElement> SortFields(XElement fieldsParent, string keyFieldAttribute)
 		{
+			var sortedFields = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+
 			if (!fieldsParent.HasElements)
-				return;
+				return sortedFields;
 
 			// Optional, multiple <field> elements. Unordered. Key attr: tag
-			var sortedFields = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			foreach (var fieldElement in fieldsParent.Elements("field"))
+			foreach (var fieldElement in fieldsParent.Elements("field").ToList())
 			{
-				sortedFields.Add(fieldElement.Attribute(keyAttribute).Value, fieldElement);
+				var sortedForms = new SortedDictionary<string, XElement>();
+				foreach (var form in fieldElement.Elements("form").ToList())
+				{
+					sortedForms.Add(form.Attribute("lang").Value, form);
+					form.Remove();
+				}
+				var sortedExtensibleSansFields = SortExtensibleSansField(fieldElement);
+
+				sortedFields.Add(fieldElement.Attribute(keyFieldAttribute).Value, fieldElement);
+
+				fieldElement.Remove();
+
+				foreach (var form in sortedForms)
+				{
+					fieldsParent.Add(form);
+				}
+				RestoreSortedExtensibles(sortedExtensibleSansFields, fieldElement);
 			}
 
-			fieldsParent.RemoveNodes();
-			foreach (var rangeElement in sortedFields.Values)
-			{
-				fieldsParent.Add(rangeElement);
-			}
+			return sortedFields;
 		}
 
 		private static void SortEntry(XElement entry)
 		{
-			/*
-<optional>
-	<element name="lexical-unit"> Singleton
-		<ref name="multitext-content"/>
-	</element>
-</optional>
-			 */
 			var lexicalUnit = entry.Element("lexical-unit");
 			if (lexicalUnit != null)
+			{
+				SortMultiformElement(lexicalUnit);
 				lexicalUnit.Remove();
-			/*
-<optional>
-	<element name="citation"> Singleton
-		<ref name="multitext-content"/>
-	</element>
-</optional>
-			 */
+			}
 			var citation = entry.Element("citation");
 			if (citation != null)
+			{
+				SortMultiformElement(citation);
 				citation.Remove();
-			 /*
-<zeroOrMore> Leave "as is", but together
-	<element name="pronunciation">
-		<ref name="pronunciation-content"/>
-	</element>
-</zeroOrMore>
-			 */
-			var pronunciations = entry.Elements("pronunciation").ToList();
-			foreach (var pronunciation in pronunciations)
-				pronunciation.Remove();
-			/*
-<zeroOrMore> Leave "as is", but together
-	<element name="variant">
-		<ref name="variant-content"/>
-	</element>
-</zeroOrMore>
-			 */
-			var variants = entry.Elements("variant").ToList();
-			foreach (var variant in variants)
-				variant.Remove();
-			 /*
-<zeroOrMore> Leave "as is", but together
-	<element name="sense">
-		<ref name="sense-content"/>
-	</element>
-</zeroOrMore>
-			 */
-			var senses = entry.Elements("sense").ToList();
-			foreach (var sense in senses)
-			{
-				SortSense(sense);
-				sense.Remove();
-			}
-			 /*
-<zeroOrMore>
-	<element name="annotation">
-		combined key: name+value
-	</element>
-</zeroOrMore>
-			 */
-			var sortedAnnotations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var annotations = entry.Elements("annotation").ToList();
-			foreach (var annotation in annotations)
-			{
-				sortedAnnotations.Add(annotation.Attribute("name").Value + annotation.Attribute("value").Value, annotation);
-				annotation.Remove();
-			}
-			/*
-<zeroOrMore>
-   <element name="etymology">
-	   combined key: type+source
-   </element>
-</zeroOrMore>
-			 */
-			var sortedEtymologies = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var etymologies = entry.Elements("etymology").ToList();
-			foreach (var etymology in etymologies)
-			{
-				sortedEtymologies.Add(etymology.Attribute("source").Value + etymology.Attribute("type").Value, etymology);
-				etymology.Remove();
-			}
-			/*
-<zeroOrMore>
-   <element name="field">
-	   // key attr: type
-   </element>
-</zeroOrMore>
-			 */
-			var sortedFields = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var fields = entry.Elements("field").ToList();
-			foreach (var field in fields)
-			{
-				sortedFields.Add(field.Attribute("type").Value, field);
-				field.Remove();
-			}
-			/*
-<zeroOrMore> Leave "as is", but together
-   <element name="note">
-	   <ref name="note-content"/>
-   </element>
-</zeroOrMore>
-			 */
-			var notes = entry.Elements("note").ToList();
-			foreach (var note in notes)
-				note.Remove();
-			/*
-<zeroOrMore>
-   <element name="relation">
-	   combined key: type+ref
-   </element>
-</zeroOrMore>
-			 */
-			var sortedRelations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var relations = entry.Elements("relation").ToList();
-			foreach (var relation in relations)
-			{
-				sortedRelations.Add(relation.Attribute("ref").Value + relation.Attribute("type").Value, relation);
-				relation.Remove();
-			}
-			/*
-<zeroOrMore>
-   <element name="trait">">
-	   combined key: name+value
-   </element>
-</zeroOrMore>
-		   */
-			var sortedTraits = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var traits = entry.Elements("trait").ToList();
-			foreach (var trait in traits)
-			{
-				sortedTraits.Add(trait.Attribute("name").Value + trait.Attribute("value").Value, trait);
-				trait.Remove();
 			}
 
+			var pronunciations = SortPronunciations(entry);
+			var variants = SortVariantContents(entry);
+			var sensesInFileOrder = SortSenseContent(entry, "sense");
+			var sortedEtymologies = SortedEtymologies(entry);
+			var notes = SortedNotes(entry);
+			var sortedRelations = SortedRelations(entry);
+			var sortedExtensibles = SortExtensibleWithField(entry);
 			var leftovers = entry.Elements().ToList();
+
 			entry.RemoveNodes();
 
 			if (lexicalUnit != null)
@@ -406,212 +295,432 @@ namespace Palaso.Lift
 				entry.Add(pronunciation);
 			foreach (var variant in variants)
 				entry.Add(variant);
-			foreach (var sense in senses)
+			foreach (var sense in sensesInFileOrder)
 				entry.Add(sense);
-			foreach (var annotation in sortedAnnotations.Values)
-				entry.Add(annotation);
-			foreach (var etymology in sortedEtymologies.Values)
-				entry.Add(etymology);
-			foreach (var field in sortedFields.Values)
-				entry.Add(field);
-			foreach (var note in notes)
+			foreach (var note in notes.Values)
 				entry.Add(note);
 			foreach (var relation in sortedRelations.Values)
 				entry.Add(relation);
-			foreach (var trait in sortedTraits.Values)
-				entry.Add(trait);
+			foreach (var etymology in sortedEtymologies.Values)
+				entry.Add(etymology);
+			RestoreSortedExtensibles(sortedExtensibles, entry);
 			foreach (var leftover in leftovers)
 				entry.Add(leftover);
 		}
 
-		private static void SortSense(XElement sense)
+		private static SortedDictionary<string, XElement> SortedNotes(XElement notesParent)
 		{
-			/*
-							  <optional>
-								<element name="definition">
-								  <ref name="multitext-content"/>
-								</element>
-							  </optional>
-			 */
-			var definition = sense.Element("definition");
-			if (definition != null)
-				definition.Remove();
-			/*
-							  <zeroOrMore>
-								<element name="gloss">
-								  <ref name="form-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
-			var sortedGlosses = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var glosses = sense.Elements("gloss").ToList();
-			foreach (var gloss in glosses)
+			var sortedNotes = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			var fakeKeyPart = 1;
+			var tempGuid = Guid.NewGuid();
+			foreach (var note in notesParent.Elements("note").ToList())
 			{
-				sortedGlosses.Add(gloss.Attribute("lang").Value, gloss);
-				gloss.Remove();
+				var sortedForms = new SortedDictionary<string, XElement>();
+				foreach (var form in note.Elements("form").ToList())
+				{
+					sortedForms.Add(form.Attribute("lang").Value, form);
+					form.Remove();
+				}
+				var typeAttr = note.Attribute("type");
+				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
+				sortedNotes.Add(key, note);
+				if (typeAttr == null)
+					fakeKeyPart++;
+
+				var sortedExtensibles = SortExtensibleWithField(note);
+
+				note.Remove();
+
+				foreach (var form in sortedForms.Values)
+				{
+					note.Add(form);
+				}
+				RestoreSortedExtensibles(sortedExtensibles, note);
 			}
-			/*
-							  <optional>
-								<element name="grammatical-info">
-								  <ref name="grammatical-info-content"/>
-								</element>
-							  </optional>
-			 */
-			var grammaticalInfo = sense.Element("grammatical-info");
-			if (grammaticalInfo != null)
-				grammaticalInfo.Remove();
-			/*
-							  <zeroOrMore>
-								<element name="example">
-								  <ref name="example-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
-			var examples = sense.Elements("example").ToList();
-			foreach (var example in examples)
-				example.Remove();
-			/*
-							  <zeroOrMore>
-								<element name="reversal">
-								  <ref name="reversal-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
-			var reversals = sense.Elements("reversal").ToList();
-			foreach (var reversal in reversals)
-				reversal.Remove();
-			/*
-							<zeroOrMore>
-								<element name="subsense">
-								  <ref name="sense-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
-			var subsenses = sense.Elements("subsense").ToList();
-			foreach (var subsense in subsenses)
+			return sortedNotes;
+		}
+
+		private static SortedDictionary<string, XElement> SortedEtymologies(XElement entry)
+		{
+			var sortedEtymologies = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			var etymologies = entry.Elements("etymology").ToList();
+			foreach (var etymology in etymologies)
 			{
-				SortSense(subsense);
-				subsense.Remove();
+				var sortedForms = new SortedDictionary<string, XElement>();
+				foreach (var form in etymology.Elements("form").ToList())
+				{
+					sortedForms.Add(form.Attribute("lang").Value, form);
+					form.Remove();
+				}
+				var sortedGlosses = new SortedDictionary<string, XElement>();
+				foreach (var gloss in etymology.Elements("gloss").ToList())
+				{
+					sortedGlosses.Add(gloss.Attribute("lang").Value, gloss);
+					gloss.Remove();
+				}
+				var sortedExtensibles = SortExtensibleWithField(etymology);
+
+				sortedEtymologies.Add(etymology.Attribute("source").Value + etymology.Attribute("type").Value, etymology);
+				etymology.Remove();
+
+				foreach (var form in sortedForms.Values)
+				{
+					etymology.Add(form);
+				}
+				foreach (var gloss in sortedGlosses.Values)
+				{
+					etymology.Add(gloss);
+				}
+				RestoreSortedExtensibles(sortedExtensibles, etymology);
 			}
-			/*
-							<zeroOrMore>
-								<element name="relation">
-								  <ref name="relation-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
+			return sortedEtymologies;
+		}
+
+		private static SortedDictionary<string, XElement> SortedRelations(XElement relationParent)
+		{
 			var sortedRelations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var relations = sense.Elements("relation").ToList();
+			var relations = relationParent.Elements("relation").ToList();
 			foreach (var relation in relations)
 			{
+				SortMultiformElement(relation.Element("usage"));
+				var sortedExtensible = SortExtensibleWithField(relation);
 				sortedRelations.Add(relation.Attribute("ref").Value + relation.Attribute("type").Value, relation);
+
 				relation.Remove();
+
+				RestoreSortedExtensibles(sortedExtensible, relation);
 			}
-			/*
-							  <zeroOrMore>
-								<element name="illustration">
-								  <ref name="URLRef-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
+			return sortedRelations;
+		}
+
+		private static IEnumerable<XElement> SortVariantContents(XElement entry)
+		{
+			var variants = entry.Elements("variant").ToList();
+			foreach (var variant in variants)
+			{
+				SortMultiformElement(variant);
+				var sortedExtensible = SortExtensibleWithField(variant);
+				var sortedPronunciations = SortPronunciations(variant);
+				var sortedRelations = SortedRelations(variant);
+
+				variant.Remove();
+
+				RestoreSortedExtensibles(sortedExtensible, variant);
+				foreach (var pronunciation in sortedPronunciations)
+				{
+					variant.Add(pronunciation);
+				}
+				foreach (var relation in sortedRelations.Values)
+				{
+					variant.Add(relation);
+				}
+			}
+			return variants;
+		}
+
+		private static IEnumerable<XElement> SortPronunciations(XElement entry)
+		{
+			var pronunciations = entry.Elements("pronunciation").ToList();
+			foreach (var pronunciation in pronunciations)
+			{
+				SortMultiformElement(pronunciation);
+				SortMultiformElement(pronunciation.Element("label"));
+				var sortedExtensible = SortExtensibleWithField(pronunciation);
+				var sortedMedia = SortedMedia(pronunciation);
+
+				pronunciation.Remove();
+
+				RestoreSortedExtensibles(sortedExtensible, pronunciation);
+				foreach (var media in sortedMedia.Values)
+				{
+					pronunciation.Add(media);
+				}
+			}
+			return pronunciations;
+		}
+
+		private static void RestoreSortedExtensibles(Dictionary<string, SortedDictionary<string, XElement>> sortedExtensible, XElement parent)
+		{
+			var current = sortedExtensible["annotations"];
+			foreach (var annotation in current.Values)
+			{
+				parent.Add(annotation);
+			}
+
+			current = sortedExtensible["traits"];
+			foreach (var trait in current.Values)
+			{
+				parent.Add(trait);
+			}
+
+			if (!sortedExtensible.TryGetValue("fields", out current))
+				return;
+
+			foreach (var field in current.Values)
+			{
+				parent.Add(field);
+			}
+		}
+
+		private static Dictionary<string, XElement> SortedMedia(XElement mediaParent)
+		{
+			var sortedMedia = new Dictionary<string, XElement>();
+
+			foreach (var media in mediaParent.Elements("media").ToList())
+			{
+				SortMedia(media);
+				sortedMedia.Add(media.Attribute("href").Value, media);
+				media.Remove();
+			}
+
+			return sortedMedia;
+		}
+
+		private static void SortMedia(XElement media)
+		{
+			SortMultiformElement(media);
+		}
+
+		private static IEnumerable<XElement> SortSenseContent(XElement senseParent, string senseElementName)
+		{
+			var sensesInFileOrder = senseParent.Elements(senseElementName).ToList();
+
+			foreach (var sense in sensesInFileOrder)
+			{
+				var definition = sense.Element("definition");
+				if (definition != null)
+				{
+					SortMultiformElement(definition);
+					definition.Remove();
+				}
+				var sortedGlosses = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+				var glosses = sense.Elements("gloss").ToList();
+				foreach (var gloss in glosses)
+				{
+					sortedGlosses.Add(gloss.Attribute("lang").Value, gloss);
+					gloss.Remove();
+				}
+				var grammaticalInfo = SortGrammaticalInfo(sense);
+				var examples = SortExamplesContents(sense);
+				var reversals = SortedReversals(sense);
+				var subsenses = SortSenseContent(sense, "subsense");
+				var sortedRelations = SortedRelations(sense);
+				var sortedIllustrations = SortedIllustrations(sense);
+				var sortedNotes = SortedNotes(sense);
+				var sortedExtensible = SortExtensibleWithField(sense);
+				var leftovers = sense.Elements().ToList();
+
+				sense.RemoveNodes();
+
+				if (definition != null)
+					sense.Add(definition);
+				foreach (var gloss in sortedGlosses.Values)
+					sense.Add(gloss);
+				if (grammaticalInfo != null)
+					sense.Add(grammaticalInfo);
+				foreach (var example in examples)
+					sense.Add(example);
+				foreach (var reversal in reversals.Values)
+					sense.Add(reversal);
+				foreach (var subsense in subsenses)
+					sense.Add(subsense);
+				foreach (var relation in sortedRelations.Values)
+					sense.Add(relation);
+				foreach (var illustration in sortedIllustrations.Values)
+					sense.Add(illustration);
+				foreach (var note in sortedNotes.Values)
+					sense.Add(note);
+				RestoreSortedExtensibles(sortedExtensible, sense);
+				foreach (var leftover in leftovers)
+					sense.Add(leftover);
+				sense.Remove();
+			}
+			return sensesInFileOrder;
+		}
+
+		private static SortedDictionary<string, XElement> SortedIllustrations(XElement sense)
+		{
 			var sortedIllustrations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
 			var illustrations = sense.Elements("illustration").ToList();
 			foreach (var illustration in illustrations)
 			{
+				var label = illustration.Element("label");
+				if (label != null)
+					SortMultiformElement(label);
 				sortedIllustrations.Add(illustration.Attribute("href").Value, illustration);
 				illustration.Remove();
 			}
-			/*
-							  <zeroOrMore>
-								<element name="note">
-								  <ref name="note-content"/>
-								</element>
-							  </zeroOrMore>
-			 */
-			var sortedNotes = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var notes = sense.Elements("note").ToList();
-			int fakeNoteKey = 1;
-			foreach (var note in notes)
+			return sortedIllustrations;
+		}
+
+		private static SortedDictionary<string, XElement> SortedReversals(XElement reversalParent)
+		{
+			var sortedReversals = new SortedDictionary<string, XElement>();
+			var fakeKeyPart = 1;
+			var tempGuid = Guid.NewGuid();
+			foreach (var reversal in reversalParent.Elements("reversal").ToList())
 			{
-				var typeAttr = note.Attribute("type");
-				var key = typeAttr == null ? "@@@@@" + fakeNoteKey : typeAttr.Value;
-				sortedNotes.Add(key, note);
+				SortReversalContents(reversal);
+
+				var typeAttr = reversal.Attribute("type");
+				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
+				sortedReversals.Add(key, reversal);
 				if (typeAttr == null)
-					fakeNoteKey++;
-				note.Remove();
+					fakeKeyPart++;
 			}
-			/*
-	  <zeroOrMore>
-		<element name="annotation">
-		  <ref name="annotation-content"/>
-		</element>
-	  </zeroOrMore>
-			 */
-			var sortedAnnotations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var annotations = sense.Elements("annotation").ToList();
-			foreach (var annotation in annotations)
+
+			return sortedReversals;
+		}
+
+		private static void SortReversalContents(XElement reversal)
+		{
+			var sortedForms = new SortedDictionary<string, XElement>();
+			foreach (var form in reversal.Elements("form").ToList())
 			{
+				sortedForms.Add(form.Attribute("lang").Value, form);
+				form.Remove();
+			}
+			var grammaticalInfo = SortGrammaticalInfo(reversal);
+
+			var sortedNestedReversal = reversal.Element("reversal-main");
+			if (sortedNestedReversal != null)
+				SortReversalContents(sortedNestedReversal);
+
+			reversal.Remove();
+
+			foreach (var form in sortedForms.Values)
+			{
+				reversal.Add(form);
+			}
+			if (grammaticalInfo != null)
+				reversal.Add(grammaticalInfo);
+			if (sortedNestedReversal != null)
+				reversal.Add(sortedNestedReversal);
+		}
+
+		private static IEnumerable<XElement> SortExamplesContents(XElement sense)
+		{
+			var examples = sense.Elements("example").ToList();
+			foreach (var example in examples)
+			{
+				var sortedForms = new SortedDictionary<string, XElement>();
+				foreach (var form in example.Elements("form").ToList())
+				{
+					sortedForms.Add(form.Attribute("lang").Value, form);
+					form.Remove();
+				}
+				var sortedTranslations = SortedTranslations(example);
+				var sortedNotes = SortedNotes(example);
+				var sortedExtensibles = SortExtensibleWithField(example);
+
+				example.Remove();
+
+				foreach (var form in sortedForms.Values)
+				{
+					example.Add(form);
+				}
+				foreach (var translation in sortedTranslations.Values)
+				{
+					example.Add(translation);
+				}
+				foreach (var note in sortedNotes.Values)
+				{
+					example.Add(note);
+				}
+				RestoreSortedExtensibles(sortedExtensibles, example);
+			}
+			return examples;
+		}
+
+		private static SortedDictionary<string, XElement> SortedTranslations(XElement translationParent)
+		{
+			var sortedTranslations = new SortedDictionary<string, XElement>();
+			var fakeKeyPart = 1;
+			var tempGuid = Guid.NewGuid();
+			foreach (var translation in translationParent.Elements("translation").ToList())
+			{
+				var typeAttr = translation.Attribute("type");
+				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
+				sortedTranslations.Add(key, translation);
+				if (typeAttr == null)
+					fakeKeyPart++;
+
+				translation.Remove();
+			}
+			return sortedTranslations;
+		}
+
+		private static XElement SortGrammaticalInfo(XElement grammaticalInfoParent)
+		{
+			var grammaticalInfo = grammaticalInfoParent.Element("grammatical-info");
+			if (grammaticalInfo != null)
+			{
+				var sortedTraits = SortedTraits(grammaticalInfo);
+				grammaticalInfo.Remove();
+				foreach (var trait in sortedTraits.Values)
+				{
+					grammaticalInfo.Add(trait);
+				}
+			}
+			return grammaticalInfo;
+		}
+
+		private static Dictionary<string, SortedDictionary<string, XElement>> SortExtensibleSansField(XElement extensibleParent)
+		{
+			return new Dictionary<string, SortedDictionary<string, XElement>>(2, StringComparer.InvariantCultureIgnoreCase)
+				{
+					{"annotations", SortedAnnotations(extensibleParent)},
+					{"traits", SortedTraits(extensibleParent)}
+				};
+		}
+
+		private static Dictionary<string, SortedDictionary<string, XElement>> SortExtensibleWithField(XElement extensibleParent)
+		{
+			return new Dictionary<string, SortedDictionary<string, XElement>>(2, StringComparer.InvariantCultureIgnoreCase)
+				{
+					{"annotations", SortedAnnotations(extensibleParent)},
+					{"traits", SortedTraits(extensibleParent)},
+					{"fields", SortFields(extensibleParent, "type")}
+				};
+		}
+
+		private static SortedDictionary<string, XElement> SortedAnnotations(XElement annotationParent)
+		{
+			var sortedAnnotations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			foreach (var annotation in annotationParent.Elements("annotation").ToList())
+			{
+				SortMultiformElement(annotation);
 				sortedAnnotations.Add(annotation.Attribute("name").Value + annotation.Attribute("value").Value, annotation);
 				annotation.Remove();
 			}
-			/*
-				  <zeroOrMore>
-					<element name="field">
-					  <ref name="field-content"/>
-					</element>
-				  </zeroOrMore>
-			 */
-			var sortedFields = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var fields = sense.Elements("field").ToList();
-			foreach (var field in fields)
-			{
-				sortedFields.Add(field.Attribute("type").Value, field);
-				field.Remove();
-			}
-			/*
-	  <zeroOrMore>
-		<element name="trait">
-		  <ref name="trait-content"/>
-		</element>
-	  </zeroOrMore>
-			*/
+			return sortedAnnotations;
+		}
+
+		private static SortedDictionary<string, XElement> SortedTraits(XElement traitParent)
+		{
 			var sortedTraits = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var traits = sense.Elements("trait").ToList();
-			foreach (var trait in traits)
+			foreach (var trait in traitParent.Elements("trait").ToList())
 			{
+				SortedAnnotations(trait);
 				sortedTraits.Add(trait.Attribute("name").Value + trait.Attribute("value").Value, trait);
 				trait.Remove();
 			}
+			return sortedTraits;
+		}
 
-			var leftovers = sense.Elements().ToList();
-			sense.RemoveNodes();
+		private static void SortMultiformElement(XElement multiformElementParent)
+		{
+			if (multiformElementParent == null)
+				return;
 
-			if (definition != null)
-				sense.Add(definition);
-			foreach (var gloss in sortedGlosses.Values)
-				sense.Add(gloss);
-			if (grammaticalInfo != null)
-				sense.Add(grammaticalInfo);
-			foreach (var example in examples)
-				sense.Add(example);
-			foreach (var reversal in reversals)
-				sense.Add(reversal);
-			foreach (var subsense in subsenses)
-				sense.Add(subsense);
-			foreach (var relation in sortedRelations.Values)
-				sense.Add(relation);
-			foreach (var illustration in sortedIllustrations.Values)
-				sense.Add(illustration);
-			foreach (var note in sortedNotes.Values)
-				sense.Add(note);
-			foreach (var annotation in sortedAnnotations.Values)
-				sense.Add(annotation);
-			foreach (var field in sortedFields.Values)
-				sense.Add(field);
-			foreach (var trait in sortedTraits.Values)
-				sense.Add(trait);
-			foreach (var leftover in leftovers)
-				sense.Add(leftover);
+			var sortedForms = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			foreach (var form in multiformElementParent.Elements("form").ToList())
+			{
+				sortedForms.Add(form.Attribute("lang").Value, form);
+				form.Remove();
+			}
+			foreach (var form in sortedForms.Values)
+				multiformElementParent.Add(form);
 		}
 
 		private static void SortAttributes(XElement element)

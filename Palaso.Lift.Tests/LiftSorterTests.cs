@@ -63,29 +63,32 @@ namespace Palaso.Lift.Tests
 			const string liftData =
 @"<?xml version='1.0' encoding='utf-8'?>
 <lift producer='SIL.FLEx 3.0.0.40042' version='0.13'>
-<entry guid='1' >
-<leftover />
-<etymology source='a' type='b' />
-<annotation name='a' value='b' />
-<variant o='1' />
-<relation ref='a' type='b' />
-<note o='1' />
-<trait name='a' value='b' />
-<field type='b' />
-<sense id='1' />
-<annotation name='a' value='a' />
-<field type='a' />
-<pronunciation o='1' />
-<note o='2' />
-<variant o='2' />
-<citation />
-<trait name='a' value='a' />
-<pronunciation o='2' />
-<lexical-unit />
-<etymology source='a' type='a' />
-<sense id='2' />
-<relation ref='a' type='a' />
-</entry>
+	<entry guid='1' >
+		<leftover />
+		<etymology source='a' type='b' />
+		<annotation name='a' value='b' />
+		<variant o='1' />
+		<relation ref='a' type='b' />
+		<note o='1' />
+		<trait name='a' value='b' />
+		<field type='b' />
+		<sense id='1' />
+		<annotation name='a' value='a' />
+		<field type='a' />
+		<pronunciation o='1' />
+		<note o='2' />
+		<variant o='2' />
+		<citation />
+		<trait name='a' value='a' />
+		<pronunciation o='2' />
+		<lexical-unit>
+			<form lang='b' />
+			<form lang='a' />
+		</lexical-unit>
+		<etymology source='a' type='a' />
+		<sense id='2' />
+		<relation ref='a' type='a' />
+	</entry>
 </lift>";
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
@@ -95,76 +98,83 @@ namespace Palaso.Lift.Tests
 				var entryChildren = doc.Root.Element("entry").Elements().ToList();
 				Assert.IsTrue(entryChildren.Count == 21);
 
-				var currentChild = entryChildren[0];
+				var currentIdx = -1;
+				var currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("lexical-unit", currentChild.Name.LocalName);
+				var lexUnitChildren = currentChild.Elements("form").ToList();
+				Assert.IsTrue(lexUnitChildren.Count == 2);
+				currentChild = lexUnitChildren[0];
+				Assert.AreEqual("a", currentChild.Attribute("lang").Value);
+				currentChild = lexUnitChildren[1];
+				Assert.AreEqual("b", currentChild.Attribute("lang").Value);
 
-				currentChild = entryChildren[1];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("citation", currentChild.Name.LocalName);
 
-				currentChild = entryChildren[2];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("pronunciation", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = entryChildren[3];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("pronunciation", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
 
-				currentChild = entryChildren[4];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("variant", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = entryChildren[5];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("variant", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
 
-				currentChild = entryChildren[6];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("sense", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("id").Value);
-				currentChild = entryChildren[7];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("sense", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("id").Value);
 
-				currentChild = entryChildren[8];
-				Assert.AreEqual("annotation", currentChild.Name.LocalName);
-				Assert.AreEqual("a", currentChild.Attribute("value").Value);
-				currentChild = entryChildren[9];
-				Assert.AreEqual("annotation", currentChild.Name.LocalName);
-				Assert.AreEqual("b", currentChild.Attribute("value").Value);
-
-				currentChild = entryChildren[10];
-				Assert.AreEqual("etymology", currentChild.Name.LocalName);
-				Assert.AreEqual("a", currentChild.Attribute("type").Value);
-				currentChild = entryChildren[11];
-				Assert.AreEqual("etymology", currentChild.Name.LocalName);
-				Assert.AreEqual("b", currentChild.Attribute("type").Value);
-
-				currentChild = entryChildren[12];
-				Assert.AreEqual("field", currentChild.Name.LocalName);
-				Assert.AreEqual("a", currentChild.Attribute("type").Value);
-				currentChild = entryChildren[13];
-				Assert.AreEqual("field", currentChild.Name.LocalName);
-				Assert.AreEqual("b", currentChild.Attribute("type").Value);
-
-				currentChild = entryChildren[14];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("note", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = entryChildren[15];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("note", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
 
-				currentChild = entryChildren[16];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("relation", currentChild.Name.LocalName);
 				Assert.AreEqual("a", currentChild.Attribute("type").Value);
-				currentChild = entryChildren[17];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("relation", currentChild.Name.LocalName);
 				Assert.AreEqual("b", currentChild.Attribute("type").Value);
 
-				currentChild = entryChildren[18];
+				currentChild = entryChildren[++currentIdx];
+				Assert.AreEqual("etymology", currentChild.Name.LocalName);
+				Assert.AreEqual("a", currentChild.Attribute("type").Value);
+				currentChild = entryChildren[++currentIdx];
+				Assert.AreEqual("etymology", currentChild.Name.LocalName);
+				Assert.AreEqual("b", currentChild.Attribute("type").Value);
+
+				currentChild = entryChildren[++currentIdx];
+				Assert.AreEqual("annotation", currentChild.Name.LocalName);
+				Assert.AreEqual("a", currentChild.Attribute("value").Value);
+				currentChild = entryChildren[++currentIdx];
+				Assert.AreEqual("annotation", currentChild.Name.LocalName);
+				Assert.AreEqual("b", currentChild.Attribute("value").Value);
+
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("trait", currentChild.Name.LocalName);
 				Assert.AreEqual("a", currentChild.Attribute("value").Value);
-				currentChild = entryChildren[19];
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("trait", currentChild.Name.LocalName);
 				Assert.AreEqual("b", currentChild.Attribute("value").Value);
 
-				currentChild = entryChildren[20];
+				currentChild = entryChildren[++currentIdx];
+				Assert.AreEqual("field", currentChild.Name.LocalName);
+				Assert.AreEqual("a", currentChild.Attribute("type").Value);
+				currentChild = entryChildren[++currentIdx];
+				Assert.AreEqual("field", currentChild.Name.LocalName);
+				Assert.AreEqual("b", currentChild.Attribute("type").Value);
+
+				currentChild = entryChildren[++currentIdx];
 				Assert.AreEqual("leftover", currentChild.Name.LocalName);
 			}
 		}
@@ -214,92 +224,93 @@ namespace Palaso.Lift.Tests
 				var senseChildren = doc.Root.Element("entry").Element("sense").Elements().ToList();
 				Assert.IsTrue(senseChildren.Count == 26);
 
-				var currentChild = senseChildren[0];
+				var currentIdx = -1;
+				var currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("definition", currentChild.Name.LocalName);
 
-				currentChild = senseChildren[1];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("gloss", currentChild.Name.LocalName);
 				Assert.AreEqual("a", currentChild.Attribute("lang").Value);
-				currentChild = senseChildren[2];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("gloss", currentChild.Name.LocalName);
 				Assert.AreEqual("b", currentChild.Attribute("lang").Value);
 
-				currentChild = senseChildren[3];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("grammatical-info", currentChild.Name.LocalName);
 
-				currentChild = senseChildren[4];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("example", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = senseChildren[5];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("example", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
 
-				currentChild = senseChildren[6];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("reversal", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = senseChildren[7];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("reversal", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
 
-				currentChild = senseChildren[8];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("subsense", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("id").Value);
-				currentChild = senseChildren[9];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("subsense", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("id").Value);
 
-				currentChild = senseChildren[10];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("relation", currentChild.Name.LocalName);
 				Assert.AreEqual("a", currentChild.Attribute("type").Value);
-				currentChild = senseChildren[11];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("relation", currentChild.Name.LocalName);
 				Assert.AreEqual("b", currentChild.Attribute("type").Value);
 
-				currentChild = senseChildren[12];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("illustration", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("href").Value);
-				currentChild = senseChildren[13];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("illustration", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("href").Value);
 
-				currentChild = senseChildren[14];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("note", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = senseChildren[15];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("note", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
-				currentChild = senseChildren[16];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("note", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("type").Value);
-				currentChild = senseChildren[17];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("note", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("type").Value);
 
-				currentChild = senseChildren[18];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("annotation", currentChild.Name.LocalName);
 				Assert.AreEqual("a", currentChild.Attribute("value").Value);
-				currentChild = senseChildren[19];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("annotation", currentChild.Name.LocalName);
 				Assert.AreEqual("b", currentChild.Attribute("value").Value);
 
-				currentChild = senseChildren[20];
+				currentChild = senseChildren[++currentIdx];
+				Assert.AreEqual("trait", currentChild.Name.LocalName);
+				Assert.AreEqual("a", currentChild.Attribute("value").Value);
+				currentChild = senseChildren[++currentIdx];
+				Assert.AreEqual("trait", currentChild.Name.LocalName);
+				Assert.AreEqual("b", currentChild.Attribute("value").Value);
+
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("field", currentChild.Name.LocalName);
 				Assert.AreEqual("a", currentChild.Attribute("type").Value);
-				currentChild = senseChildren[21];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("field", currentChild.Name.LocalName);
 				Assert.AreEqual("b", currentChild.Attribute("type").Value);
 
-				currentChild = senseChildren[22];
-				Assert.AreEqual("trait", currentChild.Name.LocalName);
-				Assert.AreEqual("a", currentChild.Attribute("value").Value);
-				currentChild = senseChildren[23];
-				Assert.AreEqual("trait", currentChild.Name.LocalName);
-				Assert.AreEqual("b", currentChild.Attribute("value").Value);
-
-				currentChild = senseChildren[24];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("leftover", currentChild.Name.LocalName);
 				Assert.AreEqual("1", currentChild.Attribute("o").Value);
-				currentChild = senseChildren[25];
+				currentChild = senseChildren[++currentIdx];
 				Assert.AreEqual("leftover", currentChild.Name.LocalName);
 				Assert.AreEqual("2", currentChild.Attribute("o").Value);
 			}
@@ -406,10 +417,10 @@ namespace Palaso.Lift.Tests
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
-				var rangeElements = doc.Root.Elements("header").Elements("fields").Elements("field").ToList();
-				Assert.IsTrue(rangeElements.Count == 2);
-				Assert.IsTrue(rangeElements[0].Attribute("tag").Value == "1");
-				Assert.IsTrue(rangeElements[1].Attribute("tag").Value == "2");
+				var fieldElements = doc.Root.Elements("header").Elements("fields").Elements("field").ToList();
+				Assert.IsTrue(fieldElements.Count == 2);
+				Assert.IsTrue(fieldElements[0].Attribute("tag").Value == "1");
+				Assert.IsTrue(fieldElements[1].Attribute("tag").Value == "2");
 			}
 		}
 
