@@ -239,21 +239,16 @@ namespace Palaso.Lift
 			// Optional, multiple <field> elements. Unordered. Key attr: tag
 			foreach (var fieldElement in fieldsParent.Elements("field").ToList())
 			{
-				var sortedForms = new SortedDictionary<string, XElement>();
-				foreach (var form in fieldElement.Elements("form").ToList())
-				{
-					sortedForms.Add(form.Attribute("lang").Value, form);
-					form.Remove();
-				}
+				var sortedForms = SortMultiformElementCore(fieldElement);
 				var sortedExtensibleSansFields = SortExtensibleSansField(fieldElement);
 
 				sortedFields.Add(fieldElement.Attribute(keyFieldAttribute).Value, fieldElement);
 
 				fieldElement.Remove();
 
-				foreach (var form in sortedForms)
+				foreach (var form in sortedForms.Values)
 				{
-					fieldsParent.Add(form);
+					fieldElement.Add(form);
 				}
 				RestoreSortedExtensibles(sortedExtensibleSansFields, fieldElement);
 			}
@@ -315,12 +310,7 @@ namespace Palaso.Lift
 			var tempGuid = Guid.NewGuid();
 			foreach (var note in notesParent.Elements("note").ToList())
 			{
-				var sortedForms = new SortedDictionary<string, XElement>();
-				foreach (var form in note.Elements("form").ToList())
-				{
-					sortedForms.Add(form.Attribute("lang").Value, form);
-					form.Remove();
-				}
+				var sortedForms = SortMultiformElementCore(note);
 				var typeAttr = note.Attribute("type");
 				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
 				sortedNotes.Add(key, note);
@@ -343,15 +333,10 @@ namespace Palaso.Lift
 		private static SortedDictionary<string, XElement> SortedEtymologies(XElement entry)
 		{
 			var sortedEtymologies = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-			var etymologies = entry.Elements("etymology").ToList();
-			foreach (var etymology in etymologies)
+
+			foreach (var etymology in entry.Elements("etymology").ToList())
 			{
-				var sortedForms = new SortedDictionary<string, XElement>();
-				foreach (var form in etymology.Elements("form").ToList())
-				{
-					sortedForms.Add(form.Attribute("lang").Value, form);
-					form.Remove();
-				}
+				var sortedForms = SortMultiformElementCore(etymology);
 				var sortedGlosses = new SortedDictionary<string, XElement>();
 				foreach (var gloss in etymology.Elements("gloss").ToList())
 				{
@@ -382,13 +367,22 @@ namespace Palaso.Lift
 			var relations = relationParent.Elements("relation").ToList();
 			foreach (var relation in relations)
 			{
-				SortMultiformElement(relation.Element("usage"));
+				var usage = relation.Element("usage");
+				if (usage != null)
+				{
+					SortMultiformElement(usage);
+					usage.Remove();
+				}
 				var sortedExtensible = SortExtensibleWithField(relation);
 				sortedRelations.Add(relation.Attribute("ref").Value + relation.Attribute("type").Value, relation);
 
 				relation.Remove();
 
 				RestoreSortedExtensibles(sortedExtensible, relation);
+				if (usage != null)
+				{
+					relation.Add(usage);
+				}
 			}
 			return sortedRelations;
 		}
@@ -398,13 +392,17 @@ namespace Palaso.Lift
 			var variants = entry.Elements("variant").ToList();
 			foreach (var variant in variants)
 			{
-				SortMultiformElement(variant);
+				var sortedForms = SortMultiformElementCore(variant);
 				var sortedExtensible = SortExtensibleWithField(variant);
 				var sortedPronunciations = SortPronunciations(variant);
 				var sortedRelations = SortedRelations(variant);
 
 				variant.Remove();
 
+				foreach (var form in sortedForms.Values)
+				{
+					variant.Add(form);
+				}
 				RestoreSortedExtensibles(sortedExtensible, variant);
 				foreach (var pronunciation in sortedPronunciations)
 				{
@@ -420,16 +418,28 @@ namespace Palaso.Lift
 
 		private static IEnumerable<XElement> SortPronunciations(XElement entry)
 		{
+			/*
+		  <ref name="multitext-content"/>
+		  <ref name="extensible-content"/>
+		  <zeroOrMore>
+			<element name="media">
+			  <ref name="URLRef-content"/>
+			</element>
+		  </zeroOrMore>
+			*/
 			var pronunciations = entry.Elements("pronunciation").ToList();
 			foreach (var pronunciation in pronunciations)
 			{
-				SortMultiformElement(pronunciation);
-				SortMultiformElement(pronunciation.Element("label"));
+				var sortedForms = SortMultiformElementCore(pronunciation);
 				var sortedExtensible = SortExtensibleWithField(pronunciation);
 				var sortedMedia = SortedMedia(pronunciation);
 
 				pronunciation.Remove();
 
+				foreach (var form in sortedForms.Values)
+				{
+					pronunciation.Add(form);
+				}
 				RestoreSortedExtensibles(sortedExtensible, pronunciation);
 				foreach (var media in sortedMedia.Values)
 				{
@@ -462,23 +472,27 @@ namespace Palaso.Lift
 			}
 		}
 
-		private static Dictionary<string, XElement> SortedMedia(XElement mediaParent)
+		private static SortedDictionary<string, XElement> SortedMedia(XElement mediaParent)
 		{
-			var sortedMedia = new Dictionary<string, XElement>();
+			var sortedMedia = new SortedDictionary<string, XElement>();
 
 			foreach (var media in mediaParent.Elements("media").ToList())
 			{
-				SortMedia(media);
+				var label = media.Element("label");
+				if (label != null)
+				{
+					var sortedForms = SortMultiformElementCore(label);
+
+					foreach (var form in sortedForms.Values)
+					{
+						label.Add(form);
+					}
+				}
 				sortedMedia.Add(media.Attribute("href").Value, media);
 				media.Remove();
 			}
 
 			return sortedMedia;
-		}
-
-		private static void SortMedia(XElement media)
-		{
-			SortMultiformElement(media);
 		}
 
 		private static IEnumerable<XElement> SortSenseContent(XElement senseParent, string senseElementName)
@@ -497,11 +511,14 @@ namespace Palaso.Lift
 				var glosses = sense.Elements("gloss").ToList();
 				foreach (var gloss in glosses)
 				{
+					var form = gloss.Element("form");
+					if (form != null)
+						SortFormContent(form);
 					sortedGlosses.Add(gloss.Attribute("lang").Value, gloss);
 					gloss.Remove();
 				}
-				var grammaticalInfo = SortGrammaticalInfo(sense);
-				var examples = SortExamplesContents(sense);
+				var grammaticalInfo = SortGrammaticalInfoContent(sense);
+				var examples = SortedExamplesContents(sense);
 				var reversals = SortedReversals(sense);
 				var subsenses = SortSenseContent(sense, "subsense");
 				var sortedRelations = SortedRelations(sense);
@@ -574,15 +591,10 @@ namespace Palaso.Lift
 
 		private static void SortReversalContents(XElement reversal)
 		{
-			var sortedForms = new SortedDictionary<string, XElement>();
-			foreach (var form in reversal.Elements("form").ToList())
-			{
-				sortedForms.Add(form.Attribute("lang").Value, form);
-				form.Remove();
-			}
-			var grammaticalInfo = SortGrammaticalInfo(reversal);
+			var sortedForms = SortMultiformElementCore(reversal);
+			var grammaticalInfo = SortGrammaticalInfoContent(reversal);
 
-			var sortedNestedReversal = reversal.Element("reversal-main");
+			var sortedNestedReversal = reversal.Element("main");
 			if (sortedNestedReversal != null)
 				SortReversalContents(sortedNestedReversal);
 
@@ -598,17 +610,12 @@ namespace Palaso.Lift
 				reversal.Add(sortedNestedReversal);
 		}
 
-		private static IEnumerable<XElement> SortExamplesContents(XElement sense)
+		private static IEnumerable<XElement> SortedExamplesContents(XElement sense)
 		{
 			var examples = sense.Elements("example").ToList();
 			foreach (var example in examples)
 			{
-				var sortedForms = new SortedDictionary<string, XElement>();
-				foreach (var form in example.Elements("form").ToList())
-				{
-					sortedForms.Add(form.Attribute("lang").Value, form);
-					form.Remove();
-				}
+				var sortedForms = SortMultiformElementCore(example);
 				var sortedTranslations = SortedTranslations(example);
 				var sortedNotes = SortedNotes(example);
 				var sortedExtensibles = SortExtensibleWithField(example);
@@ -639,6 +646,7 @@ namespace Palaso.Lift
 			var tempGuid = Guid.NewGuid();
 			foreach (var translation in translationParent.Elements("translation").ToList())
 			{
+				var sortedForms = SortMultiformElementCore(translation);
 				var typeAttr = translation.Attribute("type");
 				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
 				sortedTranslations.Add(key, translation);
@@ -646,17 +654,24 @@ namespace Palaso.Lift
 					fakeKeyPart++;
 
 				translation.Remove();
+
+				foreach (var form in sortedForms.Values)
+				{
+					translation.Add(form);
+				}
 			}
 			return sortedTranslations;
 		}
 
-		private static XElement SortGrammaticalInfo(XElement grammaticalInfoParent)
+		private static XElement SortGrammaticalInfoContent(XElement grammaticalInfoParent)
 		{
 			var grammaticalInfo = grammaticalInfoParent.Element("grammatical-info");
 			if (grammaticalInfo != null)
 			{
 				var sortedTraits = SortedTraits(grammaticalInfo);
+
 				grammaticalInfo.Remove();
+
 				foreach (var trait in sortedTraits.Values)
 				{
 					grammaticalInfo.Add(trait);
@@ -687,10 +702,20 @@ namespace Palaso.Lift
 		private static SortedDictionary<string, XElement> SortedAnnotations(XElement annotationParent)
 		{
 			var sortedAnnotations = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			var fakeKeyPart = 1;
+			var tempGuid = Guid.NewGuid();
 			foreach (var annotation in annotationParent.Elements("annotation").ToList())
 			{
-				SortMultiformElement(annotation);
-				sortedAnnotations.Add(annotation.Attribute("name").Value + annotation.Attribute("value").Value, annotation);
+				var sortedForms = SortMultiformElementCore(annotation);
+				var valueAttr = annotation.Attribute("value");
+				var valuePartOfKey = valueAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : valueAttr.Value;
+				sortedAnnotations.Add(annotation.Attribute("name").Value + valuePartOfKey, annotation);
+				if (valueAttr == null)
+					fakeKeyPart++;
+				foreach (var form in sortedForms.Values)
+				{
+					annotation.Add(form);
+				}
 				annotation.Remove();
 			}
 			return sortedAnnotations;
@@ -701,9 +726,14 @@ namespace Palaso.Lift
 			var sortedTraits = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
 			foreach (var trait in traitParent.Elements("trait").ToList())
 			{
-				SortedAnnotations(trait);
+				var sortedAnnotations = SortedAnnotations(trait);
 				sortedTraits.Add(trait.Attribute("name").Value + trait.Attribute("value").Value, trait);
 				trait.Remove();
+
+				foreach (var annotation in sortedAnnotations.Values)
+				{
+					trait.Add(annotation);
+				}
 			}
 			return sortedTraits;
 		}
@@ -713,14 +743,39 @@ namespace Palaso.Lift
 			if (multiformElementParent == null)
 				return;
 
+			var sortedForms = SortMultiformElementCore(multiformElementParent);
+
+			foreach (var form in sortedForms.Values)
+				multiformElementParent.Add(form);
+		}
+
+		private static SortedDictionary<string, XElement> SortMultiformElementCore(XElement multiformElementParent)
+		{
 			var sortedForms = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+			if (multiformElementParent == null)
+				return sortedForms;
+
 			foreach (var form in multiformElementParent.Elements("form").ToList())
 			{
+				SortFormContent(form);
 				sortedForms.Add(form.Attribute("lang").Value, form);
 				form.Remove();
 			}
-			foreach (var form in sortedForms.Values)
-				multiformElementParent.Add(form);
+			return sortedForms;
+		}
+
+		private static void SortFormContent(XElement formElement)
+		{
+			// Don't even think of messing with the <text> innards.
+			var textElement = formElement.Element("text");
+			textElement.Remove();
+			var sortedAnnotations = SortedAnnotations(formElement);
+
+			formElement.Add(textElement);
+			foreach (var annotation in sortedAnnotations.Values)
+			{
+				formElement.Add(annotation);
+			}
 		}
 
 		private static void SortAttributes(XElement element)
