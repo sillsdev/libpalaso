@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace Palaso.Lift
 							if (!sortedEntries.ContainsKey(guidKey))
 							{
 								SortEntry(element);
-								sortedEntries.Add(guidKey, Utf8.GetBytes(element.ToString()));
+								sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), Utf8.GetBytes(element.ToString()));
 							}
 						}
 					}
@@ -115,7 +116,7 @@ namespace Palaso.Lift
 			foreach (var childRangeElement in rangeElement.Elements("range-element").ToList())
 			{
 				SortBasicsOfRangeElement(childRangeElement);
-				sortedChildRanges.Add(childRangeElement.Attribute("id").Value, childRangeElement);
+				sortedChildRanges.Add(GetUniqueKey(sortedChildRanges.Keys, childRangeElement.Attribute("id").Value), childRangeElement);
 				childRangeElement.Remove();
 			}
 
@@ -171,7 +172,7 @@ namespace Palaso.Lift
 				for (var i = 0; i < tempReader.AttributeCount; ++i)
 				{
 					tempReader.MoveToAttribute(i);
-					sortedRootAttributes.Add(tempReader.LocalName, tempReader.Value);
+					sortedRootAttributes.Add(GetUniqueKey(sortedRootAttributes.Keys, tempReader.LocalName), tempReader.Value);
 				}
 			}
 			return sortedRootAttributes;
@@ -218,7 +219,7 @@ namespace Palaso.Lift
 			foreach (var rangeElement in rangesParent.Elements("range").ToList())
 			{
 				SortRange(rangeElement);
-				sortedRanges.Add(rangeElement.Attribute("id").Value, rangeElement);
+				sortedRanges.Add(GetUniqueKey(sortedRanges.Keys, rangeElement.Attribute("id").Value), rangeElement);
 			}
 
 			rangesParent.RemoveNodes();
@@ -242,7 +243,7 @@ namespace Palaso.Lift
 				var sortedForms = SortMultiformElementCore(fieldElement);
 				var sortedExtensibleSansFields = SortExtensibleSansField(fieldElement);
 
-				sortedFields.Add(fieldElement.Attribute(keyFieldAttribute).Value, fieldElement);
+				sortedFields.Add(GetUniqueKey(sortedFields.Keys, fieldElement.Attribute(keyFieldAttribute).Value), fieldElement);
 
 				fieldElement.Remove();
 
@@ -313,7 +314,7 @@ namespace Palaso.Lift
 				var sortedForms = SortMultiformElementCore(note);
 				var typeAttr = note.Attribute("type");
 				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
-				sortedNotes.Add(key, note);
+				sortedNotes.Add(GetUniqueKey(sortedNotes.Keys, key), note);
 				if (typeAttr == null)
 					fakeKeyPart++;
 
@@ -340,12 +341,12 @@ namespace Palaso.Lift
 				var sortedGlosses = new SortedDictionary<string, XElement>();
 				foreach (var gloss in etymology.Elements("gloss").ToList())
 				{
-					sortedGlosses.Add(gloss.Attribute("lang").Value, gloss);
+					sortedGlosses.Add(GetUniqueKey(sortedGlosses.Keys, gloss.Attribute("lang").Value), gloss);
 					gloss.Remove();
 				}
 				var sortedExtensibles = SortExtensibleWithField(etymology);
 
-				sortedEtymologies.Add(etymology.Attribute("source").Value + etymology.Attribute("type").Value, etymology);
+				sortedEtymologies.Add(GetUniqueKey(sortedEtymologies.Keys, etymology.Attribute("source").Value + etymology.Attribute("type").Value), etymology);
 				etymology.Remove();
 
 				foreach (var form in sortedForms.Values)
@@ -374,7 +375,7 @@ namespace Palaso.Lift
 					usage.Remove();
 				}
 				var sortedExtensible = SortExtensibleWithField(relation);
-				sortedRelations.Add(relation.Attribute("ref").Value + relation.Attribute("type").Value, relation);
+				sortedRelations.Add(GetUniqueKey(sortedRelations.Keys, relation.Attribute("ref").Value + relation.Attribute("type").Value), relation);
 
 				relation.Remove();
 
@@ -488,7 +489,7 @@ namespace Palaso.Lift
 						label.Add(form);
 					}
 				}
-				sortedMedia.Add(media.Attribute("href").Value, media);
+				sortedMedia.Add(GetUniqueKey(sortedMedia.Keys, media.Attribute("href").Value), media);
 				media.Remove();
 			}
 
@@ -514,7 +515,7 @@ namespace Palaso.Lift
 					var form = gloss.Element("form");
 					if (form != null)
 						SortFormContent(form);
-					sortedGlosses.Add(gloss.Attribute("lang").Value, gloss);
+					sortedGlosses.Add(GetUniqueKey(sortedGlosses.Keys, gloss.Attribute("lang").Value), gloss);
 					gloss.Remove();
 				}
 				var grammaticalInfo = SortGrammaticalInfoContent(sense);
@@ -564,7 +565,7 @@ namespace Palaso.Lift
 				var label = illustration.Element("label");
 				if (label != null)
 					SortMultiformElement(label);
-				sortedIllustrations.Add(illustration.Attribute("href").Value, illustration);
+				sortedIllustrations.Add(GetUniqueKey(sortedIllustrations.Keys, illustration.Attribute("href").Value), illustration);
 				illustration.Remove();
 			}
 			return sortedIllustrations;
@@ -581,7 +582,7 @@ namespace Palaso.Lift
 
 				var typeAttr = reversal.Attribute("type");
 				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
-				sortedReversals.Add(key, reversal);
+				sortedReversals.Add(GetUniqueKey(sortedReversals.Keys, key), reversal);
 				if (typeAttr == null)
 					fakeKeyPart++;
 			}
@@ -649,7 +650,7 @@ namespace Palaso.Lift
 				var sortedForms = SortMultiformElementCore(translation);
 				var typeAttr = translation.Attribute("type");
 				var key = typeAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : typeAttr.Value;
-				sortedTranslations.Add(key, translation);
+				sortedTranslations.Add(GetUniqueKey(sortedTranslations.Keys, key), translation);
 				if (typeAttr == null)
 					fakeKeyPart++;
 
@@ -709,7 +710,7 @@ namespace Palaso.Lift
 				var sortedForms = SortMultiformElementCore(annotation);
 				var valueAttr = annotation.Attribute("value");
 				var valuePartOfKey = valueAttr == null ? "@@@@@@" + tempGuid.ToString() + fakeKeyPart : valueAttr.Value;
-				sortedAnnotations.Add(annotation.Attribute("name").Value + valuePartOfKey, annotation);
+				sortedAnnotations.Add(GetUniqueKey(sortedAnnotations.Keys, annotation.Attribute("name").Value + valuePartOfKey), annotation);
 				if (valueAttr == null)
 					fakeKeyPart++;
 				foreach (var form in sortedForms.Values)
@@ -727,7 +728,7 @@ namespace Palaso.Lift
 			foreach (var trait in traitParent.Elements("trait").ToList())
 			{
 				var sortedAnnotations = SortedAnnotations(trait);
-				sortedTraits.Add(trait.Attribute("name").Value + trait.Attribute("value").Value, trait);
+				sortedTraits.Add(GetUniqueKey(sortedTraits.Keys, trait.Attribute("name").Value + trait.Attribute("value").Value), trait);
 				trait.Remove();
 
 				foreach (var annotation in sortedAnnotations.Values)
@@ -758,7 +759,7 @@ namespace Palaso.Lift
 			foreach (var form in multiformElementParent.Elements("form").ToList())
 			{
 				SortFormContent(form);
-				sortedForms.Add(form.Attribute("lang").Value, form);
+				sortedForms.Add(GetUniqueKey(sortedForms.Keys, form.Attribute("lang").Value), form);
 				form.Remove();
 			}
 			return sortedForms;
@@ -792,11 +793,25 @@ namespace Palaso.Lift
 
 			var sortedAttributes = new SortedDictionary<string, XAttribute>();
 			foreach (var attr in element.Attributes())
-				sortedAttributes.Add(attr.Name.LocalName, attr);
+			{
+				sortedAttributes.Add(GetUniqueKey(sortedAttributes.Keys, attr.Name.LocalName), attr);
+			}
 
 			element.Attributes().Remove();
 			foreach (var sortedAttrKvp in sortedAttributes)
 				element.Add(sortedAttrKvp.Value);
+		}
+
+		internal static string GetUniqueKey(ICollection<string> keys, string keyCandidate)
+		{
+			var keyWithSuffix = keyCandidate;
+			var suffix = 1;
+			while (true)
+			{
+				if (!keys.Contains(keyWithSuffix))
+					return keyWithSuffix;
+				keyWithSuffix = keyCandidate + suffix++;
+			}
 		}
 	}
 }

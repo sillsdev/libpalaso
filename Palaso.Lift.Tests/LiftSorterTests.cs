@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -1743,6 +1744,34 @@ namespace Palaso.Lift.Tests
 				Assert.AreEqual("form", currentFormChild.Name.LocalName);
 				Assert.AreEqual("ab", currentFormChild.Attribute("lang").Value);
 			}
+		}
+
+		[Test]
+		public void GetUniqueKeyForDictionary()
+		{
+			var sortedDictionary = new SortedDictionary<string, string>
+				{
+					{"key", "value"}
+				};
+			var uniqueKey = LiftSorter.GetUniqueKey(sortedDictionary.Keys, "key");
+			Assert.AreEqual("key1", uniqueKey);
+			sortedDictionary.Add(uniqueKey, "value1");
+			uniqueKey = LiftSorter.GetUniqueKey(sortedDictionary.Keys, "key");
+			Assert.AreEqual("key2", uniqueKey);
+		}
+
+		[Test]
+		public void GetUniqueKeyForSortedDictionary()
+		{
+			var dictionary = new Dictionary<string, string>
+				{
+					{"key", "value"}
+				};
+			var uniqueKey = LiftSorter.GetUniqueKey(dictionary.Keys, "key");
+			Assert.AreEqual("key1", uniqueKey);
+			dictionary.Add(uniqueKey, "value1");
+			uniqueKey = LiftSorter.GetUniqueKey(dictionary.Keys, "key");
+			Assert.AreEqual("key2", uniqueKey);
 		}
 	}
 }
