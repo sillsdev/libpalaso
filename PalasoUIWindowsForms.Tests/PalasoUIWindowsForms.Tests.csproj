@@ -115,6 +115,7 @@
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
 	<Compile Include="Keyboarding\IBusEnvironmentForTest.cs" />
+	<Compile Include="Keyboarding\WidnowsIMEAdaptorTests.cs" />
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
