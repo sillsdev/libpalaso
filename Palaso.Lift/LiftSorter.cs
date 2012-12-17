@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -131,11 +130,24 @@ namespace Palaso.Lift
 		private static void SortBasicsOfRangeElement(XElement rangeElement)
 		{
 			var description = rangeElement.Element("description");
-			SortMultiformElement(description);
+			if (description != null)
+			{
+				SortMultiformElement(description);
+				description.Remove();
+			}
 			var label = rangeElement.Element("label");
-			SortMultiformElement(label);
+			if (label != null)
+			{
+				SortMultiformElement(label);
+				label.Remove();
+			}
 			var abbrev = rangeElement.Element("abbrev");
-			SortMultiformElement(abbrev);
+			if (abbrev != null)
+			{
+				SortMultiformElement(abbrev);
+				abbrev.Remove();
+			}
+			var leftovers = rangeElement.Elements().ToList();
 
 			rangeElement.RemoveNodes();
 
@@ -145,6 +157,10 @@ namespace Palaso.Lift
 				rangeElement.Add(label);
 			if (abbrev != null)
 				rangeElement.Add(abbrev);
+			foreach (var leftover in leftovers)
+			{
+				rangeElement.Add(leftover);
+			}
 		}
 
 		private static void WriteElement(XmlWriter writer, XElement element)
@@ -183,8 +199,21 @@ namespace Palaso.Lift
 			// Has three optional elements: description, ranges, and fields.
 			// Put them in this order, if present: description, ranges, and fields.
 			var description = header.Element("description");
+			if (description != null)
+			{
+				description.Remove();
+			}
 			var ranges = header.Element("ranges");
+			if (ranges != null)
+			{
+				ranges.Remove();
+			}
 			var fields = header.Element("fields");
+			if (fields != null)
+			{
+				fields.Remove();
+			}
+			var leftovers = header.Elements().ToList();
 
 			header.RemoveNodes();
 
@@ -198,14 +227,19 @@ namespace Palaso.Lift
 				SortRanges(ranges);
 				header.Add(ranges);
 			}
-			if (fields == null)
-				return;
-
-			var sortedFields = SortFields(fields, "tag");
-			header.Add(fields);
-			foreach (var field in sortedFields.Values)
+			if (fields != null)
 			{
-				fields.Add(field);
+				var sortedFields = SortFields(fields, "tag");
+				header.Add(fields);
+				foreach (var field in sortedFields.Values)
+				{
+					fields.Add(field);
+				}
+			}
+
+			foreach (var leftover in leftovers)
+			{
+				header.Add(leftover);
 			}
 		}
 
@@ -220,13 +254,19 @@ namespace Palaso.Lift
 			{
 				SortRange(rangeElement);
 				sortedRanges.Add(GetUniqueKey(sortedRanges.Keys, rangeElement.Attribute("id").Value), rangeElement);
+				rangeElement.Remove();
 			}
+			var leftovers = rangesParent.Elements().ToList();
 
 			rangesParent.RemoveNodes();
 
 			foreach (var rangeElement in sortedRanges.Values)
 			{
 				rangesParent.Add(rangeElement);
+			}
+			foreach (var leftover in leftovers)
+			{
+				rangesParent.Add(leftover);
 			}
 		}
 
