@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<PublishUrl>publish\</PublishUrl>
 	<Install>true</Install>
 	<InstallFrom>Disk</InstallFrom>
@@ -45,6 +45,7 @@
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<LangVersion>default</LangVersion>
 	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -57,6 +58,8 @@
 	<DebugSymbols>true</DebugSymbols>
 	<RootNamespace>TestApp</RootNamespace>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -70,6 +73,8 @@
 	<Optimize>true</Optimize>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<WarningLevel>4</WarningLevel>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\..\output\$(Configuration)</OutputPath>
@@ -83,6 +88,8 @@
 	<RootNamespace>TestApp</RootNamespace>
 	<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
 	<WarningLevel>4</WarningLevel>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7">
@@ -137,6 +144,7 @@
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <DependentUpon>Resources.resx</DependentUpon>
 	</Compile>
+	<None Include="app.config" />
 	<None Include="Properties\Settings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>Settings1.Designer.cs</LastGenOutput>

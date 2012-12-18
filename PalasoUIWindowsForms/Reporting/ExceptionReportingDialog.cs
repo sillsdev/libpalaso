@@ -536,7 +536,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 		 {
 			if (ErrorReport.EmailAddress != null)
 			{
-				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
+				_details.Text = String.Format("Please e-mail this to {0} {1}", ErrorReport.EmailAddress, _details.Text);
 			}
 			Clipboard.SetDataObject(_details.Text, true);
 			 return true;
