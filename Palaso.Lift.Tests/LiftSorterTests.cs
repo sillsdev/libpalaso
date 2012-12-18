@@ -1630,6 +1630,7 @@ namespace Palaso.Lift.Tests
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftRangesFile(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
+				Assert.AreEqual("lift-ranges", doc.Root.Name.LocalName);
 				var ranges = doc.Root.Elements("range").ToList();
 				Assert.IsTrue(ranges.Count == 2);
 				Assert.IsTrue(ranges[0].Attribute("id").Value == "1");

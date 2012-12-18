@@ -100,10 +100,30 @@ namespace Palaso.Lift
 
 			using (var tempFile = new TempFile(File.ReadAllText(liftRangesPathname), Utf8))
 			{
+				var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
+
 				var doc = XDocument.Load(liftRangesPathname);
 				SortAttributes(doc.Root);
 				SortRanges(doc.Root);
-				doc.Save(tempFile.Path);
+
+				using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				{
+					writer.WriteStartDocument();
+					writer.WriteStartElement(doc.Root.Name.LocalName);
+
+					foreach (var rootAttributeKvp in sortedRootAttributes)
+					{
+						writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
+					}
+
+					foreach (var rangeElement in doc.Root.Elements())
+					{
+						WriteElement(writer, rangeElement);
+					}
+
+					writer.WriteEndElement();
+					writer.WriteEndDocument();
+				}
 
 				File.Copy(tempFile.Path, liftRangesPathname, true);
 			}
@@ -809,10 +829,17 @@ namespace Palaso.Lift
 		{
 			// Don't even think of messing with the <text> innards.
 			var textElement = formElement.Element("text");
-			textElement.Remove();
+			if (textElement != null)
+			{
+				textElement.Remove();
+			}
 			var sortedAnnotations = SortedAnnotations(formElement);
 
-			formElement.Add(textElement);
+			if (textElement != null)
+			{
+				formElement.Add(textElement);
+			}
+
 			foreach (var annotation in sortedAnnotations.Values)
 			{
 				formElement.Add(annotation);
