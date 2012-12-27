@@ -52,6 +52,8 @@ namespace Palaso.WritingSystems
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private RFC5646Tag _rfcTag;
+		private const int kMinimumFontSize=7;
+		private const int kDefaultSizeIfWeDontKnow = 10;
 
 		private string _languageName;
 
@@ -81,6 +83,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		public WritingSystemDefinition()
 		{
+			DefaultFontSize = kDefaultSizeIfWeDontKnow;
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isUnicodeEncoded = true;
 			_rfcTag = new RFC5646Tag();
@@ -144,7 +147,7 @@ namespace Palaso.WritingSystems
 			_abbreviation = ws._abbreviation;
 			_rightToLeftScript = ws._rightToLeftScript;
 			_defaultFontName = ws._defaultFontName;
-			_defaultFontSize = ws._defaultFontSize;
+			DefaultFontSize = ws._defaultFontSize;
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
@@ -838,6 +841,9 @@ namespace Palaso.WritingSystems
 				{
 					throw new ArgumentOutOfRangeException();
 				}
+				if (value < kMinimumFontSize)
+					value = kDefaultSizeIfWeDontKnow;
+
 				_defaultFontSize = value;
 				Modified = true;
 			}
