@@ -617,5 +617,23 @@ namespace Palaso.DictionaryServices.Model
 			}
 			return formForLogging;
 		}
+		/// <summary>
+		/// used by SILCAWL list
+		/// </summary>
+		public string GetSomeMeaningToUseInAbsenseOfHeadWord(string writingSystemId)
+		{
+			var s = Senses.FirstOrDefault();
+			if(s==null)
+				return "?NoMeaning?";
+			var gloss=s.Gloss.GetExactAlternative(writingSystemId);
+			if (string.IsNullOrEmpty(gloss))
+			{
+				var def = s.Definition.GetExactAlternative(writingSystemId);
+				if(string.IsNullOrEmpty(def))
+					return "?NoGlossOrDef?";
+				return def;
+			}
+			return gloss;
+		}
 	}
 }
