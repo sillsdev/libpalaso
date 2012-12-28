@@ -80,7 +80,14 @@ namespace Palaso.UI.WindowsForms.i18n
 			var hints = control as ILocalizableControl;
 			if (hints==null || hints.ShouldModifyFont)
 			{
-				control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				if (control is LinkLabel && ((LinkLabel)control).UseMnemonic == false)
+				{
+					//then that link is for user data, and shouldn't be localized (this came up in Chorus AnnotationEditorView)
+				}
+				else
+				{
+					control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				}
 			}
 			_alreadyChanging = false;
 		}
