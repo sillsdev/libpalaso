@@ -83,7 +83,6 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		public WritingSystemDefinition()
 		{
-			DefaultFontSize = kDefaultSizeIfWeDontKnow;
 			_sortUsing = SortRulesType.DefaultOrdering;
 			_isUnicodeEncoded = true;
 			_rfcTag = new RFC5646Tag();
@@ -147,7 +146,7 @@ namespace Palaso.WritingSystems
 			_abbreviation = ws._abbreviation;
 			_rightToLeftScript = ws._rightToLeftScript;
 			_defaultFontName = ws._defaultFontName;
-			DefaultFontSize = ws._defaultFontSize;
+			_defaultFontSize = ws._defaultFontSize;
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
@@ -841,12 +840,20 @@ namespace Palaso.WritingSystems
 				{
 					throw new ArgumentOutOfRangeException();
 				}
-				if (value < kMinimumFontSize)
-					value = kDefaultSizeIfWeDontKnow;
-
 				_defaultFontSize = value;
 				Modified = true;
 			}
+		}
+
+		/// <summary>
+		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
+		/// </summary>
+		/// <returns></returns>
+		virtual public float GetDefaultFontSizeOrMinimum()
+		{
+			if (_defaultFontSize < kMinimumFontSize)
+				return kDefaultSizeIfWeDontKnow;
+			return _defaultFontSize;
 		}
 
 		/// <summary>
