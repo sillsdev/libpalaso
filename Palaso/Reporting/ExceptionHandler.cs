@@ -42,7 +42,7 @@ namespace Palaso.Reporting
 				{
 					var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
 					var palasoUiWindowsFormsInializeAssemblyName =
-						referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+						referencedAssemblies.FirstOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
 					if (palasoUiWindowsFormsInializeAssemblyName != null)
 					{
 						var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);

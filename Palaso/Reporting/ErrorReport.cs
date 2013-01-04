@@ -55,7 +55,7 @@ namespace Palaso.Reporting
 			{
 				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
 				var palasoUiWindowsFormsInializeAssemblyName =
-					referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));//This will fail when there are multiple matches: SingleOrDefault
 				if (palasoUiWindowsFormsInializeAssemblyName != null)
 				{
 					var palasoUIWinFormsAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
