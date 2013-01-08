@@ -1382,6 +1382,15 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void MakeUnique_StoreIdIsNull()
+		{
+			var existingTags = new[] { "en-Zxxx-x-audio" };
+			var ws = new WritingSystemDefinition("de");
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
+			Assert.That(newWs.StoreID, Is.EqualTo(null));
+		}
+
+		[Test]
 		public void MakeUnique_IdAlreadyContainsADuplicateMarker_DuplicateNumberIsMaintainedAndNewOneIsIntroduced()
 		{
 			var existingTags = new[] { "en-Zxxx-x-dupl0-audio", "en-Zxxx-x-audio-dupl1" };

@@ -643,7 +643,6 @@ namespace Palaso.WritingSystems
 			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
 			var newWs = writingSystemToCopy.Clone();
-			newWs.StoreID = writingSystemToCopy.StoreID;
 			var lastAppended = String.Empty;
 			int duplicateNumber = 0;
 			while (otherWritingsystemIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
