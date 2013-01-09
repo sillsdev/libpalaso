@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
+using Palaso.UI.WindowsForms.SuperToolTip;
+
 #if !MONO
 
 #endif
@@ -68,6 +71,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 												}
 						  */
 						_currentImageBox.Image = value.Image;
+
+						SetCurrentImageToolTip(value);
 						SetupMetaDataControls(value.Metadata);
 					}
 					if(_imageInfo!=null && _imageInfo!=value)
@@ -82,6 +87,32 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				catch (Exception e)
 				{
 					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.");
+				}
+			}
+		}
+
+		private void SetCurrentImageToolTip(PalasoImage image)
+		{
+			_toolTip.SetToolTip(_currentImageBox, "");
+
+			//enchance: this only uses the "originalpath" version, which may be a lot larger than what we
+			//currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
+			if (image!=null && !string.IsNullOrEmpty(image.OriginalFilePath) && File.Exists(image.OriginalFilePath))
+			{
+				try
+				{
+					float size = new System.IO.FileInfo(image.OriginalFilePath).Length;
+					if (size > 1000*1024)
+						_toolTip.SetToolTip(_currentImageBox,
+											string.Format("{0} {1:N2}M", image.OriginalFilePath, size/(1024f*1000f)));
+					else
+					{
+						_toolTip.SetToolTip(_currentImageBox, string.Format("{0} {1:N2}K", image.OriginalFilePath, size/1024f));
+					}
+				}
+				catch (Exception error)
+				{
+					_toolTip.SetToolTip(_currentImageBox, error.Message);
 				}
 			}
 		}

@@ -1398,5 +1398,20 @@ namespace Palaso.Tests.WritingSystems
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
 			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
+
+		[Test]
+		public void GetDefaultFontSizeOrMinimum_DefaultConstructor_GreaterThanSix()
+		{
+			Assert.Greater(new WritingSystemDefinition().GetDefaultFontSizeOrMinimum(),6);
+		}
+		[Test]
+		public void GetDefaultFontSizeOrMinimum_SetAt0_GreaterThanSix()
+		{
+			var ws = new WritingSystemDefinition()
+						 {
+							 DefaultFontSize = 0
+						 };
+			Assert.Greater(ws.GetDefaultFontSizeOrMinimum(), 6);
+		}
 	}
 }

@@ -41,6 +41,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
 			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
@@ -48,11 +49,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._editLink = new System.Windows.Forms.LinkLabel();
 			this._invitationToMetadataPanel = new System.Windows.Forms.Panel();
+			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
+			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this._copyExemplarMetadata = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
 			this._metadataDisplayControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetadataDisplayControl();
-			this._currentImageBox = new System.Windows.Forms.PictureBox();
+			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.panel1.SuspendLayout();
 			this._invitationToMetadataPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
@@ -127,6 +129,31 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 195);
 			this._invitationToMetadataPanel.TabIndex = 8;
 			//
+			// _editMetadataLink
+			//
+			this._editMetadataLink.AutoSize = true;
+			this._editMetadataLink.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._editMetadataLink.Location = new System.Drawing.Point(4, 82);
+			this._editMetadataLink.Name = "_editMetadataLink";
+			this._editMetadataLink.Size = new System.Drawing.Size(119, 19);
+			this._editMetadataLink.TabIndex = 8;
+			this._editMetadataLink.TabStop = true;
+			this._editMetadataLink.Text = "Set up metadata...";
+			this._editMetadataLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnEditMetadataLink_LinkClicked);
+			//
+			// _currentImageBox
+			//
+			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._currentImageBox.BackColor = System.Drawing.SystemColors.Control;
+			this._currentImageBox.Location = new System.Drawing.Point(7, 0);
+			this._currentImageBox.MinimumSize = new System.Drawing.Size(251, 245);
+			this._currentImageBox.Name = "_currentImageBox";
+			this._currentImageBox.Size = new System.Drawing.Size(253, 245);
+			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this._currentImageBox.TabIndex = 5;
+			this._currentImageBox.TabStop = false;
+			//
 			// _copyExemplarMetadata
 			//
 			this._copyExemplarMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -138,7 +165,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._copyExemplarMetadata.Multiline = true;
 			this._copyExemplarMetadata.Name = "_copyExemplarMetadata";
 			this._copyExemplarMetadata.ReadOnly = true;
-			this._copyExemplarMetadata.Size = new System.Drawing.Size(237, 37);
+			this._copyExemplarMetadata.Size = new System.Drawing.Size(237, 17);
 			this._copyExemplarMetadata.TabIndex = 11;
 			this._copyExemplarMetadata.TabStop = false;
 			this._copyExemplarMetadata.Text = "Copy Examplar that is really long";
@@ -156,22 +183,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.betterLabel1.Multiline = true;
 			this.betterLabel1.Name = "betterLabel1";
 			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(245, 80);
+			this.betterLabel1.Size = new System.Drawing.Size(245, 65);
 			this.betterLabel1.TabIndex = 9;
 			this.betterLabel1.TabStop = false;
 			this.betterLabel1.Text = "This image does not know:\r\n\r\nWho created it?\r\nWho can use it?";
-			//
-			// _editMetadataLink
-			//
-			this._editMetadataLink.AutoSize = true;
-			this._editMetadataLink.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._editMetadataLink.Location = new System.Drawing.Point(4, 82);
-			this._editMetadataLink.Name = "_editMetadataLink";
-			this._editMetadataLink.Size = new System.Drawing.Size(119, 19);
-			this._editMetadataLink.TabIndex = 8;
-			this._editMetadataLink.TabStop = true;
-			this._editMetadataLink.Text = "Set up metadata...";
-			this._editMetadataLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnEditMetadataLink_LinkClicked);
 			//
 			// _metadataDisplayControl
 			//
@@ -181,19 +196,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._metadataDisplayControl.Name = "_metadataDisplayControl";
 			this._metadataDisplayControl.Size = new System.Drawing.Size(253, 172);
 			this._metadataDisplayControl.TabIndex = 6;
-			//
-			// _currentImageBox
-			//
-			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this._currentImageBox.BackColor = System.Drawing.SystemColors.Control;
-			this._currentImageBox.Location = new System.Drawing.Point(7, 0);
-			this._currentImageBox.MinimumSize = new System.Drawing.Size(251, 245);
-			this._currentImageBox.Name = "_currentImageBox";
-			this._currentImageBox.Size = new System.Drawing.Size(253, 245);
-			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this._currentImageBox.TabIndex = 5;
-			this._currentImageBox.TabStop = false;
 			//
 			// ImageToolboxControl
 			//
@@ -228,5 +230,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private System.Windows.Forms.LinkLabel _editMetadataLink;
 		private System.Windows.Forms.LinkLabel _editLink;
 		private Widgets.BetterLinkLabel _copyExemplarMetadata;
+		private System.Windows.Forms.ToolTip _toolTip;
 	}
 }
