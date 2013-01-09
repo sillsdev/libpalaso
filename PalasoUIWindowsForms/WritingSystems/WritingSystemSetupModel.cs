@@ -1292,6 +1292,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
 						_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
+				_writingSystemDefinitions.RemoveAll(ws=>ws == unsettableWs);   //Standard .Remove() won't work because the writing systems could be clones and therefor equal according to WS equality
+				_writingSystemDefinitions.Add(uniqueWs);
+				OnAddOrDelete();
 				_writingSystemRepository.Set(uniqueWs);
 			}
 		}
