@@ -99,6 +99,7 @@
 	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />
@@ -210,7 +211,6 @@
 	<Compile Include="Reporting\ExceptionHelper.cs" />
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ReportingSettings.cs" />
-
 	<Compile Include="Reporting\UsageReporter.cs" />
 	<Compile Include="Resource.Designer.cs">
 	  <DependentUpon>Resource.resx</DependentUpon>
@@ -334,7 +334,6 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-
 	<EmbeddedResource Include="Resource.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>

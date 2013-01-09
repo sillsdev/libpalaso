@@ -37,7 +37,7 @@ namespace Palaso.Lift
 			using (var tempFile = new TempFile(File.ReadAllText(liftPathname), Utf8))
 			{
 				var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
-				var sortedEntries = new SortedDictionary<string, byte[]>(StringComparer.InvariantCultureIgnoreCase);
+				var sortedEntries = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
 				XElement header = null;
 				using (var splitter = new FastXmlElementSplitter(tempFile.Path))
 				{
@@ -59,7 +59,7 @@ namespace Palaso.Lift
 							if (!sortedEntries.ContainsKey(guidKey))
 							{
 								SortEntry(element);
-								sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), Utf8.GetBytes(element.ToString()));
+								sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), element);
 							}
 						}
 					}
@@ -129,6 +129,23 @@ namespace Palaso.Lift
 			}
 		}
 
+		/// <summary>
+		/// Return a set of the names of those elements in LIFT were we must not indent each child on a separate line.
+		/// This is basically the elements which can contain both text and elements as children.
+		/// In particular we must know about any parent where it is possible all children are elements, but where
+		/// additional white space is significant.
+		/// </summary>
+		public static HashSet<string> LiftSuppressIndentingChildren
+		{
+			get
+			{
+				var result = new HashSet<string>();
+				result.Add("text");
+				result.Add("span");
+				return result;
+			}
+		}
+
 		private static void SortRange(XElement rangeElement)
 		{
 			var sortedChildRanges = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
@@ -185,18 +202,17 @@ namespace Palaso.Lift
 
 		private static void WriteElement(XmlWriter writer, XElement element)
 		{
-			WriteElement(writer, element.ToString());
+			XmlUtils.WriteNode(writer, element, LiftSuppressIndentingChildren);
 		}
 
 		private static void WriteElement(XmlWriter writer, string element)
 		{
-			WriteElement(writer, Utf8.GetBytes(element));
+			XmlUtils.WriteNode(writer, element, LiftSuppressIndentingChildren);
 		}
 
 		private static void WriteElement(XmlWriter writer, byte[] element)
 		{
-			using (var nodeReader = XmlReader.Create(new MemoryStream(element, false), CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Fragment)))
-				writer.WriteNode(nodeReader, true);
+			WriteElement(writer, Encoding.UTF8.GetString(element));
 		}
 
 		private static SortedDictionary<string, string> SortRootElementAttributes(string pathname)
