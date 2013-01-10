@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Palaso.Code;
 using Palaso.Data;
 
@@ -147,6 +148,12 @@ namespace Palaso.WritingSystems
 				if (other == null) return false;
 				if (!_subTagParts.SequenceEqual(other._subTagParts)) return false;
 				return true;
+			}
+
+			public IEnumerable<string> GetPrivateUseSubtagsMatchingRegEx(string pattern)
+			{
+				var regex = new Regex(pattern);
+				return _subTagParts.Where(part => regex.IsMatch(part));
 			}
 		}
 
@@ -562,5 +569,9 @@ namespace Palaso.WritingSystems
 			return _variant.Contains(tagToFind);
 		}
 
+		public IEnumerable<string> GetPrivateUseSubtagsMatchingRegEx(string pattern)
+		{
+			return _privateUse.GetPrivateUseSubtagsMatchingRegEx(pattern);
+		}
 	}
 }

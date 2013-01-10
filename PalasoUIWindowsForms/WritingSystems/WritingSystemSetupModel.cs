@@ -1290,9 +1290,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			foreach (var unsettableWs in unsettableWritingSystems)
 			{
+				//create a writing system just to get the unique id, then copy that id to the writing system that we want to set
 				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
 						_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
-				_writingSystemRepository.Set(uniqueWs);
+				unsettableWs.Language = uniqueWs.Language;
+				unsettableWs.Script = uniqueWs.Script;
+				unsettableWs.Region = uniqueWs.Region;
+				unsettableWs.Variant = uniqueWs.Variant;
+				OnAddOrDelete();
+				_writingSystemRepository.Set(unsettableWs);
 			}
 		}
 

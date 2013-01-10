@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Palaso.Code;
 using Palaso.WritingSystems.Collation;
 
@@ -52,6 +53,8 @@ namespace Palaso.WritingSystems
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private RFC5646Tag _rfcTag;
+		private const int kMinimumFontSize=7;
+		private const int kDefaultSizeIfWeDontKnow = 10;
 
 		private string _languageName;
 
@@ -643,7 +646,6 @@ namespace Palaso.WritingSystems
 			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
 			var newWs = writingSystemToCopy.Clone();
-			newWs.StoreID = writingSystemToCopy.StoreID;
 			var lastAppended = String.Empty;
 			int duplicateNumber = 0;
 			while (otherWritingsystemIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
@@ -721,10 +723,13 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
+				//the idea here is to give writing systems a nice legible label for. For this reason subtags are replaced with nice labels
+				var wsToConstructLabelFrom = this.Clone();
 				string n = string.Empty;
-				n = !String.IsNullOrEmpty(LanguageName) ? LanguageName : DisplayLabel;
+				n = !String.IsNullOrEmpty(wsToConstructLabelFrom.LanguageName) ? wsToConstructLabelFrom.LanguageName : wsToConstructLabelFrom.DisplayLabel;
 				string details = "";
-				if(IpaStatus != IpaStatusChoices.NotIpa)
+
+				if (wsToConstructLabelFrom.IpaStatus != IpaStatusChoices.NotIpa)
 				{
 					switch (IpaStatus)
 					{
@@ -740,29 +745,58 @@ namespace Palaso.WritingSystems
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
+					wsToConstructLabelFrom.IpaStatus = IpaStatusChoices.NotIpa;
 				}
-				else if (!String.IsNullOrEmpty(_rfcTag.Script))
+				if (wsToConstructLabelFrom.IsVoice)
 				{
-					details += _rfcTag.Script+"-";
+					details += "Voice-";
+					wsToConstructLabelFrom.IsVoice = false;
 				}
-				if (!String.IsNullOrEmpty(_rfcTag.Region))
+				if (wsToConstructLabelFrom.IsDuplicate)
 				{
-					details += _rfcTag.Region + "-";
-				}
-				if (IpaStatus == IpaStatusChoices.NotIpa && !String.IsNullOrEmpty(_rfcTag.Variant))
-				{
-					details += _rfcTag.Variant + "-";
+					var duplicateNumbers = new List<string>(wsToConstructLabelFrom.DuplicateNumbers);
+					foreach (var number in duplicateNumbers)
+					{
+						details += "Copy";
+						if (number != "0")
+						{
+							details += number;
+						}
+						details += "-";
+						wsToConstructLabelFrom._rfcTag.RemoveFromPrivateUse("dupl" + number);
+					}
 				}
 
-				if (IsVoice)
+				if (!String.IsNullOrEmpty(wsToConstructLabelFrom.Script))
 				{
-					details = details.Replace("Zxxx-", "");
-					details += "voice";
+					details += wsToConstructLabelFrom.Script+"-";
 				}
+				if (!String.IsNullOrEmpty(wsToConstructLabelFrom.Region))
+				{
+					details += wsToConstructLabelFrom.Region + "-";
+				}
+				if (!String.IsNullOrEmpty(wsToConstructLabelFrom.Variant))
+				{
+					details += wsToConstructLabelFrom.Variant + "-";
+				}
+
 				details = details.Trim(new[] { '-' });
 				if (details.Length > 0)
 					details = " ("+details + ")";
 				return n+details;
+			}
+		}
+
+		protected bool IsDuplicate
+		{
+			get { return _rfcTag.GetPrivateUseSubtagsMatchingRegEx(@"^dupl\d$").Count() != 0; }
+		}
+
+		protected IEnumerable<string> DuplicateNumbers
+		{
+			get
+			{
+				return _rfcTag.GetPrivateUseSubtagsMatchingRegEx(@"^dupl\d$").Select(subtag => Regex.Match(subtag, @"\d*$").Value);
 			}
 		}
 
@@ -841,6 +875,17 @@ namespace Palaso.WritingSystems
 				_defaultFontSize = value;
 				Modified = true;
 			}
+		}
+
+		/// <summary>
+		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
+		/// </summary>
+		/// <returns></returns>
+		virtual public float GetDefaultFontSizeOrMinimum()
+		{
+			if (_defaultFontSize < kMinimumFontSize)
+				return kDefaultSizeIfWeDontKnow;
+			return _defaultFontSize;
 		}
 
 		/// <summary>
