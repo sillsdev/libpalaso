@@ -1398,5 +1398,132 @@ namespace Palaso.Tests.WritingSystems
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
 			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
+
+		[Test]
+		public void ListLabel_ScriptRegionVariantEmpty_LabelIsLanguage()
+		{
+			var ws = new WritingSystemDefinition("de");
+			Assert.That(ws.ListLabel, Is.EqualTo("German"));
+		}
+
+		[Test]
+		public void ListLabel_ScriptSet_LabelIsLanguageWithScriptInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.Script = "Armi";
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi)"));
+		}
+
+		[Test]
+		public void ListLabel_RegionSet_LabelIsLanguageWithRegionInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.Region = "US";
+			Assert.That(ws.ListLabel, Is.EqualTo("German (US)"));
+		}
+
+		[Test]
+		public void ListLabel_ScriptRegionSet_LabelIsLanguageWithScriptandRegionInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.Script = "Armi";
+			ws.Region = "US";
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi-US)"));
+		}
+
+		[Test]
+		public void ListLabel_ScriptVariantSet_LabelIsLanguageWithScriptandVariantInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.Script = "Armi";
+			ws.AddToVariant("smth");
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi-x-smth)"));
+		}
+
+		[Test]
+		public void ListLabel_RegionVariantSet_LabelIsLanguageWithRegionAndVariantInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.Region = "US";
+			ws.AddToVariant("smth");
+			Assert.That(ws.ListLabel, Is.EqualTo("German (US-x-smth)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantSetToIpa_LabelIsLanguageWithIPAInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.Variant = WellKnownSubTags.Ipa.VariantSubtag;
+			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantSetToPhonetic_LabelIsLanguageWithIPADashEticInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA-etic)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantSetToPhonemic_LabelIsLanguageWithIPADashEmicInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA-emic)"));
+		}
+
+		[Test]
+		public void ListLabel_WsIsVoice_LabelIsLanguageWithVoiceInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.IsVoice = true;
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Voice)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantContainsDuplwithNumber_LabelIsLanguageWithCopyAndNumberInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, new[]{"de", "de-x-dupl0"});
+			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy1)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantContainsDuplwithZero_LabelIsLanguageWithCopyAndNoNumberInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, new[] { "de" });
+			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantContainsmulitpleDuplswithNumber_LabelIsLanguageWithCopyAndNumbersInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, new[] { "de", "de-x-dupl0" });
+			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy-Copy1)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantContainsUnknownVariant_LabelIsLanguageWithVariantInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.AddToVariant("garble");
+			Assert.That(ws.ListLabel, Is.EqualTo("German (x-garble)"));
+		}
+
+		[Test]
+		public void ListLabel_AllSortsOfThingsSet_LabelIsCorrect()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, new[] { "de", "de-x-dupl0" });
+			newWs.Region = "US";
+			newWs.Script = "Armi";
+			newWs.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			newWs.AddToVariant("garble");
+			newWs.AddToVariant("1901");
+			Assert.That(newWs.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
+		}
 	}
 }
