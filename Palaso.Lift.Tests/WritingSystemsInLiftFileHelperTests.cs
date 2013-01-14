@@ -291,6 +291,21 @@ namespace Palaso.Lift.Tests
 		}
 
 		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemSecondHasContent_WritingSystemIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "" }, { "de", "de word" } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/lexical-unit/form[@lang='de']", 2);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='de']/text[text()='de word']");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='th']");
+			}
+		}
+
+		[Test]
 		public void ReplaceWritingSystemId_SecondOfTwoFormsContainsOldWritingSystemOtherContainsNewWritingSystemSecondHasContent_WritingSystemIsReplaced()
 		{
 			var ws2Content = new Dictionary<string, string> { { "de", "" }, { "th", "thai Word" } };
