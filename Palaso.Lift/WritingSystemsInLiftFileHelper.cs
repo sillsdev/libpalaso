@@ -128,10 +128,11 @@ namespace Palaso.Lift
 							foreach (XmlNode node in nodesWithLangId)
 							{
 								node.Attributes["lang"].Value = newId;
+								var textOfCurrentNode = node.SelectSingleNode("./text/text()") == null ? "" : node.SelectSingleNode("./text/text()").Value;
 								var xPathForSiblingsWithIdenticalLangAndContent =
 									String.Format(
 										"following-sibling::{0}[@lang='{1}' and ./text/text() = '{2}'] | preceding-sibling::{0}[@lang='{1}' and ./text/text() = '{2}']",
-										node.Name, node.Attributes["lang"].Value, node.SelectSingleNode("./text/text()").Value);
+										node.Name, node.Attributes["lang"].Value, textOfCurrentNode);
 								var siblingNodesWithNewId = node.SelectNodes(xPathForSiblingsWithIdenticalLangAndContent).Cast<XmlNode>();
 								foreach (var identicalNode in siblingNodesWithNewId)
 								{

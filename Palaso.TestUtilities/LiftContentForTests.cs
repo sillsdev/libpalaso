@@ -42,10 +42,20 @@ namespace Palaso.TestUtilities
 			builder.AppendLine();
 			foreach (var kvp in writingSystemsToContentMap)
 			{
-				builder.AppendFormat(
+				if (String.IsNullOrEmpty(kvp.Value))
+				{
+					builder.AppendFormat(
+@"        <form lang='{0}'>
+		  <text/>
+		</form>", kvp.Key);
+				}
+				else
+				{
+					builder.AppendFormat(
 @"        <form lang='{0}'>
 		  <text>{1}</text>
 		</form>", kvp.Key, kvp.Value);
+				}
 				builder.AppendLine();
 			}
 			builder.Append(
