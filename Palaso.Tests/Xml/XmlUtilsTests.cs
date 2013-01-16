@@ -140,5 +140,32 @@ namespace Palaso.Tests.Xml
 			}
 			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
 		}
+		/// <summary>
+		/// This verifies that suppressing pretty-printing of children works for spans nested in spans nested in text.
+		/// </summary>
+		[Test]
+		public void WriteNode_DoesNotIndentChildWhenTwoLevelsSuppressed()
+		{
+			string input = @"<text><span class='bold'><span class='italic'>bit</span>bt</span></text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text><span\r\n"
+				+ "			class=\"bold\"><span\r\n"
+				+ "				class=\"italic\">bit</span>bt</span></text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			var suppressIndentingChildren = new HashSet<string>();
+			suppressIndentingChildren.Add("text");
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				XmlUtils.WriteNode(writer, input, suppressIndentingChildren);
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
+		}
 	}
 }
