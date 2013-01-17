@@ -97,6 +97,7 @@
 	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />

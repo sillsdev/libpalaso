@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 using NUnit.Framework;
 using Palaso.Xml;
 
@@ -40,6 +41,87 @@ namespace Palaso.Tests.Xml
 
 			attrValues = XmlUtils.GetAttributes(data, new HashSet<string> { "attr" });
 			Assert.IsNull(attrValues["attr"]);
+		}
+
+		/// <summary>
+		/// This is a regression test for (FLEx) LT-13962, a problem caused by importing white space introduced by pretty-printing.
+		/// </summary>
+		[Test]
+		public void WriteNode_DoesNotIndentFirstChildOfMixedNode()
+		{
+			string input = @"<text><span class='bold'>bt</span> more text</text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text><span\r\n"
+				+ "			class=\"bold\">bt</span> more text</text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				XmlUtils.WriteNode(writer, input, new HashSet<string>());
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
+		}
+
+		/// <summary>
+		/// This verifies the special case of (FLEx) LT-13962 where the ONLY child of an element that can contain significant text
+		/// is an element.
+		/// </summary>
+		[Test]
+		public void WriteNode_DoesNotIndentChildWhenSuppressed()
+		{
+			string input = @"<text><span class='bold'>bt</span></text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text><span\r\n"
+				+ "			class=\"bold\">bt</span></text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			var suppressIndentingChildren = new HashSet<string>();
+			suppressIndentingChildren.Add("text");
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				XmlUtils.WriteNode(writer, input, suppressIndentingChildren);
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
+		}
+
+		/// <summary>
+		/// This verifies that suppressing pretty-printing of children works for spans nested in spans nested in text.
+		/// </summary>
+		[Test]
+		public void WriteNode_DoesNotIndentChildWhenTwoLevelsSuppressed()
+		{
+			string input = @"<text><span class='bold'><span class='italic'>bit</span>bt</span></text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text><span\r\n"
+				+ "			class=\"bold\"><span\r\n"
+				+ "				class=\"italic\">bit</span>bt</span></text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			var suppressIndentingChildren = new HashSet<string>();
+			suppressIndentingChildren.Add("text");
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				XmlUtils.WriteNode(writer, input, suppressIndentingChildren);
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
 		}
 	}
 }
