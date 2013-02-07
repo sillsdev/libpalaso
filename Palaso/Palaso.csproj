@@ -87,6 +87,10 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
 	</Reference>
+   <Reference Condition="'$(Configuration)' == 'DebugMono'" Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Debug\icu.net.dll</HintPath>
+	</Reference>
 	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
