@@ -1,4 +1,5 @@
 using System;
+using Palaso.Progress;
 using NUnit.Framework;
 
 namespace Palaso.Tests.Progress.LogBoxTests
