@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Forms;
-using ProgressLogBox = Palaso.Progress.LogBox.LogBox;
+using ProgressLogBox = Palaso.UI.WindowsForms.Progress.LogBox;
 
 namespace Palaso.Tests.Progress.LogBoxTests
 {

@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Palaso.Progress.LogBox;
 using Palaso.Progress;
+using Palaso.UI.WindowsForms.Progress;
 using System.ComponentModel;
 using System.Threading;
 
