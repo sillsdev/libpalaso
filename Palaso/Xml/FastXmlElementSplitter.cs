@@ -1,3 +1,4 @@
+//#define USEBYTESASPRIMARY
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,8 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+#if USEBYTESASPRIMARY
 using Palaso.Extensions;
-using Palaso.Progress.LogBox;
+#endif
+using Palaso.Progress;
 
 namespace Palaso.Xml
 {
@@ -16,19 +19,21 @@ namespace Palaso.Xml
 	///</summary>
 	public class FastXmlElementSplitter : IDisposable
 	{
-		private readonly static Encoding _encUtf8 = Encoding.UTF8;
-
-		private static readonly Dictionary<byte, bool> _endingWhitespace = new Dictionary<byte, bool>
-										{
-											{_encUtf8.GetBytes(" ")[0], true},
-											{_encUtf8.GetBytes("\t")[0], true},
-											{_encUtf8.GetBytes("\r")[0], true},
-											{_encUtf8.GetBytes("\n")[0], true}
-										};
+		private readonly static Encoding EncUtf8 = Encoding.UTF8;
 
 		private readonly string _pathname;
+#if USEBYTESASPRIMARY
+		private static readonly Dictionary<byte, bool> EndingWhitespace = new Dictionary<byte, bool>
+										{
+											{EncUtf8.GetBytes(" ")[0], true},
+											{EncUtf8.GetBytes("\t")[0], true},
+											{EncUtf8.GetBytes("\r")[0], true},
+											{EncUtf8.GetBytes("\n")[0], true}
+										};
+
 		private int _startOfRecordsOffset;
 		private int _endOfRecordsOffset;
+#endif
 
 		/// <summary>
 		/// Constructor
@@ -36,11 +41,9 @@ namespace Palaso.Xml
 		/// <param name="pathname">Pathname of file to process.</param>
 		public FastXmlElementSplitter(string pathname)
 		{
-			if (string.IsNullOrEmpty(pathname))
-				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "pathname");
+			if (string.IsNullOrEmpty(pathname)) throw new ArgumentException("Null or empty string", "pathname");
 
-			if (!File.Exists(pathname))
-				throw new FileNotFoundException("File was not found.", "pathname");
+			if (!File.Exists(pathname)) throw new FileNotFoundException("File was not found.", "pathname");
 
 			_pathname = pathname;
 		}
@@ -68,13 +71,13 @@ namespace Palaso.Xml
 		/// </exception>
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string recordMarker)
 		{
-#if USEORIGINAL
+#if USEBYTESASPRIMARY
 			if (string.IsNullOrEmpty(recordMarker))
 				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
 
 			var inputBytes = File.ReadAllBytes(_pathname);
 			var recordMarkerAsBytes = FormatRecordMarker(recordMarker);
-			var openingAngleBracket = _encUtf8.GetBytes("<")[0];
+			var openingAngleBracket = EncUtf8.GetBytes("<")[0];
 
 			InitializeOffsets(openingAngleBracket, inputBytes, recordMarkerAsBytes);
 
@@ -91,7 +94,7 @@ namespace Palaso.Xml
 #else
 			return new List<byte[]>(
 				GetSecondLevelElementStrings(recordMarker)
-					.Select(stringResult => _encUtf8.GetBytes(stringResult)));
+					.Select(stringResult => EncUtf8.GetBytes(stringResult)));
 #endif
 		}
 
@@ -118,10 +121,10 @@ namespace Palaso.Xml
 		/// </exception>
 		public IEnumerable<string> GetSecondLevelElementStrings(string recordMarker)
 		{
-#if USEORIGINAL
+#if USEBYTESASPRIMARY
 			return new List<string>(
 				GetSecondLevelElementBytes(recordMarker)
-					.Select(byteResult => _encUtf8.GetString(byteResult)));
+					.Select(byteResult => EncUtf8.GetString(byteResult)));
 #else
 			bool foundOptionalFirstElement;
 			return GetSecondLevelElementStrings(null, recordMarker, out foundOptionalFirstElement);
@@ -133,25 +136,14 @@ namespace Palaso.Xml
 		/// </summary>
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker, out bool foundOptionalFirstElement)
 		{
-#if USEORIGINAL
+#if USEBYTESASPRIMARY
 			foundOptionalFirstElement = false;
 			if (string.IsNullOrEmpty(recordMarker))
 				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
 
+			// First call gets the regular records.
 			var results = new List<byte[]>(GetSecondLevelElementBytes(recordMarker));
-			var readerSettings = new XmlReaderSettings
-			{
-				CheckCharacters = false,
-				ConformanceLevel = ConformanceLevel.Document,
-#if NET_4_0 && !__MonoCS__
-				DtdProcessing = DtdProcessing.Parse,
-#else
-				ProhibitDtd = true,
-#endif
-				ValidationType = ValidationType.None,
-				CloseInput = true,
-				IgnoreWhitespace = true
-			};
+			var readerSettings = CanonicalXmlSettings.CreateXmlReaderSettings();
 			var textReader = new XmlTextReader(_pathname)
 			{
 				WhitespaceHandling = WhitespaceHandling.Significant
@@ -159,12 +151,13 @@ namespace Palaso.Xml
 			using (var reader = XmlReader.Create(textReader, readerSettings))
 			{
 				// Try to get the optional first element. Prepend it to 'results', if found.
+				// But, don't mess with the reglar records here.
 				reader.MoveToContent();
 				if (reader.Read() && reader.LocalName == firstElementMarker)
 				{
 					foundOptionalFirstElement = true;
 					var optionalElement = reader.ReadOuterXml();
-					results.Insert(0, _encUtf8.GetBytes(optionalElement));
+					results.Insert(0, EncUtf8.GetBytes(optionalElement));
 				}
 			}
 
@@ -172,7 +165,7 @@ namespace Palaso.Xml
 #else
 			return new List<byte[]>(
 				GetSecondLevelElementStrings(firstElementMarker, recordMarker, out foundOptionalFirstElement)
-					.Select(stringResult => _encUtf8.GetBytes(stringResult)));
+					.Select(stringResult => EncUtf8.GetBytes(stringResult)));
 #endif
 		}
 
@@ -181,32 +174,19 @@ namespace Palaso.Xml
 		/// </summary>
 		public IEnumerable<string> GetSecondLevelElementStrings(string firstElementMarker, string recordMarker, out bool foundOptionalFirstElement)
 		{
-#if USEORIGINAL
+#if USEBYTESASPRIMARY
 			return new List<string>(
 				GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
-					.Select(byteResult => _encUtf8.GetString(byteResult)));
+					.Select(byteResult => EncUtf8.GetString(byteResult)));
 #else
-			if (string.IsNullOrEmpty(recordMarker))
-				throw new ArgumentException(LogBoxResources.kNullOrEmptyString, "recordMarker");
+			if (string.IsNullOrEmpty(recordMarker)) throw new ArgumentException("Null or empty string", "recordMarker");
 
 			foundOptionalFirstElement = false;
 			var results = new List<string>(25000);
 			if (!string.IsNullOrEmpty(firstElementMarker))
 				firstElementMarker = firstElementMarker.Replace("<", null).Replace(">", null);
 			recordMarker = recordMarker.Replace("<", null).Replace(">", null);
-			var readerSettings = new XmlReaderSettings
-			{
-				CheckCharacters = false,
-				ConformanceLevel = ConformanceLevel.Document,
-#if NET_4_0 && !__MonoCS__
-				DtdProcessing = DtdProcessing.Parse,
-#else
-				ProhibitDtd = true,
-#endif
-				ValidationType = ValidationType.None,
-				CloseInput = true,
-				IgnoreWhitespace = true
-			};
+			var readerSettings = CanonicalXmlSettings.CreateXmlReaderSettings();
 			var textReader = new XmlTextReader(_pathname)
 			{
 				WhitespaceHandling = WhitespaceHandling.Significant
@@ -232,6 +212,14 @@ namespace Palaso.Xml
 					{
 						results.Add(reader.ReadOuterXml());
 					}
+					else
+					{
+						// Prevents an infinite loop.
+						var msg = string.Format("Can't find{0} main record with element name '{1}'",
+							firstElementMarker == null ? "" : string.Format(" optional element name '{0}' or", firstElementMarker),
+							recordMarker);
+						throw new ArgumentException(msg);
+					}
 				}
 			}
 
@@ -239,6 +227,7 @@ namespace Palaso.Xml
 #endif
 		}
 
+#if USEBYTESASPRIMARY
 		/// <summary>
 		/// This method adjusts _startOfRecordsOffset to the offset to the start of the records,
 		/// and adjusts _endOfRecordsOffset to the end of the last record.
@@ -287,15 +276,15 @@ namespace Palaso.Xml
 				for (var j = 1; ; j++)
 				{
 					var current = inputBytes[i + j];
-					if (_endingWhitespace.ContainsKey(current))
+					if (EndingWhitespace.ContainsKey(current))
 					{
-						// Got it!
+						// Got it! [Yes, but it may be a nested on that was found.]
 						return i;
 					}
 					if (recordMarkerAsBytes[j] != current)
 						break; // no match, resume searching for opening character.
-					if (j != recordMarkerAsBytes.Length - 1)
-						continue;
+					//if (j != recordMarkerAsBytes.Length - 1)
+					//	continue;
 				}
 			}
 
@@ -304,8 +293,9 @@ namespace Palaso.Xml
 
 		private static byte[] FormatRecordMarker(string recordMarker)
 		{
-			return _encUtf8.GetBytes("<" + recordMarker.Replace("<", null).Replace(">", null).Trim());
+			return EncUtf8.GetBytes("<" + recordMarker.Replace("<", null).Replace(">", null).Trim());
 		}
+#endif
 
 		~FastXmlElementSplitter()
 		{

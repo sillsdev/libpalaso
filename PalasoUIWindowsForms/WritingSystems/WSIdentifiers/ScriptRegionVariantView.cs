@@ -98,7 +98,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				{
 					if (originalCode == "Zxxx")
 					{
-						MessageBox.Show("This Voice writing system's script cannot be changed.");
+						MessageBox.Show("This Voice input system's script cannot be changed.");
 					}
 					else
 					{

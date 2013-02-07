@@ -375,7 +375,7 @@ namespace Palaso.DictionaryServices.Lift
 			//enchance: instead of KeyValuePair, make a LiftField class, so we can either keep the
 			// other field stuff as xml (in order to round-trip it) or model it.
 
-			extensible.Properties.Add(new KeyValuePair<string, object>(typeAttribute, t));
+			extensible.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>(typeAttribute, t));
 
 			if (traits != null)
 			{

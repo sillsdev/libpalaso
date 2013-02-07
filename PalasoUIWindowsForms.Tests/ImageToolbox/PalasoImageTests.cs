@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,17 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		{
 			var pi = PalasoImage.FromImage(new Bitmap(10,10));
 			Assert.IsNull(pi.FileName);
+		}
+
+		[Test, Ignore("by hand only")]
+		public void FromFile_HugeJPEG_DoesNotCrash()
+		{
+			//nb: trying to reproduce a problem that came up in bloom with this very image, but
+			//i never did get this to crash here
+				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
+				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
+				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
+				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
 		}
 
 		/// <summary>

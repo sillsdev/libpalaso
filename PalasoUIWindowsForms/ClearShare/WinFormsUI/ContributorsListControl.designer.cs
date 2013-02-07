@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Palaso.UI.WindowsForms.Widgets.Grid;
+using Palaso.UI.WindowsForms.Widgets.BetterGrid;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
@@ -32,7 +32,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		private void InitializeComponent()
 		{
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-			this._grid = new Palaso.UI.WindowsForms.Widgets.Grid.BetterGrid();
+			this._grid = new BetterGrid();
 			this._panelGrid = new System.Windows.Forms.Panel();
 			((System.ComponentModel.ISupportInitialize)(this._grid)).BeginInit();
 			this._panelGrid.SuspendLayout();

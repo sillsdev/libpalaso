@@ -67,7 +67,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 			if (SuggestOther)
 			{
-				yield return new OtherSuggestion(primary);
+				yield return new OtherSuggestion(primary, existingWritingSystemsForLanguage);
 			}
 		}
 

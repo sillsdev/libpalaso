@@ -6,10 +6,11 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {
@@ -64,6 +65,12 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 			m.License = LicenseInfo.FromXmp(properties);
 
+			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
+			if (!string.IsNullOrEmpty(m.CopyrightNotice))
+			{
+				m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright ?", "Copyright ©");
+			}
+
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
 			m.HasChanges = false;
 		}
@@ -96,10 +103,28 @@ namespace Palaso.UI.WindowsForms.ClearShare
 					value = null;
 				if (value != _copyrightNotice)
 					HasChanges = true;
-				_copyrightNotice = value;
+				_copyrightNotice = FixArtOfReadingCopyrightProblem(value);
 				if (!String.IsNullOrEmpty(_copyrightNotice))
 					IsEmpty = false;
+
 			}
+		}
+
+		/// <summary>
+		/// Somehow we shipped art of reading with a copyright which read:
+		/// "Copyright, SIL International 2009. This work is licensed under a Creative Commons Attribution-NoDeriv" and so forth.
+		/// This trims that off.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		private string FixArtOfReadingCopyrightProblem(string value)
+		{
+			if(string.IsNullOrEmpty(value))
+				return string.Empty;
+			var startOfProblem = value.IndexOf("This work");
+			if (startOfProblem == -1)
+				return value;
+			return value.Substring(0, startOfProblem);
 		}
 
 		private string _creator;
@@ -194,35 +219,68 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+
 		private static Dictionary<string, string> GetImageProperites(string path)
 		{
-			var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
-			var args = new StringBuilder();
-			foreach (var assignment in MetadataAssignments)
-			{
-				args.Append(" " + assignment.Switch + " ");
-			}
-			var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path), Path.GetDirectoryName(path), 5, new NullProgress());
-#if DEBUG
-			Debug.WriteLine("reading");
-			Debug.WriteLine(args.ToString());
-			Debug.WriteLine(result.StandardError);
-			Debug.WriteLine(result.StandardOutput);
-#endif
-			var lines = result.StandardOutput.SplitTrimmed('\n');
 			var values = new Dictionary<string, string>();
-			foreach (var line in lines)
+			try
 			{
-				var parts = line.SplitTrimmed(':');
-				if (parts.Count < 2)
-					continue;
+				var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+				var args = new StringBuilder();
+				args.Append("-charset cp65001 "); //utf-8
+				foreach (var assignment in MetadataAssignments)
+				{
+					args.Append(" " + assignment.Switch + " ");
+				}
+				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
+												   _commandLineEncoding, Path.GetDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
+												   new NullProgress());
+				if(result.DidTimeOut)
+				{
+					//we don't know what causes this... just a guess... maybe the file was locked?
+					Thread.Sleep(2000); //give it a second
 
-				//recombine any parts of the value which had a colon (like a url does)
-				string value = parts[1];
-				for (int i = 2; i < parts.Count; ++i)
-					value = value + ":" + parts[i];
+					result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
+												  _commandLineEncoding, Path.GetDirectoryName(path), 20,
+												  new NullProgress());
 
-				values.Add(parts[0].ToLower(), value);
+					if (result.DidTimeOut)
+					{
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("The program that reads metadata (e.g. copyright) from the image: " +
+																		   path + " did not report back in the allotted time. We know about this problem are and trying to figure out what causes it (seems to happen on slower computers).");
+						Palaso.Reporting.UsageReporter.ReportExceptionString("ExifTool timed out: " + (result.StandardError ?? "") + "|" + (result.StandardOutput ?? ""));
+
+						return values;
+					}
+				}
+
+#if DEBUG
+				Debug.WriteLine("reading");
+				Debug.WriteLine(args.ToString());
+				Debug.WriteLine(result.StandardError);
+				Debug.WriteLine(result.StandardOutput);
+#endif
+				var lines = result.StandardOutput.SplitTrimmed('\n');
+
+				foreach (var line in lines)
+				{
+					var parts = line.SplitTrimmed(':');
+					if (parts.Count < 2)
+						continue;
+
+					//recombine any parts of the value which had a colon (like a url does)
+					string value = parts[1];
+					for (int i = 2; i < parts.Count; ++i)
+						value = value + ":" + parts[i];
+
+					values.Add(parts[0].ToLower(), value);
+				}
+			}
+			catch (Exception error)
+			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
+																 "The program had trouble checking the metadata in the image: " +
+																 path);
 			}
 			return values;
 		}
@@ -305,6 +363,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 
 		private string _path;
+		private static Encoding _commandLineEncoding = Encoding.UTF8;
 
 		public void Write()
 		{
@@ -329,9 +388,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
+			arguments.Append("-charset cp65001 ");//utf-8
 			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", path);
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(_path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(_path), 5, new NullProgress());
 			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 
 
@@ -442,13 +502,14 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				File.Delete(path);
 
 			StringBuilder arguments = new StringBuilder();
+			arguments.Append("-charset cp65001 ");//utf-8
 			arguments.AppendFormat("-o \"{0}\"", path);
 			AddAssignmentArguments(arguments);
 
 			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 
 			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
 
 		}
 
@@ -474,8 +535,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 					tempImage.Save(temp.Path);
 				}
 				StringBuilder arguments = new StringBuilder();
+				arguments.Append("-charset cp65001 ");//utf-8
 				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", path, temp.Path);
-				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), Path.GetDirectoryName(path), 5, new NullProgress());
+				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
 				LoadProperties(temp.Path, this);
 			}
 
@@ -499,6 +561,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public void LoadFromStoredExemplar(FileCategory category)
 		{
 			LoadXmpFile(GetExemplarPath(category));
+			HasChanges = true;
 		}
 
 		/// <summary>
@@ -508,6 +571,26 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		static public bool HaveStoredExemplar(FileCategory category)
 		{
 			return File.Exists(GetExemplarPath(category));
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="ideal_iso639LanguageCode">e.g. "en" or "fr"</param>
+		/// <returns></returns>
+		public string GetSummaryParagraph(string ideal_iso639LanguageCode)
+		{
+			var b = new StringBuilder();
+			b.AppendLine("Creator: " + Creator);
+			b.AppendLine(CopyrightNotice);
+			if(!string.IsNullOrEmpty(CollectionName))
+				b.AppendLine(CollectionName);
+			if (!string.IsNullOrEmpty(CollectionUri))
+				b.AppendLine(CollectionUri);
+			if (!string.IsNullOrEmpty(License.Url))
+				b.AppendLine(License.Url);
+			b.AppendLine(License.GetDescription(ideal_iso639LanguageCode));
+			return b.ToString();
 		}
 
 		/// <summary>

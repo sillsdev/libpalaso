@@ -13,7 +13,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			_originalMetaData = originalMetaData;
 			InitializeComponent();
-			_metdataEditorControl.Metadata = _returnMetaData = originalMetaData.DeepCopy();
+			_metadataEditorControl.Metadata = _returnMetaData = originalMetaData.DeepCopy();
 			ShowCreator = true;
 		}
 
@@ -21,9 +21,14 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// Set this to false if you don't want to collect info on who created it (e.g. you're just getting copyright/license)
 		/// </summary>
 		public bool ShowCreator {
-			get { return _metdataEditorControl.ShowCreator; }
-			set { _metdataEditorControl.ShowCreator = value; }
+			get { return _metadataEditorControl.ShowCreator; }
+			set
+			{
+				_metadataEditorControl.ShowCreator = value;
+				Text = value ? "Credit, Copyright, & License" : "Copyright & License";
+			}
 		}
+
 
 		public Metadata Metadata
 		{
@@ -52,7 +57,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 		private void _minimallyCompleteCheckTimer_Tick(object sender, EventArgs e)
 		{
-			_okButton.Enabled = _metdataEditorControl.Metadata.IsMinimallyComplete;
+			_okButton.Enabled = _metadataEditorControl.Metadata.IsMinimallyComplete;
 		}
 	}
 }

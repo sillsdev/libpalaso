@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.Media.Tests.Properties;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.Media.Tests
 {

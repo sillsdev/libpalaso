@@ -41,7 +41,7 @@ namespace Palaso.WritingSystems
 			}
 			if (changedId == null)
 			{
-				if (_logEvents.Where(c => c.Type == "Change" && ((WritingSystemLogChangeEvent)c).From.Equals(id)).Count() > 1)
+				if (_logEvents.Count(c => (c.Type == "Change" || c.Type == "Merge") && ((WritingSystemLogChangeEvent)c).From.Equals(id)) > 1)
 				{
 					return true;
 				}
@@ -52,12 +52,12 @@ namespace Palaso.WritingSystems
 
 		public string GetChangeFor(string id)
 		{
-			if (_logEvents.Where(c => c.Type == "Change" && ((WritingSystemLogChangeEvent)c).From.Equals(id)).Count() != 1)
+			if (_logEvents.Count(c => (c.Type == "Change" || c.Type == "Merge") && ((WritingSystemLogChangeEvent)c).From.Equals(id)) != 1)
 			{
 				return null;
 			}
 			string result = id;
-			foreach (WritingSystemLogChangeEvent change in _logEvents.Where(c => c.Type == "Change"))
+			foreach (WritingSystemLogChangeEvent change in _logEvents.Where(c => c.Type == "Change" || c.Type == "Merge"))
 			{
 				if (result == change.From)
 				{
@@ -71,21 +71,26 @@ namespace Palaso.WritingSystems
 		{
 			if (from != to)
 			{
-				_WriteToLog(new WritingSystemLogChangeEvent(from, to));
+				WriteToLog(new WritingSystemLogChangeEvent(from, to));
 			}
 		}
 
 		public void LogAdd(string added)
 		{
-			_WriteToLog(new WritingSystemLogAddEvent(added));
+			WriteToLog(new WritingSystemLogAddEvent(added));
+		}
+
+		public void LogConflate(string from, string to)
+		{
+			WriteToLog(new WritingSystemLogConflateEvent(from, to));
 		}
 
 		public void LogDelete(string deleted)
 		{
-			_WriteToLog(new WritingSystemLogDeleteEvent(deleted));
+			WriteToLog(new WritingSystemLogDeleteEvent(deleted));
 		}
 
-		private void _WriteToLog(WritingSystemLogEvent logEvent)
+		private void WriteToLog(WritingSystemLogEvent logEvent)
 		{
 			//_logEvents.Clear();
 			_logEvents.Add(logEvent);
@@ -121,6 +126,7 @@ namespace Palaso.WritingSystems
 		void LogChange(string from, string to);
 		void LogAdd(string id);
 		void LogDelete(string id);
+		void LogConflate(string oldId, string newId);
 		string GetChangeFor(string id);
 		bool HasChangeFor(string id);
 	}

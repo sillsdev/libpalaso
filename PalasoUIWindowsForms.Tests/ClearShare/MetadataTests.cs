@@ -41,6 +41,23 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			Assert.AreEqual("Copyright Test", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
 		}
 
+		[Test, Ignore("not yet")]
+		public void RoundTripPng_CopyrightNoticeWithNonAscii()
+		{
+			_outgoing.CopyrightNotice = "Copyright ŋoŋ";
+			_outgoing.Write();
+			Assert.AreEqual("Copyright ŋoŋ", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
+		}
+
+
+		[Test, Ignore("not yet")]
+		public void RoundTripPng_AttributionNameWithNonAscii()
+		{
+			_outgoing.Creator = "joŋ";
+			_outgoing.Write();
+			Assert.AreEqual("joŋ", Metadata.FromFile(_tempFile.Path).Creator);
+		}
+
 		[Test]
 		public void RoundTripPng_PNGWithDangerousCharacters_PreservesCopyrightNotice()
 		{

@@ -12,6 +12,38 @@ namespace Palaso.Tests.Xml
 	public class CanonicalXmlSettingsTests
 	{
 		[Test]
+		public void CanonicalXmlReaderSettings_ForDocument_HaveCorrectSettings()
+		{
+			CheckReaderSettings(CanonicalXmlSettings.CreateXmlReaderSettings(), ConformanceLevel.Document);
+		}
+
+		[Test]
+		public void CanonicalXmlReaderSettings_ForDocumentAsParameter_HaveCorrectSettings()
+		{
+			CheckReaderSettings(CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Document), ConformanceLevel.Document);
+		}
+
+		[Test]
+		public void CanonicalXmlReaderSettings_ForDocumentFragment_HaveCorrectSettings()
+		{
+			CheckReaderSettings(CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Fragment), ConformanceLevel.Fragment);
+		}
+
+		private static void CheckReaderSettings(XmlReaderSettings settings, ConformanceLevel expectedConformanceLevel)
+		{
+			Assert.IsFalse(settings.CheckCharacters);
+#if NET_4_0 && !__MonoCS__
+			Assert.AreEqual(DtdProcessing.Parse, settings.DtdProcessing);
+#else
+			Assert.IsTrue(settings.ProhibitDtd);
+#endif
+			Assert.AreEqual(ValidationType.None , settings.ValidationType);
+			Assert.IsTrue(settings.CloseInput);
+			Assert.IsTrue(settings.IgnoreWhitespace);
+			Assert.AreEqual(expectedConformanceLevel, settings.ConformanceLevel);
+		}
+
+		[Test]
 		public void WriteReadWithBuilder_WithCanonicalXmlWriterSettings_MatchesExpected()
 		{
 			string xmlInput = @"<a attrib1='value1' attrib2='value2'><b>Content</b></a>".Replace('\'', '"');

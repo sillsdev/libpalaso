@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.IO
 {
@@ -101,10 +101,10 @@ namespace Palaso.IO
 		{
 			if (filename == null) throw new ArgumentNullException("filename");
 			if (filename == string.Empty)
-				throw new ArgumentException(LogBoxResources.kFilenameIsEmptyString, "filename");
+				throw new ArgumentException("Filename has no content", "filename");
 			filename = filename.Trim();
 			if (filename == string.Empty)
-				throw new ArgumentException(LogBoxResources.kFilenameIsOnlyWhitespace, "filename");
+				throw new ArgumentException("Filename has only whitespace", "filename");
 
 			var pathname = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
 			File.Create(pathname).Close();

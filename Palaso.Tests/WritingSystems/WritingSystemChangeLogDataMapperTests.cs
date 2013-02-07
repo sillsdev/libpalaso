@@ -23,13 +23,13 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void Read_SampleLogFile_PopulatesModel()
+		public void Read_SampleLogFile_PopulatesChanges()
 		{
 			using (var e = new TestEnvironment())
 			{
 				var log = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(e.GetSampleLogFilePath()));
 				Assert.That(log.HasChangeFor("aaa"));
-				Assert.That(log.GetChangeFor("aaa"), Is.EqualTo("ccc"));
+				Assert.That(log.GetChangeFor("aaa"), Is.EqualTo("ddd"));
 			}
 		}
 
@@ -43,9 +43,13 @@ namespace Palaso.Tests.WritingSystems
 				log.LogChange("aab", "bba");
 				log.LogAdd("aab");
 				log.LogDelete("aab");
+				log.LogConflate("aab","bba");
 				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change/From[text()='aab']");
+				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Change/To[text()='bba']");
 				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Add/Id[text()='aab']");
 				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Delete/Id[text()='aab']");
+				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Merge/From[text()='aab']");
+				AssertThatXmlIn.File(tempFilePath).HasAtLeastOneMatchForXpath("/WritingSystemChangeLog/Changes/Merge/To[text()='bba']");
 			}
 		}
 
@@ -66,12 +70,16 @@ namespace Palaso.Tests.WritingSystems
 		<From>bbb</From>
 		<To>ddd</To>
 	</Change>
-	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
-		<Delete>eee</Delete>
-	</Change>
-	<Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
-		<Add>fff</Add>
-	</Change>
+	<Delete Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
+		<id>eee</id>
+	</Delete>
+	<Add Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-06T13:15:30Z'>
+		<id>fff</id>
+	</Add>
+	<Merge Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-07T13:15:30Z'>
+		<From>ccc</From>
+		<To>ddd</To>
+	</Merge>
 </Changes>
 </WritingSystemChangeLog>
 ").Replace("'", "\"");

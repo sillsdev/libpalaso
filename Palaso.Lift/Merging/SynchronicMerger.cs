@@ -27,10 +27,23 @@ namespace Palaso.Lift.Merging
 		/// <param name="pathToBaseLiftFile"></param>
 		public bool MergeUpdatesIntoFile(string pathToBaseLiftFile)
 		{
-
 			// _pathToBaseLiftFile = pathToBaseLiftFile;
 
 			FileInfo[] files = GetPendingUpdateFiles(pathToBaseLiftFile);
+			return MergeUpdatesIntoFile(pathToBaseLiftFile, files);
+		}
+
+		/// <summary>
+		/// Given a LIFT file and a set of .lift.update files, apply the changes to the LIFT file and delete the .lift.update files.
+		/// </summary>
+		/// <param name="pathToBaseLiftFile">The LIFT file containing all the lexical entries for a paticular language project</param>
+		/// <param name="files">These files contain the changes the user has made. Changes to entries; New entries; Deleted entries</param>
+		/// <returns></returns>
+		/// <exception cref="IOException">If file is locked</exception>
+		/// <exception cref="LiftFormatException">If there is an error and then file is found to be non-conformant.</exception>
+		///
+		public bool MergeUpdatesIntoFile(string pathToBaseLiftFile, FileInfo[] files)
+		{
 			if (files.Length < 1)
 			{
 				return false;
@@ -134,7 +147,6 @@ namespace Palaso.Lift.Merging
 			return true;
 		}
 
-
 		private static void MakeBackup(string pathToBaseLiftFile, string pathToMergeInTo)
 		{
 // File.Move works across volumes but the destination cannot exist.
@@ -218,9 +230,12 @@ namespace Palaso.Lift.Merging
 			   throw new ArgumentException("pathToBaseLiftFile must be a full path, not just a file name. Path was "+pathToBaseLiftFile);
 		   }
 			// ReSharper disable AssignNullToNotNullAttribute
-			DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(pathToBaseLiftFile));
+			var di = new DirectoryInfo(Path.GetDirectoryName(pathToBaseLiftFile));
 			// ReSharper restore AssignNullToNotNullAttribute
-			return di.GetFiles("*"+ExtensionOfIncrementalFiles, SearchOption.TopDirectoryOnly);
+			var files = di.GetFiles("*"+ExtensionOfIncrementalFiles, SearchOption.TopDirectoryOnly);
+			//files comes back unsorted, sort by creation time before returning.
+			Array.Sort(files, new Comparison<FileInfo>((a, b) => a.CreationTime.CompareTo(b.CreationTime)));
+			return files;
 		}
 
 		static private void TestWriting(XmlWriter w)
@@ -258,7 +273,7 @@ namespace Palaso.Lift.Merging
 			return bakPath;
 		}
 
-		static private void MergeInNewFile(string olderFilePath, string newerFilePath, string outputPath)
+		private void MergeInNewFile(string olderFilePath, string newerFilePath, string outputPath)
 		{
 
 			XmlDocument newerDoc = new XmlDocument();
@@ -290,7 +305,7 @@ namespace Palaso.Lift.Merging
 		}
 
 
-		private static void ProcessOlderNode(XmlReader olderReader, XmlDocument newerDoc, XmlWriter writer)
+		private void ProcessOlderNode(XmlReader olderReader, XmlDocument newerDoc, XmlWriter writer)
 		{
 			switch (olderReader.NodeType)
 			{
@@ -304,7 +319,7 @@ namespace Palaso.Lift.Merging
 			}
 		}
 
-		private static void ProcessElement(XmlReader olderReader, XmlWriter writer, XmlDocument newerDoc)
+		private void ProcessElement(XmlReader olderReader, XmlWriter writer, XmlDocument newerDoc)
 		{
 
 
@@ -350,29 +365,35 @@ namespace Palaso.Lift.Merging
 			{
 				if (olderReader.Name == "entry")
 				{
-					string oldId = olderReader.GetAttribute("guid");
-					if (String.IsNullOrEmpty(oldId))
-					{
-						throw new ApplicationException("All entries must have guid attributes in order for merging to work. " + olderReader.Value);
-					}
-					XmlNode match= newerDoc.SelectSingleNode("//entry[@guid='" + oldId + "']");
-					if (match != null)
-					{
-						olderReader.Skip(); //skip the old one
-						writer.WriteNode(match.CreateNavigator(), true); //REVIEW CreateNavigator
-						if (match.ParentNode != null)
-							match.ParentNode.RemoveChild(match);
-					}
-					else
-					{
-						writer.WriteNode(olderReader, true);
-					}
+					MergeLiftUpdateEntryIntoLiftFile(olderReader, writer, newerDoc);
 				}
 				else
 				{
 					Utilities.WriteShallowNode(olderReader, writer);
 				}
 
+			}
+		}
+
+		protected virtual void MergeLiftUpdateEntryIntoLiftFile(XmlReader olderReader, XmlWriter writer, XmlDocument newerDoc)
+		{
+			string oldId = olderReader.GetAttribute("guid");
+			if (String.IsNullOrEmpty(oldId))
+			{
+				throw new ApplicationException("All entries must have guid attributes in order for merging to work. " +
+											   olderReader.Value);
+			}
+			XmlNode match = newerDoc.SelectSingleNode("//entry[@guid='" + oldId + "']");
+			if (match != null)
+			{
+				olderReader.Skip(); //skip the old one
+				writer.WriteNode(match.CreateNavigator(), true); //REVIEW CreateNavigator
+				if (match.ParentNode != null)
+					match.ParentNode.RemoveChild(match);
+			}
+			else
+			{
+				writer.WriteNode(olderReader, true);
 			}
 		}
 

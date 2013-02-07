@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<PublishUrl>publish\</PublishUrl>
 	<Install>true</Install>
 	<InstallFrom>Disk</InstallFrom>
@@ -31,6 +31,7 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -51,6 +52,7 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -98,10 +100,10 @@
 	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />
-	<Reference Include="System.Configuration" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
@@ -109,16 +111,11 @@
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Management" />
 	<Reference Include="System.Security" />
-	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="icu.net" />
 	<None Include="app.config" />
-	<None Include="Progress\LogBox\LogBoxSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
-	</None>
 	<None Include="Reporting\ErrorReportSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <Generator>PublicSettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Reporting\app.config" />
@@ -128,7 +125,11 @@
 	<Compile Include="Base32\Base32ConvertBase.cs" />
 	<Compile Include="Base32\Base32FormattingOptions.cs" />
 	<Compile Include="Base32\Base32HexConvert.cs" />
+	<Compile Include="Code\IClonableGeneric.cs" />
+	<Compile Include="Code\Require.cs" />
 	<Compile Include="Code\RequireThat.cs" />
+	<Compile Include="CommandLineProcessing\AsyncProcessOutputReader.cs" />
+	<Compile Include="CommandLineProcessing\SynchronousProcessOutputReader.cs" />
 	<Compile Include="Data\DelegateQuery.cs" />
 	<Compile Include="Data\DictionaryEqualityComparer.cs" />
 	<Compile Include="Data\IDataMapper.cs" />
@@ -153,6 +154,7 @@
 	<Compile Include="Email\ThunderbirdEmailProvider.cs" />
 	<Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
 	<Compile Include="EventsAndDelegates\DisposableAction.cs" />
+	<Compile Include="EntryAssembly.cs" />
 	<Compile Include="Extensions\ByteArrayExtensions.cs" />
 	<Compile Include="Extensions\DateTimeExtensions.cs" />
 	<Compile Include="Extensions\DictionaryExtensions.cs" />
@@ -180,44 +182,18 @@
 	<Compile Include="Migration\XmlReaderWriterMigrationStrategy.cs" />
 	<Compile Include="Migration\XPathVersion.cs" />
 	<Compile Include="Migration\XslMigrationStrategy.cs" />
-	<Compile Include="Misc\IUserInterfaceMemory.cs" />
+	<Compile Include="Network\HttpEncoderFromMono.cs" />
+	<Compile Include="Network\HttpUtilityFromMono.cs" />
 	<Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
-	<Compile Include="Network\ProxyCredentialsRequestDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Network\ProxyCredentialsRequestDialog.designer.cs">
-	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Network\RobustNetworkOperation.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
 	<Compile Include="Progress\Commands\BasicCommand.cs" />
 	<Compile Include="Progress\ConsoleProgressState.cs" />
-	<Compile Include="Progress\IProgressIndicator.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox\LogBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox\LogBox.designer.cs">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Progress\LogBox\LogBoxSettings.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
-	</Compile>
-	<Compile Include="Progress\LogBox\Progress.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox\LogBoxResources.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>LogBoxResources.resx</DependentUpon>
-	</Compile>
+	<Compile Include="Progress\IProgressIndicator.cs" />
+	<Compile Include="Progress\Progress.cs" />
 	<Compile Include="Progress\NullProgressState.cs" />
 	<Compile Include="Progress\ProgressState.cs" />
-	<Compile Include="Progress\WaitCursor.cs" />
 	<Compile Include="Progress\XslTransformWithProgress.cs" />
 	<Compile Include="Properties\Resources.Designer.cs">
 	  <AutoGen>True</AutoGen>
@@ -226,6 +202,8 @@
 	</Compile>
 	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
+	<Compile Include="Reporting\ConsoleErrorReporter.cs" />
+	<Compile Include="Reporting\ConsoleExceptionHandler.cs" />
 	<Compile Include="Reporting\ErrorReport.cs" />
 	<Compile Include="Reporting\ErrorReportSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>
@@ -234,34 +212,10 @@
 	</Compile>
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
-	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Reporting\ExceptionReportingDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Reporting\PalasoErrorDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Reporting\ExceptionReportingDialog.cs" />
+
 	<Compile Include="Reporting\Logger.cs" />
-	<Compile Include="Reporting\ProblemNotificationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
-	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Reporting\ReportingSettings.cs" />
-	<Compile Include="Reporting\ReportingStrings.Designer.cs">
-	  <DependentUpon>ReportingStrings.resx</DependentUpon>
-	</Compile>
-	<Compile Include="Reporting\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
 	<Compile Include="Reporting\UsageReporter.cs" />
-	<Compile Include="Reporting\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Reporting\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Resource.Designer.cs">
 	  <DependentUpon>Resource.resx</DependentUpon>
 	</Compile>
@@ -326,6 +280,11 @@
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
 	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
 	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
+	<Compile Include="IO\FileRelatedStrings.Designer.cs">
+	  <DependentUpon>FileRelatedStrings.resx</DependentUpon>
+	  <DesignTime>True</DesignTime>
+	  <AutoGen>True</AutoGen>
+	</Compile>
 	<Compile Include="WritingSystems\Collation\ICollator.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXml.cs" />
@@ -374,62 +333,27 @@
 	<Compile Include="Xml\XmlWriterExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="Network\ProxyCredentialsRequestDialog.resx">
-	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBox\LogBox.resx">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBox\LogBoxResources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Properties\Resources.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Reporting\ExceptionReportingDialog.resx">
-	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Reporting\PalasoErrorDialog.resx">
-	  <DependentUpon>PalasoErrorDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
-	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\ReportingStrings.resx">
-	  <SubType>Designer</SubType>
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>ReportingStrings1.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Resource.resx">
+
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="IO\FileRelatedStrings.resx">
+	  <SubType>Designer</SubType>
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>FileRelatedStrings.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
 	<Content Include="Resources\ianaSubtagRegistry.txt" />
-	<None Include="Resources\spy16x16.png" />
 	<Content Include="Resources\TwoToThreeCodes.txt" />
-	<None Include="Resources\MenuButtonArrow.png" />
-	<None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">

@@ -960,10 +960,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				example.Sentence["red"] = "red sunset tonight";
 				example.Translation["green"] = "blah blah";
 				session.LiftWriter.Add(example);
+				var outPut = session.OutputString();
 				AssertEqualsCanonicalString(
-					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>",
-					session.OutputString()
-				);
+					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>", outPut);
 			}
 		}
 
@@ -1556,7 +1555,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				);
 
 				var relations = new LexRelationCollection();
-				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+				sense.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>("relations", relations));
 
 				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "one", sense));
 				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "two", sense));
@@ -1613,7 +1612,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				);
 
 				var relations = new LexRelationCollection();
-				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+				sense.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>("relations", relations));
 
 				var lexRelation = new LexRelation(synonymRelationType.ID, "one", sense);
 				lexRelation.EmbeddedXmlElements.Add("<trait name='x' value='X'/>");
@@ -1709,6 +1708,21 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is not well formed<span> XML!");
+				session.LiftWriter.AddMultitextForms(null, multiText);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
+			}
+		}
+
+		[Test]
+		public void Add_TextWithSpanAndMeaningfulWhiteSpace_FormattingAndWhitespaceIsUntouched()
+		{
+			const string formattedText = "\rThis's <span href=\"reference\">\n is a\t\t\n\r\t span</span> with annoying whitespace!\r\n";
+			const string expected = "<form\r\n\tlang=\"de\">\r\n\t<text>" + formattedText + "</text>\r\n</form>";
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", formattedText);
 				session.LiftWriter.AddMultitextForms(null, multiText);
 				session.LiftWriter.End();
 				Assert.AreEqual(expected, session.OutputString());

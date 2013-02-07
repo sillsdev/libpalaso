@@ -10,7 +10,7 @@
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>Palaso.Media</RootNamespace>
 	<AssemblyName>Palaso.Media</AssemblyName>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<FileUpgradeFlags>
 	</FileUpgradeFlags>
@@ -43,6 +43,7 @@
 	<DocumentationFile>..\output\Debug\Palaso.Media.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -51,6 +52,8 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -61,6 +64,7 @@
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -69,11 +73,11 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\irrKlang.NET2.0.dll</HintPath>
+	<Reference Include="irrKlang.NET4">
+	  <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
 	</Reference>
 	<Reference Include="NAudio">
 	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
@@ -94,6 +98,7 @@
 	<Compile Include="Naudio\AudioPlayer.cs" />
 	<Compile Include="Naudio\AudioRecorder.cs" />
 	<Compile Include="FFmpegRunner.cs" />
+	<Compile Include="Naudio\FileWriterThread.cs" />
 	<Compile Include="Naudio\IAudioPlayer.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
 	<Compile Include="MediaInfo.cs" />
@@ -103,9 +108,6 @@
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>AudioDeviceIcons.resx</DependentUpon>
-	</Compile>
-	<Compile Include="Naudio\UI\BitmapButton.cs">
-	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Naudio\UI\PeakMeterCtrl.cs">
 	  <SubType>Component</SubType>
@@ -147,9 +149,7 @@
 	<EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Naudio\UI\BitmapButton.resx">
-	  <DependentUpon>BitmapButton.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Naudio\UI\RecordingDeviceButton.resx">
 	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>
@@ -232,6 +232,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\HeadSet.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\ExternalAudioDevice.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

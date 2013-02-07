@@ -42,6 +42,12 @@ namespace Palaso.Lift.Tests.Options
 				<form lang='{0}'>verb</form>
 				<form lang='{1}'>verbe</form>
 			</name>
+			<abbreviation>
+				<form lang='{0}'>verb</form>
+			</abbreviation>
+			<description>
+				<form lang='{1}'>verbe</form>
+			</description>
 		</option>
 		<option>
 			<key>Noun</key>
@@ -49,6 +55,14 @@ namespace Palaso.Lift.Tests.Options
 				<form lang='{0}'>noun</form>
 				<form lang='{1}'>nom</form>
 			</name>
+			<abbreviation>
+				<form lang='{0}'>noun</form>
+				<form lang='{1}'>nom</form>
+			</abbreviation>
+			<description>
+				<form lang='{0}'>noun</form>
+				<form lang='{1}'>nom</form>
+			</description>
 		</option>
 	</options>
 </optionsList>".Replace("'", "\"");
@@ -264,6 +278,50 @@ namespace Palaso.Lift.Tests.Options
 				environment.Helper.ReplaceWritingSystemId("text", "test");
 				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(0));
 				Assert.That(File.ReadAllText(environment.PathToOptionsListFile), Is.EqualTo("<?xml version='1.0' encoding='utf-8'?>\r\n<form>yo</form>".Replace("'", "\"")));
+			}
+		}
+
+		[Test]
+		public void ReplaceWritingSystemId_FormForNewWritingSystemAlreadyExists_RemoveOldWritingSystemForm()
+		{
+			using (var environment = new TestEnvironment("th", "de"))
+			{
+				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
+				environment.Helper.ReplaceWritingSystemId("th", "de");
+				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(1));
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("//form[@lang='th']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='de'][text()='verb']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/name/form[@lang='de'][text()='verbe']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/abbreviation/form[@lang='de'][text()='verb']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/description/form[@lang='de'][text()='verbe']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/name/form[@lang='de'][text()='nom']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='de'][text()='noun']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/abbreviation/form[@lang='de'][text()='nom']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/abbreviation/form[@lang='de'][text()='noun']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/description/form[@lang='de'][text()='nom']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/description/form[@lang='de'][text()='noun']");
+			}
+		}
+
+		[Test]
+		public void DeleteWritingSystemId_FormForNewWritingSystemAlreadyExists_RemoveOldWritingSystemForm()
+		{
+			using (var environment = new TestEnvironment("th", "de"))
+			{
+				environment.Helper.CreateNonExistentWritingSystemsFoundInFile();
+				environment.Helper.DeleteWritingSystemId("th");
+				Assert.That(environment.Helper.WritingSystemsInUse.Count(), Is.EqualTo(1));
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("//form[@lang='th']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='th'][text()='verb']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/name/form[@lang='de'][text()='verbe']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/abbreviation/form[@lang='th'][text()='verb']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/description/form[@lang='de'][text()='verbe']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/name/form[@lang='de'][text()='nom']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='th'][text()='noun']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/abbreviation/form[@lang='de'][text()='nom']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/abbreviation/form[@lang='th'][text()='noun']");
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasSpecifiedNumberOfMatchesForXpath("/optionsList/options/option/description/form[@lang='de'][text()='nom']", 1);
+				AssertThatXmlIn.File(environment.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/description/form[@lang='th'][text()='noun']");
 			}
 		}
 	}

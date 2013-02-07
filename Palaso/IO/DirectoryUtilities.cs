@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
+
 using Palaso.Reporting;
 
 namespace Palaso.IO
@@ -133,7 +132,7 @@ namespace Palaso.IO
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
 		{
 			ErrorReport.NotifyUserOfProblem(error, "{0} was unable to copy the directory\n\n{1}\n\nto\n\n{2}",
-				Application.ProductName, srcDirectory, dstDirectory);
+				EntryAssembly.ProductName, srcDirectory, dstDirectory);
 
 			try
 			{
@@ -147,17 +146,21 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// Return subdirectoriess of <paramref name="path"/> that are not system or hidden. Note, still dies on Windows Backup files, which apparently look like directories.
+		/// Return subdirectories of <paramref name="path"/> that are not system or hidden.
+		/// There are some cases where our call to Directory.GetDirectories() throws.
+		/// For example, when the access permissions on a folder are set so that it can't be read.
+		/// Another possible example may be Windows Backup files, which apparently look like directories.
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
 		/// <returns>Zero or more directory names that are not system or hidden.</returns>
+		/// <exception cref="System.UnauthorizedAccessException ">E.g. when the user does not have read permission.</exception>
 		public static string[] GetSafeDirectories(string path)
 		{
-			return (from directoryName in Directory.GetDirectories(path)
-						   let dirInfo = new DirectoryInfo(directoryName)
-						   where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
-						   where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
-						   select directoryName).ToArray();
+				return (from directoryName in Directory.GetDirectories(path)
+						let dirInfo = new DirectoryInfo(directoryName)
+						where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
+						where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
+						select directoryName).ToArray();
 		}
 
 		/// <summary>
@@ -229,6 +232,8 @@ namespace Palaso.IO
 		{
 			var i = 0;
 			var suffix = "";
+			// Remove ending path separator, if it exists.
+			folderPath = folderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 			var parent = Directory.GetParent(folderPath).FullName;
 			var name = Path.GetFileName(folderPath);
 			while (Directory.Exists(Path.Combine(parent, name + suffix)))

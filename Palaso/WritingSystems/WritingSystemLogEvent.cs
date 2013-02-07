@@ -59,6 +59,14 @@ namespace Palaso.WritingSystems
 		}*/
 	}
 
+	public class WritingSystemLogConflateEvent: WritingSystemLogChangeEvent
+	{
+		public WritingSystemLogConflateEvent(string from, string to) : base(from, to)
+		{
+			Type = "Merge";
+		}
+	}
+
 	public class WritingSystemLogDeleteEvent : WritingSystemLogEvent
 	{
 		public string Id { get; set; }

@@ -64,7 +64,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		{
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_OtherKnownWritingSystemsIsNull_Ok()
 		{
 			using (var e = new TestEnvironment())
@@ -77,7 +77,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		}
 
 
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_StoreIsEmptyButOtherLanguagesAreAvailable_GivesOtherLanguageChoiceHeader()
 		{
 			using (var e = new TestEnvironment())
@@ -92,7 +92,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		/// <summary>
 		/// THe point here is, don't show a language under other, once it has been added to the collection
 		/// </summary>
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotOfferToCreateItAgain()
 		{
 			using (var e = new TestEnvironment())
@@ -110,7 +110,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_StoreAlreadyHasAllOsLanguages_DoesNotGiveLanguageChoiceHeader()
 		{
 			using (var e = new TestEnvironment())
@@ -174,7 +174,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_TwoLanguagesInStore_GivesBoth()
 		{
 			using (var e = new TestEnvironment())
@@ -187,7 +187,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_OneLanguageIsChildOfAnother_GivesParentOnly()
 		{
 			using (var e = new TestEnvironment())
@@ -205,7 +205,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		/// <summary>
 		/// related to http://projects.palaso.org/issues/show/482
 		/// </summary>
-		[Test]
+		[Test] // ok
 		public void GetTopLevelItems_ThreeVariantsAreSyblings_ListsAllUnderGroupHeading()
 		{
 			using (var e = new TestEnvironment())
@@ -222,7 +222,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		/// <summary>
 		/// Other details of this behavior are tested in the class used as the suggestor
 		/// </summary>
-		[Test]
+		[Test, Category("KnownMonoIssue")]
 		public void GetTopLevelItems_UsesSuggestor()
 		{
 			using (var e = new TestEnvironment())
@@ -231,7 +231,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 				e.SetDefinitionsInStore(new[] {etr});
 				var model = e.CreateModel();
 				model.Suggestor.SuggestIpa = true;
-				AssertTreeNodeLabels(model, "Edolo", "+Add IPA writing system for Edolo", "", "Add Language");
+				AssertTreeNodeLabels(model, "Edolo", "+Add IPA input system for Edolo", "", "Add Language");
 			}
 		}
 
@@ -251,7 +251,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		[Test]
+		[Test] // ok
 		public void ClickAddPredifinedLanguage_AddNewCalledOnSetupModel()
 		{
 			/* the tree would look like this:
@@ -274,7 +274,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			}
 		}
 
-		[Test]
+		[Test] // ok
 		public void ClickExistingLanguage_SelectCalledOnSetupModel()
 		{
 			/* the tree would look like this:

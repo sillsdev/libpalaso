@@ -17,12 +17,17 @@ namespace PalasoUIWindowsForms.Tests.SettingsProtection
 			//settingsLauncherButton2.LaunchSettingsCallback = () => new DialogWithSomeSettings().ShowDialog();
 
 			//Let the helper manage our visibility & password challenge
-			_settingsLauncherHelper.CustomSettingsControl = _customSettingsButton;
+			//_settingsProtectionHelper.CustomSettingsControl = _customSettingsButton;
+
+
+			_settingsProtectionHelper.ManageComponent(_customSettingsButton);
+
+			_settingsProtectionHelper.ManageComponent(_toolStripButtonToHide);
 		}
 
 		private void _customSettingsButton_Click(object sender, EventArgs e)
 		{
-			_settingsLauncherHelper.LaunchSettingsIfAppropriate(() =>
+			_settingsProtectionHelper.LaunchSettingsIfAppropriate(() =>
 																	{
 																		using (var dlg = new DialogWithSomeSettings())
 																		{

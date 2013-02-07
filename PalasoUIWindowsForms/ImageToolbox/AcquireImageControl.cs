@@ -5,8 +5,12 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using CustomControls;
-using Palaso.UI.WindowsForms.FileDialogExtender;
+using Palaso.Code;
+using Palaso.IO;
+using Palaso.Reporting;
+#if !MONO
+using WIA;
+#endif
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -41,8 +45,42 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void OnGetFromFileSystemClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.SingleImage);
+//#if MONO
+//			            using (var dlg = new OpenFileDialog())
+//            {
+//                if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
+//                {
+//                    dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+//                }
+//                else
+//                {
+//                    dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
+//                }
+//
+//                dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+//                dlg.Multiselect = false;
+//                dlg.AutoUpgradeEnabled = true;
+//				if (DialogResult.OK == dlg.ShowDialog())
+//                {
+//                    _currentImage = PalasoImage.FromFile(dlg.FileName);
+//                    _pictureBox.Image = _currentImage.Image;
+//                    ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
+//                    ImageToolboxSettings.Default.Save();
+//                    if (ImageChanged != null)
+//                        ImageChanged.Invoke(this, null);
+//                }
+//			}
+//#else
 #if MONO
-						using (var dlg = new OpenFileDialog())
+			using (var dlg = new OpenFileDialog())
+#else
+			//The primary thing this OpenFileDialogEx buys us is that with the standard one, there's
+			//no way pre-set, what "view" the user gets. With the standard dialog,
+			//we had complaints that a user had to change the view to show icons *each time* they used this.
+			//Now, OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
+
+			using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
+#endif
 			{
 				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 				{
@@ -50,52 +88,31 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				else
 				{
-					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
+					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
 				}
 
-				dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-				dlg.Multiselect = false;
-				dlg.AutoUpgradeEnabled = true;
+				//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+				dlg.Filter = "picture files(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
-					_currentImage = PalasoImage.FromFile(dlg.FileName);
-					_pictureBox.Image = _currentImage.Image;
 					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
 					ImageToolboxSettings.Default.Save();
-					if (ImageChanged != null)
-						ImageChanged.Invoke(this, null);
-				}
-			}
-#else
-			//The primary thing this ExtendedFileDialog buys us is that with the standard one, there's
-			//no way to preserve, let alone pre-set, what "view" the user gets. With the standard dialog,
-			//We had complaints that a user had to change the view to show icons *each time* they used this.
-			using (var dlg = new ExtendedFileDialog())
-			{
-				dlg.FileDlgDefaultViewMode = FolderViewMode.Thumbnails;
-				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
-				{
-					dlg.FileDlgInitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-				}
-				else
-				{
-					dlg.FileDlgInitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
-				}
 
-				//NB: dissallowed because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-				dlg.FileDlgFilter = "picture files(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-
-				if (DialogResult.OK == dlg.ShowDialog())
-				{
-					_currentImage = PalasoImage.FromFile(dlg.FileDlgFileName);
+					try
+					{
+						_currentImage = PalasoImage.FromFile(dlg.FileName);
+					}
+					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+					{
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.");
+						return;
+					}
 					_pictureBox.Image = _currentImage.Image;
-					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileDlgFileName);
-					ImageToolboxSettings.Default.Save();
 					if (ImageChanged != null)
 						ImageChanged.Invoke(this, null);
 				}
 			}
-#endif
 		}
 
 		private void OpenFileFromDrag(string path)
@@ -174,6 +191,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_scannerButton.Checked = true;
 			SetImage(null);
 			SetMode(Modes.SingleImage);
+			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
 			#endif
 		}
@@ -183,8 +201,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			SetMode(Modes.SingleImage);
 			SetImage(null);
 			_cameraButton.Checked = true;
+			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
 			#endif
+
 		}
 	  #if !MONO
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
@@ -194,15 +214,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				var acquisitionService = new ImageAcquisitionService(deviceKind);
 
-				var file = acquisitionService.Acquire();
-				if (file == null)
+				var wiaImageFile = acquisitionService.Acquire();
+				if (wiaImageFile == null)
 					return;
-				var temp = Path.GetTempFileName();
-				File.Delete(temp);
-				file.SaveFile(temp);
-				temp = ConvertToPngOrJpegIfNotAlready(temp);
-				_pictureBox.Load(temp);
-				File.Delete(temp);
+
+				var imageFile  = ConvertToPngOrJpegIfNotAlready(wiaImageFile);
+				_currentImage = PalasoImage.FromFile(imageFile);
+				_pictureBox.Image = _currentImage.Image;
+
 				if (ImageChanged != null)
 					ImageChanged.Invoke(this, null);
 			}
@@ -216,7 +235,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image");
 			}
-
 		}
 		#endif
 
@@ -229,6 +247,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_galleryControl.SetIntialSearchTerm(searchTerm);
 		}
 
+		/*
 		/// <summary>
 		/// Bitmaps --> PNG, JPEGs stay as jpegs.
 		/// Will delete the incoming file if it needs to do a conversion.
@@ -241,6 +260,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				if (!ImageFormat.Png.Equals(image.PixelFormat) && !ImageFormat.Jpeg.Equals(image.PixelFormat))
 				{
+					using (var stream = new MemoryStream())
+					{
+						incoming.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+						var oldCropped = cropped;
+						cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
+						oldCropped.Dispose();
+						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
+					}
+
 					outgoing = Path.GetTempFileName();
 					image.Save(outgoing, ImageFormat.Png);
 				}
@@ -259,6 +287,57 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			return outgoing;
 		}
+		*/
+
+#if !MONO
+		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
+		{
+			Image acquiredImage;//with my scanner, always a .bmp
+
+			var imageBytes = (byte[])wiaImageFile.FileData.get_BinaryData();
+			if (wiaImageFile.FileExtension==".jpg" || wiaImageFile.FileExtension==".png")
+			{
+				var temp = TempFile.WithExtension(wiaImageFile.FileExtension);
+				wiaImageFile.SaveFile(temp.Path);
+				return temp.Path;
+			}
+
+			using (var stream = new MemoryStream(imageBytes))
+			{
+				//Ok, so we want to know if we should save a jpeg (photo) or a png (line art).
+				//Here, we just chose whichever makes for a the smaller file.
+				//Test results
+				//                  PNG             JPG
+				//B&W Drawing       110k            813k
+				//Newspaper photo   1.3M            97k
+				//Little doodle     1.7k            11k
+
+				//NB: we do not want to dispose of these, because we will be passing back the path of one
+				//(and will manually delete the other)
+				TempFile jpeg = TempFile.WithExtension(".jpg");
+				TempFile png = TempFile.WithExtension(".png");
+
+				//DOCS: "You must keep the stream open for the lifetime of the Image."(maybe just true for jpegs)
+				using (acquiredImage = Image.FromStream(stream))
+				{
+					acquiredImage.Save(jpeg.Path, ImageFormat.Jpeg);
+					acquiredImage.Save(png.Path, ImageFormat.Png);
+				}
+
+				//now return the smaller of the two;
+				if(new FileInfo(jpeg.Path).Length > new FileInfo(png.Path).Length)
+				{
+					File.Delete(jpeg.Path);
+					return png.Path;
+				}
+				else
+				{
+					File.Delete(png.Path);
+					return jpeg.Path;
+				}
+			}
+		}
+#endif
 
 		private enum Modes {Gallery, SingleImage}
 		private void SetMode(Modes mode)

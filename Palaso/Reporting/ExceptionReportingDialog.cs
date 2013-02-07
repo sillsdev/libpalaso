@@ -508,7 +508,6 @@ namespace Palaso.Reporting
 			// _privacyNoticeButton
 			//
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
-			this._privacyNoticeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._privacyNoticeButton.Image = global::Palaso.Properties.Resources.spy16x16;
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
@@ -619,6 +618,7 @@ namespace Palaso.Reporting
 			{
 				dlg.Report(error, parent);
 			}
+
 		}
 
 		internal static void ReportMessage(string message, StackTrace stack, bool isLethal)
@@ -663,18 +663,6 @@ namespace Palaso.Reporting
 
 		 public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
 		 {
-			 try
-			 {
-				 if(!string.IsNullOrEmpty(message))
-					UsageReporter.ReportExceptionString(message);
-				 else if(error!=null)
-					 UsageReporter.ReportException(error);
-			 }
-			 catch
-			 {
-				 //swallow
-			 }
-
 			 PrepareDialog();
 			 if(!string.IsNullOrEmpty(message))
 				 _notificationText.Text = message;
@@ -887,7 +875,7 @@ namespace Palaso.Reporting
 		 {
 			if (ErrorReport.EmailAddress != null)
 			{
-				_details.Text = String.Format(ReportingStrings.ksPleaseEMailThisToUs, ErrorReport.EmailAddress, _details.Text);
+				_details.Text = String.Format("Please Email this to {0}\r\n\r\n{1}", ErrorReport.EmailAddress, _details.Text);
 			}
 			Clipboard.SetDataObject(_details.Text, true);
 			 return true;

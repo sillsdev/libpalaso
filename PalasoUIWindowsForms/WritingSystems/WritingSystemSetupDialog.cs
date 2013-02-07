@@ -81,7 +81,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			catch (ArgumentException exception)
 			{
 				MessageBox.Show (
-					this, exception.Message, "Writing Systems Error",
+					this, exception.Message, "Input Systems Error",
 					MessageBoxButtons.OK, MessageBoxIcon.Exclamation
 				);
 			}

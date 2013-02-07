@@ -19,6 +19,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if (disposing)
 			{
 				_toolImages.Dispose();
+				if (ImageInfo!=null)
+				{
+					ImageInfo.Disposed = true;
+					ImageInfo.Dispose();
+				}
 				if (components != null)
 				{
 
@@ -36,6 +41,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
 			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
@@ -43,11 +49,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._editLink = new System.Windows.Forms.LinkLabel();
 			this._invitationToMetadataPanel = new System.Windows.Forms.Panel();
+			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
+			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this._copyExemplarMetadata = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this._editMetadataLink = new System.Windows.Forms.LinkLabel();
 			this._metadataDisplayControl = new Palaso.UI.WindowsForms.ClearShare.WinFormsUI.MetadataDisplayControl();
-			this._currentImageBox = new System.Windows.Forms.PictureBox();
+			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.panel1.SuspendLayout();
 			this._invitationToMetadataPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
@@ -57,6 +64,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this._toolListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)));
+			this._toolListView.BackColor = System.Drawing.SystemColors.Control;
+			this._toolListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			listViewGroup1.Header = "test";
 			listViewGroup1.Name = "listViewGroup1";
 			this._toolListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
@@ -87,7 +96,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Controls.Add(this._editLink);
 			this.panel1.Controls.Add(this._invitationToMetadataPanel);
 			this.panel1.Controls.Add(this._metadataDisplayControl);
@@ -102,7 +110,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._editLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._editLink.AutoSize = true;
 			this._editLink.LinkColor = System.Drawing.Color.Black;
-			this._editLink.Location = new System.Drawing.Point(12, 471);
+			this._editLink.Location = new System.Drawing.Point(12, 473);
 			this._editLink.Name = "_editLink";
 			this._editLink.Size = new System.Drawing.Size(34, 13);
 			this._editLink.TabIndex = 9;
@@ -116,43 +124,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._invitationToMetadataPanel.Controls.Add(this._copyExemplarMetadata);
 			this._invitationToMetadataPanel.Controls.Add(this.betterLabel1);
 			this._invitationToMetadataPanel.Controls.Add(this._editMetadataLink);
-			this._invitationToMetadataPanel.Location = new System.Drawing.Point(7, 318);
+			this._invitationToMetadataPanel.Location = new System.Drawing.Point(9, 271);
 			this._invitationToMetadataPanel.Name = "_invitationToMetadataPanel";
-			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 146);
+			this._invitationToMetadataPanel.Size = new System.Drawing.Size(251, 195);
 			this._invitationToMetadataPanel.TabIndex = 8;
-			//
-			// _copyExemplarMetadata
-			//
-			this._copyExemplarMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this._copyExemplarMetadata.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._copyExemplarMetadata.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
-			this._copyExemplarMetadata.ForeColor = System.Drawing.Color.Blue;
-			this._copyExemplarMetadata.Location = new System.Drawing.Point(5, 104);
-			this._copyExemplarMetadata.Multiline = true;
-			this._copyExemplarMetadata.Name = "_copyExemplarMetadata";
-			this._copyExemplarMetadata.ReadOnly = true;
-			this._copyExemplarMetadata.Size = new System.Drawing.Size(237, 37);
-			this._copyExemplarMetadata.TabIndex = 11;
-			this._copyExemplarMetadata.TabStop = false;
-			this._copyExemplarMetadata.Text = "Copy Examplar that is really long";
-			this._copyExemplarMetadata.URL = null;
-			this._copyExemplarMetadata.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnCopyExamplar_MouseClick);
-			//
-			// betterLabel1
-			//
-			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel1.Location = new System.Drawing.Point(0, 6);
-			this.betterLabel1.Multiline = true;
-			this.betterLabel1.Name = "betterLabel1";
-			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(245, 80);
-			this.betterLabel1.TabIndex = 9;
-			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "This image does not know:\r\n\r\nWho created it?\r\nWho can use it?";
 			//
 			// _editMetadataLink
 			//
@@ -166,15 +141,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._editMetadataLink.Text = "Set up metadata...";
 			this._editMetadataLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OnEditMetadataLink_LinkClicked);
 			//
-			// _metadataDisplayControl
-			//
-			this._metadataDisplayControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this._metadataDisplayControl.Location = new System.Drawing.Point(7, 296);
-			this._metadataDisplayControl.Name = "_metadataDisplayControl";
-			this._metadataDisplayControl.Size = new System.Drawing.Size(251, 172);
-			this._metadataDisplayControl.TabIndex = 6;
-			//
 			// _currentImageBox
 			//
 			this._currentImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -183,10 +149,53 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._currentImageBox.Location = new System.Drawing.Point(7, 0);
 			this._currentImageBox.MinimumSize = new System.Drawing.Size(251, 245);
 			this._currentImageBox.Name = "_currentImageBox";
-			this._currentImageBox.Size = new System.Drawing.Size(251, 245);
+			this._currentImageBox.Size = new System.Drawing.Size(253, 245);
 			this._currentImageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this._currentImageBox.TabIndex = 5;
 			this._currentImageBox.TabStop = false;
+			//
+			// _copyExemplarMetadata
+			//
+			this._copyExemplarMetadata.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._copyExemplarMetadata.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._copyExemplarMetadata.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this._copyExemplarMetadata.ForeColor = System.Drawing.Color.Blue;
+			this._copyExemplarMetadata.Location = new System.Drawing.Point(5, 104);
+			this._copyExemplarMetadata.Multiline = true;
+			this._copyExemplarMetadata.Name = "_copyExemplarMetadata";
+			this._copyExemplarMetadata.ReadOnly = true;
+			this._copyExemplarMetadata.Size = new System.Drawing.Size(237, 17);
+			this._copyExemplarMetadata.TabIndex = 11;
+			this._copyExemplarMetadata.TabStop = false;
+			this._copyExemplarMetadata.Text = "Copy Examplar that is really long";
+			this._copyExemplarMetadata.URL = null;
+			this._copyExemplarMetadata.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnCopyExamplar_MouseClick);
+			//
+			// betterLabel1
+			//
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel1.Enabled = false;
+			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel1.Location = new System.Drawing.Point(0, 6);
+			this.betterLabel1.Multiline = true;
+			this.betterLabel1.Name = "betterLabel1";
+			this.betterLabel1.ReadOnly = true;
+			this.betterLabel1.Size = new System.Drawing.Size(245, 65);
+			this.betterLabel1.TabIndex = 9;
+			this.betterLabel1.TabStop = false;
+			this.betterLabel1.Text = "This image does not know:\r\n\r\nWho created it?\r\nWho can use it?";
+			//
+			// _metadataDisplayControl
+			//
+			this._metadataDisplayControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._metadataDisplayControl.Location = new System.Drawing.Point(7, 298);
+			this._metadataDisplayControl.Name = "_metadataDisplayControl";
+			this._metadataDisplayControl.Size = new System.Drawing.Size(253, 172);
+			this._metadataDisplayControl.TabIndex = 6;
 			//
 			// ImageToolboxControl
 			//
@@ -221,5 +230,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private System.Windows.Forms.LinkLabel _editMetadataLink;
 		private System.Windows.Forms.LinkLabel _editLink;
 		private Widgets.BetterLinkLabel _copyExemplarMetadata;
+		private System.Windows.Forms.ToolTip _toolTip;
 	}
 }

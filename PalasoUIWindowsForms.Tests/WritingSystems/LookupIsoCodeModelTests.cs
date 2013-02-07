@@ -26,6 +26,22 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model = new LookupIsoCodeModel();
 		}
 
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog()
+		{
+			var dialog = new LookupISOCodeDialog();
+			Application.Run(dialog);
+			MessageBox.Show("code returned:" + dialog.ISOCode);
+		}
+
+		[Test, Ignore("By hand only")]
+		public void LookupISODialogWithValue()
+		{
+			var dialog = new LookupISOCodeDialog();
+			dialog.ISOCode = "etr";
+			Application.Run(dialog);
+			MessageBox.Show("code returned:" + dialog.ISOCode);
+		}
 		[Test]
 		public void GetMatchingWritingSystems_NoMatches_Empty()
 		{

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Linq;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -25,12 +26,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 				else
 				{
-					Palaso.Reporting.ProblemNotificationDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
+					ProblemNotificationDialog.Show("The keyboard '" + name + "' could not be activated using windows ime.");
 				}
 			}
 			catch (Exception )
 			{
-				Palaso.Reporting.ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
+				ProblemNotificationDialog.Show("There was an error trying to access the windows ime.");
 			}
 		}
 
@@ -39,11 +40,42 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return (null != FindInputLanguage(name));
 		}
 
+		public static string GetLocaleName(string name)
+		{
+			var split = name.Split(new[] { '-' });
+			var layoutName = "";
+			if (split.Length <= 1)
+			{
+				layoutName = "";
+			}
+			else if (split.Length > 1 && split.Length <= 3)
+			{
+				layoutName = String.Join("-", split.Skip(1).ToArray());
+			}
+			else
+			{
+				layoutName = String.Join("-", split.Skip(split.Length - 2).ToArray());
+			}
+			return layoutName;
+		}
+
+		public static string GetLayoutName(string name)
+		{
+			//Just cut off the length of the locale + 1 for the dash
+			var locale = GetLocaleName(name);
+			if (String.IsNullOrEmpty(locale))
+			{
+				return name;
+			}
+			var layoutName = name.Substring(0, name.Length - (locale.Length + 1));
+			return layoutName;
+		}
+
 		static private InputLanguage FindInputLanguage(string name)
 		{
-			var split = name.Split(new[]{'-'}, 2);
-			string layoutName = split[0];
-			string localeName = split.Length >= 2 ? split[1] : String.Empty;
+
+			string layoutName = GetLayoutName(name);
+			string localeName = GetLocaleName(name);
 			var possibles = new List<InputLanguage>();
 			if (InputLanguage.InstalledInputLanguages != null) // as is the case on Linux
 			{
@@ -120,7 +152,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Reporting.ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
+				ProblemNotificationDialog.Show("There was a problem deactivating windows ime.");
 			}
 		}
 
@@ -137,7 +169,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			catch (Exception )
 			{
-				Reporting.ProblemNotificationDialog.Show(
+				ProblemNotificationDialog.Show(
 					"There was a problem retrieving the active keyboard in from windows ime."
 				);
 			}

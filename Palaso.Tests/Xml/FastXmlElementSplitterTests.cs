@@ -31,7 +31,7 @@ namespace Palaso.Tests.Xml
 		[Test]
 		public void File_Not_Found_Throws()
 		{
-			Assert.Throws<FileNotFoundException>(() => new FastXmlElementSplitter("Non-existant-file.xml"));
+			Assert.Throws<FileNotFoundException>(() => new FastXmlElementSplitter("Non-existent-file.xml"));
 		}
 
 		[Test]
@@ -131,6 +131,56 @@ namespace Palaso.Tests.Xml
 			{
 				File.Delete(goodPathname);
 			}
+		}
+
+		[Test]
+		public void MismatchedOptionalTagThrows()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata>
+<optional />
+<rt guid='emptyElement1'/>
+<rt guid='normalElement'>
+	<randomElement />
+</rt>
+<rt guid='emptyElement2' />
+</classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, "badfirsttag", "rt"));
+		}
+
+		[Test]
+		public void MismatchedMainTagThrows()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata>
+<rt guid='emptyElement1'/>
+<rt guid='normalElement'>
+	<randomElement />
+</rt>
+<rt guid='emptyElement2' />
+</classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, null, "notag"));
+		}
+
+		[Test]
+		public void MismatchedOptionalAndMainTagThrows()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata>
+<optional />
+<rt guid='emptyElement1'/>
+<rt guid='normalElement'>
+	<randomElement />
+</rt>
+<rt guid='emptyElement2' />
+</classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, "badfirsttag", "notag"));
 		}
 
 		[Test]
@@ -247,12 +297,12 @@ namespace Palaso.Tests.Xml
 			{
 				var enc = Encoding.UTF8;
 				File.WriteAllText(goodPathname, hasRecordsInput, enc);
-				using (var reader = new FastXmlElementSplitter(goodPathname))
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(goodPathname))
 				{
 					bool foundOptionalFirstElement;
-					var elementBytes = reader.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
+					var elementBytes = fastXmlElementSplitter.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
 					Assert.AreEqual(expectedCount, elementBytes.Count);
-					var elementStrings = reader.GetSecondLevelElementStrings(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
+					var elementStrings = fastXmlElementSplitter.GetSecondLevelElementStrings(firstElementMarker, recordMarker, out foundOptionalFirstElement).ToList();
 					Assert.AreEqual(expectedCount, elementStrings.Count);
 					for (var i = 0; i < elementStrings.Count; ++i)
 					{

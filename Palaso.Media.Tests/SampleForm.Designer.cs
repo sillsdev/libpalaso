@@ -1,4 +1,6 @@
-﻿namespace Palaso.Media.Tests
+﻿using Palaso.UI.WindowsForms.Widgets;
+
+namespace Palaso.Media.Tests
 {
 	partial class Form1
 	{
@@ -34,7 +36,7 @@
 			this.soundFieldControl1 = new Palaso.Media.SoundFieldControl();
 			this.shortSoundFieldControl1 = new Palaso.Media.ShortSoundFieldControl();
 			this.shortSoundFieldControl2 = new Palaso.Media.ShortSoundFieldControl();
-			this.bitmapButton1 = new Palaso.Media.Naudio.UI.BitmapButton();
+			this.bitmapButton1 = new BitmapButton();
 			this.SuspendLayout();
 			//
 			// soundFieldControl1
@@ -119,6 +121,6 @@
 		private SoundFieldControl soundFieldControl1;
 		private ShortSoundFieldControl shortSoundFieldControl1;
 		private ShortSoundFieldControl shortSoundFieldControl2;
-		private Naudio.UI.BitmapButton bitmapButton1;
+		private BitmapButton bitmapButton1;
 	}
 }

@@ -1,13 +1,28 @@
-﻿using System.Drawing;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using Palaso.Code;
+using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
-	public class PalasoImage
+	public class PalasoImage : IDisposable
+
 	{
-		public Metadata Metadata;
+		private Metadata _metadata;
+
+		public Metadata Metadata
+		{
+			get { return _metadata; }
+			set
+			{
+				_metadata = value;
+				_metadata.HasChanges = true; //i.e., we *do* want to save this to disk when we get a chance
+			}
+		}
 
 		/// <summary>
 		/// generally, when we load an image, we can happily forget where it came from, becuase
@@ -18,6 +33,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// and enters metadata, we want to store that metadata in the original.  That's the only reason we store this path.
 		/// </summary>
 		private static string _pathForSavingMetadataChanges;
+
+		public bool Disposed;
 
 		public PalasoImage()
 		{
@@ -43,7 +60,29 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 
-		public Image Image { get; set; }
+		private Image _image;
+		public Image Image
+		{
+			get
+			{
+				ThrowIfDisposedOfAlready();
+				return _image;
+			}
+			set
+			{
+				if(_image!=null)
+				{
+					_image.Tag = "**** Disposed by palasoImage";
+					_image.Dispose();
+				}
+				_image = value;
+			}
+		}
+
+		private void ThrowIfDisposedOfAlready()
+		{
+			Guard.Against(Disposed, "This PalasoImage was used after being disposed of.");
+		}
 
 		/// <summary>
 		/// Really, just the name, not the path.  Use if you want to save the image somewhere.
@@ -66,7 +105,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// <param name="path"></param>
 		public void Save(string path)
 		{
-		   Image.Save(path);
+			ThrowIfDisposedOfAlready();
+			Image.Save(path);
 			Metadata.Write();
 		}
 
@@ -76,7 +116,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
-			if(Metadata!=null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+			ThrowIfDisposedOfAlready();
+			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
 			{
 				Metadata.Write(_pathForSavingMetadataChanges);
 				Metadata.HasChanges = false;
@@ -85,13 +126,27 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private static Image LoadImageWithoutLocking(string path)
 		{
-			//locks until the image is dispose of some day, which is counter-intuitive to me
-			//  return Image.FromFile(path);
+			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
+							  return Image.FromFile(path);
 
-			//following work-around from http://support.microsoft.com/kb/309482
-			using (var fs = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read))
+						2) Contrary to the docs on Image.FromStream ("You must keep the stream open for the lifetime of the Image."),
+							MSDN http://support.microsoft.com/kb/309482 suggests the following work-around
+							using (var fs = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read))
+							{
+								return Image.FromStream(fs);
+							}
+			*/
+
+			//But note, it's not clear if (2) will very occasionally die with "out of memory": http://jira.palaso.org/issues/browse/BL-199
+
+			//3) Just leak a temp file.
+
+			//if(Path.GetExtension(path)==".jpg")
 			{
-				return Image.FromStream(fs);
+				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
+				File.Delete(leakMe.Path);
+				File.Copy(path, leakMe.Path);
+				return Image.FromFile(leakMe.Path);
 			}
 		}
 
@@ -106,6 +161,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			};
 			i.Metadata = Metadata.FromFile(path);
 			return i;
+		}
+
+		/// <summary>
+		/// will be set if this was created using FromFile
+		/// </summary>
+		public string OriginalFilePath
+		{
+			get { return _pathForSavingMetadataChanges; }
 		}
 
 		/*
@@ -136,6 +199,66 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				Assert.IsFalse(incoming.MetadataLocked);
 			}
 		}*/
+
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (Disposed)
+				return;
+
+			if (disposing)
+			{
+				string imageLabel = _image==null? "no-image":"with-image";
+				Debug.WriteLine("Disposing PalasoImage "+imageLabel);
+				if (Image != null)
+				{
+					Image.Dispose();
+					Image = null;
+				}
+				Disposed = true;
+			}
+		}
+
+		~PalasoImage()
+		{
+			if (_image!=null && //Todo: it would be nice if we were water tight, but at the moment, if there was not image, we don't really care
+				!Disposed && LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
+			{
+				string imageLabel = _image == null ? "no-image" : "with-image";
+				Debug.Assert(Disposed, "PalasoImage wasn't disposed of properly: " + imageLabel);
+			}
+		}
 	}
 
 

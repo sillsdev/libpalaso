@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Palaso.UI.WindowsForms.Widgets.Grid
+namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 {
 	/// ----------------------------------------------------------------------------------------
 	public class CellCustomDropDownList : Panel

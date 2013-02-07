@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml.Serialization;
+using Palaso.Code;
 using Palaso.Text;
 
 namespace Palaso.Text
@@ -42,8 +44,6 @@ namespace Palaso.Text
 		{
 			_forms = new LanguageForm[0];
 		}
-
-
 
 		public void Add(Object objectFromSerializer) {}
 
@@ -326,7 +326,7 @@ namespace Palaso.Text
 			NotifyPropertyChanged(writingSystemId);
 		}
 
-		protected void RemoveLanguageForm(LanguageForm languageForm)
+		public void RemoveLanguageForm(LanguageForm languageForm)
 		{
 			Debug.Assert(Forms.Length > 0);
 			LanguageForm[] forms = new LanguageForm[Forms.Length - 1];
@@ -482,19 +482,19 @@ namespace Palaso.Text
 			return true;
 		}
 
+		public override bool Equals(Object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof(MultiTextBase)) return false;
+			return Equals((MultiTextBase)obj);
+		}
+
 		public bool Equals(MultiTextBase other)
 		{
-			if (other.Count != Count)
-			{
-				return false;
-			}
-			foreach (LanguageForm form in other)
-			{
-				if (!ContainsEqualForm(form))
-				{
-					return false;
-				}
-			}
+			if (other == null) return false;
+			if (other.Count != Count) return false;
+			if (!_forms.SequenceEqual(other.Forms)) return false;
 			return true;
 		}
 

@@ -16,6 +16,7 @@ namespace TestApp
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			//Application.Run(new FastXmlSplitterTestForm());
 			Application.Run(new Form1());
 		}
 

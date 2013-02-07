@@ -16,10 +16,10 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 		public SettingProtectionDialog()
 		{
 			InitializeComponent();
-			_normallyHiddenCheckbox.Checked = SettingsProtectionSingleton.Configuration.NormallyHidden;
-			_requirePasswordCheckBox.Checked = SettingsProtectionSingleton.Configuration.RequirePassword;
+			_normallyHiddenCheckbox.Checked = SettingsProtectionSingleton.Settings.NormallyHidden;
+			_requirePasswordCheckBox.Checked = SettingsProtectionSingleton.Settings.RequirePassword;
 
-			_didHavePasswordSet = SettingsProtectionSingleton.Configuration.RequirePassword;
+			_didHavePasswordSet = SettingsProtectionSingleton.Settings.RequirePassword;
 
 			_passwordNotice.Text = string.Format(_passwordNotice.Text, SettingsProtectionSingleton.FactoryPassword,
 												 Application.ProductName);
@@ -27,19 +27,19 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 
 		private void OnNormallHidden_CheckedChanged(object sender, EventArgs e)
 		{
-			SettingsProtectionSingleton.Configuration.NormallyHidden = _normallyHiddenCheckbox.Checked;
+			SettingsProtectionSingleton.Settings.NormallyHidden = _normallyHiddenCheckbox.Checked;
 			_image.Image = SettingsProtectionSingleton.GetImage(48);
 		}
 
 		private void OnRequirePasswordCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			SettingsProtectionSingleton.Configuration.RequirePassword = _requirePasswordCheckBox.Checked;
+			SettingsProtectionSingleton.Settings.RequirePassword = _requirePasswordCheckBox.Checked;
 			_image.Image = SettingsProtectionSingleton.GetImage(48);
 		}
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
-			if(!_didHavePasswordSet && SettingsProtectionSingleton.Configuration.RequirePassword)
+			if(!_didHavePasswordSet && SettingsProtectionSingleton.Settings.RequirePassword)
 			{
 				using(var dlg = new SettingsPasswordDialog(SettingsProtectionSingleton.FactoryPassword, SettingsPasswordDialog.Mode.MakeSureTheyKnowPassword))
 				{
@@ -48,7 +48,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 				}
 			}
 
-			SettingsProtectionSingleton.Configuration.Save();
+			SettingsProtectionSingleton.Settings.Save();
 			Close();
 		}
 	}
