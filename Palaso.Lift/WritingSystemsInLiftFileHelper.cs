@@ -8,6 +8,7 @@ using Palaso.IO;
 using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.Xml;
+using Palaso.Extensions;
 
 namespace Palaso.Lift
 {
@@ -129,15 +130,20 @@ namespace Palaso.Lift
 							{
 								node.Attributes["lang"].Value = newId;
 								var textOfCurrentNode = node.SelectSingleNode("./text/text()") == null ? "" : node.SelectSingleNode("./text/text()").Value;
-								var xPathForSiblingsWithIdenticalLangAndContent =
+								var xPathForSiblingsWithIdenticalLang =
 									String.Format(
-										"following-sibling::{0}[@lang='{1}' and ./text/text() = '{2}'] | preceding-sibling::{0}[@lang='{1}' and ./text/text() = '{2}']",
-										node.Name, node.Attributes["lang"].Value, textOfCurrentNode);
-								var siblingNodesWithNewId = node.SelectNodes(xPathForSiblingsWithIdenticalLangAndContent).Cast<XmlNode>();
+										"following-sibling::{0}[@lang='{1}'] | preceding-sibling::{0}[@lang='{1}']",
+										node.Name, node.Attributes["lang"].Value);
+								var siblingNodesWithNewId = node.SelectNodes(xPathForSiblingsWithIdenticalLang).Cast<XmlNode>();
 								foreach (var identicalNode in siblingNodesWithNewId)
 								{
-									var parent = identicalNode.SelectSingleNode("parent::*");
-									parent.RemoveChild(identicalNode);
+									var textNode = identicalNode.SelectSingleNode("./text/text()");
+									var textOfNodeWithSameLang = textNode == null ? "" : textNode.Value;
+									if (textOfCurrentNode == textOfNodeWithSameLang)
+									{
+										var parent = identicalNode.SelectSingleNode("parent::*");
+										parent.RemoveChild(identicalNode);
+									}
 								}
 							}
 						}

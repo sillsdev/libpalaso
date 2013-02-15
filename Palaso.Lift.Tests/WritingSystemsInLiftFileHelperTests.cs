@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using Palaso.Extensions;
 
 namespace Palaso.Lift.Tests
 {
@@ -497,6 +499,29 @@ namespace Palaso.Lift.Tests
 				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry", 2);
 				e.Helper.DeleteWritingSystemId("de");
 				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry", 2);
+			}
+		}
+
+		//WS-34563
+		[Test]
+		public void ReplaceWritingSystemId_FirstOfTwoGlossesContainsOldWritingSystemOtherContainsNewWritingSystemBothHaveIdenticalContentWithSingleAndDoubleQuotes_WritingSystemIsReplacedSecondFormIsDeleted()
+		{
+			var problematicString = "He said: \"Life's good.\"";
+			var ws2Content = new Dictionary<string, string> { { "th", problematicString }, { "de", problematicString } };
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content));
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("th", "de");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']/text", 1);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/sense/gloss[@lang='th']");
+				// We are not using:
+				//AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/entry/sense/gloss[@lang='de']/text[text()='de word']", 1);
+				//because the whole point is that the syntax is problematic for xpath
+				var xmlDoc = new XmlDocument();
+				xmlDoc.Load(e.PathToLiftFile);
+				var node = xmlDoc.SelectSingleNode("/lift/entry/sense/gloss[@lang='de']/text/text()");
+				Assert.That(node.Value, Is.EqualTo(problematicString));
 			}
 		}
 	}
