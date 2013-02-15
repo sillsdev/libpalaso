@@ -12,7 +12,7 @@ namespace Palaso.Xml
 	/// <summary>
 	/// Summary description for XmlUtils.
 	/// </summary>
-	public class XmlUtils
+	public static class XmlUtils
 	{
 		/// <summary>
 		/// Returns true if value of attrName is 'true' or 'yes' (case ignored)
@@ -494,7 +494,7 @@ namespace Palaso.Xml
 		{
 			string sOutput = sInput;
 
-			if (sOutput != null && sOutput.Length != 0)
+			if (!string.IsNullOrEmpty(sOutput))
 			{
 				sOutput = sOutput.Replace("&", "&amp;");
 				sOutput = sOutput.Replace("<", "&lt;");
@@ -716,6 +716,112 @@ namespace Palaso.Xml
 			}
 			writer.WriteEndElement();
 		}
-	}
 
+		/// <summary>
+		/// Remove illegal XML characters from a string.
+		/// </summary>
+		public static string SanitizeString(string s)
+		{
+			if (string.IsNullOrEmpty(s))
+			{
+				return s;
+			}
+
+			StringBuilder buffer = new StringBuilder(s.Length);
+
+			for (int i = 0; i < s.Length; i++)
+			{
+				int code;
+				try
+				{
+					code = Char.ConvertToUtf32(s, i);
+				}
+				catch (ArgumentException)
+				{
+					continue;
+				}
+				if (IsLegalXmlChar(code))
+					buffer.Append(Char.ConvertFromUtf32(code));
+				if (Char.IsSurrogatePair(s, i))
+					i++;
+			}
+
+			return buffer.ToString();
+		}
+
+		/// <summary>
+		/// Whether a given character is allowed by XML 1.0.
+		/// </summary>
+		private static bool IsLegalXmlChar(int codePoint)
+		{
+			return (codePoint == 0x9 ||
+				codePoint == 0xA ||
+				codePoint == 0xD ||
+				(codePoint >= 0x20 && codePoint <= 0xD7FF) ||
+				(codePoint >= 0xE000 && codePoint <= 0xFFFD) ||
+				(codePoint >= 0x10000/* && character <= 0x10FFFF*/) //it's impossible to get a code point bigger than 0x10FFFF because Char.ConvertToUtf32 would have thrown an exception
+			);
+		}
+		/// <summary>
+		/// Write a node out containing the XML in dataToWrite, pretty-printed according to the rules of writer, except
+		/// that we suppress indentation for children of nodes whose names are listed in suppressIndentingChildren,
+		/// and also for "mixed" nodes (where some children are text).
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="dataToWrite"></param>
+		/// <param name="suppressIndentingChildren"></param>
+		public static void WriteNode(XmlWriter writer, string dataToWrite, HashSet<string> suppressIndentingChildren)
+		{
+			XElement element = XDocument.Parse(dataToWrite).Root;
+			WriteNode(writer, element, suppressIndentingChildren);
+		}
+		/// <summary>
+		/// Write a node out containing the XML in dataToWrite, pretty-printed according to the rules of writer, except
+		/// that we suppress indentation for children of nodes whose names are listed in suppressIndentingChildren,
+		/// and also for "mixed" nodes (where some children are text).
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="dataToWrite"></param>
+		/// <param name="suppressIndentingChildren"></param>
+		public static void WriteNode(XmlWriter writer, XElement dataToWrite, HashSet<string> suppressIndentingChildren)
+		{
+			if (dataToWrite == null)
+				return;
+			WriteElementTo(writer, dataToWrite, suppressIndentingChildren);
+		}
+
+		/// <summary>
+		/// Recursively write an element to the writer, suppressing indentation of children when required.
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="element"></param>
+		/// <param name="suppressIndentingChildren"></param>
+		private static void WriteElementTo(XmlWriter writer, XElement element, HashSet<string> suppressIndentingChildren)
+		{
+			writer.WriteStartElement(element.Name.LocalName);
+			foreach (var attr in element.Attributes())
+				writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+			// The writer automatically suppresses indenting children for any element that it detects has text children.
+			// However, it won't do this for the first child if that is an element, even if it later encounters text children.
+			// Also, there may be a parent where text including white space is significant, yet it is possible for the
+			// WHOLE content to be an element. For example, a <text> or <AStr> element may consist entirely of a <span>.
+			// In such cases there is NO way to tell from the content that it should not be indented, so all we can do
+			// is pass a list of such elements.
+			bool suppressIndenting = suppressIndentingChildren.Contains(element.Name.LocalName) || element.Nodes().Any(x => x is XText);
+			// In either case, we implement the suppression by making the first child a fake text element.
+			// Calling this method, even with an empty string, has proved to be enough to make the writer treat the parent
+			// as "mixed" which prevents indenting its children.
+			if (suppressIndenting)
+				writer.WriteString("");
+			foreach (var child in element.Nodes())
+			{
+				var xElement = child as XElement;
+				if (xElement != null)
+					WriteElementTo(writer, xElement, suppressIndentingChildren);
+				else
+					child.WriteTo(writer); // defaults are fine for everything else.
+			}
+			writer.WriteEndElement();
+		}
+	}
 }

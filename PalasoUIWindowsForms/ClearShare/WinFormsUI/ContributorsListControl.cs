@@ -53,7 +53,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
-			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date"));
+			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date", null, CalendarCell.UserAction.CellMouseClick));
 
 			col = BetterGrid.CreateTextBoxColumn("comments", "Comments");
 			col.Width = 200;
@@ -162,9 +162,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					return;
 
 				var contribution = _model.Contributions.ElementAt(_grid.CurrentCellAddress.Y);
-				var args = new CancelEventArgs(false);
-				ValidatingContributor(this, contribution, args);
-				if (args.Cancel)
+				if (!GetIsValidContribution(contribution))
 				{
 					SystemSounds.Beep.Play();
 					return;
@@ -173,6 +171,16 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 			// Make the first cell current in the row the user clicked.
 			_grid.CurrentCell = _grid[0, hi.RowIndex];
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private bool GetIsValidContribution(Contribution contribution)
+		{
+			if (ValidatingContributor == null)
+				return true;
+			var args = new CancelEventArgs(false);
+			ValidatingContributor(this, contribution, args);
+			return !args.Cancel;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -240,7 +248,8 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		private IEnumerable<Contribution> GetContributionCollectionFromGrid()
 		{
 			return _grid.GetRows().Where(r =>
-				r.Index != _grid.NewRowIndex).Select(row => GetContributionFromRow(row.Index)).Where(c => c!= null);
+				r.Index != _grid.NewRowIndex).Select(row =>
+					GetContributionFromRow(row.Index)).Where(c => c!= null && GetIsValidContribution(c));
 		}
 
 		/// ------------------------------------------------------------------------------------

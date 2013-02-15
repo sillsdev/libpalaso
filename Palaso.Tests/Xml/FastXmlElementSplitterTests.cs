@@ -31,7 +31,7 @@ namespace Palaso.Tests.Xml
 		[Test]
 		public void File_Not_Found_Throws()
 		{
-			Assert.Throws<FileNotFoundException>(() => new FastXmlElementSplitter("Non-existant-file.xml"));
+			Assert.Throws<FileNotFoundException>(() => new FastXmlElementSplitter("Non-existent-file.xml"));
 		}
 
 		[Test]
