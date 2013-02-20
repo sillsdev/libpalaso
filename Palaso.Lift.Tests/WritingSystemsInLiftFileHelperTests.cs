@@ -524,5 +524,23 @@ namespace Palaso.Lift.Tests
 				Assert.That(node.Value, Is.EqualTo(problematicString));
 			}
 		}
+
+		//WS-34568
+		[Test]
+		public void ReplaceWritingSystemId_headerContainsBadRfcTag_RfcTagIsReplaced()
+		{
+			var ws2Content = new Dictionary<string, string> { { "th", "thai" }, { "de", "deutsch" } };
+			var entryXml = LiftContentForTests.GetSingleEntrywithGlossContainingWritingsystemsAndContent(ws2Content);
+			var entryWithHeader = LiftContentForTests.AddHeaderWithSingleCustomField("bogus", entryXml);
+
+			var liftFileContent =
+				LiftContentForTests.WrapEntriesInLiftElements("0.13", entryWithHeader);
+			using (var e = new TestEnvironment(liftFileContent))
+			{
+				e.Helper.ReplaceWritingSystemId("bogus", "qaa-x-bogus");
+				AssertThatXmlIn.File(e.PathToLiftFile).HasSpecifiedNumberOfMatchesForXpath("/lift/header/fields/field/form[@lang='qaa-x-bogus']", 1);
+				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/header/fields/field/form[@lang='bogus']");
+			}
+		}
 	}
 }

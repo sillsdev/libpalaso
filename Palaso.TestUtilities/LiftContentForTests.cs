@@ -32,6 +32,22 @@ namespace Palaso.TestUtilities
 	producer='WeSay 1.0.0.0'>",version).Replace("'", "\"") + entriesXml + "</lift>";
 		}
 
+		public static string AddHeaderWithSingleCustomField(string wsId, string entriesXml)
+		{
+			return string.Format(
+				@"
+<header>
+		<fields>
+			<field tag='custom'>
+				<form lang='{0}'>
+					<text>For storing markers that are otherwise not defined</text>
+				</form>
+			</field>
+		</fields>
+	</header>
+", wsId) + entriesXml;
+		}
+
 		public static string GetSingleEntryWithLexicalUnitContainingWritingsystemsAndContent(Dictionary<string, string> writingSystemsToContentMap)
 		{
 			var builder = new StringBuilder();
