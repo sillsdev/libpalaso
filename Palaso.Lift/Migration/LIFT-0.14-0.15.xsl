@@ -67,15 +67,22 @@
 
 	<xsl:template match="field[@tag]">
 		<xsl:element name="field-definition">
-			<xsl:variable name="spec"><xsl:value-of select="string(.)"/></xsl:variable>
+			<xsl:variable name="spec"><xsl:value-of select="string(form[@lang='x-spec' or @lang='qaa-x-spec']/text)"/></xsl:variable>
 			<xsl:variable name="tag"><xsl:value-of select="@tag"/></xsl:variable>
 			<!-- we can handle only one type of parent in this conversion. -->
 			<xsl:variable name="parent-name">
 				<xsl:choose>
-					<xsl:when test="contains($spec,'Class=LexEntry')"><xsl:text>entry</xsl:text></xsl:when>
-					<xsl:when test="contains($spec,'Class=LexSense')"><xsl:text>sense</xsl:text></xsl:when>
-					<xsl:when test="contains($spec,'Class=MoForm')"><xsl:text>variant</xsl:text></xsl:when>
-					<xsl:when test="contains($spec,'Class=LexExampleSentence')"><xsl:text>example</xsl:text></xsl:when>
+					<xsl:when test="contains($spec, 'Class=')">
+						<!-- we may have some unwanted whitespace -->
+						<xsl:variable name="class-spec" select="normalize-space(substring-after($spec, 'Class='))"/>
+						<xsl:choose>
+							<xsl:when test="starts-with($class-spec, 'LexEntry')"><xsl:text>entry</xsl:text></xsl:when>
+							<xsl:when test="starts-with($class-spec, 'LexSense')"><xsl:text>sense</xsl:text></xsl:when>
+							<xsl:when test="starts-with($class-spec, 'MoForm')"><xsl:text>variant</xsl:text></xsl:when>
+							<xsl:when test="starts-with($class-spec, 'LexExampleSentence')"><xsl:text>example</xsl:text></xsl:when>
+							<xsl:otherwise>UNKNOWN</xsl:otherwise>
+						</xsl:choose>
+					</xsl:when>
 					<xsl:otherwise>
 						<!-- only the newest files from FieldWorks have Class= in the specification string -->
 						<xsl:for-each select="//field[@type=$tag]">
@@ -177,7 +184,7 @@
 										<xsl:value-of select="substring-before(substring-after($spec,'WsSelector='),';')"/>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="normalize-space(substring-after($spec,'WsSelector='))"/>
+										<xsl:value-of select="substring-after($spec,'WsSelector=')"/>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:attribute>
@@ -192,7 +199,7 @@
 							<xsl:value-of select="substring-before(substring-after($spec,' range='),';')"/>
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="normalize-space(substring-after($spec,' range='))"/>
+							<xsl:value-of select="substring-after($spec,' range=')"/>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:attribute>
