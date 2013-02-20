@@ -231,11 +231,27 @@ namespace Palaso.Reporting
 		private string MakeEventString(string category, string action, string optionalLabel, int optionalInteger)
 		{
 			//What's the 5? It's just a constant Google defines. "Google Analytics uses the value of the utme parameter to track events in the form of 5(object*action*label)(value)"
-			return Uri.EscapeDataString(String.Format("5({0}*{1}*{2})({3})",
-				category,
-				action,
-				string.IsNullOrEmpty(optionalLabel) ? string.Empty : optionalLabel,
-				optionalInteger.ToString()));
+			// Prevent crash due to excessively long URI (see: http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url)
+			var label = string.IsNullOrEmpty(optionalLabel) ? string.Empty : optionalLabel;
+			var integer = optionalInteger.ToString();
+			const int maxUriLength = 2000;
+			int maxActionLength = maxUriLength - 7 - category.Length - label.Length - integer.Length;
+			do
+			{
+				if (action.Length > maxActionLength)
+					action = action.Remove(maxActionLength);
+				try
+				{
+					return Uri.EscapeDataString(String.Format("5({0}*{1}*{2})({3})", category, action, label, integer));
+				}
+				catch (UriFormatException)
+				{
+					maxActionLength -= 100;
+					if (maxActionLength <= 0)
+						throw;
+				}
+			}
+			while (true);
 		}
 
 		private string UtmcCookieString
