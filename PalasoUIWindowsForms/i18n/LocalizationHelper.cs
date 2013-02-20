@@ -11,7 +11,7 @@ using Palaso.i18n;
 
 namespace Palaso.UI.WindowsForms.i18n
 {
-	[Designer(typeof (LocalizationHelperDesigner))]
+	[Designer("LocalizationHelperDesigner, PalsoUIWindowsFormsDesign")]
 	[ToolboxItem(true)]
 	[ProvideProperty("ParentFo", typeof (Form))]
 	public partial class LocalizationHelper: Component, ISupportInitialize, IExtenderProvider
@@ -80,7 +80,14 @@ namespace Palaso.UI.WindowsForms.i18n
 			var hints = control as ILocalizableControl;
 			if (hints==null || hints.ShouldModifyFont)
 			{
-				control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				if (control is LinkLabel && ((LinkLabel)control).UseMnemonic == false)
+				{
+					//then that link is for user data, and shouldn't be localized (this came up in Chorus AnnotationEditorView)
+				}
+				else
+				{
+					control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				}
 			}
 			_alreadyChanging = false;
 		}
@@ -290,20 +297,5 @@ namespace Palaso.UI.WindowsForms.i18n
 		}
 	}
 
-	/// <summary>
-	///   Designer object used to set the Parent property.
-	/// </summary>
-	internal class LocalizationHelperDesigner: ComponentDesigner
-	{
-		///   <summary>
-		///   Sets the Parent property to "this" -
-		///   the Form/UserControl where the component is being dropped.
-		///   </summary>
-		[Obsolete]
-		public override void OnSetComponentDefaults()
-		{
-			LocalizationHelper rp = (LocalizationHelper) Component;
-			rp.Parent = (Control) Component.Site.Container.Components[0];
-		}
-	}
+
 }

@@ -1400,6 +1400,21 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void GetDefaultFontSizeOrMinimum_DefaultConstructor_GreaterThanSix()
+		{
+			Assert.Greater(new WritingSystemDefinition().GetDefaultFontSizeOrMinimum(),6);
+		}
+		[Test]
+		public void GetDefaultFontSizeOrMinimum_SetAt0_GreaterThanSix()
+		{
+			var ws = new WritingSystemDefinition()
+						 {
+							 DefaultFontSize = 0
+						 };
+			Assert.Greater(ws.GetDefaultFontSizeOrMinimum(), 6);
+		}
+
+		[Test]
 		public void ListLabel_ScriptRegionVariantEmpty_LabelIsLanguage()
 		{
 			var ws = new WritingSystemDefinition("de");
@@ -1413,6 +1428,7 @@ namespace Palaso.Tests.WritingSystems
 			ws.Script = "Armi";
 			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi)"));
 		}
+
 
 		[Test]
 		public void ListLabel_RegionSet_LabelIsLanguageWithRegionInBrackets()
