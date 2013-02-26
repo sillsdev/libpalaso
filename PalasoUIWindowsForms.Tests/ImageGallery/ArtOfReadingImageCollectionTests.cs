@@ -71,6 +71,16 @@ namespace PalasoUIWindowsForms.Tests.ImageGallery
 		}
 
 		[Test]
+		public void GetMatchingPictures_UpperCaseQuery_GetsMatches()
+		{
+			bool foundExactMatches;
+			var treesMatches = _artCollection.GetMatchingPictures("trees", out foundExactMatches);
+			var TREESMatches = _artCollection.GetMatchingPictures("TREES", out foundExactMatches);
+			Assert.AreEqual(treesMatches.Count(), TREESMatches.Count());
+		}
+
+
+		[Test]
 		public void GetMatchingPictures_WordsFollowedByPunctuation_StillMatches()
 		{
 			bool foundExactMatches;
