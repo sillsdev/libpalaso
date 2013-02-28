@@ -72,14 +72,14 @@
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="Microsoft.Build.Framework" />
-	<Reference Include="Microsoft.Build.Tasks" />
-	<Reference Include="Microsoft.Build.Utilities" />
 	<Reference Include="System" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
+	<Reference Include="Microsoft.Build.Tasks.v4.0" />
+	<Reference Include="Microsoft.Build.Utilities.v4.0" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Archive\Archive.cs" />
