@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso", "Palaso\Palaso.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Tests", "Palaso.Tests\Palaso.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
@@ -153,6 +153,7 @@ Global
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.Debug|x86.ActiveCfg = Debug|x86
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.Debug|x86.Build.0 = Debug|x86
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.DebugMono|Any CPU.ActiveCfg = DebugMono|Any CPU
+		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.DebugMono|Any CPU.Build.0 = DebugMono|Any CPU
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.DebugMono|x86.ActiveCfg = DebugMono|x86
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -327,7 +328,6 @@ Global
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.Debug|x86.ActiveCfg = Debug|x86
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.DebugMono|Any CPU.ActiveCfg = DebugMono|Any CPU
-		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.DebugMono|Any CPU.Build.0 = DebugMono|Any CPU
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.DebugMono|x86.ActiveCfg = DebugMono|x86
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.DebugMono|x86.Build.0 = DebugMono|x86
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.Release|Any CPU.ActiveCfg = Release|Any CPU
