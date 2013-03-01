@@ -78,8 +78,10 @@
 	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
-	<Reference Include="Microsoft.Build.Tasks.v4.0" />
-	<Reference Include="Microsoft.Build.Utilities.v4.0" />
+	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Microsoft.Build.Tasks.v4.0" />
+	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="Microsoft.Build.Utilities.v4.0" />
+	<Reference Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Microsoft.Build.Tasks" />
+	<Reference Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Microsoft.Build.Utilities" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Archive\Archive.cs" />
