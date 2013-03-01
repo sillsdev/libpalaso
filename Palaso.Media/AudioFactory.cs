@@ -6,11 +6,11 @@ namespace Palaso.Media
 	{
 		public static ISimpleAudioSession AudioSession(string filePath)
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
+#if MONO
 				return new AudioNullSession();
-			}
+#else
 			return new AudioIrrKlangSession(filePath);
+#endif
 		}
 	}
 
