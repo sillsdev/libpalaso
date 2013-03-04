@@ -90,6 +90,10 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
+	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="gstreamer-sharp, Version=0.9.2.0, Culture=neutral, PublicKeyToken=4956b48baf980190">
+	  <Private>False</Private>
+	  <Package>gstreamer-sharp-0.10</Package>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="AudioFactory.cs" />
