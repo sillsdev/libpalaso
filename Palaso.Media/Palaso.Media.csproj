@@ -141,6 +141,7 @@
 	<Compile Include="SoundFieldControl.Designer.cs">
 	  <DependentUpon>SoundFieldControl.cs</DependentUpon>
 	</Compile>
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="AudioGStreamerSession.cs" />
   </ItemGroup>
   <ItemGroup>
 	<None Include="app.config" />
