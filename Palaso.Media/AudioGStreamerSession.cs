@@ -8,6 +8,8 @@ namespace Palaso.Media
 	{
 		public static bool gst_is_init;
 		private readonly string _path;
+		private DateTime _startRecordingTime;
+		private DateTime _stopRecordingTime;
 		private bool _playInit, _recordInit, _recordOgg;
 		private bool _isPlaying, _isRecording;
 		private Gst.BasePlugins.PlayBin2 _playBin;
@@ -49,6 +51,7 @@ namespace Palaso.Media
 				SetupRecordingPipeline();
 			}
 			_pipeline.SetState(Gst.State.Playing);
+			_startRecordingTime = DateTime.Now;
 			_isRecording = true;
 			_pipeline.Bus.AddWatch (new BusFunc (BusCb));
 		}
@@ -86,6 +89,7 @@ namespace Palaso.Media
 			}
 
 			_pipeline.SetState(Gst.State.Null);
+			_stopRecordingTime = DateTime.Now;
 			_isRecording = false;
 			SaveAsWav (_path);
 
@@ -96,8 +100,12 @@ namespace Palaso.Media
 
 		public double LastRecordingMilliseconds
 		{
-			// how to implement this?
-			get { return 0.0; }
+			get
+			{
+				if(_startRecordingTime == default(DateTime) || _stopRecordingTime == default(DateTime))
+					return 0.0;
+				return _stopRecordingTime.Subtract(_startRecordingTime).TotalMilliseconds;
+			}
 		}
 
 		public bool IsRecording
