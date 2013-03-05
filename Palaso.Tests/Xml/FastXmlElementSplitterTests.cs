@@ -124,7 +124,8 @@ namespace Palaso.Tests.Xml
 				File.WriteAllText(goodPathname, noRecordsInput, Encoding.UTF8);
 				using (var reader = new FastXmlElementSplitter(goodPathname))
 				{
-					Assert.Throws<XmlException>(() => reader.GetSecondLevelElementBytes("rt"));
+					// An earlier version was expected to throw XmlException. But we aren't parsing XML well enough to do that confidently.
+					Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("rt"));
 				}
 			}
 			finally
@@ -147,6 +148,8 @@ namespace Palaso.Tests.Xml
 <rt guid='emptyElement2' />
 </classdata>";
 
+			// throws because we're telling it to parse a file with <rt> elements and an optional first <badfirsttag> element,
+			// which means the actual first element <optional /> is unexpected.
 			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, "badfirsttag", "rt"));
 		}
 
@@ -163,6 +166,7 @@ namespace Palaso.Tests.Xml
 <rt guid='emptyElement2' />
 </classdata>";
 
+			// We're telling it the file should containg <notag> elements.
 			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, null, "notag"));
 		}
 
@@ -180,6 +184,7 @@ namespace Palaso.Tests.Xml
 <rt guid='emptyElement2' />
 </classdata>";
 
+			// The file is expected to contain an option <badfirsttag> followed by <notag> elements.
 			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 5, "badfirsttag", "notag"));
 		}
 
@@ -203,6 +208,61 @@ namespace Palaso.Tests.Xml
 
 			CheckGoodFile(hasRecordsInput, 5, null, "rt");
 			CheckGoodFile(hasRecordsInput, 5, null, "<rt");
+		}
+
+		[Test]
+		public void Can_Find_Single_Good_Element_With_No_White_Space()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata><rt guid='emptyElement1'/></classdata>";
+
+			CheckGoodFile(hasRecordsInput, 1, null, "rt");
+		}
+
+		[Test]
+		public void Can_Find_Single_Complex_Element_With_No_White_Space()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata><rt guid='emptyElement1'><rt guid='trash'/></rt></classdata>";
+
+			CheckGoodFile(hasRecordsInput, 1, null, "rt");
+		}
+
+		[Test]
+		public void Bad_Final_Marker_Is_Detected()
+		{
+			const string hasRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<classdata><marker guid='emptyElement1'><marker guid='trash'/></marke></classdata>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasRecordsInput, 1, null, "marker"));
+		}
+
+		// We detect at least a top-level mismatched /something.
+		// We won't currently detect a mismatch nested inside a good pair.
+		[Test]
+		public void Invalid_Nesting_Is_Detected()
+		{
+			const string hasNestedRecordsInput =
+@"<?xml version='1.0' encoding='utf-8'?>
+<Reversal>
+<ReversalIndex>
+</ReversalIndex>
+<ReversalIndexEntry guid='elementWithNesting1'>
+	<something>
+		<ReversalIndexEntry guid='nestedElement1'/>
+	</ReversalIndexEntry>
+</something>
+<ReversalIndexEntry guid='elementWithNesting2'>
+	<ReversalIndexEntry guid='nestedElement2'>
+		<morestuff />
+	</ReversalIndexEntry>
+</ReversalIndexEntry>
+</Reversal>";
+
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(hasNestedRecordsInput, 3, "ReversalIndex", "ReversalIndexEntry"));
 		}
 
 		[Test]
