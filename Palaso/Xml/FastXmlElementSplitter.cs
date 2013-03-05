@@ -92,9 +92,7 @@ namespace Palaso.Xml
 		/// </exception>
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string recordMarker)
 		{
-			return new List<byte[]>(
-				GetSecondLevelElementStrings(recordMarker)
-					.Select(stringResult => EncUtf8.GetBytes(stringResult)));
+			return GetSecondLevelElementBytes(null, recordMarker);
 		}
 
 		///<summary>

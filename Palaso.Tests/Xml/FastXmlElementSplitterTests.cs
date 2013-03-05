@@ -45,7 +45,8 @@ namespace Palaso.Tests.Xml
 			using (var reader = new FastXmlElementSplitter(Assembly.GetExecutingAssembly().CodeBase.Replace(@"file:///", null)))
 #endif
 			{
-				Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes(null));
+				// ToList is needed to make the enumerable evaluate.
+				Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes(null).ToList());
 			}
 		}
 
@@ -60,7 +61,8 @@ namespace Palaso.Tests.Xml
 			using (var reader = new FastXmlElementSplitter(Assembly.GetExecutingAssembly().CodeBase.Replace(@"file:///", null)))
 #endif
 			{
-				Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes(""));
+				// ToList is needed to make the enumeration evaluate.
+				Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("").ToList());
 			}
 		}
 
@@ -125,7 +127,8 @@ namespace Palaso.Tests.Xml
 				using (var reader = new FastXmlElementSplitter(goodPathname))
 				{
 					// An earlier version was expected to throw XmlException. But we aren't parsing XML well enough to do that confidently.
-					Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("rt"));
+					// Note: the ToList is needed to force the enumeration to enumerate.
+					Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("rt").ToList());
 				}
 			}
 			finally
