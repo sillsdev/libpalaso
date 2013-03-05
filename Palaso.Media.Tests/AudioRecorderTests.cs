@@ -38,7 +38,7 @@ namespace Palaso.Media.Tests
 		   Assert.IsFalse(File.Exists(path));
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void StopRecording_NotRecording_Throws()
 	   {
 		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
@@ -46,7 +46,7 @@ namespace Palaso.Media.Tests
 x.StopRecordingAndSaveAsWav());
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void StopPlaying_WhilePlaying_Ok()
 	   {
 		   using (var session = new RecordingSession(1000))
@@ -57,7 +57,7 @@ x.StopRecordingAndSaveAsWav());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void Record_AfterRecordThenStop_Ok()
 	   {
 		   using (var session = new RecordingSession(100))
@@ -68,7 +68,7 @@ x.StopRecordingAndSaveAsWav());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void Play_WhileRecording_Throws()
 	   {
 		   using (var session = new RecordingSession())
@@ -78,7 +78,7 @@ session.Recorder.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanRecord_FileDoesNotExist_True()
 	   {
 		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
@@ -92,7 +92,7 @@ session.Recorder.Play());
 		   Assert.IsFalse(x.CanStop);
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanRecord_ConstructWithEmptyFile_True()
 	   {
 		   using (var f = new TempFile())
@@ -121,17 +121,6 @@ x.Play());
 	   }
 
 	   [Test]
-		public void Play_DoesPlay ()
-		{
-			using (var file = TempFile.FromResource(Resources.finished, ".wav")) {
-				var x = AudioFactory.AudioSession (file.Path);
-				Assert.DoesNotThrow (() =>
-					x.Play ()
-				);
-			}
-	   }
-
-	   [Test, Ignore("recording")]
 	   public void CanStop_WhilePlaying_True()
 	   {
 			using (var session = new RecordingSession(1000))
@@ -143,7 +132,7 @@ x.Play());
 	   }
 
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void RecordAndStop_FileAlreadyExists_FileReplaced()
 	   {
 		   using (var f = new TempFile())
@@ -157,7 +146,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void IsRecording_WhileRecording_True()
 	   {
 		   using (var f = new TempFile())
@@ -170,7 +159,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void RecordThenPlay_SmokeTest()
 	   {
 		   using (var f = new TempFile())
@@ -188,7 +177,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void Play_GiveThaiFileName_ShouldHearTwoSounds()
 	   {
 		   using (var d = new TemporaryFolder("palaso media test"))
@@ -256,7 +245,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanStop_WhileRecording_True()
 	   {
 		   using (var session = new RecordingSession())
@@ -265,7 +254,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanPlay_WhileRecording_False()
 	   {
 		   using (var session = new RecordingSession())
@@ -274,7 +263,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanRecord_WhileRecording_False()
 	   {
 		   using (var session = new RecordingSession())
@@ -283,7 +272,7 @@ x.Play());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void StartRecording_WhileRecording_Throws()
 	   {
 		   using (var session = new RecordingSession())
@@ -293,7 +282,7 @@ session.Recorder.StartRecording());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanRecord_WhilePlaying_False()
 	   {
 		   using (var session = new RecordingSession(1000))
@@ -305,7 +294,7 @@ session.Recorder.StartRecording());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void CanPlay_WhilePlaying_False()
 	   {
 		   using (var session = new RecordingSession(1000))
@@ -316,7 +305,7 @@ session.Recorder.StartRecording());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void IsRecording_AfterRecording_False()
 	   {
 		   using (var f = new TempFile())
@@ -326,7 +315,7 @@ session.Recorder.StartRecording());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void RecordThenStop_CanPlay_IsTrue()
 	   {
 		   using (var f = new TempFile())
@@ -336,7 +325,7 @@ session.Recorder.StartRecording());
 		   }
 	   }
 
-	   [Test, Ignore("recording")]
+	   [Test]
 	   public void RecordThenPlay_OK()
 	   {
 		   using (var f = new TempFile())
@@ -353,6 +342,28 @@ session.Recorder.StartRecording());
 		   Thread.Sleep(100);
 		   x.StopRecordingAndSaveAsWav();
 		   return x;
+	   }
+
+	   [Test]
+		public void Play_DoesPlay ()
+		{
+			using (var file = TempFile.FromResource(Resources.finished, ".wav")) {
+				var x = AudioFactory.AudioSession (file.Path);
+				Assert.DoesNotThrow (() =>
+					x.Play ()
+				);
+			}
+	   }
+
+	   [Test]
+		public void Record_DoesRecord ()
+		{
+
+			string fpath = "/tmp/dump.ogg";
+			var x = AudioFactory.AudioSession (fpath);
+			x.StartRecording();
+			Thread.Sleep(1000);
+			x.StopRecordingAndSaveAsWav();
 	   }
 	}
 }
