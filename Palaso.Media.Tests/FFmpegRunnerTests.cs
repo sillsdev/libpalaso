@@ -10,6 +10,7 @@ namespace Palaso.Media.Tests
 	public class FFmpegRunnerTests
 	{
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
@@ -17,6 +18,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void ExtractMp3Audio_CreatesFile()
 		{
@@ -29,6 +31,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void ChangeNumberOfAudioChannels_CreatesFile()
 		{
@@ -41,6 +44,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void MakeLowQualityCompressedAudio_CreatesFile()
 		{
@@ -57,6 +61,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void MakeLowQualitySmallVideo_CreatesFile()
 		{

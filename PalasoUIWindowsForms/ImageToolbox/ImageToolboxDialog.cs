@@ -40,5 +40,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			imageToolboxControl1.Closing();
 			Close();
 		}
+
+		private void ImageToolboxDialog_Load(object sender, EventArgs e)
+		{
+			UsageReporter.SendNavigationNotice("ImageToolbox");
+		}
 	}
 }

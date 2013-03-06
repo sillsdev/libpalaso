@@ -10,7 +10,7 @@ namespace Palaso.Tests.Xml
 	public class XmlUtilsTests
 	{
 		[Test]
-		public void DoubleQuotedAttribute_HasValue()
+		public void GetAttributes_DoubleQuotedAttribute_HasValue()
 		{
 			const string data = @"<element attr='data' />";
 			var tmp = data.Replace("'", "\"");
@@ -22,7 +22,7 @@ namespace Palaso.Tests.Xml
 		}
 
 		[Test]
-		public void SingleQuotedAttribute_HasValue()
+		public void GetAttributes_SingleQuotedAttribute_HasValue()
 		{
 			const string data = @"<element attr='data' />";
 			var attrValues = XmlUtils.GetAttributes(Encoding.UTF8.GetBytes(data), new HashSet<string> { "attr" });
@@ -33,7 +33,7 @@ namespace Palaso.Tests.Xml
 		}
 
 		[Test]
-		public void NonExistantAttribute_IsNull()
+		public void GetAttributes_NonExistentAttribute_IsNull()
 		{
 			const string data = @"<element />";
 			var attrValues = XmlUtils.GetAttributes(Encoding.UTF8.GetBytes(data), new HashSet<string> { "attr" });
@@ -41,6 +41,51 @@ namespace Palaso.Tests.Xml
 
 			attrValues = XmlUtils.GetAttributes(data, new HashSet<string> { "attr" });
 			Assert.IsNull(attrValues["attr"]);
+		}
+
+		[Test]
+		public void SanitizeString_NullString_ReturnsNull()
+		{
+			Assert.IsNull(XmlUtils.SanitizeString(null));
+		}
+
+		[Test]
+		public void SanitizeString_EmptyString_ReturnsEmptyString()
+		{
+			Assert.AreEqual(string.Empty, XmlUtils.SanitizeString(string.Empty));
+		}
+
+		[Test]
+		public void SanitizeString_ValidString_ReturnsSameString()
+		{
+			string s = "Abc\u0009 \u000A\u000D\uD7FF\uE000\uFFFD";
+			s += char.ConvertFromUtf32(0x10000);
+			s += char.ConvertFromUtf32(0x10FFFF);
+			Assert.AreEqual(s, XmlUtils.SanitizeString(s));
+		}
+
+		[Test]
+		public void SanitizeString_CompletelyInvalidString_ReturnsEmptyString()
+		{
+			string s = "\u0000\u0008\u000B\u000C\u000E\u001F\uD800\uD999\uFFFE\uFFFF";
+			int utf32 = 0x20ffff - 0x10000;
+			char[] surrogate = new char[2];
+			surrogate[0] = (char)((utf32 / 0x400) + '\ud800');
+			surrogate[1] = (char)((utf32 % 0x400) + '\udc00');
+			s += new string(surrogate);
+			Assert.AreEqual(string.Empty, XmlUtils.SanitizeString(s));
+		}
+
+		[Test]
+		public void SanitizeString_StringWithInvalidChars_ReturnsStringWithInvalidCharsRemoved()
+		{
+			string s = "A\u0008B\u000B\u000C\u000E\u001F\uD800\uD999\uFFFE\uFFFFC";
+			int utf32 = 0x20ffff - 0x10000;
+			char[] surrogate = new char[2];
+			surrogate[0] = (char)((utf32 / 0x400) + '\ud800');
+			surrogate[1] = (char)((utf32 % 0x400) + '\udc00');
+			s += new string(surrogate);
+			Assert.AreEqual("ABC", XmlUtils.SanitizeString(s));
 		}
 
 		/// <summary>
@@ -95,7 +140,6 @@ namespace Palaso.Tests.Xml
 			}
 			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
 		}
-
 		/// <summary>
 		/// This verifies that suppressing pretty-printing of children works for spans nested in spans nested in text.
 		/// </summary>

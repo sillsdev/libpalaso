@@ -55,7 +55,7 @@ namespace Palaso.Reporting
 			{
 				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
 				var palasoUiWindowsFormsInializeAssemblyName =
-					referencedAssemblies.SingleOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));//This will fail when there are multiple matches: SingleOrDefault
 				if (palasoUiWindowsFormsInializeAssemblyName != null)
 				{
 					var palasoUIWinFormsAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
@@ -427,9 +427,10 @@ namespace Palaso.Reporting
 			return x;
 		}
 
-		public static void ReportFatalException(Exception e)
+		public static void ReportFatalException(Exception error)
 		{
-			_errorReporter.ReportFatalException(e);
+			UsageReporter.ReportException(true, null, error, null);
+			_errorReporter.ReportFatalException(error);
 		}
 
 		/// <summary>
@@ -458,6 +459,8 @@ namespace Palaso.Reporting
 			{
 				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
 			}
+
+			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
 		}
 
 		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
@@ -518,6 +521,7 @@ namespace Palaso.Reporting
 				return;
 			}
 			_errorReporter.ReportNonFatalException(exception, policy);
+			 UsageReporter.ReportException(false, null, exception, null);
 		}
 
 		/// <summary>
