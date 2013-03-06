@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Lift;
+using Palaso.Extensions;
 using Palaso.Tests.Data;
 using Palaso.TestUtilities;
 using Palaso.DictionaryServices.Model;
@@ -69,7 +72,21 @@ namespace Palaso.DictionaryServices.Tests
 		{
 			SetState();
 			const string expectedCreationDateTime = "2008-07-01T16:29:23Z";
-			string actualCreationDateTime = Item.CreationTime.ToUniversalTime().ToString(LiftWriter.LiftDateTimeFormat);
+			string actualCreationDateTime = Item.CreationTime.ToUniversalTime().ToLiftDateTimeFormat();
+			Assert.AreEqual(expectedCreationDateTime, actualCreationDateTime);
+		}
+
+		[Test]
+		public void Read_ProblematicCulture_ReadsCorrectly()
+		{
+			var culture = new CultureInfo("en-US");
+			culture.DateTimeFormat.TimeSeparator = ".";
+
+			Thread.CurrentThread.CurrentCulture = culture;
+
+			SetState();
+			const string expectedCreationDateTime = "2008-07-01T16:29:23Z";
+			string actualCreationDateTime = Item.CreationTime.ToUniversalTime().ToLiftDateTimeFormat();
 			Assert.AreEqual(expectedCreationDateTime, actualCreationDateTime);
 		}
 
