@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 
 namespace Palaso.Extensions
 {
@@ -12,14 +13,21 @@ namespace Palaso.Extensions
 		public const string TimeFormatNoTimeZone = "yyyy-MM-ddTHH:mm:ssZ";
 		public const string DateOnlyFormat = "yyyy-MM-dd";
 
+
+		public static string ToLiftDateTimeFormat(this DateTime when)
+		{
+			return when.ToISO8601DateAndUTCTimeString();
+		}
+
 		public static string ToISO8601DateAndUTCTimeString(this DateTime  when)
 		{
-		 return when.ToString(TimeFormatNoTimeZone);
+			//the invariantCulture here ensures we get what we asked for. Else, we can actually get '.' instead of ':' in the time separators.
+			return when.ToString(TimeFormatNoTimeZone, CultureInfo.InvariantCulture);
 		}
 
 		public static string ToISO8601DateOnlyString(this DateTime when)
 		{
-			return when.ToString(DateOnlyFormat);
+			return when.ToString(DateOnlyFormat, CultureInfo.InvariantCulture);
 		}
 
 		public static DateTime ParseISO8601DateTime(string when)
@@ -92,6 +100,7 @@ namespace Palaso.Extensions
 				DateTime date;
 				List<CultureInfo> culturesToTry = new List<CultureInfo>(new[]
 																			{
+																				Thread.CurrentThread.CurrentCulture,
 																				CultureInfo.CurrentCulture,
 																				CultureInfo.CreateSpecificCulture("en-US"),
 																				CultureInfo.CreateSpecificCulture("en-GB"),

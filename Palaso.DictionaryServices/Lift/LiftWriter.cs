@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -16,9 +17,8 @@ using Palaso.Xml;
 
 namespace Palaso.DictionaryServices.Lift
 {
-	public class LiftWriter : ILiftWriter<LexEntry>
+   public class LiftWriter : ILiftWriter<LexEntry>
 	{
-		public const string LiftDateTimeFormat = DateTimeExtensions.TimeFormatNoTimeZone;
 		private readonly XmlWriter _writer;
 		private readonly Dictionary<string, int> _allIdsExportedSoFar;
 
@@ -136,10 +136,10 @@ namespace Palaso.DictionaryServices.Lift
 
 			Debug.Assert(entry.CreationTime.Kind == DateTimeKind.Utc);
 			Writer.WriteAttributeString("dateCreated",
-										entry.CreationTime.ToString(LiftDateTimeFormat));
+										entry.CreationTime.ToLiftDateTimeFormat());
 			Debug.Assert(entry.ModificationTime.Kind == DateTimeKind.Utc);
 			Writer.WriteAttributeString("dateModified",
-										entry.ModificationTime.ToString(LiftDateTimeFormat));
+										entry.ModificationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("guid", entry.Guid.ToString());
 			// _writer.WriteAttributeString("flex", "id", "http://fieldworks.sil.org", entry.Guid.ToString());
 			WriteMultiWithWrapperIfNonEmpty(LexEntry.WellKnownProperties.LexicalUnit,
@@ -799,9 +799,9 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			Writer.WriteStartElement("entry");
 			Writer.WriteAttributeString("dateCreated",
-										entry.CreationTime.ToString(LiftDateTimeFormat));
+										entry.CreationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("dateModified",
-										entry.ModificationTime.ToString(LiftDateTimeFormat));
+										entry.ModificationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("guid", entry.Guid.ToString());
 			Writer.WriteEndElement();
 		}
@@ -811,11 +811,11 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteStartElement("entry");
 			Writer.WriteAttributeString("id", GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, _allIdsExportedSoFar));
 			Writer.WriteAttributeString("dateCreated",
-										entry.CreationTime.ToString(LiftDateTimeFormat));
+										entry.CreationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("dateModified",
-										entry.ModificationTime.ToString(LiftDateTimeFormat));
+										entry.ModificationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("guid", entry.Guid.ToString());
-			Writer.WriteAttributeString("dateDeleted", DateTime.UtcNow.ToString(LiftDateTimeFormat));
+			Writer.WriteAttributeString("dateDeleted", DateTime.UtcNow.ToLiftDateTimeFormat());
 
 			Writer.WriteEndElement();
 		}
