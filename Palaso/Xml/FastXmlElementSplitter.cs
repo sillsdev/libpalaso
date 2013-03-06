@@ -34,6 +34,8 @@ namespace Palaso.Xml
 		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
 		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
 		private static byte[] _inputBytes; // the entire content of the file we are parsing.
+		private static byte[] cdataStart = EncUtf8.GetBytes("![CDATA[");
+		private static byte[] cdataEnd = EncUtf8.GetBytes("]]>");
 
 		private readonly string _pathname;
 
@@ -210,11 +212,19 @@ namespace Palaso.Xml
 				// 2: ...> : no change (end of opening or closing marker)
 				// 3: </x... : depth-- (closing marker)
 				// 4: .../> : depth-- (end of open marker that has no close marker)
+				// 5: <![CDATA[ : advance to matching ]]>
 				// If depth is zero we must stop and output. In case 3 we must also check for the correct closing marker.
 				if (gotOpenBracket)
 				{
 					if (_inputBytes[_currentOffset] == _slash)
 						depth--; // case 3
+					else if (Match(cdataStart))
+					{
+						_currentOffset += cdataStart.Length;
+						while (_currentOffset <= _endOfRecordsOffset - cdataEnd.Length && !Match(cdataEnd))
+							_currentOffset++;
+						continue;
+					}
 					else
 					{
 						depth++; // case 1
@@ -241,6 +251,8 @@ namespace Palaso.Xml
 						throw new ArgumentException("Unmatched opening tag " + marker);
 					return _inputBytes.SubArray(start, _currentOffset - start);
 				}
+				if (_currentOffset == _endOfRecordsOffset)
+					throw new ArgumentException("Unmatched opening tag " + marker);
 			}
 		}
 
@@ -255,6 +267,17 @@ namespace Palaso.Xml
 		/// <returns></returns>
 		bool MatchMarker(byte[] marker)
 		{
+			if (!Match(marker)) return false;
+			return Terminators.Contains(_inputBytes[_currentOffset + marker.Length]);
+		}
+
+		/// <summary>
+		/// Return true if the bytes starting at _currentPosition match the specified marker. No termination is required.
+		/// </summary>
+		/// <param name="marker"></param>
+		/// <returns></returns>
+		private bool Match(byte[] marker)
+		{
 			if (_currentOffset + marker.Length >= _endOfRecordsOffset)
 				return false;
 			for (int i = 0; i < marker.Length; i++)
@@ -262,7 +285,7 @@ namespace Palaso.Xml
 				if (_inputBytes[_currentOffset + i] != marker[i])
 					return false;
 			}
-			return Terminators.Contains(_inputBytes[_currentOffset + marker.Length]);
+			return true;
 		}
 
 		/// <summary>
@@ -357,7 +380,7 @@ namespace Palaso.Xml
 					return false;
 				}
 			}
-			return false;
+			return _inputBytes[_currentOffset] == _openingAngleBracket;
 		}
 
 		/// <summary>
