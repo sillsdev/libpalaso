@@ -11,9 +11,9 @@ namespace Palaso.Media
 	/// </summary>
 	public class AudioAlsaSession : ISimpleAudioSession
 	{
-		DateTime m_startRecordingTime = DateTime.MinValue;
-		DateTime m_stopRecordingTime = DateTime.MinValue;
-		AlsaAudioDevice m_device;
+		DateTime _startRecordingTime = DateTime.MinValue;
+		DateTime _stopRecordingTime = DateTime.MinValue;
+		AlsaAudioDevice _device;
 
 		#region Construction and Disposal
 
@@ -23,7 +23,7 @@ namespace Palaso.Media
 		public AudioAlsaSession(string filePath)
 		{
 			FilePath = filePath;
-			m_device = new AlsaAudioDevice();
+			_device = new AlsaAudioDevice();
 		}
 
 		#endregion
@@ -46,12 +46,12 @@ namespace Palaso.Media
 		{
 			if (!CanRecord)
 				throw new ApplicationException("AlsaAudioSession: Already recording or playing on the ALSA sound device");
-			bool fOk = m_device.StartRecording();
+			bool fOk = _device.StartRecording();
 			if (!fOk)
 				throw new Exception("AlsaAudioSession: Cannot open the ALSA sound device");
-			m_stopRecordingTime = DateTime.MinValue;
-			m_startRecordingTime = DateTime.Now;
-			//Console.WriteLine("AlsaAudioSession: Recording started at {0}", m_startRecordingTime);
+			_stopRecordingTime = DateTime.MinValue;
+			_startRecordingTime = DateTime.Now;
+			//Console.WriteLine("AlsaAudioSession: Recording started at {0}", _startRecordingTime);
 		}
 
 		/// <summary>
@@ -61,8 +61,8 @@ namespace Palaso.Media
 		{
 			if (!IsRecording)
 				throw new ApplicationException("AlsaAudioSession: Not recording on the ALSA sound device");
-			m_device.StopRecording();
-			m_stopRecordingTime = DateTime.Now;
+			_device.StopRecording();
+			_stopRecordingTime = DateTime.Now;
 			SaveAsWav(FilePath);
 		}
 
@@ -73,10 +73,10 @@ namespace Palaso.Media
 		{
 			get
 			{
-				if (m_startRecordingTime == DateTime.MinValue || m_stopRecordingTime == DateTime.MinValue)
+				if (_startRecordingTime == DateTime.MinValue || _stopRecordingTime == DateTime.MinValue)
 					return 0.0;
 				else
-					return (m_stopRecordingTime - m_startRecordingTime).Milliseconds;
+					return (_stopRecordingTime - _startRecordingTime).Milliseconds;
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace Palaso.Media
 		/// </summary>
 		public bool IsRecording
 		{
-			get { return m_device.IsRecording; }
+			get { return _device.IsRecording; }
 		}
 
 		/// <summary>
@@ -93,7 +93,7 @@ namespace Palaso.Media
 		/// </summary>
 		public bool IsPlaying
 		{
-			get { return m_device.IsPlaying; }
+			get { return _device.IsPlaying; }
 		}
 
 		/// <summary>
@@ -129,7 +129,7 @@ namespace Palaso.Media
 				throw new ApplicationException("AlsaAudioSession: Already recording or playing on the ALSA sound device");
 			if (!File.Exists(FilePath))
 				throw new FileNotFoundException(String.Format("AlsaAudioSession: {0} does not exist", FilePath));
-			bool fOk = m_device.StartPlaying(FilePath);
+			bool fOk = _device.StartPlaying(FilePath);
 			if (!fOk)
 				throw new Exception("AlsaAudioSession: Cannot open the ALSA sound device");
 		}
@@ -139,7 +139,7 @@ namespace Palaso.Media
 		/// </summary>
 		public void SaveAsWav(string filePath)
 		{
-			m_device.SaveAsWav(filePath);
+			_device.SaveAsWav(filePath);
 		}
 
 		/// <summary>
@@ -147,7 +147,7 @@ namespace Palaso.Media
 		/// </summary>
 		public void StopPlaying()
 		{
-			m_device.StopPlaying();
+			_device.StopPlaying();
 		}
 
 		#endregion

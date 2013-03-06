@@ -15,7 +15,7 @@ namespace Palaso.Media
 	public class AlsaAudioDevice
 	{
 		[DllImport ("libasound.so.2")]
-		static extern int snd_pcm_open(ref IntPtr pcm, string pcm_name, int stream, int mode);
+		static extern int snd_pcm_open(ref IntPtr pcm, string pc_name, int stream, int mode);
 		[DllImport ("libasound.so.2")]
 		static extern int snd_pcm_close(IntPtr pcm);
 		[DllImport ("libasound.so.2")]
@@ -66,41 +66,40 @@ namespace Palaso.Media
 		static extern int snd_pcm_nonblock(IntPtr pcm, int nonblock);
 
 		// These constants are cribbed from alsa/pcm.h.
-		const int SND_PCM_STREAM_PLAYBACK = 0;
-		const int SND_PCM_STREAM_CAPTURE = 1;
-		const int SND_PCM_FORMAT_U8 = 1;
-		const int SND_PCM_FORMAT_S16_LE = 2;
-		const int SND_PCM_FORMAT_S24_LE = 6;
-		const int SND_PCM_FORMAT_S32_LE = 10;
-		const int SND_PCM_FORMAT_FLOAT_LE = 14;
-		const int SND_PCM_FORMAT_S24_3LE = 32;
-		const int SND_PCM_ACCESS_RW_INTERLEAVED = 3;
+		const int SND_pcm_STREA_PLAYBACK = 0;
+		const int SND_pcm_STREA_CAPTURE = 1;
+		const int SND_pcm_FORMAT_U8 = 1;
+		const int SND_pcm_FORMAT_S16_LE = 2;
+		const int SND_pcm_FORMAT_S24_LE = 6;
+		const int SND_pcm_FORMAT_S32_LE = 10;
+		const int SND_pcm_FORMAT_FLOAT_LE = 14;
+		const int SND_pcm_FORMAT_S24_3LE = 32;
+		const int SND_pcm_ACCESS_RW_INTERLEAVED = 3;
 
 		// These constants are cribbed from Microsoft.
 		const ushort WAV_FMT_PCM = 1;
 
-		IntPtr m_hpcm;
-		IntPtr m_hwparams;
-		IntPtr m_swparams;
-		Thread m_recordingThread;
-		Thread m_playbackThread;
-		bool m_fAsyncQuit;
-		int m_pcmFormat;
-		ushort m_channelCount;
-		uint m_sampleRate;
-		int m_startDelay;
-		int m_chunkSize = 1024;
-		int m_bufferSize;
-		byte[] m_audiobuf;
-		ushort m_bitsPerFrame;
-		string m_tempfile;
-		int m_chunkBytes;
-		int m_cbWritten;
-		string m_filename;
-		int m_cbRemaining;
-		string m_error;
+		IntPtr _hpcm;
+		IntPtr _hwparams;
+		IntPtr _swparams;
+		Thread _recordingThread;
+		Thread _playbackThread;
+		/// <summary>flag to stop recording or playing</summary>
+		bool _fAsyncQuit;
+		int _pcmFormat;
+		ushort _channelCount;
+		uint _sampleRate;
+		int _startDelay;
+		int _chunkSize = 1024;
+		int _bufferSize;
+		byte[] _audiobuf;
+		ushort _bitsPerFrame;
+		string _tempfile;
+		int _chunkBytes;
+		int _cbWritten;
+		string _filename;
 
-		#region Construction
+		#region Construction and Destruction
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="Palaso.Media.AlsaAudioDevice"/> class.
@@ -109,6 +108,14 @@ namespace Palaso.Media
 		{
 		}
 
+		/// <summary>
+		/// Delete any temporary file created during recording that somehow still exists.
+		/// </summary>
+		~AlsaAudioDevice()
+		{
+			if (!String.IsNullOrEmpty(_tempfile) && File.Exists(_tempfile))
+				File.Delete(_tempfile);
+		}
 		#endregion
 
 		#region Public methods and properties
@@ -125,24 +132,24 @@ namespace Palaso.Media
 				return false;
 			if (IsPlaying || IsRecording)
 				return false;
-			m_error = null;
-			if (!ValidateFile(fileName))
+			string errorMsg = null;
+			if (!ValidateFile(fileName, out errorMsg))
 			{
-				ShowError(m_error);
+				ShowError(errorMsg);
 				return false;
 			}
-			m_filename = fileName;
-			m_fAsyncQuit = false;
+			_filename = fileName;
+			_fAsyncQuit = false;
 
 			// Create the thread object, passing in the Record method
 			// via a ThreadStart delegate. This does not start the thread.
-			m_playbackThread = new Thread(new ThreadStart(Play));
+			_playbackThread = new Thread(new ThreadStart(Play));
 
 			// Start the thread
-			m_playbackThread.Start();
+			_playbackThread.Start();
 
 			// Wait for the started thread to become alive:
-			while (!m_playbackThread.IsAlive)
+			while (!_playbackThread.IsAlive)
 				;
 			return true;
 		}
@@ -159,17 +166,17 @@ namespace Palaso.Media
 			if (IsRecording || IsPlaying)
 				return false;
 
-			m_fAsyncQuit = false;
+			_fAsyncQuit = false;
 
 			// Create the thread object, passing in the Record method
 			// via a ThreadStart delegate. This does not start the thread.
-			m_recordingThread = new Thread(new ThreadStart(Record));
+			_recordingThread = new Thread(new ThreadStart(Record));
 
 			// Start the thread
-			m_recordingThread.Start();
+			_recordingThread.Start();
 
 			// Wait for the started thread to become alive:
-			while (!m_recordingThread.IsAlive)
+			while (!_recordingThread.IsAlive)
 				;
 			return true;
 		}
@@ -179,7 +186,7 @@ namespace Palaso.Media
 		/// </summary>
 		public bool IsRecording
 		{
-			get { return m_recordingThread != null && m_recordingThread.IsAlive; }
+			get { return _recordingThread != null && _recordingThread.IsAlive; }
 		}
 
 		/// <summary>
@@ -189,11 +196,11 @@ namespace Palaso.Media
 		{
 			if (!IsRecording)
 				return;
-			m_fAsyncQuit = true;
-			m_recordingThread.Join(1000);
-			if (m_recordingThread.IsAlive)
-				m_recordingThread.Abort();
-			m_recordingThread = null;
+			_fAsyncQuit = true;
+			_recordingThread.Join(1000);
+			if (_recordingThread.IsAlive)
+				_recordingThread.Abort();
+			_recordingThread = null;
 		}
 
 		/// <summary>
@@ -201,27 +208,47 @@ namespace Palaso.Media
 		/// </summary>
 		public void SaveAsWav(string filePath)
 		{
-			if (String.IsNullOrEmpty(m_tempfile) || !File.Exists(m_tempfile) || m_cbWritten == 0)
+			// Make sure we have data.
+			if (String.IsNullOrEmpty(_tempfile))
+			{
+				_cbWritten = 0;
 				return;
-			FileInfo fi = new FileInfo(m_tempfile);
-			Debug.Assert(fi.Length == m_cbWritten);
+			}
+			if (!File.Exists(_tempfile))
+			{
+				_tempfile = null;
+				_cbWritten = 0;
+				return;
+			}
+			if (_cbWritten == 0)
+			{
+				File.Delete(_tempfile);
+				_tempfile = null;
+				return;
+			}
+			FileInfo fi = new FileInfo(_tempfile);
+			Debug.Assert(fi.Length == _cbWritten);
 			WaveFileWriter writer = new WaveFileWriter(filePath);
 			writer.WriteFileHeader((int)fi.Length);
 			WaveFormatChunk format = new WaveFormatChunk();
 			format.chunkId = "fmt ";
 			format.chunkSize = 16;				// size of the struct in bytes - 8
 			format.audioFormat = WAV_FMT_PCM;
-			format.channelCount = m_channelCount;
-			format.sampleRate = m_sampleRate;
-			format.byteRate = (uint)(m_sampleRate * m_channelCount * m_bitsPerFrame / 8);
-			format.blockAlign = (ushort)(m_channelCount * m_bitsPerFrame / 8);
-			format.bitsPerSample = m_bitsPerFrame;
+			format.channelCount = _channelCount;
+			format.sampleRate = _sampleRate;
+			format.byteRate = (uint)(_sampleRate * _channelCount * _bitsPerFrame / 8);
+			format.blockAlign = (ushort)(_channelCount * _bitsPerFrame / 8);
+			format.bitsPerSample = _bitsPerFrame;
 			writer.WriteFormatChunk(format);
 			writer.WriteDataHeader((int)fi.Length);
-			byte[] data = File.ReadAllBytes(m_tempfile);
-			Debug.Assert(data.Length == m_cbWritten);
+			byte[] data = File.ReadAllBytes(_tempfile);
+			Debug.Assert(data.Length == _cbWritten);
 			writer.WriteData(data);
 			writer.Close();
+			// Clean up the temporary data from the recording process.
+			File.Delete(_tempfile);
+			_tempfile = null;
+			_cbWritten = 0;
 		}
 
 		/// <summary>
@@ -229,7 +256,7 @@ namespace Palaso.Media
 		/// </summary>
 		public bool IsPlaying
 		{
-			get { return m_playbackThread != null && m_playbackThread.IsAlive; }
+			get { return _playbackThread != null && _playbackThread.IsAlive; }
 		}
 
 		/// <summary>
@@ -239,11 +266,11 @@ namespace Palaso.Media
 		{
 			if (!IsPlaying)
 				return;
-			m_fAsyncQuit = true;
-			m_playbackThread.Join(1000);
-			if (m_playbackThread.IsAlive)
-				m_playbackThread.Abort();
-			m_playbackThread = null;
+			_fAsyncQuit = true;
+			_playbackThread.Join(1000);
+			if (_playbackThread.IsAlive)
+				_playbackThread.Abort();
+			_playbackThread = null;
 		}
 
 		#endregion
@@ -264,18 +291,18 @@ namespace Palaso.Media
 		/// </returns>
 		bool InitializeForRecording()
 		{
-			m_pcmFormat = SND_PCM_FORMAT_S16_LE;
-			m_channelCount = 1;
-			m_sampleRate = 22000;
-			m_startDelay = 1;
-			int res = snd_pcm_open(ref m_hpcm, "default", SND_PCM_STREAM_CAPTURE, 0);
+			_pcmFormat = SND_pcm_FORMAT_S16_LE;
+			_channelCount = 1;
+			_sampleRate = 22000;
+			_startDelay = 1;
+			int res = snd_pcm_open(ref _hpcm, "default", SND_pcm_STREA_CAPTURE, 0);
 			if (res < 0)
 			{
 				ShowError("Cannot open default sound device for recording");
-				m_hpcm = IntPtr.Zero;
+				_hpcm = IntPtr.Zero;
 				return false;
 			}
-			m_audiobuf = new byte[m_chunkSize];
+			_audiobuf = new byte[_chunkSize];
 			return true;
 		}
 
@@ -288,41 +315,41 @@ namespace Palaso.Media
 		bool SetParams()
 		{
 			// allocate fresh data structures
-			if (m_hwparams != IntPtr.Zero)
-				snd_pcm_hw_params_free(m_hwparams);
-			int res = snd_pcm_hw_params_malloc(ref m_hwparams);
+			if (_hwparams != IntPtr.Zero)
+				snd_pcm_hw_params_free(_hwparams);
+			int res = snd_pcm_hw_params_malloc(ref _hwparams);
 			if (res < 0)
 			{
 				return false;
 			}
-			if (m_swparams != IntPtr.Zero)
-				snd_pcm_sw_params_free(m_swparams);
-			res = snd_pcm_sw_params_malloc(ref m_swparams);
+			if (_swparams != IntPtr.Zero)
+				snd_pcm_sw_params_free(_swparams);
+			res = snd_pcm_sw_params_malloc(ref _swparams);
 			if (res < 0)
 			{
 				return false;
 			}
 			// Set the values we want for sound processing.
-			res = snd_pcm_hw_params_any(m_hpcm, m_hwparams);
+			res = snd_pcm_hw_params_any(_hpcm, _hwparams);
 			if (res < 0)
 			{
 				return false;
 			}
-			res = snd_pcm_hw_params_set_access(m_hpcm, m_hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
+			res = snd_pcm_hw_params_set_access(_hpcm, _hwparams, SND_pcm_ACCESS_RW_INTERLEAVED);
 			if (res < 0)
 			{
 				ShowError("Interleaved sound channel access is not available");
 				Cleanup();
 				return false;
 			}
-			res = snd_pcm_hw_params_set_format(m_hpcm, m_hwparams, m_pcmFormat);
+			res = snd_pcm_hw_params_set_format(_hpcm, _hwparams, _pcmFormat);
 			if (res < 0)
 			{
 				ShowError("The desired sound format is not available");
 				Cleanup();
 				return false;
 			}
-			res = snd_pcm_hw_params_set_channels(m_hpcm, m_hwparams, (uint)m_channelCount);
+			res = snd_pcm_hw_params_set_channels(_hpcm, _hwparams, (uint)_channelCount);
 			if (res < 0)
 			{
 				ShowError("The desired sound channel count is not available");
@@ -330,63 +357,63 @@ namespace Palaso.Media
 				return false;
 			}
 
-			uint rate = m_sampleRate;
+			uint rate = _sampleRate;
 			int dir = 0;
-			res = snd_pcm_hw_params_set_rate_near(m_hpcm, m_hwparams, ref rate, ref dir);
+			res = snd_pcm_hw_params_set_rate_near(_hpcm, _hwparams, ref rate, ref dir);
 			System.Diagnostics.Debug.Assert(res >= 0);
-			m_sampleRate = rate;
+			_sampleRate = rate;
 
-			res = snd_pcm_hw_params(m_hpcm, m_hwparams);
+			res = snd_pcm_hw_params(_hpcm, _hwparams);
 			if (res < 0)
 			{
 				ShowError("Unable to install hw params:");
 				Cleanup();
 				return false;
 			}
-			snd_pcm_hw_params_get_period_size(m_hwparams, ref m_chunkSize, ref dir);
-			snd_pcm_hw_params_get_buffer_size(m_hwparams, ref m_bufferSize);
-			if (m_chunkSize == m_bufferSize)
+			snd_pcm_hw_params_get_period_size(_hwparams, ref _chunkSize, ref dir);
+			snd_pcm_hw_params_get_buffer_size(_hwparams, ref _bufferSize);
+			if (_chunkSize == _bufferSize)
 			{
-				ShowError(String.Format("Can't use period equal to buffer size (%lu == %lu)", m_chunkSize, m_bufferSize));
+				ShowError(String.Format("Can't use period equal to buffer size (%lu == %lu)", _chunkSize, _bufferSize));
 				Cleanup();
 				return false;
 			}
 
-			snd_pcm_sw_params_current(m_hpcm, m_swparams);
-			ulong n = (ulong)m_chunkSize;
-			res = snd_pcm_sw_params_set_avail_min(m_hpcm, m_swparams, n);
+			snd_pcm_sw_params_current(_hpcm, _swparams);
+			ulong n = (ulong)_chunkSize;
+			res = snd_pcm_sw_params_set_avail_min(_hpcm, _swparams, n);
 
 			/* round up to closest transfer boundary */
-			n = (ulong)m_bufferSize;
+			n = (ulong)_bufferSize;
 			ulong start_threshold;
-			if (m_startDelay <= 0)
+			if (_startDelay <= 0)
 			{
-				start_threshold = n + (ulong)((double) rate * m_startDelay / 1000000);
+				start_threshold = n + (ulong)((double) rate * _startDelay / 1000000);
 			}
 			else
 			{
-				start_threshold = (ulong)((double) rate * m_startDelay / 1000000);
+				start_threshold = (ulong)((double) rate * _startDelay / 1000000);
 			}
 			if (start_threshold < 1)
 				start_threshold = 1;
 			if (start_threshold > n)
 				start_threshold = n;
-			res = snd_pcm_sw_params_set_start_threshold(m_hpcm, m_swparams, start_threshold);
+			res = snd_pcm_sw_params_set_start_threshold(_hpcm, _swparams, start_threshold);
 			Debug.Assert(res >= 0);
-			ulong stop_threshold = (ulong)m_bufferSize;
-			res = snd_pcm_sw_params_set_stop_threshold(m_hpcm, m_swparams, stop_threshold);
+			ulong stop_threshold = (ulong)_bufferSize;
+			res = snd_pcm_sw_params_set_stop_threshold(_hpcm, _swparams, stop_threshold);
 			Debug.Assert(res >= 0);
 
-			if (snd_pcm_sw_params(m_hpcm, m_swparams) < 0)
+			if (snd_pcm_sw_params(_hpcm, _swparams) < 0)
 			{
 				ShowError("unable to install sw params:");
 				Cleanup();
 				return false;
 			}
-			int bitsPerSample = snd_pcm_format_physical_width(m_pcmFormat);
-			m_bitsPerFrame = (ushort)(bitsPerSample * m_channelCount);
-			m_chunkBytes = m_chunkSize * m_bitsPerFrame / 8;
-			m_audiobuf = new byte[m_chunkBytes];
+			int bitsPerSample = snd_pcm_format_physical_width(_pcmFormat);
+			_bitsPerFrame = (ushort)(bitsPerSample * _channelCount);
+			_chunkBytes = _chunkSize * _bitsPerFrame / 8;
+			_audiobuf = new byte[_chunkBytes];
 			return true;
 		}
 
@@ -395,22 +422,22 @@ namespace Palaso.Media
 		/// </summary>
 		void Cleanup()
 		{
-			if (m_audiobuf != null)
-				m_audiobuf = null;
-			if (m_hwparams != IntPtr.Zero)
+			if (_audiobuf != null)
+				_audiobuf = null;
+			if (_hwparams != IntPtr.Zero)
 			{
-				snd_pcm_hw_params_free(m_hwparams);
-				m_hwparams = IntPtr.Zero;
+				snd_pcm_hw_params_free(_hwparams);
+				_hwparams = IntPtr.Zero;
 			}
-			if (m_swparams != IntPtr.Zero)
+			if (_swparams != IntPtr.Zero)
 			{
-				snd_pcm_sw_params_free(m_swparams);
-				m_swparams = IntPtr.Zero;
+				snd_pcm_sw_params_free(_swparams);
+				_swparams = IntPtr.Zero;
 			}
-			if (m_hpcm != IntPtr.Zero)
+			if (_hpcm != IntPtr.Zero)
 			{
-				snd_pcm_close(m_hpcm);
-				m_hpcm = IntPtr.Zero;
+				snd_pcm_close(_hpcm);
+				_hpcm = IntPtr.Zero;
 			}
 		}
 
@@ -424,29 +451,29 @@ namespace Palaso.Media
 				return;
 			SetParams();
 
-			m_tempfile = Path.GetTempFileName();
-			var file = File.Create(m_tempfile);
+			_tempfile = Path.GetTempFileName();
+			var file = File.Create(_tempfile);
 			int rest = Int32.MaxValue;
-			m_cbWritten = 0;
-			while (rest > 0 && !m_fAsyncQuit)
+			_cbWritten = 0;
+			while (rest > 0 && !_fAsyncQuit)
 			{
-				int byteCount = (rest < m_chunkBytes) ? rest : m_chunkBytes;
-				int frameCount = byteCount * 8 / m_bitsPerFrame;
-				Debug.Assert(frameCount == m_chunkSize);
-				int count = (int)snd_pcm_readi(m_hpcm, m_audiobuf, (long)frameCount);
+				int byteCount = (rest < _chunkBytes) ? rest : _chunkBytes;
+				int frameCount = byteCount * 8 / _bitsPerFrame;
+				Debug.Assert(frameCount == _chunkSize);
+				int count = (int)snd_pcm_readi(_hpcm, _audiobuf, (long)frameCount);
 				if (count != frameCount)
 				{
 					Console.WriteLine("AlsaAudioDevice: stopping because returned count ({0}) != frameCount ({1})", count, frameCount);
 					break;
 				}
-				file.Write(m_audiobuf, 0, byteCount);
+				file.Write(_audiobuf, 0, byteCount);
 				rest -= byteCount;
-				m_cbWritten += byteCount;
+				_cbWritten += byteCount;
 			}
 			file.Close();
 			file.Dispose();
 			Cleanup();
-			m_fAsyncQuit = false;
+			_fAsyncQuit = false;
 		}
 
 		/// <summary>
@@ -457,15 +484,15 @@ namespace Palaso.Media
 		/// </returns>
 		bool InitializeForPlayback()
 		{
-			m_pcmFormat = 0;
-			m_channelCount = 0;
-			m_sampleRate = 0;
-			m_startDelay = 0;
-			int res = snd_pcm_open(ref m_hpcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+			_pcmFormat = 0;
+			_channelCount = 0;
+			_sampleRate = 0;
+			_startDelay = 0;
+			int res = snd_pcm_open(ref _hpcm, "default", SND_pcm_STREA_PLAYBACK, 0);
 			if (res < 0)
 			{
 				ShowError("Cannot open default sound device for recording");
-				m_hpcm = IntPtr.Zero;
+				_hpcm = IntPtr.Zero;
 				return false;
 			}
 			return true;
@@ -477,34 +504,35 @@ namespace Palaso.Media
 		/// <returns>
 		/// true if the file is a WAVE file we can play, otherwise false
 		/// </returns>
-		bool ValidateFile(string fileName)
+		bool ValidateFile(string fileName, out string errorMsg)
 		{
+			errorMsg = null;
 			using (var reader = new WaveFileReader(fileName))
 			{
 				var header = reader.ReadWaveFileHeader();
 				if (header.chunkId != "RIFF" || header.riffType != "WAVE")
 				{
-					m_error = String.Format("{0} is not a WAVE file.", m_filename);
+					errorMsg = String.Format("{0} is not a WAVE file.", _filename);
 					return false;
 				}
 				var formatPlaying = reader.ReadWaveFormatChunk();
 				WaveDataHeader dataheader = reader.ReadWaveDataHeader();
 				if (formatPlaying.chunkId != "fmt " || formatPlaying.chunkSize != 16 || dataheader.chunkId != "data")
 				{
-					m_error = String.Format("{0} is not a recognized type of WAVE file.", m_filename);
+					errorMsg = String.Format("{0} is not a recognized type of WAVE file.", _filename);
 					return false;
 				}
 				if (formatPlaying.audioFormat != WAV_FMT_PCM)
 				{
-					m_error = String.Format("{0} is not PCM encoded ({1}).", m_filename, formatPlaying.audioFormat);
+					errorMsg = String.Format("{0} is not PCM encoded ({1}).", _filename, formatPlaying.audioFormat);
 					return false;
 				}
 				if (formatPlaying.channelCount < 1)
 				{
-					m_error = String.Format("{0} has an invalid number of channels ({1}).", m_filename, formatPlaying.channelCount);
+					errorMsg = String.Format("{0} has an invalid number of channels ({1}).", _filename, formatPlaying.channelCount);
 					return false;
 				}
-				if (ComputePcmFormatFromWaveFormat(formatPlaying) < 0)
+				if (ComputePcmFormatFromWaveFormat(formatPlaying, out errorMsg) < 0)
 					return false;
 				//Console.WriteLine("{0} is a WAVE file recorded at {1}Hz, using {2} bits/sample and {3} channels.",
 				//	fileName, formatPlaying.sampleRate, formatPlaying.bitsPerSample, formatPlaying.channelCount);
@@ -520,32 +548,33 @@ namespace Palaso.Media
 		{
 			if (!InitializeForPlayback())
 				return;
-			using (var reader = new WaveFileReader(m_filename))
+			using (var reader = new WaveFileReader(_filename))
 			{
 				reader.ReadWaveFileHeader();
 				var formatPlaying = reader.ReadWaveFormatChunk();
 				var dataheader = reader.ReadWaveDataHeader();
-				m_pcmFormat = ComputePcmFormatFromWaveFormat(formatPlaying);
-				m_channelCount = formatPlaying.channelCount;
-				m_sampleRate = formatPlaying.sampleRate;
-				m_cbRemaining = (int)dataheader.chunkSize;
+				string errorMsg;
+				_pcmFormat = ComputePcmFormatFromWaveFormat(formatPlaying, out errorMsg);
+				_channelCount = formatPlaying.channelCount;
+				_sampleRate = formatPlaying.sampleRate;
 				SetParams();
-				while (m_cbRemaining >= m_chunkBytes && !m_fAsyncQuit)
+				int cbRemaining = (int)dataheader.chunkSize;
+				while (cbRemaining >= _chunkBytes && !_fAsyncQuit)
 				{
-					var bytes = reader.ReadWaveData(m_chunkBytes);
-					if (bytes == null || bytes.Length != m_chunkBytes)
+					var bytes = reader.ReadWaveData(_chunkBytes);
+					if (bytes == null || bytes.Length != _chunkBytes)
 						break;
-					int size = snd_pcm_writei(m_hpcm, bytes, m_chunkSize);
-					if (size != m_chunkSize)
+					int size = snd_pcm_writei(_hpcm, bytes, _chunkSize);
+					if (size != _chunkSize)
 						break;
-					m_cbRemaining -= m_chunkBytes;
+					cbRemaining -= _chunkBytes;
 				}
 			}
-			snd_pcm_nonblock(m_hpcm, 0);
-			snd_pcm_drain(m_hpcm);
-			snd_pcm_nonblock(m_hpcm, 0);
+			snd_pcm_nonblock(_hpcm, 0);
+			snd_pcm_drain(_hpcm);
+			snd_pcm_nonblock(_hpcm, 0);
 			Cleanup();
-			m_fAsyncQuit = false;
+			_fAsyncQuit = false;
 		}
 
 		/// <summary>
@@ -555,22 +584,23 @@ namespace Palaso.Media
 		/// -1 if the format is unplayable, otherwise the (positive) value representing
 		/// the PCM format.
 		/// </returns>
-		int ComputePcmFormatFromWaveFormat(WaveFormatChunk formatPlaying)
+		int ComputePcmFormatFromWaveFormat(WaveFormatChunk formatPlaying, out string errorMsg)
 		{
+			errorMsg = null;
 			switch (formatPlaying.bitsPerSample)
 			{
-			case 8:		return SND_PCM_FORMAT_U8;
-			case 16:	return SND_PCM_FORMAT_S16_LE;
+			case 8:		return SND_pcm_FORMAT_U8;
+			case 16:	return SND_pcm_FORMAT_S16_LE;
 			case 24:
 				switch (formatPlaying.blockAlign / formatPlaying.channelCount)
 				{
-				case 3: return SND_PCM_FORMAT_S24_3LE;
-				case 4: return SND_PCM_FORMAT_S24_LE;
+				case 3: return SND_pcm_FORMAT_S24_3LE;
+				case 4: return SND_pcm_FORMAT_S24_LE;
 				}
 				break;
-			case 32:	return SND_PCM_FORMAT_S32_LE;
+			case 32:	return SND_pcm_FORMAT_S32_LE;
 			}
-			m_error = String.Format("Cannot play WAVE files with {0}-bit samples in {1} bytes ({2} channels)",
+			errorMsg = String.Format("Cannot play WAVE files with {0}-bit samples in {1} bytes ({2} channels)",
 				formatPlaying.bitsPerSample, formatPlaying.blockAlign, formatPlaying.channelCount);
 			return -1;
 		}
@@ -627,14 +657,14 @@ namespace Palaso.Media
 		/// </summary>
 		public class WaveFileReader : IDisposable
 		{
-			BinaryReader m_reader;
+			BinaryReader _reader;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Palaso.Media.AlsaAudioDevice.WaveFileReader"/> class.
 			/// </summary>
 			public WaveFileReader(string filename)
 			{
-				m_reader = new BinaryReader(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
+				_reader = new BinaryReader(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
 			}
 
 			#region General Utility Methods
@@ -644,7 +674,7 @@ namespace Palaso.Media
 			/// </summary>
 			protected string ReadRiffTypeName()
 			{
-				byte[] bytes = m_reader.ReadBytes(4);
+				byte[] bytes = _reader.ReadBytes(4);
 				char[] chars = new char[4];
 				try
 				{
@@ -665,7 +695,7 @@ namespace Palaso.Media
 			{
 				var header = new WaveFileHeader();
 				header.chunkId = ReadRiffTypeName();
-				header.chunkSize = m_reader.ReadUInt32();
+				header.chunkSize = _reader.ReadUInt32();
 				header.riffType = ReadRiffTypeName();
 				return header;
 			}
@@ -677,13 +707,13 @@ namespace Palaso.Media
 			{
 				var chunk = new WaveFormatChunk();
 				chunk.chunkId = ReadRiffTypeName();
-				chunk.chunkSize = m_reader.ReadUInt32();
-				chunk.audioFormat = m_reader.ReadUInt16();
-				chunk.channelCount = m_reader.ReadUInt16();
-				chunk.sampleRate = m_reader.ReadUInt32();
-				chunk.byteRate = m_reader.ReadUInt32();
-				chunk.blockAlign = m_reader.ReadUInt16();
-				chunk.bitsPerSample = m_reader.ReadUInt16();
+				chunk.chunkSize = _reader.ReadUInt32();
+				chunk.audioFormat = _reader.ReadUInt16();
+				chunk.channelCount = _reader.ReadUInt16();
+				chunk.sampleRate = _reader.ReadUInt32();
+				chunk.byteRate = _reader.ReadUInt32();
+				chunk.blockAlign = _reader.ReadUInt16();
+				chunk.bitsPerSample = _reader.ReadUInt16();
 				return chunk;
 			}
 
@@ -694,7 +724,7 @@ namespace Palaso.Media
 			{
 				var header = new WaveDataHeader();
 				header.chunkId = ReadRiffTypeName();
-				header.chunkSize =  m_reader.ReadUInt32();
+				header.chunkSize =  _reader.ReadUInt32();
 				return header;
 			}
 
@@ -703,7 +733,7 @@ namespace Palaso.Media
 			/// </summary>
 			public byte[] ReadWaveData(int count)
 			{
-				return m_reader.ReadBytes(count);
+				return _reader.ReadBytes(count);
 			}
 			#endregion
 
@@ -714,8 +744,8 @@ namespace Palaso.Media
 			/// </summary>
 			public void Dispose()
 			{
-				if(m_reader != null)
-					m_reader.Close();
+				if(_reader != null)
+					_reader.Close();
 			}
 
 			#endregion
@@ -726,14 +756,14 @@ namespace Palaso.Media
 		/// </summary>
 		public class WaveFileWriter
 		{
-			BinaryWriter m_writer;
+			BinaryWriter _writer;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Palaso.Media.AlsaAudioDevice.WaveFileWriter"/> class.
 			/// </summary>
 			public WaveFileWriter(string filename)
 			{
-				m_writer = new BinaryWriter(new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None));
+				_writer = new BinaryWriter(new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None));
 			}
 
 			/// <summary>
@@ -741,17 +771,17 @@ namespace Palaso.Media
 			/// </summary>
 			public void WriteFileHeader(int dataSize)
 			{
-				if (m_writer == null)
+				if (_writer == null)
 					return;
-				m_writer.Write((byte)'R');
-				m_writer.Write((byte)'I');
-				m_writer.Write((byte)'F');
-				m_writer.Write((byte)'F');
-				m_writer.Write((Int32)(dataSize + 4 + 24 + 8));
-				m_writer.Write((byte)'W');
-				m_writer.Write((byte)'A');
-				m_writer.Write((byte)'V');
-				m_writer.Write((byte)'E');
+				_writer.Write((byte)'R');
+				_writer.Write((byte)'I');
+				_writer.Write((byte)'F');
+				_writer.Write((byte)'F');
+				_writer.Write((Int32)(dataSize + 4 + 24 + 8));
+				_writer.Write((byte)'W');
+				_writer.Write((byte)'A');
+				_writer.Write((byte)'V');
+				_writer.Write((byte)'E');
 			}
 
 			/// <summary>
@@ -759,19 +789,19 @@ namespace Palaso.Media
 			/// </summary>
 			public void WriteFormatChunk(WaveFormatChunk format)
 			{
-				if (m_writer == null)
+				if (_writer == null)
 					return;
-				m_writer.Write((byte)'f');
-				m_writer.Write((byte)'m');
-				m_writer.Write((byte)'t');
-				m_writer.Write((byte)' ');
-				m_writer.Write(format.chunkSize);
-				m_writer.Write(format.audioFormat);
-				m_writer.Write(format.channelCount);
-				m_writer.Write(format.sampleRate);
-				m_writer.Write(format.byteRate);
-				m_writer.Write(format.blockAlign);
-				m_writer.Write(format.bitsPerSample);
+				_writer.Write((byte)'f');
+				_writer.Write((byte)'m');
+				_writer.Write((byte)'t');
+				_writer.Write((byte)' ');
+				_writer.Write(format.chunkSize);
+				_writer.Write(format.audioFormat);
+				_writer.Write(format.channelCount);
+				_writer.Write(format.sampleRate);
+				_writer.Write(format.byteRate);
+				_writer.Write(format.blockAlign);
+				_writer.Write(format.bitsPerSample);
 			}
 
 			/// <summary>
@@ -779,13 +809,13 @@ namespace Palaso.Media
 			/// </summary>
 			public void WriteDataHeader(int dataSize)
 			{
-				if (m_writer == null)
+				if (_writer == null)
 					return;
-				m_writer.Write((byte)'d');
-				m_writer.Write((byte)'a');
-				m_writer.Write((byte)'t');
-				m_writer.Write((byte)'a');
-				m_writer.Write(dataSize);
+				_writer.Write((byte)'d');
+				_writer.Write((byte)'a');
+				_writer.Write((byte)'t');
+				_writer.Write((byte)'a');
+				_writer.Write(dataSize);
 			}
 
 			/// <summary>
@@ -793,9 +823,9 @@ namespace Palaso.Media
 			/// </summary>
 			public void WriteData(byte[] data)
 			{
-				if (m_writer == null)
+				if (_writer == null)
 					return;
-				m_writer.Write(data);
+				_writer.Write(data);
 			}
 
 			/// <summary>
@@ -803,10 +833,10 @@ namespace Palaso.Media
 			/// </summary>
 			public void Close()
 			{
-				if (m_writer != null)
+				if (_writer != null)
 				{
-					m_writer.Close();
-					m_writer = null;
+					_writer.Close();
+					_writer = null;
 				}
 			}
 		}
