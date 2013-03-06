@@ -434,6 +434,23 @@ namespace Palaso.Tests.Xml
 			CheckGoodFile(hasRecordsInput, 1, null, "annotation");
 		}
 
+		[Test]
+		public void Can_Find_Good_Records_With_Second_Level_Comment()
+		{
+			const string hasRecordsInput =
+				@"<?xml version='1.0' encoding='utf-8'?>
+					<lift version='0.13' producer='WeSay 1.0.0.0'>
+					   <entry id='everybody' guid='dded1f95-e382-11de-8a39-0800200c9add'/>
+						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
+						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
+
+						<!-- everthing above this line was being merged, but not this -->
+						<entry id='lostBoy' guid='bbed1f95-e382-11de-8a39-0800200c9a66' />
+					</lift>";
+
+			CheckGoodFile(hasRecordsInput, 4, null, "entry");
+		}
+
 		private static void CheckGoodFile(string hasRecordsInput, int expectedCount, string firstElementMarker,
 			string recordMarker)
 		{

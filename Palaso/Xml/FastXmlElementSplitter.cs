@@ -36,6 +36,8 @@ namespace Palaso.Xml
 		private static byte[] _inputBytes; // the entire content of the file we are parsing.
 		private static byte[] cdataStart = EncUtf8.GetBytes("![CDATA[");
 		private static byte[] cdataEnd = EncUtf8.GetBytes("]]>");
+		private static byte[] startComment = EncUtf8.GetBytes("!--");
+		private static byte[] endComment = EncUtf8.GetBytes("-->");
 
 		private readonly string _pathname;
 
@@ -385,6 +387,7 @@ namespace Palaso.Xml
 
 		/// <summary>
 		/// Move _currentOffset to the character following the next angle bracket, or to _endOfRecordOffset if that comes first.
+		/// Skip comments.
 		/// </summary>
 		private void AdvanceToOpenAngleBracket()
 		{
@@ -393,6 +396,13 @@ namespace Palaso.Xml
 				if (_inputBytes[_currentOffset] == _openingAngleBracket)
 				{
 					_currentOffset++;
+					if (Match(startComment))
+					{
+						_currentOffset += startComment.Length;
+						while (_currentOffset + endComment.Length < _endOfRecordsOffset && !Match(endComment))
+							_currentOffset++;
+						continue;
+					}
 					return;
 				}
 			}
