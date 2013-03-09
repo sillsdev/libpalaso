@@ -61,7 +61,8 @@
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -70,7 +71,8 @@
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -136,6 +138,7 @@
 	<Compile Include="Data\ResultSetTests.cs" />
 	<Compile Include="Data\PalasoTestItem.cs" />
 	<Compile Include="Data\TestRepositoryId.cs" />
+	<Compile Include="Extensions\ByteArrayExtensionTests.cs" />
 	<Compile Include="Extensions\DateTimeExtensionTests.cs" />
 	<Compile Include="Extensions\StringExtensionTests.cs" />
 	<Compile Include="i18n\StringCatalogTests.cs" />

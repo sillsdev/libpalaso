@@ -38,5 +38,23 @@ namespace Palaso.Extensions
 			Array.Copy(source, start, result, 0, realCount);
 			return result;
 		}
+
+		/// <summary>
+		/// Return 'true', if the two byte arrays are the same exact array, or contain the same bytes.
+		/// Otherwise, return 'false'.
+		/// </summary>
+		public static bool AreByteArraysEqual(this byte[] source, byte[] target)
+		{
+			if (source == null || target == null || source.Length != target.Length)
+				return false; // Tested: VariationsOnANullAreNeverEqual & DifferentLengthArraysAreNotEqual
+			if (source == target) // Reference identity/equality
+				return true; // Tested: SameIdenticalByteArrayAreEqual
+			for (int i = 0; i < target.Length; i++)
+			{
+				if (source[i] != target[i])
+					return false; // Tested: SameLengthButDifferentContentArraysAreNotEqual
+			}
+			return true; // Tested: SameContentByteArrayAreEqual
+		}
 	}
 }
