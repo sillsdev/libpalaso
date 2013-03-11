@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using NUnit.Framework;
 using Palaso.Extensions;
 
@@ -15,27 +16,43 @@ namespace Palaso.Tests.Extensions
 		}
 
 		[Test]
-		public void VariationsOnANullAreNeverEqual()
+		public void NullTargetIsNeverEqualWithExistingSource()
 		{
 			var data = Encoding.UTF8.GetBytes(@"<element guid='c1ee3115-e382-11de-8a39-0800200c9a66' />");
 			Assert.IsFalse(data.AreByteArraysEqual(null));
-			Assert.IsFalse(((byte[])null).AreByteArraysEqual(data));
-			Assert.IsFalse(((byte[])null).AreByteArraysEqual(null));
 		}
 
 		[Test]
-		public void DifferentLengthArraysAreNotEqual()
+		public void DifferentLengthArraysWithCommonContentToAPointAreNotEqual()
 		{
+			// Note: this test has common bytes, up to a point.
 			var data1 = Encoding.UTF8.GetBytes(@"<element val='True' />");
 			var data2 = Encoding.UTF8.GetBytes(@"<element val='False' />");
 			Assert.IsFalse(data1.AreByteArraysEqual(data2));
 		}
 
 		[Test]
-		public void SameLengthButDifferentContentArraysAreNotEqual()
+		public void DifferentLengthArraysWithDifferentContentAreNotEqual()
 		{
+			// Note: this test has very few common bytes, beyond the opening "<" and normal attr stuff like "=" and "'", and the closing " />".
 			var data1 = Encoding.UTF8.GetBytes(@"<element val='True' />");
-			var data2 = Encoding.UTF8.GetBytes(@"<element val='true' />");
+			var data2 = Encoding.UTF8.GetBytes(@"<foo nameoffoo='mystuff' />");
+			Assert.IsFalse(data1.AreByteArraysEqual(data2));
+		}
+
+		[Test]
+		public void SameLengthButSomewhatDifferentDifferentContentArraysAreNotEqual()
+		{
+			var data1 = Encoding.UTF8.GetBytes(@"<element val='sourcestuff' />");
+			var data2 = Encoding.UTF8.GetBytes(@"<element val='targetstuff' />");
+			Assert.IsFalse(data1.AreByteArraysEqual(data2));
+		}
+
+		[Test]
+		public void SameLengthButVeryDifferentDifferentContentArraysAreNotEqual()
+		{
+			var data1 = Encoding.UTF8.GetBytes(@"<element val='sourcestuff' />");
+			var data2 = Encoding.UTF8.GetBytes(@"<tnemele lav='ffutsecruos' />"); // Same workd, but in reversal order of the letters
 			Assert.IsFalse(data1.AreByteArraysEqual(data2));
 		}
 
@@ -45,6 +62,13 @@ namespace Palaso.Tests.Extensions
 			var data1 = Encoding.UTF8.GetBytes(@"<element guid='c1ee3115-e382-11de-8a39-0800200c9a66' />");
 			var data2 = Encoding.UTF8.GetBytes(@"<element guid='c1ee3115-e382-11de-8a39-0800200c9a66' />");
 			Assert.IsTrue(data1.AreByteArraysEqual(data2));
+		}
+
+		[Test]
+		public void NullSourceThrows()
+		{
+			var data = Encoding.UTF8.GetBytes(@"<element guid='c1ee3115-e382-11de-8a39-0800200c9a66' />");
+			Assert.Throws<NullReferenceException>(() => ((byte[])null).AreByteArraysEqual(data));
 		}
 	}
 }

@@ -45,14 +45,19 @@ namespace Palaso.Extensions
 		/// </summary>
 		public static bool AreByteArraysEqual(this byte[] source, byte[] target)
 		{
-			if (source == null || target == null || source.Length != target.Length)
-				return false; // Tested: VariationsOnANullAreNeverEqual & DifferentLengthArraysAreNotEqual
-			if (source == target) // Reference identity/equality
+			// Can't happen in normal code, or it would throw the null ref exception.
+			// But, if they try to be tricky, and use ((byte[])null), we will be trickier still, and notice. :-)
+			if (source == null)
+				throw new NullReferenceException("'source' is null."); // Tested: NullSourceThrows
+
+			if (source == target) // Reference identity/equality.
 				return true; // Tested: SameIdenticalByteArrayAreEqual
+			if (target == null || source.Length != target.Length)
+				return false; // Tested: NullTargetIsNeverEqualWithExistingSource, DifferentLengthArraysWithCommonContentToAPointAreNotEqual, & DifferentLengthArraysWithDifferentContentAreNotEqual
 			for (int i = 0; i < target.Length; i++)
 			{
 				if (source[i] != target[i])
-					return false; // Tested: SameLengthButDifferentContentArraysAreNotEqual
+					return false; // Tested: SameLengthButDifferentContentArraysAreNotEqual * SameLengthButVeryDifferentDifferentContentArraysAreNotEqual
 			}
 			return true; // Tested: SameContentByteArrayAreEqual
 		}
