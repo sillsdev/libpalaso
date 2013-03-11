@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Palaso.BuildTasks.StampAssemblies;
 
-namespace BuildTaskTests
+namespace Palaso.BuildTask.Tests
 {
 	[TestFixture]
 	public class StampAssemblyTests
