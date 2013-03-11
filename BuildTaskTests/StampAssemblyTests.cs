@@ -215,7 +215,7 @@ using System.Runtime.InteropServices;
 			var v = stamper.GetModifiedContents(content, "*.*.*", "*.*.*.346");
 			Assert.IsTrue(v.Contains("AssemblyVersion(\"4.2.1.0"));
 			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"4.2.1.346"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"4.2.1.0"));
+			Assert.IsFalse(v.Contains("AssemblyFileVersion(\"4.2.1.0"));
 		}
 	}
 }
