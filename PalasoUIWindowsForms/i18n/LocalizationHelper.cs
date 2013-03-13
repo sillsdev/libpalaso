@@ -143,7 +143,6 @@ namespace Palaso.UI.WindowsForms.i18n
 		private void WireToChildren(Control control)
 		{
 			control.SuspendLayout();
-			Console.WriteLine("Suspended Control {0} with name {1}", control, control.Name);
 			Debug.Assert(control != null);
 			//Debug.WriteLine("Wiring to children of " + control.Name);
 			control.ControlAdded += OnControlAdded;
@@ -155,7 +154,6 @@ namespace Palaso.UI.WindowsForms.i18n
 				WireToChildren(child);
 			}
 			control.ResumeLayout();
-			Console.WriteLine("Resumed Control {0} with name {1}", control, control.Name);
 		}
 
 		private void WireToControl(Control control)
@@ -178,6 +176,7 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void UnwireFromChildren(Control control)
 		{
+			control.SuspendLayout();
 			Debug.Assert(control != null);
 			control.ControlAdded -= OnControlAdded;
 			control.ControlRemoved -= OnControlRemoved;
@@ -188,6 +187,7 @@ namespace Palaso.UI.WindowsForms.i18n
 				UnwireFromControl(child);
 				UnwireFromChildren(child);
 			}
+			control.ResumeLayout();
 		}
 
 		private void UnwireFromControl(Control control)
