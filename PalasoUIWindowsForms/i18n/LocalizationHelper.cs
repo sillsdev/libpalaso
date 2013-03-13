@@ -86,7 +86,9 @@ namespace Palaso.UI.WindowsForms.i18n
 				}
 				else
 				{
-					control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+					Console.WriteLine("Control {0} with text {0} being fontalized.", control.GetType().Name, control.Text);
+					var font = StringCatalog.ModifyFontForLocalization(control.Font);
+					control.Font = font;
 				}
 			}
 			_alreadyChanging = false;
@@ -140,6 +142,8 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void WireToChildren(Control control)
 		{
+			control.SuspendLayout();
+			Console.WriteLine("Suspended Control {0} with name {1}", control, control.Name);
 			Debug.Assert(control != null);
 			//Debug.WriteLine("Wiring to children of " + control.Name);
 			control.ControlAdded += OnControlAdded;
@@ -150,6 +154,8 @@ namespace Palaso.UI.WindowsForms.i18n
 				WireToControl(child);
 				WireToChildren(child);
 			}
+			control.ResumeLayout();
+			Console.WriteLine("Resumed Control {0} with name {1}", control, control.Name);
 		}
 
 		private void WireToControl(Control control)
