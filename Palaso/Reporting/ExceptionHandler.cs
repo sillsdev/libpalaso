@@ -37,13 +37,8 @@ namespace Palaso.Reporting
 		{
 			if (_singleton == null)
 			{
-				_singleton = GetObjectFromPalasoUiWindowsForms<ExceptionHandler>();
-
 				//If we can't find the WinFormsExceptionHandler we'll use the Console
-				if (_singleton == null)
-				{
-					_singleton = new ConsoleExceptionHandler();
-				}
+				_singleton = GetObjectFromPalasoUiWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
 			}
 			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
 		}
@@ -72,7 +67,7 @@ namespace Palaso.Reporting
 			{
 				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
 				var palasoUiWindowsFormsInitializeAssemblyName =
-					referencedAssemblies.SingleOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
 				if (palasoUiWindowsFormsInitializeAssemblyName != null)
 				{
 					toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
