@@ -41,7 +41,7 @@ namespace Palaso.Reporting
 
 	public class ErrorReport
 	{
-		private static IErrorReporter _errorReporter = new ConsoleErrorReporter();
+		private static IErrorReporter _errorReporter;
 
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
@@ -50,32 +50,13 @@ namespace Palaso.Reporting
 		//error reporter
 		static ErrorReport()
 		{
-			var topMostAssembly = Assembly.GetEntryAssembly();
-			if (topMostAssembly != null)
-			{
-				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
-				var palasoUiWindowsFormsInializeAssemblyName =
-					referencedAssemblies.FirstOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));//This will fail when there are multiple matches: SingleOrDefault
-				if (palasoUiWindowsFormsInializeAssemblyName != null)
-				{
-					var palasoUIWinFormsAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
-					//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
-					var interfaceToFind = typeof (IErrorReporter);
-					var typeImplementingInterface =
-						palasoUIWinFormsAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
-					foreach (var type in typeImplementingInterface)
-					{
-						_errorReporter = type.GetConstructor(Type.EmptyTypes).Invoke(null) as IErrorReporter;
-					}
-				}
-			}
+			_errorReporter = ExceptionHandler.GetObjectFromPalasoUiWindowsForms<IErrorReporter>() ?? new ConsoleErrorReporter();
 		}
 
 		/// <summary>
 		/// Use this method if you want to override the default IErrorReporter.
 		/// This method should be called only once at application startup.
 		/// </summary>
-		/// <param name="handler"></param>
 		public static void SetErrorReporter(IErrorReporter reporter)
 		{
 			_errorReporter = reporter;

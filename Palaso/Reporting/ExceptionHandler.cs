@@ -37,30 +37,8 @@ namespace Palaso.Reporting
 		{
 			if (_singleton == null)
 			{
-				var topMostAssembly = Assembly.GetEntryAssembly();
-				if (topMostAssembly != null)
-				{
-					var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
-					var palasoUiWindowsFormsInializeAssemblyName =
-						referencedAssemblies.FirstOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
-					if (palasoUiWindowsFormsInializeAssemblyName != null)
-					{
-						var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
-						//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
-						var interfaceToFind = typeof (ExceptionHandler);
-						var typeImplementingInterface =
-							toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
-						foreach (var type in typeImplementingInterface)
-						{
-							_singleton = type.GetConstructor(Type.EmptyTypes).Invoke(null) as ExceptionHandler;
-						}
-					}
-					//If we can't find the WinFormsExceptionHandler we'll use the Console
-					if (_singleton == null)
-					{
-						_singleton = new ConsoleExceptionHandler();
-					}
-				}
+				//If we can't find the WinFormsExceptionHandler we'll use the Console
+				_singleton = GetObjectFromPalasoUiWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
 			}
 			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
 		}
@@ -77,6 +55,42 @@ namespace Palaso.Reporting
 				_singleton = handler;
 			}
 			else{throw new InvalidOperationException("An ExceptionHandler has already been set.");}
+		}
+
+		internal static T GetObjectFromPalasoUiWindowsForms<T>() where T : class
+		{
+			const string palasoUiWindowsFormsAssemblyName = "PalasoUIWindowsForms";
+
+			Assembly toInitializeAssembly = null;
+			var topMostAssembly = Assembly.GetEntryAssembly();
+			if (topMostAssembly != null)
+			{
+				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+				var palasoUiWindowsFormsInitializeAssemblyName =
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
+				if (palasoUiWindowsFormsInitializeAssemblyName != null)
+				{
+					toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
+				}
+			}
+			if (toInitializeAssembly == null)
+				toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsAssemblyName);
+
+			if (toInitializeAssembly != null)
+			{
+				//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
+				var interfaceToFind = typeof(T);
+				var typeImplementingInterface = toInitializeAssembly.GetTypes().FirstOrDefault(interfaceToFind.IsAssignableFrom);
+				if (typeImplementingInterface != null)
+				{
+					var winFormsExceptionHandlerConstructor = typeImplementingInterface.GetConstructor(Type.EmptyTypes);
+					if (winFormsExceptionHandlerConstructor != null)
+					{
+						return winFormsExceptionHandlerConstructor.Invoke(null) as T;
+					}
+				}
+			}
+			return null;
 		}
 
 		/// ------------------------------------------------------------------------------------
