@@ -119,8 +119,21 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void OnControlAdded(object sender, ControlEventArgs e)
 		{
-			WireToControl(e.Control);
-			WireToChildren(e.Control);
+			WireToControlAndChildren(e.Control);
+		}
+
+		private void WireToControlAndChildren(Control control)
+		{
+			if (control is ILocalizableControl)
+			{
+				((ILocalizableControl) control).BeginWiring();
+			}
+			WireToControl(control);
+			WireToChildren(control);
+			if (control is ILocalizableControl)
+			{
+				((ILocalizableControl) control).EndWiring();
+			}
 		}
 
 		private void OnControlRemoved(object sender, ControlEventArgs e)
@@ -149,8 +162,7 @@ namespace Palaso.UI.WindowsForms.i18n
 			control.Disposed += OnControlDisposed;
 			foreach (Control child in control.Controls)
 			{
-				WireToControl(child);
-				WireToChildren(child);
+				WireToControlAndChildren(child);
 			}
 			control.ResumeLayout();
 		}
@@ -213,7 +225,8 @@ namespace Palaso.UI.WindowsForms.i18n
 				   control is TabControl ||
 				   control is TabPage ||
 				   control is Form ||
-				   control is BetterLabel;
+				   control is BetterLabel ||
+				   control is ILocalizableControl;
 		}
 
 		#region ISupportInitialize Members
