@@ -63,7 +63,7 @@ namespace Palaso.CommandLineProcessing
 						return false;
 
 					Thread.Sleep(100);
-					if (DateTime.Now > end)
+					if (secondsBeforeTimeOut>0 && DateTime.Now > end)
 					{
 						return false;
 					}

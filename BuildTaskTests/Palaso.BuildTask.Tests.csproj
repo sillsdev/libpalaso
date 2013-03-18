@@ -8,14 +8,16 @@
 	<ProjectGuid>{C1DFF344-3B97-4265-A465-C14A84BA19F6}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>BuildTaskTests</RootNamespace>
-	<AssemblyName>Palaso.BuildTaskTests</AssemblyName>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<RootNamespace>Palaso.BuildTask.Tests</RootNamespace>
+	<AssemblyName>Palaso.BuildTask.Tests</AssemblyName>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<FileUpgradeFlags>
 	</FileUpgradeFlags>
 	<OldToolsVersion>3.5</OldToolsVersion>
 	<UpgradeBackupLocation />
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>

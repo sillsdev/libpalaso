@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Microsoft.Build.Framework;
 
-namespace BuildTaskTests
+namespace Palaso.BuildTask.Tests
 {
 	public class MockTaskItem : ITaskItem
 	{

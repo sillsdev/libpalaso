@@ -5,7 +5,6 @@ using System.Xml;
 using Palaso.Lift.Merging;
 using Palaso.Lift.Validation;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace Palaso.Lift.Tests.Merging
 {

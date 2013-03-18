@@ -3,7 +3,7 @@ using Microsoft.Build.Framework;
 using NUnit.Framework;
 using Palaso.BuildTasks.Archive;
 
-namespace BuildTaskTests
+namespace Palaso.BuildTask.Tests
 {
 	[TestFixture]
 	public class ArchiveTests
