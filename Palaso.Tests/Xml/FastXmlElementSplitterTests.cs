@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.Xml;
@@ -451,13 +450,32 @@ namespace Palaso.Tests.Xml
 			CheckGoodFile(hasRecordsInput, 4, null, "entry");
 		}
 
+		[Test]
+		public void SplitterHandlesEmptyRootOnASCIIAndUTF8Files()
+		{
+			const string emptyRoot =
+@"<notes version='0'/>";
+			CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.ASCII);
+			CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.UTF8);
+		}
+
+		[Test]
+		public void SplitterFailsInvalidRootTagOnASCIIAndUTF8Files()
+		{
+			const string emptyRoot =
+@"notes version='0'/>";
+			Assert.Throws<ArgumentException>(()=>CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.ASCII), @"Failed to detect bad ASCII file");
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.UTF8), @"Failed to detect bad UTF8 file");
+		}
+
 		private static void CheckGoodFile(string hasRecordsInput, int expectedCount, string firstElementMarker,
-			string recordMarker)
+			string recordMarker, Encoding enc = null)
 		{
 			var goodPathname = Path.GetTempFileName();
 			try
 			{
-				var enc = Encoding.UTF8;
+				if (enc == null)
+					enc = Encoding.UTF8;
 				File.WriteAllText(goodPathname, hasRecordsInput, enc);
 				using (var fastXmlElementSplitter = new FastXmlElementSplitter(goodPathname))
 				{
