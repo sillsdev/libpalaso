@@ -10,7 +10,5 @@ namespace Palaso.UI.WindowsForms.i18n
 	public interface ILocalizableControl
 	{
 		bool ShouldModifyFont { get;}
-		void BeginWiring();
-		void EndWiring();
 	}
 }

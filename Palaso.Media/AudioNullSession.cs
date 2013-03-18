@@ -11,12 +11,12 @@ namespace Palaso.Media
 
 		public void StartRecording()
 		{
-			ReportNotImplemented();
+			throw new System.NotImplementedException();
 		}
 
 		public void StopRecordingAndSaveAsWav()
 		{
-			ReportNotImplemented();
+			throw new System.NotImplementedException();
 		}
 
 		public double LastRecordingMilliseconds
@@ -51,27 +51,17 @@ namespace Palaso.Media
 
 		public void Play()
 		{
-			ReportNotImplemented();
+			throw new System.NotImplementedException();
 		}
 
 		public void SaveAsWav(string filePath)
 		{
-			ReportNotImplemented();
+			throw new System.NotImplementedException();
 		}
 
 		public void StopPlaying()
 		{
-			ReportNotImplemented();
-		}
-
-		/// <Summary>
-		/// MessageBoxes are much less destructive than exceptions, but almost as intrusive.
-		/// </Summary>
-		private void ReportNotImplemented()
-		{
-			System.Windows.Forms.MessageBox.Show(
-				"This feature has not yet been implemented. Please check back in a later version.",
-				"Not Implemented");
+			throw new System.NotImplementedException();
 		}
 	}
 }

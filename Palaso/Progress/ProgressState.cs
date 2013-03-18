@@ -4,7 +4,6 @@ using System.Text;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
-//NOTE: this "ProgressState" system is deprecated. Newer clients use the extensive Palaso.Progress.IProgress classes, often along with the logbox.
 namespace Palaso.Progress
 {
 	/// <summary>

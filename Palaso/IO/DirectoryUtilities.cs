@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 using Palaso.Reporting;
@@ -232,8 +234,6 @@ namespace Palaso.IO
 		{
 			var i = 0;
 			var suffix = "";
-			// Remove ending path separator, if it exists.
-			folderPath = folderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 			var parent = Directory.GetParent(folderPath).FullName;
 			var name = Path.GetFileName(folderPath);
 			while (Directory.Exists(Path.Combine(parent, name + suffix)))

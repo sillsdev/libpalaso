@@ -119,10 +119,5 @@ the end.");
 			ErrorReport.NotifyUserOfProblem(new ApplicationException("testing"),
 											"Bloom was appalled by the irony of that text.");
 		}
-
-		private void button10_Click(object sender, EventArgs e)
-		{
-			throw new ApplicationException("test");
-		}
 	}
 }

@@ -586,14 +586,14 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
 		{
 			base.OnRowsAdded(e);
-			IsDirty |= ContainsFocus;
+			IsDirty = true;
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
 		{
 			base.OnRowsRemoved(e);
-			IsDirty |= ContainsFocus;
+			IsDirty = true;
 		}
 
 		#region Events and methods for handling DropDown style combo box cells.
@@ -1335,18 +1335,7 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public static DataGridViewColumn CreateCalendarControlColumn(string name, string headerText)
 		{
-			return CreateCalendarControlColumn(name, headerText, null, CalendarCell.UserAction.BeginEdit);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Creates a calendar control grid column that hosts calendar (date) cells.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static DataGridViewColumn CreateCalendarControlColumn(string name, string headerText,
-			Func<DateTime> getDefaultValue, CalendarCell.UserAction whenToUseDefault)
-		{
-			var col = new CalendarColumn(getDefaultValue, whenToUseDefault);
+			var col = new CalendarColumn();
 			col.HeaderCell.Style.Font = SystemFonts.MenuFont;
 			col.Name = name;
 			col.HeaderText = headerText;

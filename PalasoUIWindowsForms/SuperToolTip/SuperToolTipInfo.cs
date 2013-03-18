@@ -91,7 +91,7 @@ namespace Palaso.UI.WindowsForms.SuperToolTip
 
 		[NotifyParentProperty(true)]
 		[DefaultValue("")]
-		[Editor("MultilineStringEditor","UITypeEditor")]
+		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
 		public string BodyText
 		{
 			get { return _bodyText; }
@@ -149,7 +149,7 @@ namespace Palaso.UI.WindowsForms.SuperToolTip
 
 		[NotifyParentProperty(true)]
 		[DefaultValue("")]
-		[Editor("MultilineStringEditor", "UITypeEditor")]
+		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
 		public string HeaderText
 		{
 			get { return _headerText; }
@@ -207,7 +207,7 @@ namespace Palaso.UI.WindowsForms.SuperToolTip
 
 		[NotifyParentProperty(true)]
 		[DefaultValue("")]
-		[Editor("MultilineStringEditor", "UITypeEditor")]
+		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
 		public string FooterText
 		{
 			get { return _footerText; }

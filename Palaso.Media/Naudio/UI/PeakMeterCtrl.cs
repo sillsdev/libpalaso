@@ -25,7 +25,6 @@
 /// Subsequent additions/modifications:
 /// hatton: Added PeakLevel property, to simplify wiring to audio recorders
 /// So, to use, simply drag this on the form, then call PeakLevel occasionally.
-/// bogle: Changed to use Windows.Forms.Timer to avoid deadlock.
 
 using System;
 using System.ComponentModel;
@@ -69,11 +68,12 @@ namespace Palaso.Media.Naudio.UI
 		private const int LEDDefault = 8;
 		private const int cxyMargin = 1;
 
+		private int _AnimDelay;
 		private int _MinRangeValue;
 		private int _MedRangeValue;
 		private int _MaxRangeValue;
 		private PeakMeterData[] _meterData;
-		private System.Windows.Forms.Timer _animationTimer;
+		private System.Threading.Timer _animationTimer;
 		public PeakMeterCtrl()
 		{
 			InitializeComponent();
@@ -94,6 +94,7 @@ namespace Palaso.Media.Naudio.UI
 
 		private void InitDefault()
 		{
+			_AnimDelay = Timeout.Infinite;
 			_MinRangeValue = MinRangeDefault; // [0,60[
 			_MedRangeValue = MedRangeDefault; // [60,80[
 			_MaxRangeValue = MaxRangeDefault; // [80,100[
@@ -255,38 +256,44 @@ namespace Palaso.Media.Naudio.UI
 		[Browsable(false)]
 		public bool IsActive
 		{
-			get { return (_animationTimer != null && _animationTimer.Enabled); }
+			get { return (_animationTimer != null); }
 		}
 
 		#region Control Methods
 
+		// support for thread-safe version
+		private delegate bool StartDelegate(int delay);
 		/// <summary>
 		/// Start animation
 		/// </summary>
 		/// <param name="delay"></param>
 		/// <returns></returns>
-		public void Start(int delay)
+		public bool Start(int delay)
 		{
-			if (InvokeRequired)
+			if (this.InvokeRequired)
 			{
-				Invoke((Action<int>)Start, delay);
-				return;
+				StartDelegate startDelegate = new StartDelegate(this.Start);
+				return (bool)this.Invoke(startDelegate, delay);
 			}
-			StartAnimation(delay);
+			_AnimDelay = delay;
+			return StartAnimation(delay);
 		}
 
+		// support for thread-safe version
+		private delegate bool StopDelegate();
 		/// <summary>
 		/// Stop Animation
 		/// </summary>
 		/// <returns></returns>
-		public void Stop()
+		public bool Stop()
 		{
-			if (InvokeRequired)
+			if (this.InvokeRequired)
 			{
-				Invoke((Action)Stop);
-				return;
+				StopDelegate stopDelegate = new StopDelegate(this.Stop);
+				return (bool)this.Invoke(stopDelegate);
 			}
-			StopAnimation();
+			_AnimDelay = Timeout.Infinite;
+			return StopAnimation();
 		}
 
 		/// <summary>
@@ -323,6 +330,9 @@ namespace Palaso.Media.Naudio.UI
 			Refresh();
 		}
 
+
+		// support for thread-safe version
+		private delegate bool SetDataDelegate(int[] arrayValue, int offset, int size);
 		/// <summary>
 		/// Set meter band value
 		/// </summary>
@@ -330,20 +340,19 @@ namespace Palaso.Media.Naudio.UI
 		/// <param name="offset">Starting offset position</param>
 		/// <param name="size">Number of values to set</param>
 		/// <returns></returns>
-		public void SetData(int[] arrayValue, int offset, int size)
+		public bool SetData(int[] arrayValue, int offset, int size)
 		{
 			if (arrayValue == null)
 				throw new ArgumentNullException("arrayValue");
 			if (arrayValue.Length < (offset + size))
 				throw new ArgumentOutOfRangeException("arrayValue");
-			if (_animationTimer == null)
-				throw new InvalidOperationException("Peak meter must have been started before setting data.");
 
-			if (InvokeRequired)
+			if (this.InvokeRequired)
 			{
-				BeginInvoke((Action<int[], int, int>)SetData, arrayValue, offset, size);
-				return;
+				SetDataDelegate setDelegate = new SetDataDelegate(this.SetData);
+				return (bool)this.Invoke(setDelegate, arrayValue, offset, size);
 			}
+			bool isRunning = this.IsActive;
 
 			Monitor.Enter(this._meterData);
 
@@ -360,20 +369,25 @@ namespace Palaso.Media.Naudio.UI
 						pm.Falloff = pm.Value;
 						pm.Speed = this._FalloffSpeed;
 					}
-					_meterData[i] = pm;
+					this._meterData[i] = pm;
 				}
 			}
-			Monitor.Exit(_meterData);
+			Monitor.Exit(this._meterData);
 
 			// check that timer should be restarted
-			if (!_animationTimer.Enabled)
+			if (_AnimDelay != Timeout.Infinite)
 			{
-				_animationTimer.Start();
+				if (_animationTimer == null)
+				{
+					StartAnimation(_AnimDelay);
+				}
 			}
 			else
 			{
 				Refresh();
 			}
+
+			return isRunning;
 		}
 		#endregion
 
@@ -420,21 +434,33 @@ namespace Palaso.Media.Naudio.UI
 				_meterData[i] = pm;
 			}
 		}
-		protected void StartAnimation(int period)
+		protected bool StartAnimation(int period)
 		{
-			if (!IsActive)
+			if ( !IsActive )
 			{
-				_animationTimer = new System.Windows.Forms.Timer();
-				_animationTimer.Tick += delegate { TimerCallback(); };
+				TimerCallback timerDelegate =
+					new TimerCallback(TimerCallback);
+				_animationTimer = new System.Threading.Timer(timerDelegate, this, Timeout.Infinite, Timeout.Infinite);
 			}
-			_animationTimer.Interval = period;
-			_animationTimer.Start();
+			return _animationTimer.Change(period, period);
 		}
 
-		protected void StopAnimation()
+		protected bool StopAnimation()
 		{
-			if (IsActive)
-				_animationTimer.Stop();
+			bool result = false;
+			if ( IsActive && _animationTimer!=null)
+			{
+				try
+				{
+					result = _animationTimer.Change(Timeout.Infinite, Timeout.Infinite);
+					_animationTimer.Dispose();
+					_animationTimer = null;
+					result = true;
+				}
+				catch { }
+			}
+
+			return result;
 		}
 
 		protected override void OnHandleDestroyed(EventArgs e)
@@ -448,12 +474,14 @@ namespace Palaso.Media.Naudio.UI
 			Refresh();
 		}
 
-		protected void TimerCallback()
+		protected void TimerCallback(Object thisObject)
 		{
 			try
 			{
-				if (IsHandleCreated)
-					BeginInvoke(new MethodInvoker(Refresh));
+				// refresh now!
+				var thisControl = thisObject as Control;
+				if (thisControl != null && thisControl.IsHandleCreated)
+					thisControl.Invoke(new MethodInvoker(Refresh));
 				else
 					return;
 			}

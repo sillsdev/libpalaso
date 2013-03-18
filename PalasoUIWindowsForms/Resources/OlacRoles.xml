@@ -59,11 +59,6 @@
 		<definition>The participant contributed original writings to the resource.</definition>
 	  </term>
 	  <term>
-		<code>careful_speech_speaker</code>
-		<name>Careful Speech Speaker</name>
-		<definition>The participant carefully re-speaks the words recorded in an source recording.</definition>
-	  </term>
-	  <term>
 		<code>compiler</code>
 		<name>Compiler</name>
 		<definition>The participant is responsible for collecting the sub-parts of the
@@ -150,7 +145,7 @@
 		  <p>This role is intended for minor participants such as audience members or other peripherally-involved
 		  participants in the event.  These interlocutors need not have been physically present.  They could be
 		  participants in some form of long-distance communication, such as lurkers in an online discussion, or they
-		  may have participated in the general sense of having allowed the event to take place, such as the
+		  may have participated in general sense of having allowed the creation event to take place, such as the
 		  mayor of an indigenous community.</p>
 		</comment>
 	  </term>

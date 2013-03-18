@@ -101,7 +101,7 @@
 			this._copyToClipboardMenuItem,
 			this._runDiagnostics,
 			this._chooseFontMenuItem});
-			this._menu.Image = global::Palaso.UI.WindowsForms.Progress.LogBoxResources.MenuButtonArrow;
+			this._menu.Image = global::Palaso.UI.WindowsForms.Properties.Resources.MenuButtonArrow;
 			this._menu.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this._menu.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
 			this._menu.Name = "_menu";
@@ -111,28 +111,28 @@
 			//
 			this._showDetailsMenu.CheckOnClick = true;
 			this._showDetailsMenu.Name = "_showDetailsMenu";
-			this._showDetailsMenu.Size = new System.Drawing.Size(171, 22);
+			this._showDetailsMenu.Size = new System.Drawing.Size(169, 22);
 			this._showDetailsMenu.Text = "Show Details";
 			this._showDetailsMenu.CheckStateChanged += new System.EventHandler(this._showDetails_CheckedChanged);
 			//
 			// _copyToClipboardMenuItem
 			//
 			this._copyToClipboardMenuItem.Name = "_copyToClipboardMenuItem";
-			this._copyToClipboardMenuItem.Size = new System.Drawing.Size(171, 22);
+			this._copyToClipboardMenuItem.Size = new System.Drawing.Size(169, 22);
 			this._copyToClipboardMenuItem.Text = "Copy to Clipboard";
 			this._copyToClipboardMenuItem.Click += new System.EventHandler(this.copyToClipboardToolStripMenuItem_Click);
 			//
 			// _runDiagnostics
 			//
 			this._runDiagnostics.Name = "_runDiagnostics";
-			this._runDiagnostics.Size = new System.Drawing.Size(171, 22);
+			this._runDiagnostics.Size = new System.Drawing.Size(169, 22);
 			this._runDiagnostics.Text = "Run Diagnostics";
 			this._runDiagnostics.Click += new System.EventHandler(this.OnRunDiagnosticsClick);
 			//
 			// _chooseFontMenuItem
 			//
 			this._chooseFontMenuItem.Name = "_chooseFontMenuItem";
-			this._chooseFontMenuItem.Size = new System.Drawing.Size(171, 22);
+			this._chooseFontMenuItem.Size = new System.Drawing.Size(169, 22);
 			this._chooseFontMenuItem.Text = "Choose Font...";
 			this._chooseFontMenuItem.Click += new System.EventHandler(this.OnChooseFontClick);
 			//
@@ -192,7 +192,6 @@
 			this.Controls.Add(this._reportProblemLink);
 			this.Name = "LogBox";
 			this.Size = new System.Drawing.Size(293, 353);
-			this.Load += new System.EventHandler(this.LogBox_Load);
 			this.BackColorChanged += new System.EventHandler(this.LogBox_BackColorChanged);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();

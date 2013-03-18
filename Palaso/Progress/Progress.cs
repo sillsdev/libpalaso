@@ -503,7 +503,9 @@ namespace Palaso.Progress
 
 	}
 
-public class StringBuilderProgress : GenericProgress
+
+
+	public class StringBuilderProgress : GenericProgress
 	{
 		private StringBuilder _builder = new StringBuilder();
 
@@ -702,4 +704,3 @@ public class StringBuilderProgress : GenericProgress
 
 	}
 }
-

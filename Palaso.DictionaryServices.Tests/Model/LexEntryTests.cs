@@ -266,66 +266,6 @@ namespace Palaso.DictionaryServices.Tests.Model
 		}
 
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoGloss_GivesDefinition()
-		{
-			var sense = new LexSense();
-			sense.Definition.SetAlternative("en", "blue");
-			var entry = new LexEntry();
-			entry.Senses.Add(sense);
-			Assert.AreEqual("blue",entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-		}
-
-		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoSenses_GivesMessage()
-		{
-			var entry = new LexEntry();
-			Assert.AreEqual("?NoMeaning?", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-		}
-
-		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_GlossAndDef_GivesGloss()
-		{
-			var sense = new LexSense();
-			sense.Gloss.SetAlternative("en", "red");
-			sense.Definition.SetAlternative("en", "blue");
-			var entry = new LexEntry();
-			entry.Senses.Add(sense);
-			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-		}
-
-
-		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoDef_GivesGloss()
-		{
-			var sense = new LexSense();
-			sense.Gloss.SetAlternative("en", "red");
-			var entry = new LexEntry();
-			entry.Senses.Add(sense);
-			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-		}
-		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_MultipleGlosses_GivesRequestedOne()
-		{
-			var sense = new LexSense();
-			sense.Gloss.SetAlternative("en", "man");
-			sense.Gloss.SetAlternative("fr", "homme");
-			var entry = new LexEntry();
-			entry.Senses.Add(sense);
-			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-			Assert.AreEqual("homme", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("fr"));
-		}
-		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoGlossOrMeaningInLang_GivesMessage()
-		{
-			var sense = new LexSense();
-			sense.Gloss.SetAlternative("en", "man");
-			var entry = new LexEntry();
-			entry.Senses.Add(sense);
-			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-			Assert.AreEqual("?NoGlossOrDef?", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("fr"));
-		}
-
-		[Test]
 		public void Cleanup_HasBaseform_PropertyIsNotRemoved()
 		{
 			var target = new LexEntry();

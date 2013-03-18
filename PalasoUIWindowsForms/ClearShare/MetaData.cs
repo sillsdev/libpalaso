@@ -6,7 +6,6 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
@@ -237,21 +236,9 @@ namespace Palaso.UI.WindowsForms.ClearShare
 												   new NullProgress());
 				if(result.DidTimeOut)
 				{
-					//we don't know what causes this... just a guess... maybe the file was locked?
-					Thread.Sleep(2000); //give it a second
-
-					result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
-												  _commandLineEncoding, Path.GetDirectoryName(path), 20,
-												  new NullProgress());
-
-					if (result.DidTimeOut)
-					{
-						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("The program that reads metadata (e.g. copyright) from the image: " +
-																		   path + " did not report back in the allotted time. We know about this problem are and trying to figure out what causes it (seems to happen on slower computers).");
-						Palaso.Reporting.UsageReporter.ReportExceptionString("ExifTool timed out: " + (result.StandardError ?? "") + "|" + (result.StandardOutput ?? ""));
-
-						return values;
-					}
+					Palaso.Reporting.ErrorReport.ReportNonFatalExceptionWithMessage(new Exception(), "The program which reads metadata (e.g. copyright) from the image: " +
+																	 path+" ran out of time.");
+					return values;
 				}
 
 #if DEBUG

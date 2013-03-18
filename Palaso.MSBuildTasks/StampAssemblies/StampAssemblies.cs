@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -25,8 +27,6 @@ namespace Palaso.BuildTasks.StampAssemblies
 		[Required]
 		public string Version { get; set; }
 
-		public string FileVersion { get; set; }
-
 		public override bool Execute()
 		{
 			foreach (var inputAssemblyPath in InputAssemblyPaths)
@@ -37,36 +37,29 @@ namespace Palaso.BuildTasks.StampAssemblies
 				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
 				//SafeLog("StampAssemblies: Contents: {0}",contents);
 
-				File.WriteAllText(path,  GetModifiedContents(contents, Version, FileVersion));
+				File.WriteAllText(path,  GetModifiedContents(contents, Version));
 			}
 			return true;
 		}
 
-		public string GetModifiedContents(string contents, string incomingVersion, string incomingFileVersion)
+		public string GetModifiedContents(string contents, string incomingVersion)
 		{
 			var versionTemplateInFile = GetExistingAssemblyVersion(contents);
-			var fileVersionTemplateInFile = GetExistingAssemblyFileVersion(contents);
 			var versionTemplateInBuildScript = ParseVersionString(incomingVersion);
-			VersionParts fileVersionTemplateInScript = null;
-			fileVersionTemplateInScript = incomingFileVersion != null ? ParseVersionString(incomingFileVersion)
-																	  : versionTemplateInBuildScript;
 
-			var newVersion = MergeTemplates(versionTemplateInBuildScript, versionTemplateInFile);
-			var newFileVersion = MergeTemplates(fileVersionTemplateInScript, fileVersionTemplateInFile);
+			string newVersionString = MergeTemplates(versionTemplateInBuildScript, versionTemplateInFile);
 
 			SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
-				versionTemplateInFile.ToString(), incomingVersion, newVersion);
-			SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
-				fileVersionTemplateInFile.ToString(), incomingFileVersion, newFileVersion);
+				versionTemplateInFile.ToString(), incomingVersion, newVersionString);
 
 
 			var replacement = string.Format(
 				"[assembly: AssemblyVersion(\"{0}\")]",
-				newVersion);
+				newVersionString);
 			contents = Regex.Replace(contents, @"\[assembly: AssemblyVersion\("".*""\)\]", replacement);
 			replacement = string.Format(
 				"[assembly: AssemblyFileVersion(\"{0}\")]",
-				newFileVersion);
+				newVersionString);
 			contents = Regex.Replace(contents, @"\[assembly: AssemblyFileVersion\("".*""\)\]", replacement);
 			return contents;
 		}
@@ -116,21 +109,6 @@ namespace Palaso.BuildTasks.StampAssemblies
 			try
 			{
 				var result = Regex.Match(contents, @"\[assembly\: AssemblyVersion\(""(.+)""");
-				return ParseVersionString(result.Groups[1].Value);
-			}
-			catch (Exception e)
-			{
-				Log.LogError("Could not parse the AssemblyVersion attribute, which should be something like 0.7.*.* or 1.0.0.0");
-				Log.LogErrorFromException(e);
-				throw e;
-			}
-		}
-
-		public VersionParts GetExistingAssemblyFileVersion(string contents)
-		{
-			try
-			{
-				var result = Regex.Match(contents, @"\[assembly\: AssemblyFileVersion\(""(.+)""");
 				return ParseVersionString(result.Groups[1].Value);
 			}
 			catch (Exception e)

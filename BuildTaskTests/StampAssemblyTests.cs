@@ -1,7 +1,12 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using NUnit.Framework;
 using Palaso.BuildTasks.StampAssemblies;
 
-namespace Palaso.BuildTask.Tests
+namespace BuildTaskTests
 {
 	[TestFixture]
 	public class StampAssemblyTests
@@ -32,7 +37,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyVersion(""0.7.*.*"")]
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.456", null);
+			var s = stamper.GetModifiedContents(content, "*.*.123.456");
 			Assert.IsTrue(s.Contains("0.7.123.456"));
 		}
 
@@ -45,7 +50,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyVersion(""0.7.*.0"")]
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", null);
+			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712");
 			Assert.IsTrue(s.Contains("0.7.123.0"));
 		}
 
@@ -62,7 +67,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyVersion(""1.2.*"")]
 [assembly: AssemblyFileVersion(""1.2.*"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.345.6", null);
+			var s = stamper.GetModifiedContents(content, "*.*.345.6");
 			Assert.IsTrue(s.Contains("1.2.345.6"));
 		}
 
@@ -79,7 +84,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyVersion(""*.*.*.*"")]
 [assembly: AssemblyFileVersion(""*.*.*.*"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.345.6", null);
+			var s = stamper.GetModifiedContents(content, "*.*.345.6");
 			Assert.IsTrue(s.Contains("0.0.345.6"));
 		}
 
@@ -93,7 +98,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyVersion(""1.0.0.0"")]
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f", null);
+			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f");
 			Assert.IsTrue(s.Contains("1.0.121.0"));
 		}
 
@@ -112,7 +117,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyVersion(""0.0.9.789"")]
 [assembly: AssemblyFileVersion(""0.0.9.789"")]";
 
-			var s = stamper.GetModifiedContents(content, "0.3.14", null);
+			var s = stamper.GetModifiedContents(content, "0.3.14");
 			Assert.IsTrue(s.Contains("0.3.14"), s);
 		}
 
@@ -158,59 +163,8 @@ using System.Runtime.InteropServices;
 
 ".Replace('\'', '"');
 
-			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f", null);
+	var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f");
 			Assert.IsTrue(s.Contains("0.1.121.0"));
-		}
-
-		[Test]
-		public void GetModifiedContents_FileVersionFollowsParam()
-		{
-			var stamper = new StampAssemblies();
-			var content = @"// You can specify all the values or you can default the Revision and Build Numbers
-// by using the '*' as shown below:
-[assembly: AssemblyVersion(""9.9.9.99"")]
-[assembly: AssemblyFileVersion(""8.8.8.88"")]";
-
-			var v = stamper.GetModifiedContents(content, "5.4.3.2", "1.2.3.4");
-			Assert.IsTrue(v.Contains("AssemblyVersion(\"5.4.3.2"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"1.2.3.4"));
-			Assert.IsFalse(v.Contains("9.9.9.99"));
-			Assert.IsFalse(v.Contains("8.8.8.88"));
-		}
-
-		[Test]
-		public void GetModifiedContents_FileVersionMatchesVersionWhenMissing()
-		{
-			var stamper = new StampAssemblies();
-			var content = @"// You can specify all the values or you can default the Revision and Build Numbers
-// by using the '*' as shown below:
-[assembly: AssemblyVersion(""9.9.9.99"")]
-[assembly: AssemblyFileVersion(""8.8.8.88"")]";
-
-			var v = stamper.GetModifiedContents(content, "5.4.3.2", null);
-			Assert.IsTrue(v.Contains("AssemblyVersion(\"5.4.3.2"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"5.4.3.2"));
-			Assert.IsFalse(v.Contains("9.9.9.99"));
-			Assert.IsFalse(v.Contains("8.8.8.88"));
-		}
-		/// <summary>
-		/// This test simulates the actual configuration of the icu.net wrapper as of January 2013.
-		/// In order to have easier compatability between Palaso and FLEx which use different versions
-		/// we did not want the AssemblyVersion to change after each build.
-		/// </summary>
-		[Test]
-		public void GetModifiedContents_ActualICUConfigTest()
-		{
-			var stamper = new StampAssemblies();
-			var content = @"// You can specify all the values or you can default the Revision and Build Numbers
-// by using the '*' as shown below:
-[assembly: AssemblyVersion(""4.2.1.0"")]
-[assembly: AssemblyFileVersion(""4.2.1.0"")]";
-
-			var v = stamper.GetModifiedContents(content, "*.*.*", "*.*.*.346");
-			Assert.IsTrue(v.Contains("AssemblyVersion(\"4.2.1.0"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"4.2.1.346"));
-			Assert.IsFalse(v.Contains("AssemblyFileVersion(\"4.2.1.0"));
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Text;
+
 
 namespace Palaso.Reporting
 {
@@ -17,7 +17,6 @@ namespace Palaso.Reporting
 		private string _mostRecentArea;
 
 		private static UsageReporter s_singleton;
-		private Exception _mostRecentException;
 
 		[Obsolete("Better to use the version which explicitly sets the reportAsDeveloper flag")]
 		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode)
@@ -568,46 +567,34 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// Send an error to Google Analytics, if BeginGoogleAnalytics was previously called
 		/// </summary>
-		public static void ReportException(bool wasFatal, string theCommandOrOtherContext, Exception error, string messageUserSaw)
+		public static void ReportException(bool wasFatal, string theCommandOrOtherContext, Exception error)
 		{
-
 			if (s_singleton == null)
 				return;
 
-			if (error!=null && s_singleton._mostRecentException == error)
-				return; //it's hard to avoid getting here twice with all the various paths
-
-			s_singleton._mostRecentException = error;
-
-			var sb = new StringBuilder();
-			if (!string.IsNullOrEmpty(messageUserSaw))
-				sb.Append(messageUserSaw + "|");
-			if (error != null)
-				sb.Append(error.Message + "|");
-			if(s_singleton._mostRecentArea!=null)
-				sb.Append(s_singleton._mostRecentArea + "|");
-			if (!string.IsNullOrEmpty(theCommandOrOtherContext))
-				sb.Append(theCommandOrOtherContext + "|");
-			if (wasFatal)
-				sb.Append(" fatal |");
-			if (error != null)
-			{
-				if(error.InnerException!=null)
-					sb.Append("Inner: "+error.InnerException.Message + "|");
-				sb.Append(error.StackTrace);
-			}
-
-			SendEvent(s_singleton._mostRecentArea, "error", sb.ToString(), ErrorReport.VersionNumberString, 0);
+			string message = error.Message;
+			if (error.InnerException != null)
+				message += " Inner: " + error.InnerException.Message;
+			SendEvent(s_singleton._mostRecentArea, "error", message, ErrorReport.VersionNumberString + (wasFatal ? "/Fatal Error/" : "/Non-Fatal Error/")+theCommandOrOtherContext, 0);
 		}
 
 		public static void ReportException(Exception error)
 		{
-			ReportException(false, null, error, null);
+			if (s_singleton == null)
+				return;
+
+			string message = error.Message;
+			if (error.InnerException != null)
+				message += " Inner: " + error.InnerException.Message;
+			SendEvent(s_singleton._mostRecentArea, "error", message,  ErrorReport.VersionNumberString , 0);
 		}
 
-		public static void ReportExceptionString(string messageUserSaw)
+		public static void ReportExceptionString(string errorMessage)
 		{
-			ReportException(false, null, null, messageUserSaw);
+			if (s_singleton == null)
+				return;
+
+			SendEvent(s_singleton._mostRecentArea, "error", errorMessage, ErrorReport.VersionNumberString, 0);
 		}
 	}
 }

@@ -8,9 +8,10 @@ namespace Palaso.Media
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
-				return new AudioAlsaSession(filePath);
+				return new AudioNullSession();
 			}
 			return new AudioIrrKlangSession(filePath);
 		}
 	}
+
 }

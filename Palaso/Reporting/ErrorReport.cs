@@ -408,10 +408,9 @@ namespace Palaso.Reporting
 			return x;
 		}
 
-		public static void ReportFatalException(Exception error)
+		public static void ReportFatalException(Exception e)
 		{
-			UsageReporter.ReportException(true, null, error, null);
-			_errorReporter.ReportFatalException(error);
+			_errorReporter.ReportFatalException(e);
 		}
 
 		/// <summary>
@@ -440,8 +439,6 @@ namespace Palaso.Reporting
 			{
 				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
 			}
-
-			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
 		}
 
 		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
@@ -502,7 +499,6 @@ namespace Palaso.Reporting
 				return;
 			}
 			_errorReporter.ReportNonFatalException(exception, policy);
-			 UsageReporter.ReportException(false, null, exception, null);
 		}
 
 		/// <summary>

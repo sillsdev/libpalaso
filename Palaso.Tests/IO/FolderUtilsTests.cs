@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Security.AccessControl;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
@@ -196,18 +197,6 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
-		public void UniqueFolderPathEndingWithDirectorySeparatorNotCreated()
-		{
-			using (var tempDir = new TemporaryFolder("TempRootDir"))
-			{
-				var targetDir = Path.Combine(tempDir.Path, "ZPI");
-				var uniqueFolderPath = DirectoryUtilities.GetUniqueFolderPath(targetDir + Path.DirectorySeparatorChar);
-				Assert.IsFalse(Directory.Exists(uniqueFolderPath));
-				Assert.AreEqual(targetDir, uniqueFolderPath);
-			}
-		}
-
-		[Test]
 		public void UniqueFolderPathCreated()
 		{
 			using (var tempDir = new TemporaryFolder("TempRootDir"))
@@ -215,19 +204,6 @@ namespace Palaso.Tests.IO
 				var targetDir = Path.Combine(tempDir.Path, "ZPI");
 				Directory.CreateDirectory(targetDir);
 				var uniqueFolderPath = DirectoryUtilities.GetUniqueFolderPath(targetDir);
-				Assert.IsFalse(Directory.Exists(uniqueFolderPath));
-				Assert.AreNotEqual(targetDir, uniqueFolderPath);
-			}
-		}
-
-		[Test]
-		public void UniqueFolderPathEndingWithDirectorySeparatorCreated()
-		{
-			using (var tempDir = new TemporaryFolder("TempRootDir"))
-			{
-				var targetDir = Path.Combine(tempDir.Path, "ZPI");
-				Directory.CreateDirectory(targetDir);
-				var uniqueFolderPath = DirectoryUtilities.GetUniqueFolderPath(targetDir + Path.DirectorySeparatorChar);
 				Assert.IsFalse(Directory.Exists(uniqueFolderPath));
 				Assert.AreNotEqual(targetDir, uniqueFolderPath);
 			}

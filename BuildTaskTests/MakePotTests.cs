@@ -5,7 +5,7 @@ using Palaso.BuildTasks.MakePot;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 
-namespace Palaso.BuildTask.Tests
+namespace BuildTaskTests
 {
 	[TestFixture]
 	public class MakePotTests

@@ -57,7 +57,8 @@ namespace Palaso.WritingSystems
 
 		virtual public WritingSystemDefinition CreateNew()
 		{
-			return new WritingSystemDefinition();
+			var retval = new WritingSystemDefinition();
+			return retval;
 		}
 
 		virtual protected LdmlDataMapper CreateLdmlAdaptor()

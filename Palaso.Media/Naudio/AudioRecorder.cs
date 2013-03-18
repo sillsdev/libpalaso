@@ -141,32 +141,29 @@ namespace Palaso.Media.Naudio
 			Debug.Assert(_waveIn == null, "only call this once");
 			try
 			{
-				lock (this)
+				if (_recordingState != RecordingState.Stopped)
 				{
-					if (_recordingState != RecordingState.Stopped)
-					{
-						throw new InvalidOperationException(
-							"Can't begin monitoring while we are in this state: " + _recordingState.ToString());
-					}
-					Debug.Assert(_waveIn == null);
-					_waveIn = new WaveIn();
-					InitializeWaveIn();
-
-					_waveIn.DataAvailable += waveIn_DataAvailable;
-					_waveIn.WaveFormat = _recordingFormat;
-					try
-					{
-						_waveIn.StartRecording();
-					}
-					catch (MmException error)
-					{
-						if (error.Result != MmResult.AlreadyAllocated)  //TODO: I get this most of the time, but I don't know how to prevent it... maybe it's a hold over from previous runs? In which case, we need to make this disposable and stop the recording
-							throw;
-					}
-
-					TryGetVolumeControl();
-					RecordingState = RecordingState.Monitoring;
+					throw new InvalidOperationException(
+						"Can't begin monitoring while we are in this state: " + _recordingState.ToString());
 				}
+				Debug.Assert(_waveIn == null);
+				_waveIn = new WaveIn();
+				InitializeWaveIn();
+
+				_waveIn.DataAvailable += waveIn_DataAvailable;
+				_waveIn.WaveFormat = _recordingFormat;
+				try
+				{
+					_waveIn.StartRecording();
+				}
+				catch (MmException error)
+				{
+					if (error.Result != MmResult.AlreadyAllocated)  //TODO: I get this most of the time, but I don't know how to prevent it... maybe it's a hold over from previous runs? In which case, we need to make this disposable and stop the recording
+						throw;
+				}
+
+				TryGetVolumeControl();
+				RecordingState = RecordingState.Monitoring;
 			}
 			catch (Exception e)
 			{
@@ -217,7 +214,6 @@ namespace Palaso.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		protected virtual void TransitionFromRecordingToMonitoring()
 		{
-			RecordingState = RecordingState.Stopping;
 			_fileWriterThread.Stop();
 			RecordedTime = _fileWriterThread.RecordedTimeInSeconds;
 			_fileWriterThread = null;
@@ -240,32 +236,29 @@ namespace Palaso.Media.Naudio
 				throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
 			}
 
-			lock (this)
+			if (_waveInBuffersChanged)
 			{
-				if (_waveInBuffersChanged)
-				{
-					CloseWaveIn();
-					RecordingState = RecordingState.Stopped;
-					BeginMonitoring();
-				}
-
-				_bytesRecorded = 0;
-
-				WaveFileWriter writer;
-				if (!File.Exists(waveFileName) || !appendToFile)
-					writer = new WaveFileWriter(waveFileName, _recordingFormat);
-				else
-				{
-					var buffer = GetAudioBufferToAppendTo(waveFileName);
-					writer = new WaveFileWriter(waveFileName, _recordingFormat);
-					writer.Write(buffer, 0, buffer.Length);
-				}
-				_fileWriterThread = new FileWriterThread(writer);
-
-				_recordingStartTime = DateTime.Now;
-				_prevRecordedTime = 0d;
-				RecordingState = RecordingState.Recording;
+				CloseWaveIn();
+				RecordingState = RecordingState.Stopped;
+				BeginMonitoring();
 			}
+
+			_bytesRecorded = 0;
+
+			WaveFileWriter writer;
+			if (!File.Exists(waveFileName) || !appendToFile)
+				writer = new WaveFileWriter(waveFileName, _recordingFormat);
+			else
+			{
+				var buffer = GetAudioBufferToAppendTo(waveFileName);
+				writer = new WaveFileWriter(waveFileName, _recordingFormat);
+				writer.Write(buffer, 0, buffer.Length);
+			}
+			_fileWriterThread = new FileWriterThread(writer);
+
+			_recordingStartTime = DateTime.Now;
+			_prevRecordedTime = 0d;
+			RecordingState = RecordingState.Recording;
 			if (RecordingStarted != null)
 				RecordingStarted(this, EventArgs.Empty);
 		}
@@ -289,17 +282,14 @@ namespace Palaso.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual void Stop()
 		{
-			lock (this)
+			if (_recordingState == RecordingState.Recording)
 			{
-				if (_recordingState == RecordingState.Recording)
-				{
-					_recordingStopTime = DateTime.Now;
-					RecordingState = RecordingState.RequestedStop;
-					// Don't stop because we'll lose any buffer(s) that have not been processed.
-					// Then when we re-start, NAudio can crash because the buffers for which it has
-					// queued messages will be disposed
-					//   _waveIn.StopRecording();
-				}
+				_recordingStopTime = DateTime.Now;
+				RecordingState = RecordingState.RequestedStop;
+				// Don't stop because we'll lose any buffer(s) that have not been processed.
+				// Then when we re-start, NAudio can crash because the buffers for which it has
+				// queued messages will be disposed
+				//   _waveIn.StopRecording();
 			}
 		}
 
@@ -362,36 +352,13 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public virtual bool IsRecording
-		{
-			get
-			{
-				lock (this)
-				{
-					return _recordingState == RecordingState.Recording ||
-						_recordingState == RecordingState.RequestedStop ||
-						_recordingState == RecordingState.Stopping;
-				}
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
 		public virtual RecordingState RecordingState
 		{
-			get
-			{
-				lock (this)
-				{
-					return _recordingState;
-				}
-			}
+			get { return _recordingState; }
 			protected set
 			{
-				lock (this)
-				{
-					_recordingState = value;
-					Debug.WriteLine("recorder state--> " + value.ToString());
-				}
+				_recordingState = value;
+				Debug.WriteLine("recorder state--> " + value.ToString());
 			}
 		}
 
@@ -414,51 +381,49 @@ namespace Palaso.Media.Naudio
   */
 
 			//David's version:
-			lock (this)
+
+			var buffer = e.Buffer;
+			int bytesRecorded = e.BytesRecorded;
+			bool hitMaximumFileSize = false;
+			if (_recordingState == RecordingState.Recording || _recordingState == RecordingState.RequestedStop)
+				hitMaximumFileSize = !WriteToFile(buffer, bytesRecorded);
+
+			var bytesPerSample = _waveIn.WaveFormat.BitsPerSample / 8;
+
+			// It appears the data only occupies 2 bytes of those in a sample and that
+			// those 2 are always the last two in each sample. The other bytes are zero
+			// filled. Therefore, when getting those two bytes, the first index into a
+			// sample needs to be 0 for 16 bit samples, 1 for 24 bit samples and 2 for
+			// 32 bit samples. I'm not sure what to do for 8 bit samples. I could never
+			// figure out the correct conversion of a byte in an 8 bit per sample buffer
+			// to a float sample value. However, I doubt folks are going to be recording
+			// at 8 bits/sample so I'm ignoring that problem.
+			for (var index = bytesPerSample - 2; index < bytesRecorded - 1; index += bytesPerSample)
 			{
-				var buffer = e.Buffer;
-				int bytesRecorded = e.BytesRecorded;
-				bool hitMaximumFileSize = false;
-				if (_recordingState == RecordingState.Recording || _recordingState == RecordingState.RequestedStop)
-					hitMaximumFileSize = !WriteToFile(buffer, bytesRecorded);
+				var sample = (short)((buffer[index + 1] << 8) | buffer[index]);
+				var sample32 = sample / 32768f;
+				SampleAggregator.Add(sample32);
+			}
 
-				var bytesPerSample = _waveIn.WaveFormat.BitsPerSample / 8;
+			if (_fileWriterThread == null)
+				return;
 
-				// It appears the data only occupies 2 bytes of those in a sample and that
-				// those 2 are always the last two in each sample. The other bytes are zero
-				// filled. Therefore, when getting those two bytes, the first index into a
-				// sample needs to be 0 for 16 bit samples, 1 for 24 bit samples and 2 for
-				// 32 bit samples. I'm not sure what to do for 8 bit samples. I could never
-				// figure out the correct conversion of a byte in an 8 bit per sample buffer
-				// to a float sample value. However, I doubt folks are going to be recording
-				// at 8 bits/sample so I'm ignoring that problem.
-				for (var index = bytesPerSample - 2; index < bytesRecorded - 1; index += bytesPerSample)
+			// Only fire the progress event every 10th of a second.
+			var currRecordedTime = (double)_bytesRecorded / _recordingFormat.AverageBytesPerSecond;
+			if (currRecordedTime - _prevRecordedTime >= 0.05d)
+			{
+				_prevRecordedTime = currRecordedTime;
+				_recProgressEventArgs.RecordedLength = TimeSpan.FromSeconds(currRecordedTime);
+				if (RecordingProgress != null)
+					RecordingProgress.BeginInvoke(this, _recProgressEventArgs, null, null);
+			}
+
+			if (RecordingState == RecordingState.RequestedStop)
+			{
+				if (DateTime.Now > _recordingStopTime.AddSeconds(2) || hitMaximumFileSize ||
+					_recordingStartTime.AddSeconds(currRecordedTime) >= _recordingStopTime)
 				{
-					var sample = (short)((buffer[index + 1] << 8) | buffer[index]);
-					var sample32 = sample / 32768f;
-					SampleAggregator.Add(sample32);
-				}
-
-				if (_fileWriterThread == null)
-					return;
-
-				// Only fire the progress event every 10th of a second.
-				var currRecordedTime = (double)_bytesRecorded / _recordingFormat.AverageBytesPerSecond;
-				if (currRecordedTime - _prevRecordedTime >= 0.05d)
-				{
-					_prevRecordedTime = currRecordedTime;
-					_recProgressEventArgs.RecordedLength = TimeSpan.FromSeconds(currRecordedTime);
-					if (RecordingProgress != null)
-						RecordingProgress.BeginInvoke(this, _recProgressEventArgs, null, null);
-				}
-
-				if (RecordingState == RecordingState.RequestedStop)
-				{
-					if (DateTime.Now > _recordingStopTime.AddSeconds(2) || hitMaximumFileSize ||
-						_recordingStartTime.AddSeconds(currRecordedTime) >= _recordingStopTime)
-					{
-						TransitionFromRecordingToMonitoring();
-					}
+					TransitionFromRecordingToMonitoring();
 				}
 			}
 		}

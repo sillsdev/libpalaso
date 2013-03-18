@@ -1744,20 +1744,5 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
-
-		[Test]
-		public void Add_TextWithSpanAndMeaningfulWhiteSpace_FormattingAndWhitespaceIsUntouched()
-		{
-			const string formattedText = "\rThis's <span href=\"reference\">\n is a\t\t\n\r\t span</span> with annoying whitespace!\r\n";
-			const string expected = "<form\r\n\tlang=\"de\">\r\n\t<text>" + formattedText + "</text>\r\n</form>";
-			using (var session = new LiftExportAsFragmentTestSession())
-			{
-				var multiText = new MultiText();
-				multiText.SetAlternative("de", formattedText);
-				session.LiftWriter.AddMultitextForms(null, multiText);
-				session.LiftWriter.End();
-				Assert.AreEqual(expected, session.OutputString());
-			}
-		}
 	}
 }
