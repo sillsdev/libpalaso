@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
-
 
 namespace Palaso.Reporting
 {
@@ -21,7 +16,6 @@ namespace Palaso.Reporting
 			new HashSet<CancelExceptionHandlingEventHandler>();
 
 		private static ExceptionHandler _singleton;
-
 
 		/// ------------------------------------------------------------------------------------
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
@@ -61,7 +55,6 @@ namespace Palaso.Reporting
 		{
 			const string palasoUiWindowsFormsAssemblyName = "PalasoUIWindowsForms";
 
-			Assembly toInitializeAssembly = null;
 			var topMostAssembly = Assembly.GetEntryAssembly();
 			if (topMostAssembly != null)
 			{
@@ -70,23 +63,21 @@ namespace Palaso.Reporting
 					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
 				if (palasoUiWindowsFormsInitializeAssemblyName != null)
 				{
-					toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
-				}
-			}
-			if (toInitializeAssembly == null)
-				toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsAssemblyName);
-
-			if (toInitializeAssembly != null)
-			{
-				//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
-				var interfaceToFind = typeof(T);
-				var typeImplementingInterface = toInitializeAssembly.GetTypes().FirstOrDefault(interfaceToFind.IsAssignableFrom);
-				if (typeImplementingInterface != null)
-				{
-					var winFormsExceptionHandlerConstructor = typeImplementingInterface.GetConstructor(Type.EmptyTypes);
-					if (winFormsExceptionHandlerConstructor != null)
+					var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
+					//TomB: this comment (presumably an idea for future enhancement) was in both versions of the code from which
+					// this method was created, even though it really only seems to apply to the one that was formerly in
+					// ErrorReport: "Make this go find the actual winFormsErrorReporter as opposed to looking for the interface"
+					// Not sure exactly what the author of that comment had in mind (perhaps to look for an explicit type name),
+					// but now that this method is called from two different places, it might be harder to do this.
+					var interfaceToFind = typeof(T);
+					var typeImplementingInterface = toInitializeAssembly.GetTypes().FirstOrDefault(interfaceToFind.IsAssignableFrom);
+					if (typeImplementingInterface != null)
 					{
-						return winFormsExceptionHandlerConstructor.Invoke(null) as T;
+						var winFormsExceptionHandlerConstructor = typeImplementingInterface.GetConstructor(Type.EmptyTypes);
+						if (winFormsExceptionHandlerConstructor != null)
+						{
+							return winFormsExceptionHandlerConstructor.Invoke(null) as T;
+						}
 					}
 				}
 			}
