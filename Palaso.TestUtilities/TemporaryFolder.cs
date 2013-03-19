@@ -120,7 +120,7 @@ namespace Palaso.TestUtilities
 		/// </summary>
 		static public TemporaryFolder TrackExisting(string path)
 		{
-			Debug.Assert(Directory.Exists(path));
+			Debug.Assert(Directory.Exists(path), @"TrackExisting given non existant folder to track.");
 			var f = new TemporaryFolder(); // This creates a new directory called "unnamedTestFolder", which is not deleted on Dispose.
 			if (f.Path.EndsWith("unnamedTestFolder") && Directory.Exists(f.Path))
 				Directory.Delete(f.Path);

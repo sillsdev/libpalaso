@@ -309,7 +309,7 @@ namespace Palaso.Xml
 		private void InitializeOffsets()
 		{
 			// Find offset for end of records.
-			_endOfRecordsOffset = 0;
+			_endOfRecordsOffset = -1;
 			for (var i = _inputBytes.Length - 1; i >= 0; --i)
 			{
 				if (_inputBytes[i] != _openingAngleBracket)
@@ -318,7 +318,7 @@ namespace Palaso.Xml
 				_endOfRecordsOffset = i;
 				break;
 			}
-			if (_endOfRecordsOffset == 0)
+			if (_endOfRecordsOffset < 0)
 				throw new ArgumentException("There was no main ending tag in the file.");
 
 			// Find first angle bracket
