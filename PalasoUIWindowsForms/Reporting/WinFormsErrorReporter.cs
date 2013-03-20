@@ -4,7 +4,7 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	class WinFormsErrorReporter:IErrorReporter
+	public class WinFormsErrorReporter : IErrorReporter
 	{
 
 		public void ReportFatalException(Exception e)
