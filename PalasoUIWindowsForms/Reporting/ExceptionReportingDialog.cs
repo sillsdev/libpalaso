@@ -510,8 +510,8 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// ------------------------------------------------------------------------------------
 		private void btnClose_Click(object sender, EventArgs e)
 		{
-			 ErrorReportSettings.Default.ReportingMethod = ((ReportingMethod) (_methodCombo.SelectedItem)).Id;
-			 ErrorReportSettings.Default.Save();
+			ErrorReportSettings.Default.ReportingMethod = ((ReportingMethod) (_methodCombo.SelectedItem)).Id;
+			ErrorReportSettings.Default.Save();
 
 			if (ModifierKeys.Equals(Keys.Shift))
 			{
