@@ -14,7 +14,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>none</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<ConsolePause>false</ConsolePause>
@@ -32,7 +32,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -41,7 +41,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<DebugType>none</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<ConsolePause>false</ConsolePause>
