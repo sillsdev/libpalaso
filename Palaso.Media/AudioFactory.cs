@@ -7,8 +7,8 @@ namespace Palaso.Media
 		public static ISimpleAudioSession AudioSession(string filePath)
 		{
 #if MONO
-				return new AudioGStreamerSession(filePath);
-				//return new AudioAlsaSession(filePath);
+				//return new AudioGStreamerSession(filePath);
+				return new AudioAlsaSession(filePath);
 #else
 			return new AudioIrrKlangSession(filePath);
 #endif
