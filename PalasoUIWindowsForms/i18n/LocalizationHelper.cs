@@ -86,7 +86,8 @@ namespace Palaso.UI.WindowsForms.i18n
 				}
 				else
 				{
-					control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+					var font = StringCatalog.ModifyFontForLocalization(control.Font);
+					control.Font = font;
 				}
 			}
 			_alreadyChanging = false;
@@ -118,8 +119,21 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void OnControlAdded(object sender, ControlEventArgs e)
 		{
-			WireToControl(e.Control);
-			WireToChildren(e.Control);
+			WireToControlAndChildren(e.Control);
+		}
+
+		private void WireToControlAndChildren(Control control)
+		{
+			if (control is ILocalizableControl)
+			{
+				((ILocalizableControl) control).BeginWiring();
+			}
+			WireToControl(control);
+			WireToChildren(control);
+			if (control is ILocalizableControl)
+			{
+				((ILocalizableControl) control).EndWiring();
+			}
 		}
 
 		private void OnControlRemoved(object sender, ControlEventArgs e)
@@ -140,6 +154,7 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void WireToChildren(Control control)
 		{
+			control.SuspendLayout();
 			Debug.Assert(control != null);
 			//Debug.WriteLine("Wiring to children of " + control.Name);
 			control.ControlAdded += OnControlAdded;
@@ -147,9 +162,9 @@ namespace Palaso.UI.WindowsForms.i18n
 			control.Disposed += OnControlDisposed;
 			foreach (Control child in control.Controls)
 			{
-				WireToControl(child);
-				WireToChildren(child);
+				WireToControlAndChildren(child);
 			}
+			control.ResumeLayout();
 		}
 
 		private void WireToControl(Control control)
@@ -172,6 +187,7 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void UnwireFromChildren(Control control)
 		{
+			control.SuspendLayout();
 			Debug.Assert(control != null);
 			control.ControlAdded -= OnControlAdded;
 			control.ControlRemoved -= OnControlRemoved;
@@ -182,6 +198,7 @@ namespace Palaso.UI.WindowsForms.i18n
 				UnwireFromControl(child);
 				UnwireFromChildren(child);
 			}
+			control.ResumeLayout();
 		}
 
 		private void UnwireFromControl(Control control)
@@ -209,7 +226,8 @@ namespace Palaso.UI.WindowsForms.i18n
 				   control is TabControl ||
 				   control is TabPage ||
 				   control is Form ||
-				   control is BetterLabel;
+				   control is BetterLabel ||
+				   control is ILocalizableControl;
 		}
 
 		#region ISupportInitialize Members

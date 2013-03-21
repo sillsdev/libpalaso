@@ -102,21 +102,23 @@ session.Recorder.Play());
 		   }
 	   }
 
-	   [Test, Ignore("IrrKlang doesn't throw, so we don't really know")]
+	   [Test]
+	   [Platform(Include="Linux", Reason="IrrKlang doesn't throw, so we don't really know")]
 	   public void Play_FileEmpty_Throws()
 	   {
 		   using (var f = new TempFile())
 		   {
 			   var x = AudioFactory.AudioSession(f.Path);
-			Assert.Throws<ApplicationException>(() =>
+			   Assert.Throws<EndOfStreamException>(() =>
  x.Play());
 		   }
 	   }
+
 	   [Test]
-	   public void Play_FileDoesExist_Throws()
+	   public void Play_FileDoesNotExist_Throws()
 	   {
 		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
-		Assert.Throws<FileNotFoundException>(() =>
+			   Assert.Throws<FileNotFoundException>(() =>
 x.Play());
 	   }
 
@@ -138,11 +140,17 @@ x.Play());
 		   using (var f = new TempFile())
 		   {
 			   var old = File.GetLastWriteTimeUtc(f.Path);
+			   var oldInfo = new FileInfo(f.Path);
+			   var oldLength = oldInfo.Length;
+			   Assert.AreEqual(0, oldLength);
+			   var oldTimestamp = oldInfo.LastWriteTimeUtc;
 			   var x = AudioFactory.AudioSession(f.Path);
 			   x.StartRecording();
-			   Thread.Sleep(100);
+			   Thread.Sleep(1000);
 			   x.StopRecordingAndSaveAsWav();
-			   Assert.Greater(File.GetLastWriteTimeUtc(f.Path), old);
+			   var newInfo = new FileInfo(f.Path);
+			   Assert.Greater(newInfo.LastWriteTimeUtc, oldTimestamp);
+			   Assert.Greater(newInfo.Length, oldLength);
 		   }
 	   }
 
@@ -332,6 +340,7 @@ session.Recorder.StartRecording());
 		   {
 			   ISimpleAudioSession x = RecordSomething(f);
 			   x.Play();
+			   Thread.Sleep(100);	// Ensure file exists to be played.
 		   }
 	   }
 

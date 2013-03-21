@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Palaso.BuildTasks.StampAssemblies;
 
-namespace BuildTaskTests
+namespace Palaso.BuildTask.Tests
 {
 	[TestFixture]
 	public class StampAssemblyTests
@@ -215,7 +210,7 @@ using System.Runtime.InteropServices;
 			var v = stamper.GetModifiedContents(content, "*.*.*", "*.*.*.346");
 			Assert.IsTrue(v.Contains("AssemblyVersion(\"4.2.1.0"));
 			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"4.2.1.346"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"4.2.1.0"));
+			Assert.IsFalse(v.Contains("AssemblyFileVersion(\"4.2.1.0"));
 		}
 	}
 }

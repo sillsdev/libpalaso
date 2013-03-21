@@ -845,17 +845,10 @@ namespace Palaso.Lift
 		{
 			// Don't even think of messing with the <text> innards.
 			var textElement = formElement.Element("text");
-			if (textElement != null)
-			{
-				textElement.Remove();
-			}
+			textElement.Remove();
 			var sortedAnnotations = SortedAnnotations(formElement);
 
-			if (textElement != null)
-			{
-				formElement.Add(textElement);
-			}
-
+			formElement.Add(textElement);
 			foreach (var annotation in sortedAnnotations.Values)
 			{
 				formElement.Add(annotation);

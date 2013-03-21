@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using Palaso.Code;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
@@ -249,6 +250,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
+			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
+			Guard.AgainstNull(_imageInfo, "_imageInfo");
+			Guard.AgainstNull(_imageInfo.Metadata, "_imageInfo.Metadata");
+
 			//it's not clear at the moment where the following belongs... but we want
 			//to encourage Creative Commons Licensing, so if there is no license, we'll start
 			//the following dialog out with a reasonable default.
@@ -258,6 +263,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				if(DialogResult.OK == dlg.ShowDialog())
 				{
+					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
 					_imageInfo.Metadata = dlg.Metadata;
 					SetupMetaDataControls(_imageInfo.Metadata);
 					_imageInfo.SaveUpdatedMetadataIfItMakesSense();

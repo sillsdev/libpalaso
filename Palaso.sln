@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryServices",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.DictionaryServices.Tests", "Palaso.DictionaryServices.Tests\Palaso.DictionaryServices.Tests.csproj", "{CC84BDED-CECD-466A-9397-F5D83527B218}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTaskTests", "BuildTaskTests\Palaso.BuildTaskTests.csproj", "{C1DFF344-3B97-4265-A465-C14A84BA19F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTask.Tests", "BuildTaskTests\Palaso.BuildTask.Tests.csproj", "{C1DFF344-3B97-4265-A465-C14A84BA19F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Email.TestApp", "Palaso.Email.TestApp\Palaso.Email.TestApp.csproj", "{2A206833-C713-4ACB-ACD3-EB971415119E}"
 EndProject

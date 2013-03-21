@@ -49,7 +49,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public IEnumerable<object> GetMatchingPictures(string keywords, out bool foundExactMatches)
 		{
-			keywords = GetCleanedUpSearchString(keywords);
+			keywords = GetCleanedUpSearchString(keywords.ToLowerInvariant());
 			return GetMatchingPictures(keywords.SplitTrimmed(' '), out foundExactMatches);
 		}
 

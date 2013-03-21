@@ -8,10 +8,10 @@ namespace Palaso.Media
 		{
 #if MONO
 				return new AudioGStreamerSession(filePath);
+				//return new AudioAlsaSession(filePath);
 #else
 			return new AudioIrrKlangSession(filePath);
 #endif
 		}
 	}
-
 }

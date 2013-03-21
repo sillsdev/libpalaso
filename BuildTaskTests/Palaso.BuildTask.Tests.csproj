@@ -8,8 +8,8 @@
 	<ProjectGuid>{C1DFF344-3B97-4265-A465-C14A84BA19F6}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>BuildTaskTests</RootNamespace>
-	<AssemblyName>Palaso.BuildTaskTests</AssemblyName>
+	<RootNamespace>Palaso.BuildTask.Tests</RootNamespace>
+	<AssemblyName>Palaso.BuildTask.Tests</AssemblyName>
 	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<FileUpgradeFlags>

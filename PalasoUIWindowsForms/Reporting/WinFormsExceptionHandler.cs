@@ -8,7 +8,7 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	internal class WinFormsExceptionHandler: ExceptionHandler
+	public class WinFormsExceptionHandler: ExceptionHandler
 	{
 
 		/// ------------------------------------------------------------------------------------

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift.Validation;
@@ -908,6 +910,35 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
 					String.Format("//entry[@dateModified=\"{0}\"]", entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ"))
 				);
+			}
+		}
+
+		/// <summary>
+		/// Regression: WS-34576
+		/// </summary>
+		[Test]
+		public void Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon()
+		{
+			var culture = new CultureInfo("en-US");
+			culture.DateTimeFormat.TimeSeparator = ".";
+
+			Thread.CurrentThread.CurrentCulture = culture;
+
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.LexicalForm["test"] = "lexicalForm";
+				// make dateModified different than dateCreated
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					String.Format("//entry[@dateModified=\"{0}\"]",
+								  entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture))
+					);
+				Assert.IsTrue(result.Contains(":"), "should contain colons");
+				Assert.IsFalse(result.Contains("."), "should not contain periods");
 			}
 		}
 

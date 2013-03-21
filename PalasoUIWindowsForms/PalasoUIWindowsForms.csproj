@@ -64,7 +64,8 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<Optimize>false</Optimize>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -74,7 +75,8 @@
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
@@ -318,6 +320,7 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+	<Compile Include="ReleaseNotes\MarkdownSharp.cs" />
 	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -363,6 +366,12 @@
 	</Compile>
 	<Compile Include="SettingProtection\SettingsProtectionLauncherButton.Designer.cs">
 	  <DependentUpon>SettingsProtectionLauncherButton.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ReleaseNotes\ShowReleaseNotesDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ReleaseNotes\ShowReleaseNotesDialog.Designer.cs">
+	  <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Spelling\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
@@ -713,6 +722,9 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
+	<EmbeddedResource Include="ReleaseNotes\ShowReleaseNotesDialog.resx">
+	  <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="SettingProtection\SettingsProtectionHelper.resx">
 	  <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
 	</EmbeddedResource>
@@ -1027,6 +1039,7 @@
   <ItemGroup>
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
