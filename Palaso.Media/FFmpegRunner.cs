@@ -41,7 +41,12 @@ namespace Palaso.Media
 		{
 			//on linux, we can safely assume the package has included the needed dependency
 #if MONO
-						return "ffmpeg";
+			if (File.Exists("/usr/bin/ffmpeg"))
+				return "/usr/bin/ffmpeg";
+			else if (File.Exists("/usr/bin/avconv"))
+				return "/usr/bin/avconv";	// the new name of ffmpeg on Linux
+			else
+				return null;
 #endif
 
 #if !MONO

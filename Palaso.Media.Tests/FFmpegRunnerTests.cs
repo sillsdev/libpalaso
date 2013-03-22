@@ -18,6 +18,7 @@ namespace Palaso.Media.Tests
 
 		[Test]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
+		[Platform(Exclude="Linux", Reason="MP3 is not licensed on Linux")]
 		public void ExtractMp3Audio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -54,6 +55,7 @@ namespace Palaso.Media.Tests
 
 		[Test]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
+		[Platform(Exclude="Linux", Reason="MP3 is not licensed on Linux")]
 		public void MakeLowQualityCompressedAudio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -72,6 +74,7 @@ namespace Palaso.Media.Tests
 
 		[Test]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
+		[Platform(Exclude="Linux", Reason="MP3 is not licensed on Linux")]
 		public void MakeLowQualitySmallVideo_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
