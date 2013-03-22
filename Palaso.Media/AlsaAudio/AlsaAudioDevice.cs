@@ -280,7 +280,7 @@ namespace Palaso.Media
 		/// </summary>
 		void ShowError(string msg)
 		{
-			System.Windows.Forms.MessageBox.Show(msg, "Audio Device Error");
+			//System.Windows.Forms.MessageBox.Show(msg, "Audio Device Error");
 		}
 
 		/// <summary>
@@ -507,37 +507,93 @@ namespace Palaso.Media
 		bool ValidateFile(string fileName, out string errorMsg)
 		{
 			errorMsg = null;
+			FileInfo info = new FileInfo(fileName);
+			int fileSize = (int)info.Length;
+			bool haveHeader = false;
+			bool haveFormat = false;
+			bool haveFact = false;
+			bool haveData = false;
+			int chunkCount = 0;
 			using (var reader = new WaveFileReader(fileName))
 			{
-				var header = reader.ReadWaveFileHeader();
+				var chunk = reader.ReadWaveChunk();
+				var header = chunk as WaveFileHeader;
+				if (header == null)
+				{
+					errorMsg = String.Format("{0} is not a WAVE file!", fileName);
+					return false;
+				}
 				if (header.chunkId != "RIFF" || header.riffType != "WAVE")
 				{
-					errorMsg = String.Format("{0} is not a WAVE file.", _filename);
+					errorMsg = String.Format("{0} is not a valid WAVE file (id = {1}, size = {2}, riff = {3}).",
+						fileName, header.chunkId, header.chunkSize, header.riffType);
 					return false;
 				}
-				var formatPlaying = reader.ReadWaveFormatChunk();
-				WaveDataHeader dataheader = reader.ReadWaveDataHeader();
-				if (formatPlaying.chunkId != "fmt " || formatPlaying.chunkSize != 16 || dataheader.chunkId != "data")
+				haveHeader = true;
+				++chunkCount;
+				WaveFormatChunk format = null;
+				for (chunk = reader.ReadWaveChunk(); chunk != null; chunk = reader.ReadWaveChunk())
 				{
-					errorMsg = String.Format("{0} is not a recognized type of WAVE file.", _filename);
-					return false;
+					++chunkCount;
+					if (chunk is WaveFormatChunk)
+					{
+						if (haveFormat)
+						{
+							//Console.WriteLine("Found another format chunk.");
+						}
+						else
+						{
+							format = chunk as WaveFormatChunk;
+							haveFormat = true;
+						}
+						continue;
+					}
+					if (chunk is WaveFactChunk)
+					{
+						if (haveFact)
+						{
+							//Console.WriteLine("Found another fact chunk.");
+						}
+						else
+						{
+							haveFact = true;
+						}
+						continue;
+					}
+					if (chunk is WaveDataHeader)
+					{
+						if (haveData)
+						{
+							//Console.WriteLine("Found another data chunk.");
+						}
+						else
+						{
+							haveData = true;
+						}
+						reader.Advance(chunk.chunkSize);
+						continue;
+					}
 				}
-				if (formatPlaying.audioFormat != WAV_FMT_PCM)
+				if (format == null)
 				{
-					errorMsg = String.Format("{0} is not PCM encoded ({1}).", _filename, formatPlaying.audioFormat);
 					return false;
 				}
-				if (formatPlaying.channelCount < 1)
+				if (format.audioFormat != WAV_FMT_PCM)
 				{
-					errorMsg = String.Format("{0} has an invalid number of channels ({1}).", _filename, formatPlaying.channelCount);
+					errorMsg = String.Format("{0} is not PCM encoded ({1}).", fileName, format.audioFormat);
 					return false;
 				}
-				if (ComputePcmFormatFromWaveFormat(formatPlaying, out errorMsg) < 0)
+				if (format.channelCount < 1)
+				{
+					errorMsg = String.Format("{0} has an invalid number of channels ({1}).", fileName, format.channelCount);
+					return false;
+				}
+				if (ComputePcmFormatFromWaveFormat(format, out errorMsg) < 0)
 					return false;
 				//Console.WriteLine("{0} is a WAVE file recorded at {1}Hz, using {2} bits/sample and {3} channels.",
-				//	fileName, formatPlaying.sampleRate, formatPlaying.bitsPerSample, formatPlaying.channelCount);
+				//                  fileName, format.sampleRate, format.bitsPerSample, format.channelCount);
 			}
-			return true;
+			return haveHeader && haveFormat && haveData;
 		}
 
 		/// <summary>
@@ -550,15 +606,28 @@ namespace Palaso.Media
 				return;
 			using (var reader = new WaveFileReader(_filename))
 			{
-				reader.ReadWaveFileHeader();
-				var formatPlaying = reader.ReadWaveFormatChunk();
-				var dataheader = reader.ReadWaveDataHeader();
-				string errorMsg;
-				_pcmFormat = ComputePcmFormatFromWaveFormat(formatPlaying, out errorMsg);
-				_channelCount = formatPlaying.channelCount;
-				_sampleRate = formatPlaying.sampleRate;
-				SetParams();
-				int cbRemaining = (int)dataheader.chunkSize;
+				var header = reader.ReadWaveChunk() as WaveFileHeader;
+				if (header == null)
+					return;
+				int cbRemaining = 0;
+				for (var chunk = reader.ReadWaveChunk(); chunk != null; chunk = reader.ReadWaveChunk())
+				{
+					if (chunk is WaveFormatChunk)
+					{
+						var format = chunk as WaveFormatChunk;
+						string errorMsg;
+						_pcmFormat = ComputePcmFormatFromWaveFormat(format, out errorMsg);
+						_channelCount = format.channelCount;
+						_sampleRate = format.sampleRate;
+						SetParams();
+						continue;
+					}
+					if (chunk is WaveDataHeader)
+					{
+						cbRemaining = (int)chunk.chunkSize;
+						break;
+					}
+				}
 				while (cbRemaining >= _chunkBytes && !_fAsyncQuit)
 				{
 					var bytes = reader.ReadWaveData(_chunkBytes);
@@ -606,27 +675,30 @@ namespace Palaso.Media
 		}
 
 		/// <summary>
-		/// WAVE file header.
+		/// The common heading of every "chunk" of a WAVE file.
 		/// </summary>
-		public struct WaveFileHeader
+		public class WaveChunk
 		{
-			/// <summary>must == "RIFF" (actually stored as four bytes in the file)</summary>
+			/// <summary>The chunk identifier (four 8-bit chars in the file)</summary>
 			public string chunkId;
-			/// <summary>file size - 8</summary>
+			/// <summary>The size of the chunk following this header</summary>
 			public UInt32 chunkSize;
-			/// <summary>must == "WAVE" (actually stored as four bytes in the file)</summary>
+		}
+
+		/// <summary>
+		/// WAVE file header: chunkId == "RIFF", chunkSize == file size - 8
+		/// </summary>
+		public class WaveFileHeader : WaveChunk
+		{
+			/// <summary>must == "WAVE" (four 8-bit chars in the file)</summary>
 			public string riffType;
 		}
 
 		/// <summary>
-		/// Wave format block that immediately follows the file header.
+		/// Wave format block: chunkId == "fmt ", chunkSize >= 16
 		/// </summary>
-		public struct WaveFormatChunk
+		public class WaveFormatChunk : WaveChunk
 		{
-			/// <summary>must == "fmt " (actually stored as bytes in the file)</summary>
-			public string chunkId;
-			/// <summary>must == 16 for us to work with this file</summary>
-			public UInt32 chunkSize;
 			/// <summary>must == 1 (PCM) for us to work with this file</summary>
 			public UInt16 audioFormat;
 			/// <summary>number of channels (tracks) in the recording</summary>
@@ -639,19 +711,37 @@ namespace Palaso.Media
 			public UInt16 blockAlign;
 			/// <summary>number of bits per sample (better be a small multiple of 8!)</summary>
 			public UInt16 bitsPerSample;
+			/// <summary>extra information found in some files</summary>
+			public byte[] extraInfo;
 		}
 
 		/// <summary>
-		/// Wave data header that immediately follows the format block.
+		/// Wave data header: chunkId == "data".
 		/// </summary>
-		public struct WaveDataHeader
+		public class WaveDataHeader : WaveChunk
 		{
-			/// <summary>must == "data" (actually stored as bytes in the file)</summary>
-			public string chunkId;
-			/// <summary>data size must be file size - 44 for us to work with this file</summary>
-			public UInt32 chunkSize;
+			// Do we need this redundant class?  It does simplify the code at one point.
 		}
 
+		/// <summary>
+		/// Wave "fact" chunk: chunkId == "fact", chunkSize >= 4
+		/// </summary>
+		public class WaveFactChunk : WaveChunk
+		{
+			/// <summary>number of samples in the data chunk</summary>
+			public UInt32 sampleCount;
+			/// <summary>extra information that might exist someday</summary>
+			public byte[] extraInfo;
+		}
+
+		/// <summary>
+		/// random Wave chunk that we don't handle.
+		/// </summary>
+		public class WaveRandomChunk : WaveChunk
+		{
+			/// <summary></summary>
+			public byte[] chunkData;
+		}
 		/// <summary>
 		/// Utility class for reading a WAVE file.
 		/// </summary>
@@ -675,6 +765,12 @@ namespace Palaso.Media
 			protected string ReadRiffTypeName()
 			{
 				byte[] bytes = _reader.ReadBytes(4);
+				if (bytes == null || bytes.Length < 4)
+				{
+					if (_reader.BaseStream.Position < 4)
+						throw new EndOfStreamException();
+					return null;
+				}
 				char[] chars = new char[4];
 				try
 				{
@@ -689,24 +785,69 @@ namespace Palaso.Media
 			}
 
 			/// <summary>
-			/// Reads the WAVE file header, without any verification.
+			/// Reads the next chunk from a supposed WAVE file.
 			/// </summary>
-			public WaveFileHeader ReadWaveFileHeader()
+			public WaveChunk ReadWaveChunk()
+			{
+				var chunkId = ReadRiffTypeName();
+				//Console.WriteLine("ChunkId = \"{0}\"", chunkId);
+				switch (chunkId)
+				{
+				case "RIFF":
+					return ReadWaveFileHeader(chunkId);
+				case "fmt ":
+					return ReadWaveFormatChunk(chunkId);
+				case "data":
+					return ReadWaveDataHeader(chunkId);
+				case "fact":
+					return ReadWaveFactChunk(chunkId);
+				case null:
+					return null;
+				default:
+					if (!String.IsNullOrEmpty(chunkId) && chunkId.Length == 4 &&
+						IsAsciiLetter(chunkId[0]) &&
+						IsAsciiLetter(chunkId[1]) &&
+						(IsAsciiLetter(chunkId[2]) || chunkId[2] == ' ') &&
+						(IsAsciiLetter(chunkId[3]) || chunkId[3] == ' '))
+					{
+						return ReadRandomChunk(chunkId);
+					}
+					return null;
+				}
+			}
+
+			/// <summary>
+			/// Advance the location in the file by the given offset.
+			/// </summary>
+			public void Advance(long offset)
+			{
+				_reader.BaseStream.Seek(offset, SeekOrigin.Current);
+			}
+
+			bool IsAsciiLetter(char ch)
+			{
+				return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' || ch <= 'z');
+			}
+
+			/// <summary>
+			/// Reads the WAVE file header.
+			/// </summary>
+			WaveFileHeader ReadWaveFileHeader(string chunkId)
 			{
 				var header = new WaveFileHeader();
-				header.chunkId = ReadRiffTypeName();
+				header.chunkId = chunkId;
 				header.chunkSize = _reader.ReadUInt32();
 				header.riffType = ReadRiffTypeName();
 				return header;
 			}
 
 			/// <summary>
-			/// Reads the WAVE format block, without any verification.
+			/// Reads the WAVE format block.
 			/// </summary>
-			public WaveFormatChunk ReadWaveFormatChunk()
+			WaveFormatChunk ReadWaveFormatChunk(string chunkId)
 			{
 				var chunk = new WaveFormatChunk();
-				chunk.chunkId = ReadRiffTypeName();
+				chunk.chunkId = chunkId;
 				chunk.chunkSize = _reader.ReadUInt32();
 				chunk.audioFormat = _reader.ReadUInt16();
 				chunk.channelCount = _reader.ReadUInt16();
@@ -714,18 +855,46 @@ namespace Palaso.Media
 				chunk.byteRate = _reader.ReadUInt32();
 				chunk.blockAlign = _reader.ReadUInt16();
 				chunk.bitsPerSample = _reader.ReadUInt16();
+				if (chunk.chunkSize > 16)
+					chunk.extraInfo = _reader.ReadBytes((int)(chunk.chunkSize - 16));
 				return chunk;
 			}
 
 			/// <summary>
-			/// Reads the WAVE data header, without any verification.
+			/// Reads the WAVE data header.
 			/// </summary>
-			public WaveDataHeader ReadWaveDataHeader()
+			WaveDataHeader ReadWaveDataHeader(string chunkId)
 			{
 				var header = new WaveDataHeader();
-				header.chunkId = ReadRiffTypeName();
+				header.chunkId = chunkId;
 				header.chunkSize =  _reader.ReadUInt32();
 				return header;
+			}
+
+			/// <summary>
+			/// Reads a "fact" chunk from a WAVE file.
+			/// </summary>
+			/// <returns>The wave fact chunk.</returns>
+			/// <param name="chunkId">Chunk identifier.</param>
+			WaveChunk ReadWaveFactChunk(string chunkId)
+			{
+				var chunk = new WaveFactChunk();
+				chunk.chunkId = chunkId;
+				chunk.chunkSize = _reader.ReadUInt32();
+				chunk.sampleCount = _reader.ReadUInt32();
+				if (chunk.chunkSize > 4)
+					chunk.extraInfo = _reader.ReadBytes((int)(chunk.chunkSize - 4));
+				return chunk;
+			}
+
+			WaveChunk ReadRandomChunk(string chunkId)
+			{
+				var chunk = new WaveRandomChunk();
+				chunk.chunkId = chunkId;
+				chunk.chunkSize = _reader.ReadUInt32();
+				if (chunk.chunkSize > 0)
+					chunk.chunkData = _reader.ReadBytes((int)chunk.chunkSize);
+				return chunk;
 			}
 
 			/// <summary>
