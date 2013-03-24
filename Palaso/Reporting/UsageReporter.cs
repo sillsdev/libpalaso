@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Mime;
 using System.Text;
+using RestSharp;
 
 namespace Palaso.Reporting
 {
@@ -18,6 +20,7 @@ namespace Palaso.Reporting
 
 		private static UsageReporter s_singleton;
 		private Exception _mostRecentException;
+
 
 		[Obsolete("Better to use the version which explicitly sets the reportAsDeveloper flag")]
 		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode)
@@ -55,6 +58,7 @@ namespace Palaso.Reporting
 			s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
 			settings.PreviousVersion = ErrorReport.VersionNumberString;
 		}
+
 
 		/// <summary>
 		/// A unique guid for this machine, which is the same for all palaso apps (because we store it in special palaso text file in appdata)
@@ -205,6 +209,19 @@ namespace Palaso.Reporting
 			{
 				s_singleton._appNameToUseInReporting = value;
 			}
+		}
+
+		public static string MostRecentArea
+		{
+			get
+			{
+				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._mostRecentArea))
+				{
+					return s_singleton._mostRecentArea;
+				}
+				return string.Empty;
+			}
+
 		}
 
 		/// <summary>
@@ -599,6 +616,8 @@ namespace Palaso.Reporting
 
 			SendEvent(s_singleton._mostRecentArea, "error", sb.ToString(), ErrorReport.VersionNumberString, 0);
 		}
+
+
 
 		public static void ReportException(Exception error)
 		{

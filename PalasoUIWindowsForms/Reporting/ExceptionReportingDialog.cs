@@ -368,8 +368,8 @@ namespace Palaso.UI.WindowsForms.Reporting
 								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
 			 }
 
-			 AddErrorReportingPropertiesToDetails();
-
+			 _details.Text += ErrorReport.GetEnvironmentDetails()+Environment.NewLine;
+			 _details.Text += ErrorReport.GetLogOfEventsBeforeError() + Environment.NewLine;
 
 			 Debug.WriteLine(_details.Text);
 			 if (innerMostException != null)
@@ -408,10 +408,9 @@ namespace Palaso.UI.WindowsForms.Reporting
 			 }
 			_details.Text += "--Stack--"+ Environment.NewLine;;
 			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
-
-
-			 AddErrorReportingPropertiesToDetails();
-
+			 _details.Text += Environment.NewLine;
+			 _details.Text += ErrorReport.GetEnvironmentDetails();
+			 _details.Text += ErrorReport.GetLogOfEventsBeforeError();
 			 Debug.WriteLine(_details.Text);
 
 
@@ -428,26 +427,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 			 ShowReportDialogIfAppropriate(owningForm);
 		 }
 
-		 private void AddErrorReportingPropertiesToDetails()
-		 {
-
-			 _details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
-			 foreach (string label in ErrorReport.Properties.Keys)
-			 {
-				 _details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
-			 }
-
-			 _details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
-			 try
-			 {
-				 _details.Text += Logger.LogText;
-			 }
-			 catch (Exception err)
-			 {
-				 //We have more than one report of dieing while logging an exception.
-				 _details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
-			 }
-		 }
 
 		 private void PrepareDialog()
 		 {

@@ -15,6 +15,8 @@ namespace TestApp
 		public Form1()
 		{
 			InitializeComponent();
+
+			ErrorReport.SetUpForParseDotCom("https://parse.com/apps/palasoreportingtest", "xnOou71DhkahT0rOn5NU6TmTq1lg3XKParHnI3Pb", "VtMY6GSkk5wdP6m1yiuUCSP8iEAb7rDmgt19WWJR");
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -122,7 +124,7 @@ the end.");
 
 		private void button10_Click(object sender, EventArgs e)
 		{
-			throw new ApplicationException("test");
+			throw new ApplicationException("test2");
 		}
 	}
 }
