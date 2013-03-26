@@ -109,7 +109,7 @@ session.Recorder.Play());
 		   using (var f = new TempFile())
 		   {
 			   var x = AudioFactory.AudioSession(f.Path);
-			   Assert.Throws<EndOfStreamException>(() =>
+			   Assert.Throws<Exception>(() =>
  x.Play());
 		   }
 	   }

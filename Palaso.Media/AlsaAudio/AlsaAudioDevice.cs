@@ -9,8 +9,8 @@ namespace Palaso.Media
 {
 	/// <summary>
 	/// Simplified wrapper around the standard Linux Alsa audio library.  This wrapper
-	/// records only mono WAVE files at 22KHz, and plays back only simple PCM encoded
-	/// WAVE files.
+	/// records only simple 16-bit PCM mono WAVE files at 22KHz, and plays back using
+	/// libsndfile to read the sound data.
 	/// </summary>
 	public class AlsaAudioDevice
 	{
@@ -20,8 +20,18 @@ namespace Palaso.Media
 		static extern int snd_pcm_close(IntPtr pcm);
 		[DllImport ("libasound.so.2")]
 		static extern int snd_pcm_drain(IntPtr pcm);
+		// The next five methods are really all the same method, just with the data being passed
+		// in different forms.  (yes, this appears to work okay!)
 		[DllImport ("libasound.so.2")]
 		static extern int snd_pcm_writei(IntPtr pcm, byte[] buf, int size);
+		[DllImport ("libasound.so.2")]
+		static extern int snd_pcm_writei(IntPtr pcm, short[] buf, int size);
+		[DllImport ("libasound.so.2")]
+		static extern int snd_pcm_writei(IntPtr pcm, int[] buf, int size);
+		[DllImport ("libasound.so.2")]
+		static extern int snd_pcm_writei(IntPtr pcm, float[] buf, int size);
+		[DllImport ("libasound.so.2")]
+		static extern int snd_pcm_writei(IntPtr pcm, double[] buf, int size);
 		[DllImport ("libasound.so.2")]
 		static extern int snd_pcm_set_params(IntPtr pcm, int format, int access, int channels, int rate, int soft_resample, int latency);
 		[DllImport ("libasound.so.2")]
@@ -66,18 +76,143 @@ namespace Palaso.Media
 		static extern int snd_pcm_nonblock(IntPtr pcm, int nonblock);
 
 		// These constants are cribbed from alsa/pcm.h.
-		const int SND_pcm_STREA_PLAYBACK = 0;
-		const int SND_pcm_STREA_CAPTURE = 1;
-		const int SND_pcm_FORMAT_U8 = 1;
-		const int SND_pcm_FORMAT_S16_LE = 2;
-		const int SND_pcm_FORMAT_S24_LE = 6;
-		const int SND_pcm_FORMAT_S32_LE = 10;
-		const int SND_pcm_FORMAT_FLOAT_LE = 14;
-		const int SND_pcm_FORMAT_S24_3LE = 32;
-		const int SND_pcm_ACCESS_RW_INTERLEAVED = 3;
+		const int SND_PCM_STREA_PLAYBACK = 0;
+		const int SND_PCM_STREA_CAPTURE = 1;
+		const int SND_PCM_FORMAT_U8 = 1;
+		const int SND_PCM_FORMAT_S16_LE = 2;
+		const int SND_PCM_FORMAT_S24_LE = 6;
+		const int SND_PCM_FORMAT_S32_LE = 10;
+		const int SND_PCM_FORMAT_FLOAT_LE = 14;
+		const int SND_PCM_FORMAT_FLOAT64_LE = 16;
+		const int SND_PCM_FORMAT_S24_3LE = 32;
+		const int SND_PCM_ACCESS_RW_INTERLEAVED = 3;
 
-		// These constants are cribbed from Microsoft.
+		// This constant is cribbed from Microsoft.
 		const ushort WAV_FMT_PCM = 1;
+
+		/// <summary>
+		/// The SF_Mode enum is adapted from sndfile.h
+		/// </summary>
+		internal enum SF_Mode
+		{
+			/* True and false */
+			FALSE	= 0,
+			TRUE	= 1,
+
+			/* Modes for opening files. */
+			READ	= 0x10,
+			WRITE	= 0x20,
+			RDWR	= 0x30,
+
+			AMBISONIC_NONE		= 0x40,
+			AMBISONIC_B_FORMAT	= 0x41
+		}
+
+		/// <summary>
+		/// The SF_Format enum is adapted from sndfile.h
+		/// </summary>
+		[Flags]
+		internal enum SF_Format : uint
+		{
+			/* Major formats. */
+			WAV			= 0x010000,		/* Microsoft WAV format (little endian default). */
+			AIFF		= 0x020000,		/* Apple/SGI AIFF format (big endian). */
+			AU			= 0x030000,		/* Sun/NeXT AU format (big endian). */
+			RAW			= 0x040000,		/* RAW PCM data. */
+			PAF			= 0x050000,		/* Ensoniq PARIS file format. */
+			SVX			= 0x060000,		/* Amiga IFF / SVX8 / SV16 format. */
+			NIST		= 0x070000,		/* Sphere NIST format. */
+			VOC			= 0x080000,		/* VOC files. */
+			IRCAM		= 0x0A0000,		/* Berkeley/IRCAM/CARL */
+			W64			= 0x0B0000,		/* Sonic Foundry's 64 bit RIFF/WAV */
+			MAT4		= 0x0C0000,		/* Matlab (tm) V4.2 / GNU Octave 2.0 */
+			MAT5		= 0x0D0000,		/* Matlab (tm) V5.0 / GNU Octave 2.1 */
+			PVF			= 0x0E0000,		/* Portable Voice Format */
+			XI			= 0x0F0000,		/* Fasttracker 2 Extended Instrument */
+			HTK			= 0x100000,		/* HMM Tool Kit format */
+			SDS			= 0x110000,		/* Midi Sample Dump Standard */
+			AVR			= 0x120000,		/* Audio Visual Research */
+			WAVEX		= 0x130000,		/* MS WAVE with WAVEFORMATEX */
+			SD2			= 0x160000,		/* Sound Designer 2 */
+			FLAC		= 0x170000,		/* FLAC lossless file format */
+			CAF			= 0x180000,		/* Core Audio File format */
+			WVE			= 0x190000,		/* Psion WVE format */
+			OGG			= 0x200000,		/* Xiph OGG container */
+			MPC2K		= 0x210000,		/* Akai MPC 2000 sampler */
+			RF64		= 0x220000,		/* RF64 WAV file */
+
+			/* Subtypes from here on. */
+
+			PCM_S8		= 0x0001,		/* Signed 8 bit data */
+			PCM_16		= 0x0002,		/* Signed 16 bit data */
+			PCM_24		= 0x0003,		/* Signed 24 bit data */
+			PCM_32		= 0x0004,		/* Signed 32 bit data */
+
+			PCM_U8		= 0x0005,		/* Unsigned 8 bit data (WAV and RAW only) */
+
+			FLOAT		= 0x0006,		/* 32 bit float data */
+			DOUBLE		= 0x0007,		/* 64 bit float data */
+
+			ULAW		= 0x0010,		/* U-Law encoded. */
+			ALAW		= 0x0011,		/* A-Law encoded. */
+			IMA_ADPCM	= 0x0012,		/* IMA ADPCM. */
+			MS_ADPCM	= 0x0013,		/* Microsoft ADPCM. */
+
+			GSM610		= 0x0020,		/* GSM 6.10 encoding. */
+			VOX_ADPCM	= 0x0021,		/* OKI / Dialogix ADPCM */
+
+			G721_32		= 0x0030,		/* 32kbs G721 ADPCM encoding. */
+			G723_24		= 0x0031,		/* 24kbs G723 ADPCM encoding. */
+			G723_40		= 0x0032,		/* 40kbs G723 ADPCM encoding. */
+
+			DWVW_12		= 0x0040, 		/* 12 bit Delta Width Variable Word encoding. */
+			DWVW_16		= 0x0041, 		/* 16 bit Delta Width Variable Word encoding. */
+			DWVW_24		= 0x0042, 		/* 24 bit Delta Width Variable Word encoding. */
+			DWVW_N		= 0x0043, 		/* N bit Delta Width Variable Word encoding. */
+
+			DPCM_8		= 0x0050,		/* 8 bit differential PCM (XI only) */
+			DPCM_16		= 0x0051,		/* 16 bit differential PCM (XI only) */
+
+			VORBIS		= 0x0060,		/* Xiph Vorbis encoding. */
+
+			/* Endian-ness options. */
+
+			ENDIAN_FILE			= 0x00000000,	/* Default file endian-ness. */
+			ENDIAN_LITTLE		= 0x10000000,	/* Force little endian-ness. */
+			ENDIAN_BIG			= 0x20000000,	/* Force big endian-ness. */
+			ENDIAN_CPU			= 0x30000000,	/* Force CPU endian-ness. */
+
+			SUBMASK		= 0x0000FFFF,
+			TYPEMASK	= 0x0FFF0000,
+			ENDMASK		= 0x30000000
+		}
+
+		/// <summary>
+		/// The SF_INFO struct is adapted from sndfile.h
+		/// </summary>
+		[StructLayout(LayoutKind.Sequential)]
+		internal struct SF_INFO
+		{
+			public long frames;
+			public int samplerate;
+			public int channels;
+			public SF_Format format;
+			public int sections;
+			public int seekable;
+		}
+
+		[DllImport("libsndfile.so.1")]
+		internal static extern IntPtr sf_open(string path, SF_Mode mode, ref SF_INFO info);
+		[DllImport("libsndfile.so.1")]
+		internal static extern long sf_readf_short(IntPtr sndfile, short[] ptr, long frames) ;
+		[DllImport("libsndfile.so.1")]
+		internal static extern long sf_readf_int(IntPtr sndfile, int[] ptr, long frames) ;
+		[DllImport("libsndfile.so.1")]
+		internal static extern long sf_readf_float(IntPtr sndfile, float[] ptr, long frames) ;
+		[DllImport("libsndfile.so.1")]
+		internal static extern long sf_readf_double(IntPtr sndfile, double[] ptr, long frames) ;
+		[DllImport("libsndfile.so.1")]
+		internal static extern int sf_close(IntPtr sndfile);
 
 		IntPtr _hpcm;
 		IntPtr _hwparams;
@@ -98,6 +233,8 @@ namespace Palaso.Media
 		int _chunkBytes;
 		int _cbWritten;
 		string _filename;
+		IntPtr _hsf;
+		SF_INFO _info;
 
 		#region Construction and Destruction
 
@@ -121,7 +258,7 @@ namespace Palaso.Media
 		#region Public methods and properties
 
 		/// <summary>
-		/// Play the specified WAVE file.
+		/// Play the specified sound file.
 		/// </summary>
 		/// <param name='fileName'>
 		/// true if successful, false if an error occurs
@@ -132,10 +269,11 @@ namespace Palaso.Media
 				return false;
 			if (IsPlaying || IsRecording)
 				return false;
-			string errorMsg = null;
-			if (!ValidateFile(fileName, out errorMsg))
+			_info = new SF_INFO();
+			_hsf = sf_open(fileName, SF_Mode.READ, ref _info);
+			if (_hsf == IntPtr.Zero)
 			{
-				ShowError(errorMsg);
+				ShowError(String.Format("Sound player cannot open {0}", fileName));
 				return false;
 			}
 			_filename = fileName;
@@ -252,7 +390,7 @@ namespace Palaso.Media
 		}
 
 		/// <summary>
-		/// true iff a WAVE file is playing.
+		/// true iff a sound file is playing.
 		/// </summary>
 		public bool IsPlaying
 		{
@@ -280,7 +418,7 @@ namespace Palaso.Media
 		/// </summary>
 		void ShowError(string msg)
 		{
-			//System.Windows.Forms.MessageBox.Show(msg, "Audio Device Error");
+			Console.WriteLine("Audio Device Error: {0}", msg);
 		}
 
 		/// <summary>
@@ -291,11 +429,11 @@ namespace Palaso.Media
 		/// </returns>
 		bool InitializeForRecording()
 		{
-			_pcmFormat = SND_pcm_FORMAT_S16_LE;
+			_pcmFormat = SND_PCM_FORMAT_S16_LE;
 			_channelCount = 1;
 			_sampleRate = 22000;
 			_startDelay = 1;
-			int res = snd_pcm_open(ref _hpcm, "default", SND_pcm_STREA_CAPTURE, 0);
+			int res = snd_pcm_open(ref _hpcm, "default", SND_PCM_STREA_CAPTURE, 0);
 			if (res < 0)
 			{
 				ShowError("Cannot open default sound device for recording");
@@ -335,7 +473,7 @@ namespace Palaso.Media
 			{
 				return false;
 			}
-			res = snd_pcm_hw_params_set_access(_hpcm, _hwparams, SND_pcm_ACCESS_RW_INTERLEAVED);
+			res = snd_pcm_hw_params_set_access(_hpcm, _hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
 			if (res < 0)
 			{
 				ShowError("Interleaved sound channel access is not available");
@@ -439,6 +577,11 @@ namespace Palaso.Media
 				snd_pcm_close(_hpcm);
 				_hpcm = IntPtr.Zero;
 			}
+			if (_hsf != IntPtr.Zero)
+			{
+				sf_close(_hsf);
+				_hsf = IntPtr.Zero;
+			}
 		}
 
 		/// <summary>
@@ -477,201 +620,128 @@ namespace Palaso.Media
 		}
 
 		/// <summary>
-		/// Initialize the library for playing a WAVE file.
+		/// Initialize the library for playing a sound file.
 		/// </summary>
 		/// <returns>
 		/// true if successful, false if an error occurs
 		/// </returns>
 		bool InitializeForPlayback()
 		{
-			_pcmFormat = 0;
-			_channelCount = 0;
-			_sampleRate = 0;
-			_startDelay = 0;
-			int res = snd_pcm_open(ref _hpcm, "default", SND_pcm_STREA_PLAYBACK, 0);
+			if (_hsf == IntPtr.Zero)
+				return false;
+			int res = snd_pcm_open(ref _hpcm, "default", SND_PCM_STREA_PLAYBACK, 0);
 			if (res < 0)
 			{
 				ShowError("Cannot open default sound device for recording");
 				_hpcm = IntPtr.Zero;
 				return false;
 			}
+			switch (_info.format & SF_Format.SUBMASK)
+			{
+			case SF_Format.PCM_24:
+			case SF_Format.PCM_32:
+				_pcmFormat = SND_PCM_FORMAT_S32_LE;
+				break;
+			case SF_Format.FLOAT:
+				_pcmFormat = SND_PCM_FORMAT_FLOAT_LE;
+				break;
+			case SF_Format.DOUBLE:
+				_pcmFormat = SND_PCM_FORMAT_FLOAT64_LE;
+				break;
+			default:
+				_pcmFormat = SND_PCM_FORMAT_S16_LE;
+				break;
+			}
+			_channelCount = (ushort)_info.channels;
+			_sampleRate = (uint)_info.samplerate;
+			_startDelay = 0;
+			SetParams();
 			return true;
 		}
 
 		/// <summary>
-		/// Check the given file to make sure it's a WAVE file that we know how to play.
-		/// </summary>
-		/// <returns>
-		/// true if the file is a WAVE file we can play, otherwise false
-		/// </returns>
-		bool ValidateFile(string fileName, out string errorMsg)
-		{
-			errorMsg = null;
-			FileInfo info = new FileInfo(fileName);
-			int fileSize = (int)info.Length;
-			bool haveHeader = false;
-			bool haveFormat = false;
-			bool haveFact = false;
-			bool haveData = false;
-			int chunkCount = 0;
-			using (var reader = new WaveFileReader(fileName))
-			{
-				var chunk = reader.ReadWaveChunk();
-				var header = chunk as WaveFileHeader;
-				if (header == null)
-				{
-					errorMsg = String.Format("{0} is not a WAVE file!", fileName);
-					return false;
-				}
-				if (header.chunkId != "RIFF" || header.riffType != "WAVE")
-				{
-					errorMsg = String.Format("{0} is not a valid WAVE file (id = {1}, size = {2}, riff = {3}).",
-						fileName, header.chunkId, header.chunkSize, header.riffType);
-					return false;
-				}
-				haveHeader = true;
-				++chunkCount;
-				WaveFormatChunk format = null;
-				for (chunk = reader.ReadWaveChunk(); chunk != null; chunk = reader.ReadWaveChunk())
-				{
-					++chunkCount;
-					if (chunk is WaveFormatChunk)
-					{
-						if (haveFormat)
-						{
-							//Console.WriteLine("Found another format chunk.");
-						}
-						else
-						{
-							format = chunk as WaveFormatChunk;
-							haveFormat = true;
-						}
-						continue;
-					}
-					if (chunk is WaveFactChunk)
-					{
-						if (haveFact)
-						{
-							//Console.WriteLine("Found another fact chunk.");
-						}
-						else
-						{
-							haveFact = true;
-						}
-						continue;
-					}
-					if (chunk is WaveDataHeader)
-					{
-						if (haveData)
-						{
-							//Console.WriteLine("Found another data chunk.");
-						}
-						else
-						{
-							haveData = true;
-						}
-						reader.Advance(chunk.chunkSize);
-						continue;
-					}
-				}
-				if (format == null)
-				{
-					return false;
-				}
-				if (format.audioFormat != WAV_FMT_PCM)
-				{
-					errorMsg = String.Format("{0} is not PCM encoded ({1}).", fileName, format.audioFormat);
-					return false;
-				}
-				if (format.channelCount < 1)
-				{
-					errorMsg = String.Format("{0} has an invalid number of channels ({1}).", fileName, format.channelCount);
-					return false;
-				}
-				if (ComputePcmFormatFromWaveFormat(format, out errorMsg) < 0)
-					return false;
-				//Console.WriteLine("{0} is a WAVE file recorded at {1}Hz, using {2} bits/sample and {3} channels.",
-				//                  fileName, format.sampleRate, format.bitsPerSample, format.channelCount);
-			}
-			return haveHeader && haveFormat && haveData;
-		}
-
-		/// <summary>
-		/// Play the WAVE file that we've prepared.  This occurs on its own thread so that
+		/// Play the sound file that we've opened.  The playback occurs on its own thread so that
 		/// the user can asynchronously stop the playback.
 		/// </summary>
 		void Play()
 		{
 			if (!InitializeForPlayback())
 				return;
-			using (var reader = new WaveFileReader(_filename))
+			try
 			{
-				var header = reader.ReadWaveChunk() as WaveFileHeader;
-				if (header == null)
-					return;
-				int cbRemaining = 0;
-				for (var chunk = reader.ReadWaveChunk(); chunk != null; chunk = reader.ReadWaveChunk())
+				int remaining = (int)_info.frames;
+				switch (_pcmFormat)
 				{
-					if (chunk is WaveFormatChunk)
+				case SND_PCM_FORMAT_S32_LE:
+					var ints = new int[1024 * _info.channels];
+					while (remaining > 0)
 					{
-						var format = chunk as WaveFormatChunk;
-						string errorMsg;
-						_pcmFormat = ComputePcmFormatFromWaveFormat(format, out errorMsg);
-						_channelCount = format.channelCount;
-						_sampleRate = format.sampleRate;
-						SetParams();
-						continue;
+						int num = (remaining >= 1024) ? 1024 : remaining;
+						long cf = sf_readf_int(_hsf, ints, num);
+						if (cf != num)
+							break;
+						int num2 = snd_pcm_writei(_hpcm, ints, num);
+						if (num2 != num)
+							break;
+						remaining -= num;
 					}
-					if (chunk is WaveDataHeader)
+					break;
+				case SND_PCM_FORMAT_FLOAT_LE:
+					var floats = new float[1024 * _info.channels];
+					while (remaining > 0)
 					{
-						cbRemaining = (int)chunk.chunkSize;
-						break;
+						int num = (remaining >= 1024) ? 1024 : remaining;
+						long cf = sf_readf_float(_hsf, floats, num);
+						if (cf != num)
+							break;
+						int num2 = snd_pcm_writei(_hpcm, floats, num);
+						if (num2 != num)
+							break;
+						remaining -= num;
 					}
+					break;
+				case SND_PCM_FORMAT_FLOAT64_LE:
+					var doubles = new double[1024 * _info.channels];
+					while (remaining > 0)
+					{
+						int num = (remaining >= 1024) ? 1024 : remaining;
+						long cf = sf_readf_double(_hsf, doubles, num);
+						if (cf != num)
+							break;
+						int num2 = snd_pcm_writei(_hpcm, doubles, num);
+						if (num2 != num)
+							break;
+						remaining -= num;
+					}
+					break;
+				default:
+					var shorts = new short[1024 * _info.channels];
+					while (remaining > 0)
+					{
+						int num = (remaining >= 1024) ? 1024 : remaining;
+						long cf = sf_readf_short(_hsf, shorts, num);
+						if (cf != num)
+							break;
+						int num2 = snd_pcm_writei(_hpcm, shorts, num);
+						if (num2 != num)
+							break;
+						remaining -= num;
+					}
+					break;
 				}
-				while (cbRemaining >= _chunkBytes && !_fAsyncQuit)
+				if (remaining > 0)
 				{
-					var bytes = reader.ReadWaveData(_chunkBytes);
-					if (bytes == null || bytes.Length != _chunkBytes)
-						break;
-					int size = snd_pcm_writei(_hpcm, bytes, _chunkSize);
-					if (size != _chunkSize)
-						break;
-					cbRemaining -= _chunkBytes;
+					ShowError(String.Format("Error trying to play {0}", _filename));
 				}
+				snd_pcm_nonblock(_hpcm, 0);
+				snd_pcm_drain(_hpcm);
+				snd_pcm_nonblock(_hpcm, 0);
 			}
-			snd_pcm_nonblock(_hpcm, 0);
-			snd_pcm_drain(_hpcm);
-			snd_pcm_nonblock(_hpcm, 0);
-			Cleanup();
-			_fAsyncQuit = false;
-		}
-
-		/// <summary>
-		/// Computes the library's PCM format from wave file's format.
-		/// </summary>
-		/// <returns>
-		/// -1 if the format is unplayable, otherwise the (positive) value representing
-		/// the PCM format.
-		/// </returns>
-		int ComputePcmFormatFromWaveFormat(WaveFormatChunk formatPlaying, out string errorMsg)
-		{
-			errorMsg = null;
-			switch (formatPlaying.bitsPerSample)
+			finally
 			{
-			case 8:		return SND_pcm_FORMAT_U8;
-			case 16:	return SND_pcm_FORMAT_S16_LE;
-			case 24:
-				switch (formatPlaying.blockAlign / formatPlaying.channelCount)
-				{
-				case 3: return SND_pcm_FORMAT_S24_3LE;
-				case 4: return SND_pcm_FORMAT_S24_LE;
-				}
-				break;
-			case 32:	return SND_pcm_FORMAT_S32_LE;
+				Cleanup();
+				_fAsyncQuit = false;
 			}
-			errorMsg = String.Format("Cannot play WAVE files with {0}-bit samples in {1} bytes ({2} channels)",
-				formatPlaying.bitsPerSample, formatPlaying.blockAlign, formatPlaying.channelCount);
-			return -1;
 		}
 
 		/// <summary>
@@ -683,15 +753,6 @@ namespace Palaso.Media
 			public string chunkId;
 			/// <summary>The size of the chunk following this header</summary>
 			public UInt32 chunkSize;
-		}
-
-		/// <summary>
-		/// WAVE file header: chunkId == "RIFF", chunkSize == file size - 8
-		/// </summary>
-		public class WaveFileHeader : WaveChunk
-		{
-			/// <summary>must == "WAVE" (four 8-bit chars in the file)</summary>
-			public string riffType;
 		}
 
 		/// <summary>
@@ -713,211 +774,6 @@ namespace Palaso.Media
 			public UInt16 bitsPerSample;
 			/// <summary>extra information found in some files</summary>
 			public byte[] extraInfo;
-		}
-
-		/// <summary>
-		/// Wave data header: chunkId == "data".
-		/// </summary>
-		public class WaveDataHeader : WaveChunk
-		{
-			// Do we need this redundant class?  It does simplify the code at one point.
-		}
-
-		/// <summary>
-		/// Wave "fact" chunk: chunkId == "fact", chunkSize >= 4
-		/// </summary>
-		public class WaveFactChunk : WaveChunk
-		{
-			/// <summary>number of samples in the data chunk</summary>
-			public UInt32 sampleCount;
-			/// <summary>extra information that might exist someday</summary>
-			public byte[] extraInfo;
-		}
-
-		/// <summary>
-		/// random Wave chunk that we don't handle.
-		/// </summary>
-		public class WaveRandomChunk : WaveChunk
-		{
-			/// <summary></summary>
-			public byte[] chunkData;
-		}
-		/// <summary>
-		/// Utility class for reading a WAVE file.
-		/// </summary>
-		public class WaveFileReader : IDisposable
-		{
-			BinaryReader _reader;
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="Palaso.Media.AlsaAudioDevice.WaveFileReader"/> class.
-			/// </summary>
-			public WaveFileReader(string filename)
-			{
-				_reader = new BinaryReader(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
-			}
-
-			#region General Utility Methods
-
-			/// <summary>
-			/// Reads a 4 byte segment and tries to convert the bytes into a string.
-			/// </summary>
-			protected string ReadRiffTypeName()
-			{
-				byte[] bytes = _reader.ReadBytes(4);
-				if (bytes == null || bytes.Length < 4)
-				{
-					if (_reader.BaseStream.Position < 4)
-						throw new EndOfStreamException();
-					return null;
-				}
-				char[] chars = new char[4];
-				try
-				{
-					for (int i = 0; i < 4; ++i)
-						chars[i] = (char)bytes[i];
-					return new string(chars);
-				}
-				catch
-				{
-					return "????";
-				}
-			}
-
-			/// <summary>
-			/// Reads the next chunk from a supposed WAVE file.
-			/// </summary>
-			public WaveChunk ReadWaveChunk()
-			{
-				var chunkId = ReadRiffTypeName();
-				//Console.WriteLine("ChunkId = \"{0}\"", chunkId);
-				switch (chunkId)
-				{
-				case "RIFF":
-					return ReadWaveFileHeader(chunkId);
-				case "fmt ":
-					return ReadWaveFormatChunk(chunkId);
-				case "data":
-					return ReadWaveDataHeader(chunkId);
-				case "fact":
-					return ReadWaveFactChunk(chunkId);
-				case null:
-					return null;
-				default:
-					if (!String.IsNullOrEmpty(chunkId) && chunkId.Length == 4 &&
-						IsAsciiLetter(chunkId[0]) &&
-						IsAsciiLetter(chunkId[1]) &&
-						(IsAsciiLetter(chunkId[2]) || chunkId[2] == ' ') &&
-						(IsAsciiLetter(chunkId[3]) || chunkId[3] == ' '))
-					{
-						return ReadRandomChunk(chunkId);
-					}
-					return null;
-				}
-			}
-
-			/// <summary>
-			/// Advance the location in the file by the given offset.
-			/// </summary>
-			public void Advance(long offset)
-			{
-				_reader.BaseStream.Seek(offset, SeekOrigin.Current);
-			}
-
-			bool IsAsciiLetter(char ch)
-			{
-				return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' || ch <= 'z');
-			}
-
-			/// <summary>
-			/// Reads the WAVE file header.
-			/// </summary>
-			WaveFileHeader ReadWaveFileHeader(string chunkId)
-			{
-				var header = new WaveFileHeader();
-				header.chunkId = chunkId;
-				header.chunkSize = _reader.ReadUInt32();
-				header.riffType = ReadRiffTypeName();
-				return header;
-			}
-
-			/// <summary>
-			/// Reads the WAVE format block.
-			/// </summary>
-			WaveFormatChunk ReadWaveFormatChunk(string chunkId)
-			{
-				var chunk = new WaveFormatChunk();
-				chunk.chunkId = chunkId;
-				chunk.chunkSize = _reader.ReadUInt32();
-				chunk.audioFormat = _reader.ReadUInt16();
-				chunk.channelCount = _reader.ReadUInt16();
-				chunk.sampleRate = _reader.ReadUInt32();
-				chunk.byteRate = _reader.ReadUInt32();
-				chunk.blockAlign = _reader.ReadUInt16();
-				chunk.bitsPerSample = _reader.ReadUInt16();
-				if (chunk.chunkSize > 16)
-					chunk.extraInfo = _reader.ReadBytes((int)(chunk.chunkSize - 16));
-				return chunk;
-			}
-
-			/// <summary>
-			/// Reads the WAVE data header.
-			/// </summary>
-			WaveDataHeader ReadWaveDataHeader(string chunkId)
-			{
-				var header = new WaveDataHeader();
-				header.chunkId = chunkId;
-				header.chunkSize =  _reader.ReadUInt32();
-				return header;
-			}
-
-			/// <summary>
-			/// Reads a "fact" chunk from a WAVE file.
-			/// </summary>
-			/// <returns>The wave fact chunk.</returns>
-			/// <param name="chunkId">Chunk identifier.</param>
-			WaveChunk ReadWaveFactChunk(string chunkId)
-			{
-				var chunk = new WaveFactChunk();
-				chunk.chunkId = chunkId;
-				chunk.chunkSize = _reader.ReadUInt32();
-				chunk.sampleCount = _reader.ReadUInt32();
-				if (chunk.chunkSize > 4)
-					chunk.extraInfo = _reader.ReadBytes((int)(chunk.chunkSize - 4));
-				return chunk;
-			}
-
-			WaveChunk ReadRandomChunk(string chunkId)
-			{
-				var chunk = new WaveRandomChunk();
-				chunk.chunkId = chunkId;
-				chunk.chunkSize = _reader.ReadUInt32();
-				if (chunk.chunkSize > 0)
-					chunk.chunkData = _reader.ReadBytes((int)chunk.chunkSize);
-				return chunk;
-			}
-
-			/// <summary>
-			/// Reads the requested amount of sound data from the WAVE file.
-			/// </summary>
-			public byte[] ReadWaveData(int count)
-			{
-				return _reader.ReadBytes(count);
-			}
-			#endregion
-
-			#region IDisposable Members
-
-			/// <summary>
-			/// Release all resources used by the <see cref="Palaso.Media.AlsaAudioDevice.WaveFileReader"/> object.
-			/// </summary>
-			public void Dispose()
-			{
-				if(_reader != null)
-					_reader.Close();
-			}
-
-			#endregion
 		}
 
 		/// <summary>
