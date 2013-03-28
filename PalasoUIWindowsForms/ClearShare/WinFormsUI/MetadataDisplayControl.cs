@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using L10NSharp;
 using Palaso.UI.WindowsForms.Widgets;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
@@ -23,7 +24,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			_table.RowStyles.Clear();
 			if(!string.IsNullOrEmpty(metaData.Creator))
 			{
-				AddRow("Creator: "+metaData.Creator);
+				AddRow(string.Format("Creator: {0}".Localize("Metadata.Creator"), metaData.Creator));
 			}
 			if (!string.IsNullOrEmpty(metaData.CollectionName))
 			{
@@ -56,7 +57,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			{
 				if (metaData.License is NullLicense)
 				{
-					AddRow("No license specified");
+					AddRow("No license specified".Localize());
 				}
 				else
 				{
@@ -73,7 +74,8 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					}
 					if (!string.IsNullOrEmpty(metaData.License.Url))
 					{
-						AddHyperLink("License Info", metaData.License.Url, 1);
+						//AddHyperLink(LocalizationManager.GetString("License Info", metaData.License.Url, 1);
+						AddHyperLink("License Info".Localize(), metaData.License.Url, 1);
 					}
 					else if(pictureBox!=null)
 					{
