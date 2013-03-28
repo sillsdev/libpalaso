@@ -125,6 +125,10 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="L10NSharp">
+	  <HintPath>..\lib\common\L10NSharp.dll</HintPath>
+	</Reference>
+	<Reference Include="LocalizationManager, Version=1.1.4834.18775, Culture=neutral, processorArchitecture=MSIL" />
 	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Debug\NAudio.dll</HintPath>
@@ -134,7 +138,9 @@
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Security" />
+	<Reference Include="System.ServiceModel" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
@@ -1031,7 +1037,9 @@
   <ItemGroup>
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+	<Content Include="LocalizationManager.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
