@@ -119,6 +119,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_rfc4646.Text = _model.CurrentDefinition.Bcp47Tag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
+				_languageName.Font = SystemFonts.MessageBoxFont;
+				_rfc4646.Font = SystemFonts.MessageBoxFont;
 			}
 		}
 

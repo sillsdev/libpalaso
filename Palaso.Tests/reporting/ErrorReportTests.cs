@@ -19,6 +19,7 @@ namespace Palaso.Tests.reporting
 			ErrorReport.EmailAddress = "pretend@8ksdfj83jls8.com";
 			ErrorReport.ReportNonFatalException(new ApplicationException("testing"));
 		}
+#if !MONO
 		[Test, Ignore("by hand only")]
 		public void TestSendEmail()
 		{
@@ -26,5 +27,6 @@ namespace Palaso.Tests.reporting
 			x.AddRecipientTo("pretend@8ksdfj83jls8.com");
 			x.SendMailDirect("test", "testbody");
 		}
+#endif
 	}
 }

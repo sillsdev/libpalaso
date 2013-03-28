@@ -454,8 +454,9 @@ namespace Palaso.Reporting
 			{
 				_settings.Launches++;
 			}
-
+#if !MONO
 			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
+#endif
 
 			 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{

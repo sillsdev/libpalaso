@@ -28,7 +28,7 @@ namespace Palaso.UsbDrive.Linux
 				var uDiskDevice = new UDiskDevice(device);
 				string iface = uDiskDevice.GetProperty("DriveConnectionInterface");
 				string partition = uDiskDevice.GetProperty("DeviceIsPartition");
-				if (iface == onInterface && partition == "True")
+				if (iface == onInterface && uDiskDevice.IsMounted)
 				{
 					yield return device;
 				}

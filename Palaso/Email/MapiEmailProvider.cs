@@ -10,8 +10,12 @@ namespace Palaso.Email
 			return new EmailMessage();
 		}
 
+
 		public bool SendMessage(IEmailMessage message)
 		{
+#if MONO
+			return false;
+#else
 			var mapi = new MAPI();
 			foreach (string recipient in message.To)
 			{
@@ -36,6 +40,7 @@ namespace Palaso.Email
 
 			//this one works for thunderbird, too. It opens a window rather than just sending:
 			return mapi.SendMailPopup(message.Subject, message.Body);
+#endif
 		}
 	}
 }
