@@ -44,7 +44,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._okButton, L10NSharp.LocalizationPriority.High);
 			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
-			this._okButton.Location = new System.Drawing.Point(155, 514);
+			this._okButton.Location = new System.Drawing.Point(164, 550);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 2;
@@ -60,7 +60,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._cancelButton, L10NSharp.LocalizationPriority.High);
 			this._L10NSharpExtender.SetLocalizingId(this._cancelButton, "Common.CancelButton");
-			this._cancelButton.Location = new System.Drawing.Point(246, 514);
+			this._cancelButton.Location = new System.Drawing.Point(255, 550);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 3;
@@ -84,11 +84,11 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._metadataEditorControl, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._metadataEditorControl, null);
 			this._L10NSharpExtender.SetLocalizingId(this._metadataEditorControl, "MetadataEditor.MetadataEditorDialog.MetadataEditorControl");
-			this._metadataEditorControl.Location = new System.Drawing.Point(-1, 0);
+			this._metadataEditorControl.Location = new System.Drawing.Point(1, 12);
 			this._metadataEditorControl.Metadata = null;
 			this._metadataEditorControl.Name = "_metadataEditorControl";
 			this._metadataEditorControl.ShowCreator = false;
-			this._metadataEditorControl.Size = new System.Drawing.Size(338, 505);
+			this._metadataEditorControl.Size = new System.Drawing.Size(338, 527);
 			this._metadataEditorControl.TabIndex = 0;
 			//
 			// MetadataEditorDialog
@@ -96,7 +96,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(338, 549);
+			this.ClientSize = new System.Drawing.Size(347, 585);
 			this.ControlBox = false;
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);

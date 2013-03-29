@@ -34,9 +34,9 @@
 			this.betterLinkLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
-			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
+			this._localizationHelper = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
 			this._searchResultStats = new System.Windows.Forms.Label();
-			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).BeginInit();
 			this.SuspendLayout();
 			//
 			// _searchButton
@@ -71,7 +71,7 @@
 			this.betterLinkLabel1.Multiline = true;
 			this.betterLinkLabel1.Name = "betterLinkLabel1";
 			this.betterLinkLabel1.ReadOnly = true;
-			this.betterLinkLabel1.Size = new System.Drawing.Size(348, 22);
+			this.betterLinkLabel1.Size = new System.Drawing.Size(348, 17);
 			this.betterLinkLabel1.TabIndex = 11;
 			this.betterLinkLabel1.TabStop = false;
 			this.betterLinkLabel1.Text = "Download Art Of Reading Installer";
@@ -85,13 +85,14 @@
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this._messageLabel.BackColor = System.Drawing.Color.White;
 			this._messageLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._messageLabel.Enabled = false;
 			this._messageLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._messageLabel.ForeColor = System.Drawing.Color.Gray;
 			this._messageLabel.Location = new System.Drawing.Point(24, 99);
 			this._messageLabel.Multiline = true;
 			this._messageLabel.Name = "_messageLabel";
 			this._messageLabel.ReadOnly = true;
-			this._messageLabel.Size = new System.Drawing.Size(348, 150);
+			this._messageLabel.Size = new System.Drawing.Size(348, 17);
 			this._messageLabel.TabIndex = 10;
 			this._messageLabel.TabStop = false;
 			this._messageLabel.Text = "~No matching images";
@@ -114,9 +115,9 @@
 			this._thumbnailViewer.UseCompatibleStateImageBehavior = false;
 			this._thumbnailViewer.DoubleClick += new System.EventHandler(this._thumbnailViewer_DoubleClick);
 			//
-			// localizationHelper1
+			// _localizationHelper
 			//
-			this.localizationHelper1.Parent = this;
+			this._localizationHelper.Parent = this;
 			//
 			// _searchResultStats
 			//
@@ -141,7 +142,7 @@
 			this.Name = "ArtOfReadingChooser";
 			this.Size = new System.Drawing.Size(408, 325);
 			this.Load += new System.EventHandler(this.ArtOfReadingChooser_Load);
-			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -153,7 +154,7 @@
 		private System.Windows.Forms.Button _searchButton;
 		private System.Windows.Forms.TextBox _searchTermsBox;
 		private Widgets.BetterLabel _messageLabel;
-		private i18n.LocalizationHelper localizationHelper1;
+		private i18n.LocalizationHelper _localizationHelper;
 		private Widgets.BetterLinkLabel betterLinkLabel1;
 		private System.Windows.Forms.Label _searchResultStats;
 	}
