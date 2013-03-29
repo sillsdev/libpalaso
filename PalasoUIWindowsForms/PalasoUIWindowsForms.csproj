@@ -301,6 +301,18 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
+	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
+	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.designer.cs">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Progress\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -442,7 +454,6 @@
 	<Compile Include="Reporting\ExceptionReportingDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="Keyboarding\Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\LabelProgress.cs" />
 	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
@@ -472,18 +483,7 @@
 	<Compile Include="Progress\SimpleStatusProgress.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Keyboarding\Miscellaneous\TaskBarFlasher.cs" />
 	<Compile Include="Progress\TextBoxProgress.cs" />
-	<Compile Include="Keyboarding\Miscellaneous\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Keyboarding\Miscellaneous\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Keyboarding\Miscellaneous\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Keyboarding\Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
 	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
@@ -708,6 +708,12 @@
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
+	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBox.resx">
 	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
@@ -781,14 +787,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
 	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Keyboarding\Miscellaneous\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Keyboarding\Miscellaneous\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
