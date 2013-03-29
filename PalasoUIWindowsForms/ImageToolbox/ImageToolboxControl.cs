@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using L10NSharp;
 using Palaso.Code;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
-using Palaso.UI.WindowsForms.SuperToolTip;
 
 #if !MONO
 
@@ -87,7 +86,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				catch (Exception e)
 				{
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.");
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.".Localize("ImageToolbox.GenericGettingImageProblem"));
 				}
 			}
 		}
@@ -211,7 +210,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			catch (Exception error)
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
-																 "Sorry, something went wrong with the ImageToolbox");
+																 "Sorry, something went wrong with the ImageToolbox".Localize("ImageToolbox.GenericProblem"));
 			}
 			finally
 			{
@@ -285,13 +284,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			_editLink.Visible = false;
 
-			AddControl("Get Picture", ImageToolboxButtons.browse, "browse", (x) =>
+			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
 				var c = new AcquireImageControl();
 				c.SetIntialSearchString(InitialSearchString);
 				return c;
 			});
-			_cropToolListItem = AddControl("Crop", ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
+			_cropToolListItem = AddControl("Crop".Localize("ImageToolbox.Crop"), ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
