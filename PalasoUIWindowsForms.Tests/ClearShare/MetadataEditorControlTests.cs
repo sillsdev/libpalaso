@@ -13,6 +13,17 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 	[TestFixture]
 	public class MetadataEditorControlTests
 	{
+
+		[Test, Ignore("By Hand")]
+		public void ShowFullDialog()
+		{
+			var m = new Metadata();
+			using (var dlg = new MetadataEditorDialog(m))
+			{
+				dlg.ShowDialog();
+			}
+		}
+
 		[Test, Ignore("By Hand")]
 		public void ShowControl()
 		{

@@ -35,6 +35,7 @@
 			this._noDerivates = new System.Windows.Forms.RadioButton();
 			this._derivatives = new System.Windows.Forms.RadioButton();
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._nonCommercial = new System.Windows.Forms.RadioButton();
 			this._commercial = new System.Windows.Forms.RadioButton();
 			this._licenseImage = new System.Windows.Forms.PictureBox();
@@ -43,15 +44,14 @@
 			this._customLicense = new System.Windows.Forms.RadioButton();
 			this._customLicenseDescription = new System.Windows.Forms.TextBox();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this._illustratorLabel = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this._illustrator = new System.Windows.Forms.TextBox();
 			this._copyrightYear = new System.Windows.Forms.TextBox();
 			this._copyrightBy = new System.Windows.Forms.TextBox();
 			this._copyrightHolderLabel = new System.Windows.Forms.Label();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._licenseImage)).BeginInit();
@@ -139,6 +139,25 @@
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(229, 65);
 			this.panel2.TabIndex = 20;
+			//
+			// betterLabel1
+			//
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.betterLabel1.Enabled = false;
+			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._L10NSharpExtender.SetLocalizableToolTip(this.betterLabel1, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.betterLabel1, null);
+			this._L10NSharpExtender.SetLocalizingId(this.betterLabel1, "MetadataEditor.AllowCommercialUse");
+			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
+			this.betterLabel1.Multiline = true;
+			this.betterLabel1.Name = "betterLabel1";
+			this.betterLabel1.ReadOnly = true;
+			this.betterLabel1.Size = new System.Drawing.Size(392, 17);
+			this.betterLabel1.TabIndex = 0;
+			this.betterLabel1.TabStop = false;
+			this.betterLabel1.Text = "Allow commercial uses of your work?";
 			//
 			// _nonCommercial
 			//
@@ -248,25 +267,6 @@
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "MetadataEditor";
 			//
-			// betterLabel1
-			//
-			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel1.Enabled = false;
-			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this._L10NSharpExtender.SetLocalizableToolTip(this.betterLabel1, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.betterLabel1, null);
-			this._L10NSharpExtender.SetLocalizingId(this.betterLabel1, "MetadataEditor.AllowCommercialUse");
-			this.betterLabel1.Location = new System.Drawing.Point(0, 0);
-			this.betterLabel1.Multiline = true;
-			this.betterLabel1.Name = "betterLabel1";
-			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(392, 17);
-			this.betterLabel1.TabIndex = 0;
-			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "Allow commercial uses of your work?";
-			//
 			// betterLabel2
 			//
 			this.betterLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -285,26 +285,6 @@
 			this.betterLabel2.TabIndex = 12;
 			this.betterLabel2.TabStop = false;
 			this.betterLabel2.Text = "Allow modifications of your work?";
-			//
-			// tableLayoutPanel1
-			//
-			this.tableLayoutPanel1.ColumnCount = 2;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
-			this.tableLayoutPanel1.Controls.Add(this._illustratorLabel, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this._illustrator, 1, 0);
-			this.tableLayoutPanel1.Controls.Add(this._copyrightYear, 1, 1);
-			this.tableLayoutPanel1.Controls.Add(this._copyrightBy, 1, 2);
-			this.tableLayoutPanel1.Controls.Add(this._copyrightHolderLabel, 0, 2);
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 20);
-			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 3;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(318, 109);
-			this.tableLayoutPanel1.TabIndex = 27;
 			//
 			// _illustratorLabel
 			//
@@ -345,6 +325,7 @@
 			this._illustrator.Name = "_illustrator";
 			this._illustrator.Size = new System.Drawing.Size(197, 23);
 			this._illustrator.TabIndex = 9;
+			this._illustrator.TextChanged += new System.EventHandler(this._illustrator_TextChanged);
 			//
 			// _copyrightYear
 			//
@@ -357,6 +338,7 @@
 			this._copyrightYear.Name = "_copyrightYear";
 			this._copyrightYear.Size = new System.Drawing.Size(38, 23);
 			this._copyrightYear.TabIndex = 10;
+			this._copyrightYear.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
 			//
 			// _copyrightBy
 			//
@@ -371,6 +353,7 @@
 			this._copyrightBy.Name = "_copyrightBy";
 			this._copyrightBy.Size = new System.Drawing.Size(220, 45);
 			this._copyrightBy.TabIndex = 27;
+			this._copyrightBy.TextChanged += new System.EventHandler(this._copyrightBy_TextChanged);
 			//
 			// _copyrightHolderLabel
 			//
@@ -384,6 +367,26 @@
 			this._copyrightHolderLabel.Size = new System.Drawing.Size(86, 51);
 			this._copyrightHolderLabel.TabIndex = 28;
 			this._copyrightHolderLabel.Text = "By";
+			//
+			// tableLayoutPanel1
+			//
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this._illustratorLabel, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this._illustrator, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this._copyrightYear, 1, 1);
+			this.tableLayoutPanel1.Controls.Add(this._copyrightBy, 1, 2);
+			this.tableLayoutPanel1.Controls.Add(this._copyrightHolderLabel, 0, 2);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 20);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 3;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(318, 109);
+			this.tableLayoutPanel1.TabIndex = 27;
 			//
 			// MetadataEditorControl
 			//
