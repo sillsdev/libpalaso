@@ -16,7 +16,9 @@ namespace Palaso.IO
 		string LocateFile(string fileName);
 		string LocateFile(string fileName, string descriptionForErrorMessage);
 		string LocateOptionalFile(string fileName);
+		string LocateFileWithThrow(string fileName);
 		string LocateDirectory(string directoryName);
+		string LocateDirectoryWithThrow(string directoryName);
 		string LocateDirectory(string directoryName, string descriptionForErrorMessage);
 		IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths);
 	}
@@ -93,7 +95,22 @@ namespace Palaso.IO
 			}
 			return path;
 		}
+		public string LocateDirectoryWithThrow(string directoryName)
+		{
+			var path = LocateDirectory(directoryName);
+			if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
+			{
+				throw new ApplicationException(String.Format("Could not find {0}.  It expected to find it in one of these locations: {1}",
+					directoryName, _searchPaths.Concat(Environment.NewLine)));
+			}
+			return path;
+		}
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns>null if not found</returns>
 		public string LocateOptionalFile(string fileName)
 		{
 			var path = LocateFile(fileName);
@@ -104,6 +121,18 @@ namespace Palaso.IO
 			return path;
 		}
 
+		/// <summary>
+		/// Throws ApplicationException if not found.
+		/// </summary>
+		public string LocateFileWithThrow(string fileName)
+		{
+			var path = LocateFile(fileName);
+			if (string.IsNullOrEmpty(path) || !File.Exists(path))
+			{
+				throw new ApplicationException("Could not find " + fileName + ". It expected to find it in one of these locations: " + Environment.NewLine + _searchPaths.Concat(Environment.NewLine));
+			}
+			return path;
+		}
 		/// <summary>
 		/// Gives the directory of either the project folder (if running from visual studio), or
 		/// the installation folder.  Helpful for finding templates and things; by using this,
