@@ -312,7 +312,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			bool isFirst = true;
 			foreach (string path in files)
 			{
-				ProcessFile(parent, path, doc, guidDatabase, isFirst);
+				ProcessFile(parent, path, doc, guidDatabase, isFirst, outerDirectoryId);
 				isFirst = false;
 			}
 
@@ -385,13 +385,13 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			return id;
 		}
 
-		private void ProcessFile(XmlElement parent, string path, XmlDocument doc, IdToGuidDatabase guidDatabase, bool isFirst)
+		private void ProcessFile(XmlElement parent, string path, XmlDocument doc, IdToGuidDatabase guidDatabase, bool isFirst, string directoryId)
 		{
 
 			string guid;
 			string name = Path.GetFileName(path);
-			string id = name;
-			if (!Char.IsLetter(id[0]) && id[0] != '_')
+			string id = directoryId+"."+name; //includ the parent directory id so that files with the same name (e.g. "index.html") found twice in the system will get different ids.
+			if (!Char.IsLetter(id[0]) && id[0] != '_')//probably not needed now that we're prepending the parent directory id, accept maybe at the root?
 				id = '_' + id;
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 
