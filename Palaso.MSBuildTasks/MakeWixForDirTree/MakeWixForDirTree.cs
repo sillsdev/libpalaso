@@ -391,6 +391,12 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			string guid;
 			string name = Path.GetFileName(path);
 			string id = directoryId+"."+name; //includ the parent directory id so that files with the same name (e.g. "index.html") found twice in the system will get different ids.
+
+			const int kMaxLength = 50; //I have so far not found out what the max really is
+			if (id.Length > kMaxLength)
+			{
+				id = id.Substring(id.Length - kMaxLength, kMaxLength); //get the last chunk of it
+			}
 			if (!Char.IsLetter(id[0]) && id[0] != '_')//probably not needed now that we're prepending the parent directory id, accept maybe at the root?
 				id = '_' + id;
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
