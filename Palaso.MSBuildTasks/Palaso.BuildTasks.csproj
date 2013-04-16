@@ -92,6 +92,7 @@
 	<Compile Include="MakeWixForDirTree\IdToGuidDatabase.cs" />
 	<Compile Include="MakeWixForDirTree\MakeWixForDirTree.cs" />
 	<Compile Include="FileUpdate.cs" />
+	<Compile Include="CpuArchitecture.cs" />
 	<Compile Include="SubString\Split.cs" />
   </ItemGroup>
   <ItemGroup>
