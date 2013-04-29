@@ -246,7 +246,16 @@ namespace Palaso.IO
 			{
 				path = System.IO.Path.Combine(path, part);
 			}
+			if (Directory.Exists(path))
+				return path;
 
+			//try src (e.g. Bloom keeps its javascript under source directory (and in distfiles only when installed)
+			path = FileLocator.DirectoryOfApplicationOrSolution;
+			path = Path.Combine(path, "src");
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
 
 			if (optional && !Directory.Exists(path))
 				return null;
