@@ -66,7 +66,6 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 			Color clr = SystemColors.Window;
 			GridColor = Color.FromArgb(CalculateContrastiveGridLineColorComponent(clr.R),
 				CalculateContrastiveGridLineColorComponent(clr.G), CalculateContrastiveGridLineColorComponent(clr.B));
-			//GridColor = Color.FromArgb(clr.R - 30, clr.G - 30, clr.B - 30);
 			MultiSelect = false;
 			PaintHeaderAcrossFullGridWidth = true;
 			TextBoxEditControlBorderColor = Color.Silver;
