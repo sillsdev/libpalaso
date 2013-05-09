@@ -118,6 +118,7 @@ namespace Palaso.Media.Naudio
 			if (_waveIn != null)
 			{
 				_waveIn.DataAvailable -= waveIn_DataAvailable;
+				_waveIn.RecordingStopped -= OnRecordingStopped;
 				try { _waveIn.Dispose(); }
 				catch { }
 				_waveIn = null;
@@ -153,6 +154,7 @@ namespace Palaso.Media.Naudio
 					InitializeWaveIn();
 
 					_waveIn.DataAvailable += waveIn_DataAvailable;
+					_waveIn.RecordingStopped += OnRecordingStopped;
 					_waveIn.WaveFormat = _recordingFormat;
 					try
 					{
@@ -172,6 +174,23 @@ namespace Palaso.Media.Naudio
 			{
 				CloseWaveIn();
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e, "There was a problem starting up volume monitoring.");
+			}
+		}
+
+		/// <summary>
+		/// As of NAudio 1.6, this can occur because something went wrong, for example, someone unplugged the microphone.
+		/// We won't get a DataAvailable notification, so make sure we aren't stuck in a state where we expect it.
+		/// Note that we can get this even when nothing but monitoring is happening.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="eventArgs"></param>
+		private void OnRecordingStopped(object sender, EventArgs eventArgs)
+		{
+			lock (this)
+			{
+				Debug.WriteLine("Got RecordingStopped event");
+				if (_fileWriterThread != null)
+					TransitionFromRecordingToMonitoring();
 			}
 		}
 
@@ -295,6 +314,7 @@ namespace Palaso.Media.Naudio
 				{
 					_recordingStopTime = DateTime.Now;
 					RecordingState = RecordingState.RequestedStop;
+					Debug.WriteLine("Setting RequestedStop");
 					// Don't stop because we'll lose any buffer(s) that have not been processed.
 					// Then when we re-start, NAudio can crash because the buffers for which it has
 					// queued messages will be disposed
@@ -457,6 +477,7 @@ namespace Palaso.Media.Naudio
 					if (DateTime.Now > _recordingStopTime.AddSeconds(2) || hitMaximumFileSize ||
 						_recordingStartTime.AddSeconds(currRecordedTime) >= _recordingStopTime)
 					{
+						Debug.WriteLine("Transition to monitoring from DataAvailable");
 						TransitionFromRecordingToMonitoring();
 					}
 				}
