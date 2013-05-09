@@ -19,14 +19,6 @@ namespace Palaso.Media.Naudio.UI
 			set
 			{
 				_recorder = value;
-				if (_recorder != null && _recorder.SelectedDevice != null)
-				{
-					toolTip1.SetToolTip(_recordingDeviceImage, _recorder.SelectedDevice.Capabilities.ProductName);
-				}
-				else
-				{
-					toolTip1.SetToolTip(_recordingDeviceImage, "no input device");
-				}
 				if (IsHandleCreated)
 					UpdateDisplay();
 			}
@@ -40,6 +32,14 @@ namespace Palaso.Media.Naudio.UI
 
 		public void UpdateDisplay()
 		{
+			if (_recorder != null && _recorder.SelectedDevice != null)
+			{
+				toolTip1.SetToolTip(_recordingDeviceImage, _recorder.SelectedDevice.Capabilities.ProductName);
+			}
+			else
+			{
+				toolTip1.SetToolTip(_recordingDeviceImage, "no input device");
+			}
 			if (_recorder == null)
 				return;
 
