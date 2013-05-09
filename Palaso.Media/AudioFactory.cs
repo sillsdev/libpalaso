@@ -4,7 +4,7 @@ namespace Palaso.Media
 {
 	public class AudioFactory
 	{
-		public static ISimpleAudioSession AudioSession(string filePath)
+		public static ISimpleAudioSession CreateAudioSession(string filePath)
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
@@ -12,5 +12,11 @@ namespace Palaso.Media
 			}
 			return new AudioIrrKlangSession(filePath);
 		}
+
+		[Obsolete("This was a unfortunate method name. Use CreateAudioSessionInstead.")]
+		public static ISimpleAudioSession AudioSession(string filePath)
+		{
+			return CreateAudioSession(filePath);
 	}
+}
 }
