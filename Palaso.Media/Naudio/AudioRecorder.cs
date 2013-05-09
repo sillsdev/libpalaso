@@ -126,7 +126,19 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// <summary>
-		/// Switch device after we have started, typically because the user plugged in a new one.
+		/// Switch device after we have started monitoring, typically because the user plugged in a new one.
+		/// One way to detect a new device (see e.g. HearThis, RecordingToolControl.checkNewMicTimer_Tick)
+		/// is to keep a set of the ProductNames derived using (from d in RecordingDevice.Devices select d.ProductName),
+		/// and periodically compare it with the current set of RecordingDevice.Devices, which (at least on
+		/// Win7 with USB mics) seems to update as things are connected and disconnected.
+		/// Then if the current set of product names has one that isn't in the set, SwitchDevice to
+		/// the new device. This can also be used to detect that the current device is no longer available,
+		/// and switch to (e.g.) the current default recording device, if any.
+		/// It could also be used with some sort of control to allow the user to choose recording device.
+		/// (One idea would be to make the RecordingDeviceButton respond to a click by cycling through
+		/// the available devices, or pop up a chooser...though that is probably overdoing things, users
+		/// are unlikely to have more than two.)
+		/// I'm not sure this approach will detect the plugging and unplugging of non-USB mics.
 		/// </summary>
 		/// <param name="device"></param>
 		public void SwitchDevice(RecordingDevice device)
