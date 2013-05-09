@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
 namespace Palaso.Media.Naudio.UI
 {
 	/// <summary>
-	/// This 'button' displays an icon and tooltip to indicate which recording device is currently in use.
+	/// This control displays an icon and tooltip to indicate which recording device is currently in use.
 	/// It also monitors the set of connected RecordingDevices and (a) switches to a new one if it appears,
 	/// as for example when a new microphone is plugged in; (b) switches to the default one if the current
 	/// one is unplugged.
-	/// Enhance JohnT: Possibly the RecordingDeviceButton could respond to a click by cycling through
+	/// Enhance JohnT: Possibly the RecordingDeviceIndicator could become a RecordingDeviceButton and could respond to a click by cycling through
 	/// the available devices, or pop up a chooser...though that is probably overdoing things, users
 	/// are unlikely to have more than two. Currently there is no click behavior.
 	/// </summary>
-	public partial class RecordingDeviceButton : UserControl
+	public partial class RecordingDeviceIndicator : UserControl
 	{
 		private IAudioRecorder _recorder;
 
@@ -23,13 +22,16 @@ namespace Palaso.Media.Naudio.UI
 
 		private HashSet<string> _knownRecordingDevices;
 
-		public RecordingDeviceButton()
+		public RecordingDeviceIndicator()
 		{
 			InitializeComponent();
-			_checkNewMicTimer.Tick += checkNewMicTimer_Tick;
+			_checkNewMicTimer.Tick += OnCheckNewMicTimer_Tick;
 			_checkNewMicTimer.Interval = 1000;
 		}
 
+		/// <summary>
+		/// This control will find out about selected devices from the recorder, but also will tell the recorder to change devices as needed.
+		/// </summary>
 		public IAudioRecorder Recorder
 		{
 			get { return _recorder; }
@@ -74,7 +76,7 @@ namespace Palaso.Media.Naudio.UI
 		/// are never equal to the ones from a previous call.</remarks>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		void checkNewMicTimer_Tick(object sender, EventArgs e)
+		void OnCheckNewMicTimer_Tick(object sender, EventArgs e)
 		{
 			if (_recorder == null)
 				return;
