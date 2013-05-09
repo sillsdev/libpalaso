@@ -125,6 +125,20 @@ namespace Palaso.Media.Naudio
 			}
 		}
 
+		/// <summary>
+		/// Switch device after we have started, typically because the user plugged in a new one.
+		/// </summary>
+		/// <param name="device"></param>
+		public void SwitchDevice(RecordingDevice device)
+		{
+			if (_fileWriterThread != null)
+				AbortRecording();
+			CloseWaveIn();
+			SelectedDevice = device;
+			RecordingState = RecordingState.Stopped;
+			if (SelectedDevice != null)
+				BeginMonitoring();
+		}
 		/// ------------------------------------------------------------------------------------
 		public virtual WaveFormat RecordingFormat
 		{
@@ -184,13 +198,21 @@ namespace Palaso.Media.Naudio
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="eventArgs"></param>
-		private void OnRecordingStopped(object sender, EventArgs eventArgs)
+		private void OnRecordingStopped(object sender, StoppedEventArgs eventArgs)
 		{
 			lock (this)
 			{
 				Debug.WriteLine("Got RecordingStopped event");
-				if (_fileWriterThread != null)
-					TransitionFromRecordingToMonitoring();
+				if (eventArgs.Exception != null)
+				{
+					// Something went wrong, typically the user unplugged the microphone.
+					// We are not going to get any more data until we BeginMonitoring again.
+					// So make sure we get into a state where that can be done.
+					if (_fileWriterThread != null)
+						AbortRecording();
+					CloseWaveIn();
+					RecordingState = RecordingState.Stopped;
+				}
 			}
 		}
 
