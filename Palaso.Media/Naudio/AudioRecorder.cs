@@ -27,7 +27,11 @@ namespace Palaso.Media.Naudio
 		void BeginMonitoring();
 		void BeginRecording(string path);
 		void Stop();
+		// Set only before BeginMonitoring()
 		RecordingDevice SelectedDevice { get; set; }
+		// Use this to switch devices AFTER BeginMonitoring()
+		void SwitchDevice(RecordingDevice device);
+		event EventHandler SelectedDeviceChanged;
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
@@ -60,7 +64,20 @@ namespace Palaso.Media.Naudio
 		protected double _prevRecordedTime;
 
 		public SampleAggregator SampleAggregator { get; protected set; }
-		public RecordingDevice SelectedDevice { get; set; }
+		private RecordingDevice _selectedDevice;
+
+		public RecordingDevice SelectedDevice
+		{
+			get { return _selectedDevice; }
+			set
+			{
+				_selectedDevice = value;
+				if (SelectedDeviceChanged != null)
+					SelectedDeviceChanged(this, new EventArgs());
+			}
+		}
+
+		public event EventHandler SelectedDeviceChanged;
 		public TimeSpan RecordedTime { get; set; }
 
 		private int _bufferSize = -1;
@@ -127,18 +144,9 @@ namespace Palaso.Media.Naudio
 
 		/// <summary>
 		/// Switch device after we have started monitoring, typically because the user plugged in a new one.
-		/// One way to detect a new device (see e.g. HearThis, RecordingToolControl.checkNewMicTimer_Tick)
-		/// is to keep a set of the ProductNames derived using (from d in RecordingDevice.Devices select d.ProductName),
-		/// and periodically compare it with the current set of RecordingDevice.Devices, which (at least on
-		/// Win7 with USB mics) seems to update as things are connected and disconnected.
-		/// Then if the current set of product names has one that isn't in the set, SwitchDevice to
-		/// the new device. This can also be used to detect that the current device is no longer available,
-		/// and switch to (e.g.) the current default recording device, if any.
-		/// It could also be used with some sort of control to allow the user to choose recording device.
-		/// (One idea would be to make the RecordingDeviceButton respond to a click by cycling through
-		/// the available devices, or pop up a chooser...though that is probably overdoing things, users
-		/// are unlikely to have more than two.)
-		/// I'm not sure this approach will detect the plugging and unplugging of non-USB mics.
+		/// The usual way to achieve this is to display a RecordingDeviceButton connected to this Recorder.
+		/// If you want to achieve it some other way, check out the implementation of
+		/// RecordingDeviceButton.checkNewMicTimer_Tick).
 		/// </summary>
 		/// <param name="device"></param>
 		public void SwitchDevice(RecordingDevice device)
