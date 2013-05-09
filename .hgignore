@@ -22,5 +22,6 @@ nant.resx.bak
 glob:lib/DebugMono/icu*40.dll
 *.lnk
 CopyTo*.bat
+*.orig
 L10NSharp.*
 *.pdb

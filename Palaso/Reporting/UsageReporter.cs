@@ -450,16 +450,10 @@ namespace Palaso.Reporting
 
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
-			if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
-			{
-				_settings.Launches++;
-			}
-
 			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
 
-			 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
+			if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
-				_settings.Launches++;
 				SendNavigationNotice("launch/version{0}", ErrorReport.VersionNumberString);
 			}
 
@@ -474,14 +468,6 @@ namespace Palaso.Reporting
 			{
 				SendNavigationNotice("versionChange/version{0}-previousVersion{1}",ErrorReport.VersionNumberString,_realPreviousVersion );
 			}
-
-			if (s_singleton._settings.Launches == 1)
-			{
-				SendNavigationNotice("firstLaunch/version{0}", ErrorReport.VersionNumberString);
-			}
-
-
-			//Usage.Send("Runtime", "launched", ErrorReport.VersionNumberString, UsageReporter.AppReportingSettings.Launches);
 		}
 
 		private void SaveCookie(Cookie cookie)
