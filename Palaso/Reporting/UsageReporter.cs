@@ -596,6 +596,11 @@ namespace Palaso.Reporting
 					sb.Append("Inner: "+error.InnerException.Message + "|");
 				sb.Append(error.StackTrace);
 			}
+			// Maximum URI length is about 2000 (probably 2083 to be exact), so truncate this info if ncessary.
+			// A lot of characters (such as spaces) are going to be replaced with % codes, and there is a pretty hefty
+			// wad of additional stuff that goes into the URL besides this stuff, so cap it at 1000 and hope for the best.
+			if (sb.Length > 1000)
+				sb.Length = 1000;
 
 			SendEvent(s_singleton._mostRecentArea, "error", sb.ToString(), ErrorReport.VersionNumberString, 0);
 		}
