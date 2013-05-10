@@ -213,9 +213,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			get
 			{
-				//I'm thinking, license is secondary. Primary is who did it or what the copyright is... if you have a license without any of that... it's kind of bogus.
-				return !String.IsNullOrEmpty(CopyrightNotice) || !String.IsNullOrEmpty(Creator) ||
-					   !String.IsNullOrEmpty(CollectionUri);
+				//I'm thinking, license is secondary. Primary is who holds the copyright, and what year.
+				return !String.IsNullOrEmpty(GetCopyrightYear()) && !String.IsNullOrEmpty(GetCopyrightBy());
 			}
 		}
 

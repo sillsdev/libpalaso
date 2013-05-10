@@ -249,7 +249,7 @@ namespace Palaso.Reporting
 			{
 				string utma = String.Format("{0}.{1}.{2}.{3}.{4}.{5}",
 											DomainHash,
-											_userId.GetHashCode(), //pseudo-unique visitor id
+											GetUserId(_userId), //pseudo-unique visitor id
 											DateTimeToUnixFormat(_firstLaunch), //enhance       //timstamp of first visit.
 											DateTimeToUnixFormat(_previousLaunch),//enhance        //timestamp of previous (most recent) visit
 											DateTimeToUnixFormat(DateTime.UtcNow),//timestamp of current visit
@@ -278,27 +278,50 @@ namespace Palaso.Reporting
 
 		private int DomainHash
 		{
-			get
+			get { return GetDomainHash(_domain); }
+
+		}
+
+		internal static int GetDomainHash(string input)
+		{
+			// converted from the google domain hash code listed here:
+			//http://www.google.com/support/forum/p/Google+Analytics/thread?tid=626b0e277aaedc3c&hl=en
+			// Note JohnT: the original code is JavaScript. This means it does basic arithmetic with floats, but
+			// shifts and similar ops with 32-bit ints. There may be some pathological case where doing it
+			// all with 32-bit ints will give a different answer, but if so I haven't found it. It works
+			// at least specifically for the known client urls (see unit tests).
+			int a = 0;
+			for (int index = input.Length - 1; index >= 0; index--)
 			{
-				return 0;
-
-				// converted from the google domain hash code listed here:
-				//http://www.google.com/support/forum/p/Google+Analytics/thread?tid=626b0e277aaedc3c&hl=en
-				int a = 0;
-				for (int index = _domain.Length - 1; index >= 0; index--)
-				{
-					char character = char.Parse(_domain.Substring(index, 1));
-					int intCharacter = character;
-					a = (a << 6 & 268435455) + intCharacter + (intCharacter << 14);
-					int c = a & 266338304;
-					a = c != 0 ? a ^ c >> 21 : a;
-				}
-
-				return a;
-
+				char character = input[index];
+				int intCharacter = character;
+				a = (a << 6 & 268435455) + intCharacter + (intCharacter << 14);
+				int c = a & 266338304;
+				a = c != 0 ? a ^ c >> 21 : a;
 			}
 
+			return a;
+		}
+
+		/// <summary>
+		/// Return a value suitable for the user ID part of a __utma cookie based on the given guid.
+		/// We want something reasonably dependent on the guid and somewhat scattered over the range 1000000000,2147483647.
+		/// This is not a very clever hash function but we expect guids to be pretty well distributed to begin with.
+		/// </summary>
+		/// <param name="guid"></param>
+		/// <returns></returns>
+		internal static int GetUserId(Guid guid)
+		{
+			int start = 0;
+			foreach (var b in guid.ToByteArray())
+				start = start << 2 ^ b ^ start >> 10;
+			while (start < 1000000000)
+				start += 1000000000;
+			return start;
 		}
 
 	}
 }
+
+
+

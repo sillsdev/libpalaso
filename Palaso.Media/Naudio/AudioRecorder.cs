@@ -27,7 +27,11 @@ namespace Palaso.Media.Naudio
 		void BeginMonitoring();
 		void BeginRecording(string path);
 		void Stop();
+		// Set only before BeginMonitoring()
 		RecordingDevice SelectedDevice { get; set; }
+		// Use this to switch devices AFTER BeginMonitoring()
+		void SwitchDevice(RecordingDevice device);
+		event EventHandler SelectedDeviceChanged;
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
@@ -60,7 +64,20 @@ namespace Palaso.Media.Naudio
 		protected double _prevRecordedTime;
 
 		public SampleAggregator SampleAggregator { get; protected set; }
-		public RecordingDevice SelectedDevice { get; set; }
+		private RecordingDevice _selectedDevice;
+
+		public RecordingDevice SelectedDevice
+		{
+			get { return _selectedDevice; }
+			set
+			{
+				_selectedDevice = value;
+				if (SelectedDeviceChanged != null)
+					SelectedDeviceChanged(this, new EventArgs());
+			}
+		}
+
+		public event EventHandler SelectedDeviceChanged;
 		public TimeSpan RecordedTime { get; set; }
 
 		private int _bufferSize = -1;
@@ -118,12 +135,30 @@ namespace Palaso.Media.Naudio
 			if (_waveIn != null)
 			{
 				_waveIn.DataAvailable -= waveIn_DataAvailable;
+				_waveIn.RecordingStopped -= OnRecordingStopped;
 				try { _waveIn.Dispose(); }
 				catch { }
 				_waveIn = null;
 			}
 		}
 
+		/// <summary>
+		/// Switch device after we have started monitoring, typically because the user plugged in a new one.
+		/// The usual way to achieve this is to display a RecordingDeviceButton connected to this Recorder.
+		/// If you want to achieve it some other way, check out the implementation of
+		/// RecordingDeviceButton.checkNewMicTimer_Tick).
+		/// </summary>
+		/// <param name="device"></param>
+		public void SwitchDevice(RecordingDevice device)
+		{
+			if (_fileWriterThread != null)
+				AbortRecording();
+			CloseWaveIn();
+			SelectedDevice = device;
+			RecordingState = RecordingState.Stopped;
+			if (SelectedDevice != null)
+				BeginMonitoring();
+		}
 		/// ------------------------------------------------------------------------------------
 		public virtual WaveFormat RecordingFormat
 		{
@@ -153,6 +188,7 @@ namespace Palaso.Media.Naudio
 					InitializeWaveIn();
 
 					_waveIn.DataAvailable += waveIn_DataAvailable;
+					_waveIn.RecordingStopped += OnRecordingStopped;
 					_waveIn.WaveFormat = _recordingFormat;
 					try
 					{
@@ -172,6 +208,31 @@ namespace Palaso.Media.Naudio
 			{
 				CloseWaveIn();
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e, "There was a problem starting up volume monitoring.");
+			}
+		}
+
+		/// <summary>
+		/// As of NAudio 1.6, this can occur because something went wrong, for example, someone unplugged the microphone.
+		/// We won't get a DataAvailable notification, so make sure we aren't stuck in a state where we expect it.
+		/// Note that we can get this even when nothing but monitoring is happening.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="eventArgs"></param>
+		private void OnRecordingStopped(object sender, StoppedEventArgs eventArgs)
+		{
+			lock (this)
+			{
+				Debug.WriteLine("Got RecordingStopped event");
+				if (eventArgs.Exception != null)
+				{
+					// Something went wrong, typically the user unplugged the microphone.
+					// We are not going to get any more data until we BeginMonitoring again.
+					// So make sure we get into a state where that can be done.
+					if (_fileWriterThread != null)
+						AbortRecording();
+					CloseWaveIn();
+					RecordingState = RecordingState.Stopped;
+				}
 			}
 		}
 
@@ -295,6 +356,7 @@ namespace Palaso.Media.Naudio
 				{
 					_recordingStopTime = DateTime.Now;
 					RecordingState = RecordingState.RequestedStop;
+					Debug.WriteLine("Setting RequestedStop");
 					// Don't stop because we'll lose any buffer(s) that have not been processed.
 					// Then when we re-start, NAudio can crash because the buffers for which it has
 					// queued messages will be disposed
@@ -457,6 +519,7 @@ namespace Palaso.Media.Naudio
 					if (DateTime.Now > _recordingStopTime.AddSeconds(2) || hitMaximumFileSize ||
 						_recordingStartTime.AddSeconds(currRecordedTime) >= _recordingStopTime)
 					{
+						Debug.WriteLine("Transition to monitoring from DataAvailable");
 						TransitionFromRecordingToMonitoring();
 					}
 				}
