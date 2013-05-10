@@ -31,7 +31,7 @@ namespace Palaso.Media.Naudio
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
-		event EventHandler Stopped;
+		event Action<IAudioRecorder, ErrorEventArgs> Stopped;
 		WaveFormat RecordingFormat { get; set; }
 		TimeSpan RecordedTime { get; }
 	}
@@ -73,8 +73,9 @@ namespace Palaso.Media.Naudio
 		public event EventHandler<PeakLevelEventArgs> PeakLevelChanged;
 		public event EventHandler<RecordingProgressEventArgs> RecordingProgress;
 		public event EventHandler RecordingStarted;
+
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
-		public event EventHandler Stopped;
+		public event Action<IAudioRecorder, ErrorEventArgs> Stopped;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -190,7 +191,7 @@ namespace Palaso.Media.Naudio
 			{
 				Debug.WriteLine("Got RecordingStopped event");
 				if (_fileWriterThread != null)
-					TransitionFromRecordingToMonitoring();
+					TransitionFromRecordingToMonitoring(new Exception("NAudio recording stopped unexpectedly"));
 			}
 		}
 
@@ -231,10 +232,11 @@ namespace Palaso.Media.Naudio
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// as far as naudio is concerned, we are still "recording", but we aren't writing this file anymore
+		/// as far as naudio is concerned, we are still "recording" (i.e., accepting waveIn
+		/// data), but we want to stop writing the data to the file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		protected virtual void TransitionFromRecordingToMonitoring()
+		protected virtual void TransitionFromRecordingToMonitoring(Exception e = null)
 		{
 			RecordingState = RecordingState.Stopping;
 			_fileWriterThread.Stop();
@@ -242,7 +244,7 @@ namespace Palaso.Media.Naudio
 			_fileWriterThread = null;
 			RecordingState = RecordingState.Monitoring;
 			if (Stopped != null)
-				Stopped(this, EventArgs.Empty);
+				Stopped(this, e == null ? null : new ErrorEventArgs(e));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -440,7 +442,10 @@ namespace Palaso.Media.Naudio
 				int bytesRecorded = e.BytesRecorded;
 				bool hitMaximumFileSize = false;
 				if (_recordingState == RecordingState.Recording || _recordingState == RecordingState.RequestedStop)
+				{
+					Debug.WriteLine("Writing " + bytesRecorded + " bytes of data to file");
 					hitMaximumFileSize = !WriteToFile(buffer, bytesRecorded);
+				}
 
 				var bytesPerSample = _waveIn.WaveFormat.BitsPerSample / 8;
 
