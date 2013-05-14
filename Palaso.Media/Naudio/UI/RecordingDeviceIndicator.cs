@@ -80,6 +80,7 @@ namespace Palaso.Media.Naudio.UI
 		{
 			if (_recorder == null)
 				return;
+			// Don't try to change horses in the middle of the stream if recording is in progress.
 			if (_recorder.RecordingState != RecordingState.Monitoring && _recorder.RecordingState != RecordingState.Stopped)
 				return;
 			bool foundCurrentDevice = false;
@@ -88,21 +89,33 @@ namespace Palaso.Media.Naudio.UI
 			{
 				if (!_knownRecordingDevices.Contains(device.ProductName))
 				{
-					_recorder.SwitchDevice(device);
-					_knownRecordingDevices.Add(device.ProductName);
-					UpdateDisplay();
-					return;
+					_recorder.SelectedDevice = device;
+					if (_recorder.RecordingState == RecordingState.Monitoring)
+					{
+						_knownRecordingDevices.Add(device.ProductName);
+						UpdateDisplay();
+						return;
+					}
 				}
 				if (_recorder.SelectedDevice != null && device.ProductName == _recorder.SelectedDevice.ProductName)
 					foundCurrentDevice = true;
 			}
-			if (!foundCurrentDevice)
+			if (foundCurrentDevice)
+			{
+				if (_recorder.RecordingState != RecordingState.Monitoring)
+				{
+					_recorder.BeginMonitoring();
+					if (_recorder.RecordingState == RecordingState.Monitoring)
+						UpdateDisplay();
+				}
+			}
+			else
 			{
 				// presumably unplugged...try to switch to another.
 				var defaultDevice = devices.FirstOrDefault();
 				if (defaultDevice != _recorder.SelectedDevice)
 				{
-					_recorder.SwitchDevice(defaultDevice);
+					_recorder.SelectedDevice = defaultDevice;
 					UpdateDisplay();
 				}
 			}
@@ -164,7 +177,7 @@ namespace Palaso.Media.Naudio.UI
 
 				if (deviceName.Contains("ZOOM"))
 					_recordingDeviceImage.Image = AudioDeviceIcons.Recorder;
-				else if (deviceName.Contains("Plantronics") || deviceName.Contains("Andrea"))
+				else if (deviceName.Contains("Plantronics") || deviceName.Contains("Andrea") || deviceName.Contains("Microphone (VXi X200"))
 					_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
 				else if (deviceName.Contains("Line"))
 					_recordingDeviceImage.Image = AudioDeviceIcons.ExternalAudioDevice;

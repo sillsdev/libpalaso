@@ -27,15 +27,12 @@ namespace Palaso.Media.Naudio
 		void BeginMonitoring();
 		void BeginRecording(string path);
 		void Stop();
-		// Set only before BeginMonitoring()
 		RecordingDevice SelectedDevice { get; set; }
-		// Use this to switch devices AFTER BeginMonitoring()
-		void SwitchDevice(RecordingDevice device);
 		event EventHandler SelectedDeviceChanged;
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
-		event EventHandler Stopped;
+		event Action<IAudioRecorder, ErrorEventArgs> Stopped;
 		WaveFormat RecordingFormat { get; set; }
 		TimeSpan RecordedTime { get; }
 	}
@@ -57,7 +54,7 @@ namespace Palaso.Media.Naudio
 
 		protected UnsignedMixerControl _volumeControl;
 		protected double _microphoneLevel = 100;
-		protected RecordingState _recordingState = RecordingState.Stopped;
+		protected RecordingState _recordingState = RecordingState.NotYetStarted;
 		protected WaveFormat _recordingFormat;
 		protected RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
 		protected PeakLevelEventArgs _peakLevelEventArgs = new PeakLevelEventArgs();
@@ -68,12 +65,35 @@ namespace Palaso.Media.Naudio
 
 		public RecordingDevice SelectedDevice
 		{
-			get { return _selectedDevice; }
+			get
+			{
+				lock (this)
+				{
+					return _selectedDevice;
+				}
+			}
 			set
 			{
-				_selectedDevice = value;
-				if (SelectedDeviceChanged != null)
-					SelectedDeviceChanged(this, new EventArgs());
+				lock (this)
+				{
+					if (_selectedDevice == value)
+						return;
+					if (IsRecording)
+						throw new InvalidOperationException(
+							"Cannot switch recording devices while recording is in progress.");
+					if (_waveIn != null)
+					{
+						/// Switch device after we have started monitoring, typically because the user plugged in a new one.
+						/// The usual way to achieve this is to display a RecordingDeviceIndicator connected to this Recorder.
+						/// See the implementation of RecordingDeviceIndicator.checkNewMicTimer_Tick.
+						CloseWaveIn();
+					}
+					_selectedDevice = value;
+					if (RecordingState != RecordingState.NotYetStarted && _selectedDevice != null)
+						BeginMonitoring();
+					if (SelectedDeviceChanged != null)
+						SelectedDeviceChanged(this, new EventArgs());
+				}
 			}
 		}
 
@@ -90,8 +110,9 @@ namespace Palaso.Media.Naudio
 		public event EventHandler<PeakLevelEventArgs> PeakLevelChanged;
 		public event EventHandler<RecordingProgressEventArgs> RecordingProgress;
 		public event EventHandler RecordingStarted;
+
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
-		public event EventHandler Stopped;
+		public event Action<IAudioRecorder, ErrorEventArgs> Stopped;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -116,9 +137,13 @@ namespace Palaso.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual void Dispose()
 		{
-			if (_fileWriterThread != null)
-				_fileWriterThread.Stop();
-			CloseWaveIn();
+			lock (this)
+			{
+				if (_fileWriterThread != null)
+					_fileWriterThread.Stop();
+				CloseWaveIn();
+				RecordingState = RecordingState.NotYetStarted;
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -127,6 +152,8 @@ namespace Palaso.Media.Naudio
 			RecordedTime = TimeSpan.Zero;
 			RecordingState = RecordingState.Monitoring;
 			_fileWriterThread.Abort();
+			if (Stopped != null)
+				Stopped(this, new ErrorEventArgs(new Exception("NAudio recording stopped unexpectedly")));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -134,31 +161,17 @@ namespace Palaso.Media.Naudio
 		{
 			if (_waveIn != null)
 			{
+				try { _waveIn.StopRecording(); }
+				catch { /* It's amazing all the bizarre things that can go wrong */ }
 				_waveIn.DataAvailable -= waveIn_DataAvailable;
 				_waveIn.RecordingStopped -= OnRecordingStopped;
 				try { _waveIn.Dispose(); }
-				catch { }
+				catch { /* It's amazing all the bizarre things that can go wrong */ }
 				_waveIn = null;
+				RecordingState = RecordingState.Stopped;
 			}
 		}
 
-		/// <summary>
-		/// Switch device after we have started monitoring, typically because the user plugged in a new one.
-		/// The usual way to achieve this is to display a RecordingDeviceButton connected to this Recorder.
-		/// If you want to achieve it some other way, check out the implementation of
-		/// RecordingDeviceButton.checkNewMicTimer_Tick).
-		/// </summary>
-		/// <param name="device"></param>
-		public void SwitchDevice(RecordingDevice device)
-		{
-			if (_fileWriterThread != null)
-				AbortRecording();
-			CloseWaveIn();
-			SelectedDevice = device;
-			RecordingState = RecordingState.Stopped;
-			if (SelectedDevice != null)
-				BeginMonitoring();
-		}
 		/// ------------------------------------------------------------------------------------
 		public virtual WaveFormat RecordingFormat
 		{
@@ -173,16 +186,12 @@ namespace Palaso.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginMonitoring()
 		{
-			Debug.Assert(_waveIn == null, "only call this once");
-			try
+			lock (this)
 			{
-				lock (this)
+				if (_waveIn != null || (_recordingState != RecordingState.NotYetStarted && _recordingState != RecordingState.Stopped))
+					throw new InvalidOperationException("only call this once for a new WaveIn device");
+				try
 				{
-					if (_recordingState != RecordingState.Stopped)
-					{
-						throw new InvalidOperationException(
-							"Can't begin monitoring while we are in this state: " + _recordingState.ToString());
-					}
 					Debug.Assert(_waveIn == null);
 					_waveIn = new WaveIn();
 					InitializeWaveIn();
@@ -196,18 +205,20 @@ namespace Palaso.Media.Naudio
 					}
 					catch (MmException error)
 					{
-						if (error.Result != MmResult.AlreadyAllocated)  //TODO: I get this most of the time, but I don't know how to prevent it... maybe it's a hold over from previous runs? In which case, we need to make this disposable and stop the recording
+						if (error.Result != MmResult.AlreadyAllocated)
+							//TODO: I get this most of the time, but I don't know how to prevent it... maybe it's a hold over from previous runs? In which case, we need to make this disposable and stop the recording
 							throw;
 					}
 
 					TryGetVolumeControl();
 					RecordingState = RecordingState.Monitoring;
 				}
-			}
-			catch (Exception e)
-			{
-				CloseWaveIn();
-				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e, "There was a problem starting up volume monitoring.");
+				catch (Exception e)
+				{
+					CloseWaveIn();
+					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e,
+						 "There was a problem starting up volume monitoring.");
+				}
 			}
 		}
 
@@ -222,7 +233,8 @@ namespace Palaso.Media.Naudio
 		{
 			lock (this)
 			{
-				Debug.WriteLine("Got RecordingStopped event");
+				if (RecordingState == RecordingState.Stopped || RecordingState == RecordingState.NotYetStarted)
+					return;
 				if (eventArgs.Exception != null)
 				{
 					// Something went wrong, typically the user unplugged the microphone.
@@ -231,7 +243,6 @@ namespace Palaso.Media.Naudio
 					if (_fileWriterThread != null)
 						AbortRecording();
 					CloseWaveIn();
-					RecordingState = RecordingState.Stopped;
 				}
 			}
 		}
@@ -273,7 +284,8 @@ namespace Palaso.Media.Naudio
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// as far as naudio is concerned, we are still "recording", but we aren't writing this file anymore
+		/// as far as naudio is concerned, we are still "recording" (i.e., accepting waveIn
+		/// data), but we want to stop writing the data to the file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected virtual void TransitionFromRecordingToMonitoring()
@@ -284,7 +296,7 @@ namespace Palaso.Media.Naudio
 			_fileWriterThread = null;
 			RecordingState = RecordingState.Monitoring;
 			if (Stopped != null)
-				Stopped(this, EventArgs.Empty);
+				Stopped(this, null);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -296,6 +308,9 @@ namespace Palaso.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginRecording(string waveFileName, bool appendToFile)
 		{
+			if (_recordingState == RecordingState.NotYetStarted)
+				BeginMonitoring();
+
 			if (_recordingState != RecordingState.Monitoring)
 			{
 				throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
@@ -306,7 +321,6 @@ namespace Palaso.Media.Naudio
 				if (_waveInBuffersChanged)
 				{
 					CloseWaveIn();
-					RecordingState = RecordingState.Stopped;
 					BeginMonitoring();
 				}
 
@@ -482,7 +496,10 @@ namespace Palaso.Media.Naudio
 				int bytesRecorded = e.BytesRecorded;
 				bool hitMaximumFileSize = false;
 				if (_recordingState == RecordingState.Recording || _recordingState == RecordingState.RequestedStop)
+				{
+					Debug.WriteLine("Writing " + bytesRecorded + " bytes of data to file");
 					hitMaximumFileSize = !WriteToFile(buffer, bytesRecorded);
+				}
 
 				var bytesPerSample = _waveIn.WaveFormat.BitsPerSample / 8;
 
