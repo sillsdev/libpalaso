@@ -33,6 +33,7 @@ namespace Palaso.Xml
 		private readonly static byte _openingAngleBracket = EncUtf8.GetBytes("<")[0];
 		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
 		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
+		private readonly static byte _hyphen = EncUtf8.GetBytes("-")[0];
 		private static byte[] _inputBytes; // the entire content of the file we are parsing.
 		private static byte[] cdataStart = EncUtf8.GetBytes("![CDATA[");
 		private static byte[] cdataEnd = EncUtf8.GetBytes("]]>");
@@ -215,6 +216,8 @@ namespace Palaso.Xml
 				// 3: </x... : depth-- (closing marker)
 				// 4: .../> : depth-- (end of open marker that has no close marker)
 				// 5: <![CDATA[ : advance to matching ]]>
+				// 6: <!-- : depth++
+				// 7: --> : depth--
 				// If depth is zero we must stop and output. In case 3 we must also check for the correct closing marker.
 				if (gotOpenBracket)
 				{
@@ -229,13 +232,15 @@ namespace Palaso.Xml
 					}
 					else
 					{
-						depth++; // case 1
+						depth++; // case 1 (or 6)
 					}
 				}
 				else
 				{
 					if (_inputBytes[_currentOffset - 2] == _slash)
 						depth--; // case 4
+					else if (_inputBytes[_currentOffset - 2] == _hyphen && _inputBytes[_currentOffset - 3] == _hyphen)
+						depth--; // case 6
 					// otherwise case 2, do nothing.
 				}
 				if (depth == 0)
