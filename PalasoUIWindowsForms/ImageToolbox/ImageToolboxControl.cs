@@ -305,7 +305,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 
-		private void OnCopyExamplar_MouseClick(object sender, MouseEventArgs e)
+		private void OnCopyExemplar_MouseClick(object sender, MouseEventArgs e)
 		{
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);

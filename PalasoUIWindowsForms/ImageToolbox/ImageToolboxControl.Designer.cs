@@ -152,9 +152,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._copyExemplarMetadata.Size = new System.Drawing.Size(237, 17);
 			this._copyExemplarMetadata.TabIndex = 11;
 			this._copyExemplarMetadata.TabStop = false;
-			this._copyExemplarMetadata.Text = "Copy Examplar that is really long";
+			this._copyExemplarMetadata.Text = "Copy Exemplar that is really long";
 			this._copyExemplarMetadata.URL = null;
-			this._copyExemplarMetadata.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnCopyExamplar_MouseClick);
+			this._copyExemplarMetadata.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnCopyExemplar_MouseClick);
 			//
 			// betterLabel1
 			//
