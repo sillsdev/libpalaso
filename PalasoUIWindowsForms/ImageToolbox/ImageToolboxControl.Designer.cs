@@ -42,8 +42,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("testing");
+			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("test", System.Windows.Forms.HorizontalAlignment.Left);
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("testing");
 			this._toolListView = new System.Windows.Forms.ListView();
 			this._panelForControls = new System.Windows.Forms.Panel();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -68,13 +68,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			| System.Windows.Forms.AnchorStyles.Left)));
 			this._toolListView.BackColor = System.Drawing.SystemColors.Control;
 			this._toolListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			listViewGroup2.Header = "test";
-			listViewGroup2.Name = "listViewGroup1";
+			listViewGroup1.Header = "test";
+			listViewGroup1.Name = "listViewGroup1";
 			this._toolListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-			listViewGroup2});
+			listViewGroup1});
 			this._toolListView.HideSelection = false;
 			this._toolListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-			listViewItem2});
+			listViewItem1});
 			this._toolListView.Location = new System.Drawing.Point(0, 0);
 			this._toolListView.Name = "_toolListView";
 			this._toolListView.ShowGroups = false;
@@ -143,6 +143,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			this._copyExemplarMetadata.ForeColor = System.Drawing.Color.Blue;
 			this._l10nSharpExtender.SetLocalizableToolTip(this._copyExemplarMetadata, null);
 			this._l10nSharpExtender.SetLocalizationComment(this._copyExemplarMetadata, null);
+			this._l10nSharpExtender.SetLocalizationPriority(this._copyExemplarMetadata, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._l10nSharpExtender.SetLocalizingId(this._copyExemplarMetadata, "ImageToolbox.CopyExemplar");
 			this._copyExemplarMetadata.Location = new System.Drawing.Point(5, 104);
 			this._copyExemplarMetadata.Multiline = true;

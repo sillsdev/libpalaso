@@ -135,7 +135,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				_copyExemplarMetadata.Text = string.Format("Use {0}", Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
+				var s = LocalizationManager.GetString("Use {0}", "ImageToolbox.CopyExemplarMetadata", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 		}
 
