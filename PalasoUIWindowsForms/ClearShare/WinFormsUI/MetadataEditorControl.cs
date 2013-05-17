@@ -144,10 +144,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				customLicense.RightsStatement = _customLicenseDescription.Text;
 		}
 
-		private void _copyrightBy_TabIndexChanged(object sender, EventArgs e)
+		private void _copyrightBy_TextChanged(object sender, EventArgs e)
 		{
-
+			if (_settingUp)
+				return;
+			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
 		}
+
 
 		/*       private PalasoImage _image;
 

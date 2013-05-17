@@ -5,7 +5,7 @@ namespace Palaso.Media.Naudio
 	public interface IAudioPlayer : IDisposable
 	{
 		void LoadFile(string path);
-		void Play();
+		void StartPlaying();
 		void Stop();
 		TimeSpan CurrentPosition { get; set; }
 		TimeSpan StartPosition { get; set; }

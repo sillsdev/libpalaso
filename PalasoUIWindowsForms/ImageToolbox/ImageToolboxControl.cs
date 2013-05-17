@@ -1,10 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
+using L10NSharp;
+using Palaso.Code;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
+
 #if !MONO
 
 #endif
@@ -68,6 +71,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 												}
 						  */
 						_currentImageBox.Image = value.Image;
+
+						SetCurrentImageToolTip(value);
 						SetupMetaDataControls(value.Metadata);
 					}
 					if(_imageInfo!=null && _imageInfo!=value)
@@ -81,7 +86,33 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				catch (Exception e)
 				{
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.");
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.".Localize("ImageToolbox.GenericGettingImageProblem"));
+				}
+			}
+		}
+
+		private void SetCurrentImageToolTip(PalasoImage image)
+		{
+			_toolTip.SetToolTip(_currentImageBox, "");
+
+			//enchance: this only uses the "originalpath" version, which may be a lot larger than what we
+			//currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
+			if (image!=null && !string.IsNullOrEmpty(image.OriginalFilePath) && File.Exists(image.OriginalFilePath))
+			{
+				try
+				{
+					float size = new System.IO.FileInfo(image.OriginalFilePath).Length;
+					if (size > 1000*1024)
+						_toolTip.SetToolTip(_currentImageBox,
+											string.Format("{0} {1:N2}M", image.OriginalFilePath, size/(1024f*1000f)));
+					else
+					{
+						_toolTip.SetToolTip(_currentImageBox, string.Format("{0} {1:N2}K", image.OriginalFilePath, size/1024f));
+					}
+				}
+				catch (Exception error)
+				{
+					_toolTip.SetToolTip(_currentImageBox, error.Message);
 				}
 			}
 		}
@@ -104,7 +135,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				_copyExemplarMetadata.Text = string.Format("Use {0}", Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
+				var s = LocalizationManager.GetString("Use {0}", "ImageToolbox.CopyExemplarMetadata", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 		}
 
@@ -179,7 +211,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			catch (Exception error)
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
-																 "Sorry, something went wrong with the ImageToolbox");
+																 "Sorry, something went wrong with the ImageToolbox".Localize("ImageToolbox.GenericProblem"));
 			}
 			finally
 			{
@@ -218,6 +250,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
+			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
+			Guard.AgainstNull(_imageInfo, "_imageInfo");
+			Guard.AgainstNull(_imageInfo.Metadata, "_imageInfo.Metadata");
+
 			//it's not clear at the moment where the following belongs... but we want
 			//to encourage Creative Commons Licensing, so if there is no license, we'll start
 			//the following dialog out with a reasonable default.
@@ -227,6 +263,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				if(DialogResult.OK == dlg.ShowDialog())
 				{
+					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
 					_imageInfo.Metadata = dlg.Metadata;
 					SetupMetaDataControls(_imageInfo.Metadata);
 					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
@@ -248,13 +285,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			_editLink.Visible = false;
 
-			AddControl("Get Picture", ImageToolboxButtons.browse, "browse", (x) =>
+			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
 				var c = new AcquireImageControl();
 				c.SetIntialSearchString(InitialSearchString);
 				return c;
 			});
-			_cropToolListItem = AddControl("Crop", ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
+			_cropToolListItem = AddControl("Crop".Localize("ImageToolbox.Crop"), ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 
 			_toolListView.Items[0].Selected = true;
 			_toolListView.Refresh();
@@ -268,7 +305,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 
-		private void OnCopyExamplar_MouseClick(object sender, MouseEventArgs e)
+		private void OnCopyExemplar_MouseClick(object sender, MouseEventArgs e)
 		{
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);

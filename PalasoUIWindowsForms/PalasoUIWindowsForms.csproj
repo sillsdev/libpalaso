@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<PublishUrl>publish\</PublishUrl>
 	<Install>true</Install>
 	<InstallFrom>Disk</InstallFrom>
@@ -43,6 +43,7 @@
 	<DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
@@ -52,6 +53,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -62,6 +64,8 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<Optimize>false</Optimize>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\$(Configuration)</OutputPath>
@@ -71,6 +75,8 @@
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
@@ -95,18 +101,22 @@
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
-	  <EmbedInteropTypes>True</EmbedInteropTypes>
+	  <EmbedInteropTypes>False</EmbedInteropTypes>
 	  <HintPath>..\lib\$(Configuration)\Interop.WIA.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="SettingProtection\SettingsProtection.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>SettingsProtection.Designer.cs</LastGenOutput>
-	</None>
 	<None Include="Progress\LogBoxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
+	</None>
+	<None Include="SettingProtection\SettingsProtection1.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
+	</None>
+	<None Include="SettingProtection\SettingsProtectionSettings.settings">
+	  <Generator>SettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
 	</None>
 	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
@@ -115,9 +125,8 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\irrKlang.NET2.0.dll</HintPath>
+	<Reference Include="L10NSharp">
+	  <HintPath>..\lib\common\L10NSharp.dll</HintPath>
 	</Reference>
 	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
@@ -127,13 +136,14 @@
 	<Reference Include="System" />
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
-	<Reference Include="System.Design" />
 	<Reference Include="System.Drawing" />
-	<Reference Include="System.Drawing.Design" />
+	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Security" />
+	<Reference Include="System.ServiceModel" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
+	<Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
@@ -244,10 +254,10 @@
 	<Compile Include="ImageToolbox\OpenFileDialogWithViews.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="ImageToolbox\ImageToolbox.Designer.cs">
+	<Compile Include="ImageToolbox\ImageToolboxSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>ImageToolbox.settings</DependentUpon>
+	  <DependentUpon>ImageToolboxSettings.settings</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
 	  <SubType>UserControl</SubType>
@@ -290,6 +300,24 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
+	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
+	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.designer.cs">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Miscellaneous\WaitCursor.cs" />
+	<Compile Include="Progress\LogBox.cs">
+	  <SubType>UserControl</SubType>
+	</Compile>
+	<Compile Include="Progress\LogBox.designer.cs">
+	  <DependentUpon>LogBox.cs</DependentUpon>
+	</Compile>
 	<Compile Include="Progress\ProgressDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -305,6 +333,12 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+	<Compile Include="ReleaseNotes\MarkdownSharp.cs" />
+	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>SettingsProtection1.settings</DependentUpon>
+	</Compile>
 	<Compile Include="SettingProtection\SettingsProtectionHelper.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -335,16 +369,22 @@
 	  <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="SettingProtection\SettingsProtection.cs" />
-	<Compile Include="SettingProtection\SettingsProtection.Designer.cs">
+	<Compile Include="SettingProtection\SettingsProtectionSettings.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>SettingsProtection.settings</DependentUpon>
+	  <DependentUpon>SettingsProtectionSettings.settings</DependentUpon>
 	</Compile>
 	<Compile Include="SettingProtection\SettingsProtectionLauncherButton.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="SettingProtection\SettingsProtectionLauncherButton.Designer.cs">
 	  <DependentUpon>SettingsProtectionLauncherButton.cs</DependentUpon>
+	</Compile>
+	<Compile Include="ReleaseNotes\ShowReleaseNotesDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ReleaseNotes\ShowReleaseNotesDialog.Designer.cs">
+	  <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Spelling\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
@@ -413,14 +453,7 @@
 	<Compile Include="Reporting\ExceptionReportingDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\LabelProgress.cs" />
-	<Compile Include="Progress\LogBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox.designer.cs">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	</Compile>
 	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
 	  <AutoGen>True</AutoGen>
@@ -449,18 +482,7 @@
 	<Compile Include="Progress\SimpleStatusProgress.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
 	<Compile Include="Progress\TextBoxProgress.cs" />
-	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
 	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
@@ -678,10 +700,21 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
 	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
+	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Progress\LogBox.resx">
+	  <DependentUpon>LogBox.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\ProgressDialog.resx">
@@ -692,6 +725,9 @@
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="ReleaseNotes\ShowReleaseNotesDialog.resx">
+	  <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="SettingProtection\SettingsProtectionHelper.resx">
 	  <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
@@ -739,10 +775,6 @@
 	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBox.resx">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBoxResources.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
@@ -754,14 +786,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
 	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
@@ -888,9 +912,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="app.config" />
-	<None Include="ImageToolbox\ImageToolbox.settings">
+	<None Include="ImageToolbox\ImageToolboxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>ImageToolbox.Designer.cs</LastGenOutput>
+	  <LastGenOutput>ImageToolboxSettings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Resources\credits.png" />
   </ItemGroup>
@@ -1010,6 +1034,9 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\spy16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+	<Content Include="LocalizationManager.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

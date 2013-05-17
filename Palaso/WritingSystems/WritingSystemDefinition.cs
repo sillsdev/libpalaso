@@ -53,6 +53,8 @@ namespace Palaso.WritingSystems
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private RFC5646Tag _rfcTag;
+		private const int kMinimumFontSize=7;
+		private const int kDefaultSizeIfWeDontKnow = 10;
 
 		private string _languageName;
 
@@ -873,6 +875,17 @@ namespace Palaso.WritingSystems
 				_defaultFontSize = value;
 				Modified = true;
 			}
+		}
+
+		/// <summary>
+		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
+		/// </summary>
+		/// <returns></returns>
+		virtual public float GetDefaultFontSizeOrMinimum()
+		{
+			if (_defaultFontSize < kMinimumFontSize)
+				return kDefaultSizeIfWeDontKnow;
+			return _defaultFontSize;
 		}
 
 		/// <summary>

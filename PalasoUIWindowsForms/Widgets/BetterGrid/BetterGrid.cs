@@ -64,7 +64,8 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 			RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
 			RowHeadersWidth = 22;
 			Color clr = SystemColors.Window;
-			GridColor = Color.FromArgb(clr.R - 30, clr.G - 30, clr.B - 30);
+			GridColor = Color.FromArgb(CalculateContrastiveGridLineColorComponent(clr.R),
+				CalculateContrastiveGridLineColorComponent(clr.G), CalculateContrastiveGridLineColorComponent(clr.B));
 			MultiSelect = false;
 			PaintHeaderAcrossFullGridWidth = true;
 			TextBoxEditControlBorderColor = Color.Silver;
@@ -266,6 +267,17 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 			}
 		}
 		#endregion
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a R, G, or B value that is noticeably distinct (somewhat lighter or darker)
+		/// from the given value.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private int CalculateContrastiveGridLineColorComponent(int backgroundColorComponent)
+		{
+			return backgroundColorComponent >= 30 ? backgroundColorComponent - 30 : backgroundColorComponent + 30;
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -586,14 +598,14 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
 		{
 			base.OnRowsAdded(e);
-			IsDirty = true;
+			IsDirty |= ContainsFocus;
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override void OnRowsRemoved(DataGridViewRowsRemovedEventArgs e)
 		{
 			base.OnRowsRemoved(e);
-			IsDirty = true;
+			IsDirty |= ContainsFocus;
 		}
 
 		#region Events and methods for handling DropDown style combo box cells.
@@ -1335,7 +1347,18 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public static DataGridViewColumn CreateCalendarControlColumn(string name, string headerText)
 		{
-			var col = new CalendarColumn();
+			return CreateCalendarControlColumn(name, headerText, null, CalendarCell.UserAction.BeginEdit);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Creates a calendar control grid column that hosts calendar (date) cells.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static DataGridViewColumn CreateCalendarControlColumn(string name, string headerText,
+			Func<DateTime> getDefaultValue, CalendarCell.UserAction whenToUseDefault)
+		{
+			var col = new CalendarColumn(getDefaultValue, whenToUseDefault);
 			col.HeaderCell.Style.Font = SystemFonts.MenuFont;
 			col.Name = name;
 			col.HeaderText = headerText;

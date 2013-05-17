@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Palaso.IO;
+using Palaso.Reporting;
 
 namespace Palaso.Migration
 {
@@ -107,6 +108,10 @@ namespace Palaso.Migration
 
 			//check if there is anything to migrate. If not, don't do anything
 			if(!Directory.Exists(SourcePath)) return;
+
+
+			Logger.WriteMinorEvent("Migrator examining "+SourcePath);
+
 			if (GetLowestVersionInFolder(SourcePath) == ToVersion) return;
 
 			// Backup current folder to backup path under backup root
@@ -117,6 +122,8 @@ namespace Palaso.Migration
 			int lowestVersoinInFolder1 = -1;
 			while ((lowestVersionInFolder = GetLowestVersionInFolder(currentPath)) != ToVersion)
 			{
+				Logger.WriteEvent("Migrating "+currentPath+" from "+lowestVersionInFolder);//enhance: to what version?
+
 				//This guards against an empty Folder
 				if(lowestVersionInFolder == int.MaxValue)
 				{

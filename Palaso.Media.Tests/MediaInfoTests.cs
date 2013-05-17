@@ -8,6 +8,7 @@ namespace Palaso.Media.Tests
 	public class MediaInfoTests
 	{
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
@@ -15,6 +16,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_Duration_Correct()
 		{
@@ -27,6 +29,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_Encoding_Correct()
 		{
@@ -39,6 +42,7 @@ namespace Palaso.Media.Tests
 
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_Resolution_Correct()
 		{
@@ -50,6 +54,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void VideoInfo_MessedUpFramesPerSecond_LeavesEmpty()
 		{
@@ -64,6 +69,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_Duration_Correct()
 		{
@@ -76,6 +82,7 @@ namespace Palaso.Media.Tests
 
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_SampleFrequency_Correct()
 		{
@@ -87,6 +94,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_Channels_Correct()
 		{
@@ -98,6 +106,7 @@ namespace Palaso.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_BitDepth_Correct()
 		{
@@ -109,6 +118,7 @@ namespace Palaso.Media.Tests
 		}
 
 			[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void AudioInfo_H4N24BitStereoBitDepth_Correct()
 		{
@@ -119,6 +129,7 @@ namespace Palaso.Media.Tests
 			}
 		}
 	[Test]
+		[Platform(Exclude="Linux", Reason="Test is Windows specific")]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void GetMediaInfo_AudioFile_VideoInfoAndImageInfoAreNull()
 		{

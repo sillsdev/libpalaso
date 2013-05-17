@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<PublishUrl>publish\</PublishUrl>
 	<Install>true</Install>
 	<InstallFrom>Disk</InstallFrom>
@@ -31,6 +31,7 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -178,6 +179,8 @@
 	<Compile Include="Migration\XmlReaderWriterMigrationStrategy.cs" />
 	<Compile Include="Migration\XPathVersion.cs" />
 	<Compile Include="Migration\XslMigrationStrategy.cs" />
+	<Compile Include="Network\HttpEncoderFromMono.cs" />
+	<Compile Include="Network\HttpUtilityFromMono.cs" />
 	<Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
 	<Compile Include="Network\RobustNetworkOperation.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
@@ -208,11 +211,6 @@
 	<Compile Include="Reporting\ExceptionHelper.cs" />
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ReportingSettings.cs" />
-	<Compile Include="Reporting\ReportingStrings1.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>ReportingStrings.resx</DependentUpon>
-	</Compile>
 	<Compile Include="Reporting\UsageReporter.cs" />
 	<Compile Include="Resource.Designer.cs">
 	  <DependentUpon>Resource.resx</DependentUpon>
@@ -335,11 +333,6 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\ReportingStrings.resx">
-	  <SubType>Designer</SubType>
-	  <Generator>PublicResXFileCodeGenerator</Generator>
-	  <LastGenOutput>ReportingStrings1.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Resource.resx">
 	  <SubType>Designer</SubType>

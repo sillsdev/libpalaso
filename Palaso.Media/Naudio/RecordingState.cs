@@ -2,9 +2,11 @@
 {
 	public enum RecordingState
 	{
+		NotYetStarted,
 		Stopped,
 		Monitoring,
 		Recording,
-		RequestedStop
+		RequestedStop,
+		Stopping,
 	}
 }

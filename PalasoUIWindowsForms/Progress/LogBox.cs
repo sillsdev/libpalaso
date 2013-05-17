@@ -5,16 +5,23 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Palaso.Extensions;
 using Palaso.Progress;
-using Palaso.Progress;
+using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Progress
 {
+	/// <summary>
+	/// A full-featured log ui control, which supports colored & styled text, user-controlled
+	/// verbosity, error reporting, & copy to clipboard. Protects itself, thread-wise.
+	/// Implements IProgress, so that processes can send
+	/// text to it without knowing anything about UI.
+	/// </summary>
 	public partial class LogBox : UserControl, IProgress
 	{
 		public event EventHandler ReportErrorLinkClicked;
 
 		private Action<IProgress> _getDiagnosticsMethod;
 		private readonly ToolStripLabel _reportLink;
+		private SynchronizationContext _synchronizationContext;
 
 		public LogBox()
 		{
@@ -67,10 +74,20 @@ namespace Palaso.UI.WindowsForms.Progress
 
 			_verboseBox.Size = _box.Size = _panelBox.Size;
 			_verboseBox.Location = _box.Location = new Point(0, 0);
-			SyncContext = SynchronizationContext.Current;
+			_synchronizationContext = SynchronizationContext.Current;
 		}
 
-		public SynchronizationContext SyncContext { get; set; }
+		public SynchronizationContext SyncContext
+		{
+			get { return _synchronizationContext; }
+			set //not private becuase the IProgress requires it be public
+			{
+				if (value == null || value == _synchronizationContext)
+					return;
+				throw new NotImplementedException(
+					"There's no good reason for clients to be trying to set the SyncContext of a LogBox.");
+			}
+		}
 
 		public void AddMenuItem(string label, Image image, EventHandler onClick)
 		{
@@ -185,7 +202,24 @@ namespace Palaso.UI.WindowsForms.Progress
 					//Debug.Fail("In release build, would have given up writing this message, because the destination control isn't built yet.");
 					return;
 				}
-				box.Invoke(action);
+
+				if(!IsDisposed) //note, we'll check it again on the UI thread, since it could be disposed while waiting to run
+				{
+					if (SynchronizationContext.Current == SyncContext) //we're on the UI thread
+					{
+						action();
+				}
+				else
+				{
+						//NB: if you're getting eratic behavior here, make sure there isn't one of those "access to modified closure" situations in your calling method
+						  SyncContext.Post(state =>
+											 {
+												 //assumption is that since this is run on the UI thread, we can't be disposed in between the check of IsDiposed and the action itself
+												 if (!IsDisposed)
+													 action();
+											 }, null);
+				}
+				}
 			}
 			catch (Exception)
 			{
@@ -208,19 +242,21 @@ namespace Palaso.UI.WindowsForms.Progress
 #endif
 			foreach (var rtfBox in new[] { _box, _verboseBox })
 			{
+				var rtfBoxForDelegate = rtfBox;//no really, this assignment is needed. Took hours to track down this bug.
+				var styleForDelegate = style;
 				SafeInvoke(rtfBox, (() =>
 				{
-					if (!rtfBox.Font.FontFamily.IsStyleAvailable(style))
-						style = rtfBox.Font.Style;
+					if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
+						style = rtfBoxForDelegate.Font.Style;
 
-					using (var fnt = new Font(rtfBox.Font, style))
+					using (var fnt = new Font(rtfBoxForDelegate.Font, styleForDelegate))
 					{
-						rtfBox.SelectionStart = rtfBox.Text.Length;
-						rtfBox.SelectionColor = color;
-						rtfBox.SelectionFont = fnt;
-						rtfBox.AppendText(string.Format(msg + Environment.NewLine, args));
-						rtfBox.SelectionStart = rtfBox.Text.Length;
-						rtfBox.ScrollToCaret();
+						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
+						rtfBoxForDelegate.SelectionColor = color;
+						rtfBoxForDelegate.SelectionFont = fnt;
+						rtfBoxForDelegate.AppendText(string.Format(msg + Environment.NewLine, args));
+						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
+						rtfBoxForDelegate.ScrollToCaret();
 					}
 				}));
 			}
@@ -378,7 +414,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			try
 			{
-				Palaso.Reporting.ErrorReport.ReportNonFatalMessageWithStackTrace(msg);
+				ErrorReport.ReportNonFatalMessageWithStackTrace(msg);
 				return true;
 			}
 			catch (Exception)
@@ -426,5 +462,10 @@ namespace Palaso.UI.WindowsForms.Progress
 					e.Graphics.DrawLine(pen, pt.X, pt.Y - 1, pt.X + menuStrip1.Width, pt.Y - 1);
 			}
 		}
+
+		private void LogBox_Load(object sender, EventArgs e)
+		{
+
 	}
+}
 }

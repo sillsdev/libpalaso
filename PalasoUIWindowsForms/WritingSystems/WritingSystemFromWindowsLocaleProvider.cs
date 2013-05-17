@@ -33,8 +33,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        }
 
 
-		private static string GetRegion(InputLanguage language)
-		{
+		private static string GetRegion(InputLanguage language) {
 #if MONO // CultureAndRegionInfoBuilder not supported by Mono
 			return string.Empty;
 #else
@@ -64,7 +63,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			var unique = defs.GroupBy(d => d.Bcp47Tag)
+			var unique= defs.GroupBy(d => d.Bcp47Tag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}
@@ -81,7 +80,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					//http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
 					culture = language.Culture;
 				}
-				catch (ArgumentException e)
+				catch (CultureNotFoundException e)
 				{
 					continue;
 				}
