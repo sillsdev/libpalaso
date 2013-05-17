@@ -33,7 +33,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        }
 
 
-		private static string GetRegion(InputLanguage language) {
+		private static string GetRegion(InputLanguage language)
+		{
 #if MONO // CultureAndRegionInfoBuilder not supported by Mono
 			return string.Empty;
 #else
@@ -63,7 +64,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			var unique= defs.GroupBy(d => d.Bcp47Tag)
+			var unique = defs.GroupBy(d => d.Bcp47Tag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}
@@ -72,7 +73,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 			{
-				if (language.Culture.EnglishName.StartsWith("Invariant"))
+				CultureInfo culture = null;
+				try
+				{
+					//http://www.wesay.org/issues/browse/WS-34598
+					//Oddly enough, this can throw. It seems like it might have to do with a badly applied .Net patch
+					//http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
+					culture = language.Culture;
+				}
+				catch (ArgumentException e)
+				{
+					continue;
+				}
+				if (culture.EnglishName.StartsWith("Invariant"))
 				{
 					continue;
 				}
@@ -85,7 +98,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 				var name = TrimOffCountryNameOfMajorLanguage(language);
 
-				var cleaner = new Rfc5646TagCleaner(language.Culture.TwoLetterISOLanguageName, "", region, "", "");
+				var cleaner = new Rfc5646TagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
 				cleaner.Clean();
 
 				var def = new WritingSystemDefinition(
@@ -93,14 +106,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					cleaner.Script,
 					cleaner.Region,
 					WritingSystemDefinition.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
-					language.Culture.ThreeLetterISOLanguageName,
-					language.Culture.TextInfo.IsRightToLeft);
-				def.NativeName = language.Culture.NativeName;
+					culture.ThreeLetterISOLanguageName,
+					culture.TextInfo.IsRightToLeft);
+				def.NativeName = culture.NativeName;
 				def.Keyboard = language.LayoutName;
 				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
-				def.SortRules = language.Culture.IetfLanguageTag;
+				def.SortRules = culture.IetfLanguageTag;
 				def.DefaultFontSize = 12;
-				def.LanguageName = language.Culture.DisplayName;
+				def.LanguageName = culture.DisplayName;
 
 				yield return def;
 			}
