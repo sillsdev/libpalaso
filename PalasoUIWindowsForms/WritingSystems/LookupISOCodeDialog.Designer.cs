@@ -28,14 +28,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._lookupISOControl = new Palaso.UI.WindowsForms.WritingSystems.LookupISOControl();
+			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
 			// _okButton
 			//
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._L10NSharpExtender.SetLocalizableToolTip(this._okButton, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
+			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
 			this._okButton.Location = new System.Drawing.Point(88, 364);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
@@ -48,6 +54,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._cancelButton, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._cancelButton, null);
+			this._L10NSharpExtender.SetLocalizingId(this._cancelButton, "Common.CancelButton");
 			this._cancelButton.Location = new System.Drawing.Point(169, 364);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
@@ -62,12 +71,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this._lookupISOControl.ISOCode = "";
+			this._L10NSharpExtender.SetLocalizableToolTip(this._lookupISOControl, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._lookupISOControl, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this._lookupISOControl, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._L10NSharpExtender.SetLocalizingId(this._lookupISOControl, "LookupLanguageDialog.LookupISOControl");
 			this._lookupISOControl.Location = new System.Drawing.Point(12, 12);
 			this._lookupISOControl.Name = "_lookupISOControl";
 			this._lookupISOControl.Size = new System.Drawing.Size(255, 346);
 			this._lookupISOControl.TabIndex = 0;
 			this._lookupISOControl.ReadinessChanged += new System.EventHandler(this._lookupISOControl_Changed);
 			this._lookupISOControl.DoubleClicked += new System.EventHandler(this.OnChooserDoubleClicked);
+			//
+			// _L10NSharpExtender
+			//
+			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
+			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			//
 			// LookupISOCodeDialog
 			//
@@ -79,12 +97,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._lookupISOControl);
 			this.Controls.Add(this._okButton);
+			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
+			this._L10NSharpExtender.SetLocalizationComment(this, null);
+			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LanguageLookupDialogWindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "LookupISOCodeDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "Lookup Language Code...";
+			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -94,5 +116,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.Button _okButton;
 		private LookupISOControl _lookupISOControl;
 		private System.Windows.Forms.Button _cancelButton;
+		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }

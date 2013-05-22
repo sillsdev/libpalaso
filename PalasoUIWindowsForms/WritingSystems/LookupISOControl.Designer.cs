@@ -36,7 +36,9 @@
 			this._searchTimer = new System.Windows.Forms.Timer(this.components);
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this._cannotFindLanguageLink = new System.Windows.Forms.LinkLabel();
+			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
 			// _listView
@@ -59,15 +61,25 @@
 			//
 			// columnHeader1
 			//
+			this._L10NSharpExtender.SetLocalizableToolTip(this.columnHeader1, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.columnHeader1, null);
+			this._L10NSharpExtender.SetLocalizingId(this.columnHeader1, "LanguageLookup.NameColumnHeader");
 			this.columnHeader1.Text = "Name";
 			this.columnHeader1.Width = 163;
 			//
 			// columnHeader2
 			//
+			this._L10NSharpExtender.SetLocalizableToolTip(this.columnHeader2, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.columnHeader2, null);
+			this._L10NSharpExtender.SetLocalizingId(this.columnHeader2, "LanguageLookup.CodeColumnHeader");
 			this.columnHeader2.Text = "Code";
 			//
 			// _searchText
 			//
+			this._L10NSharpExtender.SetLocalizableToolTip(this._searchText, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._searchText, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this._searchText, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._L10NSharpExtender.SetLocalizingId(this._searchText, "LanguageLookup.LookupISOControl._searchText");
 			this._searchText.Location = new System.Drawing.Point(6, 3);
 			this._searchText.Name = "_searchText";
 			this._searchText.Size = new System.Drawing.Size(228, 20);
@@ -81,6 +93,10 @@
 			//
 			this.pictureBox1.BackColor = System.Drawing.Color.White;
 			this.pictureBox1.Image = global::Palaso.UI.WindowsForms.Properties.Resources.search18x18;
+			this._L10NSharpExtender.SetLocalizableToolTip(this.pictureBox1, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.pictureBox1, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this.pictureBox1, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._L10NSharpExtender.SetLocalizingId(this.pictureBox1, "LanguageLookup.LookupISOControl.pictureBox1");
 			this.pictureBox1.Location = new System.Drawing.Point(214, 4);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(18, 18);
@@ -92,6 +108,9 @@
 			//
 			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._cannotFindLanguageLink.AutoSize = true;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._cannotFindLanguageLink, null);
+			this._L10NSharpExtender.SetLocalizingId(this._cannotFindLanguageLink, "LanguageLookup.CannotFindLanguageLink");
 			this._cannotFindLanguageLink.Location = new System.Drawing.Point(10, 270);
 			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
 			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
@@ -99,6 +118,11 @@
 			this._cannotFindLanguageLink.TabStop = true;
 			this._cannotFindLanguageLink.Text = "Can\'t find your language?";
 			this._cannotFindLanguageLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._cannotFindLanguageLink_LinkClicked);
+			//
+			// _L10NSharpExtender
+			//
+			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
+			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			//
 			// LookupISOControl
 			//
@@ -108,10 +132,14 @@
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this._listView);
 			this.Controls.Add(this._searchText);
+			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
+			this._L10NSharpExtender.SetLocalizationComment(this, null);
+			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
 			this.Name = "LookupISOControl";
 			this.Size = new System.Drawing.Size(245, 291);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -126,5 +154,6 @@
 		private System.Windows.Forms.Timer _searchTimer;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.LinkLabel _cannotFindLanguageLink;
+		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }
