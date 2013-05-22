@@ -310,7 +310,7 @@ namespace Palaso.Progress
 		{
 			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				h.Handler.WriteMessage(colorName, message, args);
+				h.Handler.WriteMessageWithColor(colorName, message, args);
 			}
 		}
 
