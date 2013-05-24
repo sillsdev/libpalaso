@@ -13,7 +13,6 @@ using Palaso.Lift.Options;
 using Palaso.DictionaryServices.Lift;
 
 using NUnit.Framework;
-using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {
@@ -28,7 +27,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			private readonly StringBuilder _stringBuilder;
 			protected readonly string _filePath;
 
-			public LiftExportTestSessionBase()
+			protected LiftExportTestSessionBase()
 			{
 				_filePath = Path.GetTempFileName();
 				_stringBuilder = new StringBuilder();
@@ -69,7 +68,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				return StringBuilder.ToString();
 			}
 
-			public void AddTestLexEntry(string lexicalForm)
+			private void AddTestLexEntry(string lexicalForm)
 			{
 				LexEntry entry = CreateItem();
 				entry.LexicalForm["test"] = lexicalForm;
@@ -283,7 +282,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr","one");
 				e.Variants.Add(variant);
 				variant = new LexVariant();
@@ -303,7 +302,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexEtymology etymology = new LexEtymology("theType", "theSource");
+				var etymology = new LexEtymology("theType", "theSource");
 				etymology.SetAlternative("etr", "one");
 				e.Etymologies.Add(etymology);
 				session.LiftWriter.Add(e);
@@ -319,7 +318,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexEtymology etymology = new LexEtymology("theType", "theSource");
+				var etymology = new LexEtymology("theType", "theSource");
 				etymology.SetAlternative("etr", "theProtoform");
 				etymology.Gloss.SetAlternative("en", "engloss");
 				etymology.Gloss.SetAlternative("fr", "frgloss");
@@ -354,7 +353,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexPhonetic phonetic = new LexPhonetic();
+				var phonetic = new LexPhonetic();
 				phonetic.SetAlternative("ipa", "one");
 				e.Pronunciations.Add(phonetic);
 				session.LiftWriter.Add(e);
@@ -389,8 +388,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var sense = new LexSense();
-				var reversal = new LexReversal();
-				reversal.Type = "revType";
+				var reversal = new LexReversal {Type = "revType"};
 				reversal.SetAlternative("en", "one");
 				sense.Reversals.Add(reversal);
 				var reversal2 = new LexReversal();
@@ -426,7 +424,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr", "one");
 				variant.Traits.Add(new LexTrait("a", "A"));
 				variant.Traits.Add(new LexTrait("b", "B"));
@@ -442,7 +440,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr", "one");
 				var fieldA = new LexField("a");
 				fieldA.SetAlternative("en", "aaa");
@@ -462,7 +460,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr", "one");
 				var fieldA = new LexField("a");
 				fieldA.SetAlternative("en", "aaa");
@@ -1225,7 +1223,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
-		[Test]
+		[Test] // Ummmm no it shouldn't CP 2013-05.  Flex expects the opposite of this.
 		public void Gloss_MultipleGlossesSplitIntoSeparateEntries()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
@@ -1235,10 +1233,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				sense.Gloss["x"] = "xx";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				AssertHasAtLeastOneMatch("sense[count(gloss)=4]", session);
-				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='aaa']", session);
-				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='bbb']", session);
-				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='ccc']", session);
+				AssertHasAtLeastOneMatch("sense[count(gloss)=2]", session);
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='aaa; bbb; ccc']", session);
 				AssertHasAtLeastOneMatch("sense/gloss[@lang='x' and text='xx']", session);
 			}
 		}
