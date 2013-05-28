@@ -118,6 +118,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			using (var dlg = new CannotFindMyLanguageDialog())
 			{
 				dlg.ShowDialog();
+
+				//select the unlisted guy for them
+				foreach (ListViewItem item in _listView.Items)
+				{
+					var tag = item.Tag as Iso639LanguageCode;
+					if (tag.ISO3Code == "qaa")
+					{
+						_listView.Select();
+					}
+				}
 			}
 		}
 	}
