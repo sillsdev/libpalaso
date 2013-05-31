@@ -30,8 +30,10 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this._listView = new System.Windows.Forms.ListView();
-			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.PrimaryNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.codeHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.countryHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.AlternateNamesHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this._searchText = new System.Windows.Forms.TextBox();
 			this._searchTimer = new System.Windows.Forms.Timer(this.components);
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -43,36 +45,56 @@
 			//
 			// _listView
 			//
-			this._listView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-			| System.Windows.Forms.AnchorStyles.Left)));
+			this._listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.columnHeader1,
-			this.columnHeader2});
+			this.PrimaryNameHeader,
+			this.codeHeader,
+			this.countryHeader,
+			this.AlternateNamesHeader});
 			this._listView.FullRowSelect = true;
 			this._listView.HideSelection = false;
-			this._listView.Location = new System.Drawing.Point(3, 29);
+			this._listView.Location = new System.Drawing.Point(0, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(231, 230);
+			this._listView.Size = new System.Drawing.Size(722, 245);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
 			this._listView.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
 			this._listView.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			//
-			// columnHeader1
+			// PrimaryNameHeader
 			//
-			this._L10NSharpExtender.SetLocalizableToolTip(this.columnHeader1, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.columnHeader1, null);
-			this._L10NSharpExtender.SetLocalizingId(this.columnHeader1, "LanguageLookup.NameColumnHeader");
-			this.columnHeader1.Text = "Name";
-			this.columnHeader1.Width = 163;
+			this._L10NSharpExtender.SetLocalizableToolTip(this.PrimaryNameHeader, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.PrimaryNameHeader, null);
+			this._L10NSharpExtender.SetLocalizingId(this.PrimaryNameHeader, "LanguageLookup.NameColumnHeader");
+			this.PrimaryNameHeader.Text = "Name";
+			this.PrimaryNameHeader.Width = 104;
 			//
-			// columnHeader2
+			// codeHeader
 			//
-			this._L10NSharpExtender.SetLocalizableToolTip(this.columnHeader2, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.columnHeader2, null);
-			this._L10NSharpExtender.SetLocalizingId(this.columnHeader2, "LanguageLookup.CodeColumnHeader");
-			this.columnHeader2.Text = "Code";
+			this._L10NSharpExtender.SetLocalizableToolTip(this.codeHeader, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.codeHeader, null);
+			this._L10NSharpExtender.SetLocalizingId(this.codeHeader, "LanguageLookup.CodeColumnHeader");
+			this.codeHeader.Text = "Code";
+			this.codeHeader.Width = 57;
+			//
+			// countryHeader
+			//
+			this._L10NSharpExtender.SetLocalizableToolTip(this.countryHeader, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.countryHeader, null);
+			this._L10NSharpExtender.SetLocalizingId(this.countryHeader, "LanguageLookup.Country");
+			this.countryHeader.Text = "Country";
+			this.countryHeader.Width = 116;
+			//
+			// AlternateNamesHeader
+			//
+			this._L10NSharpExtender.SetLocalizableToolTip(this.AlternateNamesHeader, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.AlternateNamesHeader, null);
+			this._L10NSharpExtender.SetLocalizingId(this.AlternateNamesHeader, "LanguageLookup.OtherNames");
+			this.AlternateNamesHeader.Text = "Other Names";
+			this.AlternateNamesHeader.Width = 437;
 			//
 			// _searchText
 			//
@@ -80,7 +102,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this._searchText, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._searchText, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._searchText, "LanguageLookup.LookupISOControl._searchText");
-			this._searchText.Location = new System.Drawing.Point(6, 3);
+			this._searchText.Location = new System.Drawing.Point(1, 3);
 			this._searchText.Name = "_searchText";
 			this._searchText.Size = new System.Drawing.Size(228, 20);
 			this._searchText.TabIndex = 0;
@@ -97,21 +119,22 @@
 			this._L10NSharpExtender.SetLocalizationComment(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this.pictureBox1, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this.pictureBox1, "LanguageLookup.LookupISOControl.pictureBox1");
-			this.pictureBox1.Location = new System.Drawing.Point(214, 4);
+			this.pictureBox1.Location = new System.Drawing.Point(210, 5);
+			this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(18, 18);
-			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.pictureBox1.Size = new System.Drawing.Size(15, 15);
+			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureBox1.TabIndex = 11;
 			this.pictureBox1.TabStop = false;
 			//
 			// _cannotFindLanguageLink
 			//
-			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this._cannotFindLanguageLink.AutoSize = true;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cannotFindLanguageLink, "LanguageLookup.CannotFindLanguageLink");
-			this._cannotFindLanguageLink.Location = new System.Drawing.Point(10, 270);
+			this._cannotFindLanguageLink.Location = new System.Drawing.Point(592, 6);
 			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
 			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
 			this._cannotFindLanguageLink.TabIndex = 12;
@@ -136,7 +159,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
 			this.Name = "LookupISOControl";
-			this.Size = new System.Drawing.Size(245, 291);
+			this.Size = new System.Drawing.Size(722, 277);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
@@ -148,12 +171,14 @@
 		#endregion
 
 		private System.Windows.Forms.ListView _listView;
-		private System.Windows.Forms.ColumnHeader columnHeader1;
-		private System.Windows.Forms.ColumnHeader columnHeader2;
+		private System.Windows.Forms.ColumnHeader PrimaryNameHeader;
+		private System.Windows.Forms.ColumnHeader codeHeader;
 		private System.Windows.Forms.TextBox _searchText;
 		private System.Windows.Forms.Timer _searchTimer;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.LinkLabel _cannotFindLanguageLink;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private System.Windows.Forms.ColumnHeader countryHeader;
+		private System.Windows.Forms.ColumnHeader AlternateNamesHeader;
 	}
 }

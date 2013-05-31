@@ -25,3 +25,5 @@ CopyTo*.bat
 *.orig
 L10NSharp.*
 *.pdb
+*.ncrunchproject
+*.ncrunchsolution

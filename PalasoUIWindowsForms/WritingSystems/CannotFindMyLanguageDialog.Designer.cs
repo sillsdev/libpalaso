@@ -108,12 +108,12 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this.betterLabel1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.betterLabel1, null);
 			this._L10NSharpExtender.SetLocalizingId(this.betterLabel1, "LanguageLookup.CannotFindMyLanguage.LanguageLookup.CannotFindMyLanguageExplanatio" +
-		"n");
+		"n2");
 			this.betterLabel1.Location = new System.Drawing.Point(21, 16);
 			this.betterLabel1.Multiline = true;
 			this.betterLabel1.Name = "betterLabel1";
 			this.betterLabel1.ReadOnly = true;
-			this.betterLabel1.Size = new System.Drawing.Size(352, 113);
+			this.betterLabel1.Size = new System.Drawing.Size(352, 81);
 			this.betterLabel1.TabIndex = 6;
 			this.betterLabel1.TabStop = false;
 			this.betterLabel1.Text = resources.GetString("betterLabel1.Text");

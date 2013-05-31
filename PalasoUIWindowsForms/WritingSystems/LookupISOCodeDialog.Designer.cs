@@ -31,18 +31,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.components = new System.ComponentModel.Container();
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
-			this._lookupISOControl = new Palaso.UI.WindowsForms.WritingSystems.LookupISOControl();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._lookupISOControl = new Palaso.UI.WindowsForms.WritingSystems.LookupISOControl();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
 			// _okButton
 			//
-			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
-			this._okButton.Location = new System.Drawing.Point(88, 364);
+			this._okButton.Location = new System.Drawing.Point(501, 303);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 23);
 			this._okButton.TabIndex = 1;
@@ -52,18 +52,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _cancelButton
 			//
-			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cancelButton, "Common.CancelButton");
-			this._cancelButton.Location = new System.Drawing.Point(169, 364);
+			this._cancelButton.Location = new System.Drawing.Point(582, 303);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(75, 23);
 			this._cancelButton.TabIndex = 2;
 			this._cancelButton.Text = "&Cancel";
 			this._cancelButton.UseVisualStyleBackColor = true;
 			this._cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
+			//
+			// _L10NSharpExtender
+			//
+			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
+			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			//
 			// _lookupISOControl
 			//
@@ -73,19 +78,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._lookupISOControl.ISOCode = "";
 			this._L10NSharpExtender.SetLocalizableToolTip(this._lookupISOControl, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._lookupISOControl, null);
-			this._L10NSharpExtender.SetLocalizationPriority(this._lookupISOControl, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._L10NSharpExtender.SetLocalizingId(this._lookupISOControl, "LookupLanguageDialog.LookupISOControl");
-			this._lookupISOControl.Location = new System.Drawing.Point(12, 12);
+			this._L10NSharpExtender.SetLocalizingId(this._lookupISOControl, "LanguageLookup.LookupISOControl");
+			this._lookupISOControl.Location = new System.Drawing.Point(21, 16);
 			this._lookupISOControl.Name = "_lookupISOControl";
-			this._lookupISOControl.Size = new System.Drawing.Size(255, 346);
+			this._lookupISOControl.Size = new System.Drawing.Size(636, 267);
 			this._lookupISOControl.TabIndex = 0;
 			this._lookupISOControl.ReadinessChanged += new System.EventHandler(this._lookupISOControl_Changed);
-			this._lookupISOControl.DoubleClicked += new System.EventHandler(this.OnChooserDoubleClicked);
-			//
-			// _L10NSharpExtender
-			//
-			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
-			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
+			this._lookupISOControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
 			//
 			// LookupISOCodeDialog
 			//
@@ -93,9 +92,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(279, 399);
-			this.Controls.Add(this._cancelButton);
+			this.ClientSize = new System.Drawing.Size(692, 338);
 			this.Controls.Add(this._lookupISOControl);
+			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
@@ -114,8 +113,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		#endregion
 
 		private System.Windows.Forms.Button _okButton;
-		private LookupISOControl _lookupISOControl;
 		private System.Windows.Forms.Button _cancelButton;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private LookupISOControl _lookupISOControl;
 	}
 }

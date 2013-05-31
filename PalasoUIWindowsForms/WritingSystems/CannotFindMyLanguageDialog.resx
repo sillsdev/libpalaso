@@ -121,8 +121,8 @@
 	<value>17, 17</value>
   </metadata>
   <data name="betterLabel1.Text" xml:space="preserve">
-	<value>This list should include all the ISO-639 languages. If your language isn't listed here, you might want to search ethnologue.com for it; perhaps it is listed under a different name.
+	<value>This list should include all the ISO-639 languages, including all the alternative names known to ethnologue.com.
 
-If all else fails, choose the "Unlisted Language" option at the very bottom of the list.</value>
+If necessary, use the "Unlisted Language" option, which will be selected for you now.</value>
   </data>
 </root>

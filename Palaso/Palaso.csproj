@@ -212,9 +212,6 @@
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ReportingSettings.cs" />
 	<Compile Include="Reporting\UsageReporter.cs" />
-	<Compile Include="Resource.Designer.cs">
-	  <DependentUpon>Resource.resx</DependentUpon>
-	</Compile>
 	<Compile Include="IO\SFMReader.cs">
 	  <SubType>Code</SubType>
 	</Compile>
@@ -287,10 +284,16 @@
 	<Compile Include="WritingSystems\Collation\IcuRulesParser.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParser.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollator.cs" />
+	<Compile Include="WritingSystems\EthnologueLookup.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
 	<Compile Include="WritingSystems\Iso15924Script.cs" />
 	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\LanguageRegistryResources.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>LanguageRegistryResources.resx</DependentUpon>
+	</Compile>
 	<Compile Include="WritingSystems\LdmlDataMapper.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollator.cs" />
@@ -334,21 +337,23 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Resource.resx">
-	  <SubType>Designer</SubType>
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
 	<EmbeddedResource Include="IO\FileRelatedStrings.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>FileRelatedStrings.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
+	<EmbeddedResource Include="WritingSystems\LanguageRegistryResources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>LanguageRegistryResources.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
 	<Content Include="Reporting\Usage.ico" />
-	<Content Include="Resources\ianaSubtagRegistry.txt" />
-	<Content Include="Resources\TwoToThreeCodes.txt" />
+	<None Include="Resources\TwoToThreeCodes.txt" />
+	<None Include="Resources\LanguageIndex.txt" />
+	<None Include="Resources\LanguageCodes.txt" />
+	<None Include="Resources\ianaSubtagRegistry.txt" />
+	<None Include="Resources\CountryCodes.txt" />
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
