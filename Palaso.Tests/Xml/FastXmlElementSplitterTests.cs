@@ -15,6 +15,19 @@ namespace Palaso.Tests.Xml
 	[TestFixture]
 	public class FastXmlElementSplitterTests
 	{
+		private int _oldBufLen;
+		[SetUp]
+		public void Setup()
+		{
+			// Run these tests with a very small buffer, to give the AsyncFileReader a real workout.
+			_oldBufLen = AsyncFileReader.kbufLen;
+			AsyncFileReader.kbufLen = 10;
+		}
+		[TearDown]
+		public void TearDown()
+		{
+			AsyncFileReader.kbufLen = _oldBufLen;
+		}
 		[Test]
 		public void Null_Pathname_Throws()
 		{

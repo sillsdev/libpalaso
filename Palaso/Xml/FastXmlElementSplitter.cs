@@ -34,7 +34,7 @@ namespace Palaso.Xml
 		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
 		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
 		private readonly static byte _hyphen = EncUtf8.GetBytes("-")[0];
-		private static byte[] _inputBytes; // the entire content of the file we are parsing.
+		private static AsyncFileReader _input;
 		private static byte[] cdataStart = EncUtf8.GetBytes("![CDATA[");
 		private static byte[] cdataEnd = EncUtf8.GetBytes("]]>");
 		private static byte[] startComment = EncUtf8.GetBytes("!--");
@@ -167,7 +167,7 @@ namespace Palaso.Xml
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker)
 		{
 			if (string.IsNullOrEmpty(recordMarker)) throw new ArgumentException("Null or empty string", "recordMarker");
-			_inputBytes = File.ReadAllBytes(_pathname);
+			_input = new AsyncFileReader(_pathname);
 			InitializeOffsets();
 			var recordMarkerAsBytes = FormatRecordMarker(recordMarker);
 			if (firstElementMarker != null && _currentOffset < _endOfRecordsOffset)
@@ -193,6 +193,8 @@ namespace Palaso.Xml
 				yield return MakeElement(recordMarkerAsBytes);
 				AdvanceToOpenAngleBracket();
 			}
+			_input.Close();
+			_input = null;
 		}
 
 		/// <summary>
@@ -221,7 +223,7 @@ namespace Palaso.Xml
 				// If depth is zero we must stop and output. In case 3 we must also check for the correct closing marker.
 				if (gotOpenBracket)
 				{
-					if (_inputBytes[_currentOffset] == _slash)
+					if (_input[_currentOffset] == _slash)
 						depth--; // case 3
 					else if (Match(cdataStart))
 					{
@@ -237,9 +239,9 @@ namespace Palaso.Xml
 				}
 				else
 				{
-					if (_inputBytes[_currentOffset - 2] == _slash)
+					if (_input[_currentOffset - 2] == _slash)
 						depth--; // case 4
-					else if (_inputBytes[_currentOffset - 2] == _hyphen && _inputBytes[_currentOffset - 3] == _hyphen)
+					else if (_input[_currentOffset - 2] == _hyphen && _input[_currentOffset - 3] == _hyphen)
 						depth--; // case 6
 					// otherwise case 2, do nothing.
 				}
@@ -254,9 +256,9 @@ namespace Palaso.Xml
 						AdvanceToClosingAngleBracket();
 					}
 					// We matched the marker we started with, output the chunk.
-					if (_inputBytes[_currentOffset - 1] != _closingAngleBracket)
+					if (_input[_currentOffset - 1] != _closingAngleBracket)
 						throw new ArgumentException("Unmatched opening tag " + marker);
-					return _inputBytes.SubArray(start, _currentOffset - start);
+					return _input.SubArray(start, _currentOffset - start);
 				}
 				if (_currentOffset == _endOfRecordsOffset)
 					throw new ArgumentException("Unmatched opening tag " + marker);
@@ -275,7 +277,7 @@ namespace Palaso.Xml
 		bool MatchMarker(byte[] marker)
 		{
 			if (!Match(marker)) return false;
-			return Terminators.Contains(_inputBytes[_currentOffset + marker.Length]);
+			return Terminators.Contains(_input[_currentOffset + marker.Length]);
 		}
 
 		/// <summary>
@@ -289,7 +291,7 @@ namespace Palaso.Xml
 				return false;
 			for (int i = 0; i < marker.Length; i++)
 			{
-				if (_inputBytes[_currentOffset + i] != marker[i])
+				if (_input[_currentOffset + i] != marker[i])
 					return false;
 			}
 			return true;
@@ -315,9 +317,9 @@ namespace Palaso.Xml
 		{
 			// Find offset for end of records.
 			_endOfRecordsOffset = -1;
-			for (var i = _inputBytes.Length - 1; i >= 0; --i)
+			for (var i = _input.Length - 1; i >= 0; --i)
 			{
-				if (_inputBytes[i] != _openingAngleBracket)
+				if (_input[i] != _openingAngleBracket)
 					continue;
 
 				_endOfRecordsOffset = i;
@@ -329,7 +331,7 @@ namespace Palaso.Xml
 			// Find first angle bracket
 			_currentOffset = 0;
 			AdvanceToOpenAngleBracket();
-			if (_currentOffset < _inputBytes.Length && (_inputBytes[_currentOffset] == EncUtf8.GetBytes("?")[0]))
+			if (_currentOffset < _input.Length && (_input[_currentOffset] == EncUtf8.GetBytes("?")[0]))
 			{
 				// got an xml declaration. Find the NEXT open bracket. This will be the root element.
 				AdvanceToOpenAngleBracket();
@@ -340,9 +342,9 @@ namespace Palaso.Xml
 				// There is only one opening angle bracket in the file, except possibly the xml declaration.
 				// This is valid in just one case, when the root element ends />
 				bool gotClose = false;
-				for (var i = _inputBytes.Length - 1; i > _endOfRecordsOffset; --i)
+				for (var i = _input.Length - 1; i > _endOfRecordsOffset; --i)
 				{
-					var c = Convert.ToChar(_inputBytes[i]);
+					var c = Convert.ToChar(_input[i]);
 					if (Char.IsWhiteSpace(c))
 						continue;
 					if (gotClose)
@@ -375,7 +377,7 @@ namespace Palaso.Xml
 		{
 			for (; _currentOffset < _endOfRecordsOffset; _currentOffset++)
 			{
-				var inputByte = _inputBytes[_currentOffset];
+				var inputByte = _input[_currentOffset];
 				if (inputByte == _openingAngleBracket)
 				{
 					_currentOffset++;
@@ -387,7 +389,7 @@ namespace Palaso.Xml
 					return false;
 				}
 			}
-			return _inputBytes[_currentOffset] == _openingAngleBracket;
+			return _input[_currentOffset] == _openingAngleBracket;
 		}
 
 		/// <summary>
@@ -398,7 +400,7 @@ namespace Palaso.Xml
 		{
 			for (; _currentOffset < _endOfRecordsOffset;_currentOffset++)
 			{
-				if (_inputBytes[_currentOffset] == _openingAngleBracket)
+				if (_input[_currentOffset] == _openingAngleBracket)
 				{
 					_currentOffset++;
 					if (Match(startComment))
@@ -420,7 +422,7 @@ namespace Palaso.Xml
 		{
 			for (; _currentOffset < _endOfRecordsOffset; _currentOffset++)
 			{
-				if (_inputBytes[_currentOffset] == _closingAngleBracket)
+				if (_input[_currentOffset] == _closingAngleBracket)
 				{
 					_currentOffset++;
 					return;
@@ -462,6 +464,9 @@ namespace Palaso.Xml
 
 			if (disposing)
 			{
+				if (_input != null)
+					_input.Close();
+				_input = null;
 			}
 
 			// Dispose unmanaged resources here, whether disposing is true or false.
@@ -470,5 +475,162 @@ namespace Palaso.Xml
 
 			IsDisposed = true;
 		}
+	}
+
+	/// <summary>
+	/// Class responsible to manage access to the content of a file. The interface is mostly a subset of byte array,
+	/// and in general it replaces input = File.ReadAllBytes(pathname) with input = new AsyncFileReader(pathname),
+	/// and input can be used much like the array. One difference is that the AsyncFileReader should be closed.
+	/// The benefit of using this is that it is not necessary to allocate an array as big as the file.
+	/// Also, if the file is mainly accessed sequentially, some of the data reading will be overlapped with
+	/// processing it, at least for a large file.
+	/// </summary>
+	internal class AsyncFileReader
+	{
+		private string _pathname;
+		// MS doc says this is the smallest buffer that will produce real async reads.
+		// We want them relatively small so we can start overlapping quickly.
+		// For testing this class, kbufLen is set very small.
+		// Otherwise the unit tests will just load everything into the first 65K buffer, and much of the logic
+		// will never be tried.
+		internal static int kbufLen = 65536;
+		private const int kBufferCount = 3;
+		private int _currentBuffer; // index of a buffer (no longer Loading) where we last found a desired byte. -1 if none.
+		// Typically, buffer [_currentBuffer] contains the data we are searching for an end marker.
+		// buffer [_currentBuffer - 1] contains the data just before that, sometimes including the start of the element.
+		// the third buffer is in the process of being loaded with the next block.
+		Buffer[] buffers = new Buffer[kBufferCount];
+		private FileStream m_reader;
+
+		public AsyncFileReader(string pathName)
+		{
+			_pathname = pathName;
+			Length = (int)new FileInfo(_pathname).Length;
+			// Setting a high offset ensures that no byte we want will be in any buffer's range.
+			for (int i = 0; i < kBufferCount; i++)
+				buffers[i] = new Buffer() {Data = new byte[kbufLen], Offset = Length};
+			_currentBuffer = -1; // no buffer is loaded
+			m_reader = new FileStream(_pathname, FileMode.Open, FileAccess.Read, FileShare.None, 4096, true);
+			// Read a block at the end of the file, which we happen to know we will want first.
+			StartReading(Math.Max(Length - kbufLen, 0));
+		}
+
+		public void Close()
+		{
+			// MS Doc says EndRead must be called exactly once for each BeginRead. Not sure whether anything
+			// very bad will happen if we don't finish the final reads, but just in case...
+			for (int i = 0; i < kBufferCount; i++)
+			{
+				if (buffers[i].Loading)
+					m_reader.EndRead(buffers[i].Token);
+			}
+			m_reader.Close();
+		}
+
+		// Start reading a block at the specified (byte) index.
+		// Return the index of the block we are loading it into.
+		int StartReading(int index)
+		{
+			// Load the new data into the buffer after the current one, leaving the buffer before it holding
+			// hopefully more recent data.
+			int bufIndex = NextBuffer(_currentBuffer);
+			var buffer = buffers[bufIndex];
+			// Have to finish the current read, even though we will then overwrite the data.
+			// It should be very unusual, if it can happen at all, that the next buffer needs loading.
+			FinishRead(buffer);
+			// Start an asynchronous read. When something actually needs the data from this buffer,
+			// it must call EndRead(buffer.Token) and then set Loading to false.
+			m_reader.Seek(index, SeekOrigin.Begin);
+			buffer.Token = m_reader.BeginRead(buffer.Data, 0, buffer.Data.Length, null, null);
+			buffer.Offset = index;
+			buffer.Loading = true;
+			return bufIndex;
+		}
+
+		private void FinishRead(Buffer buffer)
+		{
+			if (!buffer.Loading)
+				return; // already loaded.
+			m_reader.EndRead(buffer.Token);
+			buffer.Loading = false;
+		}
+
+		/// <summary>
+		/// This makes the class function like a byte array, allowing [n] to get the nth byte.
+		/// </summary>
+		/// <param name="n"></param>
+		/// <returns></returns>
+		public byte this[int n]
+		{
+			get
+			{
+				Buffer currentBuffer;
+				// Try to get it from the current buffer.
+				if (_currentBuffer >= 0)
+				{
+					currentBuffer = buffers[_currentBuffer];
+					if (n >= currentBuffer.Offset && n < currentBuffer.Offset + kbufLen)
+						return currentBuffer.Data[n - currentBuffer.Offset];
+				}
+				for (int i = 0; i < kBufferCount; i++)
+				{
+					if (i == _currentBuffer)
+						continue;
+					currentBuffer = buffers[i];
+					if (n >= currentBuffer.Offset && n < currentBuffer.Offset + kbufLen)
+					{
+						// We have a buffer that covers the relevant part of the file.
+						FinishRead(currentBuffer);
+						int prevBuffer = _currentBuffer;
+						_currentBuffer = i;
+						// If we advanced from one block to the following one, go ahead and start loading the next, if any.
+						// For typical sequential access, this should overlap the reading with processing the block
+						// we just finished loading.
+						// If we went back to a previous block, probably in order to get a SubArray that extends into
+						// the current one, we want to leave the current block intact.
+						if (_currentBuffer == NextBuffer(prevBuffer) && currentBuffer.Offset + kbufLen < Length)
+							StartReading(currentBuffer.Offset + kbufLen);
+						return currentBuffer.Data[n - currentBuffer.Offset];
+					}
+				}
+				// no current buffer has it. This is usually because we are going back to get a SubArray
+				// up to the present location, and had to back up more than one buffer.
+				// We may want a few bytes before the start of the sub-array, but mainly we will want following bytes.
+				_currentBuffer = StartReading(Math.Max(n - 3, 0));
+				currentBuffer = buffers[_currentBuffer];
+				FinishRead(currentBuffer);
+				// Start reading the NEXT block; hopefully it will be ready by the time we need it.
+				if (currentBuffer.Offset + kbufLen < Length)
+					StartReading(currentBuffer.Offset + kbufLen);
+				return currentBuffer.Data[n - currentBuffer.Offset];
+			}
+		}
+
+		int NextBuffer(int index)
+		{
+			return index + 1 < kBufferCount ? index + 1 : 0;  // 0 initially, when _currentBuffer is -1.
+		}
+
+		/// <summary>
+		/// Initialized to length of file in constructor.
+		/// </summary>
+		public int Length { get; private set; }
+
+		public byte[] SubArray(int start, int count)
+		{
+			var result = new byte[count];
+			// Enhance JohnT: this could be optimized to copy chunks of buffers.
+			for (int i = 0; i < count; i++)
+				result[i] = this[i + start];
+			return result;
+		}
+	}
+
+	class Buffer
+	{
+		public bool Loading; // true if we're still loading data for it.
+		public byte[] Data; // bytes we read from the file
+		public int Offset; // from start of whole file (or beyond end, if we haven't started loading buffer)
+		public IAsyncResult Token; // from BeginRead; should be passed to EndRead when we need the data.
 	}
 }
