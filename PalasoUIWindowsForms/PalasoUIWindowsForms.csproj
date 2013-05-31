@@ -125,16 +125,21 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="L10NSharp">
+	  <HintPath>..\lib\common\L10NSharp.dll</HintPath>
+	</Reference>
 	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
 	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Security" />
+	<Reference Include="System.ServiceModel" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
@@ -295,6 +300,18 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
+	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
+	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.designer.cs">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Progress\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -436,7 +453,6 @@
 	<Compile Include="Reporting\ExceptionReportingDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\LabelProgress.cs" />
 	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
@@ -466,18 +482,7 @@
 	<Compile Include="Progress\SimpleStatusProgress.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
 	<Compile Include="Progress\TextBoxProgress.cs" />
-	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
 	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
@@ -695,11 +700,18 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
 	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
+	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBox.resx">
 	  <DependentUpon>LogBox.cs</DependentUpon>
@@ -774,14 +786,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
 	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
@@ -1031,7 +1035,9 @@
   <ItemGroup>
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+	<Content Include="LocalizationManager.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
+using L10NSharp;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
@@ -25,7 +26,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			set
 			{
 				_metadataEditorControl.ShowCreator = value;
-				Text = value ? "Credit, Copyright, & License" : "Copyright & License";
+				Text = value ? LocalizationManager.GetString("MetadataEditor.TitleWithCredit", "Credit, Copyright, & License") :  LocalizationManager.GetString("MetadataEditor.TitleNoCredit", "Copyright, & License");
 			}
 		}
 

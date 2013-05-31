@@ -130,11 +130,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (dlg.DialogResult != DialogResult.OK)
 					return null;
 				var variant = String.Empty;
-				if (dlg.ISOCode == WellKnownSubTags.Unlisted.Language)
+				if (dlg.SelectedLanguage.Code == WellKnownSubTags.Unlisted.Language)
 				{
 					variant = "x-" + "Unlisted";
 				}
-				return new WritingSystemDefinition(dlg.ISOCode, string.Empty, string.Empty, variant, dlg.ISOCode, false);
+				return new WritingSystemDefinition(dlg.SelectedLanguage.Code, string.Empty, string.Empty, variant, dlg.SelectedLanguage.Code, false);
 			}
 		}
 

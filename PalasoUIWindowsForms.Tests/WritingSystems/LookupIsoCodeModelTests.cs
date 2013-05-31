@@ -31,42 +31,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			var dialog = new LookupISOCodeDialog();
 			Application.Run(dialog);
-			MessageBox.Show("code returned:" + dialog.ISOCode);
-		}
-
-		[Test, Ignore("By hand only")]
-		public void LookupISODialogWithValue()
-		{
-			var dialog = new LookupISOCodeDialog();
-			dialog.ISOCode = "etr";
-			Application.Run(dialog);
-			MessageBox.Show("code returned:" + dialog.ISOCode);
-		}
-		[Test]
-		public void GetMatchingWritingSystems_NoMatches_Empty()
-		{
-			Assert.AreEqual(0, _model.GetMatchingWritingSystems("^^^").Count());
-		}
-
-		[Test]
-		public void GetMatchingWritingSystems_EmptyString_GetWholeList()
-		{
-			Assert.Greater(_model.GetMatchingWritingSystems(string.Empty).Count(), 7000);
+			MessageBox.Show("code returned:" + dialog.SelectedLanguage.Code);
 		}
 
 
-		[Test]
-		public void GetMatchingWritingSystems_UpperCaseGerman_ReturnsGerman()
-		{
-			var matchingWritingSystems = _model.GetMatchingWritingSystems("German").ToArray();
-			Assert.AreEqual("de",matchingWritingSystems[0].Code);
-		}
-
-		[Test]
-		public void GetMatchingWritingSystems_lowerCaseGerman_ReturnsGerman()
-		{
-			var matchingWritingSystems = _model.GetMatchingWritingSystems("german").ToArray();
-			Assert.AreEqual("de", matchingWritingSystems[0].Code);
-		}
 	}
 }

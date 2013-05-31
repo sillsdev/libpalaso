@@ -157,6 +157,7 @@
 	<Compile Include="Progress\MultiProgressTests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
+	<Compile Include="reporting\AnalyticsEventSenderTests.cs" />
 	<Compile Include="reporting\ErrorReportTests.cs" />
 	<Compile Include="reporting\UsageReporter.Tests.cs" />
 	<Compile Include="SFMReaderTest.cs" />
@@ -189,6 +190,7 @@
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\Collation\SortingTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
+	<Compile Include="WritingSystems\EthnologueLookupTests.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
 	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
