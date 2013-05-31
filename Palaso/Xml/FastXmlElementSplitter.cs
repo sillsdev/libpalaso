@@ -496,9 +496,15 @@ namespace Palaso.Xml
 		internal static int kbufLen = 65536;
 		private const int kBufferCount = 3;
 		private int _currentBuffer; // index of a buffer (no longer Loading) where we last found a desired byte. -1 if none.
-		// Typically, buffer [_currentBuffer] contains the data we are searching for an end marker.
-		// buffer [_currentBuffer - 1] contains the data just before that, sometimes including the start of the element.
-		// the third buffer is in the process of being loaded with the next block.
+		// The typical use of this class is reading through a file, noting a start position, reading to an end position,
+		// and then making a byte array out of what is in between. Thus, it is basically a sequential read, with an occasional,
+		// typically short, jump backwards.
+		// Using three buffers allows us to have
+		//	- one we are reading through (_currentBuffer),
+		//  - one we are in the process of loading (asynchronously, while processing the previous one...this is typically
+		//		the 'next' buffer in the rotation after _currentBuffer)
+		//  - the one we read through last, which we keep around so that stepping back to get the chunk we identified
+		//		does not require us to re-read anything (unless a chunk is really huge).
 		Buffer[] buffers = new Buffer[kBufferCount];
 		private FileStream m_reader;
 
