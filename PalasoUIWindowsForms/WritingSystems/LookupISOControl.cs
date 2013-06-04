@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Linq;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 
@@ -25,9 +28,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model = new LookupIsoCodeModel();
 		}
 
-		public Iso639LanguageCode ISOCodeAndName
+		public LanguageInfo LanguageInfo
 		{
-			get { return _model.ISOCodeAndName; }
+			get { return _model.LanguageInfo; }
 		}
 
 		public string ISOCode
@@ -38,17 +41,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnLoad(object sender, EventArgs e)
 		{
+			if (DesignMode)
+				return;
 			UpdateReadiness();
 			_searchTimer.Start();
 		}
 
+		private new bool DesignMode
+		{
+			get
+			{
+				return (base.DesignMode || GetService(typeof(IDesignerHost)) != null) ||
+					(LicenseManager.UsageMode == LicenseUsageMode.Designtime);
+			}
+		}
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
 			var oldIso = _model.ISOCode;
 			if (_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
-				_model.ISOCodeAndName = item.Tag as Iso639LanguageCode;
+				_model.LanguageInfo = item.Tag as LanguageInfo;
 
 			}
 			if (_model.ISOCode != oldIso)
@@ -79,30 +92,49 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_listView.Items.Clear();
 			_listView.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
-			var itemSelected = false;
-			foreach(Iso639LanguageCode lang in _model.GetMatchingWritingSystems(typedText))
+
+
+			if (_searchText.Text == "?")
 			{
-					ListViewItem item = new ListViewItem(lang.Name);
+				var description = L10NSharp.LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
+				List<string> names = new List<string>(new string[] {description});
+				LanguageInfo unlistedLanguage = new LanguageInfo() {Code = "qaa", Country = "", Names = names};
+				ListViewItem item = new ListViewItem(description);
+				item.SubItems.Add("qaa");
+				item.Tag = unlistedLanguage;
+				item.Selected = true;
+				_listView.Items.Add(item);
+
+			}
+			else
+			{
+				var itemSelected = false;
+				foreach (LanguageInfo lang in _model.GetMatchingLanguages(typedText))
+				{
+					ListViewItem item = new ListViewItem(lang.Names[0]);
 					item.SubItems.Add(lang.Code);
+					item.SubItems.Add(lang.Country);
+					item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
+					item.SubItems.Add(lang.Country);
 					item.Tag = lang;
 					toShow.Add(item);
 
-					if(!itemSelected && typedText.Length>1 &&
-						(lang.Code.ToLower() == typedText || lang.Name.ToLower().StartsWith(typedText.ToLower())))
+					if (!itemSelected && typedText.Length > 1 &&
+						(lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
 					{
 						item.Selected = true;
-						itemSelected = true;//we only want to select the first one
+						itemSelected = true; //we only want to select the first one
 					}
-			}
-			_listView.Items.AddRange(toShow.ToArray());
-			_listView.ResumeLayout();
-//            if (_listView.Items.Count > 0)
-//            {
-//                _listView.SelectedIndices.Add(0);
-//            }
+				}
+				_listView.Items.AddRange(toShow.ToArray());
 
-			if(_model.ISOCode != oldIso)
-				UpdateReadiness();
+			}
+			_listView.ResumeLayout();
+			//            if (_listView.Items.Count > 0)
+			//            {
+			//                _listView.SelectedIndices.Add(0);
+			//            }			if(_model.ISOCode != oldIso)
+			UpdateReadiness();
 		}
 
 		private void listView1_DoubleClick(object sender, EventArgs e)
@@ -118,6 +150,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			using (var dlg = new CannotFindMyLanguageDialog())
 			{
 				dlg.ShowDialog();
+
+				//select the unlisted guy for them
+//				foreach (ListViewItem item in _listView.Items)
+//				{
+//					var tag = item.Tag as Iso639LanguageCode;
+//					if (tag.ISO3Code == "qaa")
+//					{
+//						_listView.Select();
+//					}
+//				}
+
+				_searchText.Text = "?";
 			}
 		}
 	}

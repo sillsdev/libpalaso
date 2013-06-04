@@ -8,6 +8,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	{
 		private readonly IList<Iso639LanguageCode> _languageCodes;
 		private Iso639LanguageCode _selectedWritingSystem;
+		private EthnologueLookup _ethnologueLookup;
 
 
 		public LookupIsoCodeModel()
@@ -28,8 +29,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				);
 		}
 
-		public IEnumerable<Iso639LanguageCode> GetMatchingWritingSystems(string typedText)
+		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)
 		{
+			if(_ethnologueLookup==null)
+				 _ethnologueLookup = new EthnologueLookup();
+
 			/* This works, but the results are satisfactory yet (they could be with some enancement to the matcher
 			 We would need it to favor exact prefix matches... currently an exact match could be several items down the list.
 
@@ -37,29 +41,34 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var languages = ApproximateMatcher.FindClosestForms(_languageCodes, d, s, ApproximateMatcherOptions.IncludePrefixedAndNextClosestForms);
 			*/
 
-			typedText = typedText.ToLowerInvariant();
-
-			foreach (Iso639LanguageCode lang in _languageCodes)
+//            typedText = typedText.ToLowerInvariant();
+//
+//            foreach (Iso639LanguageCode lang in _languageCodes)
+//            {
+//                if (string.IsNullOrEmpty(typedText) // in which case, show all of them
+//                    || (lang.InvariantLowerCaseCode.StartsWith(typedText)
+//                        || lang.Name.ToLowerInvariant().StartsWith(typedText)))
+//                {
+//                    yield return lang;
+//                }
+//            }
+			foreach (var language in    _ethnologueLookup.SuggestLanguages(typedText))
 			{
-				if (string.IsNullOrEmpty(typedText) // in which case, show all of them
-					|| (lang.InvariantLowerCaseCode.StartsWith(typedText)
-						|| lang.Name.ToLowerInvariant().StartsWith(typedText)))
-				{
-					yield return lang;
-				}
+				yield return language;
 			}
+
 		}
 
 
-		public Iso639LanguageCode ISOCodeAndName;
+		public LanguageInfo LanguageInfo;
 
 		public string ISOCode
 		{
 			get
 			{
-				if (ISOCodeAndName == null)
+				if (LanguageInfo == null)
 					return string.Empty;
-				return ISOCodeAndName.Code;
+				return LanguageInfo.Code;
 			}
 		}
 	}

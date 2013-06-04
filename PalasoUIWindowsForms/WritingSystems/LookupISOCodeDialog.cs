@@ -24,18 +24,25 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.Close();
 		}
 
-		public Iso639LanguageCode ISOCodeAndName
+//        public Iso639LanguageCode ISOCodeAndName
+//        {
+//            get
+//            {
+//				if( DialogResult != DialogResult.OK)
+//					return null;
+//	            return new Iso639LanguageCode(_lookupISOControl.LanguageInfo.Code, _lookupISOControl.LanguageInfo.Names[0],
+//	                                          _lookupISOControl.LanguageInfo.Code);//review: it's not clear which codes these are supposed to be. As is, they are 639-1 if it exists, else 639-3
+//            }
+//        }
+
+		public LanguageInfo SelectedLanguage
 		{
 			get
 			{
-				return  DialogResult == DialogResult.OK ? _lookupISOControl.ISOCodeAndName : null;
+				if( DialogResult != DialogResult.OK)
+					return null;
+				return _lookupISOControl.LanguageInfo;
 			}
-		}
-
-		public string ISOCode
-		{
-			get { return DialogResult == DialogResult.OK ? _lookupISOControl.ISOCode : string.Empty; }
-			set { _lookupISOControl.ISOCode = value; }
 		}
 
 
@@ -46,7 +53,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _lookupISOControl_Changed(object sender, EventArgs e)
 		{
-			_okButton.Enabled = _lookupISOControl.ISOCodeAndName != null;
+			_okButton.Enabled = _lookupISOControl.LanguageInfo != null;
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)
