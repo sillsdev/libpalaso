@@ -27,3 +27,5 @@ L10NSharp.*
 *.pdb
 *.ncrunchproject
 *.ncrunchsolution
+.nuget/NuGet.exe
+*.cache

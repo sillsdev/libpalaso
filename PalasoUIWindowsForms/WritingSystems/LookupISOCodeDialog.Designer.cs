@@ -1,3 +1,4 @@
+using L10NSharp;
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	partial class LookupISOCodeDialog
@@ -114,7 +115,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Button _cancelButton;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 		private LookupISOControl _lookupISOControl;
+		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }
