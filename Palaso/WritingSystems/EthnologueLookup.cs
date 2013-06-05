@@ -165,5 +165,20 @@ namespace Palaso.WritingSystems
 		public List<string> Names=new List<string>();
 		public string Country;
 		public string Code;
+		private string _desiredName;
+
+		/// <summary>
+		/// People sometimes don't want use the Ethnologue-supplied name
+		/// </summary>
+		public string DesiredName
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_desiredName))
+					return Names.FirstOrDefault();
+				return _desiredName;
+			}
+			set { _desiredName = value.Trim(); }
+		}
 	}
 }

@@ -128,9 +128,9 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="L10NSharp, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+	<Reference Include="L10NSharp, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\packages\L10NSharp.1.1.1\lib\net40-Client\L10NSharp.dll</HintPath>
+	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
 	</Reference>
 	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>

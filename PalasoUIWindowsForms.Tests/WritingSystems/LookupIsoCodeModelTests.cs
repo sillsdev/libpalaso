@@ -31,7 +31,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			var dialog = new LookupISOCodeDialog();
 			Application.Run(dialog);
-			MessageBox.Show("code returned:" + dialog.SelectedLanguage.Code);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code+" with desired name: "+dialog.SelectedLanguage.DesiredName);
 		}
 
 

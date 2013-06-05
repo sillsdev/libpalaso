@@ -10,6 +10,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public LookupISOCodeDialog()
 		{
 			InitializeComponent();
+			ShowDesiredLanguageNameField = true;
+		}
+
+		/// <summary>
+		/// If you wouldn't be paying attention to their requested name, and are only going to look at the code, then
+		/// set this to default so that they aren't fooled into thinking they can modify the name they'll see in your application.
+		/// </summary>
+		public bool ShowDesiredLanguageNameField
+		{
+			set { _lookupISOControl.ShowDesiredLanguageNameField = value; }
 		}
 
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -53,7 +63,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _lookupISOControl_Changed(object sender, EventArgs e)
 		{
-			_okButton.Enabled = _lookupISOControl.LanguageInfo != null;
+			_okButton.Enabled = _lookupISOControl.HaveSufficientInformation;
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows.Forms;
+using Palaso.Extensions;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -12,6 +13,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	{
 		private LookupIsoCodeModel _model;
 		private string _lastSearchedForText;
+		private string _unlistedLanguageName;
 		public event EventHandler ReadinessChanged;
 
 		public void UpdateReadiness()
@@ -25,12 +27,29 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public LookupISOControl()
 		{
 			InitializeComponent();
+			ShowDesiredLanguageNameField = true;
 			_model = new LookupIsoCodeModel();
+			_unlistedLanguageName = L10NSharp.LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
+		}
+
+		public bool ShowDesiredLanguageNameField
+		{
+			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible= value; }
 		}
 
 		public LanguageInfo LanguageInfo
 		{
 			get { return _model.LanguageInfo; }
+		}
+
+		public bool HaveSufficientInformation
+		{
+			get
+			{
+				return LanguageInfo != null &&
+				_desiredLanguageDisplayName.Text != _unlistedLanguageName &&
+					_desiredLanguageDisplayName.Text.Trim().Length > 0;
+			}
 		}
 
 		public string ISOCode
@@ -63,6 +82,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
 				_model.LanguageInfo = item.Tag as LanguageInfo;
 
+				if (_model.LanguageInfo.Code == "qaa")
+				{
+					//_desiredLanguageDisplayName.Text = "";
+				}
+				else
+				{
+					_desiredLanguageDisplayName.Text = _model.LanguageInfo.Names[0];
+					//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
+					foreach (var name in _model.LanguageInfo.Names)
+					{
+						if (name.ToLowerInvariant().StartsWith(_searchText.Text.ToLowerInvariant()))
+						{
+							_desiredLanguageDisplayName.Text = name;
+							break;
+						}
+					}
+				}
 			}
 			if (_model.ISOCode != oldIso)
 				UpdateReadiness();
@@ -119,13 +155,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					item.Tag = lang;
 					toShow.Add(item);
 
-					if (!itemSelected && typedText.Length > 1 &&
-						(lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
+//					if (!itemSelected && typedText.Length > 1 &&
+//					    (lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
+					if (!itemSelected)
 					{
 						item.Selected = true;
 						itemSelected = true; //we only want to select the first one
 					}
 				}
+				if (!itemSelected)
+				{
+					_model.LanguageInfo = null;
+					//_desiredLanguageDisplayName.Text = _searchText.Text;
+				}
+				_desiredLanguageDisplayName.Enabled = itemSelected;
 				_listView.Items.AddRange(toShow.ToArray());
 
 			}
@@ -151,18 +194,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				dlg.ShowDialog();
 
-				//select the unlisted guy for them
-//				foreach (ListViewItem item in _listView.Items)
-//				{
-//					var tag = item.Tag as Iso639LanguageCode;
-//					if (tag.ISO3Code == "qaa")
-//					{
-//						_listView.Select();
-//					}
-//				}
-
+				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
 				_searchText.Text = "?";
+				if (_desiredLanguageDisplayName.Visible)
+				{
+					_desiredLanguageDisplayName.Select();
+					_desiredLanguageDisplayName.Enabled = true;
+				}
 			}
+		}
+
+		private void _desiredLanguageDisplayName_TextChanged(object sender, EventArgs e)
+		{
+			if(_model.LanguageInfo!=null)
+				_model.LanguageInfo.DesiredName = _desiredLanguageDisplayName.Text;
+			UpdateReadiness();
 		}
 	}
 }
