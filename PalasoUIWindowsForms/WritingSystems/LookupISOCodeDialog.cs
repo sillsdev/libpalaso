@@ -50,8 +50,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			set { _lookupISOControl.LanguageInfo = value; }
 			get
 			{
-				if( DialogResult != DialogResult.OK)
-					return null;
 				return _lookupISOControl.LanguageInfo;
 			}
 		}
