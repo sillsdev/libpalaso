@@ -14,6 +14,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private LookupIsoCodeModel _model;
 		private string _lastSearchedForText;
 		private string _unlistedLanguageName;
+		private string _incomingDesiredName;
+		private LanguageInfo _incomingLanguageInfo;
 		public event EventHandler ReadinessChanged;
 
 		public void UpdateReadiness()
@@ -40,6 +42,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public LanguageInfo LanguageInfo
 		{
 			get { return _model.LanguageInfo; }
+			set { _model.LanguageInfo = value; }
 		}
 
 		public bool HaveSufficientInformation
@@ -62,6 +65,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (DesignMode)
 				return;
+			if (_model.LanguageInfo != null)
+			{
+				_searchText.Text = _model.LanguageInfo.Code;
+				if (!string.IsNullOrEmpty(_model.LanguageInfo.DesiredName))
+				{
+					_incomingLanguageInfo = _model.LanguageInfo;
+					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
+				}
+			}
+
 			UpdateReadiness();
 			_searchTimer.Start();
 		}
@@ -82,9 +95,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
 				_model.LanguageInfo = item.Tag as LanguageInfo;
 
-				if (_model.LanguageInfo.Code == "qaa")
+				if (_incomingLanguageInfo != null && _incomingLanguageInfo.Code == _model.LanguageInfo.Code && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
 				{
-					//_desiredLanguageDisplayName.Text = "";
+					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
 				}
 				else
 				{

@@ -47,6 +47,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public LanguageInfo SelectedLanguage
 		{
+			set { _lookupISOControl.LanguageInfo = value; }
 			get
 			{
 				if( DialogResult != DialogResult.OK)
