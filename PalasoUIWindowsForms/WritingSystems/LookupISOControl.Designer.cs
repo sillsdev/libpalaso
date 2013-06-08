@@ -63,7 +63,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(0, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(722, 237);
+			this._listView.Size = new System.Drawing.Size(722, 245);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -201,7 +201,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
 			this.Name = "LookupISOControl";
-			this.Size = new System.Drawing.Size(722, 323);
+			this.Size = new System.Drawing.Size(722, 277);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.flowLayoutPanel1.ResumeLayout(false);
