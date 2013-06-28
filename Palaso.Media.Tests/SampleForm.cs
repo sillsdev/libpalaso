@@ -11,7 +11,7 @@ namespace Palaso.Media.Tests
 {
 	public partial class Form1 : Form
 	{
-		private readonly AudioIrrKlangSession _recorder;
+		private readonly ISimpleAudioSession _recorder;
 		private string _path;
 
 		public Form1()

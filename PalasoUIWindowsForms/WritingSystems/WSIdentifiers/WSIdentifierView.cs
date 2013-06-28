@@ -63,6 +63,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 			{
 				this.Enabled = false;
 				_abbreviation.Text = string.Empty;
+				_detailPanel.Controls.Clear();
   //              _name.Text = string.Empty;
 			   // _code.Text = string.Empty;
 				comboBox1.SelectedIndex = 0;

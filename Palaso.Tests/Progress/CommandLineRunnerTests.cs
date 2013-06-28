@@ -9,7 +9,7 @@ namespace Palaso.Tests.Progress
 	public class CommandLineRunnerTests
 	{
 
-		[Test, Category("KnownMonoIssue")]
+		[Test]
 		public void CommandWith10Line_NoCallbackOption_Get10LinesSynchronously()
 		{
 			var app = "PalasoUIWindowsForms.TestApp.exe";// FileLocator.GetFileDistributedWithApplication("PalasoUIWindowsForms.TestApp.exe");
@@ -20,7 +20,7 @@ namespace Palaso.Tests.Progress
 			Assert.IsTrue(result.StandardOutput.Contains("9"));
 		}
 
-		[Test, Category("KnownMonoIssue")]
+		[Test]
 		public void CommandWith10Line_CallbackOption_Get10LinesAsynchronously()
 		{
 			var app = "PalasoUIWindowsForms.TestApp.exe";// FileLocator.GetFileDistributedWithApplication("PalasoUIWindowsForms.TestApp.exe");
