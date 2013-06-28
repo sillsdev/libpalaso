@@ -6,7 +6,9 @@ using System.Threading;
 using NAudio.Wave;
 using NUnit.Framework;
 using Palaso.IO;
+#if !MONO
 using Palaso.Media.Naudio;
+#endif
 using Palaso.Media.Tests.Properties;
 using Palaso.TestUtilities;
 
@@ -19,12 +21,14 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void LoadFile_ThenDispose_FileCanBeDeleted()
 	   {
+#if !MONO
 		   var file = TempFile.FromResource(Resources._2Channel, ".wav");
 		   using (var player = new AudioPlayer())
 		   {
 			   player.LoadFile(file.Path);
 		   }
 		   Assert.DoesNotThrow(() => File.Delete(file.Path));
+#endif
 	   }
 
 
@@ -34,6 +38,7 @@ namespace Palaso.Media.Tests
 	   [Test, Ignore("Known to Fail (hangs forever")]
 	   public void PlayFile_ThenDispose_FileCanBeDeleted()
 	   {
+#if !MONO
 		   var file = TempFile.FromResource(Resources._2Channel, ".wav");
 		   using (var player = new AudioPlayer())
 		   {
@@ -48,6 +53,7 @@ namespace Palaso.Media.Tests
 		   }
 		   Assert.DoesNotThrow(() => File.Delete(file.Path));
 		   Assert.False(File.Exists(file.Path));
+#endif
 	   }
 	}
 }
