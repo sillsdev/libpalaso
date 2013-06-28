@@ -12,9 +12,8 @@
 		<DownloadFile Address="http://build.palaso.org/guestAuth/repository/download/bt196/.lastSuccessful/L10NSharp.dll"
 					  LocalFilename="$(SolutionDir)/Download/L10NSharp.dll"/>
 		<!-- split into two stages so that if the net connection fails, you still have the old files -->
-		<MakeDir Directories="$(SolutionDir)/packages/L10NSharp.1.1.3/lib/net40-Client"/>
-		<Copy SourceFiles="@(DownloadFiles)" DestinationFolder="$(SolutionDir)/packages/L10NSharp.1.1.3/lib/net40-Client"
-			SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true"/>
+		<Copy SourceFiles="@(DownloadFiles)" DestinationFolder="$(SolutionDir)/lib/common"
+			SkipUnchangedFiles="true"/>
 	</Target>
 
 </Project>
