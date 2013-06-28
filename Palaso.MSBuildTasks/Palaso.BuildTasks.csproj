@@ -93,6 +93,7 @@
 	<Compile Include="MakeWixForDirTree\MakeWixForDirTree.cs" />
 	<Compile Include="FileUpdate.cs" />
 	<Compile Include="CpuArchitecture.cs" />
+	<Compile Include="DownloadFile.cs" />
 	<Compile Include="SubString\Split.cs" />
   </ItemGroup>
   <ItemGroup>

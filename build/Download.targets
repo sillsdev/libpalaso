@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="DownloadFile" AssemblyFile="$(SolutionDir)/build/Palaso.BuildTasks.dll" />
+
+	<!-- bt228 is the output from precise64-xyzzy-build -->
+	<Target Name="CheckPrerequisites" Condition="'$(OS)'!='Windows_NT'">
+		<DownloadFile Address="http://build.palaso.org/guestAuth/repository/download/bt228/.lastSuccessful/L10NSharp.dll"
+					  LocalFilename="$(SolutionDir)/packages/L10NSharp.1.1.3/lib/net40-Client/L10NSharp.dll"/>
+	</Target>
+</Project>
