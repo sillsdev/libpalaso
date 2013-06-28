@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="DownloadFile" AssemblyFile="$(SolutionDir)/build/Palaso.BuildTasks.dll" />
+
+	<ItemGroup>
+		<DownloadFiles Include="$(SolutionDir)/Download/L10NSharp.dll"/>
+	</ItemGroup>
+
+	<!-- bt196 is the output from L10NSharp continuous (Windows) build -->
+	<Target Name="BeforeBuild" Condition="'$(OS)'!='Windows_NT'">
+		<MakeDir Directories="$(SolutionDir)/Download"/>
+		<DownloadFile Address="http://build.palaso.org/guestAuth/repository/download/bt196/.lastSuccessful/L10NSharp.dll"
+					  LocalFilename="$(SolutionDir)/Download/L10NSharp.dll"/>
+		<!-- split into two stages so that if the net connection fails, you still have the old files -->
+		<MakeDir Directories="$(SolutionDir)/packages/L10NSharp.1.1.3/lib/net40-Client"/>
+		<Copy SourceFiles="@(DownloadFiles)" DestinationFolder="$(SolutionDir)/packages/L10NSharp.1.1.3/lib/net40-Client"
+			SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true"/>
+	</Target>
+
+</Project>
