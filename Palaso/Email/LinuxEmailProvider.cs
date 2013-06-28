@@ -26,12 +26,6 @@ namespace Palaso.Email
 			var recipientTo = message.To;
 			var toBuilder = new StringBuilder();
 
-			if (body.Contains (",") || body.Contains ("'"))
-			{
-				// these characters cause problems with the command line arguments
-				return false;
-			}
-
 			for (int i = 0; i < recipientTo.Count; ++i)
 			{
 				if (i > 0)
