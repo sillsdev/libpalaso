@@ -43,9 +43,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
-			this._okButton.Location = new System.Drawing.Point(501, 303);
+			this._okButton.Location = new System.Drawing.Point(453, 311);
 			this._okButton.Name = "_okButton";
-			this._okButton.Size = new System.Drawing.Size(75, 23);
+			this._okButton.Size = new System.Drawing.Size(96, 23);
 			this._okButton.TabIndex = 1;
 			this._okButton.Text = "&OK";
 			this._okButton.UseVisualStyleBackColor = true;
@@ -58,9 +58,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cancelButton, "Common.CancelButton");
-			this._cancelButton.Location = new System.Drawing.Point(582, 303);
+			this._cancelButton.Location = new System.Drawing.Point(568, 311);
 			this._cancelButton.Name = "_cancelButton";
-			this._cancelButton.Size = new System.Drawing.Size(75, 23);
+			this._cancelButton.Size = new System.Drawing.Size(98, 23);
 			this._cancelButton.TabIndex = 2;
 			this._cancelButton.Text = "&Cancel";
 			this._cancelButton.UseVisualStyleBackColor = true;
@@ -82,7 +82,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizingId(this._lookupISOControl, "LanguageLookup.LookupISOControl");
 			this._lookupISOControl.Location = new System.Drawing.Point(21, 16);
 			this._lookupISOControl.Name = "_lookupISOControl";
-			this._lookupISOControl.Size = new System.Drawing.Size(636, 267);
+			this._lookupISOControl.Size = new System.Drawing.Size(645, 289);
 			this._lookupISOControl.TabIndex = 0;
 			this._lookupISOControl.ReadinessChanged += new System.EventHandler(this._lookupISOControl_Changed);
 			this._lookupISOControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
@@ -93,7 +93,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(692, 338);
+			this.ClientSize = new System.Drawing.Size(686, 349);
 			this.Controls.Add(this._lookupISOControl);
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);

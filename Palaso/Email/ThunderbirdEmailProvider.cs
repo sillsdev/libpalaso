@@ -14,7 +14,7 @@ namespace Palaso.Email
 		{
 			get
 			{
-				return "-compose to='{0}',subject='{1}',body='{2}'";
+				return "-compose \"to='{0}',subject='{1}',body='{2}'\"";
 			}
 		}
 

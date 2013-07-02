@@ -29,7 +29,7 @@ namespace Palaso.Media.Tests
 		   }
 		   Assert.DoesNotThrow(() => File.Delete(file.Path));
 #endif
-	   }
+		}
 
 
 	   /// <summary>
@@ -54,6 +54,6 @@ namespace Palaso.Media.Tests
 		   Assert.DoesNotThrow(() => File.Delete(file.Path));
 		   Assert.False(File.Exists(file.Path));
 #endif
-	   }
+		}
 	}
 }

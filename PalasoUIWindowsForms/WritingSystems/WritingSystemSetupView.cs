@@ -126,7 +126,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			using (var dlg = new LookupISOCodeDialog())
+			using (var dlg = new LookupISOCodeDialog() { ShowDesiredLanguageNameField =false})
 			{
 				dlg.ShowDialog();
 				if (dlg.DialogResult != DialogResult.OK)
