@@ -29,11 +29,12 @@ namespace Palaso.WritingSystems
 				var items = line.Split('\t');//id name area
 				CountryCodeToCountryName.Add(items[0].Trim(),items[1].Trim());
 			}
-
+			CountryCodeToCountryName.Add("?","?");//for unlisted language
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges
-			string[] entries = LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+			List<string> entries = new List<string>(LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
+			entries.Add("qaa\t?\tL\tUnlisted Language");
 			foreach (string entry in entries.Skip(1))//skip the header
 			{
 				var items = entry.Split('\t');
@@ -165,5 +166,20 @@ namespace Palaso.WritingSystems
 		public List<string> Names=new List<string>();
 		public string Country;
 		public string Code;
+		private string _desiredName;
+
+		/// <summary>
+		/// People sometimes don't want use the Ethnologue-supplied name
+		/// </summary>
+		public string DesiredName
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_desiredName))
+					return Names.FirstOrDefault();
+				return _desiredName;
+			}
+			set { _desiredName = value.Trim(); }
+		}
 	}
 }

@@ -31,9 +31,33 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			var dialog = new LookupISOCodeDialog();
 			Application.Run(dialog);
-			MessageBox.Show("code returned:" + dialog.SelectedLanguage.Code);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code+" with desired name: "+dialog.SelectedLanguage.DesiredName);
+		}
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialCodeAndCustomName()
+		{
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr", DesiredName = "Etoloooo" };
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialCodeOnly()
+		{
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr"};
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
+		}
 
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialQAACodeAndCustomName()
+		{
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "qaa", DesiredName = "Vulcan" };
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
+		}
 	}
 }
