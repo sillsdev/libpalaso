@@ -194,9 +194,43 @@ namespace Palaso.WritingSystems
 				}
 				reader.ReadEndElement();
 			}
+			else if (reader.GetAttribute("xmlns:palaso2") != null)
+			{
+				reader.ReadStartElement("special");
+				GetKnownKeyboards(reader, ws);
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					reader.Read();
+				}
+				reader.ReadEndElement();
+			}
 			else
 			{
 				reader.Skip();
+			}
+		}
+
+		private void GetKnownKeyboards(XmlReader reader, IWritingSystemDefinition ws)
+		{
+			reader.MoveToContent();
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == Palaso2NamespaceName+ ":" + KnownKeyboardsElementName);
+			using (var knownKeyboardsReader = reader.ReadSubtree())
+			{
+				knownKeyboardsReader.MoveToContent();
+				knownKeyboardsReader.ReadStartElement(Palaso2NamespaceName + ":" + KnownKeyboardsElementName);
+				knownKeyboardsReader.MoveToContent();
+				while (knownKeyboardsReader.NodeType == XmlNodeType.Element && knownKeyboardsReader.Name == Palaso2NamespaceName + ":" + KeyboardElementName)
+				{
+					var keyboard = new KeyboardDefinition();
+					keyboard.Layout = knownKeyboardsReader.GetAttribute(LayoutAttrName);
+					keyboard.Locale = knownKeyboardsReader.GetAttribute(LocaleAttrName);
+					PlatformID id;
+					PlatformID.TryParse(knownKeyboardsReader.GetAttribute(OSAttrName), out id);
+					keyboard.OperatingSystem = id;
+					knownKeyboardsReader.Read();
+					FindElement(knownKeyboardsReader, KeyboardElementName);
+					ws.AddKnownKeyboard(keyboard);
+				}
 			}
 		}
 
@@ -654,6 +688,7 @@ namespace Palaso.WritingSystems
 		protected virtual void AddNamespaces(XmlNamespaceManager m)
 		{
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			m.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
 		}
 
 		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)
@@ -828,6 +863,12 @@ namespace Palaso.WritingSystems
 			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
 		}
 
+		private const string KnownKeyboardsElementName = "knownKeyboards";
+		private const string Palaso2NamespaceName = "palaso2";
+		private const string KeyboardElementName = "keyboard";
+		private const string LayoutAttrName = "layout";
+		private const string LocaleAttrName = "locale";
+		private const string OSAttrName = "os";
 		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
 			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
@@ -850,6 +891,25 @@ namespace Palaso.WritingSystems
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
+
+			if (ws.KnownKeyboards.Any())
+			{
+				var p2Namespace = _nameSpaceManager.LookupNamespace(Palaso2NamespaceName);
+				WriteBeginSpecialElement(writer, Palaso2NamespaceName);
+				writer.WriteStartElement(KnownKeyboardsElementName, p2Namespace);
+				foreach (var keyboard in ws.KnownKeyboards)
+				{
+					writer.WriteStartElement(KeyboardElementName, p2Namespace);
+					writer.WriteAttributeString(LayoutAttrName, keyboard.Layout);
+					writer.WriteAttributeString(LocaleAttrName, keyboard.Locale);
+					writer.WriteAttributeString(OSAttrName, keyboard.OperatingSystem.ToString());
+					writer.WriteEndElement(); // Keyboard
+				}
+				writer.WriteEndElement(); // KnownKeyboards
+				WriteFlexOrPalasoConformElement(writer, reader, Palaso2NamespaceName, "version",
+					WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
+				writer.WriteEndElement(); // Special
+			}
 		}
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)

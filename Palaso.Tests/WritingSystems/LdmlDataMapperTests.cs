@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml;
 using System.IO;
 using NUnit.Framework;
@@ -128,6 +129,45 @@ namespace Palaso.Tests.WritingSystems
 			}
 
 			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
+		}
+
+		[Test]
+		public void RoundtripKnownKeyboards()
+		{
+			var ldmlAdaptor = new LdmlDataMapper();
+
+			const string sortRules = "(A̍ a̍)";
+			var wsWithKnownKeyboards = new WritingSystemDefinition();
+			var keyboard1 = new KeyboardDefinition();
+			keyboard1.Locale = "en-US";
+			keyboard1.Layout = "MyFavoriteKeyboard";
+			keyboard1.OperatingSystem = PlatformID.MacOSX; // pick something that for sure won't be our default
+			wsWithKnownKeyboards.AddKnownKeyboard(keyboard1);
+
+			var keyboard2 = new KeyboardDefinition();
+			keyboard2.Locale = "en-GB";
+			keyboard2.Layout = "SusannasFavoriteKeyboard";
+			keyboard2.OperatingSystem = PlatformID.Unix;
+			wsWithKnownKeyboards.AddKnownKeyboard(keyboard2);
+
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
+			{
+				ldmlAdaptor.Write(tempFile.Path, wsWithKnownKeyboards, null);
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+
+			var knownKeyboards = wsFromLdml.KnownKeyboards.ToList();
+			Assert.That(knownKeyboards, Has.Count.EqualTo(2), "restored WS should have known keyboards");
+			var keyboard1FromLdml = knownKeyboards[0];
+			Assert.That(keyboard1FromLdml.Layout, Is.EqualTo("MyFavoriteKeyboard"));
+			Assert.That(keyboard1FromLdml.Locale, Is.EqualTo("en-US"));
+			Assert.That(keyboard1FromLdml.OperatingSystem, Is.EqualTo(PlatformID.MacOSX));
+
+			var keyboard2FromLdml = knownKeyboards[1];
+			Assert.That(keyboard2FromLdml.Layout, Is.EqualTo("SusannasFavoriteKeyboard"));
+			Assert.That(keyboard2FromLdml.Locale, Is.EqualTo("en-GB"));
+			Assert.That(keyboard2FromLdml.OperatingSystem, Is.EqualTo(PlatformID.Unix));
 		}
 
 

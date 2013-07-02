@@ -125,6 +125,18 @@ namespace Palaso.WritingSystems
 		string Keyboard { get; set; }
 
 		/// <summary>
+		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
+		/// Enhance: document (or add to this interface?) a way of getting available keyboards.
+		/// </summary>
+		IEnumerable<KeyboardDefinition> KnownKeyboards { get; }
+
+		/// <summary>
+		/// Note that a new keyboard is known to be used for this writing system.
+		/// </summary>
+		/// <param name="newKeyboard"></param>
+		void AddKnownKeyboard(KeyboardDefinition newKeyboard);
+
+		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
 		bool RightToLeftScript { get; set; }

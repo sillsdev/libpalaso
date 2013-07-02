@@ -290,6 +290,7 @@
 	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.cs" />
+	<Compile Include="WritingSystems\KeyboardDefinition.cs" />
 	<Compile Include="WritingSystems\LanguageRegistryResources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>

@@ -1199,6 +1199,18 @@ namespace Palaso.WritingSystems
 				yield return privateUseToken;
 			}
 		}
+
+		List<KeyboardDefinition> _knownKeyboards = new List<KeyboardDefinition>();
+
+		public IEnumerable<KeyboardDefinition> KnownKeyboards
+		{
+			get { return _knownKeyboards; }
+		}
+
+		public void AddKnownKeyboard(KeyboardDefinition newKeyboard)
+		{
+			_knownKeyboards.Add(newKeyboard); // Enhance JohnT: should we verify it is different from any existing one?
+		}
 	}
 
 	public enum IpaStatusChoices
