@@ -11,7 +11,7 @@ namespace Palaso.Tests.WritingSystems
 	public abstract class IWritingSystemRepositoryTests
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
-		private WritingSystemDefinition _writingSystem;
+		private IWritingSystemDefinition _writingSystem;
 		private WritingSystemIdChangedEventArgs _writingSystemIdChangedEventArgs;
 		private WritingSystemDeletedEventArgs _writingSystemDeletedEventArgs;
 		private WritingSystemConflatedEventArgs _writingSystemConflatedEventArgs;
@@ -156,7 +156,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Language = "two";
 			_writingSystem.DefaultFontName = "one font";
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("two");
+			var ws2 = RepositoryUnderTest.Get("two");
 			Assert.AreEqual("one font", ws2.DefaultFontName);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
@@ -217,7 +217,7 @@ namespace Palaso.Tests.WritingSystems
 
 			IWritingSystemRepository repository = CreateNewStore();
 			int count = 0;
-			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -233,12 +233,12 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 14);
 			repository.Set(ws2);
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -254,12 +254,12 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 16);
 			repository.Set(ws2);
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -275,13 +275,13 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 14);
 			repository.Set(ws2);
 			repository.LastChecked("en", new DateTime(2008, 1, 16));
 
 			int count = 0;
-			foreach (var ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (var ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -373,7 +373,7 @@ namespace Palaso.Tests.WritingSystems
 		public void MakeDuplicate_ReturnsNewObject()
 		{
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(_writingSystem);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(_writingSystem);
 			Assert.AreNotSame(_writingSystem, ws2);
 		}
 
@@ -388,7 +388,7 @@ namespace Palaso.Tests.WritingSystems
 			ws1.VersionDescription = "description of this version";
 			ws1.VersionNumber = "1.0";
 			RepositoryUnderTest.Set(ws1);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			Assert.AreEqual(ws1.Language, ws2.Language);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);

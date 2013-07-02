@@ -47,23 +47,23 @@ namespace Palaso.WritingSystems
 		/// an already-existing writing system.  Set should be called when there is a change
 		/// that updates the RFC5646 information.
 		/// </summary>
-		void Set(WritingSystemDefinition ws);
+		void Set(IWritingSystemDefinition ws);
 
 		/// <summary>
 		/// Returns true if a call to Set should succeed, false if a call to Set would throw
 		/// </summary>
-		bool CanSet(WritingSystemDefinition ws);
+		bool CanSet(IWritingSystemDefinition ws);
 
 		/// <summary>
 		/// Gets the writing system object for the given Store ID
 		/// </summary>
-		WritingSystemDefinition Get(string identifier);
+		IWritingSystemDefinition Get(string identifier);
 
 		/// <summary>
 		/// If the given writing system were passed to Set, this function returns the
 		/// new StoreID that would be assigned.
 		/// </summary>
-		string GetNewStoreIDWhenSet(WritingSystemDefinition ws);
+		string GetNewStoreIDWhenSet(IWritingSystemDefinition ws);
 
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
@@ -86,7 +86,7 @@ namespace Palaso.WritingSystems
 		/// Creates a new writing system object and returns it.  Set will need to be called
 		/// once identifying information has been changed in order to save it in the store.
 		/// </summary>
-		WritingSystemDefinition CreateNew();
+		IWritingSystemDefinition CreateNew();
 
 		/// <summary>
 		/// Merges two writing systems into one.
@@ -101,29 +101,23 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Returns a list of all writing system definitions in the store.
 		/// </summary>
-		[Obsolete("Deprecated: use AllWritingSystems instead")]
-		IEnumerable<WritingSystemDefinition> WritingSystemDefinitions { get; }
-
-		/// <summary>
-		/// Returns a list of all writing system definitions in the store.
-		/// </summary>
-		IEnumerable<WritingSystemDefinition> AllWritingSystems { get; }
+		IEnumerable<IWritingSystemDefinition> AllWritingSystems { get; }
 
 		/// <summary>
 		/// Returns a list of *text* writing systems in the store
 		/// </summary>
-		IEnumerable<WritingSystemDefinition> TextWritingSystems { get; }
+		IEnumerable<IWritingSystemDefinition> TextWritingSystems { get; }
 
 		/// <summary>
 		/// Returns a list of *audio* writing systems in the store
 		/// </summary>
-		IEnumerable<WritingSystemDefinition> VoiceWritingSystems { get; }
+		IEnumerable<IWritingSystemDefinition> VoiceWritingSystems { get; }
 		/// <summary>
 		/// Makes a duplicate of an existing writing system definition.  Set will need
 		/// to be called with this new duplicate once identifying information has been changed
 		/// in order to place the new definition in the store.
 		/// </summary>
-		WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition);
+		IWritingSystemDefinition MakeDuplicate(IWritingSystemDefinition definition);
 
 		/// <summary>
 		/// If a consumer has a writingSystemId that is not contained in the
@@ -161,12 +155,12 @@ namespace Palaso.WritingSystems
 		/// Returns a list of writing systems from rhs which are newer than ones in the store.
 		/// </summary>
 		// TODO: Maybe this should be IEnumerable<string> .... which returns the identifiers.
-		IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs);
+		IEnumerable<IWritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<IWritingSystemDefinition> rhs);
 
 		/// <summary>
 		/// Event Handler that updates the store when a writing system id has changed
 		/// </summary>
-		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId);
+		void OnWritingSystemIDChange(IWritingSystemDefinition ws, string oldId);
 
 		///<summary>
 		/// Returns a list of writing system tags that apply only to text based writing systems.

@@ -19,7 +19,7 @@ namespace Palaso.WritingSystems
 	abstract public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 
-		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
+		private readonly Dictionary<string, IWritingSystemDefinition> _writingSystems;
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
 		protected Dictionary<string, string> _idChangeMap;
@@ -35,16 +35,10 @@ namespace Palaso.WritingSystems
 		protected WritingSystemRepositoryBase(WritingSystemCompatibility compatibilityMode)
 		{
 			CompatibilityMode = compatibilityMode;
-			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
+			_writingSystems = new Dictionary<string, IWritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
 			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
-		}
-
-		[Obsolete("Deprecated: use AllWritingSystems instead")]
-		public IEnumerable<WritingSystemDefinition> WritingSystemDefinitions
-		{
-			get { return AllWritingSystems; }
 		}
 
 		protected IDictionary<string, DateTime> WritingSystemsToIgnore
@@ -55,7 +49,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		virtual public WritingSystemDefinition CreateNew()
+		virtual public IWritingSystemDefinition CreateNew()
 		{
 			return new WritingSystemDefinition();
 		}
@@ -117,7 +111,7 @@ namespace Palaso.WritingSystems
 			_writingSystems.Clear();
 		}
 
-		public WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition)
+		public IWritingSystemDefinition MakeDuplicate(IWritingSystemDefinition definition)
 		{
 			if (definition == null)
 			{
@@ -139,7 +133,7 @@ namespace Palaso.WritingSystems
 			return _writingSystems.ContainsKey(identifier);
 		}
 
-		public bool CanSet(WritingSystemDefinition ws)
+		public bool CanSet(IWritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -149,7 +143,7 @@ namespace Palaso.WritingSystems
 				ws.StoreID != _writingSystems[ws.Id].StoreID);
 		}
 
-		public virtual void  Set(WritingSystemDefinition ws)
+		public virtual void  Set(IWritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -208,7 +202,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
+		public string GetNewStoreIDWhenSet(IWritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -217,7 +211,7 @@ namespace Palaso.WritingSystems
 			return String.IsNullOrEmpty(ws.StoreID) ? ws.Id : ws.StoreID;
 		}
 
-		public WritingSystemDefinition Get(string identifier)
+		public IWritingSystemDefinition Get(string identifier)
 		{
 			if (identifier == null)
 			{
@@ -242,7 +236,7 @@ namespace Palaso.WritingSystems
 		{
 		}
 
-		virtual protected void OnChangeNotifySharedStore(WritingSystemDefinition ws)
+		virtual protected void OnChangeNotifySharedStore(IWritingSystemDefinition ws)
 		{
 			DateTime lastDateModified;
 			if (_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) && ws.DateModified > lastDateModified)
@@ -253,7 +247,7 @@ namespace Palaso.WritingSystems
 		{
 		}
 
-		virtual public IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
+		virtual public IEnumerable<IWritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<IWritingSystemDefinition> rhs)
 		{
 			if (rhs == null)
 			{
@@ -276,7 +270,7 @@ namespace Palaso.WritingSystems
 			return newerWritingSystems;
 		}
 
-		public IEnumerable<WritingSystemDefinition> AllWritingSystems
+		public IEnumerable<IWritingSystemDefinition> AllWritingSystems
 		{
 			get
 			{
@@ -284,17 +278,17 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		public IEnumerable<WritingSystemDefinition> TextWritingSystems
+		public IEnumerable<IWritingSystemDefinition> TextWritingSystems
 		{
 			get { return _writingSystems.Values.Where(ws => !ws.IsVoice); }
 		}
 
-		public IEnumerable<WritingSystemDefinition> VoiceWritingSystems
+		public IEnumerable<IWritingSystemDefinition> VoiceWritingSystems
 		{
 			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
 		}
 
-		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		public virtual void OnWritingSystemIDChange(IWritingSystemDefinition ws, string oldId)
 		{
 			_writingSystems[ws.Id] = ws;
 			_writingSystems.Remove(oldId);

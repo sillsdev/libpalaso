@@ -36,11 +36,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public class WritingSystemSetupModel
 	{
 		private readonly bool _usingRepository;
-		private WritingSystemDefinition _currentWritingSystem;
+		private IWritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
 		private readonly IWritingSystemRepository _writingSystemRepository;
-		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
-		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
+		private readonly List<IWritingSystemDefinition> _writingSystemDefinitions;
+		private readonly List<IWritingSystemDefinition> _deletedWritingSystemDefinitions;
 
 		internal string DefaultCustomSimpleSortRules = "A a-B b-C c-D d-E e-F f-G g-H h-I i-J j-K k-L l-M m-N n-O o-P p-Q q-R r-S s-T t-U u-V v-W w-X x-Y y-Z z".Replace("-", "\r\n");
 
@@ -70,8 +70,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
 			_writingSystemRepository = writingSystemRepository;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
-			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
+			_writingSystemDefinitions = new List<IWritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
+			_deletedWritingSystemDefinitions = new List<IWritingSystemDefinition>();
 			_currentIndex = -1;
 			_usingRepository = true;
 		}
@@ -92,7 +92,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
 			_writingSystemRepository = null;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
+			_writingSystemDefinitions = new List<IWritingSystemDefinition>(1);
 			WritingSystemDefinitions.Add(ws);
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
@@ -143,7 +143,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// available on WritingSystemDefinition.  This is needed to ensure that the UI
 		/// stays up to date with any changes to the underlying WritingSystemDefinition.
 		/// </summary>
-		internal WritingSystemDefinition CurrentDefinition
+		internal IWritingSystemDefinition CurrentDefinition
 		{
 			get
 			{
@@ -179,7 +179,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			return true;
 		}
 
-		public virtual bool SetCurrentDefinition(WritingSystemDefinition definition)
+		public virtual bool SetCurrentDefinition(IWritingSystemDefinition definition)
 		{
 			var index = WritingSystemDefinitions.FindIndex(d => d == definition);
 			if (index < 0)
@@ -211,7 +211,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					throw new ArgumentOutOfRangeException();
 				}
 				_currentIndex = value;
-				WritingSystemDefinition oldCurrentWS = _currentWritingSystem;
+				var oldCurrentWS = _currentWritingSystem;
 				_currentWritingSystem = value == -1 ? null : WritingSystemDefinitions[value];
 				// we can't just check indexes as it doesn't work if the list has changed
 				if (oldCurrentWS != _currentWritingSystem)
@@ -386,7 +386,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					WritingSystemDefinition ws = WritingSystemDefinitions[i];
+					var ws = WritingSystemDefinitions[i];
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
@@ -699,7 +699,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		virtual public string VerboseDescription(WritingSystemDefinition writingSystem)
+		virtual public string VerboseDescription(IWritingSystemDefinition writingSystem)
 		{
 			var summary = new StringBuilder();
 			summary.AppendFormat(" {0}", writingSystem.LanguageName);
@@ -806,7 +806,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public virtual List<WritingSystemDefinition> WritingSystemDefinitions
+		public virtual List<IWritingSystemDefinition> WritingSystemDefinitions
 		{
 			get { return _writingSystemDefinitions; }
 		}
@@ -1176,7 +1176,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			WritingSystemDefinition ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
+			var ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1192,7 +1192,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to add new input system definition when there is no store.");
 			}
-			WritingSystemDefinition ws=null;
+			IWritingSystemDefinition ws=null;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
 			{
 				ws = _writingSystemRepository.CreateNew();
@@ -1269,14 +1269,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new InvalidOperationException ("Unable to export current selection when there is no current selection.");
 			}
 			LdmlDataMapper adaptor = new LdmlDataMapper ();
-			adaptor.Write (filePath, _currentWritingSystem, null);
+			adaptor.Write (filePath, (WritingSystemDefinition)_currentWritingSystem, null);
 		}
 
 		public void SetAllPossibleAndRemoveOthers()
 		{
 			// NOTE: It is not a good idea to remove and then add all writing systems, even though it would
 			// NOTE: accomplish the same goal as any information in the LDML file not used by palaso would be lost.
-			var unsettableWritingSystems = new List<WritingSystemDefinition>();
+			var unsettableWritingSystems = new List<IWritingSystemDefinition>();
 			foreach (var ws in WritingSystemDefinitions)
 			{
 				if (_writingSystemRepository.CanSet(ws))
@@ -1377,8 +1377,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				throw new ArgumentException("File does not exist.", "fileName");
 			}
 			LdmlDataMapper _adaptor = new LdmlDataMapper();
-			WritingSystemDefinition ws = _writingSystemRepository.CreateNew();
-			_adaptor.Read(fileName, ws);
+			var ws = _writingSystemRepository.CreateNew();
+			_adaptor.Read(fileName, (WritingSystemDefinition)ws);
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1392,7 +1392,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        {
 //
 //        }
-		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
+		public virtual void AddPredefinedDefinition(IWritingSystemDefinition definition)
 		{
 			if (!_usingRepository)
 			{
@@ -1403,7 +1403,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			OnAddOrDelete();
 		}
 
-		internal void RenameIsoCode(WritingSystemDefinition existingWs)
+		internal void RenameIsoCode(IWritingSystemDefinition existingWs)
 		{
 			WritingSystemDefinition newWs = null;
 			if (!_usingRepository)
@@ -1573,17 +1573,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 	public class WhatToDoWithDataInWritingSystemToBeDeletedEventArgs : EventArgs
 	{
-		private WritingSystemDefinition _writingSystemIdToConflateWith;
+		private IWritingSystemDefinition _writingSystemIdToConflateWith;
 
-		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(WritingSystemDefinition writingSystemIdToDelete)
+		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(IWritingSystemDefinition writingSystemIdToDelete)
 		{
 			WritingSystemIdToDelete = writingSystemIdToDelete;
 			WhatToDo = WhatToDos.Delete;
 		}
 
 		public WhatToDos WhatToDo { get; set; }
-		public WritingSystemDefinition WritingSystemIdToDelete { get; private set; }
-		public WritingSystemDefinition WritingSystemIdToConflateWith
+		public IWritingSystemDefinition WritingSystemIdToDelete { get; private set; }
+		public IWritingSystemDefinition WritingSystemIdToConflateWith
 		{
 			get
 			{

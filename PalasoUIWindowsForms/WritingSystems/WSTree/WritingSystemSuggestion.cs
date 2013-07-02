@@ -34,7 +34,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 	public class VoiceSuggestion : WritingSystemSuggestion
 	{
-		public VoiceSuggestion(WritingSystemDefinition primary)
+		public VoiceSuggestion(IWritingSystemDefinition primary)
 		{
 			_templateDefinition = primary.Clone();
 			_templateDefinition.IsVoice = true;
@@ -45,7 +45,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		{
 			return TemplateDefinition;
 		}
-		public static bool ShouldSuggest(IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
+		public static bool ShouldSuggest(IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
 			return !existingWritingSystemsForLanguage.Any(def => def.IsVoice);
 		}
@@ -53,7 +53,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 	public class DialectSuggestion : WritingSystemSuggestion
 	{
-		public DialectSuggestion(WritingSystemDefinition primary)
+		public DialectSuggestion(IWritingSystemDefinition primary)
 		{
 			_templateDefinition = primary.Clone();
 			this.Label = string.Format("new dialect of {0}", _templateDefinition.LanguageName);
@@ -75,7 +75,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		/// </summary>
 		private readonly string[] _fontsForIpa = { "arial unicode ms", "lucinda sans unicode", "doulous sil", FontFamily.GenericSansSerif.Name };
 
-		public IpaSuggestion(WritingSystemDefinition primary)
+		public IpaSuggestion(IWritingSystemDefinition primary)
 		{
 			_templateDefinition = new WritingSystemDefinition(primary.Language, "", primary.Region, primary.Variant, "ipa", false)
 									  {
@@ -99,7 +99,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			return f.Name.ToLower() == name.ToLower();
 		}
 
-		public static bool ShouldSuggest(IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
+		public static bool ShouldSuggest(IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
 			return !existingWritingSystemsForLanguage.Any(def => def.IpaStatus != IpaStatusChoices.NotIpa);
 		}
@@ -107,7 +107,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 	public class OtherSuggestion : WritingSystemSuggestion
 	{
-		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
+		public OtherSuggestion(IWritingSystemDefinition primary, IEnumerable<IWritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
 			_templateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.Id));
 			this.Label = string.Format("other input system for {0}", _templateDefinition.LanguageName);

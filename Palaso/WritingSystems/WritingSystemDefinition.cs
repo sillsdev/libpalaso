@@ -21,7 +21,7 @@ namespace Palaso.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition : IClonableGeneric<WritingSystemDefinition>
+	public class WritingSystemDefinition : IClonableGeneric<WritingSystemDefinition>, IWritingSystemDefinition
 	{
 		public enum SortRulesType
 		{
@@ -136,6 +136,14 @@ namespace Palaso.WritingSystems
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
 			UpdateIdFromRfcTag();
+		}
+
+		/// <summary>
+		/// Copy constructor from IWritingSystem: useable only if the interface is in fact implemented by this class.
+		/// </summary>
+		/// <param name="ws"></param>
+		internal WritingSystemDefinition(IWritingSystemDefinition ws) : this ((WritingSystemDefinition)ws)
+		{
 		}
 
 		/// <summary>
@@ -643,7 +651,7 @@ namespace Palaso.WritingSystems
 		/// <param name="otherWritingsystemIds"></param>
 		/// <returns></returns>
 		public static WritingSystemDefinition CreateCopyWithUniqueId(
-			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
+			IWritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
 			var newWs = writingSystemToCopy.Clone();
 			var lastAppended = String.Empty;
