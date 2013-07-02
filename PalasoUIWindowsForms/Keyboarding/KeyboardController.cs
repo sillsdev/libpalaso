@@ -1,9 +1,16 @@
+#if MONO
+
+#define DISABLE_KEYBOARDSWITCHING
+
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Palaso.Reporting;
+
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
@@ -64,6 +71,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static void ActivateKeyboard(string name)
 		{
 #if MONO
+			if (string.IsNullOrEmpty(name))
+			{
+				return;
+			}
 			if (IBusAdaptor.HasKeyboardNamed(name))
 			{
 				IBusAdaptor.ActivateKeyboard(name);
@@ -87,6 +98,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Keyman7Adaptor.ActivateKeyboard(name);
 			}
 #endif
+#if !DISABLE_KEYBOARDSWITCHING
 			else
 			{
 				if (!(s_languagesAlreadyShownKeyBoardNotFoundMessages.Contains(name)))
@@ -97,6 +109,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 				}
 			}
+#endif
 
 		}
 

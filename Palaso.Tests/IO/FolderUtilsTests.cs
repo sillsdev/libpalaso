@@ -160,6 +160,7 @@ namespace Palaso.Tests.IO
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
 		}
 		[Test]
+		[Category("KnownMonoIssue")]
 		[Platform(Exclude="Unix")]
 		public void SafeFoldersOmitSystemAndHiddenFolders()
 		{

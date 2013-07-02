@@ -148,8 +148,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
+#if!MONO
 			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
 			_model.ActivateCurrentKeyboard();
+#endif
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)
@@ -158,7 +160,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
+#if !MONO
 			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+#endif
 		}
 
 	}

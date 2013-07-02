@@ -234,10 +234,12 @@ namespace Palaso.Media
 
 			private void ExtractEncoding(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, "Video: ([^,]*)");
+				// DG 201303: ffmpeg gives more info like mpeg4 (Simple Profile)
+				// revert match to "Video: ([^,]*)" if that would be useful
+				var match = Regex.Match(ffmpegOutput, "Video: ([^,^(]*)");
 				if (match.Groups.Count == 2)
 				{
-					Encoding = match.Groups[1].Value;
+					Encoding = match.Groups[1].Value.Trim();
 				}
 			}
 
