@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Palaso.WritingSystems
 {
@@ -32,7 +33,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		public bool IsAvailable
 		{
-			get { return true; } // Todo EberhardB(JohnT) implement
+			get { return Keyboarding.Controller.AllAvailableKeyboards.Contains(this); }
 		}
 
 		/// <summary>
@@ -41,7 +42,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		public void Activate()
 		{
-			// Todo EberhardB(JohnT) implement
+			Keyboarding.Controller.Activate(this);
 		}
 
 		public override bool Equals(Object obj)

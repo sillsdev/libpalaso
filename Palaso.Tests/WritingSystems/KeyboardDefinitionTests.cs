@@ -57,5 +57,42 @@ namespace Palaso.Tests.WritingSystems
 		{
 			Assert.That(Keyboarding.Controller, Is.InstanceOf<DefaultKeyboardController>());
 		}
+
+		[Test]
+		public void Activate_CallsControllerActivate()
+		{
+			var keyboard1 = new KeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
+			var controller = new MockController();
+			Keyboarding.Controller = controller;
+			keyboard1.Activate();
+			Keyboarding.Controller = null;
+			Assert.That(controller.ActivatedKeyboard, Is.EqualTo(keyboard1));
+		}
+
+		[Test]
+		public void IsAvailable_ChecksControllerList()
+		{
+			var keyboard1 = new KeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
+			var keyboard2 = new KeyboardDefinition() { Layout = "layout2", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
+			var controller = new MockController();
+			var availableKeyboards = new List<IKeyboardDefinition>();
+			availableKeyboards.Add(keyboard1);
+			controller.AllAvailableKeyboards = availableKeyboards;
+			Keyboarding.Controller = controller;
+			Assert.That(keyboard1.IsAvailable, Is.True);
+			Assert.That(keyboard2.IsAvailable, Is.False);
+			Keyboarding.Controller = null;
+		}
+
+		class MockController : IKeyboardController
+		{
+			public IKeyboardDefinition ActivatedKeyboard;
+			public void Activate(IKeyboardDefinition keyboard)
+			{
+				ActivatedKeyboard = keyboard;
+			}
+
+			public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; set; }
+		}
 	}
 }
