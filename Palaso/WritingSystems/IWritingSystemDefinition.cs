@@ -137,6 +137,11 @@ namespace Palaso.WritingSystems
 		void AddKnownKeyboard(IKeyboardDefinition newKeyboard);
 
 		/// <summary>
+		/// Returns the available keyboards (known to Keyboarding.Controller) that are not KnownKeyboards for this writing system.
+		/// </summary>
+		IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards { get; }
+
+		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
 		bool RightToLeftScript { get; set; }

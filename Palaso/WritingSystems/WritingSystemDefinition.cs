@@ -1211,6 +1211,17 @@ namespace Palaso.WritingSystems
 		{
 			_knownKeyboards.Add(newKeyboard); // Enhance JohnT: should we verify it is different from any existing one?
 		}
+
+		/// <summary>
+		/// Returns the available keyboards (known to Keyboarding.Controller) that are not KnownKeyboards for this writing system.
+		/// </summary>
+		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards
+		{
+			get
+			{
+				return Keyboarding.Controller.AllAvailableKeyboards.Where(k => !KnownKeyboards.Contains(k));
+			}
+		}
 	}
 
 	public enum IpaStatusChoices

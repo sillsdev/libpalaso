@@ -50,7 +50,12 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(keyboard1 == keyboard2, Is.False);
 			Assert.That(keyboard1 != keyboard2, Is.True);
 			Assert.That(kbd1.Equals(kbd2), Is.False);
+		}
 
+		[Test]
+		public void DefaultKeyboardingController_IsExpectedClass()
+		{
+			Assert.That(Keyboarding.Controller, Is.InstanceOf<DefaultKeyboardController>());
 		}
 	}
 }

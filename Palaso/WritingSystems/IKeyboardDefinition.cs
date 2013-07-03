@@ -2,6 +2,9 @@
 
 namespace Palaso.WritingSystems
 {
+	/// <summary>
+	///  An interface defining the properties and behaviors of keyboards relevant to writing system methods and properties.
+	/// </summary>
 	public interface IKeyboardDefinition
 	{
 		/// <summary>

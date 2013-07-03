@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Palaso.Data;
@@ -1540,6 +1541,60 @@ namespace Palaso.Tests.WritingSystems
 			newWs.AddToVariant("garble");
 			newWs.AddToVariant("1901");
 			Assert.That(newWs.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
+		}
+
+		[Test]
+		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new KeyboardDefinition() {Layout = "something", Locale="en-US"};
+			var kbd2 = new KeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
+			var controller = new MockKeyboardController();
+			var keyboardList = new List<IKeyboardDefinition>();
+			keyboardList.Add(kbd1);
+			keyboardList.Add(kbd2);
+			controller.AllAvailableKeyboards = keyboardList;
+			Keyboarding.Controller = controller;
+
+			var result = ws.OtherAvailableKeyboards;
+
+			Keyboarding.Controller = null; // just in case it affects other tests
+
+			Assert.That(result, Has.Member(kbd1));
+			Assert.That(result, Has.Member(kbd2));
+		}
+
+		[Test]
+		public void OtherAvailableKeyboards_OmitsKnownKeyboards()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new KeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd2 = new KeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
+			var kbd3 = new KeyboardDefinition() { Layout = "something", Locale = "en-US" }; // equal to kbd1
+			var controller = new MockKeyboardController();
+			var keyboardList = new List<IKeyboardDefinition>();
+			keyboardList.Add(kbd1);
+			keyboardList.Add(kbd2);
+			controller.AllAvailableKeyboards = keyboardList;
+			Keyboarding.Controller = controller;
+			ws.AddKnownKeyboard(kbd3);
+
+			var result = ws.OtherAvailableKeyboards.ToList();
+
+			Keyboarding.Controller = null; // just in case it affects other tests
+
+			Assert.That(result, Has.Member(kbd2));
+			Assert.That(result, Has.No.Member(kbd1));
+		}
+
+		class MockKeyboardController : IKeyboardController
+		{
+			public void Activate(IKeyboardDefinition keyboard)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; set; }
 		}
 	}
 }

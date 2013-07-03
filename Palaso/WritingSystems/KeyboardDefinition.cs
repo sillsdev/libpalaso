@@ -3,7 +3,8 @@
 namespace Palaso.WritingSystems
 {
 	/// <summary>
-	/// A simple record of the properties we track defining a keyboard.
+	/// A simple record of the properties we track in writing systems defining a keyboard and implementing the keyboard-related
+	/// writing system methods and properties.
 	/// </summary>
 	public class KeyboardDefinition : IKeyboardDefinition
 	{
