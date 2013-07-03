@@ -1200,14 +1200,14 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		List<KeyboardDefinition> _knownKeyboards = new List<KeyboardDefinition>();
+		List<IKeyboardDefinition> _knownKeyboards = new List<IKeyboardDefinition>();
 
-		public IEnumerable<KeyboardDefinition> KnownKeyboards
+		public IEnumerable<IKeyboardDefinition> KnownKeyboards
 		{
 			get { return _knownKeyboards; }
 		}
 
-		public void AddKnownKeyboard(KeyboardDefinition newKeyboard)
+		public void AddKnownKeyboard(IKeyboardDefinition newKeyboard)
 		{
 			_knownKeyboards.Add(newKeyboard); // Enhance JohnT: should we verify it is different from any existing one?
 		}

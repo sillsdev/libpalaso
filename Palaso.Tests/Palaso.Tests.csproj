@@ -192,6 +192,7 @@
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
 	<Compile Include="WritingSystems\EthnologueLookupTests.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
+	<Compile Include="WritingSystems\KeyboardDefinitionTests.cs" />
 	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
