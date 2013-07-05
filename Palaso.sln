@@ -344,7 +344,6 @@ Global
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.Release|x86.ActiveCfg = Release|x86
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.ReleaseMono|Any CPU.ActiveCfg = ReleaseMono|Any CPU
-		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.ReleaseMono|Any CPU.Build.0 = ReleaseMono|Any CPU
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.ReleaseMono|x86.ActiveCfg = ReleaseMono|x86
 		{BFDFE8A9-D671-4CA4-BAF4-9B9429BB3140}.ReleaseMono|x86.Build.0 = ReleaseMono|x86
 	EndGlobalSection
