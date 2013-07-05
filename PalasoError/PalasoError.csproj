@@ -33,7 +33,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>..\output\DebugMono</OutputPath>
-	<DefineConstants>DEBUG;</DefineConstants>
+	<DefineConstants>DEBUG;MONO</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<ConsolePause>false</ConsolePause>
@@ -42,6 +42,7 @@
 	<DebugType>none</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>..\output\ReleaseMono</OutputPath>
+	<DefineConstants>MONO</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<ConsolePause>false</ConsolePause>
