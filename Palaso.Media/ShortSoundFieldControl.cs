@@ -182,7 +182,14 @@ namespace Palaso.Media
 			if (File.Exists(Path))
 				File.Delete(Path);
 
-			_recorder.StartRecording();
+			try
+			{
+				_recorder.StartRecording();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Sound Problem");
+			}
 			UpdateScreen();
 
 		}
@@ -252,7 +259,14 @@ namespace Palaso.Media
 		{
 			if (_recorder != null && File.Exists(Path)) //avoid crashes in situations where play should not have been available
 			{
-				_recorder.Play();
+				try
+				{
+					_recorder.Play();
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message, "Sound Problem");
+				}
 			}
 			else
 			{

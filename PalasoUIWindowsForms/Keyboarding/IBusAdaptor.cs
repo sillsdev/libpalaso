@@ -1,182 +1,39 @@
 #if MONO
+
+#define DISABLE_KEYBOARDSWITCHING
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+
 using Palaso.Code;
 using Palaso.Reporting;
+using Palaso.WritingSystems;
 
-using NDesk.DBus;
-using org.freedesktop.IBus;
+using IBusDotNet;
 using Timer = System.Windows.Forms.Timer;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
 {
-	/// <summary>
-	/// static class that allow creation of DBus connection to IBus's session DBus.
-	/// </summary>
-	static internal class IBusConnectionFactory
-	{
-		const string ENV_IBUS_ADDRESS = "IBUS_ADDRESS";
-		const string IBUS_ADDRESS = "IBUS_ADDRESS";
-
-		/// <summary>
-		/// Attempts to return the file name of the ibus server config file that contains the socket name.
-		/// </summary>
-		static string IBusConfigFilename ()
+		enum IBusEngineVersion
 		{
-			// Implementation Plan:
-			// Read file in $XDG_CONFIG_HOME/ibus/bus/* if ($XDG_CONFIG_HOME) not set then $HOME/.config/ibus/bus/*
-			// Actual file is called 'localmachineid'-'hostname'-'displaynumber'
-			// eg: 5a2f89ae5421972c24f8a4414b0495d7-unix-0
-			// could check $DISPLAY to see if we are running not on display 0 or not.
-
-			string directory = System.Environment.GetEnvironmentVariable ("XDG_CONFIG_HOME");
-			if (String.IsNullOrEmpty (directory))
-			{
-				directory = System.Environment.GetEnvironmentVariable ("HOME");
-
-				if (String.IsNullOrEmpty (directory))
-					throw new ApplicationException ("$XDG_CONFIG_HOME or $HOME Environment not set");
-
-				directory = Path.Combine (directory, ".config");
-			}
-			directory = Path.Combine (directory, "ibus");
-			directory = Path.Combine (directory, "bus");
-
-			var di = new DirectoryInfo (directory);
-
-			// default to 0 if we can't find from DISPLAY ENV var
-			int displayNumber = 0;
-
-			// DISPLAY is hostname:displaynumber.screennumber
-			// or more nomally ':0.0"
-			// so look for first number after :
-
-			string display = System.Environment.GetEnvironmentVariable ("DISPLAY");
-			if (display != String.Empty)
-			{
-				int start = display.IndexOf (':');
-				int end = display.IndexOf ('.');
-				if (start > 0 && end > 0)
-					int.TryParse (display.Substring (start, end - start), out displayNumber);
-			}
-
-			string filter = String.Format ("*-{0}", displayNumber);
-			FileInfo[] files = di.GetFiles (filter);
-
-			if (files.Length != 1)
-				throw new ApplicationException (String.Format ("Unable to locate IBus Config file in directory {0} with filter {1}. DISPLAY = {2}: {3}", directory, filter, display, files.Length < 1 ? "Unable to locate file" : "Too many files"));
-
-			return files[0].FullName;
-
+			NotConfigured,
+			V1,
+			V2,
+			V3,
+			V4
 		}
-
-		/// <summary>
-		/// Read config file and return the socket name from it.
-		/// </summary>
-		static string GetSocket (string filename)
-		{
-			// Look for line
-			// Set Enviroment 'DBUS_SESSION_BUS_ADDRESS' so DBus Library actually connects to IBus' DBus.
-			// IBUS_ADDRESS=unix:abstract=/tmp/dbus-DVpIKyfU9k,guid=f44265fa3b2781284d54c56a4b0d83f3
-
-			var s = new StreamReader (filename);
-			string line = String.Empty;
-			while (line != null)
-			{
-				line = s.ReadLine ();
-
-				if (line.Contains (IBUS_ADDRESS))
-				{
-					string[] toks = line.Split ("=".ToCharArray (), 2);
-					if (toks.Length != 2 || toks[1] == String.Empty)
-						throw new ApplicationException (String.Format ("IBUS config file : {0} not as expected for line {1}. Expected IBUS_ADDRESS='some socket'", filename, line));
-
-					return toks[1];
-				}
-			}
-
-			throw new ApplicationException (String.Format ("IBUS config file : {0} doesn't contain {1} token", filename, IBUS_ADDRESS));
-		}
-
-		/// <summary>
-		/// Create a DBus to connection to the IBus system in use.
-		/// </summary>
-		public static NDesk.DBus.Connection Create ()
-		{
-			// if Enviroment var IBUS_ADDRESS doesn't exist then attempt to read it from IBus server settings file.
-			string socketName = System.Environment.GetEnvironmentVariable (ENV_IBUS_ADDRESS);
-			if (String.IsNullOrEmpty (socketName))
-				socketName = GetSocket (IBusConfigFilename ());
-
-			// Equivelent to having $DBUS_SESSION_BUS_ADDRESS set
-			Connection connnection = Bus.Open (socketName);
-
-			return connnection;
-		}
-	}
-
-	internal class IBus
-	{
-		readonly org.freedesktop.IBus.IIBus _inputBus;
-
-		public IBus (NDesk.DBus.Connection connection)
-		{
-			_inputBus = connection.GetObject<org.freedesktop.IBus.IIBus> ("org.freedesktop.IBus", new ObjectPath ("/org/freedesktop/IBus"));
-			//Console.WriteLine("Introspect IBus");
-			//Console.WriteLine(_inputBus.Introspect());
-			//Console.WriteLine("---");
-		}
-
-		/// <summary>
-		/// Allow Access to the underlying org.freedesktop.IBus.IIBus
-		/// </summary>
-		public org.freedesktop.IBus.IIBus InputBus
-		{
-			get { return _inputBus; }
-		}
-		/// <summary>
-		/// Return the DBUS 'path' name for the currently focused InputContext
-		/// Throws: System.Exception with message 'org.freedesktop.DBus.Error.Failed: No input context focused'
-		/// if nothing is currently focused.
-		/// </summary>
-		public string GetFocusedInputContextPath ()
-		{
-			return _inputBus.CurrentInputContext ();
-		}
-	}
-
-	internal class IBusInputContext
-	{
-		readonly org.freedesktop.IBus.InputContext _inputContext;
-
-		/// <summary>
-		/// Wraps a connection to a specfic instance of an IBus InputContext
-		/// inputContextName needs to be the name of specfic instance of the input context.
-		/// For example "/org/freedesktop/IBus/InputContext_15"
-		/// </summary>
-		public IBusInputContext (NDesk.DBus.Connection connection, string inputContextName)
-		{
-			_inputContext = connection.GetObject<org.freedesktop.IBus.InputContext> ("org.freedesktop.DBus", new ObjectPath (inputContextName));
-		}
-
-		/// <summary>
-		/// Allow Access to the underlying org.freedesktop.IBus.IIBus
-		/// </summary>
-		public org.freedesktop.IBus.InputContext InputContext
-		{
-			get { return _inputContext; }
-		}
-	}
-
 	internal class IBusAdaptor
 	{
-		static NDesk.DBus.Connection _connection;
+		static IBusConnection _connection;
 		private static KeyboardController.KeyboardDescriptor _defaultKeyboard;
 		private static Timer _timer;
 		private static string _requestActivateName;
+		private static IBusEngineVersion _engineVersion;
 
 		enum IBusError
 		{
@@ -203,11 +60,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void OpenConnection()
 		{
+#if !DISABLE_KEYBOARDSWITCHING
 			if (_connection == null)
 			{
 				try
 				{
 					_connection = IBusConnectionFactory.Create();
+					if (_connection == null)
+					{
+						NotifyUserOfProblem(IBusError.Unknown, "IBus doesn't seem to be running");
+					}
+					_engineVersion = IBusEngineVersion.NotConfigured;
 				}
 				catch (DirectoryNotFoundException e)
 				{
@@ -225,6 +88,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					}
 				}
 			}
+#endif
 		}
 
 		/// <summary>
@@ -239,6 +103,64 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 		}
 
+		/// <summary>
+		/// Tell IBus to exit
+		/// </summary>
+		public static bool ExitIBus()
+		{
+#if DISABLE_KEYBOARDSWITCHING
+			return true;
+#else
+			if (EngineAvailable)
+			{
+				var ibus = new InputBusWrapper (_connection);
+				ibus.InputBus.Exit (false);
+				Thread.Sleep(100);
+				CloseConnection();
+			}
+			return !EngineAvailable;
+#endif
+		}
+
+		/// <summary>
+		/// Tell IBus to restart
+		/// </summary>
+		public static bool RestartIBus()
+		{
+#if DISABLE_KEYBOARDSWITCHING
+			return true;
+#else
+			if (EngineAvailable)
+			{
+				var ibus = new InputBusWrapper (_connection);
+				ibus.InputBus.Exit (true);
+				Thread.Sleep(100);
+				CloseConnection();
+			}
+			return EngineAvailable;
+#endif
+		}
+
+		/// <summary>
+		/// Start IBus manually
+		/// </summary>
+		public static bool StartIBus()
+		{
+#if DISABLE_KEYBOARDSWITCHING
+			return true;
+#else
+			if (!EngineAvailable)
+			{
+				ProcessStartInfo startInfo = new ProcessStartInfo("ibus-daemon",
+															  "-x -d -r");
+				Process.Start(startInfo);
+				Thread.Sleep(100);
+			}
+			return EngineAvailable;
+#endif
+		}
+
+#if !DISABLE_KEYBOARDSWITCHING
 		private static void NotifyUserOfProblem(IBusError error, string message)
 		{
 			switch (error)
@@ -249,13 +171,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					break;
 			}
 		}
+#endif
 
 		public static string DefaultKeyboardName
 		{
-			get { return _defaultKeyboard != null ? _defaultKeyboard.ShortName : String.Empty; }
+			get { return _defaultKeyboard != null ? _defaultKeyboard.Id : String.Empty; }
 		}
 
-		private static IBusInputContext TryGetFocusedInputContext(IBus ibus)
+		private static InputContextWrapper TryGetFocusedInputContext(InputBusWrapper ibus)
 		{
 			for (int i = 1; ; ++i)
 			{
@@ -263,7 +186,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					string inputContextPath = ibus.GetFocusedInputContextPath();
 					//Console.WriteLine("TryGetFocusedInputContext: {0} ICPath {1}", i, inputContextPath);
-					return new IBusInputContext(_connection, inputContextPath);
+					return new InputContextWrapper(_connection, inputContextPath);
 				}
 				catch (Exception)
 				{
@@ -278,9 +201,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		public static void ActivateKeyboard (string name)
 		{
+#if !DISABLE_KEYBOARDSWITCHING
 			EnsureConnection ();
 
-			if(!HasKeyboardNamed(name))
+			if(String.Compare(name,"None") != 0 && !HasKeyboardNamed(name))
 			{
 				throw new ArgumentOutOfRangeException("name", name, "IBus does not have a Keyboard of that name.");
 			}
@@ -292,14 +216,22 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			_requestActivateName = name;
 			_timer.Start();
+#endif
 		}
 
 		private static void OnTimerTick(object sender, EventArgs e)
 		{
-			_timer.Stop();
-			var ibus = new IBus(_connection);
-			var inputContextBus = TryGetFocusedInputContext(ibus);
-			inputContextBus.InputContext.SetEngine(_requestActivateName);
+			try
+			{
+				_timer.Stop();
+				var ibus = new InputBusWrapper(_connection);
+				var inputContextBus = TryGetFocusedInputContext(ibus);
+				inputContextBus.InputContext.SetEngine(_requestActivateName);
+			}
+			catch (Exception x)
+			{
+				Console.WriteLine ("OnTimerTick Exception: {0}", x.Message);
+			}
 		}
 
 		/// <summary>
@@ -311,29 +243,150 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				yield break;
 			}
-			var ibus = new IBus (_connection);
+			var ibus = new InputBusWrapper (_connection);
 			object[] engines = ibus.InputBus.ListActiveEngines ();
-			for (int i = 0; i < (engines).Length; ++i)
+			if (EngineVersion == IBusEngineVersion.NotConfigured && (engines).Length>0)
 			{
-				var engineDesc = (IBusEngineDesc)Convert.ChangeType (engines[i], typeof(IBusEngineDesc));
-				var v = new KeyboardController.KeyboardDescriptor
-							{
-								Id = engineDesc.name,
-								ShortName = engineDesc.longname,
-								LongName = engineDesc.longname,
-								engine = KeyboardController.Engines.IBus
-							};
-
-				yield return v;
+				GetEngineVersion(engines[0]);
 			}
 
+			for (int i = 0; i < (engines).Length; ++i)
+			{
+				if (EngineVersion == IBusEngineVersion.V1)
+				{
+					var v = GetKeyboardDescriptor_V1(engines[i]);
+					yield return v;
+				}
+				else if (EngineVersion == IBusEngineVersion.V2)
+				{
+					var v = GetKeyboardDescriptor_V2(engines[i]);
+					yield return v;
+				}
+				else if (EngineVersion == IBusEngineVersion.V3)
+				{
+					var v = GetKeyboardDescriptor_V3(engines[i]);
+					yield return v;
+				}
+				else if (EngineVersion == IBusEngineVersion.V4)
+				{
+					var v = GetKeyboardDescriptor_V4(engines[i]);
+					yield return v;
+				}
+				else
+					throw new ApplicationException("Unknown IBus engine version");
+			}
 		}
+
+		protected static string GetLanguageFromId (string lang_id)
+		{
+			String language;
+			try
+			{
+				CultureInfo ci = CultureInfo.GetCultureInfo(lang_id);
+				language = ci.DisplayName; // + "(" + lang_id + ")";
+				if (language.Contains("Invariant"))
+				{
+					language = "Other"; // + "(" + lang_id + ")";
+				}
+			}
+			catch
+			{
+				if (StandardTags.IsValidIso639LanguageCode(lang_id))
+				{
+					var codes = StandardTags.ValidIso639LanguageCodes;
+					var lang = codes.Where(code => code.Code == lang_id).First();
+					language = lang.Name; // + "(" + lang_id + ")";
+				}
+				else
+				{
+					language = "Unknown"; // + "(" + lang_id + ")";
+				}
+			}
+			return language;
+		}
+
+		/// <summary>
+		/// Helper function the builds a list of Active Keyboards
+		/// </summary>
+		protected static KeyboardController.KeyboardDescriptor GetKeyboardDescriptor_V1 (object engine)
+		{
+			var engineDesc = (IBusEngineDesc_v1)Convert.ChangeType (engine, typeof(IBusEngineDesc_v1));
+			var v = new KeyboardController.KeyboardDescriptor
+					{
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
+						engine = KeyboardController.Engines.IBus
+					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
+
+			return v;
+		}
+
+		/// <summary>
+		/// Helper function the builds a list of Active Keyboards
+		/// </summary>
+		protected static KeyboardController.KeyboardDescriptor GetKeyboardDescriptor_V2 (object engine)
+		{
+			var engineDesc = (IBusEngineDesc_v2)Convert.ChangeType (engine, typeof(IBusEngineDesc_v2));
+			var v = new KeyboardController.KeyboardDescriptor
+					{
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
+						engine = KeyboardController.Engines.IBus
+					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
+
+			return v;
+		}
+
+		/// <summary>
+		/// Helper function the builds a list of Active Keyboards
+		/// </summary>
+		protected static KeyboardController.KeyboardDescriptor GetKeyboardDescriptor_V3 (object engine)
+		{
+			var engineDesc = (IBusEngineDesc_v3)Convert.ChangeType (engine, typeof(IBusEngineDesc_v3));
+			var v = new KeyboardController.KeyboardDescriptor
+					{
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
+						engine = KeyboardController.Engines.IBus
+					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
+
+			return v;
+		}
+
+		/// <summary>
+		/// Helper function the builds a list of Active Keyboards
+		/// </summary>
+		protected static KeyboardController.KeyboardDescriptor GetKeyboardDescriptor_V4 (object engine)
+		{
+			var engineDesc = (IBusEngineDesc_v4)Convert.ChangeType (engine, typeof(IBusEngineDesc_v4));
+			var v = new KeyboardController.KeyboardDescriptor
+					{
+						Id = engineDesc.longname,
+						ShortName = engineDesc.name,
+						LongName = GetLanguageFromId(engineDesc.language) + " - " + engineDesc.name,
+						engine = KeyboardController.Engines.IBus
+					};
+			//Console.WriteLine("got description: {0}", engineDesc.ToString ());
+
+			return v;
+		}
+
 
 		public static List<KeyboardController.KeyboardDescriptor> KeyboardDescriptors
 		{
 			get
 			{
-				EnsureConnection();
+				try
+				{
+					EnsureConnection();
+				}
+				catch {};
 				return new List<KeyboardController.KeyboardDescriptor>(GetKeyboardDescriptors () );
 			}
 		}
@@ -357,19 +410,91 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			// Do nothing. IBus and mono maintain one input context per control.
 			// So, there is no need to deactivate it as the keyboard is not global.
-			//ActivateKeyboard(DefaultKeyboardName);
+
+			// But from ibus 1.3 it can be global
+			//trying to find out how to deactivate
+			if (!String.IsNullOrEmpty(DefaultKeyboardName))
+			{
+				try
+				{
+					ActivateKeyboard(DefaultKeyboardName);
+				}
+				catch (ErrorReport.ProblemNotificationSentToUserException e)
+				{
+					if (!e.Message.Contains("seem to be running"))
+						throw;
+				};
+			}
+
+/*			if (_connection != null)
+			{
+				ActivateKeyboard("None");
+			}
+			CloseConnection();
+			*/
+		}
+
+		public static void GetEngineVersion (object engine)
+		{
+			try
+			{
+				var engineDesc = (IBusEngineDesc_v4)Convert.ChangeType (engine, typeof(IBusEngineDesc_v4));
+				_engineVersion = IBusEngineVersion.V4;
+			}
+			catch (System.InvalidCastException)
+			{
+				try
+				{
+					var engineDesc = (IBusEngineDesc_v3)Convert.ChangeType (engine, typeof(IBusEngineDesc_v3));
+					_engineVersion = IBusEngineVersion.V3;
+				}
+				catch (System.InvalidCastException)
+				{
+					try
+					{
+						var engineDesc = (IBusEngineDesc_v2)Convert.ChangeType (engine, typeof(IBusEngineDesc_v2));
+						_engineVersion = IBusEngineVersion.V2;
+					}
+					catch (System.InvalidCastException)
+					{
+						_engineVersion = IBusEngineVersion.V1;
+					}
+				}
+			}
+		}
+
+
+		public static IBusEngineVersion EngineVersion
+		{
+			get
+			{
+				return _engineVersion;
+			}
 		}
 
 		public static bool HasKeyboardNamed (string name)
 		{
-			return GetKeyboardDescriptors().Any(d => d.ShortName.Equals(name));
+#if DEBUG
+			Console.WriteLine("Looking for {0} in:",name);
+			foreach (var keyboard in GetKeyboardDescriptors())
+			{
+				Console.WriteLine(keyboard.Id);
+			}
+#endif
+			bool retval = GetKeyboardDescriptors().Any(d => d.Id.Equals(name));
+#if DEBUG
+			Console.WriteLine(retval ? "succeeded" : "failed");
+#endif
+			return retval;
 		}
 
 		public static string GetActiveKeyboard ()
 		{
 			EnsureConnection ();
-
-			var ibus = new IBus (_connection);
+#if DISABLE_KEYBOARDSWITCHING
+			return "Manual";
+#else
+			var ibus = new InputBusWrapper (_connection);
 			try
 			{
 				var inputContextBus = TryGetFocusedInputContext(ibus);
@@ -378,9 +503,35 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					throw new ApplicationException ("Focused Input Context doesn't have an active Keyboard/Engine");
 				}
-
-				var engineDesc = (IBusEngineDesc)Convert.ChangeType (engine, typeof(IBusEngineDesc));
-				return engineDesc.longname;
+				if (EngineVersion == IBusEngineVersion.NotConfigured)
+				{
+					GetEngineVersion(engine);
+				}
+				string enginename;
+				if (EngineVersion == IBusEngineVersion.V3)
+				{
+					var engineDesc = (IBusEngineDesc_v3)Convert.ChangeType (engine, typeof(IBusEngineDesc_v3));
+					enginename = engineDesc.longname;
+				}
+				else if (EngineVersion == IBusEngineVersion.V4)
+				{
+					var engineDesc = (IBusEngineDesc_v4)Convert.ChangeType (engine, typeof(IBusEngineDesc_v4));
+					enginename = engineDesc.longname;
+				}
+				else if (EngineVersion == IBusEngineVersion.V2)
+				{
+					var engineDesc = (IBusEngineDesc_v2)Convert.ChangeType (engine, typeof(IBusEngineDesc_v2));
+					enginename = engineDesc.longname;
+				}
+				else if (EngineVersion == IBusEngineVersion.V1)
+				{
+					var engineDesc = (IBusEngineDesc_v1)Convert.ChangeType (engine, typeof(IBusEngineDesc_v1));
+					enginename = engineDesc.longname;
+				}
+				else
+					throw new ApplicationException("Unknown IBus engine version");
+				Console.WriteLine ("GetActiveKeyboard got keyboard {0}", enginename);
+				return enginename;
 			}
 			catch (Exception)
 			{
@@ -390,6 +541,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				);
 				return String.Empty;
 			}
+#endif
 		}
 	}
 }

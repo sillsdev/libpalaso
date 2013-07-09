@@ -69,7 +69,7 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel5.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel5.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel5.Location = new System.Drawing.Point(22, 59);
+			this.betterLabel5.Location = new System.Drawing.Point(13, 59);
 			this.betterLabel5.Multiline = true;
 			this.betterLabel5.Name = "betterLabel5";
 			this.betterLabel5.ReadOnly = true;
@@ -84,7 +84,7 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel4.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel4.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.betterLabel4.Location = new System.Drawing.Point(22, 22);
+			this.betterLabel4.Location = new System.Drawing.Point(13, 22);
 			this.betterLabel4.Multiline = true;
 			this.betterLabel4.Name = "betterLabel4";
 			this.betterLabel4.ReadOnly = true;

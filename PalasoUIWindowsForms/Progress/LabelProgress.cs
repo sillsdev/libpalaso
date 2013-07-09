@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Windows.Forms;
 using Palaso.Progress;
-using Palaso.Progress;
 
 namespace Palaso.UI.WindowsForms.Progress
 {

@@ -36,6 +36,11 @@ namespace Palaso.UsbDrive.Linux
 			}
 		}
 
+		public override string VolumeLabel
+		{
+			get { return _device.VolumeLabel; }
+		}
+
 		public override ulong TotalSize
 		{
 			get { return _device.TotalSize; }
@@ -47,9 +52,9 @@ namespace Palaso.UsbDrive.Linux
 			get { throw new NotImplementedException("TotalFreeSpace not implemented in Mono yet."); }
 		}
 
-		public new static List<UsbDriveInfo> GetDrives()
+		public new static List<IUsbDriveInfo> GetDrives()
 		{
-			var drives = new List<UsbDriveInfo>();
+			var drives = new List<IUsbDriveInfo>();
 
 			var uDisks = new UDisks();
 			// ReSharper disable LoopCanBeConvertedToQuery

@@ -1,3 +1,336 @@
+#if MONO
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
+using Palaso.Email;
+using Palaso.Reporting;
+using System.IO;
+
+namespace Palaso.Reporting
+{
+	 public class ExceptionReportingDialog : IDisposable
+	{
+		private bool _isLethal;
+		private static bool s_doIgnoreReport = false;
+		private string _details;
+
+
+		protected ExceptionReportingDialog(bool isLethal)
+		{
+			_isLethal = isLethal;
+		}
+
+		#region IDisposable override
+
+		/// <summary>
+		/// Check to see if the object has been disposed.
+		/// All public Properties and Methods should call this
+		/// before doing anything else.
+		/// </summary>
+// Dispose() calls Dispose(true)
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected void Dispose(bool disposing)
+		{
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+		}
+
+		#endregion IDisposable override
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// show a dialog or output to the error log, as appropriate.
+		/// </summary>
+		/// <param name="error">the exception you want to report</param>
+		/// ------------------------------------------------------------------------------------
+		internal static void ReportException(Exception error)
+		{
+			ReportException(error, null);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="error"></param>
+		/// <param name="parent"></param>
+		internal static void ReportException(Exception error, Form parent)
+		{
+			ReportException(error, null, true);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// show a dialog or output to the error log, as appropriate.
+		/// </summary>
+		/// <param name="error">the exception you want to report</param>
+		/// <param name="parent">the parent form that this error belongs to (i.e. the form
+		/// show modally on)</param>
+		/// ------------------------------------------------------------------------------------
+		/// <param name="isLethal"></param>
+		internal static void ReportException(Exception error, Form parent, bool isLethal)
+		{
+			if (s_doIgnoreReport)
+			{
+				return;            // ignore message if we are showing from a previous error
+			}
+
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			{
+				dlg.Report(error, parent);
+			}
+		}
+
+		internal static void ReportMessage(string message, StackTrace stack, bool isLethal)
+		{
+			if (s_doIgnoreReport)
+			{
+				return;            // ignore message if we are showing from a previous error
+			}
+
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			{
+				dlg.Report(message, string.Empty, stack, null);
+			}
+		}
+		internal static void ReportMessage(string message, Exception error, bool isLethal)
+		{
+			if (s_doIgnoreReport)
+			{
+				return;            // ignore message if we are showing from a previous error
+			}
+
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			{
+				dlg.Report(message, null, error,null);
+			}
+		}
+
+		 public void Report(Exception error, Form owningForm)
+		{
+			Report(null,null, error, owningForm);
+		}
+
+
+		 public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
+		 {
+			 try
+			 {
+				 if(!string.IsNullOrEmpty(message))
+					UsageReporter.ReportExceptionString(message);
+				 else if(error!=null)
+					 UsageReporter.ReportException(error);
+			 }
+			 catch
+			 {
+				 //swallow
+			 }
+
+			 if (!string.IsNullOrEmpty(message))
+			 {
+				Console.WriteLine ("Message (not an exception): " + message);
+				_details += "Message (not an exception): " + message + Environment.NewLine;
+				_details += Environment.NewLine;
+			 }
+			if (!string.IsNullOrEmpty(messageBeforeStack))
+			 {
+				Console.WriteLine (messageBeforeStack);
+				 _details += messageBeforeStack;
+				 _details += Environment.NewLine;
+			 }
+
+			 Exception innerMostException = null;
+			 _details += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+			Console.WriteLine(ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException));
+
+			 //if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
+			 //we want the developer to read.
+			 if (innerMostException != null)
+			 {
+				 _details += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
+								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details;
+				Console.WriteLine ("Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
+								  "\r\n\r\nFull, hierarchical exception contents:\r\n");
+			 }
+
+			 AddErrorReportingPropertiesToDetails();
+
+
+			 Debug.WriteLine(_details);
+			 if (innerMostException != null)
+			 {
+				 error = innerMostException;
+			 }
+
+
+			 try
+			 {
+				 Logger.WriteEvent("Got exception " + error.GetType().Name);
+			 }
+			 catch (Exception err)
+			 {
+				 //We have more than one report of dieing while logging an exception.
+				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
+				 _details += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
+				 _details += "Was trying to log the exception: " + error.Message + Environment.NewLine;
+				Console.WriteLine ("Recent events:");
+				 _details += "Recent events:" + Environment.NewLine;
+				Console.WriteLine (Logger.MinorEventsLog);
+				 _details += Logger.MinorEventsLog;
+			 }
+
+			 ShowReportDialogIfAppropriate(owningForm);
+		 }
+
+		 public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
+		 {
+
+			_details += "Message (not an exception): " + message + Environment.NewLine;
+			Console.WriteLine ("Message (not an exception): " + message);
+			 _details += Environment.NewLine;
+			 if(!string.IsNullOrEmpty(messageBeforeStack))
+			 {
+				_details += messageBeforeStack;
+				_details += Environment.NewLine;
+				Console.WriteLine(messageBeforeStack);
+			 }
+			_details += "--Stack--"+ Environment.NewLine;;
+			Console.WriteLine ("--Stack--");
+			 _details += stackTrace.ToString() + Environment.NewLine; ;
+			Console.WriteLine (stackTrace.ToString());
+
+			 AddErrorReportingPropertiesToDetails();
+
+			 Debug.WriteLine(_details);
+
+
+			 try
+			 {
+				 Logger.WriteEvent("Got error message " + message);
+			 }
+			 catch (Exception err)
+			 {
+				 //We have more than one report of dieing while logging an exception.
+				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
+				 _details += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+			 }
+
+			 ShowReportDialogIfAppropriate(owningForm);
+		 }
+
+		 private void AddErrorReportingPropertiesToDetails()
+		 {
+
+			 _details += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
+			Console.WriteLine("--Error Reporting Properties--");
+			 foreach (string label in ErrorReport.Properties.Keys)
+			 {
+				 _details += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
+				Console.WriteLine(label + ": " + ErrorReport.Properties[label]);
+			 }
+
+			 _details += Environment.NewLine+"--Log--"+Environment.NewLine;
+			Console.WriteLine ("--Log--");
+			 try
+			 {
+				 _details += Logger.LogText;
+				Console.WriteLine (Logger.LogText);
+			 }
+			 catch (Exception err)
+			 {
+				 //We have more than one report of dieing while logging an exception.
+				Console.WriteLine ("****Could not read from log: " + err.Message);
+				 _details += "****Could not read from log: " + err.Message + Environment.NewLine;
+			 }
+		 }
+
+
+		 private void ShowReportDialogIfAppropriate(Form owningForm)
+		 {
+
+			 if (ErrorReport.IsOkToInteractWithUser)
+			 {
+				 s_doIgnoreReport = true;
+				// DG: May 2012 Starting a new process with the reporting dialog
+				// in a separate program so that problems with mono SWF don't
+				// stop you getting the error log
+
+				string tempFileName = Path.GetTempFileName();
+
+				File.WriteAllText(tempFileName, _details);
+
+				string commandLineArgs;
+				if (_isLethal)
+					commandLineArgs = "1";
+				else
+					commandLineArgs = "0";
+
+				commandLineArgs += " '" + tempFileName + "'";
+				commandLineArgs += " '"+ ErrorReport.EmailAddress + "'";
+				commandLineArgs += " '"+ ErrorReport.EmailSubject + "'";
+
+				string dir = Directory.GetParent(Application.ExecutablePath).FullName;
+
+				var p = new Process
+				{
+					StartInfo =
+					{
+						FileName = Path.Combine(dir, "PalasoError.exe"),
+						Arguments = commandLineArgs,
+						UseShellExecute = true,
+						ErrorDialog = true
+					}
+				};
+
+				p.Start();
+				s_doIgnoreReport = false;
+
+				if (_isLethal)
+				{
+					Process.GetCurrentProcess().Kill();
+				}
+			 }
+			 else //the test environment already prohibits dialogs but will save the contents of assertions in some log.
+			 {
+				 Debug.Fail(_details);
+			 }
+		 }
+	}
+}
+#else
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -336,17 +669,20 @@ namespace Palaso.Reporting
 
 			 if (!string.IsNullOrEmpty(message))
 			 {
+				Console.WriteLine ("Message (not an exception): " + message);
 				_details.Text += "Message (not an exception): " + message + Environment.NewLine;
 				_details.Text += Environment.NewLine;
 			 }
 			if (!string.IsNullOrEmpty(messageBeforeStack))
 			 {
+				Console.WriteLine (messageBeforeStack);
 				 _details.Text += messageBeforeStack;
 				 _details.Text += Environment.NewLine;
 			 }
 
 			 Exception innerMostException = null;
 			 _details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+			Console.WriteLine(ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException));
 
 			 //if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
 			 //we want the developer to read.
@@ -354,6 +690,8 @@ namespace Palaso.Reporting
 			 {
 				 _details.Text += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
 								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
+				Console.WriteLine ("Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
+								  "\r\n\r\nFull, hierarchical exception contents:\r\n");
 			 }
 
 			 AddErrorReportingPropertiesToDetails();
@@ -373,9 +711,13 @@ namespace Palaso.Reporting
 			 catch (Exception err)
 			 {
 				 //We have more than one report of dieing while logging an exception.
+				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
 				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
 				 _details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
+				Console.WriteLine ("Recent events:");
 				 _details.Text += "Recent events:" + Environment.NewLine;
+				Console.WriteLine (Logger.MinorEventsLog);
 				 _details.Text += Logger.MinorEventsLog;
 			 }
 
@@ -388,15 +730,18 @@ namespace Palaso.Reporting
 			 _notificationText.Text = message;
 
 			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
+			Console.WriteLine ("Message (not an exception): " + message);
 			 _details.Text += Environment.NewLine;
 			 if(!string.IsNullOrEmpty(messageBeforeStack))
 			 {
 				_details.Text += messageBeforeStack;
 				_details.Text += Environment.NewLine;
+				Console.WriteLine(messageBeforeStack);
 			 }
 			_details.Text += "--Stack--"+ Environment.NewLine;;
+			Console.WriteLine ("--Stack--");
 			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
-
+			Console.WriteLine (stackTrace.ToString());
 
 			 AddErrorReportingPropertiesToDetails();
 
@@ -410,6 +755,7 @@ namespace Palaso.Reporting
 			 catch (Exception err)
 			 {
 				 //We have more than one report of dieing while logging an exception.
+				Console.WriteLine ("****Could not write to log (" + err.Message + ")");
 				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
 			 }
 
@@ -420,19 +766,24 @@ namespace Palaso.Reporting
 		 {
 
 			 _details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
+			Console.WriteLine("--Error Reporting Properties--");
 			 foreach (string label in ErrorReport.Properties.Keys)
 			 {
 				 _details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
+				Console.WriteLine(label + ": " + ErrorReport.Properties[label]);
 			 }
 
 			 _details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
+			Console.WriteLine ("--Log--");
 			 try
 			 {
 				 _details.Text += Logger.LogText;
+				Console.WriteLine (Logger.LogText);
 			 }
 			 catch (Exception err)
 			 {
 				 //We have more than one report of dieing while logging an exception.
+				Console.WriteLine ("****Could not read from log: " + err.Message);
 				 _details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
 			 }
 		 }
@@ -673,13 +1024,13 @@ namespace Palaso.Reporting
 		 private void _privacyNoticeButton_Click(object sender, EventArgs e)
 		 {
 			MessageBox.Show(
-				@"If you don�t care who reads your bug report, you can skip this notice.
+				@"If you don't care who reads your bug report, you can skip this notice.
 
-When you submit a crash report or other issue, the contents of your email go in our issue tracking system, �jira�, which is available via the web at http://jira.palso.org/issues. This is the normal way to handle issues in an open-source project.
+When you submit a crash report or other issue, the contents of your email go in our issue tracking system, 'jira', which is available via the web at http://jira.palso.org/issues. This is the normal way to handle issues in an open-source project.
 
 Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
 
-However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don�t want the issue in our issue tracking system. If need be, we�ll make some kind of sanitized place-holder for your issue so that we don�t lose it.
+However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don't want the issue in our issue tracking system. If need be, we'll make some kind of sanitized place-holder for your issue so that we don't lose it.
 ");
 		 }
 
@@ -692,3 +1043,4 @@ However, anyone can make an account and then read what you sent us. So if you ha
 		 }
 	}
 }
+#endif
