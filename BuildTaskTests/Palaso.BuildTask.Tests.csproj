@@ -43,7 +43,7 @@
 	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DebugType>full</DebugType>
-	<PlatformTarget>x86</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">

@@ -61,7 +61,7 @@
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DocumentationFile>..\output\Debug\Palaso.DictionaryServices.XML</DocumentationFile>
 	<DebugType>full</DebugType>
-	<PlatformTarget>x86</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
 	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>

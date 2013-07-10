@@ -60,7 +60,7 @@
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DocumentationFile>..\output\Debug\Palaso.Media.XML</DocumentationFile>
 	<DebugType>full</DebugType>
-	<PlatformTarget>x86</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<LangVersion>default</LangVersion>
 	<ErrorReport>prompt</ErrorReport>
 	<TargetFrameworkProfile>
