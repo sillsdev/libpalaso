@@ -10,7 +10,6 @@
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>Palaso.Media</RootNamespace>
 	<AssemblyName>Palaso.Media</AssemblyName>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<FileUpgradeFlags>
 	</FileUpgradeFlags>
@@ -33,10 +32,10 @@
 	<BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-	<DebugSymbols>true</DebugSymbols>
+	<DebugSymbols>True</DebugSymbols>
 	<DebugType>full</DebugType>
-	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<Optimize>False</Optimize>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -47,8 +46,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
-	<Optimize>true</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<Optimize>True</Optimize>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -56,75 +55,81 @@
 	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
-	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<DebugSymbols>True</DebugSymbols>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DocumentationFile>..\output\Debug\Palaso.Media.XML</DocumentationFile>
 	<DebugType>full</DebugType>
-	<PlatformTarget>x86</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<LangVersion>default</LangVersion>
 	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
+	<WarningLevel>4</WarningLevel>
+	<Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
-	<Optimize>true</Optimize>
+	<Optimize>True</Optimize>
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile></TargetFrameworkProfile>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
+	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="irrKlang.NET4">
+	<Reference Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="irrKlang.NET4">
 	  <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
 	</Reference>
-	<Reference Include="NAudio">
+	<Reference Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="NAudio">
 	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+	<Reference Include="System.Core" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
+	<Reference Condition="'$(Configuration)' == 'XDebugMono' Or '$(Configuration)' == 'XReleaseMono' " Include="gstreamer-sharp, Version=0.9.2.0, Culture=neutral, PublicKeyToken=4956b48baf980190">
+	  <Private>False</Private>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="AlsaAudio\AlsaAudioDevice.cs" />
 	<Compile Include="AlsaAudio\AudioAlsaSession.cs" />
 	<Compile Include="AudioFactory.cs" />
-	<Compile Include="AudioIrrKlangSession.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="AudioIrrKlangSession.cs" />
 	<Compile Include="AudioNullSession.cs" />
-	<Compile Include="Naudio\AudioPlayer.cs" />
-	<Compile Include="Naudio\AudioRecorder.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\AudioPlayer.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\AudioRecorder.cs" />
 	<Compile Include="FFmpegRunner.cs" />
-	<Compile Include="Naudio\FileWriterThread.cs" />
-	<Compile Include="Naudio\IAudioPlayer.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\FileWriterThread.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\IAudioPlayer.cs" />
 	<Compile Include="ISimpleAudioSession.cs" />
 	<Compile Include="MediaInfo.cs" />
-	<Compile Include="Naudio\RecordingDevice.cs" />
-	<Compile Include="Naudio\TrimWaveStream.cs" />
-	<Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\RecordingDevice.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\TrimWaveStream.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>AudioDeviceIcons.resx</DependentUpon>
 	</Compile>
-	<Compile Include="Naudio\UI\PeakMeterCtrl.cs">
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\PeakMeterCtrl.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Naudio\UI\PeakMeterCtrl.designer.cs">
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\PeakMeterCtrl.designer.cs">
 	  <DependentUpon>PeakMeterCtrl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Naudio\UI\RecordingDeviceButton.cs">
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\RecordingDeviceIndicator.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
-	<Compile Include="Naudio\UI\RecordingDeviceButton.designer.cs">
-	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\RecordingDeviceIndicator.designer.cs">
+	  <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Naudio\RecordingState.cs" />
-	<Compile Include="Naudio\SampleAggregator.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\RecordingState.cs" />
+	<Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\SampleAggregator.cs" />
 	<Compile Include="ShortSoundFieldControl.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -143,18 +148,19 @@
 	<Compile Include="SoundFieldControl.Designer.cs">
 	  <DependentUpon>SoundFieldControl.cs</DependentUpon>
 	</Compile>
+	<Compile Condition="'$(Configuration)' == 'XDebugMono' Or '$(Configuration)' == 'XReleaseMono' " Include="AudioGStreamerSession.cs" />
   </ItemGroup>
   <ItemGroup>
 	<None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
+	<EmbeddedResource Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\AudioDeviceIcons.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Naudio\UI\RecordingDeviceButton.resx">
-	  <DependentUpon>RecordingDeviceButton.cs</DependentUpon>
+	<EmbeddedResource Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="Naudio\UI\RecordingDeviceIndicator.resx">
+	  <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ShortSoundFieldControl.resx">
 	  <DependentUpon>ShortSoundFieldControl.cs</DependentUpon>
@@ -210,18 +216,6 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="HeadSet.png" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Microphone.png" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="NOTEBOOK.png" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Include="Recorder.png" />
   </ItemGroup>
   <ItemGroup>
 	<None Include="Resources\Microphone.png" />

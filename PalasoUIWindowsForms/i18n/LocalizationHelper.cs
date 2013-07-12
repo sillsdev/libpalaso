@@ -219,6 +219,7 @@ namespace Palaso.UI.WindowsForms.i18n
 		private static bool IsAllowedControl(Control control)
 		{
 			return control is Label ||
+				   control is BetterLabel ||
 				   control is GroupBox ||
 				   control is ButtonBase ||
 				   control is IButtonControl ||

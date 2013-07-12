@@ -50,7 +50,7 @@ namespace Palaso.Media.Naudio
 			_inStream = stream;
 		}
 
-		public void Play()
+		public void StartPlaying()
 		{
 			if (PlaybackState != PlaybackState.Stopped || _inStream == null)
 				return;

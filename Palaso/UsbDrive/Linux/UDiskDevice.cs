@@ -73,5 +73,11 @@ namespace Palaso.UsbDrive.Linux
 		{
 			get { return GetProperty("DeviceIsMounted") == "True"; }
 		}
+
+		public string VolumeLabel
+		{
+			get { return GetProperty("IdLabel"); }
+		}
+
 	}
 }

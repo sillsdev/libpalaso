@@ -1,6 +1,6 @@
 ﻿namespace Palaso.Media.Naudio.UI
 {
-	partial class RecordingDeviceButton
+	partial class RecordingDeviceIndicator
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecordingDeviceButton));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecordingDeviceIndicator));
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this._recordingDeviceImage = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this._recordingDeviceImage)).BeginInit();
@@ -53,7 +53,7 @@
 			this.BackColor = System.Drawing.Color.Transparent;
 			this.Controls.Add(this._recordingDeviceImage);
 			this.Margin = new System.Windows.Forms.Padding(0);
-			this.Name = "RecordingDeviceButton";
+			this.Name = "RecordingDeviceIndicator";
 			this.Size = new System.Drawing.Size(20, 26);
 			((System.ComponentModel.ISupportInitialize)(this._recordingDeviceImage)).EndInit();
 			this.ResumeLayout(false);

@@ -44,25 +44,46 @@ namespace Palaso.Media
 		   if(File.Exists(Path))
 			   File.Delete(Path);
 
-			_recorder.StartRecording();
+			try
+			{
+				_recorder.StartRecording();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Sound Problem");
+			}
 			UpdateScreen();
 		}
 
 		private void _playButton_Click(object sender, EventArgs e)
 		{
-			_recorder.Play();
+			try
+			{
+				_recorder.Play();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Sound Problem");
+			}
 			UpdateScreen();
 		}
 
 		private void _stopButton_Click(object sender, EventArgs e)
 		{
-			if(_recorder.IsRecording)
+			try
 			{
-				_recorder.StopRecordingAndSaveAsWav();
+				if(_recorder.IsRecording)
+				{
+					_recorder.StopRecordingAndSaveAsWav();
+				}
+				else
+				{
+					_recorder.StopPlaying();
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				_recorder.StopPlaying();
+				MessageBox.Show(ex.Message, "Sound Problem");
 			}
 			UpdateScreen();
 		}

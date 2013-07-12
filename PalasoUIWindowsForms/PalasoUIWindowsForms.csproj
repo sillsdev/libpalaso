@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -31,12 +31,14 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
+	<SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+	<RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>1</WarningLevel>
@@ -48,7 +50,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -57,7 +59,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
@@ -68,7 +70,7 @@
 	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
@@ -86,6 +88,14 @@
 	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
+	</Reference>
+	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\$(Configuration)\irrKlang.NET2.0.dll</HintPath>
+	</Reference>
+	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
@@ -106,6 +116,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+	<None Include="packages.config" />
 	<None Include="Progress\LogBoxSettings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
@@ -125,16 +136,22 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
+	<Reference Include="L10NSharp, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
+	</Reference>
+	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86" Condition="'$(OS)'=='Windows_NT'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
 	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
-	<Reference Include="System.configuration" />
+	<Reference Include="System.Configuration" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Security" />
+	<Reference Include="System.ServiceModel" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
@@ -295,6 +312,18 @@
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Keyman.cs" />
 	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
+	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
+	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+	</Compile>
+	<Compile Include="Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Progress\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -436,7 +465,6 @@
 	<Compile Include="Reporting\ExceptionReportingDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Progress\LabelProgress.cs" />
 	<Compile Include="Progress\LogBoxResources.Designer.cs">
 	  <DependentUpon>LogBoxResources.resx</DependentUpon>
@@ -466,18 +494,7 @@
 	<Compile Include="Progress\SimpleStatusProgress.cs">
 	  <SubType>Component</SubType>
 	</Compile>
-	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
 	<Compile Include="Progress\TextBoxProgress.cs" />
-	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Miscellaneous\WaitCursor.cs" />
 	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
 	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
@@ -628,6 +645,10 @@
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
+	<Compile Include="Keyboarding\IBusConnection.cs" />
+	<Compile Include="Keyboarding\IBusConnectionFactory.cs" />
+	<Compile Include="Keyboarding\InputBusWrapper.cs" />
+	<Compile Include="Keyboarding\InputContextWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
@@ -695,11 +716,18 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
 	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
+	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
+	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
+	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Progress\LogBox.resx">
 	  <DependentUpon>LogBox.cs</DependentUpon>
@@ -774,14 +802,6 @@
 	</EmbeddedResource>
 	<EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
 	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
 	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
@@ -885,9 +905,7 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+	<Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -1031,8 +1049,11 @@
   <ItemGroup>
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets"
+		  Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets"
+		  Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -6,11 +6,13 @@ using System.Threading;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
+using Palaso.Media.Tests.Properties;
 
 
 namespace Palaso.Media.Tests
 {
-   [TestFixture]
+	[TestFixture]
+	[NUnit.Framework.Category("AudioTests")]
 	public class AudioRecorderTests
 	{
 	   [Test]
@@ -108,7 +110,7 @@ session.Recorder.Play());
 		   using (var f = new TempFile())
 		   {
 			   var x = AudioFactory.AudioSession(f.Path);
-			   Assert.Throws<EndOfStreamException>(() =>
+			   Assert.Throws<Exception>(() =>
  x.Play());
 		   }
 	   }
@@ -350,6 +352,28 @@ session.Recorder.StartRecording());
 		   Thread.Sleep(100);
 		   x.StopRecordingAndSaveAsWav();
 		   return x;
+	   }
+
+	   [Test]
+		public void Play_DoesPlay ()
+		{
+			using (var file = TempFile.FromResource(Resources.finished, ".wav")) {
+				var x = AudioFactory.AudioSession (file.Path);
+				Assert.DoesNotThrow (() =>
+					x.Play ()
+				);
+			}
+	   }
+
+	   [Test]
+		public void Record_DoesRecord ()
+		{
+
+			string fpath = "/tmp/dump.ogg";
+			var x = AudioFactory.AudioSession (fpath);
+			x.StartRecording();
+			Thread.Sleep(1000);
+			x.StopRecordingAndSaveAsWav();
 	   }
 	}
 }

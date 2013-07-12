@@ -102,7 +102,7 @@ namespace Palaso.WritingSystems
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
 			var TwoToThreeMap = new Dictionary<string, string>();
-			string[] encodingPairs = Resource.TwoToThreeCodes.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string pair in encodingPairs)
 			{
 				var items = pair.Split('\t');
@@ -111,7 +111,7 @@ namespace Palaso.WritingSystems
 				TwoToThreeMap[items[0]] = items[1];
 			}
 
-			string[] ianaSubtagsAsStrings = Resource.IanaSubtags.Split(new[] { "%%" }, StringSplitOptions.None);
+			string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
 				string[] subTagComponents = ianaSubtagAsString.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);

@@ -31,42 +31,33 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			var dialog = new LookupISOCodeDialog();
 			Application.Run(dialog);
-			MessageBox.Show("code returned:" + dialog.ISOCode);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code+" with desired name: "+dialog.SelectedLanguage.DesiredName);
+		}
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialCodeAndCustomName()
+		{
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr", DesiredName = "Etoloooo" };
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 
 		[Test, Ignore("By hand only")]
-		public void LookupISODialogWithValue()
+		public void LookupISODialog_WithInitialCodeOnly()
 		{
 			var dialog = new LookupISOCodeDialog();
-			dialog.ISOCode = "etr";
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr"};
 			Application.Run(dialog);
-			MessageBox.Show("code returned:" + dialog.ISOCode);
-		}
-		[Test]
-		public void GetMatchingWritingSystems_NoMatches_Empty()
-		{
-			Assert.AreEqual(0, _model.GetMatchingWritingSystems("^^^").Count());
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 
-		[Test]
-		public void GetMatchingWritingSystems_EmptyString_GetWholeList()
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialQAACodeAndCustomName()
 		{
-			Assert.Greater(_model.GetMatchingWritingSystems(string.Empty).Count(), 7000);
-		}
-
-
-		[Test]
-		public void GetMatchingWritingSystems_UpperCaseGerman_ReturnsGerman()
-		{
-			var matchingWritingSystems = _model.GetMatchingWritingSystems("German").ToArray();
-			Assert.AreEqual("de",matchingWritingSystems[0].Code);
-		}
-
-		[Test]
-		public void GetMatchingWritingSystems_lowerCaseGerman_ReturnsGerman()
-		{
-			var matchingWritingSystems = _model.GetMatchingWritingSystems("german").ToArray();
-			Assert.AreEqual("de", matchingWritingSystems[0].Code);
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "qaa", DesiredName = "Vulcan" };
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 	}
 }

@@ -31,6 +31,15 @@ namespace Palaso.UsbDrive.Windows
 			}
 		}
 
+		public override string VolumeLabel
+		{
+			get
+			{
+				return  _driveInfo.VolumeLabel;
+			}
+		}
+
+
 		public override ulong TotalSize
 		{
 			get
@@ -49,9 +58,9 @@ namespace Palaso.UsbDrive.Windows
 			}
 		}
 
-		public new static List<UsbDriveInfo> GetDrives()
+		public new static List<IUsbDriveInfo> GetDrives()
 		{
-			var drives = new List<UsbDriveInfo>();
+			var drives = new List<IUsbDriveInfo>();
 			using (var driveSearcher = new ManagementObjectSearcher(
 				"SELECT Caption, DeviceID FROM Win32_DiskDrive WHERE InterfaceType='USB'")
 			)
