@@ -30,6 +30,15 @@ namespace Palaso.Media.Naudio.UI
 		}
 
 		/// <summary>
+		/// This allows the client to suspend the periodic checking during operations (other than recording) where it is
+		/// undesirable to change devices (or take the time to check for them).
+		/// </summary>
+		public bool MicCheckingEnabled
+		{
+			set { _checkNewMicTimer.Enabled = value; }
+		}
+
+		/// <summary>
 		/// This control will find out about selected devices from the recorder, but also will tell the recorder to change devices as needed.
 		/// </summary>
 		public IAudioRecorder Recorder
