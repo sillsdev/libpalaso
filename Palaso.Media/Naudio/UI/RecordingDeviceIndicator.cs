@@ -22,11 +22,16 @@ namespace Palaso.Media.Naudio.UI
 
 		private HashSet<string> _knownRecordingDevices;
 
-		public RecordingDeviceIndicator()
+		public RecordingDeviceIndicator() : this(1000, true)
+		{
+		}
+
+		public RecordingDeviceIndicator(int checkNewMicTimerInterval, bool checkNewMicTimerInitiallyEnabled)
 		{
 			InitializeComponent();
 			_checkNewMicTimer.Tick += OnCheckNewMicTimer_Tick;
-			_checkNewMicTimer.Interval = 1000;
+			_checkNewMicTimer.Interval = checkNewMicTimerInterval;
+			MicCheckingEnabled = checkNewMicTimerInitiallyEnabled;
 		}
 
 		/// <summary>
