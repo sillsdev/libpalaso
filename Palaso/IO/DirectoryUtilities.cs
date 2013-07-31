@@ -11,7 +11,7 @@ namespace Palaso.IO
 	{
 
 		/// <summary>
-		/// Makes a full copies of the specified directory in the system's temporary directory.
+		/// Makes a full copy of the specified directory in the system's temporary directory.
 		/// If the copy fails at any point in the process, the user is notified of the
 		/// problem and an attempt is made to remove the destination directory if the failure
 		/// happened part way through the process.

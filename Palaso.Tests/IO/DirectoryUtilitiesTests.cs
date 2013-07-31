@@ -129,19 +129,42 @@ namespace Palaso.Tests.IO
 		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_ReturnsCorrectFolderPath()
 		{
-			var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(_srcFolder);
-			Assert.IsNotNull(returnPath);
-			var foldername = Path.GetFileName(_srcFolder);
-			Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
+			string srcFolder2 = Path.Combine(_srcFolder, "copyFrom");
+			Directory.CreateDirectory(srcFolder2);
+
+			try
+			{
+				var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(srcFolder2);
+				Assert.IsNotNull(returnPath);
+				Assert.IsTrue(Directory.Exists(returnPath));
+				var foldername = Path.GetFileName(srcFolder2);
+				Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
+			}
+			finally
+			{
+				if (Directory.Exists(srcFolder2))
+					Directory.Delete(srcFolder2, true);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_MakesCopyInTempFolder()
 		{
-			var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(_srcFolder);
-			Assert.IsNotNull(returnPath);
-			Assert.IsTrue(Directory.Exists(returnPath));
+			string srcFolder2 = Path.Combine(_srcFolder, "copyFrom");
+			Directory.CreateDirectory(srcFolder2);
+
+			try
+			{
+				var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(srcFolder2);
+				Assert.IsNotNull(returnPath);
+				Assert.IsTrue(Directory.Exists(returnPath));
+			}
+			finally
+			{
+				if (Directory.Exists(srcFolder2))
+					Directory.Delete(srcFolder2, true);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
