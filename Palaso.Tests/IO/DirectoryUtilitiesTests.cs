@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
@@ -6,7 +8,7 @@ using Palaso.TestUtilities;
 namespace Palaso.Tests.IO
 {
 	[TestFixture]
-	public class FolderUtilsTests
+	public class DirectoryUtilitiesTests
 	{
 		private string _srcFolder;
 		private string _dstFolder;
@@ -159,6 +161,147 @@ namespace Palaso.Tests.IO
 			var foldername = Path.GetFileName(_srcFolder);
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
 		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_Identical_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, _srcFolder));
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_dstFolder, _dstFolder));
+			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(nonExsistentFolderPath, nonExsistentFolderPath));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_TotallyDifferent_ReturnsFalse()
+		{
+			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, _dstFolder));
+			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
+			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, nonExsistentFolderPath));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_DifferByTrailingBackslash_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_DifferByDirectionOfSlash_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:/temp"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_DifferByTrailingCurrentDirectoryDot_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\."));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_DifferByTrailingDot_ResultDependsOnOperatingSystem()
+		{
+#if MONO
+			Assert.IsFalse(
+#else
+			Assert.IsTrue(
+#endif
+DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_ResultDependsOnOperatingSystem()
+		{
+#if MONO
+			Assert.IsFalse(
+#else
+			Assert.IsTrue(
+#endif
+DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_OnePathContainsBacktrackingToParentFolders_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\x\..\..\temp\."));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_DifferentCase_ResultDependsOnOperatingSystem()
+		{
+#if MONO
+			Assert.IsFalse(
+#else
+			Assert.IsTrue(
+#endif
+			DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_AbsolutePathAndRelativePathToDifferentFolder_ReturnsFalse()
+		{
+			Directory.SetCurrentDirectory(_srcFolder);
+			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, "~!source"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void AreDirectoriesEquivalent_AbsolutePathAndRelativePathToSameFolder_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(".", Directory.GetCurrentDirectory()));
+
+			Directory.SetCurrentDirectory(Path.GetTempPath());
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, "~!source"));
+			string[] logicalDrives;
+			try
+			{
+				logicalDrives = Directory.GetLogicalDrives();
+			}
+			catch
+			{
+				// Ignore -- can't test this on this system
+				return;
+			}
+			foreach (string logicalDrive in logicalDrives)
+			{
+				string[] directories;
+				try
+				{
+					directories = Directory.GetDirectories(logicalDrive);
+				}
+				catch
+				{
+					continue; // try another drive.
+				}
+
+				foreach (string folder in directories)
+				{
+					try
+					{
+						Directory.SetCurrentDirectory(Path.Combine(logicalDrive, folder));
+					}
+					catch
+					{
+						continue; // try another folder
+					}
+				}
+				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"\", logicalDrive));
+				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"\temp", logicalDrive + "temp"));
+				return; // Found an accessible drive -- no need to try them all.
+			}
+			Assert.Ignore("Unable to find a drive and folder that could be set as current working directory.");
+		}
+
+		/// ------------------------------------------------------------------------------------
 		[Test]
 		[Category("KnownMonoIssue")]
 		[Platform(Exclude="Unix")]
