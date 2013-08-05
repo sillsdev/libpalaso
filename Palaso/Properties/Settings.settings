@@ -1,0 +1,58 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Palaso.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+	<Setting Name="AudioFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;.mp3&lt;/string&gt;
+  &lt;string&gt;.wav&lt;/string&gt;
+  &lt;string&gt;.wma&lt;/string&gt;
+  &lt;string&gt;.acc&lt;/string&gt;
+  &lt;string&gt;.ogg&lt;/string&gt;
+  &lt;string&gt;.flac&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+	</Setting>
+	<Setting Name="VideoFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;.wmv&lt;/string&gt;
+  &lt;string&gt;.avi&lt;/string&gt;
+  &lt;string&gt;.mpg&lt;/string&gt;
+  &lt;string&gt;.mpeg&lt;/string&gt;
+  &lt;string&gt;.mpa&lt;/string&gt;
+  &lt;string&gt;.asf&lt;/string&gt;
+  &lt;string&gt;.mov&lt;/string&gt;
+  &lt;string&gt;.mp4&lt;/string&gt;
+  &lt;string&gt;.mts&lt;/string&gt;
+  &lt;string&gt;.m4v&lt;/string&gt;
+  &lt;string&gt;.m2v&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+	</Setting>
+	<Setting Name="TextFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;.txt&lt;/string&gt;
+  &lt;string&gt;.doc&lt;/string&gt;
+  &lt;string&gt;.docx&lt;/string&gt;
+  &lt;string&gt;.odt&lt;/string&gt;
+  &lt;string&gt;.rtf&lt;/string&gt;
+  &lt;string&gt;.htm&lt;/string&gt;
+  &lt;string&gt;.html&lt;/string&gt;
+  &lt;string&gt;.pdf&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+	</Setting>
+	<Setting Name="ImageFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;.jpg&lt;/string&gt;
+  &lt;string&gt;.jpeg&lt;/string&gt;
+  &lt;string&gt;.gif&lt;/string&gt;
+  &lt;string&gt;.tif&lt;/string&gt;
+  &lt;string&gt;.png&lt;/string&gt;
+  &lt;string&gt;.bmp&lt;/string&gt;
+  &lt;string&gt;.dib&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+	</Setting>
+  </Settings>
+</SettingsFile>

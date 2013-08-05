@@ -10,6 +10,58 @@ namespace Palaso.Tests.IO
 	[TestFixture]
 	public class FileUtilTests
 	{
+		private TemporaryFolder _parentFolder;
+
+		/// ------------------------------------------------------------------------------------
+		[SetUp]
+		public void Setup()
+		{
+			_parentFolder = new TemporaryFolder("FileUtilsTests");
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[TearDown]
+		public void TearDown()
+		{
+			_parentFolder.Dispose();
+			_parentFolder = null;
+		}
+
+		[Test]
+		public void IsFileLocked_FilePathIsNull_ReturnsFalse()
+		{
+			Assert.IsFalse(FileUtils.IsFileLocked(null));
+		}
+
+		[Test]
+		public void IsFileLocked_FileDoesntExist_ReturnsFalse()
+		{
+			Assert.IsFalse(FileUtils.IsFileLocked(@"c:\blahblah.blah"));
+		}
+
+		[Test]
+		public void IsFileLocked_FileExistsAndIsNotLocked_ReturnsFalse()
+		{
+			using (var file = new TempFileFromFolder(_parentFolder))
+				Assert.IsFalse(FileUtils.IsFileLocked(file.Path));
+		}
+
+		[Test]
+		public void IsFileLocked_FileExistsAndIsLocked_ReturnsTrue()
+		{
+			using (var file = new TempFileFromFolder(_parentFolder))
+			{
+				var stream = File.OpenWrite(file.Path);
+				try
+				{
+					Assert.IsTrue(FileUtils.IsFileLocked(file.Path));
+				}
+				finally
+				{
+					stream.Close();
+				}
+			}
+		}
 
 		public class TestEnvironment : IDisposable
 		{

@@ -141,7 +141,7 @@
 	<Compile Include="Extensions\StringExtensionTests.cs" />
 	<Compile Include="i18n\StringCatalogTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
-	<Compile Include="IO\FileUtil.Tests.cs" />
+	<Compile Include="IO\FileUtilsTests.cs" />
 	<Compile Include="IO\DirectoryUtilitiesTests.cs" />
 	<Compile Include="IO\TempFileTests.cs" />
 	<Compile Include="Migration\DefaultVersionTests.cs" />
