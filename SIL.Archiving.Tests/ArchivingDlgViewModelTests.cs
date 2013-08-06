@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -52,8 +53,9 @@ namespace SIL.Archiving.Tests
 			{
 				string fileName = Path.Combine(tmpFolder.Path, "ddo.session");
 				File.CreateText(fileName).Close();
-				var filesToAdd = new Dictionary<string, IEnumerable<string>>();
-				filesToAdd.Add(string.Empty, new [] {Path.Combine(tmpFolder.Path, "ddo.session")});
+				var filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+				var fileList = new[] {Path.Combine(tmpFolder.Path, "ddo.session")};
+				filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
 				int dummy;
 				_helper.Initialize(() => filesToAdd, out dummy, null);
 				_helper.CreateMetsFile();
@@ -107,8 +109,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetSourceFilesForMetsData_ListContainsOnlySessionMetaFile_ReturnsCorrectMetsData()
 		{
-			var fileLists = new Dictionary<string, IEnumerable<string>>();
-			fileLists[string.Empty] = new[] { "blah.session" };
+			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session" }, "Message to display.");
 
 			var expected = "\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
@@ -118,8 +120,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetSourceFilesForMetsData_ListContainsOnlyPersonMetaFile_ReturnsCorrectMetsData()
 		{
-			var fileLists = new Dictionary<string, IEnumerable<string>>();
-			fileLists[string.Empty] = new[] { "blah.person" };
+			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.person" }, "Message to display.");
 
 			var expected = "\" \":\"blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
@@ -129,8 +131,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetSourceFilesForMetsData_ListContainsOnlyMetaFile_ReturnsCorrectMetsData()
 		{
-			var fileLists = new Dictionary<string, IEnumerable<string>>();
-			fileLists[string.Empty] = new[] { "blah.meta" };
+			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.meta" }, "Message to display.");
 
 			var expected = "\" \":\"blah.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
@@ -140,8 +142,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetSourceFilesForMetsData_ListContainsGenericSessionFile_ReturnsCorrectMetsData()
 		{
-			var fileLists = new Dictionary<string, IEnumerable<string>>();
-			fileLists[string.Empty] = new[] { "blah.wav" };
+			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.wav" }, "Message to display.");
 
 			var expected = "\" \":\"blah.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
@@ -151,8 +153,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetSourceFilesForMetsData_ListContainsGenericPersonFile_ReturnsCorrectMetsData()
 		{
-			var fileLists = new Dictionary<string, IEnumerable<string>>();
-			fileLists["Carmen"] = new[] { "Carmen_blah.wav" };
+			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+			fileLists["Carmen"] = new Tuple<IEnumerable<string>, string>(new[] { "Carmen_blah.wav" }, "Message to display.");
 
 			var expected = "\" \":\"__AppSpecific__Carmen_blah.wav\",\"description\":\"MyApp Contributor File\",\"relationship\":\"source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
@@ -162,9 +164,9 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetSourceFilesForMetsData_ListMultipleFiles_ReturnsCorrectMetsData()
 		{
-			var fileLists = new Dictionary<string, IEnumerable<string>>();
-			fileLists[string.Empty] = new[] { "blah.session", "really cool.wav" };
-			fileLists["person id"] = new[] { "person id_blah.person", "person id_baa.mpg", "person id_baa.mpg.meta" };
+			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
+			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session", "really cool.wav" }, "Message to display.");
+			fileLists["person id"] = new Tuple<IEnumerable<string>, string>(new[] { "person id_blah.person", "person id_baa.mpg", "person id_baa.mpg.meta" }, "Message to display.");
 
 			Assert.AreEqual("\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"source\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
