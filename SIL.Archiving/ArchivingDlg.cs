@@ -14,11 +14,24 @@ namespace SIL.Archiving
 	{
 		private readonly FormSettings _settings;
 		private readonly ArchivingDlgViewModel _viewModel;
-		private readonly Func<IDictionary<string, IEnumerable<string>>> _getFilesToArchive;
+		private readonly Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> _getFilesToArchive;
 
 		/// ------------------------------------------------------------------------------------
+		/// <param name="model">View model</param>
+		/// <param name="getFilesToArchive">delegate to retrieve the lists of files of files to
+		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
+		/// calling application. The key for each group will be supplied back to the calling app
+		/// for use in "normalizing" file names. For each group, in addition to the enumerated
+		/// files to include (in Item1 of the Tuple), the calling app can provide a progress
+		/// message (in Item2 of the Tuple) to be displayed when that group of files is being
+		/// zipped and added to the RAMP file.</param>
+		/// <param name="bounds">Location and size where the client would like the dialog box
+		/// to appear (at current DPI)</param>
+		/// <param name="state">Window state in which the client would like the dialog box to
+		/// appear</param>
+		/// ------------------------------------------------------------------------------------
 		public ArchivingDlg(ArchivingDlgViewModel model,
-			Func<IDictionary<string, IEnumerable<string>>> getFilesToArchive, Rectangle bounds,
+			Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive, Rectangle bounds,
 			FormWindowState state)
 		{
 			if (bounds.Height <= 0)

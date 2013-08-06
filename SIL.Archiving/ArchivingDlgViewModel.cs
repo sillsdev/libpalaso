@@ -47,7 +47,7 @@ namespace SIL.Archiving
 		private readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
 		private string _rampProgramPath;
 		private Action _incrementProgressBarAction;
-		private IDictionary<string, IEnumerable<string>> _fileLists;
+		private IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
 		private readonly Font _programDialogFont;
 
 		public bool IsBusy { get; private set; }
@@ -108,7 +108,19 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public bool Initialize(Func<IDictionary<string, IEnumerable<string>>> getFilesToArchive,
+		/// <param name="getFilesToArchive">delegate to retrieve the lists of files of files to
+		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
+		/// calling application. The key for each group will be supplied back to the calling app
+		/// for use in "normalizing" file names. For each group, in addition to the enumerated
+		/// files to include (in Item1 of the Tuple), the calling app can provide a progress
+		/// message (in Item2 of the Tuple) to be displayed when that group of files is being
+		/// zipped and added to the RAMP file.</param>
+		/// <param name="maxProgBarValue">Value calculated as the max value for the progress
+		/// bar so the dialog can set that correctly</param>
+		/// <param name="incrementProgressBarAction">Delegate to inform the dialog box that
+		/// the progress should be incremented</param>
+		/// ------------------------------------------------------------------------------------
+		public bool Initialize(Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive,
 			out int maxProgBarValue, Action incrementProgressBarAction)
 		{
 			IsBusy = true;
@@ -133,12 +145,17 @@ namespace SIL.Archiving
 			}
 
 			_fileLists = getFilesToArchive();
+			foreach (var fileList in _fileLists.Where(fileList => fileList.Value.Item1.Any()))
+			{
+				string normalizedName = NormalizeFilenameForRAMP(fileList.Key, Path.GetFileName(fileList.Value.Item1.First()));
+				_progressMessages[normalizedName] = fileList.Value.Item2;
+			}
 			DisplayInitialSummary();
 			IsBusy = false;
 
 			// One for analyzing each list, one for copying each file, one for saving each file in the zip file
 			// and one for the mets.xml file.
-			maxProgBarValue = _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value).Count() + 1;
+			maxProgBarValue = _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
 
 			return (_rampProgramPath != null);
 		}
@@ -173,7 +190,7 @@ namespace SIL.Archiving
 				LogBox.WriteMessage(Environment.NewLine + string.Format(fmt, element,
 					(kvp.Key == string.Empty ? _title : kvp.Key)));
 
-				foreach (var file in kvp.Value)
+				foreach (var file in kvp.Value.Item1)
 					LogBox.WriteMessageWithFontStyle(FontStyle.Regular, "          \u00B7 {0}", Path.GetFileName(file));
 			}
 
@@ -320,7 +337,7 @@ namespace SIL.Archiving
 			if (_fileLists != null)
 			{
 				// Return a list of types found in session's files (e.g. Text, Video, etc.).
-				string value = GetMode(_fileLists.SelectMany(f => f.Value));
+				string value = GetMode(_fileLists.SelectMany(f => f.Value.Item1));
 				if (value != null)
 					yield return value;
 
@@ -354,11 +371,11 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public IEnumerable<string> GetSourceFilesForMetsData(IDictionary<string, IEnumerable<string>> fileLists)
+		public IEnumerable<string> GetSourceFilesForMetsData(IDictionary<string, Tuple<IEnumerable<string>, string>> fileLists)
 		{
 			foreach (var kvp in fileLists)
 			{
-				foreach (var file in kvp.Value)
+				foreach (var file in kvp.Value.Item1)
 				{
 					var description = _getFileDescription(kvp.Key, file);
 
@@ -455,7 +472,7 @@ namespace SIL.Archiving
 				{
 					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
 						string.IsNullOrEmpty(list.Key) ? _id: list.Key);
-					foreach (var file in list.Value)
+					foreach (var file in list.Value.Item1)
 					{
 						string newFileName = Path.GetFileName(file);
 						newFileName = NormalizeFilenameForRAMP(list.Key, newFileName);
