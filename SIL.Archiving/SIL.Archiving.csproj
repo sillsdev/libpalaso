@@ -38,10 +38,8 @@
 	<Reference Include="L10NSharp">
 	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
 	</Reference>
-	<Reference Include="SilUtils">
-	  <HintPath>..\lib\SilUtils.dll</HintPath>
-	</Reference>
 	<Reference Include="System" />
+	<Reference Include="System.configuration" />
 	<Reference Include="System.Core" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />

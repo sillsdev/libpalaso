@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using L10NSharp;
+using Palaso.UI.WindowsForms;
 using Palaso.UI.WindowsForms.Miscellaneous;
+using Palaso.UI.WindowsForms.PortableSettingsProvider;
 using SIL.Archiving.Properties;
-using SilUtils;
 
 namespace SIL.Archiving
 {
@@ -17,6 +18,15 @@ namespace SIL.Archiving
 		private readonly Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> _getFilesToArchive;
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>Caller can use this to retrieve and persist form settings (typicvally
+		/// after form is closed).</summary>
+		/// ------------------------------------------------------------------------------------
+		public FormSettings FormSettings
+		{
+			get { return _settings; }
+		}
+
+		/// ------------------------------------------------------------------------------------
 		/// <param name="model">View model</param>
 		/// <param name="getFilesToArchive">delegate to retrieve the lists of files of files to
 		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
@@ -25,26 +35,13 @@ namespace SIL.Archiving
 		/// files to include (in Item1 of the Tuple), the calling app can provide a progress
 		/// message (in Item2 of the Tuple) to be displayed when that group of files is being
 		/// zipped and added to the RAMP file.</param>
-		/// <param name="bounds">Location and size where the client would like the dialog box
-		/// to appear (at current DPI)</param>
-		/// <param name="state">Window state in which the client would like the dialog box to
-		/// appear</param>
+		/// <param name="settings">Location, size, and state where the client would like the
+		/// dialog box to appear (can be null)</param>
 		/// ------------------------------------------------------------------------------------
 		public ArchivingDlg(ArchivingDlgViewModel model,
-			Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive, Rectangle bounds,
-			FormWindowState state)
+			Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive, FormSettings settings)
 		{
-			if (bounds.Height <= 0)
-			{
-				StartPosition = FormStartPosition.CenterScreen;
-				_settings = FormSettings.Create(this);
-			}
-			else
-			{
-				_settings = new FormSettings();
-				_settings.Bounds = bounds;
-				_settings.State = state;
-			}
+			_settings = settings ?? FormSettings.Create(this);
 
 			_viewModel = model;
 			_getFilesToArchive = getFilesToArchive;
