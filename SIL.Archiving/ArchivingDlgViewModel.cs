@@ -34,7 +34,7 @@ namespace SIL.Archiving
 
 		private readonly string _title;
 		private readonly string _id;
-		private readonly Func<IEnumerable<string>> _getAppSpecificMetsPairs;
+		private readonly IEnumerable<string> _appSpecificMetsPairs;
 		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
 		private readonly Func<ArchivingDlgViewModel, string, string, bool> _specialFileCopy; // first paramm is the source file path, second param is destination file path
 		private readonly Action<string, string, StringBuilder> _appSpecificFilenameNormalization;
@@ -66,9 +66,8 @@ namespace SIL.Archiving
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
 		/// <param name="programDialogFont">The default dialog font used by the calling
 		/// application to ensure a consistent look in the UI</param>
-		/// <param name="getAppSpecificMetsPairs">Callback function for the application to
-		/// supply application-specific strings to be included in METS file. These need to be
-		/// formatted correctly as JSON key-value pairs.</param>
+		/// <param name="appSpecificMetsPairs">Application-specific strings to be included in
+		/// METS file. These need to be formatted correctly as JSON key-value pairs.</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// <param name="specialFileCopy">Callback function to allow the calling application to
@@ -80,13 +79,13 @@ namespace SIL.Archiving
 		/// name which the app can further alter as needed.</param>
 		/// ------------------------------------------------------------------------------------
 		public ArchivingDlgViewModel(string title, string id, Font programDialogFont,
-			Func<IEnumerable<string>> getAppSpecificMetsPairs, Func<string, string, string> getFileDescription,
+			IEnumerable<string> appSpecificMetsPairs, Func<string, string, string> getFileDescription,
 			Func<ArchivingDlgViewModel, string, string, bool> specialFileCopy,
 			Action<string, string, StringBuilder> appSpecificFilenameNormalization)
 		{
 			_title = title;
 			_id = id;
-			_getAppSpecificMetsPairs = getAppSpecificMetsPairs;
+			_appSpecificMetsPairs = appSpecificMetsPairs;
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
 			_getFileDescription = getFileDescription;
@@ -328,9 +327,9 @@ namespace SIL.Archiving
 		{
 			yield return JSONUtils.MakeKeyValuePair("dc.title", _title);
 
-			if (_getAppSpecificMetsPairs != null)
+			if (_appSpecificMetsPairs != null)
 			{
-				foreach (string appSpecificPair in _getAppSpecificMetsPairs())
+				foreach (string appSpecificPair in _appSpecificMetsPairs)
 					yield return appSpecificPair;
 			}
 
