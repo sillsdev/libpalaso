@@ -152,7 +152,7 @@
 			this.ClientSize = new System.Drawing.Size(379, 401);
 			this.Controls.Add(this._tableLayoutPanel);
 			this.locExtender.SetLocalizableToolTip(this, null);
-			this.locExtender.SetLocalizationComment(this, "Paremeter is application name");
+			this.locExtender.SetLocalizationComment(this, "Parameter is application name");
 			this.locExtender.SetLocalizingId(this, "DialogBoxes.ArchivingDlg.WindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
