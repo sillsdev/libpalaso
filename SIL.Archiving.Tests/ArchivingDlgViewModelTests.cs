@@ -20,7 +20,8 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 
-			_helper = new ArchivingDlgViewModel("Test Title", "tst", null, null, GetFileDescription, null, CustomFilenameNormalization);
+			_helper = new ArchivingDlgViewModel("Test App", "Test Title", "tst", null, GetFileDescription);
+			_helper.AppSpecificFilenameNormalization = CustomFilenameNormalization;
 		}
 
 		/// ------------------------------------------------------------------------------------
