@@ -140,7 +140,8 @@
 			//
 			// locExtender
 			//
-			this.locExtender.LocalizationManagerId = "SayMore";
+			this.locExtender.LocalizationManagerId = "SIL.Archiving";
+			this.locExtender.PrefixForNewItems = null;
 			//
 			// ArchivingDlg
 			//
@@ -151,7 +152,7 @@
 			this.ClientSize = new System.Drawing.Size(379, 401);
 			this.Controls.Add(this._tableLayoutPanel);
 			this.locExtender.SetLocalizableToolTip(this, null);
-			this.locExtender.SetLocalizationComment(this, null);
+			this.locExtender.SetLocalizationComment(this, "Paremeter is application name");
 			this.locExtender.SetLocalizingId(this, "DialogBoxes.ArchivingDlg.WindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -161,7 +162,7 @@
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-			this.Text = "SayMore: Archive with RAMP (SIL Only)";
+			this.Text = "{0}: Archive with RAMP (SIL Only)";
 			this._tableLayoutPanel.ResumeLayout(false);
 			this._tableLayoutPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.locExtender)).EndInit();

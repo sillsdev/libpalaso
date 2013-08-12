@@ -28,6 +28,11 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <param name="model">View model</param>
+		/// <param name="localizationManagerId">The ID of the localization manager for the
+		/// calling application.</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
 		/// <param name="getFilesToArchive">delegate to retrieve the lists of files of files to
 		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
 		/// calling application. The key for each group will be supplied back to the calling app
@@ -38,7 +43,8 @@ namespace SIL.Archiving
 		/// <param name="settings">Location, size, and state where the client would like the
 		/// dialog box to appear (can be null)</param>
 		/// ------------------------------------------------------------------------------------
-		public ArchivingDlg(ArchivingDlgViewModel model,
+		public ArchivingDlg(ArchivingDlgViewModel model, string localizationManagerId,
+			string appSpecificArchivalProcessInfo,
 			Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive, FormSettings settings)
 		{
 			_settings = settings ?? FormSettings.Create(this);
@@ -48,6 +54,10 @@ namespace SIL.Archiving
 
 			InitializeComponent();
 
+			if (!string.IsNullOrEmpty(localizationManagerId))
+				locExtender.LocalizationManagerId = localizationManagerId;
+
+			Text = string.Format(Text, model.AppName);
 			_progressBar.Visible = false;
 			_buttonLaunchRamp.Enabled = false;
 
@@ -56,14 +66,13 @@ namespace SIL.Archiving
 			// controls having a lot of text in their Text property have to have it set this
 			// way rather than in the designer. Otherwise, the code string scanner won't find
 			// the control's text.
-			_linkOverview.Text = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.OverviewText",
+			_linkOverview.Text = string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.OverviewText",
 				"RAMP is a utility for entering metadata and uploading submissions to SIL's internal archive, " +
 				"REAP. If you have access to this archive, this tool will help you use RAMP to archive your " +
-				"SayMore sessions. It will gather up all the files and data related to a session and its " +
-				"contributors, then launch RAMP so that you can fill out more information and do the actual submission.",
+				"{0} data. {1} When the RAMP package has been created, you can  launch RAMP and enter any additional information before doing the actual submission.",
 				"The first occurance of the word 'RAMP' will be made a hyperlink to the RAMP website. " +
 				"If the word 'RAMP' is not found, the text will not contain that hyperlink.",
-				null, null, _linkOverview);
+				null, null, _linkOverview), _viewModel.AppName, appSpecificArchivalProcessInfo);
 
 			_linkOverview.Links.Clear();
 			if (model.ProgramDialogFont != null)

@@ -36,8 +36,6 @@ namespace SIL.Archiving
 		private readonly string _id;
 		private readonly IEnumerable<string> _appSpecificMetsPairs;
 		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
-		private readonly Func<ArchivingDlgViewModel, string, string, bool> _specialFileCopy; // first paramm is the source file path, second param is destination file path
-		private readonly Action<string, string, StringBuilder> _appSpecificFilenameNormalization;
 		private string _metsFilePath;
 		private string _tempFolder;
 		private BackgroundWorker _worker;
@@ -48,56 +46,98 @@ namespace SIL.Archiving
 		private string _rampProgramPath;
 		private Action _incrementProgressBarAction;
 		private IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
-		private readonly Font _programDialogFont;
 
+		#region properties
+		public string AppName { get; private set; }
 		public bool IsBusy { get; private set; }
 		public string RampPackagePath { get; private set; }
 		public LogBox LogBox { get; private set; }
-		internal Font ProgramDialogFont
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The font used in the Log box. Application can set this to ensure a consistent look
+		/// in the UI.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public Font ProgramDialogFont
 		{
-			get { return _programDialogFont; }
+			get { return LogBox.Font; }
+			set
+			{
+				if (value != null)
+					LogBox.Font = FontHelper.MakeFont(value, FontStyle.Bold);
+			}
 		}
+
+		#region callbacks
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Callback function to allow the application to modify the contents of a file rather
+		/// than merely copying it. If application performs the "copy" for the given file,
+		/// it should return true; otherwise, false.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public Func<ArchivingDlgViewModel, string, string, bool> FileCopyOverride { private get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Callback to do application-specific normalization of filenames to be added to
+		/// archive based on the file-list key (param 1) and the filename (param 2).
+		/// The StringBuilder (param 3) has the normalized name which the app can alter as needed.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public Action<string, string, StringBuilder> AppSpecificFilenameNormalization { private get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Callback to allow application to do special handling of exceptions or other error
+		/// conditions. The exception parameter can be null.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public Action<Exception, string> HandleNonFatalError { private get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Callback to allow application to handly display of initial summary in log box. If
+		/// the application implements this, then the default summary display will be suppressed.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public Action<IDictionary<string, Tuple<IEnumerable<string>, string>>, LogBox> OverrideDisplayInitialSummary { private get; set; }
+		#endregion
+		#endregion
 
 		#region construction and initialization
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
+		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
-		/// <param name="programDialogFont">The default dialog font used by the calling
-		/// application to ensure a consistent look in the UI</param>
 		/// <param name="appSpecificMetsPairs">Application-specific strings to be included in
 		/// METS file. These need to be formatted correctly as JSON key-value pairs.</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
-		/// <param name="specialFileCopy">Callback function to allow the calling application to
-		/// modify the contents of a file rather than merely copying it. If application handles
-		/// the "copy" it should return true; otherwise, false.</param>
-		/// <param name="appSpecificFilenameNormalization">Callback to do application-specific
-		/// normalization of filenames to be added to archive based on the file-list key
-		/// (param 1) and the filename (param 2). The StringBuilder (param 3) has the normalized
-		/// name which the app can further alter as needed.</param>
 		/// ------------------------------------------------------------------------------------
-		public ArchivingDlgViewModel(string title, string id, Font programDialogFont,
-			IEnumerable<string> appSpecificMetsPairs, Func<string, string, string> getFileDescription,
-			Func<ArchivingDlgViewModel, string, string, bool> specialFileCopy,
-			Action<string, string, StringBuilder> appSpecificFilenameNormalization)
+		public ArchivingDlgViewModel(string appName, string title, string id,
+			IEnumerable<string> appSpecificMetsPairs, Func<string, string, string> getFileDescription)
 		{
+			if (appName == null)
+				throw new ArgumentNullException("appName");
+			AppName = appName;
+			if (title == null)
+				throw new ArgumentNullException("title");
 			_title = title;
+			if (id == null)
+				throw new ArgumentNullException("id");
 			_id = id;
 			_appSpecificMetsPairs = appSpecificMetsPairs;
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
 			_getFileDescription = getFileDescription;
-			_specialFileCopy = specialFileCopy;
-			_appSpecificFilenameNormalization = appSpecificFilenameNormalization;
-			_programDialogFont = programDialogFont;
 
 			LogBox = new LogBox();
 			LogBox.TabStop = false;
 			LogBox.ShowMenu = false;
-			if (programDialogFont != null)
-				LogBox.Font = FontHelper.MakeFont(programDialogFont, FontStyle.Bold);
 
 			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*.ramp"))
 			{
@@ -162,35 +202,21 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void DisplayInitialSummary()
 		{
-			if (_fileLists.Count > 1)
-			{
-				LogBox.WriteMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg1",
-					"The following session and contributor files will be added to your archive."));
-			}
+			if (OverrideDisplayInitialSummary != null)
+				OverrideDisplayInitialSummary(_fileLists, LogBox);
 			else
 			{
-				LogBox.WriteWarning(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.NoContributorsForSessionMsg",
-					"There are no contributors for this session."));
+				LogBox.WriteMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg",
+					"The following files will be added to the archive:"));
 
-				LogBox.WriteMessage(Environment.NewLine +
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg2",
-						"The following session files will be added to your archive."));
-			}
+				foreach (var kvp in _fileLists)
+				{
+					if (kvp.Key != string.Empty)
+						LogBox.WriteMessage(Environment.NewLine + "    " + kvp.Key);
 
-			var fmt = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ArchivingProgressMsg", "     {0}: {1}",
-				"The first parameter is 'Session' or 'Contributor'. The second parameter is the session or contributor name.");
-
-			foreach (var kvp in _fileLists)
-			{
-				var element = (kvp.Key == string.Empty ?
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SessionElementName", "Session") :
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ContributorElementName", "Contributor"));
-
-				LogBox.WriteMessage(Environment.NewLine + string.Format(fmt, element,
-					(kvp.Key == string.Empty ? _title : kvp.Key)));
-
-				foreach (var file in kvp.Value.Item1)
-					LogBox.WriteMessageWithFontStyle(FontStyle.Regular, "          \u00B7 {0}", Path.GetFileName(file));
+					foreach (var file in kvp.Value.Item1)
+						LogBox.WriteMessageWithFontStyle(FontStyle.Regular, "          \u00B7 {0}", Path.GetFileName(file));
+				}
 			}
 
 			LogBox.ScrollToTop();
@@ -204,7 +230,7 @@ namespace SIL.Archiving
 		{
 			if (!File.Exists(RampPackagePath))
 			{
-				ErrorReport.NotifyUserOfProblem("Eeeek. SayMore prematurely removed .ramp package.");
+				ReportError(null, string.Format("RAMP package prematurely removed: {0}", RampPackagePath));
 				return false;
 			}
 
@@ -229,7 +255,6 @@ namespace SIL.Archiving
 			{
 				ReportError(e, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
 					"There was an error attempting to open the archive package in RAMP."));
-
 				return false;
 			}
 		}
@@ -310,7 +335,7 @@ namespace SIL.Archiving
 				if ((e is IOException) || (e is UnauthorizedAccessException) || (e is SecurityException))
 				{
 					ReportError(e, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg",
-						"There was an error attempting to create a RAMP/REAP mets file for the session '{0}'."));
+						"There was an error attempting to create the RAMP/REAP mets file."));
 					return null;
 				}
 				throw;
@@ -322,7 +347,7 @@ namespace SIL.Archiving
 			return _metsFilePath;
 		}
 
-		/// ------------------------------------------------------------------------------------
+		 /// ------------------------------------------------------------------------------------
 		public IEnumerable<string> GetMetsPairs()
 		{
 			yield return JSONUtils.MakeKeyValuePair("dc.title", _title);
@@ -335,17 +360,21 @@ namespace SIL.Archiving
 
 			if (_fileLists != null)
 			{
-				// Return a list of types found in session's files (e.g. Text, Video, etc.).
 				string value = GetMode(_fileLists.SelectMany(f => f.Value.Item1));
 				if (value != null)
 					yield return value;
 
-				// Return JSON array of session and contributor files with their descriptions.
+				// Return JSON array of files with their descriptions.
 				yield return JSONUtils.MakeArrayFromValues("files",
 					GetSourceFilesForMetsData(_fileLists));
 			}
 		}
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public string GetMode(IEnumerable<string> files)
 		{
@@ -403,8 +432,8 @@ namespace SIL.Archiving
 					prevPeriod = i;
 				}
 			}
-			if (_appSpecificFilenameNormalization != null)
-				_appSpecificFilenameNormalization(key, fileName, bldr);
+			if (AppSpecificFilenameNormalization != null)
+				AppSpecificFilenameNormalization(key, fileName, bldr);
 			return bldr.ToString();
 		}
 		#endregion
@@ -446,7 +475,7 @@ namespace SIL.Archiving
 
 			if (!File.Exists(RampPackagePath))
 			{
-				ErrorReport.NotifyUserOfProblem("Ack. SayMore failed to actually make the .ramp package.");
+				ReportError(null, string.Format("Failed to make the RAMP package: {0}", RampPackagePath));
 				return false;
 			}
 
@@ -458,6 +487,9 @@ namespace SIL.Archiving
 		{
 			try
 			{
+				if (Thread.CurrentThread.Name == null)
+					Thread.CurrentThread.Name = "CreateZipFileInWorkerThread";
+
 				// Before adding the files to the RAMP (zip) file, we need to copy all the
 				// files to a temp folder, flattening out the directory structure and renaming
 				// the files as needed to comply with REAP guidelines.
@@ -490,11 +522,11 @@ namespace SIL.Archiving
 						return;
 					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
 						Path.GetFileName(fileToCopy.Key));
-					if (_specialFileCopy != null)
+					if (FileCopyOverride != null)
 					{
 						try
 						{
-							if (_specialFileCopy(this, fileToCopy.Key, fileToCopy.Value))
+							if (FileCopyOverride(this, fileToCopy.Key, fileToCopy.Value))
 							{
 								if (!File.Exists(fileToCopy.Value))
 									throw new FileNotFoundException("Calling application claimed to copy file but didn't", fileToCopy.Value);
@@ -503,8 +535,9 @@ namespace SIL.Archiving
 						}
 						catch (Exception error)
 						{
-							ErrorReport.NotifyUserOfProblem(error, LocalizationManager.GetString(
-								"DialogBoxes.ArchivingDlg.FileExcludedFromRAMP", "File excluded from RAMP package."));
+							var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromRAMP",
+								"File excluded from RAMP package: " + fileToCopy.Value);
+							ReportError(error, msg);
 						}
 					}
 					// Don't use File.Copy because it's asynchronous.
@@ -531,7 +564,7 @@ namespace SIL.Archiving
 			{
 				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
 					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg",
-						"There was an error attempting to create an archive for the session '{0}'.")));
+						"There was an error attempting to create the RAMP file.")));
 
 				_workerException = true;
 			}
@@ -628,16 +661,19 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void ReportError(Exception e, string msg)
 		{
-			if (!LogBox.IsHandleCreated)
+			if (LogBox.IsHandleCreated)
 			{
 				WaitCursor.Hide();
 				LogBox.WriteError(msg, _title);
-				LogBox.WriteException(e);
+				if (e != null)
+					LogBox.WriteException(e);
 			}
-			else
+			else if (e != null)
 			{
 				throw e;
 			}
+			if (HandleNonFatalError != null)
+				HandleNonFatalError(e, msg);
 		}
 
 		#region Clean-up methods
