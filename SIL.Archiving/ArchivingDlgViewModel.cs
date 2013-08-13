@@ -12,7 +12,6 @@ using System.Threading;
 using System.Windows.Forms;
 using Ionic.Zip;
 using L10NSharp;
-using Palaso.Reporting;
 using Palaso.UI.WindowsForms;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.Miscellaneous;
@@ -393,6 +392,14 @@ namespace SIL.Archiving
 					list.Add("Text");
 				if (FileUtils.GetIsImage(file))
 					list.Add("Photograph");
+				if (FileUtils.GetIsMusicalNotation(file))
+					list.Add("Musical notation");
+				if (FileUtils.GetIsDataset(file))
+					list.Add("Dataset");
+				if (FileUtils.GetIsSoftwareOrFont(file))
+					list.Add("Software application");
+				if (FileUtils.GetIsPresentation(file))
+					list.Add("Presentation");
 			}
 
 			return JSONUtils.MakeBracketedListFromValues("dc.type.mode", list);

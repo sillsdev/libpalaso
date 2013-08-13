@@ -98,5 +98,119 @@ namespace Palaso.Properties {
 				return ((global::System.Collections.Specialized.StringCollection)(this["ImageFileExtensions"]));
 			}
 		}
+
+		[global::System.Configuration.ApplicationScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>.tab</string>
+  <string>.btab</string>
+  <string>.cmf</string>
+  <string>.dls</string>
+  <string>.midi</string>
+  <string>.mid</string>
+  <string>.imf</string>
+  <string>.ly</string>
+  <string>.mxl</string>
+  <string>.niff</string>
+  <string>.mmf</string>
+  <string>.mml</string>
+  <string>.rmf</string>
+  <string>.mdx</string>
+  <string>.xmf</string>
+</ArrayOfString>")]
+		public global::System.Collections.Specialized.StringCollection MusicalNotationFileExtensions {
+			get {
+				return ((global::System.Collections.Specialized.StringCollection)(this["MusicalNotationFileExtensions"]));
+			}
+		}
+
+		[global::System.Configuration.ApplicationScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>.fwbackup</string>
+  <string>.mdf</string>
+  <string>.lift</string>
+  <string>.sfm</string>
+  <string>.oxes</string>
+  <string>.osis</string>
+  <string>.xml</string>
+  <string>.prj</string>
+  <string>.mdb</string>
+  <string>.bak</string>
+  <string>.ssf</string>
+  <string>.sty</string>
+  <string>.lds</string>
+  <string>.lng</string>
+  <string>.db</string>
+  <string>.uml</string>
+</ArrayOfString>")]
+		public global::System.Collections.Specialized.StringCollection DatasetFileExtensions {
+			get {
+				return ((global::System.Collections.Specialized.StringCollection)(this["DatasetFileExtensions"]));
+			}
+		}
+
+		[global::System.Configuration.ApplicationScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>.ttf</string>
+  <string>.map</string>
+  <string>.tec</string>
+  <string>.otf</string>
+  <string>.cs</string>
+  <string>.cpp</string>
+  <string>.h</string>
+  <string>.exe</string>
+  <string>.dll</string>
+  <string>.bat</string>
+  <string>.com</string>
+  <string>.kmx</string>
+  <string>.kmn</string>
+  <string>.sh</string>
+  <string>.py</string>
+  <string>.ikp</string>
+  <string>.cct</string>
+  <string>.inkey</string>
+  <string>.js</string>
+  <string>.css</string>
+  <string>.msi</string>
+  <string>.mak</string>
+  <string>.pl</string>
+  <string>.resx</string>
+  <string>.rc</string>
+  <string>.sql</string>
+  <string>.vb</string>
+  <string>.vbs</string>
+  <string>.xaml</string>
+</ArrayOfString>")]
+		public global::System.Collections.Specialized.StringCollection SoftwareAndFontFileExtensions {
+			get {
+				return ((global::System.Collections.Specialized.StringCollection)(this["SoftwareAndFontFileExtensions"]));
+			}
+		}
+
+		[global::System.Configuration.ApplicationScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>.ppt</string>
+  <string>.pptx</string>
+  <string>.odp</string>
+  <string>.pptm</string>
+  <string>.potx</string>
+  <string>.potm</string>
+  <string>.pot</string>
+  <string>.pps</string>
+  <string>.ppsx</string>
+  <string>.ppsm</string>
+</ArrayOfString>")]
+		public global::System.Collections.Specialized.StringCollection PresentationFileExtensions {
+			get {
+				return ((global::System.Collections.Specialized.StringCollection)(this["PresentationFileExtensions"]));
+			}
+		}
 	}
 }

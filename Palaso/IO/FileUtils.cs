@@ -32,6 +32,26 @@ namespace Palaso.IO
 			get { return Settings.Default.ImageFileExtensions; }
 		}
 
+		public static StringCollection DatasetFileExtensions
+		{
+			get { return Settings.Default.DatasetFileExtensions; }
+		}
+
+		public static StringCollection SoftwareAndFontFileExtensions
+		{
+			get { return Settings.Default.SoftwareAndFontFileExtensions; }
+		}
+
+		public static StringCollection PresentationFileExtensions
+		{
+			get { return Settings.Default.PresentationFileExtensions; }
+		}
+
+		public static StringCollection MusicalNotationFileExtensions
+		{
+			get { return Settings.Default.MusicalNotationFileExtensions; }
+		}
+
 		public static bool GetIsText(string path)
 		{
 			return GetIsSpecifiedFileType(TextFileExtensions, path);
@@ -45,6 +65,26 @@ namespace Palaso.IO
 		public static bool GetIsVideo(string path)
 		{
 			return GetIsSpecifiedFileType(VideoFileExtensions, path);
+		}
+
+		public static bool GetIsMusicalNotation(string path)
+		{
+			return GetIsSpecifiedFileType(MusicalNotationFileExtensions, path);
+		}
+
+		public static bool GetIsDataset(string path)
+		{
+			return GetIsSpecifiedFileType(DatasetFileExtensions, path);
+		}
+
+		public static bool GetIsSoftwareOrFont(string path)
+		{
+			return GetIsSpecifiedFileType(SoftwareAndFontFileExtensions, path);
+		}
+
+		public static bool GetIsPresentation(string path)
+		{
+			return GetIsSpecifiedFileType(PresentationFileExtensions, path);
 		}
 
 		public static bool GetIsImage(string path)

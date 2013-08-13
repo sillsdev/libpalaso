@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 using L10NSharp;
-using Palaso.UI.WindowsForms;
 using Palaso.UI.WindowsForms.Miscellaneous;
 using Palaso.UI.WindowsForms.PortableSettingsProvider;
 using SIL.Archiving.Properties;

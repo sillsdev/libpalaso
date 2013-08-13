@@ -62,5 +62,11 @@ namespace SIL.Archiving
 		{
 			return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
 		}
+
+		/// ------------------------------------------------------------------------------------
+		public static string DecodeData(string data)
+		{
+			return Encoding.UTF8.GetString(Convert.FromBase64String(data));
+		}
 	}
 }
