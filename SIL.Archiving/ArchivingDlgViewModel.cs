@@ -418,7 +418,7 @@ namespace SIL.Archiving
 
 					yield return JSONUtils.MakeKeyValuePair(" ", fileName) + "," +
 						JSONUtils.MakeKeyValuePair("description", description) + "," +
-						JSONUtils.MakeKeyValuePair("relationship", "source");
+						JSONUtils.MakeKeyValuePair("relationship", "Source");
 				}
 			}
 		}

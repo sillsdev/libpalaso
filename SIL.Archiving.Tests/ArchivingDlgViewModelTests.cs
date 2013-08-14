@@ -113,7 +113,7 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session" }, "Message to display.");
 
-			var expected = "\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"source\"";
+			var expected = "\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"Source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -124,7 +124,7 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.person" }, "Message to display.");
 
-			var expected = "\" \":\"blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"source\"";
+			var expected = "\" \":\"blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"Source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -135,7 +135,7 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.meta" }, "Message to display.");
 
-			var expected = "\" \":\"blah.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"source\"";
+			var expected = "\" \":\"blah.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"Source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -146,7 +146,7 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.wav" }, "Message to display.");
 
-			var expected = "\" \":\"blah.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"source\"";
+			var expected = "\" \":\"blah.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"Source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -157,7 +157,7 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists["Carmen"] = new Tuple<IEnumerable<string>, string>(new[] { "Carmen_blah.wav" }, "Message to display.");
 
-			var expected = "\" \":\"__AppSpecific__Carmen_blah.wav\",\"description\":\"MyApp Contributor File\",\"relationship\":\"source\"";
+			var expected = "\" \":\"__AppSpecific__Carmen_blah.wav\",\"description\":\"MyApp Contributor File\",\"relationship\":\"Source\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -169,19 +169,19 @@ namespace SIL.Archiving.Tests
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session", "really cool.wav" }, "Message to display.");
 			fileLists["person id"] = new Tuple<IEnumerable<string>, string>(new[] { "person id_blah.person", "person id_baa.mpg", "person id_baa.mpg.meta" }, "Message to display.");
 
-			Assert.AreEqual("\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"source\"",
+			Assert.AreEqual("\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"Source\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 
-			Assert.AreEqual("\" \":\"really+cool.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"source\"",
+			Assert.AreEqual("\" \":\"really+cool.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"Source\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(1));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"source\"",
+			Assert.AreEqual("\" \":\"__AppSpecific__person+id_blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"Source\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(2));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa.mpg\",\"description\":\"MyApp Contributor File\",\"relationship\":\"source\"",
+			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa.mpg\",\"description\":\"MyApp Contributor File\",\"relationship\":\"Source\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(3));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa#mpg.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"source\"",
+			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa#mpg.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"Source\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(4));
 		}
 
