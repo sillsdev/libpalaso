@@ -52,6 +52,16 @@ namespace Palaso.IO
 			get { return Settings.Default.MusicalNotationFileExtensions; }
 		}
 
+		public static StringCollection ZipFileExtensions
+		{
+			get { return Settings.Default.ZipFileExtensions; }
+		}
+
+		public static bool GetIsZipFile(string path)
+		{
+			return GetIsSpecifiedFileType(ZipFileExtensions, path);
+		}
+
 		public static bool GetIsText(string path)
 		{
 			return GetIsSpecifiedFileType(TextFileExtensions, path);
@@ -288,6 +298,5 @@ namespace Palaso.IO
 			return shortBuilder.ToString();
 #endif
 		}
-
 	}
 }

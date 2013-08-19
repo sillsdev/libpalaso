@@ -382,8 +382,22 @@ namespace SIL.Archiving
 
 			var list = new HashSet<string>();
 
+			AddModesToSet(list, files);
+
+			return JSONUtils.MakeBracketedListFromValues("dc.type.mode", list);
+		}
+
+		private void AddModesToSet(HashSet<string> list, IEnumerable<string> files)
+		{
 			foreach (var file in files)
 			{
+				if (FileUtils.GetIsZipFile(file))
+				{
+					using (var zipFile = new ZipFile(file))
+						AddModesToSet(list, zipFile.EntryFileNames);
+					continue;
+				}
+
 				if (FileUtils.GetIsAudio(file))
 					list.Add("Speech");
 				if (FileUtils.GetIsVideo(file))
@@ -401,8 +415,6 @@ namespace SIL.Archiving
 				if (FileUtils.GetIsPresentation(file))
 					list.Add("Presentation");
 			}
-
-			return JSONUtils.MakeBracketedListFromValues("dc.type.mode", list);
 		}
 
 		/// ------------------------------------------------------------------------------------

@@ -129,7 +129,7 @@ namespace Palaso.Properties {
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 		[global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>.fwbackup</string>
+  <string>.fwdata</string>
   <string>.mdf</string>
   <string>.lift</string>
   <string>.sfm</string>
@@ -210,6 +210,17 @@ namespace Palaso.Properties {
 		public global::System.Collections.Specialized.StringCollection PresentationFileExtensions {
 			get {
 				return ((global::System.Collections.Specialized.StringCollection)(this["PresentationFileExtensions"]));
+			}
+		}
+
+		[global::System.Configuration.ApplicationScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+			"org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+			"tring>.zip</string>\r\n  <string>.fwbackup</string>\r\n</ArrayOfString>")]
+		public global::System.Collections.Specialized.StringCollection ZipFileExtensions {
+			get {
+				return ((global::System.Collections.Specialized.StringCollection)(this["ZipFileExtensions"]));
 			}
 		}
 	}

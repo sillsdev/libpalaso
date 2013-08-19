@@ -77,7 +77,7 @@
 	<Setting Name="DatasetFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
 	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;string&gt;.fwbackup&lt;/string&gt;
+  &lt;string&gt;.fwdata&lt;/string&gt;
   &lt;string&gt;.mdf&lt;/string&gt;
   &lt;string&gt;.lift&lt;/string&gt;
   &lt;string&gt;.sfm&lt;/string&gt;
@@ -142,6 +142,13 @@
   &lt;string&gt;.pps&lt;/string&gt;
   &lt;string&gt;.ppsx&lt;/string&gt;
   &lt;string&gt;.ppsm&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+	</Setting>
+	<Setting Name="ZipFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;.zip&lt;/string&gt;
+  &lt;string&gt;.fwbackup&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
 	</Setting>
   </Settings>

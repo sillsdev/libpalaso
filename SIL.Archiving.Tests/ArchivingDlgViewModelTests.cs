@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ionic.Zip;
 using NUnit.Framework;
+using Palaso.IO;
 using Palaso.Reporting;
 using Palaso.TestUtilities;
 
@@ -96,6 +98,50 @@ namespace SIL.Archiving.Tests
 		{
 			var mode = _helper.GetMode(new[] { "blah.mp3", "blah.doc", "blah.mov" });
 			Assert.AreEqual("\"dc.type.mode\":[\"Speech\",\"Text\",\"Video\"]", mode);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetMode_ZipFileWithMultipleTypesInList_ReturnsCorrectMetsList()
+		{
+			ZipFile zipFile = new ZipFile();
+			zipFile.AddEntry("blah.mp3", "whatever");
+			zipFile.AddEntry("blah.doc", "whatever");
+			zipFile.AddEntry("blah.niff", "whatever");
+			var tempFile = TempFile.WithExtension("zip");
+			try
+			{
+				zipFile.Save(tempFile.Path);
+				var mode = _helper.GetMode(new[] { zipFile.Name });
+				Assert.AreEqual("\"dc.type.mode\":[\"Speech\",\"Text\",\"Musical notation\"]", mode);
+			}
+			finally
+			{
+				zipFile.Dispose();
+				tempFile.Dispose();
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetMode_FwbackupFileWithMultipleTypesInList_ReturnsCorrectMetsList()
+		{
+			ZipFile zipFile = new ZipFile();
+			zipFile.AddEntry("blah.fwdata", "whatever");
+			zipFile.AddEntry("fonts/blah.ttf", "whatever");
+			zipFile.AddEntry("images/blah.jpeg", "whatever");
+			var tempFile = TempFile.WithExtension("fwbackup");
+			try
+			{
+				zipFile.Save(tempFile.Path);
+				var mode = _helper.GetMode(new[] { zipFile.Name });
+				Assert.AreEqual("\"dc.type.mode\":[\"Dataset\",\"Software application\",\"Photograph\"]", mode);
+			}
+			finally
+			{
+				zipFile.Dispose();
+				tempFile.Dispose();
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
