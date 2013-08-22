@@ -68,7 +68,7 @@ namespace SIL.Archiving
 				"RAMP is a utility for entering metadata and uploading submissions to SIL's internal archive, " +
 				"REAP. If you have access to this archive, this tool will help you use RAMP to archive your " +
 				"{0} data. {1} When the RAMP package has been created, you can  launch RAMP and enter any additional information before doing the actual submission.",
-				"The first occurance of the word 'RAMP' will be made a hyperlink to the RAMP website. " +
+				"The first occurrence of the word 'RAMP' will be made a hyperlink to the RAMP website. " +
 				"If the word 'RAMP' is not found, the text will not contain that hyperlink.",
 				null, null, _linkOverview), _viewModel.AppName, appSpecificArchivalProcessInfo);
 
