@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -31,6 +32,32 @@ namespace SIL.Archiving
 		private static extern bool BringWindowToTop(int hWnd);
 #endif
 
+		#region RAMP and METS constants
+		public const string kRampProcessName = "RAMP";
+		public const string kRampFileExtension = ".ramp";
+		public const string kPackageTitle = "dc.title";
+		public const string kSourceFilesForMets = "files";
+		public const string kImageExtent = "format.extent.images";
+		public const string kFileTypeModeList = "dc.type.mode";
+
+		public const string kModeSpeech = "Speech";
+		public const string kModeVideo = "Video";
+		public const string kModeText = "Text";
+		public const string kModePhotograph = "Photograph";
+		public const string kModeMusicalNotation = "Musical notation";
+		public const string kModeDataset = "Dataset";
+		public const string kModeSoftwareOrFont = "Software application";
+		public const string kModePresentation = "Presentation";
+
+		public const string kDefaultKey = " ";
+		public const string kSeparator = ",";
+		public const string kFileDescription = "description";
+		public const string kFileRelationship = "relationship";
+		public const string kRelationshipSource = "Source";
+		public const string kRelationshipPresentation = "Presentation";
+		public const string kRelationshipSupporting = "Supporting";
+		#endregion
+
 		private readonly string _title;
 		private readonly string _id;
 		private readonly IEnumerable<string> _appSpecificMetsPairs;
@@ -44,6 +71,7 @@ namespace SIL.Archiving
 		private readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
 		private string _rampProgramPath;
 		private Action _incrementProgressBarAction;
+		private int _imageCount = -1;
 		private IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
 
 		#region properties
@@ -138,7 +166,7 @@ namespace SIL.Archiving
 			LogBox.TabStop = false;
 			LogBox.ShowMenu = false;
 
-			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*.ramp"))
+			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*" + kRampFileExtension))
 			{
 				try { File.Delete(orphanedRampPackage); }
 				catch { }
@@ -169,7 +197,7 @@ namespace SIL.Archiving
 
 			LogBox.WriteMessage(text);
 			Application.DoEvents();
-			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(".ramp") ??
+			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(kRampFileExtension) ??
 				FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
 
 			LogBox.Clear();
@@ -262,7 +290,7 @@ namespace SIL.Archiving
 		private void EnsureRampHasFocusAndWaitForPackageToUnlock()
 		{
 #if !__MonoCS__
-			var processes = Process.GetProcessesByName("RAMP");
+			var processes = Process.GetProcessesByName(kRampProcessName);
 			if (processes.Length >= 1)
 			{
 				// I can't figure out why neither of these work.
@@ -347,9 +375,9 @@ namespace SIL.Archiving
 		}
 
 		 /// ------------------------------------------------------------------------------------
-		public IEnumerable<string> GetMetsPairs()
+		private IEnumerable<string> GetMetsPairs()
 		{
-			yield return JSONUtils.MakeKeyValuePair("dc.title", _title);
+			yield return JSONUtils.MakeKeyValuePair(kPackageTitle, _title);
 
 			if (_appSpecificMetsPairs != null)
 			{
@@ -359,14 +387,44 @@ namespace SIL.Archiving
 
 			if (_fileLists != null)
 			{
-				string value = GetMode(_fileLists.SelectMany(f => f.Value.Item1));
+				string value = GetMode();
 				if (value != null)
 					yield return value;
 
 				// Return JSON array of files with their descriptions.
-				yield return JSONUtils.MakeArrayFromValues("files",
+				yield return JSONUtils.MakeArrayFromValues(kSourceFilesForMets,
 					GetSourceFilesForMetsData(_fileLists));
+
+				if (ImageCount > 0)
+					yield return JSONUtils.MakeKeyValuePair(kImageExtent, ImageCount.ToString(CultureInfo.InvariantCulture));
 			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of image files in the list(s) of files to archive.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public int ImageCount
+		{
+			get
+			{
+				if (_fileLists != null && _imageCount < 0)
+					GetMode();
+				return _imageCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private string GetMode()
+		{
+			_imageCount = 0;
+			return GetMode(_fileLists.SelectMany(f => f.Value.Item1));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -384,7 +442,7 @@ namespace SIL.Archiving
 
 			AddModesToSet(list, files);
 
-			return JSONUtils.MakeBracketedListFromValues("dc.type.mode", list);
+			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, list);
 		}
 
 		private void AddModesToSet(HashSet<string> list, IEnumerable<string> files)
@@ -399,21 +457,21 @@ namespace SIL.Archiving
 				}
 
 				if (FileUtils.GetIsAudio(file))
-					list.Add("Speech");
+					list.Add(kModeSpeech);
 				if (FileUtils.GetIsVideo(file))
-					list.Add("Video");
+					list.Add(kModeVideo);
 				if (FileUtils.GetIsText(file))
-					list.Add("Text");
+					list.Add(kModeText);
 				if (FileUtils.GetIsImage(file))
-					list.Add("Photograph");
+					list.Add(kModePhotograph);
 				if (FileUtils.GetIsMusicalNotation(file))
-					list.Add("Musical notation");
+					list.Add(kModeMusicalNotation);
 				if (FileUtils.GetIsDataset(file))
-					list.Add("Dataset");
+					list.Add(kModeDataset);
 				if (FileUtils.GetIsSoftwareOrFont(file))
-					list.Add("Software application");
+					list.Add(kModeSoftwareOrFont);
 				if (FileUtils.GetIsPresentation(file))
-					list.Add("Presentation");
+					list.Add(kModePresentation);
 			}
 		}
 
@@ -428,9 +486,9 @@ namespace SIL.Archiving
 
 					var fileName = NormalizeFilenameForRAMP(kvp.Key, Path.GetFileName(file));
 
-					yield return JSONUtils.MakeKeyValuePair(" ", fileName) + "," +
-						JSONUtils.MakeKeyValuePair("description", description) + "," +
-						JSONUtils.MakeKeyValuePair("relationship", "Source");
+					yield return JSONUtils.MakeKeyValuePair(kDefaultKey, fileName) + kSeparator +
+						JSONUtils.MakeKeyValuePair(kFileDescription, description) + kSeparator +
+						JSONUtils.MakeKeyValuePair(kFileRelationship, kRelationshipSource);
 				}
 			}
 		}
@@ -463,7 +521,7 @@ namespace SIL.Archiving
 		{
 			try
 			{
-				RampPackagePath = Path.Combine(Path.GetTempPath(), _id + ".ramp");
+				RampPackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
 
 				using (_worker = new BackgroundWorker())
 				{

@@ -89,7 +89,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetMode_SingleTypeInList_ReturnsCorrectMetsList()
 		{
-			Assert.AreEqual("\"dc.type.mode\":[\"Video\"]", _helper.GetMode(new[] { "blah.mpg" }));
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				ArchivingDlgViewModel.kModeVideo + "\"]", _helper.GetMode(new[] { "blah.mpg" }));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -97,7 +98,10 @@ namespace SIL.Archiving.Tests
 		public void GetMode_MultipleTypesInList_ReturnsCorrectMetsList()
 		{
 			var mode = _helper.GetMode(new[] { "blah.mp3", "blah.doc", "blah.mov" });
-			Assert.AreEqual("\"dc.type.mode\":[\"Speech\",\"Text\",\"Video\"]", mode);
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				ArchivingDlgViewModel.kModeSpeech + "\",\"" +
+				ArchivingDlgViewModel.kModeText + "\",\"" +
+				ArchivingDlgViewModel.kModeVideo + "\"]", mode);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -113,7 +117,10 @@ namespace SIL.Archiving.Tests
 			{
 				zipFile.Save(tempFile.Path);
 				var mode = _helper.GetMode(new[] { zipFile.Name });
-				Assert.AreEqual("\"dc.type.mode\":[\"Speech\",\"Text\",\"Musical notation\"]", mode);
+				Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+					ArchivingDlgViewModel.kModeSpeech + "\",\"" +
+					ArchivingDlgViewModel.kModeText + "\",\"" +
+					ArchivingDlgViewModel.kModeMusicalNotation + "\"]", mode);
 			}
 			finally
 			{
@@ -135,7 +142,10 @@ namespace SIL.Archiving.Tests
 			{
 				zipFile.Save(tempFile.Path);
 				var mode = _helper.GetMode(new[] { zipFile.Name });
-				Assert.AreEqual("\"dc.type.mode\":[\"Dataset\",\"Software application\",\"Photograph\"]", mode);
+				Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+					ArchivingDlgViewModel.kModeDataset + "\",\"" +
+					ArchivingDlgViewModel.kModeSoftwareOrFont + "\",\"" +
+					ArchivingDlgViewModel.kModePhotograph + "\"]", mode);
 			}
 			finally
 			{
@@ -149,7 +159,8 @@ namespace SIL.Archiving.Tests
 		public void GetMode_ListContainsMultiplesOfOneType_ReturnsOnlyOneTypeInList()
 		{
 			var mode = _helper.GetMode(new[] { "blah.mp3", "blah.wma", "blah.wav" });
-			Assert.AreEqual("\"dc.type.mode\":[\"Speech\"]", mode);
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				ArchivingDlgViewModel.kModeSpeech + "\"]", mode);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -159,7 +170,10 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session" }, "Message to display.");
 
-			var expected = "\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.session\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session Metadata (XML)\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -170,7 +184,10 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.person" }, "Message to display.");
 
-			var expected = "\" \":\"blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.person\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor Metadata (XML)\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -181,7 +198,11 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.meta" }, "Message to display.");
 
-			var expected = "\" \":\"blah.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.meta\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp File Metadata (XML)\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
+
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -192,7 +213,11 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.wav" }, "Message to display.");
 
-			var expected = "\" \":\"blah.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.wav\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session File\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
+
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -203,7 +228,10 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists["Carmen"] = new Tuple<IEnumerable<string>, string>(new[] { "Carmen_blah.wav" }, "Message to display.");
 
-			var expected = "\" \":\"__AppSpecific__Carmen_blah.wav\",\"description\":\"MyApp Contributor File\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__Carmen_blah.wav\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor File\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -215,19 +243,44 @@ namespace SIL.Archiving.Tests
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session", "really cool.wav" }, "Message to display.");
 			fileLists["person id"] = new Tuple<IEnumerable<string>, string>(new[] { "person id_blah.person", "person id_baa.mpg", "person id_baa.mpg.meta" }, "Message to display.");
 
-			Assert.AreEqual("\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.session\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session Metadata (XML)\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 
-			Assert.AreEqual("\" \":\"really+cool.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"really+cool.wav\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session File\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(1));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__person+id_blah.person\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor Metadata (XML)\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(2));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa.mpg\",\"description\":\"MyApp Contributor File\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__person+id_baa.mpg\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor File\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(3));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa#mpg.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__person+id_baa#mpg.meta\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp File Metadata (XML)\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(4));
 		}
 
