@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -320,6 +320,10 @@
 	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Miscellaneous\WaitCursor.cs" />
+	<Compile Include="PortableSettingsProvider\FormSettings.cs" />
+	<Compile Include="PortableSettingsProvider\GridSettings.cs" />
+	<Compile Include="PortableSettingsProvider\MruFiles.cs" />
+	<Compile Include="PortableSettingsProvider\PortableSettingsProvider.cs" />
 	<Compile Include="Progress\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -1048,10 +1052,8 @@
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets"
-		  Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets"
-		  Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets" Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
