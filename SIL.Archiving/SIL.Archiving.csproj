@@ -34,9 +34,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU'">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>bin\DebugMono\</OutputPath>
-	<DefineConstants>DEBUG;TRACE</DefineConstants>
-	<DocumentationFile>..\output\Debug\SIL.Archiving.XML</DocumentationFile>
+	<OutputPath>..\output\DebugMono\</OutputPath>
+	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+	<DocumentationFile>
+	</DocumentationFile>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<CodeAnalysisLogFile>..\output\Debug\SIL.Archiving.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
@@ -48,9 +49,10 @@
 	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU'">
-	<OutputPath>bin\ReleaseMono\</OutputPath>
-	<DefineConstants>TRACE</DefineConstants>
-	<DocumentationFile>..\output\Release\SIL.Archiving.XML</DocumentationFile>
+	<OutputPath>..\output\ReleaseMono\</OutputPath>
+	<DefineConstants>TRACE;MONO</DefineConstants>
+	<DocumentationFile>
+	</DocumentationFile>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
