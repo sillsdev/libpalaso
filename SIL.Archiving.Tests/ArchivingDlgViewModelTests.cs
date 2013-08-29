@@ -22,7 +22,7 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 
-			_helper = new ArchivingDlgViewModel("Test App", "Test Title", "tst", null, GetFileDescription);
+			_helper = new ArchivingDlgViewModel("Test App", "Test Title", "tst", GetFileDescription);
 			_helper.AppSpecificFilenameNormalization = CustomFilenameNormalization;
 		}
 
@@ -282,6 +282,119 @@ namespace SIL.Archiving.Tests
 				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
 				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(4));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudience_ChangeAudience_ThrowsInvalidOperationException()
+		{
+			_helper.SetAudience(AudienceType.Vernacular);
+			Assert.Throws<InvalidOperationException>(
+				() => _helper.SetAudience(AudienceType.Training)
+			);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetVernacularMaterialsAndContentType_IncompatibleWithAudience_ThrowsInvalidOperationException()
+		{
+			_helper.SetAudience(AudienceType.Training);
+			Assert.Throws<InvalidOperationException>(
+				() => _helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.BibleBackground)
+			);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetVernacularMaterialsAndContentType_CompatibleWithAudience_IncludedInMetsData()
+		{
+			_helper.SetAudience(AudienceType.Vernacular);
+			_helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.LiteracyEducation_Riddles);
+			var data =_helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kAudience + "\":\"" + ArchivingDlgViewModel.kAudienceVernacular + "\",\"" +
+				ArchivingDlgViewModel.kVernacularMaterialsType + "\":\"" + ArchivingDlgViewModel.kVernacularMaterialGeneral + "\",\"" +
+				ArchivingDlgViewModel.kVernacularContent + "\":\"Riddles\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetVernacularMaterialsAndContentType_MixOfScriptureAndOther_ThrowsArgumentException()
+		{
+			Assert.Throws<ArgumentException>(
+				() => _helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.BibleStory | VernacularMaterialsType.CommunityAndCulture_Calendar)
+			);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAbstract_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetAbstract("This is pretty abstract", "eng");
+			Dictionary<string, string> foreignLanguageAbstracts = new Dictionary<string, string>();
+			foreignLanguageAbstracts["frn"] = "C'est assez abstrait";
+			foreignLanguageAbstracts["spa"] = "Esto es bastante abstracto";
+			Assert.Throws<InvalidOperationException>(
+				() => _helper.SetAbstract(foreignLanguageAbstracts)
+				);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAbstract_Null_ThrowsArgumentNullException()
+		{
+			Assert.Throws<ArgumentNullException>(() => _helper.SetAbstract(null));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAbstract_ThreeLanguages_IncludedInMetsData()
+		{
+			Dictionary<string, string> abstracts = new Dictionary<string, string>();
+			abstracts["eng"] = "This is pretty abstract";
+			abstracts["frn"] = "C'est assez abstrait";
+			abstracts["spa"] = "Esto es bastante abstracto";
+			_helper.SetAbstract(abstracts);
+			var data =_helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
+				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
+				"\"0\":{\" \":\"This is pretty abstract\",\"lang\":\"eng\"}," +
+				"\"1\":{\" \":\"C'est assez abstrait\",\"lang\":\"frn\"}," +
+				"\"2\":{\" \":\"Esto es bastante abstracto\",\"lang\":\"spa\"}}}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudioVideoExtent_FreeFormString_IncludedInMetsData()
+		{
+			_helper.SetAudioVideoExtent("6 and a half seconds");
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kRecordingExtent + "\":\"6 and a half seconds\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudioVideoExtent_ValidTimeSpan_IncludedInMetsData()
+		{
+			TimeSpan duration = new TimeSpan(0, 2, 3, 4);
+			_helper.SetAudioVideoExtent(duration);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kRecordingExtent + "\":\"02:03:04\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudioVideoExtent_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetAudioVideoExtent("twelve years or more");
+			TimeSpan duration = new TimeSpan(0, 2, 3, 4);
+			Assert.Throws<InvalidOperationException>(() => _helper.SetAudioVideoExtent(duration));
 		}
 
 		/// ------------------------------------------------------------------------------------
