@@ -18,6 +18,7 @@
 	<DefineConstants>DEBUG;</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
 	<ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -26,6 +27,7 @@
 	<OutputPath>..\output\Release</OutputPath>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
 	<ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
@@ -33,17 +35,20 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>..\output\DebugMono</OutputPath>
-	<DefineConstants>DEBUG;</DefineConstants>
+	<DefineConstants>DEBUG;MONO</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<DebugType>none</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>..\output\ReleaseMono</OutputPath>
+	<DefineConstants>MONO</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

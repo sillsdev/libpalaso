@@ -22,11 +22,25 @@ namespace Palaso.Media.Naudio.UI
 
 		private HashSet<string> _knownRecordingDevices;
 
-		public RecordingDeviceIndicator()
+		public RecordingDeviceIndicator() : this(1000, true)
+		{
+		}
+
+		public RecordingDeviceIndicator(int checkNewMicTimerInterval, bool checkNewMicTimerInitiallyEnabled)
 		{
 			InitializeComponent();
 			_checkNewMicTimer.Tick += OnCheckNewMicTimer_Tick;
-			_checkNewMicTimer.Interval = 1000;
+			_checkNewMicTimer.Interval = checkNewMicTimerInterval;
+			MicCheckingEnabled = checkNewMicTimerInitiallyEnabled;
+		}
+
+		/// <summary>
+		/// This allows the client to suspend the periodic checking during operations (other than recording) where it is
+		/// undesirable to change devices (or take the time to check for them).
+		/// </summary>
+		public bool MicCheckingEnabled
+		{
+			set { _checkNewMicTimer.Enabled = value; }
 		}
 
 		/// <summary>

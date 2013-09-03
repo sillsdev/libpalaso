@@ -45,7 +45,7 @@
 	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DebugType>full</DebugType>
-	<PlatformTarget>x86</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
 	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
@@ -68,9 +68,7 @@
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+	<Reference Include="System.Core" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />

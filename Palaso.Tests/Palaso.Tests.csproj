@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -113,9 +113,7 @@
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+	<Reference Include="System.Core" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />
@@ -143,8 +141,8 @@
 	<Compile Include="Extensions\StringExtensionTests.cs" />
 	<Compile Include="i18n\StringCatalogTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
-	<Compile Include="IO\FileUtil.Tests.cs" />
-	<Compile Include="IO\FolderUtilsTests.cs" />
+	<Compile Include="IO\FileUtilsTests.cs" />
+	<Compile Include="IO\DirectoryUtilitiesTests.cs" />
 	<Compile Include="IO\TempFileTests.cs" />
 	<Compile Include="Migration\DefaultVersionTests.cs" />
 	<Compile Include="Migration\FileMigratorTests.cs" />
