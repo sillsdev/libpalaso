@@ -129,7 +129,8 @@ namespace Palaso.IO
 #else
 			comparison = StringComparison.InvariantCulture;
 #endif
-			return String.Compare(dirInfo1.FullName.TrimEnd('\\'), dirInfo2.FullName.TrimEnd('\\'), comparison) == 0;
+			var backslash = new char[] {'\\'};
+			return String.Compare(dirInfo1.FullName.TrimEnd(backslash), dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
 		}
 
 		/// <summary>
