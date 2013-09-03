@@ -54,7 +54,7 @@
 	<Compile Include="ArchivingDlg.cs">
 	  <SubType>Form</SubType>
 	</Compile>
-	<Compile Include="ArchivingDlg.designer.cs">
+	<Compile Include="ArchivingDlg.Designer.cs">
 	  <DependentUpon>ArchivingDlg.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ArchivingDlgViewModel.cs" />
