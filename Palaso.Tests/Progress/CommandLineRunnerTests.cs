@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Palaso.CommandLineProcessing;
 using Palaso.Progress;
@@ -26,7 +27,9 @@ namespace Palaso.Tests.Progress
 			var app = "PalasoUIWindowsForms.TestApp.exe";// FileLocator.GetFileDistributedWithApplication("PalasoUIWindowsForms.TestApp.exe");
 			var progress = new StringBuilderProgress();
 			int linesReceivedAsynchronously = 0;
-			CommandLineRunner.Run(app, "CommandLineRunnerTest", null, string.Empty, 100, progress, s => { ++linesReceivedAsynchronously; });
+			var result = CommandLineRunner.Run(app, "CommandLineRunnerTest", null, string.Empty, 100, progress, s => { ++linesReceivedAsynchronously; });
+			Console.Out.WriteLine("StdOut: " + result.StandardOutput);
+			Console.Out.WriteLine("StdErr: " + result.StandardError);
 			Assert.AreEqual(10, linesReceivedAsynchronously);
 		}
 	}
