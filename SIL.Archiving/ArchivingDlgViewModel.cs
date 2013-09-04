@@ -1049,7 +1049,7 @@ namespace SIL.Archiving
 			{
 				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
 
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSoftwareOrFontRequirements, languageKeyValuePairs));
+				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageKeyValuePairs));
 			}
 		}
 
@@ -1560,17 +1560,10 @@ namespace SIL.Archiving
 		public string NormalizeFilenameForRAMP(string key, string fileName)
 		{
 			StringBuilder bldr = new StringBuilder(fileName);
-			int prevPeriod = -1;
 			for (int i = 0; i < bldr.Length; i++)
 			{
 				if (bldr[i] == ' ')
-					bldr[i] = '+';
-				else if (bldr[i] == '.')
-				{
-					if (prevPeriod >= 0)
-						bldr[prevPeriod] = '#';
-					prevPeriod = i;
-				}
+					bldr[i] = '-';
 			}
 			if (AppSpecificFilenameNormalization != null)
 				AppSpecificFilenameNormalization(key, fileName, bldr);
