@@ -872,7 +872,18 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void AddDomain(string domainAbbrev, string domainName)
 		{
-			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kSilDomain, string.Format("{0}:{1}", domainAbbrev, domainName)));
+			// if a mets pair already exists for domains, add this domain to the existing list.
+			var existingValue = _metsPairs.Find(s => s.Contains(kSilDomain));
+			if (!string.IsNullOrEmpty(existingValue))
+			{
+				int pos = existingValue.IndexOf(']');
+				string newValue = existingValue.Insert(pos, string.Format(",\"{0}:{1}\"", domainAbbrev, domainName));
+				_metsPairs[_metsPairs.IndexOf(existingValue)] = newValue;
+			}
+			else
+			{
+				_metsPairs.Add(JSONUtils.MakeKeyValuePair(kSilDomain, string.Format("{0}:{1}", domainAbbrev, domainName), true));
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -884,8 +895,20 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void AddSubDomain(string domainAbbrev, string subDomain)
 		{
-			_metsPairs.Add(JSONUtils.MakeKeyValuePair(string.Format(kFmtDomainSubtype, domainAbbrev),
-				string.Format("{0} ({1})", subDomain, domainAbbrev), true));
+			// if a mets pair already exists for this domain, add this subdomain to the existing list.
+			var key = string.Format(kFmtDomainSubtype, domainAbbrev);
+			var existingValue = _metsPairs.Find(s => s.Contains(key));
+			if (!string.IsNullOrEmpty(existingValue))
+			{
+				int pos = existingValue.IndexOf(']');
+				string newValue = existingValue.Insert(pos, string.Format(",\"{0} ({1})\"", subDomain, domainAbbrev));
+				_metsPairs[_metsPairs.IndexOf(existingValue)] = newValue;
+			}
+			else
+			{
+				_metsPairs.Add(JSONUtils.MakeKeyValuePair(key,
+					string.Format("{0} ({1})", subDomain, domainAbbrev), true));
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
