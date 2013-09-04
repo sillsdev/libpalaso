@@ -1049,7 +1049,7 @@ namespace SIL.Archiving
 			{
 				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
 
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSoftwareOrFontRequirements, languageKeyValuePairs));
+				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageKeyValuePairs));
 			}
 		}
 
