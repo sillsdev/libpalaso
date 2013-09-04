@@ -13,6 +13,9 @@ namespace Palaso.Tests.IO
 		private string _srcFolder;
 		private string _dstFolder;
 
+		// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
+		private readonly string _directorySeparator = new String(Path.DirectorySeparatorChar, 1);
+
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
 		public void TestSetup()
@@ -215,14 +218,24 @@ namespace Palaso.Tests.IO
 		[Test]
 		public void AreDirectoriesEquivalent_DifferByDirectionOfSlash_ReturnsTrue()
 		{
+#if MONO
+			// 02 SEP 2013, Phil Hopper: this test is not valid on a linux file system.
+			return;
+#else
 			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:/temp"));
+#endif
+
 		}
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void AreDirectoriesEquivalent_DifferByTrailingCurrentDirectoryDot_ReturnsTrue()
 		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\."));
+			// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
+			//Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\."));
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(
+				"C:" + _directorySeparator + "temp",
+				"C:" + _directorySeparator + "temp" + _directorySeparator + "."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -253,7 +266,11 @@ DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
 		[Test]
 		public void AreDirectoriesEquivalent_OnePathContainsBacktrackingToParentFolders_ReturnsTrue()
 		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\x\..\..\temp\."));
+			// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
+			//Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\x\..\..\temp\."));
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(
+				"C:" + _directorySeparator + "temp",
+				"C:" + _directorySeparator + "temp" + _directorySeparator + "x" + _directorySeparator + ".." + _directorySeparator + ".." + _directorySeparator + "temp" + _directorySeparator + "."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -317,8 +334,9 @@ DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
 						continue; // try another folder
 					}
 				}
-				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"\", logicalDrive));
-				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"\temp", logicalDrive + "temp"));
+				// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
+				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_directorySeparator, logicalDrive));
+				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_directorySeparator + "temp", logicalDrive + "temp"));
 				return; // Found an accessible drive -- no need to try them all.
 			}
 			Assert.Ignore("Unable to find a drive and folder that could be set as current working directory.");
