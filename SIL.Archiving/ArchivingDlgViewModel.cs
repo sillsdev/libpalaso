@@ -52,6 +52,7 @@ namespace SIL.Archiving
 		public const string kSubjectLanguage = "dc.subject.subjectLanguage";
 		public const string kSoftwareOrFontRequirements = "dc.relation.requires";
 		public const string kContentLanguages = "dc.language.iso";
+		public const string kContentLanguageScripts = "dc.language.script";
 		public const string kSchemaConformance = "dc.relation.conformsto";
 		public const string kContributor = "dc.contributor";
 		public const string kAbstractDescription = "dc.description.abstract";
@@ -262,7 +263,7 @@ namespace SIL.Archiving
 				throw new ArgumentNullException("id");
 			_id = id;
 
-			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _title)});
+			_metsPairs = new List<string>(new[] { JSONUtils.MakeKeyValuePair(kPackageTitle, _title) });
 
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
@@ -675,7 +676,7 @@ namespace SIL.Archiving
 			if (stage.HasFlag(WorkStage.UsedInTrainingCourse))
 				SetStage(kStageUsedInCourse);
 			if (stage.HasFlag(WorkStage.ReadyForPublicationOrFormalPreprint))
-						{
+			{
 				PreventInvalidAudienceTypeForWorkStage(AudienceType.Vernacular | AudienceType.Internal,
 					WorkStage.ReadyForPublicationOrFormalPreprint);
 				SetStage(kStagePrepublication);
@@ -1049,7 +1050,15 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetContentLanguages(params string[] iso3Codes)
 		{
-			SetContentLanguages((IEnumerable<string>)iso3Codes);
+			var languages = new List<ArchivingLanguage>();
+
+			foreach (var iso3Code in iso3Codes)
+			{
+				if (!string.IsNullOrEmpty(iso3Code))
+					languages.Add(new ArchivingLanguage(iso3Code));
+			}
+
+			SetContentLanguages(languages);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1060,20 +1069,37 @@ namespace SIL.Archiving
 		/// specified should be the same as a subject language specified using
 		/// SetSubjectLanguage.) ENHANCE: Deal with dialect options.
 		/// </summary>
-		/// <param name="iso3Codes">The 3-letter ISO 639-2 codes for the languages</param>
+		/// <param name="languages">The 3-letter ISO 639-2 codes for the languages, as well as
+		/// the English name, dialect and writing system script</param>
 		/// ------------------------------------------------------------------------------------
-		public void SetContentLanguages(IEnumerable<string> iso3Codes)
+		public void SetContentLanguages(IEnumerable<ArchivingLanguage> languages)
 		{
-			HashSet<string> languageKeyValuePairs = new HashSet<string>();
-			foreach (var iso3Code in iso3Codes.Where(r => !string.IsNullOrEmpty(r)))
-				languageKeyValuePairs.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, iso3Code));
+			var languageValues = new HashSet<string>();
+			var scripts = new HashSet<string>();
 
-			if (languageKeyValuePairs.Any())
+			foreach (var lang in languages.Where(r => !string.IsNullOrEmpty(r.Iso3Code)))
+			{
+				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey, string.Format("{0}:{1}", lang.Iso3Code, lang.EnglishName));
+				if (!string.IsNullOrEmpty(lang.Dialect))
+					langPair += "," + JSONUtils.MakeKeyValuePair("dialect", lang.Dialect);
+
+				languageValues.Add(langPair);
+
+				if (!string.IsNullOrEmpty(lang.Script))
+					scripts.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, lang.Script));
+			}
+
+			if (languageValues.Any())
 			{
 				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
 
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageKeyValuePairs));
+				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageValues));
+
+				if (scripts.Any())
+					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguageScripts, scripts));
 			}
+
+
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1376,7 +1402,7 @@ namespace SIL.Archiving
 			{
 				// I can't figure out why neither of these work.
 				BringWindowToTop(processes[0].MainWindowHandle.ToInt32());
-//				SetForegroundWindow(processes[0].MainWindowHandle.ToInt32());
+				//				SetForegroundWindow(processes[0].MainWindowHandle.ToInt32());
 			}
 #else
 			// Figure out how to do this in MONO
@@ -1403,7 +1429,7 @@ namespace SIL.Archiving
 			IsBusy = true;
 			LogBox.Clear();
 
-			var	success = CreateMetsFile() != null;
+			var success = CreateMetsFile() != null;
 
 			if (success)
 				success = CreateRampPackage();
@@ -1463,7 +1489,7 @@ namespace SIL.Archiving
 			return _metsFilePath;
 		}
 
-		 /// ------------------------------------------------------------------------------------
+		/// ------------------------------------------------------------------------------------
 		private void SetMetsPairsForFiles()
 		{
 			if (_fileLists != null)
@@ -1477,7 +1503,7 @@ namespace SIL.Archiving
 					GetSourceFilesForMetsData(_fileLists)));
 
 				if (ImageCount > 0)
-					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, ImageCount.ToString(CultureInfo.InvariantCulture)));
+					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} images",ImageCount.ToString(CultureInfo.InvariantCulture))));
 			}
 		}
 
@@ -1527,6 +1553,10 @@ namespace SIL.Archiving
 			if (_metsPropertiesSet.HasFlag(MetsProperties.DatasetExtent) && !list.Contains(kModeDataset))
 				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
 
+			// we need the text mode for the languages set for the data in Fieldworks
+			if (list.Contains(kModeDataset) && (!list.Contains(kModeText)))
+				list.Add(kModeText);
+
 			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, list);
 		}
 
@@ -1549,7 +1579,10 @@ namespace SIL.Archiving
 				if (FileUtils.GetIsText(file))
 					list.Add(kModeText);
 				if (FileUtils.GetIsImage(file))
+				{
+					_imageCount++;
 					list.Add(kModePhotograph);
+				}
 				if (FileUtils.GetIsMusicalNotation(file))
 					list.Add(kModeMusicalNotation);
 				if (FileUtils.GetIsDataset(file))
@@ -1658,7 +1691,7 @@ namespace SIL.Archiving
 				foreach (var list in _fileLists)
 				{
 					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-						string.IsNullOrEmpty(list.Key) ? _id: list.Key);
+						string.IsNullOrEmpty(list.Key) ? _id : list.Key);
 					foreach (var file in list.Value.Item1)
 					{
 						string newFileName = Path.GetFileName(file);
@@ -1855,5 +1888,94 @@ namespace SIL.Archiving
 		}
 
 		#endregion
+	}
+
+	public class ArchivingLanguage
+	{
+		private string _iso3Code;    // ex. "eng"
+		private string _englishName; // ex. "English"
+
+		/// ------------------------------------------------------------------------------------
+		public ArchivingLanguage(string iso3Code)
+		{
+			_iso3Code = iso3Code;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public ArchivingLanguage(string iso3Code, string englishName)
+		{
+			_iso3Code = iso3Code;
+			_englishName = englishName;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The ISO3 code for the language. Ex. "eng"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string Iso3Code
+		{
+			get { return _iso3Code; }
+			set { _iso3Code = value.ToLower(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The English name of the language. Used for searching, human-readable. If not
+		/// provided by the host software, an attempt will be made to determine the name
+		/// based on the ISO3 code. Ex. "English"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string EnglishName
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_englishName))
+				{
+					var returnVal = string.Empty;
+
+					// look for the language name in culture info
+					var culture = CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(
+						c => c.ThreeLetterISOLanguageName == _iso3Code);
+
+					if (culture != null)
+					{
+						returnVal = culture.EnglishName;
+
+						// The name returned first might be something like "English (United States)," so
+						// search the parent cultures for the base culture which will return "English."
+						while ((culture.Parent.ThreeLetterISOLanguageName == _iso3Code)
+							&& (culture.Parent.ThreeLetterISOLanguageName != "ivl"))
+						{
+							culture = culture.Parent;
+							returnVal = culture.EnglishName;
+						}
+					}
+
+					_englishName = returnVal;
+				}
+
+				// throw an exception if no name is found
+				if (string.IsNullOrEmpty(_englishName))
+					throw new CultureNotFoundException(string.Format("Could not determine the language for ISO3 code \"{0}.\" Perhaps you need to set the EnglishName value explicitly.", _iso3Code));
+
+				return _englishName;
+			}
+			set { _englishName = value; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The script used for the Subject Language. Ex. "Latn:Latin"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string Script { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The dialect used for the language. Ex. "03035:Standard; deu"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string Dialect { get; set; }
 	}
 }
