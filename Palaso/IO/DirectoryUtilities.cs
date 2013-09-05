@@ -11,7 +11,7 @@ namespace Palaso.IO
 	{
 
 		/// <summary>
-		/// Makes a full copy of the specified directory in the system's temporary directory.
+		/// Makes a full copies of the specified directory in the system's temporary directory.
 		/// If the copy fails at any point in the process, the user is notified of the
 		/// problem and an attempt is made to remove the destination directory if the failure
 		/// happened part way through the process.
@@ -47,18 +47,15 @@ namespace Palaso.IO
 
 		private static bool CopyDirectory(string srcDirectory, string dstDirectoryParent, out string dstDirectory)
 		{
-			dstDirectory = Path.Combine(dstDirectoryParent, Path.GetFileName(srcDirectory));
+			dstDirectory = Path.GetFileName(srcDirectory);
+			dstDirectory = Path.Combine(dstDirectoryParent, dstDirectory);
 
 			if (!Directory.Exists(dstDirectoryParent))
 			{
-				ErrorReport.NotifyUserOfProblem(new DirectoryNotFoundException(dstDirectoryParent + " not found."),
-					"{0} was unable to copy the directory {1} to {2}", EntryAssembly.ProductName, srcDirectory, dstDirectoryParent);
-				return false;
-			}
-			if (AreDirectoriesEquivalent(srcDirectory, dstDirectory))
-			{
-				ErrorReport.NotifyUserOfProblem(new Exception("Cannot copy directory to itself."),
-					"{0} was unable to copy the directory {1} to {2}", EntryAssembly.ProductName, srcDirectory, dstDirectoryParent);
+				ReportFailedCopyAndCleanUp(
+					new DirectoryNotFoundException(dstDirectoryParent + " not found."),
+					srcDirectory, dstDirectoryParent);
+
 				return false;
 			}
 
@@ -115,23 +112,6 @@ namespace Palaso.IO
 			}
 		}
 
-		public static bool AreDirectoriesEquivalent(string dir1, string dir2)
-		{
-			return AreDirectoriesEquivalent(new DirectoryInfo(dir1), new DirectoryInfo(dir2));
-		}
-
-		// Gleaned from http://stackoverflow.com/questions/2281531/how-can-i-compare-directory-paths-in-c
-		public static bool AreDirectoriesEquivalent(DirectoryInfo dirInfo1, DirectoryInfo dirInfo2)
-		{
-			StringComparison comparison;
-#if !MONO
-			comparison = StringComparison.InvariantCultureIgnoreCase;
-#else
-			comparison = StringComparison.InvariantCulture;
-#endif
-			var backslash = new char[] { '\\' }; // added this step because mono does not implicitly convert from char to char[]
-			return String.Compare(dirInfo1.FullName.TrimEnd(backslash), dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
-		}
 
 		/// <summary>
 		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and documents are on differen drives).
@@ -151,7 +131,7 @@ namespace Palaso.IO
 
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
 		{
-			ErrorReport.NotifyUserOfProblem(error, "{0} was unable to copy the directory {1} to {2}",
+			ErrorReport.NotifyUserOfProblem(error, "{0} was unable to copy the directory\n\n{1}\n\nto\n\n{2}",
 				EntryAssembly.ProductName, srcDirectory, dstDirectory);
 
 			try

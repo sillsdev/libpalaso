@@ -140,10 +140,6 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
 	</Reference>
-	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86" Condition="'$(OS)'=='Windows_NT'">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
-	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Configuration" />
@@ -186,9 +182,10 @@
 	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\Work.cs" />
-	<Compile Include="ColorHelper.cs" />
+	<Compile Include="CustomDropDown.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Extensions\ControlExtensions.cs" />
-	<Compile Include="Extensions\FormExtensions.cs" />
 	<Compile Include="FileDialogExtender\Enums.cs" />
 	<Compile Include="FileDialogExtender\Extensions.cs" />
 	<Compile Include="FileDialogExtender\FileDialogControlBase.cs">
@@ -323,7 +320,6 @@
 	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Miscellaneous\WaitCursor.cs" />
-	<Compile Include="PaintingHelper.cs" />
 	<Compile Include="PortableSettingsProvider\FormSettings.cs" />
 	<Compile Include="PortableSettingsProvider\GridSettings.cs" />
 	<Compile Include="PortableSettingsProvider\MruFiles.cs" />
@@ -349,7 +345,6 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
-	<Compile Include="ReflectionHelper.cs" />
 	<Compile Include="ReleaseNotes\MarkdownSharp.cs" />
 	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
 	  <AutoGen>True</AutoGen>
@@ -424,9 +419,6 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Widgets\AutoHeightLabel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
 	<Compile Include="Widgets\BetterCheckedListBox.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -463,14 +455,8 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Widgets\CustomDropDown.cs">
-	  <SubType>Component</SubType>
-	</Compile>
 	<Compile Include="Widgets\Flying\Animator.cs" />
 	<Compile Include="Widgets\Flying\FlyingLabel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\HeaderLabel.cs">
 	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs">
@@ -511,12 +497,6 @@
 	<Compile Include="Progress\TextBoxProgress.cs" />
 	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
 	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
-	<Compile Include="Widgets\EnhancedPanel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\XButton.cs">
-	  <SubType>Component</SubType>
-	</Compile>
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -925,7 +905,9 @@
 	</ProjectReference>
   </ItemGroup>
   <ItemGroup>
-	<Reference Include="System.Core" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">

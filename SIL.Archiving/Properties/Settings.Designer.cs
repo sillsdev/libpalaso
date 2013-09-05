@@ -31,15 +31,5 @@ namespace SIL.Archiving.Properties {
 				return ((string)(this["RampWebSite"]));
 			}
 		}
-
-		[global::System.Configuration.ApplicationScopedSettingAttribute()]
-		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("author;compiler;consultant;developer;editor;facilitator;illustrator;interviewer;p" +
-			"hotographer;recorder;researcher;signer;speaker;transcriber;translator")]
-		public string RampContributorRoles {
-			get {
-				return ((string)(this["RampContributorRoles"]));
-			}
-		}
 	}
 }

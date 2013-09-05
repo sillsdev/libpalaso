@@ -86,7 +86,7 @@ namespace Palaso.CommandLineProcessing
 		private void HandleNewData(DataReceivedEventArgs data, StringBuilder builder, string label)
 		{
 			//Debug.WriteLine("AsyncProcessOutputReader HandleNewData at " + DateTime.Now.ToString("HH:mm:ss.ffff"));
-			if (!_stillReading || String.IsNullOrEmpty(data.Data))
+			if (!_stillReading || data.Data == null)
 				return;
 			var s = data.Data.Replace("\r\n", "\n");
 			//for some lost reason, some client wanted this... maybe easier string matching?

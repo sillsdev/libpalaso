@@ -123,7 +123,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			Debug.WriteLine("With Progress");
 			long withProgressMilliseconds = MeasureProgressUpdateCost(true, toDo);
 
-			Assert.Less((int)(withProgressMilliseconds - noProgressMilliseconds), 1500, "Should not have more than a 1.5 second overhead.");
+			Assert.Less((int)(withProgressMilliseconds - noProgressMilliseconds), 1000, "Should not have more than a one second overhead.");
 		}
 
 		[Test]

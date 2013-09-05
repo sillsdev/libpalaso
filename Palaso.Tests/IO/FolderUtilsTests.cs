@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
@@ -8,13 +6,10 @@ using Palaso.TestUtilities;
 namespace Palaso.Tests.IO
 {
 	[TestFixture]
-	public class DirectoryUtilitiesTests
+	public class FolderUtilsTests
 	{
 		private string _srcFolder;
 		private string _dstFolder;
-
-		// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
-		private readonly string _directorySeparator = new String(Path.DirectorySeparatorChar, 1);
 
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
@@ -132,42 +127,19 @@ namespace Palaso.Tests.IO
 		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_ReturnsCorrectFolderPath()
 		{
-			string srcFolder2 = Path.Combine(_srcFolder, "copyFrom");
-			Directory.CreateDirectory(srcFolder2);
-
-			try
-			{
-				var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(srcFolder2);
-				Assert.IsNotNull(returnPath);
-				Assert.IsTrue(Directory.Exists(returnPath));
-				var foldername = Path.GetFileName(srcFolder2);
-				Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
-			}
-			finally
-			{
-				if (Directory.Exists(srcFolder2))
-					Directory.Delete(srcFolder2, true);
-			}
+			var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(_srcFolder);
+			Assert.IsNotNull(returnPath);
+			var foldername = Path.GetFileName(_srcFolder);
+			Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void CopyFolderToTempFolder_SourceFolderExists_MakesCopyInTempFolder()
 		{
-			string srcFolder2 = Path.Combine(_srcFolder, "copyFrom");
-			Directory.CreateDirectory(srcFolder2);
-
-			try
-			{
-				var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(srcFolder2);
-				Assert.IsNotNull(returnPath);
-				Assert.IsTrue(Directory.Exists(returnPath));
-			}
-			finally
-			{
-				if (Directory.Exists(srcFolder2))
-					Directory.Delete(srcFolder2, true);
-			}
+			var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(_srcFolder);
+			Assert.IsNotNull(returnPath);
+			Assert.IsTrue(Directory.Exists(returnPath));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -187,162 +159,6 @@ namespace Palaso.Tests.IO
 			var foldername = Path.GetFileName(_srcFolder);
 			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
 		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_Identical_ReturnsTrue()
-		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, _srcFolder));
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_dstFolder, _dstFolder));
-			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(nonExsistentFolderPath, nonExsistentFolderPath));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_TotallyDifferent_ReturnsFalse()
-		{
-			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, _dstFolder));
-			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
-			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, nonExsistentFolderPath));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_DifferByTrailingBackslash_ReturnsTrue()
-		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\"));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_DifferByDirectionOfSlash_ReturnsTrue()
-		{
-#if MONO
-			// 02 SEP 2013, Phil Hopper: this test is not valid on a linux file system.
-			return;
-#else
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:/temp"));
-#endif
-
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_DifferByTrailingCurrentDirectoryDot_ReturnsTrue()
-		{
-			// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
-			//Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\."));
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(
-				"C:" + _directorySeparator + "temp",
-				"C:" + _directorySeparator + "temp" + _directorySeparator + "."));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_DifferByTrailingDot_ResultDependsOnOperatingSystem()
-		{
-#if MONO
-			Assert.IsFalse(
-#else
-			Assert.IsTrue(
-#endif
-DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_ResultDependsOnOperatingSystem()
-		{
-#if MONO
-			Assert.IsFalse(
-#else
-			Assert.IsTrue(
-#endif
-DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_OnePathContainsBacktrackingToParentFolders_ReturnsTrue()
-		{
-			// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
-			//Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:\temp\x\..\..\temp\."));
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(
-				"C:" + _directorySeparator + "temp",
-				"C:" + _directorySeparator + "temp" + _directorySeparator + "x" + _directorySeparator + ".." + _directorySeparator + ".." + _directorySeparator + "temp" + _directorySeparator + "."));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_DifferentCase_ResultDependsOnOperatingSystem()
-		{
-#if MONO
-			Assert.IsFalse(
-#else
-			Assert.IsTrue(
-#endif
-			DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_AbsolutePathAndRelativePathToDifferentFolder_ReturnsFalse()
-		{
-			Directory.SetCurrentDirectory(_srcFolder);
-			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, "~!source"));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void AreDirectoriesEquivalent_AbsolutePathAndRelativePathToSameFolder_ReturnsTrue()
-		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(".", Directory.GetCurrentDirectory()));
-
-			Directory.SetCurrentDirectory(Path.GetTempPath());
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, "~!source"));
-			string[] logicalDrives;
-			try
-			{
-				logicalDrives = Directory.GetLogicalDrives();
-			}
-			catch
-			{
-				// Ignore -- can't test this on this system
-				return;
-			}
-			foreach (string logicalDrive in logicalDrives)
-			{
-				string[] directories;
-				try
-				{
-					directories = Directory.GetDirectories(logicalDrive);
-				}
-				catch
-				{
-					continue; // try another drive.
-				}
-
-				foreach (string folder in directories)
-				{
-					try
-					{
-						Directory.SetCurrentDirectory(Path.Combine(logicalDrive, folder));
-					}
-					catch
-					{
-						continue; // try another folder
-					}
-				}
-				// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
-				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_directorySeparator, logicalDrive));
-				Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(_directorySeparator + "temp", logicalDrive + "temp"));
-				return; // Found an accessible drive -- no need to try them all.
-			}
-			Assert.Ignore("Unable to find a drive and folder that could be set as current working directory.");
-		}
-
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		[Category("KnownMonoIssue")]
 		[Platform(Exclude="Unix")]

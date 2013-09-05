@@ -5,8 +5,5 @@
 	<Setting Name="RampWebSite" Type="System.String" Scope="Application">
 	  <Value Profile="(Default)">https://www.help.insitehome.org/reap/manual/ramp-users-manual</Value>
 	</Setting>
-	<Setting Name="RampContributorRoles" Type="System.String" Scope="Application">
-	  <Value Profile="(Default)">author;compiler;consultant;developer;editor;facilitator;illustrator;interviewer;photographer;recorder;researcher;signer;speaker;transcriber;translator</Value>
-	</Setting>
   </Settings>
 </SettingsFile>
