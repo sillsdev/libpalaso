@@ -52,6 +52,7 @@ namespace SIL.Archiving
 		public const string kSubjectLanguage = "dc.subject.subjectLanguage";
 		public const string kSoftwareOrFontRequirements = "dc.relation.requires";
 		public const string kContentLanguages = "dc.language.iso";
+		public const string kContentLanguageScripts = "dc.language.script";
 		public const string kSchemaConformance = "dc.relation.conformsto";
 		public const string kContributor = "dc.contributor";
 		public const string kAbstractDescription = "dc.description.abstract";
@@ -1049,7 +1050,15 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetContentLanguages(params string[] iso3Codes)
 		{
-			SetContentLanguages((IEnumerable<string>)iso3Codes);
+			var languages = new List<ArchivingLanguage>();
+
+			foreach (var iso3Code in iso3Codes)
+			{
+				if (!string.IsNullOrEmpty(iso3Code))
+					languages.Add(new ArchivingLanguage(iso3Code));
+			}
+
+			SetContentLanguages(languages);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1060,20 +1069,37 @@ namespace SIL.Archiving
 		/// specified should be the same as a subject language specified using
 		/// SetSubjectLanguage.) ENHANCE: Deal with dialect options.
 		/// </summary>
-		/// <param name="iso3Codes">The 3-letter ISO 639-2 codes for the languages</param>
+		/// <param name="languages">The 3-letter ISO 639-2 codes for the languages, as well as
+		/// the English name, dialect and writing system script</param>
 		/// ------------------------------------------------------------------------------------
-		public void SetContentLanguages(IEnumerable<string> iso3Codes)
+		public void SetContentLanguages(IEnumerable<ArchivingLanguage> languages)
 		{
-			HashSet<string> languageKeyValuePairs = new HashSet<string>();
-			foreach (var iso3Code in iso3Codes.Where(r => !string.IsNullOrEmpty(r)))
-				languageKeyValuePairs.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, iso3Code));
+			var languageValues = new HashSet<string>();
+			var scripts = new HashSet<string>();
 
-			if (languageKeyValuePairs.Any())
+			foreach (var lang in languages.Where(r => !string.IsNullOrEmpty(r.Iso3Code)))
+			{
+				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey, lang.Iso3Code);
+				if (!string.IsNullOrEmpty(lang.Dialect))
+					langPair += "," + JSONUtils.MakeKeyValuePair("dialect", lang.Dialect);
+
+				languageValues.Add(langPair);
+
+				if (!string.IsNullOrEmpty(lang.Script))
+					scripts.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, lang.Script));
+			}
+
+			if (languageValues.Any())
 			{
 				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
 
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageKeyValuePairs));
+				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageValues));
+
+				if (scripts.Any())
+					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguageScripts, scripts));
 			}
+
+
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1855,5 +1881,94 @@ namespace SIL.Archiving
 		}
 
 		#endregion
+	}
+
+	public class ArchivingLanguage
+	{
+		private string _iso3Code;    // ex. "eng"
+		private string _englishName; // ex. "English"
+
+		/// ------------------------------------------------------------------------------------
+		public ArchivingLanguage(string iso3Code)
+		{
+			_iso3Code = iso3Code;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public ArchivingLanguage(string iso3Code, string englishName)
+		{
+			_iso3Code = iso3Code;
+			_englishName = englishName;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The ISO3 code for the language. Ex. "eng"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string Iso3Code
+		{
+			get { return _iso3Code; }
+			set { _iso3Code = value.ToLower(); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The English name of the language. Used for searching, human-readable. If not
+		/// provided by the host software, an attempt will be made to determine the name
+		/// based on the ISO3 code. Ex. "English"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string EnglishName
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_englishName))
+				{
+					var returnVal = string.Empty;
+
+					// look for the language name in culture info
+					var culture = CultureInfo.GetCultures(CultureTypes.AllCultures).FirstOrDefault(
+						c => c.ThreeLetterISOLanguageName == _iso3Code);
+
+					if (culture != null)
+					{
+						returnVal = culture.EnglishName;
+
+						// The name returned first might be something like "English (United States)," so
+						// search the parent cultures for the base culture which will return "English."
+						while ((culture.Parent.ThreeLetterISOLanguageName == _iso3Code)
+							&& (culture.Parent.ThreeLetterISOLanguageName != "ivl"))
+						{
+							culture = culture.Parent;
+							returnVal = culture.EnglishName;
+						}
+					}
+
+					_englishName = returnVal;
+				}
+
+				// throw an exception if no name is found
+				if (string.IsNullOrEmpty(_englishName))
+					throw new CultureNotFoundException(string.Format("Could not determine the language for ISO3 code \"{0}.\" Perhaps you need to set the EnglishName value explicitly.", _iso3Code));
+
+				return _englishName;
+			}
+			set { _englishName = value; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The script used for the Subject Language. Ex. "Latn:Latin"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string Script { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The dialect used for the language. Ex. "03035:Standard; deu"
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public string Dialect { get; set; }
 	}
 }

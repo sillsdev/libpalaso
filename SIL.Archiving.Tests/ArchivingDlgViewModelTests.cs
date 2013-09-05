@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -341,7 +342,7 @@ namespace SIL.Archiving.Tests
 		{
 			_helper.SetAbstract("This is pretty abstract", "eng");
 			Dictionary<string, string> foreignLanguageAbstracts = new Dictionary<string, string>();
-			foreignLanguageAbstracts["frn"] = "C'est assez abstrait";
+			foreignLanguageAbstracts["fra"] = "C'est assez abstrait";
 			foreignLanguageAbstracts["spa"] = "Esto es bastante abstracto";
 			Assert.Throws<InvalidOperationException>(
 				() => _helper.SetAbstract(foreignLanguageAbstracts)
@@ -361,14 +362,14 @@ namespace SIL.Archiving.Tests
 		{
 			Dictionary<string, string> abstracts = new Dictionary<string, string>();
 			abstracts["eng"] = "This is pretty abstract";
-			abstracts["frn"] = "C'est assez abstrait";
+			abstracts["fra"] = "C'est assez abstrait";
 			abstracts["spa"] = "Esto es bastante abstracto";
 			_helper.SetAbstract(abstracts);
 			var data =_helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
 				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
 				"\"0\":{\" \":\"This is pretty abstract\",\"lang\":\"eng\"}," +
-				"\"1\":{\" \":\"C'est assez abstrait\",\"lang\":\"frn\"}," +
+				"\"1\":{\" \":\"C'est assez abstrait\",\"lang\":\"fra\"}," +
 				"\"2\":{\" \":\"Esto es bastante abstracto\",\"lang\":\"spa\"}}}",
 				data);
 		}
@@ -413,10 +414,10 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetContentLanguages_TwoLanguages_IncludedInMetsData()
 		{
-			_helper.SetContentLanguages("eng", "frn");
+			_helper.SetContentLanguages("eng", "fra");
 			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
-				ArchivingDlgViewModel.kContentLanguages + "\":{\"0\":{\" \":\"eng\"},\"1\":{\" \":\"frn\"}}}",
+				ArchivingDlgViewModel.kContentLanguages + "\":{\"0\":{\" \":\"eng\"},\"1\":{\" \":\"fra\"}}}",
 				data);
 		}
 
@@ -424,11 +425,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetContentLanguages_SetTwice_ThrowsInvalidOperationException()
 		{
-			_helper.SetContentLanguages("eng", "frn");
-			List<string> moreLanguages = new List<string>();
-			moreLanguages.Add("spn");
-			moreLanguages.Add("frn");
-			Assert.Throws<InvalidOperationException>(() => _helper.SetContentLanguages(moreLanguages));
+			_helper.SetContentLanguages("eng", "fra");
+			Assert.Throws<InvalidOperationException>(() => _helper.SetContentLanguages("spa", "fra"));
 		}
 		#endregion
 
@@ -558,10 +556,10 @@ namespace SIL.Archiving.Tests
 		{
 			var descriptions = new Dictionary<string,string>();
 			descriptions["eng"] = "General data";
-			descriptions["spn"] = "Datos generales";
+			descriptions["spa"] = "Datos generales";
 			_helper.SetDescription(descriptions);
 			var data = _helper.GetUnencodedMetsData();
-			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" + ArchivingDlgViewModel.kFlagHasGeneralDescription + "\":\"Y\",\"" +
 				ArchivingDlgViewModel.kGeneralDescription + "\":{\"0\":{\" \":\"General data\",\"lang\":\"eng\"},\"1\":{\" \":\"Datos generales\",\"lang\":\"spa\"}}}",
 				data);
 		}
@@ -600,5 +598,13 @@ namespace SIL.Archiving.Tests
 				bldr.Insert(0, "__AppSpecific__");
 		}
 		#endregion
+
+		[Test]
+		public void Phil()
+		{
+			var cs = CultureInfo.GetCultures(CultureTypes.NeutralCultures).FirstOrDefault(c => c.ThreeLetterISOLanguageName == "eng");
+			if (cs != null)
+				Console.WriteLine(cs.ToString());
+		}
 	}
 }
