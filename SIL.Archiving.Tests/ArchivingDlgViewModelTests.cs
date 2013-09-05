@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using NUnit.Framework;
 using Palaso.IO;
 using Palaso.Reporting;
 using Palaso.TestUtilities;
+using Palaso.UI.WindowsForms.ClearShare;
 
 namespace SIL.Archiving.Tests
 {
@@ -22,7 +24,7 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 
-			_helper = new ArchivingDlgViewModel("Test App", "Test Title", "tst", null, GetFileDescription);
+			_helper = new ArchivingDlgViewModel("Test App", "Test Title", "tst", GetFileDescription);
 			_helper.AppSpecificFilenameNormalization = CustomFilenameNormalization;
 		}
 
@@ -57,7 +59,7 @@ namespace SIL.Archiving.Tests
 				string fileName = Path.Combine(tmpFolder.Path, "ddo.session");
 				File.CreateText(fileName).Close();
 				var filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
-				var fileList = new[] {Path.Combine(tmpFolder.Path, "ddo.session")};
+				var fileList = new[] { Path.Combine(tmpFolder.Path, "ddo.session") };
 				filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
 				int dummy;
 				_helper.Initialize(() => filesToAdd, out dummy, null);
@@ -89,7 +91,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetMode_SingleTypeInList_ReturnsCorrectMetsList()
 		{
-			Assert.AreEqual("\"dc.type.mode\":[\"Video\"]", _helper.GetMode(new[] { "blah.mpg" }));
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				ArchivingDlgViewModel.kModeVideo + "\"]", _helper.GetMode(new[] { "blah.mpg" }));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -97,7 +100,10 @@ namespace SIL.Archiving.Tests
 		public void GetMode_MultipleTypesInList_ReturnsCorrectMetsList()
 		{
 			var mode = _helper.GetMode(new[] { "blah.mp3", "blah.doc", "blah.mov" });
-			Assert.AreEqual("\"dc.type.mode\":[\"Speech\",\"Text\",\"Video\"]", mode);
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				ArchivingDlgViewModel.kModeSpeech + "\",\"" +
+				ArchivingDlgViewModel.kModeText + "\",\"" +
+				ArchivingDlgViewModel.kModeVideo + "\"]", mode);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -113,7 +119,10 @@ namespace SIL.Archiving.Tests
 			{
 				zipFile.Save(tempFile.Path);
 				var mode = _helper.GetMode(new[] { zipFile.Name });
-				Assert.AreEqual("\"dc.type.mode\":[\"Speech\",\"Text\",\"Musical notation\"]", mode);
+				Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+					ArchivingDlgViewModel.kModeSpeech + "\",\"" +
+					ArchivingDlgViewModel.kModeText + "\",\"" +
+					ArchivingDlgViewModel.kModeMusicalNotation + "\"]", mode);
 			}
 			finally
 			{
@@ -135,7 +144,11 @@ namespace SIL.Archiving.Tests
 			{
 				zipFile.Save(tempFile.Path);
 				var mode = _helper.GetMode(new[] { zipFile.Name });
-				Assert.AreEqual("\"dc.type.mode\":[\"Dataset\",\"Software application\",\"Photograph\"]", mode);
+				Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+					ArchivingDlgViewModel.kModeDataset + "\",\"" +
+					ArchivingDlgViewModel.kModeSoftwareOrFont + "\",\"" +
+					ArchivingDlgViewModel.kModePhotograph + "\",\"" +
+					ArchivingDlgViewModel.kModeText + "\"]", mode);
 			}
 			finally
 			{
@@ -149,9 +162,11 @@ namespace SIL.Archiving.Tests
 		public void GetMode_ListContainsMultiplesOfOneType_ReturnsOnlyOneTypeInList()
 		{
 			var mode = _helper.GetMode(new[] { "blah.mp3", "blah.wma", "blah.wav" });
-			Assert.AreEqual("\"dc.type.mode\":[\"Speech\"]", mode);
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				ArchivingDlgViewModel.kModeSpeech + "\"]", mode);
 		}
 
+		#region GetSourceFilesForMetsData tests
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void GetSourceFilesForMetsData_ListContainsOnlySessionMetaFile_ReturnsCorrectMetsData()
@@ -159,7 +174,10 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session" }, "Message to display.");
 
-			var expected = "\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.session\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session Metadata (XML)\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -170,7 +188,10 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.person" }, "Message to display.");
 
-			var expected = "\" \":\"blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.person\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor Metadata (XML)\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -181,7 +202,11 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.meta" }, "Message to display.");
 
-			var expected = "\" \":\"blah.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.meta\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp File Metadata (XML)\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
+
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -192,7 +217,11 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.wav" }, "Message to display.");
 
-			var expected = "\" \":\"blah.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.wav\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session File\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
+
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -203,7 +232,10 @@ namespace SIL.Archiving.Tests
 			var fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 			fileLists["Carmen"] = new Tuple<IEnumerable<string>, string>(new[] { "Carmen_blah.wav" }, "Message to display.");
 
-			var expected = "\" \":\"__AppSpecific__Carmen_blah.wav\",\"description\":\"MyApp Contributor File\",\"relationship\":\"Source\"";
+			var expected = "\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__Carmen_blah.wav\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor File\"" + ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"";
 			Assert.AreEqual(expected, _helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 		}
 
@@ -215,22 +247,347 @@ namespace SIL.Archiving.Tests
 			fileLists[string.Empty] = new Tuple<IEnumerable<string>, string>(new[] { "blah.session", "really cool.wav" }, "Message to display.");
 			fileLists["person id"] = new Tuple<IEnumerable<string>, string>(new[] { "person id_blah.person", "person id_baa.mpg", "person id_baa.mpg.meta" }, "Message to display.");
 
-			Assert.AreEqual("\" \":\"blah.session\",\"description\":\"MyApp Session Metadata (XML)\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"blah.session\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session Metadata (XML)\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(0));
 
-			Assert.AreEqual("\" \":\"really+cool.wav\",\"description\":\"MyApp Session File\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"really-cool.wav\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Session File\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(1));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_blah.person\",\"description\":\"MyApp Contributor Metadata (XML)\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__person-id_blah.person\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor Metadata (XML)\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(2));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa.mpg\",\"description\":\"MyApp Contributor File\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__person-id_baa.mpg\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp Contributor File\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(3));
 
-			Assert.AreEqual("\" \":\"__AppSpecific__person+id_baa#mpg.meta\",\"description\":\"MyApp File Metadata (XML)\",\"relationship\":\"Source\"",
+			Assert.AreEqual("\"" + ArchivingDlgViewModel.kDefaultKey + "\":\"__AppSpecific__person-id_baa.mpg.meta\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileDescription + "\":\"MyApp File Metadata (XML)\"" +
+				ArchivingDlgViewModel.kSeparator + "\"" +
+				ArchivingDlgViewModel.kFileRelationship + "\":\"" +
+				ArchivingDlgViewModel.kRelationshipSource + "\"",
 				_helper.GetSourceFilesForMetsData(fileLists).ElementAt(4));
 		}
+		#endregion
 
+		#region SetAudience tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudience_ChangeAudience_ThrowsInvalidOperationException()
+		{
+			_helper.SetAudience(AudienceType.Vernacular);
+			Assert.Throws<InvalidOperationException>(
+				() => _helper.SetAudience(AudienceType.Training)
+			);
+		}
+		#endregion
+
+		#region SetVernacularMaterialsAndContentType tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetVernacularMaterialsAndContentType_IncompatibleWithAudience_ThrowsInvalidOperationException()
+		{
+			_helper.SetAudience(AudienceType.Training);
+			Assert.Throws<InvalidOperationException>(
+				() => _helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.BibleBackground)
+			);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetVernacularMaterialsAndContentType_CompatibleWithAudience_IncludedInMetsData()
+		{
+			_helper.SetAudience(AudienceType.Vernacular);
+			_helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.LiteracyEducation_Riddles);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kAudience + "\":\"" + ArchivingDlgViewModel.kAudienceVernacular + "\",\"" +
+				ArchivingDlgViewModel.kVernacularMaterialsType + "\":\"" + ArchivingDlgViewModel.kVernacularMaterialGeneral + "\",\"" +
+				ArchivingDlgViewModel.kVernacularContent + "\":\"Riddles\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetVernacularMaterialsAndContentType_MixOfScriptureAndOther_ThrowsArgumentException()
+		{
+			Assert.Throws<ArgumentException>(
+				() => _helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.BibleStory | VernacularMaterialsType.CommunityAndCulture_Calendar)
+			);
+		}
+		#endregion
+
+		#region SetAbstract tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAbstract_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetAbstract("This is pretty abstract", "eng");
+			Dictionary<string, string> foreignLanguageAbstracts = new Dictionary<string, string>();
+			foreignLanguageAbstracts["fra"] = "C'est assez abstrait";
+			foreignLanguageAbstracts["spa"] = "Esto es bastante abstracto";
+			Assert.Throws<InvalidOperationException>(
+				() => _helper.SetAbstract(foreignLanguageAbstracts)
+				);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAbstract_Null_ThrowsArgumentNullException()
+		{
+			Assert.Throws<ArgumentNullException>(() => _helper.SetAbstract(null));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAbstract_ThreeLanguages_IncludedInMetsData()
+		{
+			Dictionary<string, string> abstracts = new Dictionary<string, string>();
+			abstracts["eng"] = "This is pretty abstract";
+			abstracts["fra"] = "C'est assez abstrait";
+			abstracts["spa"] = "Esto es bastante abstracto";
+			_helper.SetAbstract(abstracts);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
+				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
+				"\"0\":{\" \":\"This is pretty abstract\",\"lang\":\"eng\"}," +
+				"\"1\":{\" \":\"C'est assez abstrait\",\"lang\":\"fra\"}," +
+				"\"2\":{\" \":\"Esto es bastante abstracto\",\"lang\":\"spa\"}}}",
+				data);
+		}
+		#endregion
+
+		#region SetAudioVideoExtent tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudioVideoExtent_FreeFormString_IncludedInMetsData()
+		{
+			_helper.SetAudioVideoExtent("6 and a half seconds");
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kRecordingExtent + "\":\"6 and a half seconds\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudioVideoExtent_ValidTimeSpan_IncludedInMetsData()
+		{
+			TimeSpan duration = new TimeSpan(0, 2, 3, 4);
+			_helper.SetAudioVideoExtent(duration);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kRecordingExtent + "\":\"02:03:04\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetAudioVideoExtent_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetAudioVideoExtent("twelve years or more");
+			TimeSpan duration = new TimeSpan(0, 2, 3, 4);
+			Assert.Throws<InvalidOperationException>(() => _helper.SetAudioVideoExtent(duration));
+		}
+		#endregion
+
+		#region SetContentLanguages tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetContentLanguages_TwoLanguages_IncludedInMetsData()
+		{
+			_helper.SetContentLanguages("eng", "fra");
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kContentLanguages + "\":{\"0\":{\" \":\"eng:English\"},\"1\":{\" \":\"fra:French\"}}}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetContentLanguages_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetContentLanguages("eng", "fra");
+			Assert.Throws<InvalidOperationException>(() => _helper.SetContentLanguages("spa", "fra"));
+		}
+		#endregion
+
+		#region SetContributors tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetContributors_Null_ThrowsArgumentNullException()
+		{
+			Assert.Throws<ArgumentNullException>(() => _helper.SetContributors(null));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetContributors_Empty_NoChangeToMetsData()
+		{
+			var dataBefore = _helper.GetUnencodedMetsData();
+			var empty = new ContributionCollection();
+			_helper.SetContributors(empty);
+			var dataAfter = _helper.GetUnencodedMetsData();
+			Assert.AreEqual(dataBefore, dataAfter);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetContributors_TwoContributors_IncludedInMetsData()
+		{
+			var contributors = new ContributionCollection();
+			OlacSystem olacSystem = new OlacSystem();
+			contributors.Add(new Contribution("Erkel", olacSystem.GetRoleByCodeOrThrow("author")));
+			contributors.Add(new Contribution("Sungfu", olacSystem.GetRoleByCodeOrThrow("recorder")));
+			_helper.SetContributors(contributors);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kContributor + "\":{\"0\":{\" \":\"Erkel\",\"role\":\"author\"},\"1\":{\" \":\"Sungfu\",\"role\":\"recorder\"}}}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetContributors_SetTwice_ThrowsInvalidOperationException()
+		{
+			var contributors = new ContributionCollection();
+			OlacSystem olacSystem = new OlacSystem();
+			Role role = olacSystem.GetRoleByCodeOrThrow("author");
+			var contrib = new Contribution("Erkel", role);
+			contributors.Add(contrib);
+			_helper.SetContributors(contributors);
+			Assert.Throws<InvalidOperationException>(() => _helper.SetContributors(contributors));
+		}
+		#endregion
+
+		#region SetCreationDate tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetCreationDate_FreeFormString_IncludedInMetsData()
+		{
+			_helper.SetCreationDate("four years ago");
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kDateCreated + "\":\"four years ago\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetCreationDate_ValidTimeSpan_IncludedInMetsData()
+		{
+			DateTime creationDate = new DateTime(2012, 4, 13);
+			_helper.SetCreationDate(creationDate);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kDateCreated + "\":\"2012-04-13\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetCreationDate_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetCreationDate("tomorrow");
+			Assert.Throws<InvalidOperationException>(() => _helper.SetCreationDate(new DateTime(2012, 4, 13)));
+		}
+		#endregion
+
+		#region SetDatasetExtent tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetDatasetExtent_FreeFormString_IncludedInMetsData()
+		{
+			_helper.SetDatasetExtent("6 voice records and maybe an odd text file or two");
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
+				ArchivingDlgViewModel.kDatasetExtent + "\":\"6 voice records and maybe an odd text file or two\"}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetDatasetExtent_SetTwice_ThrowsInvalidOperationException()
+		{
+			_helper.SetDatasetExtent("practically nothing");
+			Assert.Throws<InvalidOperationException>(() => _helper.SetDatasetExtent("lots of data"));
+		}
+		#endregion
+
+		#region SetDescription tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetDescription_Null_ThrowsArgumentNullException()
+		{
+			Assert.Throws<ArgumentNullException>(() => _helper.SetDescription(null));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetDescription_Empty_NoChangeToMetsData()
+		{
+			var dataBefore = _helper.GetUnencodedMetsData();
+			_helper.SetDescription(new Dictionary<string, string>());
+			var dataAfter = _helper.GetUnencodedMetsData();
+			Assert.AreEqual(dataBefore, dataAfter);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetDescription_TwoLanguages_IncludedInMetsData()
+		{
+			var descriptions = new Dictionary<string, string>();
+			descriptions["eng"] = "General data";
+			descriptions["spa"] = "Datos generales";
+			_helper.SetDescription(descriptions);
+			var data = _helper.GetUnencodedMetsData();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" + ArchivingDlgViewModel.kFlagHasGeneralDescription + "\":\"Y\",\"" +
+				ArchivingDlgViewModel.kGeneralDescription + "\":{\"0\":{\" \":\"General data\",\"lang\":\"eng\"},\"1\":{\" \":\"Datos generales\",\"lang\":\"spa\"}}}",
+				data);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SetDescription_SetTwice_ThrowsInvalidOperationException()
+		{
+			var descriptions = new Dictionary<string, string>();
+			descriptions["eng"] = "General data";
+			_helper.SetDescription(descriptions);
+			Assert.Throws<InvalidOperationException>(() => _helper.SetDescription(descriptions));
+		}
+		#endregion
+
+		[Test]
+		public void GetEnglishName_GetFromCulture_ReturnsEnglishName()
+		{
+			var eng = new ArchivingLanguage("eng");
+			var fra = new ArchivingLanguage("fra");
+			var spa = new ArchivingLanguage("spa");
+			Assert.AreEqual("English", eng.EnglishName);
+			Assert.AreEqual("French", fra.EnglishName);
+			Assert.AreEqual("Spanish", spa.EnglishName);
+		}
+
+		#region Private helper methods
 		/// ------------------------------------------------------------------------------------
 		private string GetFileDescription(string key, string file)
 		{
@@ -252,5 +609,6 @@ namespace SIL.Archiving.Tests
 			if (key != string.Empty)
 				bldr.Insert(0, "__AppSpecific__");
 		}
+		#endregion
 	}
 }

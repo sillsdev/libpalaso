@@ -73,6 +73,9 @@
 	<Reference Include="nunit.framework">
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
+	<Reference Include="PalasoUIWindowsForms">
+	  <HintPath>..\output\Debug\PalasoUIWindowsForms.dll</HintPath>
+	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core" />
 	<Reference Include="System.Drawing" />
