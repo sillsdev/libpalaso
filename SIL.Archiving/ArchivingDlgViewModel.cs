@@ -262,7 +262,7 @@ namespace SIL.Archiving
 				throw new ArgumentNullException("id");
 			_id = id;
 
-			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _title)});
+			_metsPairs = new List<string>(new[] { JSONUtils.MakeKeyValuePair(kPackageTitle, _title) });
 
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
@@ -675,7 +675,7 @@ namespace SIL.Archiving
 			if (stage.HasFlag(WorkStage.UsedInTrainingCourse))
 				SetStage(kStageUsedInCourse);
 			if (stage.HasFlag(WorkStage.ReadyForPublicationOrFormalPreprint))
-						{
+			{
 				PreventInvalidAudienceTypeForWorkStage(AudienceType.Vernacular | AudienceType.Internal,
 					WorkStage.ReadyForPublicationOrFormalPreprint);
 				SetStage(kStagePrepublication);
@@ -1376,7 +1376,7 @@ namespace SIL.Archiving
 			{
 				// I can't figure out why neither of these work.
 				BringWindowToTop(processes[0].MainWindowHandle.ToInt32());
-//				SetForegroundWindow(processes[0].MainWindowHandle.ToInt32());
+				//				SetForegroundWindow(processes[0].MainWindowHandle.ToInt32());
 			}
 #else
 			// Figure out how to do this in MONO
@@ -1403,7 +1403,7 @@ namespace SIL.Archiving
 			IsBusy = true;
 			LogBox.Clear();
 
-			var	success = CreateMetsFile() != null;
+			var success = CreateMetsFile() != null;
 
 			if (success)
 				success = CreateRampPackage();
@@ -1463,7 +1463,7 @@ namespace SIL.Archiving
 			return _metsFilePath;
 		}
 
-		 /// ------------------------------------------------------------------------------------
+		/// ------------------------------------------------------------------------------------
 		private void SetMetsPairsForFiles()
 		{
 			if (_fileLists != null)
@@ -1658,7 +1658,7 @@ namespace SIL.Archiving
 				foreach (var list in _fileLists)
 				{
 					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-						string.IsNullOrEmpty(list.Key) ? _id: list.Key);
+						string.IsNullOrEmpty(list.Key) ? _id : list.Key);
 					foreach (var file in list.Value.Item1)
 					{
 						string newFileName = Path.GetFileName(file);
