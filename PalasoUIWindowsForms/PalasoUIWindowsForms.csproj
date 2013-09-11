@@ -121,6 +121,10 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
 	</None>
+	<None Include="Registration\Registration.settings">
+	  <Generator>PublicSettingsSingleFileGenerator</Generator>
+	  <LastGenOutput>Registration.Designer.cs</LastGenOutput>
+	</None>
 	<None Include="SettingProtection\SettingsProtection1.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
@@ -350,6 +354,11 @@
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
 	<Compile Include="ReflectionHelper.cs" />
+	<Compile Include="Registration\Registration.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	  <DependentUpon>Registration.settings</DependentUpon>
+	</Compile>
 	<Compile Include="ReleaseNotes\MarkdownSharp.cs" />
 	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
 	  <AutoGen>True</AutoGen>
