@@ -304,9 +304,13 @@ namespace SIL.Archiving
 
 			LogBox.WriteMessage(text);
 			Application.DoEvents();
+
+#if !__MonoCS__
 			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(kRampFileExtension) ??
 				FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
-
+#else
+			_rampProgramPath = FileLocator.LocateInProgramFiles("RAMP", true);
+#endif
 			LogBox.Clear();
 
 			if (_rampProgramPath == null)
@@ -1503,7 +1507,7 @@ namespace SIL.Archiving
 					GetSourceFilesForMetsData(_fileLists)));
 
 				if (ImageCount > 0)
-					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} images",ImageCount.ToString(CultureInfo.InvariantCulture))));
+					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} images", ImageCount.ToString(CultureInfo.InvariantCulture))));
 			}
 		}
 
