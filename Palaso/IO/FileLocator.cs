@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using Microsoft.Win32;
 using Palaso.Code;
 using Palaso.Reporting;
@@ -303,20 +302,33 @@ namespace Palaso.IO
 		///		  (sub folders) is searched.
 		///		- If fallBackToDeepSearch is false, then only the top-level program files
 		///		  folder is searched.
+		///
+		/// Note: For Mono the deep search and shallow search are the same because there
+		///		normally are no sub-directories in the program files directories.
+		///
+		/// Note: For Mono the subFoldersToSearch parameter is ignored.
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string LocateInProgramFiles(string exeName, bool fallBackToDeepSearch,
 			params string[] subFoldersToSearch)
 		{
+#if !__MonoCS__
 			var tgtPath = LocateInProgramFilesUsingShallowSearch(exeName, subFoldersToSearch);
 			if (tgtPath != null)
 				return tgtPath;
 
 			return (!fallBackToDeepSearch ? null :
 				LocateInProgramFilesUsingDeepSearch(exeName, subFoldersToSearch));
+#else
+			// For Mono, the deep search and shallow search are the same because there
+			// normally are no sub-directories in the program files directories.
+
+			// The subFoldersToSearch parameter is not valid on Linux.
+			return LocateInProgramFilesUsingDeepSearch(exeName);
+#endif
 		}
 
-		/// ------------------------------------------------------------------------------------
 		private static string LocateInProgramFilesUsingShallowSearch(string exeName,
 			params string[] subFoldersToSearch)
 		{
@@ -369,9 +381,21 @@ namespace Palaso.IO
 		/// ------------------------------------------------------------------------------------
 		public static string GetFromRegistryProgramThatOpensFileType(string fileExtension)
 		{
-#if MONO
+#if __MonoCS__
+			//------------------------------------------------------------------------------------
+			// The following command will output the mime type of an existing file, Phil.html:
+			//    file -b --mime-type ~/Phil.html
+			//
+			// This command will tell you the default application to open the file Phil.html:
+			//    ext=$(grep "$(file -b --mime-type ~/Phil.html)" /etc/mime.types
+			//        | awk '{print $1}') && xdg-mime query default $ext
+			//
+			// This command will open the file Phil.html using the default application:
+			//    xdg-open ~/Page.html
+			//------------------------------------------------------------------------------------
+
 			throw new NotImplementedException("GetFromRegistryProgramThatOpensFileType not implemented on Mono yet.");
-#else
+#endif
 			var ext = fileExtension.Trim();
 			if (!ext.StartsWith("."))
 				ext = "." + ext;
@@ -398,7 +422,6 @@ namespace Palaso.IO
 
 			value = value.Trim('\"', '%', '1', ' ');
 			return (!File.Exists(value) ? null : value);
-#endif
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -410,9 +433,16 @@ namespace Palaso.IO
 		/// ------------------------------------------------------------------------------------
 		private static IEnumerable<string> GetPossibleProgramFilesFolders()
 		{
+#if !__MonoCS__
 			var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			yield return pf.Replace(" (x86)", string.Empty);
 			yield return pf.Replace(" (x86)", string.Empty) + " (x86)";
+#else
+			yield return "/opt"; // RAMP is installed in the /opt directory by default
+			yield return "/usr/local/bin";
+			yield return "/usr/bin";
+			yield return "/bin";
+#endif
 		}
 
 		#endregion

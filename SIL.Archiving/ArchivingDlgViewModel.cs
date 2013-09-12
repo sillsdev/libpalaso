@@ -304,9 +304,13 @@ namespace SIL.Archiving
 
 			LogBox.WriteMessage(text);
 			Application.DoEvents();
+
+#if !__MonoCS__
 			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(kRampFileExtension) ??
 				FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
-
+#else
+			_rampProgramPath = FileLocator.LocateInProgramFiles("RAMP", true);
+#endif
 			LogBox.Clear();
 
 			if (_rampProgramPath == null)
