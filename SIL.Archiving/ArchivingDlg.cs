@@ -72,6 +72,9 @@ namespace SIL.Archiving
 				"If the word 'RAMP' is not found, the text will not contain that hyperlink.",
 				null, null, _linkOverview), _viewModel.AppName, appSpecificArchivalProcessInfo);
 
+			// this is for a display problem in mono
+			_linkOverview.SizeToContents();
+
 			_linkOverview.Links.Clear();
 			if (model.ProgramDialogFont != null)
 				_linkOverview.Font = model.ProgramDialogFont;
