@@ -219,26 +219,23 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
-			//try
-			//{
-			//    var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
-			//    if (family != null)
-			//    {
-			//        if (family.IsStyleAvailable(style))
-			//            return new Font(family, size, style, GraphicsUnit.Point);
+			FontFamily first = null;
 
-			//        for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
-			//        {
-			//            if (family.IsStyleAvailable(style))
-			//                return new Font(family, size, style, GraphicsUnit.Point);
-			//        }
-			//    }
-			//}
-			//catch { }
+			foreach(var family in FontFamily.Families.Where(f => f.Name == fontName))
+			{
+				if (family.IsStyleAvailable(style))
+					return new Font(family, size, style, GraphicsUnit.Point);
 
-			//return (Font)UIFont.Clone();
+				if (first == null)
+					first = family;
+			}
 
-			// the block above does not work correctly on mono
+			if (first != null)
+				return new Font(first, size, GraphicsUnit.Point);
+
+			return (Font)UIFont.Clone();
+
+
 			//foreach (var family in FontFamily.Families)
 			//{
 			//    if (family.Name != fontName) continue;
@@ -249,10 +246,10 @@ namespace Palaso.UI.WindowsForms
 			//}
 
 			// if the requested font was not found, use the default font
-			var defaultFamily = SystemFonts.IconTitleFont.FontFamily;
-			return defaultFamily.IsStyleAvailable(style)
-				? new Font(defaultFamily, size, style, GraphicsUnit.Point)
-				: new Font(defaultFamily, size, GraphicsUnit.Point);
+			//var defaultFamily = SystemFonts.IconTitleFont.FontFamily;
+			//return defaultFamily.IsStyleAvailable(style)
+			//    ? new Font(defaultFamily, size, style, GraphicsUnit.Point)
+			//    : new Font(defaultFamily, size, GraphicsUnit.Point);
 		}
 
 		/// --------------------------------------------------------------------------------
