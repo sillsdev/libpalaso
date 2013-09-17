@@ -219,24 +219,40 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
-			try
+			//try
+			//{
+			//    var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
+			//    if (family != null)
+			//    {
+			//        if (family.IsStyleAvailable(style))
+			//            return new Font(family, size, style, GraphicsUnit.Point);
+
+			//        for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
+			//        {
+			//            if (family.IsStyleAvailable(style))
+			//                return new Font(family, size, style, GraphicsUnit.Point);
+			//        }
+			//    }
+			//}
+			//catch { }
+
+			//return (Font)UIFont.Clone();
+
+			// the block above does not work correctly on mono
+			foreach (var family in FontFamily.Families)
 			{
-				var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
-				if (family != null)
-				{
-					if (family.IsStyleAvailable(style))
-						return new Font(family, size, style, GraphicsUnit.Point);
+				if (family.Name != fontName) continue;
 
-					for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
-					{
-						if (family.IsStyleAvailable(style))
-							return new Font(family, size, style, GraphicsUnit.Point);
-					}
-				}
+				return family.IsStyleAvailable(style)
+					? new Font(family, size, style, GraphicsUnit.Point)
+					: new Font(family, size, GraphicsUnit.Point);
 			}
-			catch { }
 
-			return (Font)UIFont.Clone();
+			// if the requested font was not found, use the default font
+			var defaultFamily = SystemFonts.IconTitleFont.FontFamily;
+			return defaultFamily.IsStyleAvailable(style)
+				? new Font(defaultFamily, size, style, GraphicsUnit.Point)
+				: new Font(defaultFamily, size, GraphicsUnit.Point);
 		}
 
 		/// --------------------------------------------------------------------------------
