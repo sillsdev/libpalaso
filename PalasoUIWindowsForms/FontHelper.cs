@@ -237,7 +237,7 @@ namespace Palaso.UI.WindowsForms
 			//catch { }
 
 			// the linq code in the commented block above does not work on mono
-			foreach (var family in FontFamily.Families.Where(family => family.Name == fontName))
+			foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
 			{
 				if (family.IsStyleAvailable(style))
 					return new Font(family, size, style, GraphicsUnit.Point);
@@ -250,11 +250,10 @@ namespace Palaso.UI.WindowsForms
 			}
 
 			// check if UIFont has been initialized
-			//var test = UIFont;
-			//if (test == null)
-			//    ResetFonts();
-
-			return (Font)UIFont.Clone();
+			using (var defaultFont = UIFont)
+			{
+				return (defaultFont != null) ? (Font)defaultFont.Clone() : (Font)SystemFonts.MenuFont.Clone();
+			}
 		}
 
 		/// --------------------------------------------------------------------------------
