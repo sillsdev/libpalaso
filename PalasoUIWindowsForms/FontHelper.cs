@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Linq;
@@ -219,42 +220,26 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
+			FontFamily found = null;
 
-			FontFamily first = null;
-
+			// I'm not sure why this try catch block is here, but TeamCity fails with error 139 if I remove it.
 			try
 			{
-				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
-				{
-					if (family.IsStyleAvailable(style))
-						return new Font(family, size, style, GraphicsUnit.Point);
+				// search for the font on this system
+				var families = FontFamily.Families.Where(f => f.Name == fontName).ToList();
 
-					if (first == null)
-						first = family;
-				}
+				if (families.Count > 0)
+					found = families[0];
 			}
-			catch {}
-
-			if (first != null)
-				return new Font(first, size, GraphicsUnit.Point);
-
-			return (Font)UIFont.Clone();
-
-
-			//foreach (var family in FontFamily.Families)
-			//{
-			//    if (family.Name != fontName) continue;
-
-			//    return family.IsStyleAvailable(style)
-			//        ? new Font(family, size, style, GraphicsUnit.Point)
-			//        : new Font(family, size, GraphicsUnit.Point);
-			//}
+			catch { }
 
 			// if the requested font was not found, use the default font
-			//var defaultFamily = SystemFonts.IconTitleFont.FontFamily;
-			//return defaultFamily.IsStyleAvailable(style)
-			//    ? new Font(defaultFamily, size, style, GraphicsUnit.Point)
-			//    : new Font(defaultFamily, size, GraphicsUnit.Point);
+			if (found == null)
+				found = SystemFonts.IconTitleFont.FontFamily;
+
+			return found.IsStyleAvailable(style)
+				? new Font(found, size, style, GraphicsUnit.Point)
+				: new Font(found, size, GraphicsUnit.Point);
 		}
 
 		/// --------------------------------------------------------------------------------
