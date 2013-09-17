@@ -44,6 +44,8 @@ namespace PalasoUIWindowsForms.Tests.FontTests
 
 				break;
 			}
+
+			Assert.IsTrue(true);
 		}
 	}
 }
