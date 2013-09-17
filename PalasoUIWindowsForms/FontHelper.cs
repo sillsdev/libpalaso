@@ -219,22 +219,40 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
-			try
+			//try
+			//{
+			//    var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
+			//    if (family != null)
+			//    {
+			//        if (family.IsStyleAvailable(style))
+			//            return new Font(family, size, style, GraphicsUnit.Point);
+
+			//        for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
+			//        {
+			//            if (family.IsStyleAvailable(style))
+			//                return new Font(family, size, style, GraphicsUnit.Point);
+			//        }
+			//    }
+			//}
+			//catch { }
+
+			// the linq code in the commented block above does not work on mono
+			foreach (var family in FontFamily.Families.Where(family => family.Name == fontName))
 			{
-				var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
-				if (family != null)
+				if (family.IsStyleAvailable(style))
+					return new Font(family, size, style, GraphicsUnit.Point);
+
+				for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
 				{
 					if (family.IsStyleAvailable(style))
 						return new Font(family, size, style, GraphicsUnit.Point);
-
-					for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
-					{
-						if (family.IsStyleAvailable(style))
-							return new Font(family, size, style, GraphicsUnit.Point);
-					}
 				}
 			}
-			catch { }
+
+			// check if UIFont has been initialized
+			var test = UIFont;
+			if (test == null)
+				ResetFonts();
 
 			return (Font)UIFont.Clone();
 		}
