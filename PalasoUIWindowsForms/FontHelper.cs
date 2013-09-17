@@ -219,41 +219,24 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
-			//try
-			//{
-			//    var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
-			//    if (family != null)
-			//    {
-			//        if (family.IsStyleAvailable(style))
-			//            return new Font(family, size, style, GraphicsUnit.Point);
-
-			//        for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
-			//        {
-			//            if (family.IsStyleAvailable(style))
-			//                return new Font(family, size, style, GraphicsUnit.Point);
-			//        }
-			//    }
-			//}
-			//catch { }
-
-			// the linq code in the commented block above does not work on mono
-			foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
+			try
 			{
-				if (family.IsStyleAvailable(style))
-					return new Font(family, size, style, GraphicsUnit.Point);
-
-				for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
+				var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
+				if (family != null)
 				{
 					if (family.IsStyleAvailable(style))
 						return new Font(family, size, style, GraphicsUnit.Point);
+
+					for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
+					{
+						if (family.IsStyleAvailable(style))
+							return new Font(family, size, style, GraphicsUnit.Point);
+					}
 				}
 			}
+			catch { }
 
-			// check if UIFont has been initialized
-			using (var defaultFont = UIFont)
-			{
-				return (defaultFont != null) ? (Font)defaultFont.Clone() : (Font)SystemFonts.MenuFont.Clone();
-			}
+			return (Font)UIFont.Clone();
 		}
 
 		/// --------------------------------------------------------------------------------
