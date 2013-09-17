@@ -219,16 +219,21 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
+
 			FontFamily first = null;
 
-			foreach(var family in FontFamily.Families.Where(f => f.Name == fontName))
+			try
 			{
-				if (family.IsStyleAvailable(style))
-					return new Font(family, size, style, GraphicsUnit.Point);
+				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
+				{
+					if (family.IsStyleAvailable(style))
+						return new Font(family, size, style, GraphicsUnit.Point);
 
-				if (first == null)
-					first = family;
+					if (first == null)
+						first = family;
+				}
 			}
+			catch {}
 
 			if (first != null)
 				return new Font(first, size, GraphicsUnit.Point);
