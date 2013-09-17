@@ -239,14 +239,14 @@ namespace Palaso.UI.WindowsForms
 			//return (Font)UIFont.Clone();
 
 			// the block above does not work correctly on mono
-			foreach (var family in FontFamily.Families)
-			{
-				if (family.Name != fontName) continue;
+			//foreach (var family in FontFamily.Families)
+			//{
+			//    if (family.Name != fontName) continue;
 
-				return family.IsStyleAvailable(style)
-					? new Font(family, size, style, GraphicsUnit.Point)
-					: new Font(family, size, GraphicsUnit.Point);
-			}
+			//    return family.IsStyleAvailable(style)
+			//        ? new Font(family, size, style, GraphicsUnit.Point)
+			//        : new Font(family, size, GraphicsUnit.Point);
+			//}
 
 			// if the requested font was not found, use the default font
 			var defaultFamily = SystemFonts.IconTitleFont.FontFamily;
