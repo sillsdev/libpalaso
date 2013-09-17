@@ -250,9 +250,9 @@ namespace Palaso.UI.WindowsForms
 			}
 
 			// check if UIFont has been initialized
-			var test = UIFont;
-			if (test == null)
-				ResetFonts();
+			//var test = UIFont;
+			//if (test == null)
+			//    ResetFonts();
 
 			return (Font)UIFont.Clone();
 		}
