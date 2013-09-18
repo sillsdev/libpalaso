@@ -39,5 +39,15 @@ namespace PalasoUIWindowsForms.Tests.FontTests
 				break;
 			}
 		}
+
+		[Test]
+		public void MakeFont_InvalidFontName_ValidFont()
+		{
+			const string invalidName = "SomeInvalidName";
+			using (var returnFont = FontHelper.MakeFont(invalidName))
+			{
+				Assert.AreNotEqual(invalidName, returnFont.FontFamily.Name);
+			}
+		}
 	}
 }

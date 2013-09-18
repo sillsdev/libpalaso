@@ -222,14 +222,12 @@ namespace Palaso.UI.WindowsForms
 		{
 			FontFamily found = null;
 
-			// I'm not sure why this try catch block is here, but TeamCity fails with error 139 if I remove it.
+			// I'm not sure why this try catch block is here, but on TeamCity
+			// it fails with exit code 139 if I remove it.
 			try
 			{
 				// search for the font on this system
-				var families = FontFamily.Families.Where(f => f.Name == fontName).ToList();
-
-				if (families.Count > 0)
-					found = families[0];
+				found = FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
 			}
 			catch
 			{
