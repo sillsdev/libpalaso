@@ -220,8 +220,6 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
-			FontFamily found = null;
-
 			// I'm not sure why this try catch block is here, but on TeamCity
 			// it fails with exit code 139 if I remove it.
 			try
@@ -232,11 +230,9 @@ namespace Palaso.UI.WindowsForms
 				{
 					if (family.Name != fontName) continue;
 
-					if (family.IsStyleAvailable(style))
-						return new Font(family, size, style, GraphicsUnit.Point);
-
-					if (found == null)
-						found = family;
+					return family.IsStyleAvailable(style)
+						? new Font(family, size, style, GraphicsUnit.Point)
+						: new Font(family, size, GraphicsUnit.Point);
 				}
 			}
 			catch
@@ -245,12 +241,11 @@ namespace Palaso.UI.WindowsForms
 			}
 
 			// if the requested font was not found, use the default font
-			if (found == null)
-				found = SystemFonts.IconTitleFont.FontFamily;
+			var defaultFont = SystemFonts.IconTitleFont.FontFamily;
 
-			return found.IsStyleAvailable(style)
-				? new Font(found, size, style, GraphicsUnit.Point)
-				: new Font(found, size, GraphicsUnit.Point);
+			return defaultFont.IsStyleAvailable(style)
+				? new Font(defaultFont, size, style, GraphicsUnit.Point)
+				: new Font(defaultFont, size, GraphicsUnit.Point);
 		}
 
 		/// --------------------------------------------------------------------------------
