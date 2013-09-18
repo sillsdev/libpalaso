@@ -231,12 +231,14 @@ namespace Palaso.UI.WindowsForms
 				if (families.Count > 0)
 					found = families[0];
 			}
-			finally
+			catch
 			{
-				// if the requested font was not found, use the default font
-				if (found == null)
-					found = SystemFonts.IconTitleFont.FontFamily;
+				throw;
 			}
+
+			// if the requested font was not found, use the default font
+			if (found == null)
+				found = SystemFonts.IconTitleFont.FontFamily;
 
 			return found.IsStyleAvailable(style)
 				? new Font(found, size, style, GraphicsUnit.Point)
