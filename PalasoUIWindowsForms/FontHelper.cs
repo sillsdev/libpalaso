@@ -230,9 +230,10 @@ namespace Palaso.UI.WindowsForms
 				{
 					if (family.Name != fontName) continue;
 
-					return family.IsStyleAvailable(style)
-						? new Font(family, size, style, GraphicsUnit.Point)
-						: new Font(family, size, GraphicsUnit.Point);
+					if (family.IsStyleAvailable(style))
+						return new Font(family, size, style, GraphicsUnit.Point);
+					else
+						return new Font(family, size, GraphicsUnit.Point);
 				}
 			}
 			catch
@@ -243,9 +244,10 @@ namespace Palaso.UI.WindowsForms
 			// if the requested font was not found, use the default font
 			var defaultFont = SystemFonts.IconTitleFont.FontFamily;
 
-			return defaultFont.IsStyleAvailable(style)
-				? new Font(defaultFont, size, style, GraphicsUnit.Point)
-				: new Font(defaultFont, size, GraphicsUnit.Point);
+			if (defaultFont.IsStyleAvailable(style))
+				return new Font(defaultFont, size, style, GraphicsUnit.Point);
+			else
+				return new Font(defaultFont, size, GraphicsUnit.Point);
 		}
 
 		/// --------------------------------------------------------------------------------
