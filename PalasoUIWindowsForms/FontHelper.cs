@@ -231,7 +231,10 @@ namespace Palaso.UI.WindowsForms
 				if (families.Count > 0)
 					found = families[0];
 			}
-			catch { }
+			catch (Exception e)
+			{
+				throw;
+			}
 
 			// if the requested font was not found, use the default font
 			if (found == null)
