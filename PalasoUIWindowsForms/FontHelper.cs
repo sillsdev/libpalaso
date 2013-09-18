@@ -227,7 +227,7 @@ namespace Palaso.UI.WindowsForms
 			try
 			{
 				// search for the font on this system that supports the requested style
-				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
+				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName).ToList())
 				{
 					if (family.IsStyleAvailable(style))
 						return new Font(family, size, style, GraphicsUnit.Point);
