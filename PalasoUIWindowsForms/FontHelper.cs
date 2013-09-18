@@ -227,15 +227,14 @@ namespace Palaso.UI.WindowsForms
 			try
 			{
 				// search for the font on this system that supports the requested style
-				var families = FontFamily.Families.Where(f => (f.Name == fontName) && (f.IsStyleAvailable(style))).ToList();
+				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
+				{
+					if (family.IsStyleAvailable(style))
+						return new Font(family, size, style, GraphicsUnit.Point);
 
-				// in none found, search for the font ignoring the supported styles
-				if (families.Count == 0)
-					families = FontFamily.Families.Where(f => f.Name == fontName).ToList();
-
-				// if fonts were found, use the first one
-				if (families.Count > 0)
-					found = families[0];
+					if (found == null)
+						found = family;
+				}
 			}
 			catch
 			{
