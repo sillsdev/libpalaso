@@ -238,9 +238,11 @@ namespace Palaso.UI.WindowsForms
 				if (found == null)
 					found = SystemFonts.IconTitleFont.FontFamily;
 
-				return found.IsStyleAvailable(style)
-					? new Font(found, size, style, GraphicsUnit.Point)
-					: new Font(found, size, GraphicsUnit.Point);
+				if (found.IsStyleAvailable(style))
+					return new Font(found, size, style, GraphicsUnit.Point);
+
+				return new Font(found, size, GraphicsUnit.Point);
+
 			}
 			catch (Exception e)
 			{
