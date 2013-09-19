@@ -221,26 +221,30 @@ namespace Palaso.UI.WindowsForms
 		{
 			try
 			{
-				FontFamily found = null; // FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
+				string familyName = null;
+				bool supportsStyle = false;
 
 				// on Linux it is possible to get multiple font families with the same name
 				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
 				{
 					// if the font supports the requested style, use it now
 					if (family.IsStyleAvailable(style))
-						return new Font(family, size, style, GraphicsUnit.Point);
+						return new Font(family.Name, size, style, GraphicsUnit.Point);
 
 					// keep looking if the font has the correct name, but does not support the desired style
-					found = family;
+					familyName = family.Name;
 				}
 
 				// if the requested font was not found, use the default font
-				if (found == null)
-					found = UIFont.FontFamily;
+				if (string.IsNullOrEmpty(familyName))
+				{
+					familyName = UIFont.FontFamily.Name;
+					supportsStyle = UIFont.FontFamily.IsStyleAvailable(style);
+				}
 
-				return found.IsStyleAvailable(style)
-					? new Font(found, size, style, GraphicsUnit.Point)
-					: new Font(found, size, GraphicsUnit.Point);
+				return supportsStyle
+					? new Font(familyName, size, style, GraphicsUnit.Point)
+					: new Font(familyName, size, GraphicsUnit.Point);
 			}
 			catch (Exception e)
 			{
