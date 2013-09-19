@@ -221,28 +221,18 @@ namespace Palaso.UI.WindowsForms
 		{
 			try
 			{
-				FontFamily family = null; // FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
+				FontFamily found = null; // FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
 
-				foreach (FontFamily f in FontFamily.Families)
-				{
-					if (f.Name == fontName)
-					{
-						family = f;
-						break;
-					}
-				}
-
-				if (family != null)
+				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
 				{
 					if (family.IsStyleAvailable(style))
 						return new Font(family, size, style, GraphicsUnit.Point);
 
-					for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
-					{
-						if (family.IsStyleAvailable(style))
-							return new Font(family, size, style, GraphicsUnit.Point);
-					}
+					found = family;
 				}
+
+				if (found != null)
+					return new Font(found, size, GraphicsUnit.Point);
 			}
 			catch { }
 
