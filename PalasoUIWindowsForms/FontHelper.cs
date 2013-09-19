@@ -221,7 +221,17 @@ namespace Palaso.UI.WindowsForms
 		{
 			try
 			{
-				var family = FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
+				FontFamily family = null; // FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
+
+				foreach (FontFamily f in FontFamily.Families)
+				{
+					if (f.Name == fontName)
+					{
+						family = f;
+						break;
+					}
+				}
+
 				if (family != null)
 				{
 					if (family.IsStyleAvailable(style))
