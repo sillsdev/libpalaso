@@ -240,9 +240,8 @@ namespace Palaso.UI.WindowsForms
 
 				if (found.IsStyleAvailable(style))
 					return new Font(found, size, style, GraphicsUnit.Point);
-
-				return new Font(found, size, GraphicsUnit.Point);
-
+				else
+					return new Font(found, size, GraphicsUnit.Point);
 			}
 			catch (Exception e)
 			{
