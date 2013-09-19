@@ -25,7 +25,7 @@ namespace PalasoUIWindowsForms.Tests.FontTests
 		public void MakeFont_FontNameAndStyle_ValidFont()
 		{
 			// find a bold font
-			var family = FontFamily.Families.FirstOrDefault(f => f.IsStyleAvailable(FontStyle.Bold));
+			var family = FontFamily.Families.FirstOrDefault(f => (f.IsStyleAvailable(FontStyle.Regular) && f.IsStyleAvailable(FontStyle.Bold)));
 			Assert.IsNotNull(family, "No font was found on this system that supports the Bold style");
 			Console.Out.WriteLine("Using the " + family.Name + " font for this test.");
 
