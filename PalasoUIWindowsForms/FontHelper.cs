@@ -219,6 +219,8 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
+			// On Mono there is an 139 exit code if we pass a reference to the FontFamily
+			// to the Font constructor, but not if we pass the FontFamily.Name.
 			try
 			{
 				string familyName = null;

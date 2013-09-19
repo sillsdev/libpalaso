@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms;
 
@@ -25,18 +24,18 @@ namespace PalasoUIWindowsForms.Tests.FontTests
 		[Test]
 		public void MakeFont_FontNameAndStyle_ValidFont()
 		{
-			// use Times New Roman
-			foreach (var family in FontFamily.Families.Where(family => family.Name == "Times New Roman"))
+			// find a bold font
+			var family = FontFamily.Families.FirstOrDefault(f => f.IsStyleAvailable(FontStyle.Bold));
+			Assert.IsNotNull(family, "No font was found on this system that supports the Bold style");
+			Console.Out.WriteLine("Using the " + family.Name + " font for this test.");
+
+			using (var sourceFont = new Font(family, 10f, FontStyle.Regular))
 			{
-				using (var sourceFont = new Font(family, 10f, FontStyle.Regular))
+				using (var returnFont = FontHelper.MakeFont(sourceFont, FontStyle.Bold))
 				{
-					using (var returnFont = FontHelper.MakeFont(sourceFont, FontStyle.Bold))
-					{
-						Assert.AreEqual(sourceFont.FontFamily.Name, returnFont.FontFamily.Name);
-						Assert.AreEqual(FontStyle.Bold, returnFont.Style & FontStyle.Bold);
-					}
+					Assert.AreEqual(sourceFont.FontFamily.Name, returnFont.FontFamily.Name);
+					Assert.AreEqual(FontStyle.Bold, returnFont.Style & FontStyle.Bold);
 				}
-				break;
 			}
 		}
 
