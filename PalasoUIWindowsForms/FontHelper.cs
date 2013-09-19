@@ -223,20 +223,30 @@ namespace Palaso.UI.WindowsForms
 			{
 				FontFamily found = null; // FontFamily.Families.FirstOrDefault(f => f.Name == fontName);
 
+				// on Linux it is possible to get multiple font families with the same name
 				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
 				{
+					// if the font supports the requested style, use it now
 					if (family.IsStyleAvailable(style))
 						return new Font(family, size, style, GraphicsUnit.Point);
 
+					// keep looking if the font has the correct name, but does not support the desired style
 					found = family;
 				}
 
-				if (found != null)
-					return new Font(found, size, GraphicsUnit.Point);
-			}
-			catch { }
+				// if the requested font was not found, use the default font
+				if (found == null)
+					found = SystemFonts.IconTitleFont.FontFamily;
 
-			return (Font)UIFont.Clone();
+				return found.IsStyleAvailable(style)
+					? new Font(found, size, style, GraphicsUnit.Point)
+					: new Font(found, size, GraphicsUnit.Point);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
 		}
 
 		/// --------------------------------------------------------------------------------
