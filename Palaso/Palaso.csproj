@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -111,6 +111,7 @@
 	<Reference Include="System.Security" />
 	<Reference Include="System.Xml" />
 	<None Include="app.config" />
+	<None Include="Properties\Settings.settings" />
 	<None Include="Reporting\ErrorReportSettings.settings">
 	  <Generator>PublicSettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
@@ -197,6 +198,7 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resources.resx</DependentUpon>
 	</Compile>
+	<Compile Include="Properties\Settings.Designer.cs" />
 	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ConsoleErrorReporter.cs" />
@@ -209,7 +211,6 @@
 	</Compile>
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
-
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ReportingSettings.cs" />
 	<Compile Include="Reporting\UsageReporter.cs" />
@@ -329,6 +330,7 @@
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
 	<Compile Include="Xml\XmlNodeExtensions.cs" />
+	<Compile Include="Xml\XmlSerializationHelper.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
 	<Compile Include="Xml\XmlWriterExtensions.cs" />
   </ItemGroup>
@@ -338,7 +340,6 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-
 	<EmbeddedResource Include="IO\FileRelatedStrings.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>

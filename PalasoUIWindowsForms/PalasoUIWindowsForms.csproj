@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -182,10 +182,9 @@
 	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="ClearShare\Work.cs" />
-	<Compile Include="CustomDropDown.cs">
-	  <SubType>Component</SubType>
-	</Compile>
+	<Compile Include="ColorHelper.cs" />
 	<Compile Include="Extensions\ControlExtensions.cs" />
+	<Compile Include="Extensions\FormExtensions.cs" />
 	<Compile Include="FileDialogExtender\Enums.cs" />
 	<Compile Include="FileDialogExtender\Extensions.cs" />
 	<Compile Include="FileDialogExtender\FileDialogControlBase.cs">
@@ -320,6 +319,11 @@
 	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
 	</Compile>
 	<Compile Include="Miscellaneous\WaitCursor.cs" />
+	<Compile Include="PaintingHelper.cs" />
+	<Compile Include="PortableSettingsProvider\FormSettings.cs" />
+	<Compile Include="PortableSettingsProvider\GridSettings.cs" />
+	<Compile Include="PortableSettingsProvider\MruFiles.cs" />
+	<Compile Include="PortableSettingsProvider\PortableSettingsProvider.cs" />
 	<Compile Include="Progress\LogBox.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -341,6 +345,7 @@
 	</Compile>
 	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
 	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+	<Compile Include="ReflectionHelper.cs" />
 	<Compile Include="ReleaseNotes\MarkdownSharp.cs" />
 	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
 	  <AutoGen>True</AutoGen>
@@ -415,6 +420,9 @@
 	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
 	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\AutoHeightLabel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Widgets\BetterCheckedListBox.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -451,8 +459,17 @@
 	<Compile Include="Widgets\ControlListBox.designer.cs">
 	  <DependentUpon>ControlListBox.cs</DependentUpon>
 	</Compile>
+	<Compile Include="Widgets\CustomDropDown.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\EnhancedPanel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Widgets\Flying\Animator.cs" />
 	<Compile Include="Widgets\Flying\FlyingLabel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
+	<Compile Include="Widgets\HeaderLabel.cs">
 	  <SubType>Component</SubType>
 	</Compile>
 	<Compile Include="Widgets\Prompt.cs">
@@ -493,6 +510,9 @@
 	<Compile Include="Progress\TextBoxProgress.cs" />
 	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
 	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
+	<Compile Include="Widgets\XButton.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -1048,10 +1068,8 @@
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets"
-		  Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets"
-		  Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets" Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
