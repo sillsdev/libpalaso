@@ -59,7 +59,7 @@ namespace SIL.Archiving.Tests
 				string fileName = Path.Combine(tmpFolder.Path, "ddo.session");
 				File.CreateText(fileName).Close();
 				var filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
-				var fileList = new[] {Path.Combine(tmpFolder.Path, "ddo.session")};
+				var fileList = new[] { Path.Combine(tmpFolder.Path, "ddo.session") };
 				filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
 				int dummy;
 				_helper.Initialize(() => filesToAdd, out dummy, null);
@@ -148,7 +148,7 @@ namespace SIL.Archiving.Tests
 					ArchivingDlgViewModel.kModeDataset + "\",\"" +
 					ArchivingDlgViewModel.kModeSoftwareOrFont + "\",\"" +
 					ArchivingDlgViewModel.kModePhotograph + "\",\"" +
-					ArchivingDlgViewModel.kModeText +"\"]", mode);
+					ArchivingDlgViewModel.kModeText + "\"]", mode);
 			}
 			finally
 			{
@@ -318,7 +318,7 @@ namespace SIL.Archiving.Tests
 		{
 			_helper.SetAudience(AudienceType.Vernacular);
 			_helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.LiteracyEducation_Riddles);
-			var data =_helper.GetUnencodedMetsData();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				ArchivingDlgViewModel.kAudience + "\":\"" + ArchivingDlgViewModel.kAudienceVernacular + "\",\"" +
 				ArchivingDlgViewModel.kVernacularMaterialsType + "\":\"" + ArchivingDlgViewModel.kVernacularMaterialGeneral + "\",\"" +
@@ -366,7 +366,7 @@ namespace SIL.Archiving.Tests
 			abstracts["fra"] = "C'est assez abstrait";
 			abstracts["spa"] = "Esto es bastante abstracto";
 			_helper.SetAbstract(abstracts);
-			var data =_helper.GetUnencodedMetsData();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
 				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
 				"\"0\":{\" \":\"This is pretty abstract\",\"lang\":\"eng\"}," +
@@ -555,7 +555,7 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetDescription_TwoLanguages_IncludedInMetsData()
 		{
-			var descriptions = new Dictionary<string,string>();
+			var descriptions = new Dictionary<string, string>();
 			descriptions["eng"] = "General data";
 			descriptions["spa"] = "Datos generales";
 			_helper.SetDescription(descriptions);

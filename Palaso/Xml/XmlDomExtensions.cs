@@ -46,17 +46,12 @@ namespace Palaso.Xml
 
 		private static void AddSheet(this XmlDocument dom, XmlNode head, string cssFilePath, string namespaceIfDesired)
 		{
-			//we're going to add file:// later
-			cssFilePath = cssFilePath.Replace("file:///", "");
-			cssFilePath = cssFilePath.Replace("file://", "");
-			cssFilePath = "file://" + cssFilePath;
-
 			var link = string.IsNullOrEmpty(namespaceIfDesired) ? dom.CreateElement("link") : dom.CreateElement("link", namespaceIfDesired);
 			link.SetAttribute("rel", "stylesheet");
 
 			if(cssFilePath.Contains(Path.DirectorySeparatorChar.ToString())) // review: not sure about relative vs. complete paths
 			{
-				link.SetAttribute("href", cssFilePath);
+				link.SetAttribute("href", "file://" + cssFilePath);
 			}
 			else //at least with gecko/firefox, something like "file://foo.css" is never found, so just give it raw
 			{

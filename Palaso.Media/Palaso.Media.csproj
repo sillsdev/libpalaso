@@ -60,7 +60,7 @@
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DocumentationFile>..\output\Debug\Palaso.Media.XML</DocumentationFile>
 	<DebugType>full</DebugType>
-	<PlatformTarget>AnyCPU</PlatformTarget>
+	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
 	<ErrorReport>prompt</ErrorReport>
 	<TargetFrameworkProfile>
@@ -87,7 +87,9 @@
 	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Data" />

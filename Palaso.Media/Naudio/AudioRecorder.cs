@@ -53,7 +53,7 @@ namespace Palaso.Media.Naudio
 		private FileWriterThread _fileWriterThread;
 
 		protected UnsignedMixerControl _volumeControl;
-		protected double _microphoneLevel = -1;//unknown
+		protected double _microphoneLevel = 100;
 		protected RecordingState _recordingState = RecordingState.NotYetStarted;
 		protected WaveFormat _recordingFormat;
 		protected RecordingProgressEventArgs _recProgressEventArgs = new RecordingProgressEventArgs();
@@ -210,7 +210,7 @@ namespace Palaso.Media.Naudio
 							throw;
 					}
 
-					ConnectWithVolumeControl();
+					TryGetVolumeControl();
 					RecordingState = RecordingState.Monitoring;
 				}
 				catch (Exception e)
@@ -380,7 +380,7 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		protected virtual void ConnectWithVolumeControl()
+		protected virtual void TryGetVolumeControl()
 		{
 			int waveInDeviceNumber = _waveIn.DeviceNumber;
 			if (Environment.OSVersion.Version.Major >= 6) // Vista and over
@@ -392,14 +392,7 @@ namespace Palaso.Media.Naudio
 					if (control.ControlType == MixerControlType.Volume)
 					{
 						_volumeControl = control as UnsignedMixerControl;
-
-						//REVIEW: was this (from original author). This would boost us to the max (as the original code had a 100 for _microphoneLevel)
-						//MicrophoneLevel = _microphoneLevel;
-						//Now, we do the opposite. Give preference to the system volume. If your application supports independent volume setting, that's
-						//fine, but you'll have to explicity set it via the MicrophoneLevel property.
-
-						_microphoneLevel = _volumeControl.Percent;
-
+						MicrophoneLevel = _microphoneLevel;
 						break;
 					}
 				}
@@ -420,13 +413,7 @@ namespace Palaso.Media.Naudio
 									if (control.ControlType == MixerControlType.Volume)
 									{
 										_volumeControl = control as UnsignedMixerControl;
-										//REVIEW: was this (from original author). This would boost us to the max (as the original code had a 100 for _microphoneLevel)
-										//MicrophoneLevel = _microphoneLevel;
-										//Now, we do the opposite. Give preference to the system volume. If your application supports independent volume setting, that's
-										//fine, but you'll have to explicity set it via the MicrophoneLevel property.
-
-										_microphoneLevel = _volumeControl.Percent;
-
+										MicrophoneLevel = _microphoneLevel;
 										break;
 									}
 								}
@@ -445,10 +432,7 @@ namespace Palaso.Media.Naudio
 			set
 			{
 				_microphoneLevel = value;
-				if (_volumeControl == null)
-					ConnectWithVolumeControl();
-
-				if (_volumeControl != null) //did we get it?
+				if (_volumeControl != null)
 					_volumeControl.Percent = value;
 			}
 		}

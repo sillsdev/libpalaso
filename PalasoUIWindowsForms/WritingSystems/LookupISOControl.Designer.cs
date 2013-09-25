@@ -45,6 +45,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			this.flowLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -62,7 +63,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(0, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(758, 269);
+			this._listView.Size = new System.Drawing.Size(722, 245);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -137,7 +138,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cannotFindLanguageLink, "LanguageLookup._cannotFindLanguageLink");
-			this._cannotFindLanguageLink.Location = new System.Drawing.Point(628, 6);
+			this._cannotFindLanguageLink.Location = new System.Drawing.Point(592, 6);
 			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
 			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
 			this._cannotFindLanguageLink.TabIndex = 12;
@@ -147,17 +148,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _desiredLanguageLabel
 			//
-			this._desiredLanguageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._desiredLanguageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._desiredLanguageLabel.AutoSize = true;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageLabel, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageLabel, "LanguageLookup.DesiredLanguageDisplayNameLabel");
-			this._desiredLanguageLabel.Location = new System.Drawing.Point(197, 316);
+			this._desiredLanguageLabel.Location = new System.Drawing.Point(141, 0);
 			this._desiredLanguageLabel.Name = "_desiredLanguageLabel";
 			this._desiredLanguageLabel.Size = new System.Drawing.Size(309, 13);
 			this._desiredLanguageLabel.TabIndex = 14;
 			this._desiredLanguageLabel.Text = "You can change how the language name will be displayed here:";
-			this._desiredLanguageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			//
 			// _desiredLanguageDisplayName
 			//
@@ -166,7 +166,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageDisplayName, "LanguageLookup.LookupISOControl._desiredLanguageDisplayName");
-			this._desiredLanguageDisplayName.Location = new System.Drawing.Point(512, 304);
+			this._desiredLanguageDisplayName.Location = new System.Drawing.Point(479, 282);
 			this._desiredLanguageDisplayName.Name = "_desiredLanguageDisplayName";
 			this._desiredLanguageDisplayName.Size = new System.Drawing.Size(243, 33);
 			this._desiredLanguageDisplayName.TabIndex = 13;
@@ -175,8 +175,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// flowLayoutPanel1
 			//
 			this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.flowLayoutPanel1.Controls.Add(this._desiredLanguageLabel);
 			this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-			this.flowLayoutPanel1.Location = new System.Drawing.Point(56, 349);
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(20, 283);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(453, 37);
 			this.flowLayoutPanel1.TabIndex = 15;
@@ -190,7 +191,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this._desiredLanguageLabel);
 			this.Controls.Add(this.flowLayoutPanel1);
 			this.Controls.Add(this._desiredLanguageDisplayName);
 			this.Controls.Add(this._cannotFindLanguageLink);
@@ -201,9 +201,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
 			this.Name = "LookupISOControl";
-			this.Size = new System.Drawing.Size(758, 343);
+			this.Size = new System.Drawing.Size(722, 277);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			this.flowLayoutPanel1.ResumeLayout(false);
+			this.flowLayoutPanel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();

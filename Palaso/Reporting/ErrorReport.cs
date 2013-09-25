@@ -55,11 +55,11 @@ namespace Palaso.Reporting
 
 		/// <summary>
 		/// Use this method if you want to override the default IErrorReporter.
-		/// This method should normally be called only once at application startup.
+		/// This method should be called only once at application startup.
 		/// </summary>
 		public static void SetErrorReporter(IErrorReporter reporter)
 		{
-			_errorReporter = reporter ?? new ConsoleErrorReporter();
+			_errorReporter = reporter;
 		}
 
 		protected static string s_emailAddress = null;
