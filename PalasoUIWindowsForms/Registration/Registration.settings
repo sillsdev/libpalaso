@@ -5,7 +5,7 @@
 	<Setting Name="FirstName" Type="System.String" Scope="User">
 	  <Value Profile="(Default)" />
 	</Setting>
-	<Setting Name="SirName" Type="System.String" Scope="User">
+	<Setting Name="Surname" Type="System.String" Scope="User">
 	  <Value Profile="(Default)" />
 	</Setting>
 	<Setting Name="Email" Type="System.String" Scope="User">

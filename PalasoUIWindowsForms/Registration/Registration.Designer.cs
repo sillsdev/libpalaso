@@ -38,12 +38,12 @@ namespace Palaso.UI.WindowsForms.Registration {
 		[global::System.Configuration.UserScopedSettingAttribute()]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 		[global::System.Configuration.DefaultSettingValueAttribute("")]
-		public string SirName {
+		public string Surname {
 			get {
-				return ((string)(this["SirName"]));
+				return ((string)(this["Surname"]));
 			}
 			set {
-				this["SirName"] = value;
+				this["Surname"] = value;
 			}
 		}
 
