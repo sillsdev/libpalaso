@@ -293,7 +293,7 @@ DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
 			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(_srcFolder, "~!source"));
 
 			// Change the current directory because this test is failing on mono sometimes
-			// when TestTearDown() delets _srcFolder, which is the current directory.
+			// when TestTearDown() deletes _srcFolder, which is the current directory.
 			Directory.SetCurrentDirectory(Path.GetTempPath());
 		}
 
