@@ -126,6 +126,7 @@ namespace SIL.Archiving
 		public const string kModeVideo = "Video";
 		public const string kModeText = "Text";
 		public const string kModePhotograph = "Photograph";
+		public const string kModeGraphic = "Graphic";
 		public const string kModeMusicalNotation = "Musical notation";
 		public const string kModeDataset = "Dataset";
 		public const string kModeSoftwareOrFont = "Software application";
@@ -180,7 +181,10 @@ namespace SIL.Archiving
 		private string _rampProgramPath;
 		private Action _incrementProgressBarAction;
 		private int _imageCount = -1;
+		private int _audioVideoCount = -1;
 		private IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
+
+		private string _imageMode = kModePhotograph;
 
 		#region properties
 		public string AppName { get; private set; }
@@ -253,6 +257,7 @@ namespace SIL.Archiving
 		public ArchivingDlgViewModel(string appName, string title, string id,
 			Func<string, string, string> getFileDescription)
 		{
+			ShowRecordingCountNotLength = false;
 			if (appName == null)
 				throw new ArgumentNullException("appName");
 			AppName = appName;
@@ -1508,6 +1513,9 @@ namespace SIL.Archiving
 
 				if (ImageCount > 0)
 					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} images", ImageCount.ToString(CultureInfo.InvariantCulture))));
+
+				if (ShowRecordingCountNotLength && _audioVideoCount > 0)
+					SetAudioVideoExtent(string.Format("{0} recording files.", _audioVideoCount));
 			}
 		}
 
@@ -1528,6 +1536,17 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
+		public int AudioVideoCount
+		{
+			get
+			{
+				if (_fileLists != null && _audioVideoCount < 0)
+					GetMode();
+				return _audioVideoCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets a comma-separated list of types found in the files to be archived
 		/// (e.g. Text, Video, etc.).
@@ -1536,6 +1555,7 @@ namespace SIL.Archiving
 		private string GetMode()
 		{
 			_imageCount = 0;
+			_audioVideoCount = 0;
 			return GetMode(_fileLists.SelectMany(f => f.Value.Item1));
 		}
 
@@ -1565,6 +1585,24 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Are image files to be counted as photographs or graphics
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ImagesArePhotographs
+		{
+			get { return _imageMode == kModePhotograph; }
+			set { _imageMode = value ? kModePhotograph : kModeGraphic; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Show the count of audio/video files rather than the length
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ShowRecordingCountNotLength { get; set; }
+
+		/// ------------------------------------------------------------------------------------
 		private void AddModesToSet(HashSet<string> list, IEnumerable<string> files)
 		{
 			foreach (var file in files)
@@ -1577,15 +1615,21 @@ namespace SIL.Archiving
 				}
 
 				if (FileUtils.GetIsAudio(file))
+				{
+					_audioVideoCount++;
 					list.Add(kModeSpeech);
+				}
 				if (FileUtils.GetIsVideo(file))
+				{
+					_audioVideoCount++;
 					list.Add(kModeVideo);
+				}
 				if (FileUtils.GetIsText(file))
 					list.Add(kModeText);
 				if (FileUtils.GetIsImage(file))
 				{
 					_imageCount++;
-					list.Add(kModePhotograph);
+					list.Add(_imageMode); // can be either Photograph or Graphic
 				}
 				if (FileUtils.GetIsMusicalNotation(file))
 					list.Add(kModeMusicalNotation);
