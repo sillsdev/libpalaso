@@ -125,6 +125,7 @@ namespace SIL.Archiving
 		public const string kModeVideo = "Video";
 		public const string kModeText = "Text";
 		public const string kModePhotograph = "Photograph";
+		public const string kModeGraphic = "Graphic";
 		public const string kModeMusicalNotation = "Musical notation";
 		public const string kModeDataset = "Dataset";
 		public const string kModeSoftwareOrFont = "Software application";
@@ -163,45 +164,19 @@ namespace SIL.Archiving
 		}
 		#endregion
 
-		private readonly string _title;
-		private readonly string _id;
 		private readonly List<string> _metsPairs;
 		private MetsProperties _metsPropertiesSet;
 		private AudienceType _metsAudienceType;
-		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
 		private string _metsFilePath;
 		private string _tempFolder;
-		private BackgroundWorker _worker;
 		private Timer _timer;
-		private bool _cancelProcess;
 		private bool _workerException;
-		private readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
 		private string _rampProgramPath;
-		private Action _incrementProgressBarAction;
-		private int _imageCount = -1;
-		private IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
 
 		#region properties
 		public string AppName { get; private set; }
 		public bool IsBusy { get; private set; }
 		public string RampPackagePath { get; private set; }
-		public LogBox LogBox { get; private set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// The font used in the Log box. Application can set this to ensure a consistent look
-		/// in the UI.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public Font ProgramDialogFont
-		{
-			get { return LogBox.Font; }
-			set
-			{
-				if (value != null)
-					LogBox.Font = FontHelper.MakeFont(value, FontStyle.Bold);
-			}
-		}
 
 		#region callbacks
 		/// ------------------------------------------------------------------------------------
@@ -1411,8 +1386,8 @@ namespace SIL.Archiving
 				throw;
 			}
 
-			if (_incrementProgressBarAction != null)
-				_incrementProgressBarAction();
+			if (IncrementProgressBarAction != null)
+				IncrementProgressBarAction();
 
 			return _metsFilePath;
 		}
@@ -1432,6 +1407,9 @@ namespace SIL.Archiving
 
 				if (ImageCount > 0)
 					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, ImageCount.ToString(CultureInfo.InvariantCulture)));
+
+				if (ShowRecordingCountNotLength && _audioCount > 0 && _videoCount > 0)
+					SetAudioVideoExtent(string.Format("{0} audio recording files; {1} video recording files.", _audioCount, _videoCount));
 			}
 		}
 
@@ -1452,6 +1430,28 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
+		public int AudioCount
+		{
+			get
+			{
+				if (_fileLists != null && _audioCount < 0)
+					GetMode();
+				return _audioCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int VideoCount
+		{
+			get
+			{
+				if (_fileLists != null && _videoCount < 0)
+					GetMode();
+				return _videoCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets a comma-separated list of types found in the files to be archived
 		/// (e.g. Text, Video, etc.).
@@ -1460,6 +1460,8 @@ namespace SIL.Archiving
 		private string GetMode()
 		{
 			_imageCount = 0;
+			_audioCount = 0;
+			_videoCount = 0;
 			return GetMode(_fileLists.SelectMany(f => f.Value.Item1));
 		}
 
@@ -1497,13 +1499,19 @@ namespace SIL.Archiving
 				}
 
 				if (FileUtils.GetIsAudio(file))
+				{
+					_audioCount++;
 					list.Add(kModeSpeech);
+				}
 				if (FileUtils.GetIsVideo(file))
+				{
+					_videoCount++;
 					list.Add(kModeVideo);
+				}
 				if (FileUtils.GetIsText(file))
 					list.Add(kModeText);
 				if (FileUtils.GetIsImage(file))
-					list.Add(kModePhotograph);
+					list.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
 				if (FileUtils.GetIsMusicalNotation(file))
 					list.Add(kModeMusicalNotation);
 				if (FileUtils.GetIsDataset(file))
@@ -1664,7 +1672,7 @@ namespace SIL.Archiving
 					zip.SaveProgress += HandleZipSaveProgress;
 					zip.Save(RampPackagePath);
 
-					if (!_cancelProcess && _incrementProgressBarAction != null)
+					if (!_cancelProcess && IncrementProgressBarAction != null)
 						Thread.Sleep(800);
 				}
 			}
@@ -1678,23 +1686,6 @@ namespace SIL.Archiving
 			}
 		}
 
-		/// ------------------------------------------------------------------------------------
-		const int CopyBufferSize = 64 * 1024;
-		static void CopyFile(string src, string dest)
-		{
-			using (var outputFile = File.OpenWrite(dest))
-			{
-				using (var inputFile = File.OpenRead(src))
-				{
-					var buffer = new byte[CopyBufferSize];
-					int bytesRead;
-					while ((bytesRead = inputFile.Read(buffer, 0, CopyBufferSize)) != 0)
-					{
-						outputFile.Write(buffer, 0, bytesRead);
-					}
-				}
-			}
-		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -1738,8 +1729,8 @@ namespace SIL.Archiving
 				LogBox.WriteMessageWithFontStyle(FontStyle.Regular, "\t" + e.UserState);
 			}
 
-			if (!_cancelProcess && _incrementProgressBarAction != null)
-				_incrementProgressBarAction();
+			if (!_cancelProcess && IncrementProgressBarAction != null)
+				IncrementProgressBarAction();
 		}
 
 		#endregion

@@ -29,14 +29,13 @@ namespace SIL.Archiving
 		protected readonly string _title;
 		protected readonly string _id;
 		protected readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
-		protected string _tempFolder;
-		private BackgroundWorker _worker;
-		private Timer _timer;
-		private bool _cancelProcess;
-		private bool _workerException;
-		private readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
-		private int _imageCount = -1;
-		private IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
+		protected bool _cancelProcess;
+		protected readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
+		protected IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
+		protected BackgroundWorker _worker;
+		protected int _imageCount = -1;
+		protected int _audioCount = -1;
+		protected int _videoCount = -1;
 		#endregion
 
 		#region Delegates and Events
@@ -73,12 +72,27 @@ namespace SIL.Archiving
 		public event DisplayErrorEventHandler DisplayError;
 
 		/// <summary>Action raised when progress happens</summary>
-		public Action IncrementProgressBarAction { private get; set; }
+		public Action IncrementProgressBarAction { protected get; set; }
 		#endregion
 
 		#region properties
 		public string AppName { get; private set; }
 		public bool IsBusy { get; private set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Are image files to be counted as photographs or graphics
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ImagesArePhotographs { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Show the count of audio/video files rather than the length
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ShowRecordingCountNotLength { get; set; }
+		#endregion
 
 		#region callbacks
 		/// ------------------------------------------------------------------------------------
@@ -115,7 +129,6 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public Action<IDictionary<string, Tuple<IEnumerable<string>, string>>> OverrideDisplayInitialSummary { private get; set; }
 		#endregion
-		#endregion
 
 		#region construction and initialization
 		/// ------------------------------------------------------------------------------------
@@ -129,6 +142,8 @@ namespace SIL.Archiving
 		public ArchivingDlgViewModel(string appName, string title, string id,
 			Func<string, string, string> getFileDescription)
 		{
+			ShowRecordingCountNotLength = false;
+			ImagesArePhotographs = true;
 			if (appName == null)
 				throw new ArgumentNullException("appName");
 			AppName = appName;
@@ -154,6 +169,7 @@ namespace SIL.Archiving
 		/// zipped and added to the RAMP file.</param>
 		/// <param name="maxProgBarValue">Value calculated as the max value for the progress
 		/// bar so the dialog can set that correctly</param>
+
 		/// ------------------------------------------------------------------------------------
 		public bool Initialize(Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive,
 			out int maxProgBarValue)
@@ -1234,6 +1250,8 @@ namespace SIL.Archiving
 
 		//        if (ImageCount > 0)
 		//            _metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, ImageCount.ToString(CultureInfo.InvariantCulture)));
+		//if (ShowRecordingCountNotLength && _audioVideoCount > 0)
+		//    SetAudioVideoExtent(string.Format("{0} recording files.", _audioVideoCount));
 		//    }
 		//}
 
@@ -1254,6 +1272,17 @@ namespace SIL.Archiving
 		//}
 
 		///// ------------------------------------------------------------------------------------
+		//public int AudioVideoCount
+		//{
+		//    get
+		//    {
+		//        if (_fileLists != null && _audioVideoCount < 0)
+		//            GetMode();
+		//        return _audioVideoCount;
+		//    }
+		//}
+
+		///// ------------------------------------------------------------------------------------
 		///// <summary>
 		///// Gets a comma-separated list of types found in the files to be archived
 		///// (e.g. Text, Video, etc.).
@@ -1262,6 +1291,7 @@ namespace SIL.Archiving
 		//private string GetMode()
 		//{
 		//    _imageCount = 0;
+		//    _audioVideoCount = 0;
 		//    return GetMode(_fileLists.SelectMany(f => f.Value.Item1));
 		//}
 
@@ -1299,13 +1329,19 @@ namespace SIL.Archiving
 		//        }
 
 		//        if (FileUtils.GetIsAudio(file))
+		//        {
+		//            _audioCount++;
 		//            list.Add(kModeSpeech);
+		//        }
 		//        if (FileUtils.GetIsVideo(file))
+		//        {
+		//            _videoCount++;
 		//            list.Add(kModeVideo);
+		//        }
 		//        if (FileUtils.GetIsText(file))
 		//            list.Add(kModeText);
 		//        if (FileUtils.GetIsImage(file))
-		//            list.Add(kModePhotograph);
+		//            list.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
 		//        if (FileUtils.GetIsMusicalNotation(file))
 		//            list.Add(kModeMusicalNotation);
 		//        if (FileUtils.GetIsDataset(file))
@@ -1349,207 +1385,24 @@ namespace SIL.Archiving
 				AppSpecificFilenameNormalization(key, fileName, bldr);
 			return bldr.ToString();
 		}
-		//#endregion
 
-		//#region Creating RAMP package (zip file) in background thread.
-		///// ------------------------------------------------------------------------------------
-		//public bool CreateRampPackage()
-		//{
-		//    try
-		//    {
-		//        RampPackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
-
-		//        using (_worker = new BackgroundWorker())
-		//        {
-		//            _cancelProcess = false;
-		//            _workerException = false;
-		//            _worker.ProgressChanged += HandleBackgroundWorkerProgressChanged;
-		//            _worker.WorkerReportsProgress = true;
-		//            _worker.WorkerSupportsCancellation = true;
-		//            _worker.DoWork += CreateZipFileInWorkerThread;
-		//            _worker.RunWorkerAsync();
-
-		//            while (_worker.IsBusy)
-		//                Application.DoEvents();
-		//        }
-		//    }
-		//    catch (Exception e)
-		//    {
-		//        ReportError(e, LocalizationManager.GetString(
-		//            "DialogBoxes.ArchivingDlg.CreatingZipFileErrorMsg",
-		//            "There was a problem starting process to create zip file."));
-
-		//        return false;
-		//    }
-		//    finally
-		//    {
-		//        _worker = null;
-		//    }
-
-		//    if (!File.Exists(RampPackagePath))
-		//    {
-		//        ReportError(null, string.Format("Failed to make the RAMP package: {0}", RampPackagePath));
-		//        return false;
-		//    }
-
-		//    return !_cancelProcess && !_workerException;
-		//}
-
-		///// ------------------------------------------------------------------------------------
-		//private void CreateZipFileInWorkerThread(object sender, DoWorkEventArgs e)
-		//{
-		//    try
-		//    {
-		//        if (Thread.CurrentThread.Name == null)
-		//            Thread.CurrentThread.Name = "CreateZipFileInWorkerThread";
-
-		//        // Before adding the files to the RAMP (zip) file, we need to copy all the
-		//        // files to a temp folder, flattening out the directory structure and renaming
-		//        // the files as needed to comply with REAP guidelines.
-		//        // REVIEW: Are multiple periods and/or non-Roman script really a problem?
-
-		//        _worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PreparingFilesMsg",
-		//            "Analyzing component files"));
-
-		//        var filesToCopyAndZip = new Dictionary<string, string>();
-		//        foreach (var list in _fileLists)
-		//        {
-		//            _worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-		//                string.IsNullOrEmpty(list.Key) ? _id: list.Key);
-		//            foreach (var file in list.Value.Item1)
-		//            {
-		//                string newFileName = Path.GetFileName(file);
-		//                newFileName = NormalizeFilenameForRAMP(list.Key, newFileName);
-		//                filesToCopyAndZip[file] = Path.Combine(_tempFolder, newFileName);
-		//            }
-		//            if (_cancelProcess)
-		//                return;
-		//        }
-
-		//        _worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
-		//            "Copying files"));
-
-		//        foreach (var fileToCopy in filesToCopyAndZip)
-		//        {
-		//            if (_cancelProcess)
-		//                return;
-		//            _worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-		//                Path.GetFileName(fileToCopy.Key));
-		//            if (FileCopyOverride != null)
-		//            {
-		//                try
-		//                {
-		//                    if (FileCopyOverride(this, fileToCopy.Key, fileToCopy.Value))
-		//                    {
-		//                        if (!File.Exists(fileToCopy.Value))
-		//                            throw new FileNotFoundException("Calling application claimed to copy file but didn't", fileToCopy.Value);
-		//                        continue;
-		//                    }
-		//                }
-		//                catch (Exception error)
-		//                {
-		//                    var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromRAMP",
-		//                        "File excluded from RAMP package: " + fileToCopy.Value);
-		//                    ReportError(error, msg);
-		//                }
-		//            }
-		//            // Don't use File.Copy because it's asynchronous.
-		//            CopyFile(fileToCopy.Key, fileToCopy.Value);
-		//        }
-
-		//        _worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInRAMPMsg",
-		//            "Saving files in RAMP package"));
-
-		//        using (var zip = new ZipFile())
-		//        {
-		//            // RAMP packages must not be compressed or RAMP can't read them.
-		//            zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
-		//            zip.AddFiles(filesToCopyAndZip.Values, @"\");
-		//            zip.AddFile(_metsFilePath, string.Empty);
-		//            zip.SaveProgress += HandleZipSaveProgress;
-		//            zip.Save(RampPackagePath);
-
-		//            if (!_cancelProcess && _incrementProgressBarAction != null)
-		//                Thread.Sleep(800);
-		//        }
-		//    }
-		//    catch (Exception exception)
-		//    {
-		//        _worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
-		//            LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg",
-		//                "There was an error attempting to create the RAMP file.")));
-
-		//        _workerException = true;
-		//    }
-		//}
-
-		///// ------------------------------------------------------------------------------------
-		//const int CopyBufferSize = 64 * 1024;
-		//static void CopyFile(string src, string dest)
-		//{
-		//    using (var outputFile = File.OpenWrite(dest))
-		//    {
-		//        using (var inputFile = File.OpenRead(src))
-		//        {
-		//            var buffer = new byte[CopyBufferSize];
-		//            int bytesRead;
-		//            while ((bytesRead = inputFile.Read(buffer, 0, CopyBufferSize)) != 0)
-		//            {
-		//                outputFile.Write(buffer, 0, bytesRead);
-		//            }
-		//        }
-		//    }
-		//}
-
-		///// ------------------------------------------------------------------------------------
-		///// <summary>
-		///// This is called by the Save method on the ZipFile class as the zip file is being
-		///// saved to the disk.
-		///// </summary>
-		///// ------------------------------------------------------------------------------------
-		//private void HandleZipSaveProgress(object s, SaveProgressEventArgs e)
-		//{
-		//    if (_cancelProcess || e.EventType != ZipProgressEventType.Saving_BeforeWriteEntry)
-		//        return;
-
-		//    string msg;
-		//    if (DisplayMessage != null && _progressMessages.TryGetValue(e.CurrentEntry.FileName, out msg))
-		//        DisplayMessage(msg, MessageType.Progress);
-
-		//    _worker.ReportProgress(e.EntriesSaved + 1, Path.GetFileName(e.CurrentEntry.FileName));
-		//}
-
-		///// ------------------------------------------------------------------------------------
-		//void HandleBackgroundWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
-		//{
-		//    if (e.UserState == null || _cancelProcess)
-		//        return;
-
-		//    if (e.UserState is KeyValuePair<Exception, string>)
-		//    {
-		//        var kvp = (KeyValuePair<Exception, string>)e.UserState;
-		//        ReportError(kvp.Key, kvp.Value);
-		//        return;
-		//    }
-
-		//    if (!string.IsNullOrEmpty(e.UserState as string))
-		//    {
-		//        if (e.ProgressPercentage == 0)
-		//        {
-		//            if (DisplayMessage != null)
-		//                DisplayMessage(e.UserState.ToString(), MessageType.Success);
-		//            return;
-		//        }
-
-		//        if (DisplayMessage != null)
-		//            DisplayMessage(e.UserState.ToString(), MessageType.Detail);
-		//    }
-
-		//    if (!_cancelProcess && IncrementProgressBarAction != null)
-		//        IncrementProgressBarAction();
-		//}
-
-		//#endregion
+		/// ------------------------------------------------------------------------------------
+		const int CopyBufferSize = 64 * 1024;
+		protected static void CopyFile(string src, string dest)
+		{
+			using (var outputFile = File.OpenWrite(dest))
+			{
+				using (var inputFile = File.OpenRead(src))
+				{
+					var buffer = new byte[CopyBufferSize];
+					int bytesRead;
+					while ((bytesRead = inputFile.Read(buffer, 0, CopyBufferSize)) != 0)
+					{
+						outputFile.Write(buffer, 0, bytesRead);
+					}
+				}
+			}
+		}
 
 		/// ------------------------------------------------------------------------------------
 		public virtual void Cancel()

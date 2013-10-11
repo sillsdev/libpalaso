@@ -124,39 +124,5 @@ namespace Palaso.Tests.Extensions
 		{
 			Assert.AreEqual("Abc def", "ABC DEF".ToUpperFirstLetter());
 		}
-
-		[Test]
-		public void ToIntArray_EmptyString_ReturnsEmptyArray()
-		{
-			Assert.AreEqual(0, string.Empty.ToIntArray().Length);
-		}
-
-		[Test]
-		public void ToIntArray_StringWithCommaSeparatedIntegers_ReturnsArrayOfIntegers()
-		{
-			var result = "1, 2, 3, 8".ToIntArray();
-			Assert.AreEqual(4, result.Length);
-			Assert.AreEqual(1, result[0]);
-			Assert.AreEqual(2, result[1]);
-			Assert.AreEqual(3, result[2]);
-			Assert.AreEqual(8, result[3]);
-		}
-
-		[Test]
-		public void ToIntArray_StringWithEmptySpot_ReturnsArrayOfIntegers()
-		{
-			var result = "1, 2, 3,".ToIntArray();
-			Assert.AreEqual(3, result.Length);
-			Assert.AreEqual(1, result[0]);
-			Assert.AreEqual(2, result[1]);
-			Assert.AreEqual(3, result[2]);
-		}
-
-		[Test]
-		public void ToIntArray_StringWithFloatingPointNumbers_ReturnsEmptyArray()
-		{
-			var result = "1.3, 2.5, 3.6,".ToIntArray();
-			Assert.AreEqual(0, result.Length);
-		}
 	}
 }

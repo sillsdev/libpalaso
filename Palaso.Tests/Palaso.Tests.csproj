@@ -113,7 +113,9 @@
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />
@@ -140,9 +142,9 @@
 	<Compile Include="Extensions\DateTimeExtensionTests.cs" />
 	<Compile Include="Extensions\StringExtensionTests.cs" />
 	<Compile Include="i18n\StringCatalogTests.cs" />
+	<Compile Include="IO\DirectoryUtilitiesTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
 	<Compile Include="IO\FileUtilsTests.cs" />
-	<Compile Include="IO\DirectoryUtilitiesTests.cs" />
 	<Compile Include="IO\TempFileTests.cs" />
 	<Compile Include="Migration\DefaultVersionTests.cs" />
 	<Compile Include="Migration\FileMigratorTests.cs" />

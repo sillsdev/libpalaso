@@ -24,20 +24,12 @@ namespace Palaso.UI.WindowsForms.Miscellaneous
 		{
 			Application.UseWaitCursor = turnOn;
 
-			foreach (var frm in Application.OpenForms.Cast<Form>().ToList())
+			foreach (var frm in Application.OpenForms.Cast<Form>())
 			{
-				Form form = frm; // Avoid resharper message about accessing foreach variable in closure.
-				try
-				{
-					if (form.InvokeRequired)
-						form.Invoke(new Action(() => form.Cursor = (turnOn ? Cursors.WaitCursor : Cursors.Default)));
-					else
-						form.Cursor = (turnOn ? Cursors.WaitCursor : Cursors.Default);
-				}
-				catch
-				{
-					// Form may have closed and been disposed. Oh, well.
-				}
+				if (frm.InvokeRequired)
+					frm.Invoke(new Action(() => frm.Cursor = (turnOn ? Cursors.WaitCursor : Cursors.Default)));
+				else
+					frm.Cursor = (turnOn ? Cursors.WaitCursor : Cursors.Default);
 			}
 
 			try

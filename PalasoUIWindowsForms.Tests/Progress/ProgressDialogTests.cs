@@ -111,6 +111,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		/// Though the result here are great, I'm afraid this may look worse on a single-core machine
 		/// </summary>
 		[Test]
+		[NUnit.Framework.Category("SkipOnTeamCity")]
 		public void DontBogDownWhenBombardedWithProgressUpdates()
 		{
 			Debug.WriteLine("Priming");
@@ -123,7 +124,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 			Debug.WriteLine("With Progress");
 			long withProgressMilliseconds = MeasureProgressUpdateCost(true, toDo);
 
-			Assert.Less((int)(withProgressMilliseconds - noProgressMilliseconds), 1500, "Should not have more than a 1.5 second overhead.");
+			Assert.Less((int)(withProgressMilliseconds - noProgressMilliseconds), 1000, "Should not have more than a one second overhead.");
 		}
 
 		[Test]

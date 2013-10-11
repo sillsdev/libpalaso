@@ -84,6 +84,8 @@ namespace SIL.Archiving
 			if (i >= 0)
 				_linkOverview.Links.Add(i, 4, Settings.Default.RampWebSite);
 
+			// this is for a display problem in mono
+			_linkOverview.SizeToContents();
 			_logBox = new LogBox();
 			_logBox.TabStop = false;
 			_logBox.ShowMenu = false;
