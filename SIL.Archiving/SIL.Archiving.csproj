@@ -91,6 +91,7 @@
 	</Compile>
 	<Compile Include="ArchivingDlgViewModel.cs" />
 	<Compile Include="ArchivingEnumerations.cs" />
+	<Compile Include="ArchivingLanguage.cs" />
 	<Compile Include="Extensions.cs" />
 	<Compile Include="RampArchivingDlgViewModel.cs" />
 	<Compile Include="JSONUtils.cs" />

@@ -74,6 +74,7 @@ namespace Palaso.Properties {
   <string>.htm</string>
   <string>.html</string>
   <string>.pdf</string>
+  <string>.fwdata</string>
 </ArrayOfString>")]
 		public global::System.Collections.Specialized.StringCollection TextFileExtensions {
 			get {

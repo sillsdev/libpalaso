@@ -87,6 +87,7 @@ namespace SIL.Archiving
 			// this is for a display problem in mono
 			_linkOverview.SizeToContents();
 			_logBox = new LogBox();
+			_logBox.Tag = false;
 			_logBox.TabStop = false;
 			_logBox.ShowMenu = false;
 			_logBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -94,8 +95,8 @@ namespace SIL.Archiving
 			_logBox.ReportErrorLinkClicked += delegate { Close(); };
 			_tableLayoutPanel.Controls.Add(_logBox, 0, 1);
 			_tableLayoutPanel.SetColumnSpan(_logBox, 3);
-			model.DisplayMessage += DisplayMessage;
-			model.DisplayError += new ArchivingDlgViewModel.DisplayErrorEventHandler(model_DisplayError);
+			model.OnDisplayMessage += DisplayMessage;
+			model.OnDisplayError += new ArchivingDlgViewModel.DisplayErrorEventHandler(model_DisplayError);
 
 			if (programDialogFont != null)
 			{
@@ -145,6 +146,11 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		void DisplayMessage(string msg, ArchivingDlgViewModel.MessageType type)
 		{
+			if ((bool) _logBox.Tag)
+			{
+				_logBox.Clear();
+				_logBox.Tag = false;
+			}
 			switch (type)
 			{
 				case ArchivingDlgViewModel.MessageType.Normal:
@@ -167,6 +173,10 @@ namespace SIL.Archiving
 					break;
 				case ArchivingDlgViewModel.MessageType.Success:
 					_logBox.WriteMessageWithColor(Color.DarkGreen, Environment.NewLine + msg);
+					break;
+				case ArchivingDlgViewModel.MessageType.Volatile:
+					_logBox.WriteMessage(msg);
+					_logBox.Tag = true;
 					break;
 			}
 		}

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,11 +12,8 @@ using System.Threading;
 using System.Windows.Forms;
 using Ionic.Zip;
 using L10NSharp;
-using Palaso.UI.WindowsForms;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
-using Palaso.UI.WindowsForms.Miscellaneous;
-using Palaso.UI.WindowsForms.Progress;
 using SIL.Archiving.Properties;
 using Timer = System.Threading.Timer;
 
@@ -52,6 +48,7 @@ namespace SIL.Archiving
 		public const string kSubjectLanguage = "dc.subject.subjectLanguage";
 		public const string kSoftwareOrFontRequirements = "dc.relation.requires";
 		public const string kContentLanguages = "dc.language.iso";
+		public const string kContentLanguageScripts = "dc.language.script";
 		public const string kSchemaConformance = "dc.relation.conformsto";
 		public const string kContributor = "dc.contributor";
 		public const string kAbstractDescription = "dc.description.abstract";
@@ -174,45 +171,8 @@ namespace SIL.Archiving
 		private string _rampProgramPath;
 
 		#region properties
-		public string AppName { get; private set; }
-		public bool IsBusy { get; private set; }
+		/// <summary>Path to the RAMP package</summary>
 		public string RampPackagePath { get; private set; }
-
-		#region callbacks
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Callback function to allow the application to modify the contents of a file rather
-		/// than merely copying it. If application performs the "copy" for the given file,
-		/// it should return true; otherwise, false.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public Func<ArchivingDlgViewModel, string, string, bool> FileCopyOverride { private get; set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Callback to do application-specific normalization of filenames to be added to
-		/// archive based on the file-list key (param 1) and the filename (param 2).
-		/// The StringBuilder (param 3) has the normalized name which the app can alter as needed.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public Action<string, string, StringBuilder> AppSpecificFilenameNormalization { private get; set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Callback to allow application to do special handling of exceptions or other error
-		/// conditions. The exception parameter can be null.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public Action<Exception, string> HandleNonFatalError { private get; set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Callback to allow application to handly display of initial summary in log box. If
-		/// the application implements this, then the default summary display will be suppressed.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public Action<IDictionary<string, Tuple<IEnumerable<string>, string>>, LogBox> OverrideDisplayInitialSummary { private get; set; }
-		#endregion
 		#endregion
 
 		#region construction and initialization
@@ -240,48 +200,20 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		override protected bool DoArchiveSpecificInitialization()
 		{
-			var text = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SearchingForRampMsg",
-				"Searching for the RAMP program...");
+			DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SearchingForRampMsg",
+				"Searching for the RAMP program..."), MessageType.Volatile);
 
-			LogBox.WriteMessage(text);
 			Application.DoEvents();
 			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(kRampFileExtension) ??
 				FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
 
-			LogBox.Clear();
-
 			if (_rampProgramPath == null)
 			{
-				text = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
-					"The RAMP program cannot be found!");
-
-				LogBox.WriteMessageWithColor("Red", text + Environment.NewLine);
+				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
+					"The RAMP program cannot be found!"), MessageType.Error);
 			}
 
 			return (_rampProgramPath != null);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void DisplayInitialSummary()
-		{
-			if (OverrideDisplayInitialSummary != null)
-				OverrideDisplayInitialSummary(_fileLists, LogBox);
-			else
-			{
-				LogBox.WriteMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg",
-					"The following files will be added to the archive:"));
-
-				foreach (var kvp in _fileLists)
-				{
-					if (kvp.Key != string.Empty)
-						LogBox.WriteMessage(Environment.NewLine + "    " + kvp.Key);
-
-					foreach (var file in kvp.Value.Item1)
-						LogBox.WriteMessageWithFontStyle(FontStyle.Regular, "          \u00B7 {0}", Path.GetFileName(file));
-				}
-			}
-
-			LogBox.ScrollToTop();
 		}
 		#endregion
 
@@ -604,7 +536,7 @@ namespace SIL.Archiving
 			if (stage.HasFlag(WorkStage.UsedInTrainingCourse))
 				SetStage(kStageUsedInCourse);
 			if (stage.HasFlag(WorkStage.ReadyForPublicationOrFormalPreprint))
-						{
+			{
 				PreventInvalidAudienceTypeForWorkStage(AudienceType.Vernacular | AudienceType.Internal,
 					WorkStage.ReadyForPublicationOrFormalPreprint);
 				SetStage(kStagePrepublication);
@@ -978,7 +910,15 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetContentLanguages(params string[] iso3Codes)
 		{
-			SetContentLanguages((IEnumerable<string>)iso3Codes);
+			var languages = new List<ArchivingLanguage>();
+
+			foreach (var iso3Code in iso3Codes)
+			{
+				if (!string.IsNullOrEmpty(iso3Code))
+					languages.Add(new ArchivingLanguage(iso3Code));
+			}
+
+			SetContentLanguages(languages);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -989,20 +929,37 @@ namespace SIL.Archiving
 		/// specified should be the same as a subject language specified using
 		/// SetSubjectLanguage.) ENHANCE: Deal with dialect options.
 		/// </summary>
-		/// <param name="iso3Codes">The 3-letter ISO 639-2 codes for the languages</param>
+		/// <param name="languages">The 3-letter ISO 639-2 codes for the languages, as well as
+		/// the English name, dialect and writing system script</param>
 		/// ------------------------------------------------------------------------------------
-		public void SetContentLanguages(IEnumerable<string> iso3Codes)
+		public void SetContentLanguages(IEnumerable<ArchivingLanguage> languages)
 		{
-			HashSet<string> languageKeyValuePairs = new HashSet<string>();
-			foreach (var iso3Code in iso3Codes.Where(r => !string.IsNullOrEmpty(r)))
-				languageKeyValuePairs.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, iso3Code));
+			var languageValues = new HashSet<string>();
+			var scripts = new HashSet<string>();
 
-			if (languageKeyValuePairs.Any())
+			foreach (var lang in languages.Where(r => !string.IsNullOrEmpty(r.Iso3Code)))
+			{
+				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey, string.Format("{0}:{1}", lang.Iso3Code, lang.EnglishName));
+				if (!string.IsNullOrEmpty(lang.Dialect))
+					langPair += "," + JSONUtils.MakeKeyValuePair("dialect", lang.Dialect);
+
+				languageValues.Add(langPair);
+
+				if (!string.IsNullOrEmpty(lang.Script))
+					scripts.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, lang.Script));
+			}
+
+			if (languageValues.Any())
 			{
 				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
 
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageKeyValuePairs));
+				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageValues));
+
+				if (scripts.Any())
+					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguageScripts, scripts));
 			}
+
+
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1330,7 +1287,6 @@ namespace SIL.Archiving
 		public override bool CreatePackage()
 		{
 			IsBusy = true;
-			LogBox.Clear();
 
 			var	success = CreateMetsFile() != null;
 
@@ -1341,9 +1297,8 @@ namespace SIL.Archiving
 
 			if (success)
 			{
-				LogBox.WriteMessageWithColor(Color.DarkGreen, Environment.NewLine +
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallRampMsg",
-					"Ready to hand the package to RAMP"));
+				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallRampMsg",
+					"Ready to hand the package to RAMP"), MessageType.Success);
 			}
 
 			IsBusy = false;
@@ -1700,7 +1655,7 @@ namespace SIL.Archiving
 
 			string msg;
 			if (_progressMessages.TryGetValue(e.CurrentEntry.FileName, out msg))
-				LogBox.WriteMessage(Environment.NewLine + msg);
+				DisplayMessage(msg, MessageType.Progress);
 
 			_worker.ReportProgress(e.EntriesSaved + 1, Path.GetFileName(e.CurrentEntry.FileName));
 		}
@@ -1722,11 +1677,11 @@ namespace SIL.Archiving
 			{
 				if (e.ProgressPercentage == 0)
 				{
-					LogBox.WriteMessageWithColor(Color.DarkGreen, Environment.NewLine + e.UserState);
+					DisplayMessage(e.UserState.ToString(), MessageType.Success);
 					return;
 				}
 
-				LogBox.WriteMessageWithFontStyle(FontStyle.Regular, "\t" + e.UserState);
+				DisplayMessage(e.UserState.ToString(), MessageType.Detail);
 			}
 
 			if (!_cancelProcess && IncrementProgressBarAction != null)

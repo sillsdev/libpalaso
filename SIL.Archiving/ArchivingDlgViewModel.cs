@@ -1,25 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-using Ionic.Zip;
 using L10NSharp;
-using Palaso.UI.WindowsForms;
-using Palaso.IO;
-using Palaso.UI.WindowsForms.ClearShare;
-using Palaso.UI.WindowsForms.Miscellaneous;
-using Palaso.UI.WindowsForms.Progress;
-using SIL.Archiving.Properties;
-using Timer = System.Threading.Timer;
 
 namespace SIL.Archiving
 {
@@ -41,16 +27,25 @@ namespace SIL.Archiving
 		#region Delegates and Events
 		public enum MessageType
 		{
+			/// <summary>Normal (bold) text</summary>
 			Normal,
+			/// <summary>Red text, followed by new line</summary>
 			Error,
+			/// <summary>Non-bold, indented with tab</summary>
 			Detail,
+			/// <summary>New line</summary>
 			Progress,
+			/// <summary>Non-bold, indented 8 spaces, with bullet character (U+00B7)</summary>
 			Bullet,
+			/// <summary>New line, Dark Green text</summary>
 			Success,
+			/// <summary>New line, indented 4 spaces</summary>
 			Indented,
+			/// <summary>Normal text, which will cause display to be cleared when the next message is to be displayed</summary>
+			Volatile,
 		}
 
-		/// <summary>Delegate for DisplayMessageWithColor event</summary>
+		/// <summary>Delegate for OnDisplayMessage event</summary>
 		/// <param name="msg">Message to display</param>
 		/// <param name="type">Type of message (which handler can use to determine appropriate color, style, indentation, etc.</param>
 		public delegate void DisplayMessageEventHandler(string msg, MessageType type);
@@ -58,18 +53,18 @@ namespace SIL.Archiving
 		/// <summary>
 		/// Notifiers subscribers of a message to display.
 		/// </summary>
-		public event DisplayMessageEventHandler DisplayMessage;
+		public event DisplayMessageEventHandler OnDisplayMessage;
 
-		/// <summary>Delegate for DisplayMessageWithColor event</summary>
+		/// <summary>Delegate for DisplayError event</summary>
 		/// <param name="msg">Message to display</param>
 		/// <param name="packageTitle">Title of package being created</param>
 		/// <param name="e">Exception (can be null)</param>
 		public delegate void DisplayErrorEventHandler(string msg, string packageTitle, Exception e);
 
 		/// <summary>
-		/// Notifiers subscribers of a message to display.
+		/// Notifiers subscribers of an error message to report.
 		/// </summary>
-		public event DisplayErrorEventHandler DisplayError;
+		public event DisplayErrorEventHandler OnDisplayError;
 
 		/// <summary>Action raised when progress happens</summary>
 		public Action IncrementProgressBarAction { protected get; set; }
@@ -77,7 +72,7 @@ namespace SIL.Archiving
 
 		#region properties
 		public string AppName { get; private set; }
-		public bool IsBusy { get; private set; }
+		public bool IsBusy { get; protected set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -102,7 +97,7 @@ namespace SIL.Archiving
 		/// it should return true; otherwise, false.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public Func<ArchivingDlgViewModel, string, string, bool> FileCopyOverride { private get; set; }
+		public Func<ArchivingDlgViewModel, string, string, bool> FileCopyOverride { protected get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -212,22 +207,29 @@ namespace SIL.Archiving
 		{
 			if (OverrideDisplayInitialSummary != null)
 				OverrideDisplayInitialSummary(_fileLists);
-			else if (DisplayMessage != null)
+			else if (OnDisplayMessage != null)
 			{
-				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg",
+				OnDisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg",
 						"The following files will be added to the archive:"), MessageType.Normal);
 
 				foreach (var kvp in _fileLists)
 				{
 					if (kvp.Key != string.Empty)
-						DisplayMessage(kvp.Key, MessageType.Indented);
+						OnDisplayMessage(kvp.Key, MessageType.Indented);
 
 					foreach (var file in kvp.Value.Item1)
-						DisplayMessage(Path.GetFileName(file), MessageType.Bullet);
+						OnDisplayMessage(Path.GetFileName(file), MessageType.Bullet);
 				}
 			}
 		}
 		#endregion
+
+		/// ------------------------------------------------------------------------------------
+		protected void DisplayMessage(string msg, MessageType type)
+		{
+			if (OnDisplayMessage != null)
+				OnDisplayMessage(msg, type);
+		}
 
 		//#region Methods to add app-specific METS pairs
 		///// ------------------------------------------------------------------------------------
@@ -1414,11 +1416,8 @@ namespace SIL.Archiving
 
 			if (_worker != null)
 			{
-				if (DisplayMessage != null)
-				{
-					DisplayMessage(Environment.NewLine + LocalizationManager.GetString(
+				DisplayMessage(Environment.NewLine + LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.CancellingMsg", "Canceling..."), MessageType.Error);
-				}
 
 				_worker.CancelAsync();
 				while (_worker.IsBusy)
@@ -1429,8 +1428,8 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		protected void ReportError(Exception e, string msg)
 		{
-			if (DisplayError != null)
-				DisplayError(msg, _title, e);
+			if (OnDisplayError != null)
+				OnDisplayError(msg, _title, e);
 			else if (e != null)
 				throw e;
 

@@ -145,10 +145,10 @@ namespace SIL.Archiving.Tests
 				zipFile.Save(tempFile.Path);
 				var mode = _helper.GetMode(new[] { zipFile.Name });
 				Assert.AreEqual("\"" + RampArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+					RampArchivingDlgViewModel.kModeText + "\",\"" +
 					RampArchivingDlgViewModel.kModeDataset + "\",\"" +
 					RampArchivingDlgViewModel.kModeSoftwareOrFont + "\",\"" +
-					RampArchivingDlgViewModel.kModePhotograph + "\",\"" +
-					RampArchivingDlgViewModel.kModeText + "\"]", mode);
+					RampArchivingDlgViewModel.kModePhotograph + "\"]", mode);
 			}
 			finally
 			{
