@@ -86,7 +86,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="ArchivingDlgViewModelTests.cs" />
+	<Compile Include="RampArchivingDlgViewModelTests.cs" />
 	<Compile Include="JSONUtilsTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
