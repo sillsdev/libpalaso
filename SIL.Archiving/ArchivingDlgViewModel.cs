@@ -29,6 +29,8 @@ namespace SIL.Archiving
 		{
 			/// <summary>Normal (bold) text</summary>
 			Normal,
+			/// <summary>Blue text, with "Warning:" label (not localizable)</summary>
+			Warning,
 			/// <summary>Red text, followed by new line</summary>
 			Error,
 			/// <summary>Non-bold, indented with tab</summary>
@@ -118,7 +120,7 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Callback to allow application to handly display of initial summary in log box. If
+		/// Callback to allow application to handle display of initial summary in log box. If
 		/// the application implements this, then the default summary display will be suppressed.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -225,7 +227,7 @@ namespace SIL.Archiving
 		#endregion
 
 		/// ------------------------------------------------------------------------------------
-		protected void DisplayMessage(string msg, MessageType type)
+		public void DisplayMessage(string msg, MessageType type)
 		{
 			if (OnDisplayMessage != null)
 				OnDisplayMessage(msg, type);

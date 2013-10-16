@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -8,12 +9,14 @@ namespace Palaso.Extensions
 {
 	public static class StringExtensions
 	{
-		public static List<string> SplitTrimmed(this string s, char seperator)
+		public const char kObjReplacementChar = '\uFFFC';
+
+		public static List<string> SplitTrimmed(this string s, char separator)
 		{
 			if (s.Trim() == string.Empty)
 				return new List<string>();
 
-			var x = s.Split(seperator);
+			var x = s.Split(separator);
 
 			var r = new List<string>();
 
@@ -26,6 +29,29 @@ namespace Palaso.Extensions
 				}
 			}
 			return r;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets an int array from a comma-delimited string of numbers.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static int[] ToIntArray(this string str)
+		{
+			List<int> array = new List<int>();
+
+			if (str != null)
+			{
+				string[] pieces = str.Split(',');
+				foreach (string piece in pieces)
+				{
+					int i;
+					if (int.TryParse(piece, out i))
+						array.Add(i);
+				}
+			}
+
+			return array.ToArray();
 		}
 
 		/// <summary>
@@ -159,6 +185,18 @@ namespace Palaso.Extensions
 			var letters = source.ToLowerInvariant().ToCharArray();
 			letters[0] = char.ToUpperInvariant(letters[0]);
 			return new string(letters);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Removes the ampersand accerlerator prefix from the specified text.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static string RemoveAcceleratorPrefix(this string text)
+		{
+			text = text.Replace("&&", kObjReplacementChar.ToString(CultureInfo.InvariantCulture));
+			text = text.Replace("&", string.Empty);
+			return text.Replace(kObjReplacementChar.ToString(CultureInfo.InvariantCulture), "&");
 		}
 	}
 }
