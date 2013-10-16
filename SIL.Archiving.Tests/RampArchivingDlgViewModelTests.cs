@@ -414,6 +414,8 @@ namespace SIL.Archiving.Tests
 		#region SetContentLanguages tests
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("RampRequired")]
 		public void SetContentLanguages_TwoLanguages_IncludedInMetsData()
 		{
 			_helper.SetContentLanguages("eng", "fra");
@@ -425,6 +427,8 @@ namespace SIL.Archiving.Tests
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("RampRequired")]
 		public void SetContentLanguages_SetTwice_ThrowsInvalidOperationException()
 		{
 			_helper.SetContentLanguages("eng", "fra");
