@@ -11,7 +11,8 @@ using Palaso.Media.Tests.Properties;
 
 namespace Palaso.Media.Tests
 {
-   [TestFixture]
+	[TestFixture]
+	[NUnit.Framework.Category("AudioTests")]
 	public class AudioRecorderTests
 	{
 	   [Test]

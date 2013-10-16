@@ -450,11 +450,13 @@ namespace Palaso.Reporting
 
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
+			var osLabel = ErrorReport.GetOperatingSystemLabel();
+
 			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
 
 			if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 			{
-				SendNavigationNotice("launch/version{0}", ErrorReport.VersionNumberString);
+				SendNavigationNotice("{0}/launch/version{1}", osLabel, ErrorReport.VersionNumberString);
 			}
 
 			//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
@@ -462,11 +464,11 @@ namespace Palaso.Reporting
 
 			if (string.IsNullOrEmpty(_realPreviousVersion))
 			{
-				SendNavigationNotice("firstApparentLaunchForAnyVersionOnMachine"+"/"+ErrorReport.VersionNumberString);
+				SendNavigationNotice("{0}/firstApparentLaunchForAnyVersionOnMachine" + "/" + ErrorReport.VersionNumberString, osLabel);
 			}
 			else if (_realPreviousVersion != ErrorReport.VersionNumberString)
 			{
-				SendNavigationNotice("versionChange/version{0}-previousVersion{1}",ErrorReport.VersionNumberString,_realPreviousVersion );
+				SendNavigationNotice("{0}/versionChange/version{1}-previousVersion{2}", osLabel, ErrorReport.VersionNumberString, _realPreviousVersion);
 			}
 		}
 

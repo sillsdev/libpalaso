@@ -249,14 +249,6 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void Write(Color color, FontStyle style, string msg, params object[] args)
 		{
-#if MONO // changing the text colour throws exceptions with mono 2011-12-09
-		// so just append plain text
-			_box.AppendText(string.Format(msg + Environment.NewLine, args));
-			_box.ScrollToCaret();
-			_verboseBox.AppendText(string.Format(msg + Environment.NewLine, args));
-			_verboseBox.ScrollToCaret();
-#else
-
 #if !DEBUG
 			try
 			{
@@ -267,6 +259,8 @@ namespace Palaso.UI.WindowsForms.Progress
 				var styleForDelegate = style;
 				SafeInvoke(rtfBox, (() =>
 				{
+#if !MONO // changing the text colour throws exceptions with mono 2011-12-09
+						// so just append plain text
 					if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
 						style = rtfBoxForDelegate.Font.Style;
 
@@ -275,10 +269,13 @@ namespace Palaso.UI.WindowsForms.Progress
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.SelectionColor = color;
 						rtfBoxForDelegate.SelectionFont = fnt;
+#endif
 						rtfBoxForDelegate.AppendText(string.Format(msg + Environment.NewLine, args));
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.ScrollToCaret();
+#if !MONO
 					}
+#endif
 				}));
 			}
 #if !DEBUG
@@ -290,7 +287,6 @@ namespace Palaso.UI.WindowsForms.Progress
 				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
 			}
 #endif
-#endif //MONO
 		}
 
 		public void WriteWarning(string message, params object[] args)
