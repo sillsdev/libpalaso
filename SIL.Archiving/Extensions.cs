@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows.Forms;
 
 namespace SIL.Archiving
@@ -18,45 +19,47 @@ namespace SIL.Archiving
 
 			using (var g = linkLabel.CreateGraphics())
 			{
-#if __MonoCS__
 
-				// split at the existing like breaks
-				var segments = linkLabel.Text.Replace("\r", "").Split(new[] { '\n' }, StringSplitOptions.None);
-				var newText = new StringBuilder();
-
-				foreach (var segment in segments)
+				if (ArchivingDlgViewModel.IsMono)
 				{
-					var thisSegment = segment.Trim();
+					// split at the existing like breaks
+					var segments = linkLabel.Text.Replace("\r", "").Split(new[] {'\n'}, StringSplitOptions.None);
+					var newText = new StringBuilder();
 
-					while (g.MeasureString(thisSegment, linkLabel.Font).Width > w)
+					foreach (var segment in segments)
 					{
-						var line = string.Empty;
-						var lastSpace = 0;
+						var thisSegment = segment.Trim();
 
-						for (var i = 0; i < thisSegment.Length; i++)
+						while (g.MeasureString(thisSegment, linkLabel.Font).Width > w)
 						{
-							if (char.IsWhiteSpace(thisSegment[i]))
-							{
-								if (g.MeasureString(line, linkLabel.Font).Width > w)
-								{
-									newText.AppendLine(thisSegment.Substring(0, lastSpace));
-									thisSegment = thisSegment.Substring(lastSpace + 1);
-									break;
-								}
+							var line = string.Empty;
+							var lastSpace = 0;
 
-								lastSpace = i;
+							for (var i = 0; i < thisSegment.Length; i++)
+							{
+								if (char.IsWhiteSpace(thisSegment[i]))
+								{
+									if (g.MeasureString(line, linkLabel.Font).Width > w)
+									{
+										newText.AppendLine(thisSegment.Substring(0, lastSpace));
+										thisSegment = thisSegment.Substring(lastSpace + 1);
+										break;
+									}
+
+									lastSpace = i;
+								}
+								line += thisSegment[i];
 							}
-							line += thisSegment[i];
 						}
+
+						// check for left-overs
+						if (thisSegment.Length > 0)
+							newText.AppendLine(thisSegment);
 					}
 
-					// check for left-overs
-					if (thisSegment.Length > 0)
-						newText.AppendLine(thisSegment);
+					linkLabel.Text = newText.ToString();
 				}
 
-				linkLabel.Text = newText.ToString();
-#endif
 				var size = g.MeasureString(linkLabel.Text, linkLabel.Font, w);
 				linkLabel.Height = (int)Math.Ceiling(size.Height);
 			}
