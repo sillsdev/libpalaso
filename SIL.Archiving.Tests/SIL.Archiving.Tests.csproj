@@ -86,9 +86,11 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ArbilUtilsTests.cs" />
 	<Compile Include="ArchivingDlgViewModelTests.cs" />
 	<Compile Include="JSONUtilsTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="RAMPUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">

@@ -83,6 +83,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ArbilUtils.cs" />
 	<Compile Include="ArchivingDlg.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -104,6 +105,7 @@
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	  <DependentUpon>Settings.settings</DependentUpon>
 	</Compile>
+	<Compile Include="RAMPUtils.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ArchivingDlg.resx">

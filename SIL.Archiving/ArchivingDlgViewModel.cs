@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -310,12 +309,8 @@ namespace SIL.Archiving
 			LogBox.WriteMessage(text);
 			Application.DoEvents();
 
-#if !__MonoCS__
-			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(kRampFileExtension) ??
-				FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
-#else
-			_rampProgramPath = FileLocator.LocateInProgramFiles("RAMP", true);
-#endif
+			_rampProgramPath = RAMPUtils.GetExeFileLocation();
+
 			LogBox.Clear();
 
 			if (_rampProgramPath == null)
@@ -340,6 +335,16 @@ namespace SIL.Archiving
 			maxProgBarValue = _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
 
 			return (_rampProgramPath != null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The file locations are different on Linux than on Windows
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static bool IsMono
+		{
+			get { return (System.Type.GetType("Mono.Runtime") != null); }
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1377,55 +1382,11 @@ namespace SIL.Archiving
 				return false;
 			}
 
-			try
-			{
-				var prs = new Process();
-				prs.StartInfo.FileName = _rampProgramPath;
-				prs.StartInfo.Arguments = "\"" + RampPackagePath + "\"";
-				if (!prs.Start())
-					return false;
+			var ramp = new RAMPUtils(this);
+			ramp.RampPackagePath = RampPackagePath;
+			ramp.Launch();
 
-				prs.WaitForInputIdle(8000);
-				EnsureRampHasFocusAndWaitForPackageToUnlock();
-				return true;
-			}
-			catch (InvalidOperationException)
-			{
-				EnsureRampHasFocusAndWaitForPackageToUnlock();
-				return true;
-			}
-			catch (Exception e)
-			{
-				ReportError(e, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
-					"There was an error attempting to open the archive package in RAMP."));
-				return false;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void EnsureRampHasFocusAndWaitForPackageToUnlock()
-		{
-#if !__MonoCS__
-			var processes = Process.GetProcessesByName(kRampProcessName);
-			if (processes.Length >= 1)
-			{
-				// I can't figure out why neither of these work.
-				BringWindowToTop(processes[0].MainWindowHandle.ToInt32());
-				//				SetForegroundWindow(processes[0].MainWindowHandle.ToInt32());
-			}
-#else
-			// Figure out how to do this in MONO
-#endif
-			// Every 4 seconds we'll check to see if the RAMP package is locked. When
-			// it gets unlocked by RAMP, then we'll delete it.
-			_timer = new Timer(CheckIfPackageFileIsLocked, RampPackagePath, 2000, 4000);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void CheckIfPackageFileIsLocked(Object packageFile)
-		{
-			if (!FileUtils.IsFileLocked(packageFile as string))
-				CleanUpTempRampPackage();
+			return true;
 		}
 
 		#endregion
@@ -1896,7 +1857,7 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void ReportError(Exception e, string msg)
+		public void ReportError(Exception e, string msg)
 		{
 			if (LogBox.IsHandleCreated)
 			{

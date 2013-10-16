@@ -1,5 +1,8 @@
 ﻿using System;
 
+// ReSharper disable CSharpWarnings::CS1591
+// ReSharper disable InconsistentNaming
+
 namespace SIL.Archiving
 {
 	/// <summary>
@@ -63,6 +66,7 @@ namespace SIL.Archiving
 		/// opposed to summaries or excerpts. It can apply whether the resource is text, sound, or video recording.
 		/// </summary>
 		BibleCompleteText = Scripture | 1L << 2,
+
 		BibleTextAbridgement = Scripture | 1L << 3,
 		/// <summary>Excerpts</summary>
 		BibleSelectedText = Scripture | 1L << 4,
@@ -76,6 +80,7 @@ namespace SIL.Archiving
 		BibleLectionary = Scripture | 1L << 11,
 		BibleStudyMaterial = Scripture | 1L << 12,
 		BibleTeachingMaterial = Scripture | 1L << 13,
+
 
 		CommunityAndCulture_Calendar = Other | 1L << 2,
 		CommunityAndCulture_CivicEducation = Other | 1L << 3,
@@ -353,3 +358,5 @@ namespace SIL.Archiving
 		FinishedInternal = AudienceType.Internal | 1 << 11,
 	}
 }
+// ReSharper restore CSharpWarnings::CS1591
+// ReSharper restore InconsistentNaming
