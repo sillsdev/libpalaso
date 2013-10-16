@@ -5,6 +5,7 @@ using NUnit.Framework;
 namespace SIL.Archiving.Tests
 {
 	[TestFixture]
+	[Category("Archiving")]
 	public class JSONUtilsTests
 	{
 		/// ------------------------------------------------------------------------------------

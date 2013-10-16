@@ -9,6 +9,7 @@ using L10NSharp;
 
 namespace SIL.Archiving
 {
+	/// ------------------------------------------------------------------------------------
 	public abstract class ArchivingDlgViewModel
 	{
 		#region Data members
@@ -25,6 +26,7 @@ namespace SIL.Archiving
 		#endregion
 
 		#region Delegates and Events
+		/// ------------------------------------------------------------------------------------
 		public enum MessageType
 		{
 			/// <summary>Normal (bold) text</summary>
@@ -71,7 +73,9 @@ namespace SIL.Archiving
 		#endregion
 
 		#region properties
+		/// ------------------------------------------------------------------------------------
 		public string AppName { get; private set; }
+		/// ------------------------------------------------------------------------------------
 		public bool IsBusy { get; protected set; }
 
 		/// ------------------------------------------------------------------------------------
@@ -1192,7 +1196,9 @@ namespace SIL.Archiving
 		//}
 		//#endregion
 
+		/// ------------------------------------------------------------------------------------
 		public abstract bool LaunchArchivingProgram();
+		/// ------------------------------------------------------------------------------------
 		public abstract bool CreatePackage();
 
 		//#region Methods for creating mets file.
@@ -1390,6 +1396,7 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		const int CopyBufferSize = 64 * 1024;
+		/// ------------------------------------------------------------------------------------
 		protected static void CopyFile(string src, string dest)
 		{
 			using (var outputFile = File.OpenWrite(dest))
@@ -1435,6 +1442,16 @@ namespace SIL.Archiving
 
 			if (HandleNonFatalError != null)
 				HandleNonFatalError(e, msg);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// The file locations are different on Linux than on Windows
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static bool IsMono
+		{
+			get { return (Type.GetType("Mono.Runtime") != null); }
 		}
 	}
 }

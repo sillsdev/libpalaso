@@ -10,8 +10,8 @@ namespace SIL.Archiving
 	/// ------------------------------------------------------------------------------------
 	public class ArchivingLanguage
 	{
-		private string _iso3Code;    // ex. "eng"
-		private string _englishName; // ex. "English"
+		protected string _iso3Code;    // ex. "eng"
+		protected string _englishName; // ex. "English"
 
 		/// ------------------------------------------------------------------------------------
 		public ArchivingLanguage(string iso3Code)

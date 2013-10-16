@@ -87,10 +87,8 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="RampArchivingDlgViewModelTests.cs" />
-	<Compile Include="ArbilUtilsTests.cs" />
 	<Compile Include="JSONUtilsTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="RAMPUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">

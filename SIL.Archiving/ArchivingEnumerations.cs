@@ -13,6 +13,7 @@ namespace SIL.Archiving
 	/// to describe the 'work stage' and also to recommend the 'sensitivity' category (who can see and use the work). The
 	/// work stage can be a consideration in determining sensitivity.
 	/// </summary>
+	[Flags]
 	public enum AudienceType
 	{
 		/// <summary>

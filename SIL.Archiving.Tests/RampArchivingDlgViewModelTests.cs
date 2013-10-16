@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +13,7 @@ using Palaso.UI.WindowsForms.ClearShare;
 namespace SIL.Archiving.Tests
 {
 	[TestFixture]
+	[Category("Archiving")]
 	public class SessionArchivingTests
 	{
 		private RampArchivingDlgViewModel _helper;
@@ -35,6 +35,7 @@ namespace SIL.Archiving.Tests
 			_helper.CleanUp();
 
 			try { File.Delete(_helper.RampPackagePath); }
+// ReSharper disable once EmptyGeneralCatchClause
 			catch { }
 		}
 
@@ -585,6 +586,48 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("English", eng.EnglishName);
 			Assert.AreEqual("French", fra.EnglishName);
 			Assert.AreEqual("Spanish", spa.EnglishName);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("RampRequired")]
+		public void GetLanguageName_English_ReturnsEnglish()
+		{
+			var langName = _helper.GetLanguageName("eng");
+			Assert.AreEqual(langName, "English");
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("RampRequired")]
+		public void GetLanguageName_Gibberish_ReturnsNull()
+		{
+			var langName = _helper.GetLanguageName("z23");
+			Assert.IsNull(langName);
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("RampRequired")]
+		public void GetLanguageName_ArchivingLanguage_ReturnsCorrectName()
+		{
+			// FieldWorks associates the name "Chinese" with the ISO3 Code "cmn"
+			ArchivingLanguage lang = new ArchivingLanguage("cmn", "Chinese");
+
+			// RAMP reqires the name "Chinese, Mandarin"
+			Assert.AreEqual("Chinese, Mandarin", _helper.GetLanguageName(lang.Iso3Code));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("RampRequired")]
+		public void GetRAMPFileLocation_RAMPInstalled_ReturnsFileLocation()
+		{
+			var fileName = RampArchivingDlgViewModel.GetExeFileLocation();
+			Assert.IsTrue(File.Exists(fileName), "RAMP executable file not found.");
 		}
 
 		#region Private helper methods

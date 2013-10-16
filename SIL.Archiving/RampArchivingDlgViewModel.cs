@@ -19,17 +19,26 @@ using Timer = System.Threading.Timer;
 
 namespace SIL.Archiving
 {
+	/// ------------------------------------------------------------------------------------
 	public class RampArchivingDlgViewModel: ArchivingDlgViewModel
 	{
 #if !__MonoCS__
-		[DllImport("User32.dll")]
-		private static extern IntPtr SetForegroundWindow(int hWnd);
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
-		[DllImport("User32.dll")]
-		private static extern bool BringWindowToTop(int hWnd);
+		// ReSharper disable InconsistentNaming
+		private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);    // brings window to top and makes it "always on top"
+		private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);  // brings window to top but not "always on top"
+		private const UInt32 SWP_NOSIZE = 0x0001;
+		private const UInt32 SWP_NOMOVE = 0x0002;
+		private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
+		// ReSharper restore InconsistentNaming
 #endif
 
 		#region RAMP and METS constants
+// ReSharper disable CSharpWarnings::CS1591
+
 		// Generic constants
 		public const string kDefaultKey = " ";
 		public const string kSeparator = ",";
@@ -138,6 +147,7 @@ namespace SIL.Archiving
 		public const string kRelationshipSource = "Source";
 		public const string kRelationshipPresentation = "Presentation";
 		public const string kRelationshipSupporting = "Supporting";
+// ReSharper restore CSharpWarnings::CS1591
 
 		[Flags]
 		private enum MetsProperties
@@ -156,6 +166,7 @@ namespace SIL.Archiving
 			GeneralDescription = 1 << 11,
 			AbstractDescription = 1 << 12,
 			Promotion = 1 << 13,
+// ReSharper disable once UnusedMember.Local
 			Stage = 1 << 14,
 			Type = 1 << 15,
 		}
@@ -169,6 +180,7 @@ namespace SIL.Archiving
 		private Timer _timer;
 		private bool _workerException;
 		private string _rampProgramPath;
+		private Dictionary<string, string> _languageList;
 
 		#region properties
 		/// <summary>Path to the RAMP package</summary>
@@ -193,6 +205,7 @@ namespace SIL.Archiving
 			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*" + kRampFileExtension))
 			{
 				try { File.Delete(orphanedRampPackage); }
+// ReSharper disable once EmptyGeneralCatchClause
 				catch { }
 			}
 		}
@@ -204,8 +217,7 @@ namespace SIL.Archiving
 				"Searching for the RAMP program..."), MessageType.Volatile);
 
 			Application.DoEvents();
-			_rampProgramPath = FileLocator.GetFromRegistryProgramThatOpensFileType(kRampFileExtension) ??
-				FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
+			_rampProgramPath = GetExeFileLocation();
 
 			if (_rampProgramPath == null)
 			{
@@ -429,13 +441,16 @@ namespace SIL.Archiving
 
 			PreventDuplicateMetsKey(MetsProperties.Type);
 
-			string type;
+			// TODO: This is currently not used.
+			//string type;
 			switch (trainingResourceType)
 			{
 				default:
 					throw new NotImplementedException("Need to add appropriate METS constant for training resource type " + trainingResourceType);
 			}
-			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kScholarlyWorkType, type));
+
+			// TODO: This is currently not reachable.
+			//_metsPairs.Add(JSONUtils.MakeKeyValuePair(kScholarlyWorkType, type));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -546,9 +561,10 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
+// ReSharper disable once UnusedParameter.Local
 		private void PreventInvalidAudienceTypeForWorkStage(Enum invalidAudience, WorkStage stage)
 		{
-			if (invalidAudience.HasFlag(_metsAudienceType))
+			if ((invalidAudience != null) && (invalidAudience.HasFlag(_metsAudienceType)))
 			{
 				throw new InvalidOperationException(string.Format(
 					"Resources with an audience of \"{0}\" cannot have a work stage of {1}",
@@ -845,7 +861,7 @@ namespace SIL.Archiving
 
 			SetFlag(kFlagHasSubjectLanguage);
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSubjectLanguage,
-				new[] { JSONUtils.MakeKeyValuePair(kDefaultKey, iso3Code + ":" + languageName) }));
+				new[] { JSONUtils.MakeKeyValuePair(kDefaultKey, iso3Code + ":" + GetLanguageName(iso3Code)) }));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -885,6 +901,7 @@ namespace SIL.Archiving
 			requirements = requirements.Where(r => !string.IsNullOrEmpty(r));
 
 			HashSet<string> softwareKeyValuePairs = new HashSet<string>();
+// ReSharper disable PossibleMultipleEnumeration
 			if (requirements.Any())
 			{
 				PreventDuplicateMetsKey(MetsProperties.SoftwareRequirements);
@@ -896,6 +913,7 @@ namespace SIL.Archiving
 
 				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSoftwareOrFontRequirements, softwareKeyValuePairs));
 			}
+// ReSharper restore PossibleMultipleEnumeration
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -939,7 +957,7 @@ namespace SIL.Archiving
 
 			foreach (var lang in languages.Where(r => !string.IsNullOrEmpty(r.Iso3Code)))
 			{
-				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey, string.Format("{0}:{1}", lang.Iso3Code, lang.EnglishName));
+				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey, string.Format("{0}:{1}", lang.Iso3Code, GetLanguageName(lang.Iso3Code)));
 				if (!string.IsNullOrEmpty(lang.Dialect))
 					langPair += "," + JSONUtils.MakeKeyValuePair("dialect", lang.Dialect);
 
@@ -1260,12 +1278,36 @@ namespace SIL.Archiving
 			var processes = Process.GetProcessesByName(kRampProcessName);
 			if (processes.Length >= 1)
 			{
-				// I can't figure out why neither of these work.
-				BringWindowToTop(processes[0].MainWindowHandle.ToInt32());
-//				SetForegroundWindow(processes[0].MainWindowHandle.ToInt32());
+				// First, make the window topmost: this puts it in front of all other windows
+				// and sets it as "always on top."
+				SetWindowPos(processes[0].MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+
+				// Second, make the window notopmost: this removes the "always on top" behavior
+				// and positions the window on top of all other "not always on top" windows.
+				SetWindowPos(processes[0].MainWindowHandle, HWND_NOTOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
 			}
 #else
-			// Figure out how to do this in MONO
+			// On mono this requires xdotool or wmctrl
+			string args = null;
+			if (!string.IsNullOrEmpty(FileLocator.LocateInProgramFiles("xdotool", true)))      /* try to find xdotool first */
+				args = "-c \"for pid in `xdotool search --name RAMP`; do xdotool windowactivate $pid; done\"";
+			else if (!string.IsNullOrEmpty(FileLocator.LocateInProgramFiles("wmctrl", true)))  /* if xdotool is not installed, look for wmctrl */
+				args = "-c \"wmctrl -a RAMP\"";
+
+			if (!string.IsNullOrEmpty(args))
+			{
+				var prs = new Process
+				{
+					StartInfo = {
+						FileName = "bash",
+						Arguments = args,
+						UseShellExecute = false,
+						RedirectStandardError = true
+					}
+				};
+
+				prs.Start();
+			}
 #endif
 			// Every 4 seconds we'll check to see if the RAMP package is locked. When
 			// it gets unlocked by RAMP, then we'll delete it.
@@ -1303,6 +1345,30 @@ namespace SIL.Archiving
 
 			IsBusy = false;
 			return success;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the path and file name of the RAMP executable file
+		/// </summary>
+		/// <returns>The full name of the RAMP executable file</returns>
+		/// ------------------------------------------------------------------------------------
+		public static string GetExeFileLocation()
+		{
+			string exeFile;
+			const string rampFileExtension = ".ramp";
+
+			if (IsMono)
+				exeFile = FileLocator.LocateInProgramFiles("RAMP", true);
+			else
+				exeFile = FileLocator.GetFromRegistryProgramThatOpensFileType(rampFileExtension) ??
+					FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
+
+			// make sure the file exists
+			if (!File.Exists(exeFile))
+				return null;
+
+			return new FileInfo(exeFile).FullName;
 		}
 
 		#region Methods for creating mets file.
@@ -1481,6 +1547,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public IEnumerable<string> GetSourceFilesForMetsData(IDictionary<string, Tuple<IEnumerable<string>, string>> fileLists)
 		{
+// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var kvp in fileLists)
 			{
 				foreach (var file in kvp.Value.Item1)
@@ -1684,10 +1751,101 @@ namespace SIL.Archiving
 				DisplayMessage(e.UserState.ToString(), MessageType.Detail);
 			}
 
-			if (!_cancelProcess && IncrementProgressBarAction != null)
+			if (IncrementProgressBarAction != null)
 				IncrementProgressBarAction();
 		}
 
+		#endregion
+
+		#region Language functions
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Get the path and file name of the RAMP Languages file
+		/// </summary>
+		/// <returns>The full name of the RAMP languages file</returns>
+		/// ------------------------------------------------------------------------------------
+		private static string GetLanguageFileLocation()
+		{
+			var exeFile = RampArchivingDlgViewModel.GetExeFileLocation();
+			if (exeFile == null)
+				throw new DirectoryNotFoundException("The RAMP directory was not found.");
+
+			var dir = Path.GetDirectoryName(exeFile);
+			if (dir == null)
+				throw new DirectoryNotFoundException("The RAMP directory was not found.");
+
+			// on Linux the exe and data directory are not in the same directory
+			if (!Directory.Exists(Path.Combine(dir, "data")))
+			{
+				dir = Directory.GetParent(dir).FullName;
+				if (Directory.Exists(Path.Combine(dir, "share")))
+					dir = Path.Combine(dir, "share");
+			}
+
+			// get the data directory
+			dir = Path.Combine(dir, "data");
+			if (!Directory.Exists(dir))
+				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+
+			// get the options directory
+			dir = Path.Combine(dir, "options");
+			if (!Directory.Exists(dir))
+				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+
+			// get the languages.yaml file
+			var langFile = Path.Combine(dir, "languages.yaml");
+			if (!File.Exists(langFile))
+				throw new FileNotFoundException(string.Format("The file {0} was not found.", langFile));
+
+			return langFile;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a Dictionary of the languages supported by RAMP.  The key is the ISO3 code,
+		/// and the entry value is the language name.
+		/// </summary>
+		/// <returns></returns>
+		/// ------------------------------------------------------------------------------------
+		private Dictionary<string, string> GetLanguageList()
+		{
+			if (_languageList == null)
+			{
+				_languageList = new Dictionary<string, string>();
+				var langFile = GetLanguageFileLocation();
+
+				foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
+				{
+					const int start = 9;
+					var end = fileLine.IndexOf('"', start);
+					if (end > start)
+					{
+						var parts = fileLine.Substring(start, end - start).Split(':');
+						if (parts.Length == 2)
+							_languageList[parts[0]] = parts[1];
+					}
+				}
+			}
+
+			return _languageList;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the official RAMP name of the language associated with the is03Code.
+		/// </summary>
+		/// <param name="iso3Code"></param>
+		/// <returns></returns>
+		/// ------------------------------------------------------------------------------------
+		public string GetLanguageName(string iso3Code)
+		{
+			var langs = GetLanguageList();
+
+			if (langs == null)
+				throw new Exception("The language list for RAMP was not retrieved.");
+
+			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
+		}
 		#endregion
 
 		/// ------------------------------------------------------------------------------------
@@ -1704,6 +1862,7 @@ namespace SIL.Archiving
 		public void CleanUp()
 		{
 			try { Directory.Delete(_tempFolder, true); }
+// ReSharper disable once EmptyGeneralCatchClause
 			catch { }
 		}
 
