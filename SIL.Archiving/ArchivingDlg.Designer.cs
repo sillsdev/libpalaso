@@ -35,6 +35,7 @@
 			this._buttonCancel = new System.Windows.Forms.Button();
 			this._linkOverview = new System.Windows.Forms.LinkLabel();
 			this._progressBar = new System.Windows.Forms.ProgressBar();
+			this._logBox = new Palaso.UI.WindowsForms.Progress.LogBox();
 			this.locExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._tableLayoutPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.locExtender)).BeginInit();
@@ -51,6 +52,7 @@
 			this._tableLayoutPanel.Controls.Add(this._buttonCancel, 2, 3);
 			this._tableLayoutPanel.Controls.Add(this._linkOverview, 0, 0);
 			this._tableLayoutPanel.Controls.Add(this._progressBar, 0, 2);
+			this._tableLayoutPanel.Controls.Add(this._logBox, 0, 1);
 			this._tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._tableLayoutPanel.Location = new System.Drawing.Point(12, 12);
 			this._tableLayoutPanel.Name = "_tableLayoutPanel";
@@ -138,6 +140,36 @@
 			this._progressBar.Size = new System.Drawing.Size(355, 15);
 			this._progressBar.TabIndex = 4;
 			//
+			// _logBox
+			//
+			this._logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._logBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this._logBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(171)))), ((int)(((byte)(173)))), ((int)(((byte)(179)))));
+			this._logBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this._logBox.CancelRequested = false;
+			this._tableLayoutPanel.SetColumnSpan(this._logBox, 3);
+			this._logBox.ErrorEncountered = false;
+			this._logBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._logBox.GetDiagnosticsMethod = null;
+			this.locExtender.SetLocalizableToolTip(this._logBox, null);
+			this.locExtender.SetLocalizationComment(this._logBox, null);
+			this.locExtender.SetLocalizingId(this._logBox, "LogBox");
+			this._logBox.Location = new System.Drawing.Point(0, 18);
+			this._logBox.Margin = new System.Windows.Forms.Padding(0, 5, 0, 5);
+			this._logBox.Name = "_logBox";
+			this._logBox.ProgressIndicator = null;
+			this._logBox.ShowCopyToClipboardMenuItem = false;
+			this._logBox.ShowDetailsMenuItem = false;
+			this._logBox.ShowDiagnosticsMenuItem = false;
+			this._logBox.ShowFontMenuItem = false;
+			this._logBox.ShowMenu = false;
+			this._logBox.Size = new System.Drawing.Size(355, 301);
+			this._logBox.TabIndex = 5;
+			this._logBox.TabStop = false;
+			this._logBox.ReportErrorLinkClicked += new System.EventHandler(this.HandleLogBoxReportErrorLinkClicked);
+			//
 			// locExtender
 			//
 			this.locExtender.LocalizationManagerId = "SIL.Archiving";
@@ -179,5 +211,6 @@
 		private System.Windows.Forms.LinkLabel _linkOverview;
 		private System.Windows.Forms.ProgressBar _progressBar;
 		private L10NSharp.UI.L10NSharpExtender locExtender;
+		private Palaso.UI.WindowsForms.Progress.LogBox _logBox;
 	}
 }

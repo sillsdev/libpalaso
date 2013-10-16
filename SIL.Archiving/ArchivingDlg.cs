@@ -17,7 +17,6 @@ namespace SIL.Archiving
 		private readonly FormSettings _settings;
 		private readonly ArchivingDlgViewModel _viewModel;
 		private readonly Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> _getFilesToArchive;
-		private readonly LogBox _logBox;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Caller can use this to retrieve and persist form settings (typicvally
@@ -86,15 +85,8 @@ namespace SIL.Archiving
 
 			// this is for a display problem in mono
 			_linkOverview.SizeToContents();
-			_logBox = new LogBox();
 			_logBox.Tag = false;
-			_logBox.TabStop = false;
-			_logBox.ShowMenu = false;
-			_logBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			_logBox.Margin = new Padding(0, 5, 0, 5);
-			_logBox.ReportErrorLinkClicked += delegate { Close(); };
-			_tableLayoutPanel.Controls.Add(_logBox, 0, 1);
-			_tableLayoutPanel.SetColumnSpan(_logBox, 3);
+
 			model.OnDisplayMessage += DisplayMessage;
 			model.OnDisplayError += new ArchivingDlgViewModel.DisplayErrorEventHandler(model_DisplayError);
 
@@ -168,6 +160,9 @@ namespace SIL.Archiving
 				case ArchivingDlgViewModel.MessageType.Progress:
 					_logBox.WriteMessage(Environment.NewLine + msg);
 					break;
+				case ArchivingDlgViewModel.MessageType.Warning:
+					_logBox.WriteWarning(msg);
+					break;
 				case ArchivingDlgViewModel.MessageType.Error:
 					_logBox.WriteMessageWithColor("Red", msg + Environment.NewLine);
 					break;
@@ -230,6 +225,12 @@ namespace SIL.Archiving
 
 			if (!string.IsNullOrEmpty(tgt))
 				System.Diagnostics.Process.Start(tgt);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void HandleLogBoxReportErrorLinkClicked(object sender, EventArgs e)
+		{
+			Close();
 		}
 	}
 }
