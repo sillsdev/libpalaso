@@ -1427,10 +1427,23 @@ namespace SIL.Archiving
 					GetSourceFilesForMetsData(_fileLists)));
 
 				if (ImageCount > 0)
-					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, ImageCount.ToString(CultureInfo.InvariantCulture)));
+					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} image{1}.",
+						_imageCount.ToString(CultureInfo.InvariantCulture),
+						(_imageCount == 1) ? "" : "s")));
 
-				if (ShowRecordingCountNotLength && _audioCount > 0 && _videoCount > 0)
-					SetAudioVideoExtent(string.Format("{0} audio recording files; {1} video recording files.", _audioCount, _videoCount));
+				var avExtent = new StringBuilder();
+				const string delimiter = "; ";
+
+				if (ShowRecordingCountNotLength)
+				{
+					if (_audioCount > 0)
+						avExtent.AppendLineFormat("{0} audio recording file{1}", new object[] { _audioCount, (_audioCount == 1) ? "" : "s" }, delimiter);
+
+					if (_videoCount > 0)
+						avExtent.AppendLineFormat("{0} video recording file{1}", new object[] { _videoCount, (_videoCount == 1) ? "" : "s" }, delimiter);
+
+					SetAudioVideoExtent(avExtent.ToString() + ".");
+				}
 			}
 		}
 
@@ -1532,7 +1545,10 @@ namespace SIL.Archiving
 				if (FileUtils.GetIsText(file))
 					list.Add(kModeText);
 				if (FileUtils.GetIsImage(file))
+				{
+					_imageCount++;
 					list.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
+				}
 				if (FileUtils.GetIsMusicalNotation(file))
 					list.Add(kModeMusicalNotation);
 				if (FileUtils.GetIsDataset(file))
