@@ -66,8 +66,19 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Combines the functionality fo StringBuilder.AppendFormat and
+		/// StringBuilder.AppendLine. Also allows for the delimiter to be specified.  If the
+		/// delimiter is null, Environment.NewLine will be used.
+		/// </summary>
+		/// <param name="sb"></param>
+		/// <param name="format"></param>
+		/// <param name="args"></param>
+		/// <param name="delimiter"></param>
+		/// ------------------------------------------------------------------------------------
 		public static void AppendLineFormat(this StringBuilder sb, string format, object[] args, string delimiter)
 		{
+			if (delimiter == null) delimiter = Environment.NewLine;
 			if (sb.Length != 0) sb.Append(delimiter);
 			sb.AppendFormat(format, args);
 		}
