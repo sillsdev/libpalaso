@@ -64,5 +64,12 @@ namespace SIL.Archiving
 				linkLabel.Height = (int)Math.Ceiling(size.Height);
 			}
 		}
+
+		/// ------------------------------------------------------------------------------------
+		public static void AppendLineFormat(this StringBuilder sb, string format, object[] args, string delimiter)
+		{
+			if (sb.Length != 0) sb.Append(delimiter);
+			sb.AppendFormat(format, args);
+		}
 	}
 }
