@@ -83,6 +83,9 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="AccessProtocol.cs" />
+	<Compile Include="Generic\ArchivingActor.cs" />
+	<Compile Include="Generic\ArchivingPackage.cs" />
 	<Compile Include="ArchivingDlg.cs">
 	  <SubType>Form</SubType>
 	</Compile>
@@ -93,6 +96,20 @@
 	<Compile Include="ArchivingEnumerations.cs" />
 	<Compile Include="ArchivingLanguage.cs" />
 	<Compile Include="Extensions.cs" />
+	<Compile Include="Generic\ArchivingSession.cs" />
+	<Compile Include="Generic\GenericObject.cs" />
+	<Compile Include="Generic\SimpleObjects.cs" />
+	<Compile Include="IMDI\ELARAccessProtocol.cs" />
+	<Compile Include="IMDI\IMDIArchivingDlgViewModel.cs" />
+	<Compile Include="IMDI\IMDIData.cs" />
+	<Compile Include="IMDI\Lists\ItemListBase.cs" />
+	<Compile Include="IMDI\Lists\LanguageList.cs" />
+	<Compile Include="IMDI\Lists\ListConstructor.cs" />
+	<Compile Include="IMDI\Lists\ListType.cs" />
+	<Compile Include="IMDI\Schema\IMDI_3_0.cs" />
+	<Compile Include="IMDI\Schema\IMDI_3_0_Backup.cs" />
+	<Compile Include="IMDI\Schema\SchemaHelper.cs" />
+	<Compile Include="IMDI\TLAAccessProtocol.cs" />
 	<Compile Include="RampArchivingDlgViewModel.cs" />
 	<Compile Include="JSONUtils.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
@@ -128,11 +145,21 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="app.config" />
+	<None Include="IMDI\xsd\GenerateClasses.bat" />
+	<None Include="IMDI\xsd\IMDI_3.0.xsd">
+	  <SubType>Designer</SubType>
+	</None>
 	<None Include="Properties\Settings.settings">
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Resources\EmptyMets.xml" />
+  </ItemGroup>
+  <ItemGroup>
+	<Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
+  </ItemGroup>
+  <ItemGroup>
+	<Folder Include="RAMP\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
