@@ -8,7 +8,7 @@ using System.Xml;
 namespace Palaso.Settings
 {
 	/// <summary>
-	/// A SettingsProvider implementation that can be used on both Windows and Linux (the mono implementation was buggy and incomplete)
+	/// A custom SettingsProvider implementation functional on both Windows and Linux (the default mono implementation was buggy and incomplete)
 	/// </summary>
 	public class CrossPlatformSettingsProvider : SettingsProvider, IApplicationSettingsProvider
 	{
@@ -16,7 +16,7 @@ namespace Palaso.Settings
 
 		protected string UserRoamingLocation = null;
 		protected string UserLocalLocation = null;
-		private static string CompanyAndProductPath = null;
+		private static string CompanyAndProductPath;
 		/// <summary>
 		/// Indicates if the settings should be saved in roaming or local location, defaulted to false;
 		/// </summary>
@@ -83,8 +83,7 @@ namespace Palaso.Settings
 		{
 			lock(LockObject)
 			{
-				//Iterate through the settings to be stored
-				//Only dirty settings are included in propvals, and only ones relevant to this provider
+				//Iterate through the settings to be stored, only dirty settings for this provider are in collection
 				foreach(SettingsPropertyValue propval in collection)
 				{
 					var groupName = context["GroupName"].ToString();
@@ -115,9 +114,6 @@ namespace Palaso.Settings
 		{
 			XmlElement settingNode;
 
-			//Determine if the setting is roaming.
-			//If roaming then the value is stored as an element under the root
-			//Otherwise it is stored under a machine name node
 			try
 			{
 				settingNode = (XmlElement)groupNode.SelectSingleNode("setting[@name='" + propVal.Name + "']");
@@ -190,15 +186,14 @@ namespace Palaso.Settings
 			{
 				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 				var assemblyAttributes = (AssemblyProductAttribute[])assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), true);
-				var appName = "Product not set in AssemblyInfo";
+				var appName = @"Product not set in AssemblyInfo";
 				if(assemblyAttributes.Length > 0)
 				{
 					appName = assemblyAttributes[0].Product;
 				}
 				return appName;
 			}
-			set { }
-			//Do nothing
+			set { } //Do nothing
 		}
 
 		public SettingsPropertyValue GetPreviousVersion(SettingsContext context, SettingsProperty property)
@@ -229,22 +224,28 @@ namespace Palaso.Settings
 			{
 				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 				directoryList.Sort(VersionDirectoryComparison);
-				if(directoryList[0] != assembly.GetName().Version.ToString())
+				var previousDirectory = directoryList[0];
+				if(!previousDirectory.EndsWith(assembly.GetName().Version.ToString()) && directoryList.Count <= 1)
 				{
-					var settingsLocation = Path.Combine(directoryList[0], "user.config");
-					if(File.Exists(settingsLocation))
+					return null;
+				}
+				if(previousDirectory.EndsWith(assembly.GetName().Version.ToString()))
+				{
+					previousDirectory = directoryList[1];
+				}
+				var settingsLocation = Path.Combine(previousDirectory, "user.config");
+				if(File.Exists(settingsLocation))
+				{
+					document = new XmlDocument();
+					try
 					{
-						document = new XmlDocument();
-						try
-						{
-							document.Load(settingsLocation);
-						}
-						catch(Exception)
-						{
-							//Don't blow up if we can't load old settings, just lose them.
-							document = null;
-							Console.WriteLine(@"Failed to load old settings file.");
-						}
+						document.Load(settingsLocation);
+					}
+					catch(Exception)
+					{
+						//Don't blow up if we can't load old settings, just lose them.
+						document = null;
+						Console.WriteLine(@"Failed to load old settings file.");
 					}
 				}
 			}

@@ -11,34 +11,33 @@ namespace TestApp.Properties {
 	//  The SettingsSaving event is raised before the setting values are saved.
 	internal sealed partial class Settings {
 
-		 public Settings()
-		 {
-				var provider = new CrossPlatformSettingsProvider();
-				_providers = new SettingsProviderCollection();
-				_providers.Add(provider);
-				foreach(SettingsProperty property in this.Properties)
-				{
-					property.Provider = provider;
-				}
-			// // To add event handlers for saving and changing settings, uncomment the lines below:
-			//
-			// this.SettingChanging += this.SettingChangingEventHandler;
-			//
-			// this.SettingsSaving += this.SettingsSavingEventHandler;
-			//
-		}
+		public Settings()
+		{
+			//The following 6 lines of code are what is required to get a class to implement a custom settings provider and use it for all settings.
+			var provider = new CrossPlatformSettingsProvider();
+			_providers = new SettingsProviderCollection();
+			_providers.Add(provider);
+			foreach(SettingsProperty property in this.Properties)
+			{
+				property.Provider = provider;
+			}
+		 // // To add event handlers for saving and changing settings, uncomment the lines below:
+		 //
+		 // this.SettingChanging += this.SettingChangingEventHandler;
+		 //
+		 // this.SettingsSaving += this.SettingsSavingEventHandler;
+		 //
+	  }
 
 		private static SettingsProviderCollection _providers;
 
-		private static SettingsProvider _provider;
-
-		  public override System.Configuration.SettingsProviderCollection Providers
-		  {
-			  get
-			  {
-				  return _providers;
-			  }
-		  }
+		public override SettingsProviderCollection Providers
+		{
+			get
+			{
+				return _providers;
+			}
+		}
 
 		private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e) {
 			// Add code to handle the SettingChangingEvent event here.
