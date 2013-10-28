@@ -216,36 +216,40 @@ namespace Palaso.Settings
 		private static XmlDocument GetPreviousSettingsXml()
 		{
 			XmlDocument document = null;
-			var directoryList =
-				new List<string>(
-					Directory.EnumerateDirectories(Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), CompanyAndProductPath)));
-			if(directoryList.Count > 0)
+			var appSettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+														  CompanyAndProductPath);
+			if(Directory.Exists(appSettingsPath))
 			{
-				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
-				directoryList.Sort(VersionDirectoryComparison);
-				var previousDirectory = directoryList[0];
-				if(!previousDirectory.EndsWith(assembly.GetName().Version.ToString()) && directoryList.Count <= 1)
+				var directoryList =
+				new List<string>(
+						Directory.EnumerateDirectories(appSettingsPath));
+				if(directoryList.Count > 0)
 				{
-					return null;
-				}
-				if(previousDirectory.EndsWith(assembly.GetName().Version.ToString()))
-				{
-					previousDirectory = directoryList[1];
-				}
-				var settingsLocation = Path.Combine(previousDirectory, "user.config");
-				if(File.Exists(settingsLocation))
-				{
-					document = new XmlDocument();
-					try
+					var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+					directoryList.Sort(VersionDirectoryComparison);
+					var previousDirectory = directoryList[0];
+					if(!previousDirectory.EndsWith(assembly.GetName().Version.ToString()) && directoryList.Count <= 1)
 					{
-						document.Load(settingsLocation);
+						return null;
 					}
-					catch(Exception)
+					if(previousDirectory.EndsWith(assembly.GetName().Version.ToString()))
 					{
-						//Don't blow up if we can't load old settings, just lose them.
-						document = null;
-						Console.WriteLine(@"Failed to load old settings file.");
+						previousDirectory = directoryList[1];
+					}
+					var settingsLocation = Path.Combine(previousDirectory, "user.config");
+					if(File.Exists(settingsLocation))
+					{
+						document = new XmlDocument();
+						try
+						{
+							document.Load(settingsLocation);
+						}
+						catch(Exception)
+						{
+							//Don't blow up if we can't load old settings, just lose them.
+							document = null;
+							Console.WriteLine(@"Failed to load old settings file.");
+						}
 					}
 				}
 			}
