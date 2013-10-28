@@ -33,6 +33,16 @@ namespace Palaso.Settings
 			UserLocalLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), GetFullSettingsPath());
 		}
 
+		public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
+		{
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+			if(name != null && config != null) //ReSharper lies
+// ReSharper restore ConditionIsAlwaysTrueOrFalse
+			{
+				base.Initialize(name, config);
+			}
+		}
+
 		private static string GetFullSettingsPath()
 		{
 			var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
@@ -177,6 +187,11 @@ namespace Palaso.Settings
 			{
 				return @"CrossPlatformLocalFileSettingsProvider";
 			}
+		}
+
+		public override string Description
+		{
+			get { return "@WorkingLocalFileProviderForWinAndMono"; }
 		}
 
 

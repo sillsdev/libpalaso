@@ -6,9 +6,11 @@ settings class. Currently the mono implementation is insufficient for our needs.
 Short instructions (to just make it work)
 -----------------------------------------
 To use the CrossPlatformSettings provider add the following content to a new class in the project for your assembly where settings are defined.
+All of your current settings should be modified in the designer to include "Palaso.Settings.CrossPlatformSettingsProvider" in the Provider property.
 Place the file next to the Settings.Designer.cs file and replacing the place-holders [{}] with appropriate info:
 
 using System.Configuration;
+using System.Diagnostics;
 using Palaso.Settings;
 
 namespace [{Namespace to match your Settings.Designer.cs file}].Properties
@@ -25,24 +27,9 @@ namespace [{Namespace to match your Settings.Designer.cs file}].Properties
 		/// </summary>
 		public Settings ()
 		{
-			var provider = new CrossPlatformSettingsProvider ();
-			_providers = new SettingsProviderCollection ();
-			_providers.Add (provider);
 			foreach (SettingsProperty property in Properties)
 			{
-				property.Provider = provider;
-			}
-		}
-
-		private static SettingsProviderCollection _providers;
-
-		/// <summary>
-		/// Provider collection overriding ApplicationSettingsBase to provide our own CrossPlatformSettingsProvider
-		/// </summary>
-		/// <value>The providers.</value>
-		public override System.Configuration.SettingsProviderCollection Providers {
-			get {
-				return _providers;
+				Debug.Assert(property.Provider is CrossPlatformSettingsProvider, "Palaso.Settings.CrossPlatformSettingsProvider should be used for " + property.Name);
 			}
 		}
 	}
@@ -66,12 +53,14 @@ The considerable gaps and bugs where the gaps weren't inspired the creation of t
 The CrossPlatformSettingsProvider emulates most of the default behavior of the LocalFileSettingsProvider.
 The following are the known differences:
 1. The folder name does not contain the evidence hash:
-Windows Example: C:\Users\naylor\AppData\Local\SIL\Fieldworks\8.0.5.6432\user.config
-Linux Example:   /home/jnaylor/.local/share/SIL/Fieldworks/8.0.5.6432/user.config
-
+	Windows Example: C:\Users\naylor\AppData\Local\SIL\Fieldworks\8.0.5.6432\user.config
+	Linux Example:   /home/jnaylor/.local/share/SIL/Fieldworks/8.0.5.6432/user.config
 2. I've dropped a couple of attributes off of the section element (allowExeDefinition, requirePermission) in the xml.
 	I didn't know how to programatically determine them.
 3. The custom settings provider gives us an upgrade path on Mono, but this hasn't been thoroughly exercised (no need yet)
-	The default settings Upgrade behavior provided by the CrossPlatformSettingsProvider class just copies the xml from the most
+	The default settings Upgrade behaviour provided by the CrossPlatformSettingsProvider class just copies the xml from the most
 	recent previous version into the new location.
 4. Only settings serialized as String or XML are supported.
+
+When you supply Palaso.Settings.CrossPlatformSettingsProvider to the designer the .Net framework will construct our class at runtime and
+use it for all the restoring and saving of those settings.

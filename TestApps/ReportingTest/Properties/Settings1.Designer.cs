@@ -24,6 +24,7 @@ namespace TestApp.Properties {
 		}
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Configuration.SettingsProviderAttribute(typeof(Palaso.Settings.CrossPlatformSettingsProvider))]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 		[global::System.Configuration.DefaultSettingValueAttribute("True")]
 		public bool NeedsUpgrade {
@@ -36,6 +37,7 @@ namespace TestApp.Properties {
 		}
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Configuration.SettingsProviderAttribute(typeof(Palaso.Settings.CrossPlatformSettingsProvider))]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 		public global::Palaso.Reporting.ReportingSettings ReportingSettings {
 			get {
