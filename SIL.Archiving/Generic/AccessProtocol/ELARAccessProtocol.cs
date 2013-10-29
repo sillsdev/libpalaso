@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SIL.Archiving.IMDI
+namespace SIL.Archiving.Generic.AccessProtocol
 {
 	/// <summary>Access protocol for ELAR (Endangered Languages Archive)</summary>
 	/// <see cref="http://www.elar-archive.org/depositing/preparing-access-protocol.php"/>
-	public class ElarAccessProtocol : AccessProtocol, IAccessProtocol
+	public class ElarAccessProtocol : AccessProtocolBase, IAccessProtocol
 	{
 		protected AccessOption _access;
 

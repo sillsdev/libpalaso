@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SIL.Archiving.IMDI
+namespace SIL.Archiving.Generic.AccessProtocol
 {
 	/// <summary>Access protocol for The Language Archive</summary>
 	/// <see cref="http://tla.mpi.nl/resources/access-permissions/"/>
-	public class TLAAccessProtocol : AccessProtocol, IAccessProtocol
+	public class TLAAccessProtocol : AccessProtocolBase, IAccessProtocol
 	{
 		protected AccessOption _access;
 

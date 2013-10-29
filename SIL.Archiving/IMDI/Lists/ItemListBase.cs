@@ -4,24 +4,16 @@ using System.Xml;
 
 namespace SIL.Archiving.IMDI.Lists
 {
-	/// <summary>
-	/// Generic class to handle items in the IMDI lists
-	/// </summary>
+	/// <summary>Generic class to handle items in the IMDI lists</summary>
 	public class IMDIListItem
 	{
-		/// <summary>
-		/// Displayed to the user
-		/// </summary>
+		/// <summary>Displayed to the user</summary>
 		public string Text { get; set; }
 
-		/// <summary>
-		/// Used in the metadata files
-		/// </summary>
+		/// <summary>Used in the metadata files</summary>
 		public string Value { get; set; }
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
+		/// <summary>Constructor</summary>
 		/// <param name="text">Displayed to the user</param>
 		/// <param name="value">Used in the metadata files</param>
 		public IMDIListItem(string text, string value)
@@ -52,17 +44,13 @@ namespace SIL.Archiving.IMDI.Lists
 	/// </summary>
 	public class IMDIItemList : List<IMDIListItem>
 	{
-		/// <summary>
-		/// Constructor for derived classes to use
-		/// </summary>
+		/// <summary>Constructor for derived classes to use</summary>
 		protected IMDIItemList()
 		{
 			// additional constructor code can go here
 		}
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
+		/// <summary>Constructor</summary>
 		/// <param name="nodes">A list of the imdi:Entry nodes from the XML file</param>
 		public IMDIItemList(XmlNodeList nodes)
 		{
@@ -84,30 +72,24 @@ namespace SIL.Archiving.IMDI.Lists
 			}
 		}
 
-		/// <summary>
-		/// Override in inherited classes
-		/// </summary>
+		/// <summary>Override in inherited classes</summary>
 		/// <param name="item"></param>
 		public virtual void AddItem(IMDIListItem item)
 		{
 			Add(item);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
+		/// <summary>Returns the first item found with the selected Value, or null if not found</summary>
 		/// <param name="value"></param>
-		/// <returns>The first item found with the selected Value, or null if not found</returns>
+		/// <returns></returns>
 		public IMDIListItem FindByValue(string value)
 		{
 			return this.FirstOrDefault(i => i.Value == value);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
+		/// <summary>Returns the first item found with the selected Text, or null if not found</summary>
 		/// <param name="text"></param>
-		/// <returns>The first item found with the selected Text, or null if not found</returns>
+		/// <returns></returns>
 		public IMDIListItem FindByText(string text)
 		{
 			var itm = this.FirstOrDefault(i => i.Text == text);

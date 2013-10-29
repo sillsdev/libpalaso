@@ -1,8 +1,10 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
+using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
 {
+	/// <summary>Base class for IMDI archiving objects</summary>
 	public abstract class ArchivingGenericObject
 	{
 		/// <summary>If needed but not given, Name will be used</summary>
@@ -12,7 +14,7 @@ namespace SIL.Archiving.Generic
 		public string Name;
 
 		/// <summary />
-		public LanguageString Description;
+		public HashSet<LanguageString> Descriptions;
 
 		/// <summary>Date the first entry was created</summary>
 		public DateTime DateCreatedFirst;
@@ -25,6 +27,12 @@ namespace SIL.Archiving.Generic
 
 		/// <summary>Who has access, and how do you get access. Different archives use this differently</summary>
 		public IAccessProtocol AccessProtocol;
+
+		/// <summary>Constructor</summary>
+		protected ArchivingGenericObject()
+		{
+			Descriptions = new HashSet<LanguageString>(new LanguageStringComparer());
+		}
 	}
 
 }
