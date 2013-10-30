@@ -29,32 +29,33 @@ namespace Palaso.Reporting
 #endif
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <example>
-		/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
-		///#if DEBUG
-		///                true
-		///#else
-		///                false
-		///#endif
-		///                );
-		/// </example>
-		/// <param name="settings"></param>
-		/// <param name="domain"></param>
-		/// <param name="googleAnalyticsAccountCode"></param>
-		/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
-		/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
-		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
-		{
-			s_singleton = new UsageReporter();
-			s_singleton._settings = settings;
-			s_singleton._realPreviousVersion = settings.PreviousVersion;
-			s_singleton._settings.Launches++;
-			s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
-			settings.PreviousVersion = ErrorReport.VersionNumberString;
-		}
+			/// <summary>
+			///
+			/// </summary>
+			/// <example>
+			/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
+			///#if DEBUG
+			///                true
+			///#else
+			///                false
+			///#endif
+			///                );
+			/// </example>
+			/// <param name="settings"></param>
+			/// <param name="domain"></param>
+			/// <param name="googleAnalyticsAccountCode"></param>
+			/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
+			/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
+			public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
+			{
+				s_singleton = new UsageReporter();
+				s_singleton._settings = settings;
+				s_singleton._realPreviousVersion = settings.PreviousVersion;
+				s_singleton._settings.Launches++;
+				s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
+				settings.PreviousVersion = ErrorReport.VersionNumberString;
+				settings.PreviousLaunchDate = DateTime.Now.Date;
+			}
 
 		/// <summary>
 		/// A unique guid for this machine, which is the same for all palaso apps (because we store it in special palaso text file in appdata)
@@ -222,102 +223,6 @@ namespace Palaso.Reporting
 			s_singleton.MakeLaunchDateSafe();
 		}
 
-
-		/*     /// <summary>
-			 /// if you call this every time the application starts, it will send reports on those intervals
-			 /// (e.g. {1, 10}) that are listed in the intervals parameter.  It will get version number and name out of the application.
-			 /// </summary>
-			 [Obsolete("Use BeginGoogleAnalytics Instead ")]
-			 public static void DoTrivialUsageReport(string emailAddress, string topMessage, int[] intervals)
-			 {
-				 Guard.AgainstNull(_settings, "Client must set the settings with AppReportSettings");
-
-				 MakeLaunchDateSafe();
-
-				 //avoid asking the user more than once on the special reporting days
-				 if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
-				 {
-					 foreach (int launch in intervals)
-					 {
-						 if (launch == _settings.Launches)
-						 {
-							 SendReport(emailAddress, topMessage);
-							 break;
-						 }
-					 }
-				 }
-			 }
-
-
-			 private static void SendReport(string emailAddress, string topMessage)
-			 {
-				 // Set the Application label to the name of the app
-				 Assembly assembly = Assembly.GetEntryAssembly();
-				 string version = Application.ProductVersion;
-				 if (assembly != null)
-				 {
-					 object[] attributes = assembly.GetCustomAttributes(typeof (AssemblyFileVersionAttribute), false);
-					 version = (attributes != null && attributes.Length > 0)
-								   ?
-							   ((AssemblyFileVersionAttribute) attributes[0]).Version
-								   : Application.ProductVersion;
-				 }
-
-
-				 if (!AttemptHttpReport())
-				 {
-					 using (UsageEmailDialog d = new UsageEmailDialog())
-					 {
-						 d.TopLineText = topMessage;
-						 d.EmailMessage.To.Add(emailAddress);
-						 d.EmailMessage.Subject =
-							 string.Format("{0} {1} Report {2} Launches",
-										   UsageReporter.AppNameToUseInReporting,
-										   version,
-										   _settings.Launches);
-						 d.EmailMessage.Body =
-							 string.Format("app={0} version={1} launches={2}",
-										   UsageReporter.AppNameToUseInReporting,
-										   version,
-										   _settings.Launches);
-						 d.ShowDialog();
-					 }
-				 }
-			 }
-
-
-
-		public static bool AttemptHttpReport()
-		{
-			Guard.AgainstNull(_settings, "Client must set the settings with AppReportSettings");
-
-			try
-			{
-				if(!_settings.OkToPingBasicUsageData)
-					return false;
-
-				Dictionary<string, string> parameters = new Dictionary<string, string>();
-				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
-				parameters.Add("version", ErrorReport.VersionNumberString);
-				parameters.Add("launches", _settings.Launches.ToString());
-
-				#if DEBUG // we don't need a million developer launch reports
-				parameters.Add("user", "Debug "+_settings.UserIdentifier);
-				#else
-				parameters.Add("user", s_settings.UserIdentifier);
-				#endif
-
-				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
-				return result == "OK";
-			}
-			catch(Exception)
-			{
-				Reporting.Logger.WriteMinorEvent("Http Report Failed");
-				return false;
-			}
-		}
-		 */
-
 		/// <summary>
 		/// store and retrieve values which are the same for all apps using this usage libary
 		/// </summary>
@@ -357,92 +262,6 @@ namespace Palaso.Reporting
 			}
 			return values;
 		}
-/*
-		[Obsolete("Use BeginGoogleAnalytics Instead ")]
-		public static void ReportLaunchesAsync()
-		{
-			Guard.AgainstNull(_settings, "Client must set the settings with AppReportSettings");
-			Debug.Assert(AppReportingSettings == _settings, "CHecking to see if this is supposed to be true...");
-			AppReportingSettings.Launches++;//review... should be the same as
-			_settings.PreviousLaunchDate = DateTime.UtcNow.Date;
-			var worker = new BackgroundWorker();
-			worker.DoWork += new DoWorkEventHandler(OnReportDoWork);
-			worker.RunWorkerAsync();
-		}
-
-
-		static void OnReportDoWork(object sender, DoWorkEventArgs e)
-		{
-			Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
-			Dictionary<string, string> parameters = new Dictionary<string, string>();
-			parameters.Add("app", UsageReporter.AppNameToUseInReporting);
-			parameters.Add("version", ErrorReport.VersionNumberString);
-
-			parameters.Add("launches", AppReportingSettings.Launches.ToString());
-
-
-			foreach (var pair in GetAllApplicationValuesForThisUser())
-			{
-				parameters.Add(pair.Key,pair.Value);
-			}
-			#if DEBUG // we don't need a million developer launch reports
-				   parameters.Add("user", "Debug");
-			#endif
-
-			//todo: notice, we don't have a way to add the user name in this one?
-
-			try
-			{
-				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
-			}
-			catch (Exception)
-			{
-				//so many things can go wrong, but we can't do anything about any of them
-			}
-		}
-
-
-		public static string HttpPost(string uri, Dictionary<string, string> parameters)
-		{
-			try
-			{
-				StringBuilder parameterBuilder = new StringBuilder();
-				foreach (KeyValuePair<string, string> pair in parameters)
-				{
-					parameterBuilder.Append(HttpUtility.UrlEncode(pair.Key));
-					parameterBuilder.Append("=");
-					parameterBuilder.Append(HttpUtility.UrlEncode(pair.Value));
-					parameterBuilder.Append("&");
-				}
-				//trim off the last "&"
-				if (parameterBuilder.Length > 0)
-				{
-					parameterBuilder.Remove(parameterBuilder.Length - 1, 1);
-				}
-
-				byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
-
-				var client = new WebClient();
-				client.Credentials = CredentialCache.DefaultNetworkCredentials;
-				client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-
-				var response = new byte[] { };
-
-				RobustNetworkOperation.Do(proxy =>
-				{
-					client.Proxy = proxy;
-					response = client.UploadData(uri, bytes);
-				}, null);
-
-
-				return System.Text.Encoding.ASCII.GetString(response);
-			}
-			catch (Exception)
-			{
-				return null;
-			}
-		}
-		*/
 
 		/// <summary>
 		///  Reports upgrades, launches, etc., and allows for later calls to notify analytics of navigation and events
@@ -450,26 +269,26 @@ namespace Palaso.Reporting
 
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
-			var osLabel = ErrorReport.GetOperatingSystemLabel();
+				var osLabel = ErrorReport.GetOperatingSystemLabel();
 
-			_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
+				_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
 
-			if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
-			{
-				SendNavigationNotice("{0}/launch/version{1}", osLabel, ErrorReport.VersionNumberString);
-			}
+				if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
+				{
+					SendNavigationNotice("{0}/launch/version{1}", osLabel, ErrorReport.VersionNumberString);
+				}
 
-			//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
-			//(i.e., how many people are return vistors, etc.)
+				//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
+				//(i.e., how many people are return vistors, etc.)
 
-			if (string.IsNullOrEmpty(_realPreviousVersion))
-			{
-				SendNavigationNotice("{0}/firstApparentLaunchForAnyVersionOnMachine" + "/" + ErrorReport.VersionNumberString, osLabel);
-			}
-			else if (_realPreviousVersion != ErrorReport.VersionNumberString)
-			{
-				SendNavigationNotice("{0}/versionChange/version{1}-previousVersion{2}", osLabel, ErrorReport.VersionNumberString, _realPreviousVersion);
-			}
+				if (string.IsNullOrEmpty(_realPreviousVersion))
+				{
+					SendNavigationNotice("{0}/firstApparentLaunchForAnyVersionOnMachine" + "/" + ErrorReport.VersionNumberString, osLabel);
+				}
+				else if (_realPreviousVersion != ErrorReport.VersionNumberString)
+				{
+					SendNavigationNotice("{0}/versionChange/version{1}-previousVersion{2}", osLabel, ErrorReport.VersionNumberString, _realPreviousVersion);
+				}
 		}
 
 		private void SaveCookie(Cookie cookie)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -88,7 +88,7 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
 	</Reference>
-   <Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
 	</Reference>
@@ -102,6 +102,7 @@
 	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="System.Configuration" />
 	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -212,13 +213,13 @@
 	</Compile>
 	<Compile Include="Reporting\ExceptionHandler.cs" />
 	<Compile Include="Reporting\ExceptionHelper.cs" />
-
 	<Compile Include="Reporting\Logger.cs" />
 	<Compile Include="Reporting\ReportingSettings.cs" />
 	<Compile Include="Reporting\UsageReporter.cs" />
 	<Compile Include="IO\SFMReader.cs">
 	  <SubType>Code</SubType>
 	</Compile>
+	<Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
 	<Compile Include="Spart\Actions\ActionEventArgs.cs" />
 	<Compile Include="Spart\Actions\ActionHandler.cs" />
 	<Compile Include="Spart\Actions\Actions.cs" />
@@ -341,7 +342,6 @@
 	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
-
 	<EmbeddedResource Include="IO\FileRelatedStrings.resx">
 	  <SubType>Designer</SubType>
 	  <Generator>ResXFileCodeGenerator</Generator>
