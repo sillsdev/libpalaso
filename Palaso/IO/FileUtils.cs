@@ -1,18 +1,128 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-
+using Palaso.Properties;
 using Palaso.Reporting;
 
 namespace Palaso.IO
 {
 	public class FileUtils
 	{
+		public static StringCollection TextFileExtensions
+		{
+			get { return Settings.Default.TextFileExtensions; }
+		}
+
+		public static StringCollection AudioFileExtensions
+		{
+			get { return Settings.Default.AudioFileExtensions; }
+		}
+
+		public static StringCollection VideoFileExtensions
+		{
+			get { return Settings.Default.VideoFileExtensions; }
+		}
+
+		public static StringCollection ImageFileExtensions
+		{
+			get { return Settings.Default.ImageFileExtensions; }
+		}
+
+		public static StringCollection DatasetFileExtensions
+		{
+			get { return Settings.Default.DatasetFileExtensions; }
+		}
+
+		public static StringCollection SoftwareAndFontFileExtensions
+		{
+			get { return Settings.Default.SoftwareAndFontFileExtensions; }
+		}
+
+		public static StringCollection PresentationFileExtensions
+		{
+			get { return Settings.Default.PresentationFileExtensions; }
+		}
+
+		public static StringCollection MusicalNotationFileExtensions
+		{
+			get { return Settings.Default.MusicalNotationFileExtensions; }
+		}
+
+		public static StringCollection ZipFileExtensions
+		{
+			get { return Settings.Default.ZipFileExtensions; }
+		}
+
+		public static bool GetIsZipFile(string path)
+		{
+			return GetIsSpecifiedFileType(ZipFileExtensions, path);
+		}
+
+		public static bool GetIsText(string path)
+		{
+			return GetIsSpecifiedFileType(TextFileExtensions, path);
+		}
+
+		public static bool GetIsAudio(string path)
+		{
+			return GetIsSpecifiedFileType(AudioFileExtensions, path);
+		}
+
+		public static bool GetIsVideo(string path)
+		{
+			return GetIsSpecifiedFileType(VideoFileExtensions, path);
+		}
+
+		public static bool GetIsMusicalNotation(string path)
+		{
+			return GetIsSpecifiedFileType(MusicalNotationFileExtensions, path);
+		}
+
+		public static bool GetIsDataset(string path)
+		{
+			return GetIsSpecifiedFileType(DatasetFileExtensions, path);
+		}
+
+		public static bool GetIsSoftwareOrFont(string path)
+		{
+			return GetIsSpecifiedFileType(SoftwareAndFontFileExtensions, path);
+		}
+
+		public static bool GetIsPresentation(string path)
+		{
+			return GetIsSpecifiedFileType(PresentationFileExtensions, path);
+		}
+
+		public static bool GetIsImage(string path)
+		{
+			return GetIsSpecifiedFileType(ImageFileExtensions, path);
+		}
+
+		private static bool GetIsSpecifiedFileType(StringCollection extensions, string path)
+		{
+			var extension = Path.GetExtension(path);
+			return (extension != null) && extensions.Contains(extension.ToLower());
+		}
+
+		public static bool IsFileLocked(string filePath)
+		{
+			if (filePath == null || !File.Exists(filePath))
+				return false;
+
+			try
+			{
+				File.OpenWrite(filePath).Close();
+				return false;
+			}
+			catch
+			{
+				return true;
+			}
+		}
 
 		/// <summary>
 		/// NB: This will show a dialog if the file writing can't be done (subject to Palaso.Reporting settings).
@@ -188,6 +298,5 @@ namespace Palaso.IO
 			return shortBuilder.ToString();
 #endif
 		}
-
 	}
 }
