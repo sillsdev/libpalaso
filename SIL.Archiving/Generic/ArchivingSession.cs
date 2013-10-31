@@ -1,16 +1,22 @@
 ﻿
+using System.Collections.Generic;
+
 namespace SIL.Archiving.Generic
 {
 	/// <summary>Contains the materials being archived, and their metadata</summary>
 	public class ArchivingSession : ArchivingGenericObject
 	{
-		// actors / people / contributors
+		/// <summary>The people who participated in this session</summary>
+		public ArchivingActorCollection Actors;
 
-		// files
+		/// <summary>The files to include in this session</summary>
+		public List<IArchivingFile> Files;
 
-		// genre
-
-		// sub-genre
-
+		/// <summary>Default constructor</summary>
+		public ArchivingSession()
+		{
+			Actors = new ArchivingActorCollection();
+			Files = new List<IArchivingFile>();
+		}
 	}
 }

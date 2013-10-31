@@ -8,8 +8,8 @@ namespace SIL.Archiving.IMDI
 	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
 	{
 		private readonly string _corpusName;
-		private IMDIData _imdiData;
-		private readonly string _corpusOutputFolder;
+		private IMDIPackage _imdiData;
+		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 
 		/// <summary>Constructor</summary>
@@ -17,16 +17,17 @@ namespace SIL.Archiving.IMDI
 		/// <param name="corpusName"></param>
 		/// <param name="title"></param>
 		/// <param name="id"></param>
-		/// <param name="corpusOutputFolder"></param>
-		public IMDIArchivingDlgViewModel(string appName, string corpusName, string title, string id, string corpusOutputFolder) : base(appName, title, id)
+		/// <param name="outputFolder"></param>
+		public IMDIArchivingDlgViewModel(string appName, string corpusName, string title, string id, string outputFolder) : base(appName, title, id)
 		{
 			_corpusName = corpusName;
-			_corpusOutputFolder = corpusOutputFolder;
+			_outputFolder = outputFolder;
 		}
 
+		/// <summary>Initialization</summary>
 		protected override bool DoArchiveSpecificInitialization()
 		{
-			_imdiData = new IMDIData
+			_imdiData = new IMDIPackage
 			{
 				Title = _title,
 				Name = _corpusName
@@ -35,22 +36,32 @@ namespace SIL.Archiving.IMDI
 			return true;
 		}
 
+		/// <summary>Launch Arbil or Lamus</summary>
 		public override bool LaunchArchivingProgram()
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary></summary>
 		public override bool CreatePackage()
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary>Only Latin characters, URL compatible</summary>
 		protected override StringBuilder DoArchiveSpecificFilenameNormalization(string key, string fileName)
 		{
-			return new StringBuilder(fileName.ToLatinOnly("_", "+", "."));
+			return new StringBuilder(NormalizeFileName(fileName));
 		}
 
-		private static string NormalizeDirectoryName(string dirName)
+		/// <summary>Only Latin characters, URL compatible</summary>
+		internal static string NormalizeFileName(string fileName)
+		{
+			return fileName.ToLatinOnly("_", "+", ".");
+		}
+
+		/// <summary>Only Latin characters, URL compatible</summary>
+		internal static string NormalizeDirectoryName(string dirName)
 		{
 			return dirName.ToLatinOnly("_", "_", ".-");
 		}
@@ -61,20 +72,20 @@ namespace SIL.Archiving.IMDI
 			// delete temp files, etc
 		}
 
-		/// <summary>Returns the normalized name to use for the output corpus folder. A sub-directory of <c>_corpusOutputFolder</c></summary>
+		/// <summary>Returns the normalized name to use for the output corpus folder. A sub-directory of <c>_outputFolder</c></summary>
 		public string CorpusDirectoryName
 		{
 			get
 			{
-				if (!Directory.Exists(_corpusOutputFolder))
-					throw new DirectoryNotFoundException(string.Format("The path {0} was not found.", _corpusOutputFolder));
+				if (!Directory.Exists(_outputFolder))
+					throw new DirectoryNotFoundException(string.Format("The path {0} was not found.", _outputFolder));
 
 				if (string.IsNullOrEmpty(_corpusDirectoryName))
 				{
 					var test = NormalizeDirectoryName(_corpusName);
 					var i = 1;
 
-					while (Directory.Exists(Path.Combine(_corpusOutputFolder, test)))
+					while (Directory.Exists(Path.Combine(_outputFolder, test)))
 					{
 						test = NormalizeDirectoryName(_corpusName) + "_" + i.ToString("000");
 						i++;

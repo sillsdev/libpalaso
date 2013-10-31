@@ -15,9 +15,7 @@ namespace SIL.Archiving.IMDI.Lists
 		private static string _listPath;
 		private static readonly Dictionary<string, IMDIItemList> _loadedLists = new Dictionary<string, IMDIItemList>();
 
-		/// <summary>
-		/// Returns a list of IMDIListItems that can also be used as the data source of a combo or list box
-		/// </summary>
+		/// <summary>Returns a list of IMDIListItems that can also be used as the data source of a combo or list box</summary>
 		/// <param name="listName">Name of the XML file that contains the desired list. It is suggested to
 		/// use values from IMDI_Schema.ListTypes class. If not found on the local system, we will attempt
 		/// to download from http://www.mpi.nl/IMDI/Schema.
@@ -33,9 +31,20 @@ namespace SIL.Archiving.IMDI.Lists
 			return _loadedLists[listName];
 		}
 
-		/// <summary>
-		/// Gets a list of the Entry nodes from the selected XML file.
-		/// </summary>
+		/// <summary>>Returns a list of IMDIListItems that can also be used as the data source of a combo or list box</summary>
+		/// <param name="listName"></param>
+		/// <returns></returns>
+		public static ClosedIMDIItemList GetClosedList(string listName)
+		{
+			listName = CleanListName(listName);
+
+			if (!_loadedLists.ContainsKey(listName))
+				_loadedLists.Add(listName, new IMDIItemList(GetNodeList(listName)));
+
+			return (ClosedIMDIItemList) _loadedLists[listName];
+		}
+
+		/// <summary>Gets a list of the Entry nodes from the selected XML file.</summary>
 		/// <param name="listName">Name of the XML file that contains the desired list. It is suggested to
 		/// use values from IMDI_Schema.ListTypes class. If not found on the local system, we will attempt
 		/// to download from http://www.mpi.nl/IMDI/Schema.

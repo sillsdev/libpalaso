@@ -28,6 +28,37 @@ descr = '''if (this.descriptionField == null)
 \t\t\t\t\tthis.descriptionField = new List<Description_Type>();
 \t\t\t\treturn this.descriptionField;'''
 
+# replace Actor_Type[] with List<Actor_Type>
+actor = '''if (this.actorField == null)
+\t\t\t\t\tthis.actorField = new List<Actor_Type>();
+\t\t\t\treturn this.actorField;'''
+
+# replace Language_Type[] with List<Language_Type>
+findLang = '''public List<Language_Type> Language {
+\t\t\tget {
+\t\t\t\treturn this.languageField;'''
+
+replaceLang = '''public List<Language_Type> Language {
+\t\t\tget {
+\t\t\t\tif (this.languageField == null)
+\t\t\t\t\tthis.languageField = new List<Language_Type>();
+\t\t\t\treturn this.languageField;'''
+
+# create MDGroupType on demand
+mdGroup = '''if (this.mDGroupField == null)
+\t\t\t\t\tthis.mDGroupField = new MDGroupType();
+\t\t\t\treturn this.mDGroupField;'''
+
+# replace MediaFile_Type[] with List<MediaFile_Type>
+media = '''if (this.mediaFileField == null)
+\t\t\t\t\tthis.mediaFileField = new List<MediaFile_Type>();
+\t\t\t\treturn this.mediaFileField;'''
+
+# replace WrittenResource_Type[] with List<WrittenResource_Type>
+written = '''if (this.writtenResourceField == null)
+\t\t\t\t\tthis.writtenResourceField = new List<WrittenResource_Type>();
+\t\t\t\treturn this.writtenResourceField;'''
+
 # comments and using
 comment = '''
 //
@@ -38,7 +69,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Schema;
 
-namespace IMDI.Schema {
+namespace SIL.Archiving.IMDI.Schema
+{
 '''
 
 # function to do the replacing
@@ -55,6 +87,15 @@ def replace_text(line, loc, descr, comment):
 	line = line.replace('public Vocabulary_Type() {', '/// <remarks/>\n\t\tpublic Vocabulary_Type() {')
 	line = line.replace('public Boolean_Type() {', '/// <remarks/>\n\t\tpublic Boolean_Type() {')
 	line = line.replace('public Quality_Type() {', '/// <remarks/>\n\t\tpublic Quality_Type() {')
+	line = line.replace('Actor_Type[]', 'List<Actor_Type>')
+	line = line.replace('return this.actorField;', actor)
+	line = line.replace('Language_Type[]', 'List<Language_Type>')
+	line = line.replace(findLang, replaceLang)
+	line = line.replace('return this.mDGroupField;', mdGroup)
+	line = line.replace('MediaFile_Type[]', 'List<MediaFile_Type>')
+	line = line.replace('return this.mediaFileField;', media)
+	line = line.replace('WrittenResource_Type[]', 'List<WrittenResource_Type>')
+	line = line.replace('return this.writtenResourceField;', written)
 
 	return line
 

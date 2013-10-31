@@ -14,14 +14,11 @@ namespace SIL.Archiving.Generic
 		/// <summary>Sessions to include in this package</summary>
 		public List<ArchivingSession> Sessions;
 
-		/// <summary>Location information for this package</summary>
-		public ArchivingLocation Location;
-
 		/// <summary>Information about the funding for this project</summary>
 		public ArchivingProject FundingProject;
 
 		/// <summary>Information about the contact for this project</summary>
-		public ArchivingContact ProjectContact;
+		public ArchivingContactCollection Contacts;
 
 		/// <summary />
 		protected ArchivingPackage()
@@ -29,6 +26,7 @@ namespace SIL.Archiving.Generic
 			MetadataIso3LanguageIds = new HashSet<string>();
 			ContentIso3LanguageIds = new HashSet<string>();
 			Sessions = new List<ArchivingSession>();
+			Contacts = new ArchivingContactCollection();
 		}
 	}
 }

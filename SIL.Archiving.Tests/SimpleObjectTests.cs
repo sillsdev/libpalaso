@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using SIL.Archiving.Generic;
 
@@ -19,8 +18,7 @@ namespace SIL.Archiving.Tests
 			LanguageString ls2 = new LanguageString { Iso3LanguageId = "eng", Value = "This is the second value." };
 			LanguageString ls3 = new LanguageString { Iso3LanguageId = "fra", Value = frenchValue };
 
-			// ReSharper disable once UseObjectOrCollectionInitializer
-			HashSet<LanguageString> hs = new HashSet<LanguageString>(new LanguageStringComparer());
+			LanguageStringCollection hs = new LanguageStringCollection();
 
 			var first = hs.Add(ls1);  // this one should be added
 			var second = hs.Add(ls2); // this one should not be added, it is a duplicate

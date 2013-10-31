@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI.Lists
 {
@@ -23,6 +25,12 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		public override string ToString() { return Text; }
+
+		/// <summary>Convert to Vocabulary_Type</summary>
+		public Vocabulary_Type ToVocabularyType(VocabularyType_Value_Type vocabularyType)
+		{
+			return new Vocabulary_Type { Type = vocabularyType, Value = Value };
+		}
 	}
 
 	/// <summary>
@@ -84,7 +92,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <returns></returns>
 		public IMDIListItem FindByValue(string value)
 		{
-			return this.FirstOrDefault(i => i.Value == value);
+			return this.FirstOrDefault(i => String.Equals(i.Value, value, StringComparison.CurrentCultureIgnoreCase));
 		}
 
 		/// <summary>Returns the first item found with the selected Text, or null if not found</summary>
@@ -92,8 +100,37 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <returns></returns>
 		public IMDIListItem FindByText(string text)
 		{
-			var itm = this.FirstOrDefault(i => i.Text == text);
+			var itm = this.FirstOrDefault(i => String.Equals(i.Text, text, StringComparison.CurrentCultureIgnoreCase));
 			return itm;
+		}
+	}
+
+	/// <summary>Must select one of the items in the list</summary>
+	public class ClosedIMDIItemList : IMDIItemList
+	{
+		/// <summary>Constructor</summary>
+		/// <param name="nodes">A list of the imdi:Entry nodes from the XML file</param>
+		public ClosedIMDIItemList(XmlNodeList nodes) : base(nodes)
+		{
+			PopulateList(nodes);
+		}
+
+		/// <summary>Returns the first item found with the selected Value, or null if not found</summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public new IMDIListItem FindByValue(string value)
+		{
+			IMDIListItem found;
+			try
+			{
+				found = this.First(i => String.Equals(i.Value, value, StringComparison.CurrentCultureIgnoreCase));
+			}
+			catch
+			{
+				found = this.First(i => String.Equals(i.Value, "Unspecified", StringComparison.CurrentCultureIgnoreCase));
+			}
+
+			return found;
 		}
 	}
 }

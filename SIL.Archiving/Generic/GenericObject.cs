@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Palaso.Extensions;
 using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
@@ -14,7 +14,7 @@ namespace SIL.Archiving.Generic
 		public string Name;
 
 		/// <summary />
-		public HashSet<LanguageString> Descriptions;
+		public LanguageStringCollection Descriptions;
 
 		/// <summary>Date the first entry was created</summary>
 		public DateTime DateCreatedFirst;
@@ -28,10 +28,46 @@ namespace SIL.Archiving.Generic
 		/// <summary>Who has access, and how do you get access. Different archives use this differently</summary>
 		public IAccessProtocol AccessProtocol;
 
+		/// <summary />
+		public ArchivingLocation Location;
+
 		/// <summary>Constructor</summary>
 		protected ArchivingGenericObject()
 		{
-			Descriptions = new HashSet<LanguageString>(new LanguageStringComparer());
+			Descriptions = new LanguageStringCollection();
+		}
+
+		/// <summary />
+		public string GetName()
+		{
+			return Name ?? Title;
+		}
+
+		/// <summary />
+		public string GetTitle()
+		{
+			return Title ?? Name;
+		}
+
+		/// <summary>Get single value or year range</summary>
+		public string GetDateCreated()
+		{
+			var emptyDate = default(DateTime);
+
+			// no date given
+			if (DateCreatedFirst == emptyDate)
+				return null;
+
+			// just one date given
+			if (DateCreatedLast == emptyDate)
+				return DateCreatedFirst.ToISO8601DateOnlyString();
+
+			// both dates in same year
+			if (DateCreatedFirst.Year == DateCreatedLast.Year)
+				return string.Format("{0}", DateCreatedFirst.Year);
+
+			// return the date range
+			return string.Format("{0}-{1}", DateCreatedFirst.Year, DateCreatedLast.Year);
 		}
 	}
 

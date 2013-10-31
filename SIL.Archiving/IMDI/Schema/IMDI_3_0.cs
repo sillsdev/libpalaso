@@ -3265,6 +3265,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public MDGroupType MDGroup {
 			get {
+				if (this.mDGroupField == null)
+					this.mDGroupField = new MDGroupType();
 				return this.mDGroupField;
 			}
 			set {
@@ -3927,7 +3929,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private List<Description_Type> descriptionField;
 
-		private Language_Type[] languageField;
+		private List<Language_Type> languageField;
 
 		private string xXXTypeField;
 
@@ -3960,8 +3962,10 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Language")]
-		public Language_Type[] Language {
+		public List<Language_Type> Language {
 			get {
+				if (this.languageField == null)
+					this.languageField = new List<Language_Type>();
 				return this.languageField;
 			}
 			set {
@@ -4294,7 +4298,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private List<Description_Type> descriptionField;
 
-		private Actor_Type[] actorField;
+		private List<Actor_Type> actorField;
 
 		private string xXXTypeField;
 
@@ -4327,8 +4331,10 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Actor")]
-		public Actor_Type[] Actor {
+		public List<Actor_Type> Actor {
 			get {
+				if (this.actorField == null)
+					this.actorField = new List<Actor_Type>();
 				return this.actorField;
 			}
 			set {
@@ -8960,6 +8966,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public MDGroupType MDGroup {
 			get {
+				if (this.mDGroupField == null)
+					this.mDGroupField = new MDGroupType();
 				return this.mDGroupField;
 			}
 			set {
@@ -9084,9 +9092,9 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Session_TypeResources {
 
-		private MediaFile_Type[] mediaFileField;
+		private List<MediaFile_Type> mediaFileField;
 
-		private WrittenResource_Type[] writtenResourceField;
+		private List<WrittenResource_Type> writtenResourceField;
 
 		private LexiconResource_Type[] lexiconResourceField;
 
@@ -9114,8 +9122,10 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("MediaFile")]
-		public MediaFile_Type[] MediaFile {
+		public List<MediaFile_Type> MediaFile {
 			get {
+				if (this.mediaFileField == null)
+					this.mediaFileField = new List<MediaFile_Type>();
 				return this.mediaFileField;
 			}
 			set {
@@ -9125,8 +9135,10 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("WrittenResource")]
-		public WrittenResource_Type[] WrittenResource {
+		public List<WrittenResource_Type> WrittenResource {
 			get {
+				if (this.writtenResourceField == null)
+					this.writtenResourceField = new List<WrittenResource_Type>();
 				return this.writtenResourceField;
 			}
 			set {

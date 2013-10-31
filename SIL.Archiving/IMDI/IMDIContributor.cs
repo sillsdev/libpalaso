@@ -1,12 +1,9 @@
-﻿
+﻿using System.IO;
 using SIL.Archiving.Generic;
 
 namespace SIL.Archiving.IMDI
 {
-	/// <summary>
-	/// Collects the data needed to produce an IMDI corpus to upload
-	/// </summary>
-	public class IMDIData : ArchivingPackage
+	public class IMDIContributor : ArchivingActor
 	{
 		// **** Corpus Layout ****
 		//
@@ -19,7 +16,12 @@ namespace SIL.Archiving.IMDI
 		// Test_Corpus\Test_Session\Files*.* (session files)
 		// Test_Corpus\Test_Session\Contributors\Files*.* (contributor/actor files)
 
-
+		/// <summary>Add a file for this contributor</summary>
+		/// <param name="file"></param>
+		public void AddFile(IMDIFile file)
+		{
+			Files.Add(file);
+		}
 
 	}
 }
