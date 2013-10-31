@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Palaso.Properties;
 using Palaso.Reporting;
 
 namespace Palaso.IO
@@ -14,47 +13,47 @@ namespace Palaso.IO
 	{
 		public static StringCollection TextFileExtensions
 		{
-			get { return Settings.Default.TextFileExtensions; }
+			get { return Properties.Settings.Default.TextFileExtensions; }
 		}
 
 		public static StringCollection AudioFileExtensions
 		{
-			get { return Settings.Default.AudioFileExtensions; }
+			get { return Properties.Settings.Default.AudioFileExtensions; }
 		}
 
 		public static StringCollection VideoFileExtensions
 		{
-			get { return Settings.Default.VideoFileExtensions; }
+			get { return Properties.Settings.Default.VideoFileExtensions; }
 		}
 
 		public static StringCollection ImageFileExtensions
 		{
-			get { return Settings.Default.ImageFileExtensions; }
+			get { return Properties.Settings.Default.ImageFileExtensions; }
 		}
 
 		public static StringCollection DatasetFileExtensions
 		{
-			get { return Settings.Default.DatasetFileExtensions; }
+			  get { return Properties.Settings.Default.DatasetFileExtensions; }
 		}
 
 		public static StringCollection SoftwareAndFontFileExtensions
 		{
-			get { return Settings.Default.SoftwareAndFontFileExtensions; }
+			  get { return Properties.Settings.Default.SoftwareAndFontFileExtensions; }
 		}
 
 		public static StringCollection PresentationFileExtensions
 		{
-			get { return Settings.Default.PresentationFileExtensions; }
+			  get { return Properties.Settings.Default.PresentationFileExtensions; }
 		}
 
 		public static StringCollection MusicalNotationFileExtensions
 		{
-			get { return Settings.Default.MusicalNotationFileExtensions; }
+			  get { return Properties.Settings.Default.MusicalNotationFileExtensions; }
 		}
 
 		public static StringCollection ZipFileExtensions
 		{
-			get { return Settings.Default.ZipFileExtensions; }
+			  get { return Properties.Settings.Default.ZipFileExtensions; }
 		}
 
 		public static bool GetIsZipFile(string path)
