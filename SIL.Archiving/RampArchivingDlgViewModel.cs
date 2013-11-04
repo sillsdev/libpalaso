@@ -1855,12 +1855,19 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public string GetLanguageName(string iso3Code)
 		{
-			var langs = GetLanguageList();
+			// LT-15003: prevent crash while looking up language name if RAMP not installed
+			try
+			{
+				var langs = GetLanguageList();
+				if (langs != null)
+					return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
+			}
+			catch
+			{
+				return null;
+			}
 
-			if (langs == null)
-				throw new Exception("The language list for RAMP was not retrieved.");
-
-			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
+			return null;
 		}
 		#endregion
 
