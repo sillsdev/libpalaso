@@ -191,6 +191,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			try
 			{
+				if (!m_inputContext.IsEnabled())
+					return false;
+
 				return m_inputContext.ProcessKeyEvent((uint)keySym, (uint)scanCode, (uint)state);
 			}
 			catch(NDesk.DBus.DBusConectionErrorException)

@@ -25,31 +25,36 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling ibus keyboards on Linux. Currently just a wrapper for KeyboardSwitcher.
 	/// </summary>
+	[CLSCompliant(false)]
 	public class IbusKeyboardAdaptor: IKeyboardAdaptor
 	{
-		private IIbusCommunicator IBusCommunicator = new IbusCommunicator();
+		private IIbusCommunicator IBusCommunicator;
 
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="Palaso.UI.WindowsForms.Keyboard.Linux.IbusKeyboardAdaptor"/> class.
 		/// </summary>
-		public IbusKeyboardAdaptor()
+		public IbusKeyboardAdaptor(): this(new IbusCommunicator())
 		{
-			if (!IBusCommunicator.Connected)
-				return;
-
-			KeyboardController.EventProvider.ControlAdded += OnControlRegistered;
-			KeyboardController.EventProvider.ControlRemoving += OnControlRemoving;
-
-			IBusCommunicator.CreateInputContext();
 		}
 
 		/// <summary>
 		/// Used in unit tests
 		/// </summary>
-		internal IbusKeyboardAdaptor(IIbusCommunicator ibusCommunicator)
+		public IbusKeyboardAdaptor(IIbusCommunicator ibusCommunicator)
 		{
 			IBusCommunicator = ibusCommunicator;
+
+			if (!IBusCommunicator.Connected)
+				return;
+
+			if (KeyboardController.EventProvider != null)
+			{
+				KeyboardController.EventProvider.ControlAdded += OnControlRegistered;
+				KeyboardController.EventProvider.ControlRemoving += OnControlRemoving;
+			}
+
+			IBusCommunicator.CreateInputContext();
 		}
 
 		protected virtual void InitKeyboards()

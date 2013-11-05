@@ -16,7 +16,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 	/// IBus, e.g. creating and releasing the connection to IBus and dealing with connection
 	/// errors.
 	/// </summary>
-	internal interface IIbusCommunicator : IDisposable
+	[CLSCompliant(false)]
+	public interface IIbusCommunicator : IDisposable
 	{
 		/// <summary>
 		/// Returns <c>true</c> if disposed

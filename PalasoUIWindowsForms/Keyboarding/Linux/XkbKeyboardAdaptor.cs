@@ -24,7 +24,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling xkb keyboards on Linux
 	/// </summary>
-	internal class XkbKeyboardAdaptor: IKeyboardAdaptor
+	public class XkbKeyboardAdaptor: IKeyboardAdaptor
 	{
 		protected List<IKeyboardErrorDescription> m_BadLocales;
 		private IXklEngine m_engine;
@@ -38,7 +38,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// Initializes a new instance of the <see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor"/> class.
 		/// This overload is used in unit tests.
 		/// </summary>
-		internal XkbKeyboardAdaptor(IXklEngine engine)
+		public XkbKeyboardAdaptor(IXklEngine engine)
 		{
 			m_engine = engine;
 		}

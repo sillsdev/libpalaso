@@ -39,14 +39,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// Allows setting different keyboard adapters which is needed for tests. Also allows
 		/// registering keyboard layouts.
 		/// </summary>
-		internal static class Manager
+		public static class Manager
 		{
 			/// <summary>
 			/// Sets the available keyboard adaptors. Note that if this is called more than once, the adapters
 			/// installed previously will be closed and no longer useable. Do not pass adapter instances that have been
 			/// previously passed. At least one adapter must be of type System.
 			/// </summary>
-			internal static void SetKeyboardAdaptors(IKeyboardAdaptor[] adaptors)
+			public static void SetKeyboardAdaptors(IKeyboardAdaptor[] adaptors)
 			{
 				if (!(Keyboard.Controller is IKeyboardControllerImpl))
 					Keyboard.Controller = new KeyboardControllerImpl();
@@ -66,7 +66,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// <summary>
 			/// Resets the keyboard adaptors to the default ones.
 			/// </summary>
-			internal static void Reset()
+			public static void Reset()
 			{
 				SetKeyboardAdaptors(new IKeyboardAdaptor[] {
 #if __MonoCS__
@@ -77,7 +77,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				});
 			}
 
-			internal static void InitializeAdaptors()
+			public static void InitializeAdaptors()
 			{
 				// this will also populate m_keyboards
 				foreach (var adaptor in Adaptors)
@@ -309,7 +309,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			public void RegisterControl(Control control, object eventHandler)
 			{
-				EventHandlers.Add(control, eventHandler);
+				EventHandlers[control] = eventHandler;
 				if (ControlAdded != null)
 					ControlAdded(this, new RegisterEventArgs(control, eventHandler));
 			}

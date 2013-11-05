@@ -14,14 +14,14 @@ using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 {
-	internal delegate void RegisterEventHandler(object sender, RegisterEventArgs e);
+	public delegate void RegisterEventHandler(object sender, RegisterEventArgs e);
 
 	/// <summary>
 	/// Internal interface for the implementation of the keyboard controller. Implement this
 	/// interface if you want to provide a double for unit testing. Otherwise the default
 	/// implementation is sufficient.
 	/// </summary>
-	internal interface IKeyboardControllerImpl: IDisposable
+	public interface IKeyboardControllerImpl: IDisposable
 	{
 		/// <summary>
 		/// Gets the available keyboards

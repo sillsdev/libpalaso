@@ -55,7 +55,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			public void CreateInputContext()
 			{
-				throw new NotImplementedException();
 			}
 
 			public bool IsDisposed
