@@ -81,14 +81,6 @@
 	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
-	</Reference>
-	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
-	</Reference>
 	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\irrKlang.NET2.0.dll</HintPath>
@@ -107,7 +99,7 @@
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
 	<Reference Include="ibusdotnet">
-	  <HintPath>..\lib\$(Configuration)\ibusdotnet.dll</HintPath>
+	  <HintPath>..\lib\common\ibusdotnet.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
