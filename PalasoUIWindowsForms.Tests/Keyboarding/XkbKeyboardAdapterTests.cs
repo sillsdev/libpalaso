@@ -129,8 +129,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual("en-US_us", keyboards.First().Id);
@@ -142,8 +141,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardGermany };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual("de-DE_de", keyboards.First().Id);
@@ -155,8 +153,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardFranceEliminateDeadKeys };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual(ExpectedKeyboardFranceEliminateDeadKeys, keyboards.First().Name);
@@ -167,8 +164,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUK };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual("en-GB_gb", keyboards.First().Id);
@@ -195,8 +191,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardBelgium };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards.OrderBy(kbd => kbd.Id).ToArray();
 			// It seems that Dutch (Belgium) got added recently, so some machines are missing
 			// this.
@@ -216,8 +211,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA, KeyboardGermany };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards.ToArray();
 			Assert.AreEqual(2, keyboards.Length);
 			Assert.AreEqual("en-US_us", keyboards[0].Id);
@@ -235,8 +229,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardGermany };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual("de-DE_de", keyboards.First().Id);
@@ -252,8 +245,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardFinlandNorthernSaami };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual(ExpectedKeyboardFinlandNorthernSaami, keyboards.First().Name);
@@ -264,8 +256,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { "Fake" };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(0, keyboards.Count());
 			//Assert.AreEqual(1, KeyboardController.ErrorKeyboards.Count);
@@ -278,8 +269,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
-			var adaptor = new XkbKeyboardAdaptor();
+			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { adaptor });
 
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
@@ -294,14 +284,13 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyboard_SecondTime_NotCrash()
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
-			XkbKeyboardAdaptor.SetXklEngineType<XklEngineResponder>();
 
-			var adaptor = new XkbKeyboardAdaptor();
+			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { adaptor });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			adaptor.ActivateKeyboard(keyboards.First());
 
-			adaptor = new XkbKeyboardAdaptor();
+			adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { adaptor });
 			keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			adaptor.ActivateKeyboard(keyboards.First());

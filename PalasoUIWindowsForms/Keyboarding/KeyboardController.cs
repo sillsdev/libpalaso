@@ -48,6 +48,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			internal static void SetKeyboardAdaptors(IKeyboardAdaptor[] adaptors)
 			{
+				if (!(Keyboard.Controller is IKeyboardControllerImpl))
+					Keyboard.Controller = new KeyboardControllerImpl();
+
 				Instance.Keyboards.Clear(); // InitializeAdaptors below will fill it in again.
 				if (Adaptors != null)
 				{

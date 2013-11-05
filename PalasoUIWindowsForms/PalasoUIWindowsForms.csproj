@@ -662,6 +662,7 @@
 	<Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
 	<Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
 	<Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">

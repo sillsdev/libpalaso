@@ -141,7 +141,7 @@ namespace X11.XKlavier
 
 		private Dictionary<string, List<LayoutDescription>> m_Layouts;
 
-		public static XklConfigRegistry Create(XklEngine engine)
+		public static XklConfigRegistry Create(IXklEngine engine)
 		{
 			var configRegistry = xkl_config_registry_get_instance(engine.Engine);
 			if (!xkl_config_registry_load(configRegistry, true))

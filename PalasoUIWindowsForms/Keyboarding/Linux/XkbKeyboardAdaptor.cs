@@ -26,22 +26,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// </summary>
 	internal class XkbKeyboardAdaptor: IKeyboardAdaptor
 	{
-		private static Type XklEngineType = typeof(XklEngine);
-
-		private List<IKeyboardErrorDescription> m_BadLocales;
-		private XklEngine m_engine;
-
-		/// <summary>
-		/// Sets the type of the XklEngine. This is useful for unit tests.
-		/// </summary>
-		internal static void SetXklEngineType<T>() where T: XklEngine
-		{
-			XklEngineType = typeof(T);
-		}
+		protected List<IKeyboardErrorDescription> m_BadLocales;
+		private IXklEngine m_engine;
 
 		public XkbKeyboardAdaptor()
 		{
-			m_engine = Activator.CreateInstance(XklEngineType) as XklEngine;
+			m_engine = new XklEngine();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor"/> class.
+		/// This overload is used in unit tests.
+		/// </summary>
+		internal XkbKeyboardAdaptor(IXklEngine engine)
+		{
+			m_engine = engine;
 		}
 
 		private string GetLanguageCountry(Locale locale)
@@ -79,7 +78,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return string.Format("{0} - {1} ({2})", layout.Description, layout.Language, layout.Country);
 		}
 
-		private void InitLocales()
+		protected virtual void InitLocales()
 		{
 			if (m_BadLocales != null)
 				return;

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using IBusDotNet;
 using Palaso.UI.WindowsForms.Keyboarding;
@@ -26,7 +27,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// </summary>
 	public class IbusKeyboardAdaptor: IKeyboardAdaptor
 	{
-		private readonly IIbusCommunicator IBusCommunicator = new IbusCommunicator();
+		private IIbusCommunicator IBusCommunicator = new IbusCommunicator();
 
 		/// <summary>
 		/// Initializes a new instance of the
@@ -43,7 +44,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			IBusCommunicator.CreateInputContext();
 		}
 
-		private void InitKeyboards()
+		/// <summary>
+		/// Used in unit tests
+		/// </summary>
+		internal IbusKeyboardAdaptor(IIbusCommunicator ibusCommunicator)
+		{
+			IBusCommunicator = ibusCommunicator;
+		}
+
+		protected virtual void InitKeyboards()
 		{
 			foreach (var ibusKeyboard in GetIBusKeyboards())
 			{
@@ -60,7 +69,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			var ibusWrapper = new IBusDotNet.InputBusWrapper(IBusCommunicator.Connection);
 			object[] engines = ibusWrapper.InputBus.ListActiveEngines();
 			foreach (var engine in engines)
-				yield return IBusEngineDesc.GetEngineDesc(engine);
+				yield return IBusEngineDescFactory.GetEngineDesc(engine);
 		}
 
 		private bool SetIMEKeyboard(IbusKeyboardDescription keyboard)
@@ -88,6 +97,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					return true;
 				}
 
+				// Set the associated XKB keyboard
+				var parentLayout = keyboard.IBusKeyboardEngine.Layout;
+				if (parentLayout == "en")
+					parentLayout = "us";
+				var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+				if (xkbKeyboard != null)
+					xkbKeyboard.Activate();
+
+				// Then set the IBus keyboard
 				context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
 
 				GlobalCachedInputContext.Keyboard = keyboard;

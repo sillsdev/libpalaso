@@ -41,7 +41,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			string id = engineDesc.Language;
 			string languageName = string.IsNullOrEmpty(id) ? OtherLanguage :
 				new Locale(id).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
-			if (id.ToLowerInvariant() == languageName.ToLowerInvariant())
+			if (id != null && id.ToLowerInvariant() == languageName.ToLowerInvariant())
 				languageName = OtherLanguage;
 			return String.Format("{0} - {1}", languageName, engineDesc.Name);
 		}

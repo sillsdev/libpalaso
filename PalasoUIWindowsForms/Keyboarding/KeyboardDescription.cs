@@ -132,6 +132,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			var activeKeyboard = oldActiveKeyboard as KeyboardDescription;
 			if (activeKeyboard != null)
 				activeKeyboard.Deactivate();
+			Keyboard.Controller.ActiveKeyboard = KeyboardDescription.Zero;
 			if (Engine != null)
 			{
 				// Some engines may not always be able to activate a keyboard.

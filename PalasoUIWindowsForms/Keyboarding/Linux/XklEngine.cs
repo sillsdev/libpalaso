@@ -19,7 +19,8 @@ namespace X11.XKlavier
 	/// <summary>
 	/// Provides access to the xklavier XKB keyboarding engine methods.
 	/// </summary>
-	internal class XklEngine
+	/// <seealso href="https://developer.gnome.org/libxklavier/stable/libxklavier-xkl-engine.html"/>
+	internal class XklEngine: IXklEngine
 	{
 		private struct XklState
 		{
@@ -44,7 +45,7 @@ namespace X11.XKlavier
 		{
 		}
 
-		internal IntPtr Engine { get; private set; }
+		public IntPtr Engine { get; private set; }
 
 		public string Name
 		{
