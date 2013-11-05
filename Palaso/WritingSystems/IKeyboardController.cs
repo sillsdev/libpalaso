@@ -56,6 +56,12 @@ namespace Palaso.WritingSystems
 		IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws);
 
 		/// <summary>
+		/// Finds a keyboard specified using one of the legacy fields. If such a keyboard is found, it is appropriate to
+		/// automatically add it to KnownKeyboards. If one is not, a general DefaultKeyboard should NOT be added.
+		/// This is intended to be used when KnownKeyboards is empty. It may return null.
+		/// </summary>
+		IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws);
+		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// </summary>
 		IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale);

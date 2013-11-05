@@ -88,6 +88,11 @@ namespace Palaso.WritingSystems
 			return new DefaultKeyboardDefinition() {Layout = "English", Locale = "en-US"};
 		}
 
+		public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+		{
+			return null;
+		}
+
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// </summary>

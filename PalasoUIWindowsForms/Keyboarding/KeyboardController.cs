@@ -275,12 +275,22 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			public IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
 			{
+				return LegacyForWritingSystem(ws) ?? DefaultKeyboard;
+			}
+
+			/// <summary>
+			/// Finds a keyboard specified using one of the legacy fields. If such a keyboard is found, it is appropriate to
+			/// automatically add it to KnownKeyboards. If one is not, a general DefaultKeyboard should NOT be added.
+			/// </summary>
+			/// <param name="ws"></param>
+			/// <returns></returns>
+			public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+			{
 				var legacyWs = ws as ILegacyWritingSystemDefinition;
 				if (legacyWs == null)
 					return DefaultKeyboard;
 
-				var keyboard = LegacyKeyboardHandling.GetKeyboardFromLegacyWritingSystem(legacyWs, this);
-				return keyboard ?? DefaultKeyboard;
+				return LegacyKeyboardHandling.GetKeyboardFromLegacyWritingSystem(legacyWs, this);
 			}
 
 			#region Legacy keyboard handling

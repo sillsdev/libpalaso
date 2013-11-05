@@ -1719,6 +1719,11 @@ namespace Palaso.Tests.WritingSystems
 				return Default;
 			}
 
+			public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+			{
+				throw new NotImplementedException();
+			}
+
 			/// <summary>
 			/// Creates and returns a keyboard definition object based on the layout and locale.
 			/// </summary>

@@ -109,6 +109,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				var allKeyboards = PossibleKeyboardsToChoose.ToList();
 				if (_currentWritingSystem != null)
 				{
+					// If there aren't any known, possibly this WS is being migrated from a legacy writing system.
+					// If so, we'd like to show the keyboard indicated by the legacy fields as a known keyboard.
+					// It's tempting to actually modify the KnownKeyboards list and put it in, but that would be a
+					// very dubious thing for a getter to do, and also, would put it there permanently, even
+					// if the user does not confirm it.
+					if (_currentWritingSystem != null && !_currentWritingSystem.KnownKeyboards.Any())
+					{
+						var legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+						if (legacyKeyboard != null)
+							yield return legacyKeyboard;
+					}
 					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
 					{
 						var available =
@@ -143,6 +154,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						if (known != null)
 							result.Remove(known);
 					}
+				}
+				if (!_currentWritingSystem.KnownKeyboards.Any())
+				{
+					// If there's a legacy keyboard and no known keyboards, we move the legacy one to 'known';
+					// so don't show it here.
+					var legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+					if (legacyKeyboard != null)
+						result.Remove(legacyKeyboard);
 				}
 				return result;
 			}
