@@ -76,14 +76,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		private static string GetDescription(XklConfigRegistry.LayoutDescription layout)
 		{
-			string description;
-			if (string.IsNullOrEmpty(layout.LayoutVariant))
-				description = string.Format("{0} ({1})", layout.Language, layout.Country);
-			else
-			{
-				description = string.Format("{0} ({1}) - {2}", layout.Language, layout.Country, layout.LayoutVariant);
-			}
-			return description;
+			return string.Format("{0} - {1} ({2})", layout.Description, layout.Language, layout.Country);
 		}
 
 		private void InitLocales()
@@ -132,7 +125,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 						// See mono/tools/locale-builder.
 					}
 					var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
-					var keyboard = new XkbKeyboardDescription(description, layout.Language, layout.LocaleId,
+					var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
 						inputLanguage, this, iGroup);
 					KeyboardController.Manager.RegisterKeyboard(keyboard);
 				}

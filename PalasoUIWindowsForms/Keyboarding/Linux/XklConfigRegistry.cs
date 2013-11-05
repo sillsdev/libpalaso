@@ -185,10 +185,16 @@ namespace X11.XKlavier
 		private void ProcessLanguage(IntPtr configRegistry, ref XklConfigItem item, IntPtr unused)
 		{
 			IntPtr dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
-			Marshal.StructureToPtr(item, dataPtr, false);
-			xkl_config_registry_foreach_language_variant(configRegistry, item.Name,
-				ProcessOneLayoutForLanguage, dataPtr);
-			Marshal.FreeHGlobal(dataPtr);
+			try
+			{
+				Marshal.StructureToPtr(item, dataPtr, false);
+				xkl_config_registry_foreach_language_variant(configRegistry, item.Name,
+					ProcessOneLayoutForLanguage, dataPtr);
+			}
+			finally
+			{
+				Marshal.FreeHGlobal(dataPtr);
+			}
 		}
 
 		private void ProcessOneLayoutForLanguage(IntPtr configRegistry, ref XklConfigItem item,
@@ -196,8 +202,7 @@ namespace X11.XKlavier
 		{
 			var subitemIsNull = subitem.Parent.RefCount == IntPtr.Zero;
 			XklConfigItem language = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
-			var description = subitemIsNull ? item.Description :
-				item.Description + " - " + subitem.Description;
+			var description = subitemIsNull ? item.Description : subitem.Description;
 			List<LayoutDescription > layouts;
 			if (m_Layouts.ContainsKey(description))
 				layouts = m_Layouts[description];
@@ -208,7 +213,7 @@ namespace X11.XKlavier
 			}
 
 			var newLayout = new LayoutDescription {
-				LayoutId = subitemIsNull ? item.Name : item.Name + "\t" + subitem.Name,
+				LayoutId = subitemIsNull ? item.Name : subitem.Name,
 				Description = description,
 				LayoutVariant = subitemIsNull ? string.Empty : subitem.Description,
 				LanguageCode = Get2LetterLanguageCode(language.Name),

@@ -54,8 +54,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			"France - Eliminate dead keys", "United Kingdom", "Belgium",
 			"Finland - Northern Saami" };
 		private string[] NewKeyboardNames = new string[] { "English (US)", "German",
-			"French - French (eliminate dead keys)", "English (UK)", "Belgian",
-			"Finnish - Northern Saami (Finland)" };
+			"French (eliminate dead keys)", "English (UK)", "Belgian",
+			"Northern Saami (Finland)" };
 
 		private string ExpectedKeyboardUSA { get { return ExpectedKeyboardNames[0]; } }
 		private string ExpectedKeyboardGermany { get { return ExpectedKeyboardNames[1]; } }
@@ -65,19 +65,19 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private string ExpectedKeyboardFinlandNorthernSaami { get { return ExpectedKeyboardNames[5]; } }
 
 		private string[] ExpectedKeyboardNames;
-		private string[] OldExpectedKeyboardNames = new string[] { "English (United States)",
-			"German (Germany)", "French (France) - Eliminate dead keys",
-			"English (United Kingdom)", "", "Northern Sami (Finland) - Northern Saami" };
-		private string[] NewExpectedKeyboardNames = new string[] { "English (United States)",
-			"German (Germany)", "French (France) - French (eliminate dead keys)",
-			"English (United Kingdom)", "", "Northern Sami (Finland) - Northern Saami (Finland)" };
+		private string[] OldExpectedKeyboardNames = new string[] { "English (US) - English (United States)",
+			"German - German (Germany)", "Eliminate dead keys - French (France)",
+			"English (UK) - English (United Kingdom)", "", "Northern Saami - Northern Sami (Finland)" };
+		private string[] NewExpectedKeyboardNames = new string[] { "English (US) - English (United States)",
+			"German - German (Germany)", "French (eliminate dead keys) - French (France)",
+			"English (UK) - English (United Kingdom)", "", "Northern Saami (Finland) - Northern Sami (Finland)" };
 
 		private static bool IsNewEvdevNames
 		{
 			get
 			{
 				// Debian/Ubuntu version 2.2.1 of xkeyboard-config changed the way keyboard names
-				// are stored in evdev.xml: previously it the country name was used ("Belgium"), now
+				// are stored in evdev.xml: previously the country name was used ("Belgium"), now
 				// they use the adjective ("Belgian"). We detect this by greping evdev.xml and then
 				// use the appropriate names
 				using (var process = new Process())
@@ -133,7 +133,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
-			Assert.AreEqual("en-US_English", keyboards.First().Id);
+			Assert.AreEqual("en-US_us", keyboards.First().Id);
 			Assert.AreEqual(ExpectedKeyboardUSA, keyboards.First().Name);
 		}
 
@@ -146,7 +146,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
-			Assert.AreEqual("de-DE_German", keyboards.First().Id);
+			Assert.AreEqual("de-DE_de", keyboards.First().Id);
 			Assert.AreEqual(ExpectedKeyboardGermany, keyboards.First().Name);
 		}
 
@@ -171,11 +171,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
-			Assert.AreEqual("en-GB_English", keyboards.First().Id);
+			Assert.AreEqual("en-GB_gb", keyboards.First().Id);
 			Assert.AreEqual(ExpectedKeyboardUK, keyboards.First().Name);
 		}
 
-		private IKeyboardDefinition CreateKeyboard(string layoutName, string locale)
+		private IKeyboardDefinition CreateKeyboard(string layoutName, string layout, string locale)
 		{
 			CultureInfo culture = null;
 			try
@@ -186,7 +186,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			{
 				// this can happen if locale is not supported.
 			}
-			return new KeyboardDescription(layoutName, layoutName, locale,
+			return new KeyboardDescription(layoutName, layout, locale,
 				new InputLanguageWrapper(culture, IntPtr.Zero, layoutName), null);
 		}
 
@@ -202,11 +202,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// this.
 			Assert.That(keyboards.Length == 3 || keyboards.Length == 2);
 			var expectedKeyboards = new List<IKeyboardDefinition>()
-				{ CreateKeyboard("German", "de-BE") };
-			expectedKeyboards.Add(CreateKeyboard("French", "fr-BE"));
+				{ CreateKeyboard("German", "be", "de-BE") };
+			expectedKeyboards.Add(CreateKeyboard("French", "be", "fr-BE"));
 
 			if (keyboards.Length > 2)
-				expectedKeyboards.Add(CreateKeyboard("Dutch", "nl-BE"));
+				expectedKeyboards.Add(CreateKeyboard("Dutch", "be", "nl-BE"));
 
 			Assert.That(keyboards, Is.EquivalentTo(expectedKeyboards));
 		}
@@ -220,9 +220,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards.ToArray();
 			Assert.AreEqual(2, keyboards.Length);
-			Assert.AreEqual("en-US_English", keyboards[0].Id);
+			Assert.AreEqual("en-US_us", keyboards[0].Id);
 			Assert.AreEqual(ExpectedKeyboardUSA, keyboards[0].Name);
-			Assert.AreEqual("de-DE_German", keyboards[1].Id);
+			Assert.AreEqual("de-DE_de", keyboards[1].Id);
 			Assert.AreEqual(ExpectedKeyboardGermany, keyboards[1].Name);
 		}
 
@@ -239,8 +239,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor() });
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
-			Assert.AreEqual("de-DE_Deutsch", keyboards.First().Id);
-			Assert.AreEqual("Deutsch (Deutschland)", keyboards.First().Name);
+			Assert.AreEqual("de-DE_de", keyboards.First().Id);
+			Assert.AreEqual("German - Deutsch (Deutschland)", keyboards.First().Name);
 		}
 
 		/// <summary>

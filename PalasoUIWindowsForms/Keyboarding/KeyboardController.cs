@@ -190,7 +190,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				// NOTE: on Windows InputLanguage.LayoutName returns a wrong name in some cases.
 				// Therefore we need this overload so that we can identify the keyboard correctly.
 				return Keyboards
-					.Where(keyboard =>keyboard is KeyboardDescription && ((KeyboardDescription)keyboard).InputLanguage.Equals(language))
+					.Where(keyboard => keyboard is KeyboardDescription &&
+						((KeyboardDescription)keyboard).InputLanguage != null &&
+						((KeyboardDescription)keyboard).InputLanguage.Equals(language))
 					.DefaultIfEmpty(KeyboardDescription.Zero)
 					.First();
 			}
@@ -342,7 +344,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 									kbd =>
 									{
 										var keyboardDescription = kbd as KeyboardDescription;
-										if (keyboardDescription == null || keyboardDescription.InputLanguage == null)
+										if (keyboardDescription == null || keyboardDescription.InputLanguage == null || keyboardDescription.InputLanguage.Culture == null)
 											return false;
 										return keyboardDescription.InputLanguage.Culture.LCID == lcid;
 									});

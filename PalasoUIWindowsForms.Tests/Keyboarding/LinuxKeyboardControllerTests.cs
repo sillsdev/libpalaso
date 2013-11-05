@@ -40,7 +40,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			if (_window != null)
 			{
 				_window.Close();
+				Application.DoEvents();
 				_window.Dispose();
+				_window = null;
 			}
 		}
 
@@ -195,19 +197,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
 		}
 #endif
-
-		[Test]
-		[Category("IBus")]
-		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_0KeyboardsReturned()
-		{
-			// needed for focus
-			RequiresWindowForFocus();
-
-			var availableIbusKeyboards = Keyboard.Controller.AllAvailableKeyboards.Where(kbd => kbd.Type == KeyboardType.OtherIm);
-
-			// Assuming default ibus install doesn't have any active keyboards
-			Assert.AreEqual(0, availableIbusKeyboards.Count());
-		}
 
 		[Test]
 		[Category("IBus")]
