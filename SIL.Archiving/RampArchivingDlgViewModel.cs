@@ -26,6 +26,11 @@ namespace SIL.Archiving
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+#else
+// ReSharper disable once UnusedMethodReturnValue.Local
+		// the signature of this function needs to match the signature of the windows api SetWindowPos
+		private static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags) { return true; }
+#endif
 
 		// ReSharper disable InconsistentNaming
 		private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);    // brings window to top and makes it "always on top"
@@ -34,7 +39,6 @@ namespace SIL.Archiving
 		private const UInt32 SWP_NOMOVE = 0x0002;
 		private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
 		// ReSharper restore InconsistentNaming
-#endif
 
 		#region RAMP and METS constants
 // ReSharper disable CSharpWarnings::CS1591
@@ -181,10 +185,26 @@ namespace SIL.Archiving
 		private bool _workerException;
 		private string _rampProgramPath;
 		private Dictionary<string, string> _languageList;
+		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
 
 		#region properties
 		/// <summary>Path to the RAMP package</summary>
 		public string RampPackagePath { get; private set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Show the count of audio/video files rather than the length
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ShowRecordingCountNotLength { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Are image files to be counted as photographs or graphics
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ImagesArePhotographs { get; set; }
+
 		#endregion
 
 		#region construction and initialization
@@ -197,9 +217,15 @@ namespace SIL.Archiving
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// ------------------------------------------------------------------------------------
 		public RampArchivingDlgViewModel(string appName, string title, string id,
-			Func<string, string, string> getFileDescription) : base(appName, title, id,
-			getFileDescription)
+			Func<string, string, string> getFileDescription) : base(appName, title, id)
 		{
+			if (getFileDescription == null)
+				throw new ArgumentNullException("getFileDescription");
+			_getFileDescription = getFileDescription;
+
+			ShowRecordingCountNotLength = false;
+			ImagesArePhotographs = true;
+
 			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _title)});
 
 			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*" + kRampFileExtension))
@@ -1274,19 +1300,36 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void EnsureRampHasFocusAndWaitForPackageToUnlock()
 		{
-#if !__MonoCS__
-			var processes = Process.GetProcessesByName(kRampProcessName);
-			if (processes.Length >= 1)
+			if (IsMono)
 			{
-				// First, make the window topmost: this puts it in front of all other windows
-				// and sets it as "always on top."
-				SetWindowPos(processes[0].MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
-
-				// Second, make the window notopmost: this removes the "always on top" behavior
-				// and positions the window on top of all other "not always on top" windows.
-				SetWindowPos(processes[0].MainWindowHandle, HWND_NOTOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+				BringToFrontMono();
 			}
-#else
+			else
+			{
+				BringToFrontWindows();
+			}
+
+			// Every 4 seconds we'll check to see if the RAMP package is locked. When
+			// it gets unlocked by RAMP, then we'll delete it.
+			_timer = new Timer(CheckIfPackageFileIsLocked, RampPackagePath, 2000, 4000);
+		}
+
+		private static void BringToFrontWindows()
+		{
+			var processes = Process.GetProcessesByName(kRampProcessName);
+			if (processes.Length < 1) return;
+
+			// First, make the window topmost: this puts it in front of all other windows
+			// and sets it as "always on top."
+			SetWindowPos(processes[0].MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+
+			// Second, make the window notopmost: this removes the "always on top" behavior
+			// and positions the window on top of all other "not always on top" windows.
+			SetWindowPos(processes[0].MainWindowHandle, HWND_NOTOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
+		}
+
+		private static void BringToFrontMono()
+		{
 			// On mono this requires xdotool or wmctrl
 			string args = null;
 			if (!string.IsNullOrEmpty(FileLocator.LocateInProgramFiles("xdotool", true)))      /* try to find xdotool first */
@@ -1294,24 +1337,20 @@ namespace SIL.Archiving
 			else if (!string.IsNullOrEmpty(FileLocator.LocateInProgramFiles("wmctrl", true)))  /* if xdotool is not installed, look for wmctrl */
 				args = "-c \"wmctrl -a RAMP\"";
 
-			if (!string.IsNullOrEmpty(args))
-			{
-				var prs = new Process
-				{
-					StartInfo = {
-						FileName = "bash",
-						Arguments = args,
-						UseShellExecute = false,
-						RedirectStandardError = true
-					}
-				};
+			if (string.IsNullOrEmpty(args)) return;
 
-				prs.Start();
-			}
-#endif
-			// Every 4 seconds we'll check to see if the RAMP package is locked. When
-			// it gets unlocked by RAMP, then we'll delete it.
-			_timer = new Timer(CheckIfPackageFileIsLocked, RampPackagePath, 2000, 4000);
+			var prs = new Process
+			{
+				StartInfo =
+				{
+					FileName = "bash",
+					Arguments = args,
+					UseShellExecute = false,
+					RedirectStandardError = true
+				}
+			};
+
+			prs.Start();
 		}
 
 		/// ------------------------------------------------------------------------------------
