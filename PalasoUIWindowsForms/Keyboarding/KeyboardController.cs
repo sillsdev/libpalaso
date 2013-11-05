@@ -451,6 +451,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		internal static IKeyboardAdaptor[] Adaptors { get; private set; }
 
+		/// <summary>
+		/// Gets the currently active keyboard
+		/// </summary>
+		public static IKeyboardDefinition ActiveKeyboard
+		{
+			get { return Instance.ActiveKeyboard; }
+		}
+
 		#endregion
 
 	}
