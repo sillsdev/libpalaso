@@ -98,6 +98,9 @@
 	<None Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
+	<Reference Include="ibusdotnet">
+	  <HintPath>..\lib\$(Configuration)\ibusdotnet.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
@@ -299,9 +302,26 @@
 	  <DependentUpon>SampleImages.resx</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
-	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
+	<Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
+	<Compile Include="Keyboarding\KeyboardDescription.cs" />
+	<Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
+	<Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
+	<Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Linux\IcuLocale.cs" />
+	<Compile Include="Keyboarding\Linux\X11.cs" />
+	<Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
+	<Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
+	<Compile Include="Keyboarding\Linux\XklEngine.cs" />
+	<Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
+	<Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
+	<Compile Include="Keyboarding\Types\MouseEvent.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
-	<Compile Include="Keyboarding\Keyman.cs" />
+	<Compile Include="Keyboarding\Types\Win32.cs" />
+	<Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
 	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
 	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
@@ -626,8 +646,6 @@
 	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Keyboarding\IBusAdaptor.cs" />
-	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -635,6 +653,10 @@
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
+	<Compile Include="Keyboarding\Linux\TemporaryIcuWrapper.cs" />
+	<Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
+	<Compile Include="Keyboarding\Linux\IBusCommunicator.cs" />
+	<Compile Include="Keyboarding\Linux\IIBusCommunicator.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">

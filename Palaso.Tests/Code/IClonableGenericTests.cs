@@ -34,10 +34,10 @@ namespace Palaso.Tests.Code
 		/// T should be the signature of the cloneable property.
 		/// Unlike ValuesToSet, this class allows the test instances to belong to a subclass.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		protected class SubclassValuesToSet<T> : ValuesToSet
+		/// <typeparam name="TT"></typeparam>
+		protected class SubclassValuesToSet<TT> : ValuesToSet
 		{
-			public SubclassValuesToSet(T defaultValue, T notEqualDefaultValue) : base(defaultValue, notEqualDefaultValue)
+			public SubclassValuesToSet(TT defaultValue, TT notEqualDefaultValue) : base(defaultValue, notEqualDefaultValue)
 			{
 			}
 
@@ -45,15 +45,46 @@ namespace Palaso.Tests.Code
 			{
 				get
 				{
-					return typeof(T);
+					return typeof(TT);
 				}
 			}
 		}
 
-		// Put any fields to ignore in this string surrounded by "|"
+		/// <summary>
+		/// List of fields to ignore, surrounded by "|". The tests won't check that these fields
+		/// get cloned nor that the Equals() method considers them.
+		/// </summary>
+		/// <example><code>
+		/// public override string ExceptionList { get { return "|Type|Name|IsAvailable|"; } }
+		/// </code></example>
 		public abstract string ExceptionList { get; }
 
-		//This should be a list of unequal values for each type used by the fields of he object under test
+		/// <summary>
+		/// List of fields to ignore in the Equals() method, surrounded by "|". The tests won't
+		/// check that these fields are considered in the Equals() method. This list is in
+		/// addition to the ExceptionList.
+		/// </summary>
+		public virtual string EqualsExceptionList { get { return string.Empty; } }
+
+		/// <summary>
+		/// List of unequal values for each type used by the fields of the object under test
+		/// </summary>
+		/// <example><code>
+		///	protected override List&lt;ValuesToSet&gt; DefaultValuesForTypes
+		///	{
+		///		get
+		///		{
+		///			return new List&lt;ValuesToSet&gt;
+		///			{
+		///				new ValuesToSet(false, true),
+		///				new ValuesToSet("to be", "!(to be)"),
+		///				new SubclassValuesToSet&lt;IClass&gt;(
+		///					new MyClass("one thing", 1),
+		///					new MyClass("other thing", 2))
+		///			};
+		///		}
+		/// }
+		/// </code></example>
 		protected abstract List<ValuesToSet> DefaultValuesForTypes { get; }
 
 		[Test]
@@ -81,7 +112,7 @@ namespace Palaso.Tests.Code
 				}
 				catch(InvalidOperationException e)
 				{
-					Assert.Fail("Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.", fieldInfo.FieldType.Name, fieldName);
+					Assert.Fail("Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".", fieldInfo.FieldType.Name, fieldName);
 				}
 
 				fieldInfo.SetValue(clonable, defaultValue);
@@ -90,9 +121,9 @@ namespace Palaso.Tests.Code
 				if (fieldInfo.GetValue(clonable).GetType() != typeof(string))  //strings are special in .net so we won't worry about checking them here.
 				{
 					Assert.AreNotSame(fieldInfo.GetValue(clonable), fieldInfo.GetValue(theClone),
-									  "The field {0} refers to the same object, it was not copied.", fieldName);
+									  "The field \"{0}\" refers to the same object, it was not copied.", fieldName);
 				}
-				Assert.AreEqual(defaultValue, fieldInfo.GetValue(theClone), "Field {0} not copied on Clone()", fieldName);
+				Assert.AreEqual(defaultValue, fieldInfo.GetValue(theClone), "Field \"{0}\" not copied on Clone()", fieldName);
 			}
 		}
 
@@ -128,7 +159,7 @@ namespace Palaso.Tests.Code
 					var splitResult = fieldInfo.Name.Split(new[] {'<', '>'});
 					fieldName = splitResult[1];
 				}
-				if (ExceptionList.Contains("|" + fieldName + "|"))
+				if (ExceptionList.Contains("|" + fieldName + "|") || EqualsExceptionList.Contains("|" + fieldName + "|"))
 				{
 					continue;
 				}
@@ -137,16 +168,16 @@ namespace Palaso.Tests.Code
 				{
 					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
 				}
-				catch (InvalidOperationException e)
+				catch (InvalidOperationException)
 				{
 					Assert.Fail(
-						"Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.",
+						"Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".",
 						fieldInfo.FieldType.Name, fieldName);
 				}
 				fieldInfo.SetValue(item, valueToSet.ValueToSet);
 				fieldInfo.SetValue(unequalItem, valueToSet.NotEqualValueToSet);
-				Assert.AreNotEqual(item, unequalItem, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
-				Assert.AreNotEqual(unequalItem, item, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreNotEqual(item, unequalItem, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.AreNotEqual(unequalItem, item, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
 			}
 		}
 
@@ -168,7 +199,7 @@ namespace Palaso.Tests.Code
 					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
 					fieldName = splitResult[1];
 				}
-				if (ExceptionList.Contains("|" + fieldName + "|"))
+				if (ExceptionList.Contains("|" + fieldName + "|") || EqualsExceptionList.Contains("|" + fieldName + "|"))
 				{
 					continue;
 				}
@@ -177,16 +208,16 @@ namespace Palaso.Tests.Code
 				{
 					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
 				}
-				catch (InvalidOperationException e)
+				catch (InvalidOperationException)
 				{
 					Assert.Fail(
-						"Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.",
+						"Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".",
 						fieldInfo.FieldType.Name, fieldName);
 				}
 				fieldInfo.SetValue(item, valueToSet.ValueToSet);
 				fieldInfo.SetValue(unequalItem, valueToSet.ValueToSet);
-				Assert.AreEqual(item, unequalItem, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
-				Assert.AreEqual(unequalItem, item, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreEqual(item, unequalItem, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.AreEqual(unequalItem, item, "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
 			}
 		}
 
@@ -210,7 +241,7 @@ namespace Palaso.Tests.Code
 					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
 					fieldName = splitResult[1];
 				}
-				if (ExceptionList.Contains("|" + fieldName + "|"))
+				if (ExceptionList.Contains("|" + fieldName + "|") || EqualsExceptionList.Contains("|" + fieldName + "|"))
 				{
 					continue;
 				}
@@ -219,10 +250,10 @@ namespace Palaso.Tests.Code
 				{
 					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
 				}
-				catch (InvalidOperationException e)
+				catch (InvalidOperationException)
 				{
 					Assert.Fail(
-						"Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.",
+						"Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".",
 						fieldInfo.FieldType.Name, fieldName);
 				}
 				//This conditional is here in case the ValueToSet is identical to the fields default value.
@@ -238,8 +269,8 @@ namespace Palaso.Tests.Code
 				{
 					fieldInfo.SetValue(itemWithFieldToChange, valueToSet.ValueToSet);
 				}
-				Assert.AreNotEqual(itemWithFieldToChange, itemWithDefaultField, "Field \"{0}\" is not evaluated in Equals(T other) or the ValueToSet is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
-				Assert.AreNotEqual(itemWithDefaultField, itemWithFieldToChange, "Field \"{0}\" is not evaluated in Equals(T other) or the ValueToSet is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList property.", fieldName);
+				Assert.AreNotEqual(itemWithFieldToChange, itemWithDefaultField, "Field \"{0}\" is not evaluated in Equals(T other) or the ValueToSet is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.AreNotEqual(itemWithDefaultField, itemWithFieldToChange, "Field \"{0}\" is not evaluated in Equals(T other) or the ValueToSet is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
 			}
 		}
 

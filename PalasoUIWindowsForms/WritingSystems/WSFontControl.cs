@@ -6,6 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -14,7 +15,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private WritingSystemSetupModel _model;
 		private string _defaultFontName;
 		private float _defaultFontSize;
-		private string _defaultKeyboard;
+		private IKeyboardDefinition _defaultKeyboard;
 
 		public WSFontControl()
 		{
@@ -165,7 +166,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
+			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
 			_model.ActivateCurrentKeyboard();
 		}
 
@@ -175,7 +176,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+			_defaultKeyboard.Activate();
 		}
 
 		private void RightToLeftCheckBox_CheckedChanged(object sender, EventArgs e)

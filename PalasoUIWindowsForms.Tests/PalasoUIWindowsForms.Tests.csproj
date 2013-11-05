@@ -112,11 +112,16 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>TestImages.resx</DependentUpon>
 	</Compile>
+	<Compile Include="Keyboarding\FakeKeyboardController.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
 	<Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
 	<Compile Include="Keyboarding\IBusEnvironmentForTest.cs" />
-	<Compile Include="Keyboarding\WidnowsIMEAdaptorTests.cs" />
+	<Compile Include="Keyboarding\InputLanguageWrapperTests.cs" />
+	<Compile Include="Keyboarding\KeyboardControllerTests.cs" />
+	<Compile Include="Keyboarding\KeyboardDescriptionTests.cs" />
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
+	<Compile Include="Keyboarding\XkbKeyboardAdapterTests.cs" />
+	<Compile Include="Keyboarding\XklEngineTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
 	<Compile Include="Progress\ProgressIndicatorTests.cs" />
@@ -170,6 +175,10 @@
 	<Compile Include="ErrorReporting\ErrorReportingTests.cs" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
+	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
+	  <Name>Palaso.Tests</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
 	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
 	  <Name>Palaso.TestUtilities</Name>

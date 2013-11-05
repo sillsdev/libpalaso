@@ -117,6 +117,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
 		/// Creates a new WritingSystemDefinition
 		/// </summary>
 		/// <param name="language">A valid BCP47 language subtag</param>
@@ -168,10 +169,10 @@ namespace Palaso.WritingSystems
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 			if (ws._localKeyboard != null)
-				_localKeyboard = ((KeyboardDefinition)ws._localKeyboard).Clone();
+				_localKeyboard = ((DefaultKeyboardDefinition)ws._localKeyboard).Clone();
 			WindowsLcid = ws.WindowsLcid;
 			foreach (var kbd in ws._knownKeyboards)
-				_knownKeyboards.Add(((KeyboardDefinition)kbd).Clone());
+				_knownKeyboards.Add(((DefaultKeyboardDefinition)kbd).Clone());
 			_id = ws._id;
 		}
 
@@ -930,12 +931,12 @@ namespace Palaso.WritingSystems
 			{
 				if (_localKeyboard == null)
 				{
-					var available = new HashSet<IKeyboardDefinition>(Keyboarding.Controller.AllAvailableKeyboards);
+					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
 					_localKeyboard = (from k in KnownKeyboards where available.Contains(k) select k).FirstOrDefault();
 				}
 				if (_localKeyboard == null)
 				{
-					_localKeyboard = Keyboarding.Controller.DefaultForWritingSystem(this);
+					_localKeyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
 				}
 				return _localKeyboard;
 			}
@@ -1265,13 +1266,13 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Returns the available keyboards (known to Keyboarding.Controller) that are not KnownKeyboards for this writing system.
+		/// Returns the available keyboards (known to Keyboard.Controller) that are not KnownKeyboards for this writing system.
 		/// </summary>
 		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards
 		{
 			get
 			{
-				return Keyboarding.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
+				return WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
 			}
 		}
 	}

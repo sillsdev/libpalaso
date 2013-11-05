@@ -83,8 +83,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 										  DefaultFontSize = primary.DefaultFontSize,
 										  DefaultFontName = _fontsForIpa.FirstOrDefault(FontExists),
 										  IpaStatus = IpaStatusChoices.Ipa,
-										  Keyboard = Palaso.UI.WindowsForms.Keyboarding.KeyboardController.GetIpaKeyboardIfAvailable()
 									  };
+			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
+			if (ipaKeyboard != null)
+				_templateDefinition.Keyboard = ipaKeyboard.Id;
 			this.Label = string.Format("IPA input system for {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()

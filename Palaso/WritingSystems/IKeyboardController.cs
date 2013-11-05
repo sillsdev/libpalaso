@@ -8,18 +8,30 @@ namespace Palaso.WritingSystems
 	/// <summary>
 	/// This interface defines the functions of a keyboard controller that are required to implement the keyboard-related
 	/// methods of WritingSystem.
-	/// Various classes obtain one of these when needed by reading Keyboarding.Controller.
+	/// Various classes obtain one of these when needed by reading Keyboard.Controller.
 	/// The default implementation of this in the core Palaso DLL has minimal functionality.
-	/// Typically clients will set Keyboarding.Controller to some more useful class, such as UI.WindowsForms.KeyboardController.
+	/// Typically clients will set Keyboard.Controller to some more useful class, such as UI.WindowsForms.KeyboardController.
 	/// </summary>
-	public interface IKeyboardController
+	public interface IKeyboardController: IDisposable
 	{
+		IKeyboardDefinition GetKeyboard(string layoutName);
+		IKeyboardDefinition GetKeyboard(string layoutName, string locale);
+		IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem);
+		IKeyboardDefinition GetKeyboard(IInputLanguage language);
+
 		/// <summary>
-		/// Make this keyboard active.
-		/// Review: do we need some argument to indicate which window to make it active for?
+		/// Activates the keyboard
 		/// </summary>
-		/// <param name="keyboard"></param>
-		void Activate(IKeyboardDefinition keyboard);
+		void SetKeyboard(IKeyboardDefinition keyboard);
+		void SetKeyboard(string layoutName);
+		void SetKeyboard(string layoutName, string locale);
+		void SetKeyboard(IWritingSystemDefinition writingSystem);
+		void SetKeyboard(IInputLanguage language);
+
+		/// <summary>
+		/// Activates the keyboard of the default input language
+		/// </summary>
+		void ActivateDefaultKeyboard();
 
 		/// <summary>
 		/// Returns everything that is installed on the system and available to be used.
@@ -32,11 +44,25 @@ namespace Palaso.WritingSystems
 		IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; }
 
 		/// <summary>
+		/// Call when something may have changed in the external world that should affect AllAvailableKeyboards
+		/// (e.g., when activating a window that needs an accurate current list).
+		/// </summary>
+		void UpdateAvailableKeyboards();
+
+		/// <summary>
 		/// Figures out the system default keyboard for the specified writing system (the one to use if we have no available KnownKeyboards).
 		/// The implementation may use obsolete fields such as Keyboard
 		/// </summary>
-		/// <param name="ws"></param>
-		/// <returns></returns>
 		IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws);
+
+		/// <summary>
+		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// </summary>
+		IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale);
+
+		/// <summary>
+		/// Gets or sets the currently active keyboard
+		/// </summary>
+		IKeyboardDefinition ActiveKeyboard { get; set; }
 	}
 }

@@ -320,6 +320,13 @@ namespace Palaso.WritingSystems
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
 
 		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
+
+		/// <summary>
+		/// Getter gets the XML string that represents the user preferred keyboard for each writing
+		/// system.
+		/// Setter sets the user preferred keyboards on the writing systems based on the passed in
+		/// XML string.
+		/// </summary>
 		public string LocalKeyboardSettings
 		{
 			get
@@ -352,12 +359,8 @@ namespace Palaso.WritingSystems
 				_localKeyboardSettings = new Dictionary<string, IKeyboardDefinition>();
 				foreach (var kbd in root.Elements("keyboard"))
 				{
-					var keyboard = new KeyboardDefinition()
-						{
-							Layout = GetAttributeValue(kbd, "layout"),
-							Locale = GetAttributeValue(kbd, "locale"),
-							OperatingSystem = Environment.OSVersion.Platform
-						};
+					var keyboard = Keyboard.Controller.CreateKeyboardDefinition(
+						GetAttributeValue(kbd, "layout"), GetAttributeValue(kbd, "locale"));
 					_localKeyboardSettings[kbd.Attribute("ws").Value] = keyboard;
 				}
 				// We do it like this rather than looking up the writing system by the ws attribute so as not to force the

@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Enchant;
 using Palaso.Code;
 using Palaso.Data;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Progress;
 using Palaso.i18n;
 using Palaso.Reporting;
@@ -36,7 +37,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// </code></example>
 	public class WritingSystemSetupModel
 	{
-		internal const string DefaultKeyboardName = "(default)";
 		private readonly bool _usingRepository;
 		private IWritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
@@ -102,30 +102,25 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_usingRepository = false;
 		}
 
-		public IEnumerable<KeyboardController.KeyboardDescriptor> KnownKeyboards
+		public IEnumerable<IKeyboardDefinition> KnownKeyboards
 		{
 			get
 			{
-				var allKeyboards = KeyboardNames.ToList();
+				var allKeyboards = PossibleKeyboardsToChoose.ToList();
 				if (_currentWritingSystem != null)
 				{
-					foreach (var ws in _currentWritingSystem.KnownKeyboards)
+					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
 					{
 						var available =
-							(from kbd in allKeyboards where kbd.ShortName == ws.Layout && kbd.Locale == ws.Locale select kbd).
+							(from kbd in allKeyboards where kbd.Layout == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
 								FirstOrDefault();
 						if (available != null)
 							yield return available;
 						else
 						{
-							var result = new KeyboardController.KeyboardDescriptor()
-								{
-									Available = false,
-									ShortName = ws.Layout,
-									Locale = ws.Locale,
-									Id = string.Format("{0}-{1}", ws.Layout, ws.Locale),
-									LongName = string.Format("{0} ({1})", ws.Layout, ws.Locale)
-								};
+							var result = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboard.Layout,
+								knownKeyboard.Locale);
+							((KeyboardDescription)result).IsAvailable = false;
 							yield return result;
 						}
 					}
@@ -133,17 +128,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public IEnumerable<KeyboardController.KeyboardDescriptor> OtherAvailableKeyboards
+		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards
 		{
 			get
 			{
-				var result = KeyboardNames.ToList();
+				var result = PossibleKeyboardsToChoose.ToList();
 				if (_currentWritingSystem != null)
 				{
 					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
 					{
 						var known =
-							(from kbd in result where kbd.ShortName == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
+							(from kbd in result where kbd.Layout == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
 								FirstOrDefault();
 						if (known != null)
 							result.Remove(known);
@@ -156,20 +151,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#region Properties
 		/// <summary>
-		/// Provides a list of all possible installed keyboards.
+		/// Provides a list of all possible installed keyboards, preceded by the 'default' option which does nothing.
+		/// This is typically used to populate a list of keyboards that could be chosen.
 		/// </summary>
-		public static IEnumerable<KeyboardController.KeyboardDescriptor> KeyboardNames
+		public static IEnumerable<IKeyboardDefinition> PossibleKeyboardsToChoose
 		{
 			get
 			{
-				var defaultKeyboard = new KeyboardController.KeyboardDescriptor
-					{
-						LongName = DefaultKeyboardName,
-						ShortName = DefaultKeyboardName,
-						Id = DefaultKeyboardName
-					};
-				yield return defaultKeyboard;
-				foreach (var keyboard in KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
+				// Returns default keyboard as first item
+				yield return KeyboardDescription.Zero;
+
+				foreach (var keyboard in Keyboard.Controller.AllAvailableKeyboards)
 				{
 					yield return keyboard;
 				}
@@ -615,7 +607,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					return; // Hopefully can't happen
 				if (CurrentDefinition.LocalKeyboard.Equals(value))
 					return;
-				CurrentDefinition.LocalKeyboard = value.Layout == DefaultKeyboardName ? null : value;
+				CurrentDefinition.LocalKeyboard = value.Layout == KeyboardDescriptionNull.DefaultKeyboardName ? null : value;
 				OnCurrentItemUpdated();
 			}
 		}
@@ -1359,13 +1351,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void ActivateCurrentKeyboard()
 		{
-			if (CurrentDefinition == null)
-				return;
-			var legacyWritingSystemDefinition = ((ILegacyWritingSystemDefinition)CurrentDefinition);
-			if (!string.IsNullOrEmpty(legacyWritingSystemDefinition.Keyboard))
-			{
-				KeyboardController.ActivateKeyboard(legacyWritingSystemDefinition.Keyboard);
-			}
+			if (CurrentDefinition != null && CurrentDefinition.LocalKeyboard != null)
+				CurrentDefinition.LocalKeyboard.Activate();
 		}
 
 		/// <summary>

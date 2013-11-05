@@ -8,6 +8,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -17,7 +18,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly Hashtable _sortUsingValueMap;
 		private Hashtable _languageOptionMap;
 		private bool _changingModel;
-		private string _defaultKeyboard;
+		private IKeyboardDefinition _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
 
@@ -228,7 +229,7 @@ peach";
 			{
 				return;
 			}
-			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
+			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
 			_model.ActivateCurrentKeyboard();
 		}
 
@@ -238,7 +239,7 @@ peach";
 			{
 				return;
 			}
-			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+			_defaultKeyboard.Activate();
 			if (_rulesValidationTimer.Enabled)
 			{
 				_rulesValidationTimer.Enabled = false;

@@ -137,15 +137,17 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var ldmlAdaptor = new LdmlDataMapper();
 
+			Keyboard.Controller = new MyKeyboardController();
+
 			const string sortRules = "(A̍ a̍)";
 			var wsWithKnownKeyboards = new WritingSystemDefinition();
-			var keyboard1 = new KeyboardDefinition();
+			var keyboard1 = new DefaultKeyboardDefinition();
 			keyboard1.Locale = "en-US";
 			keyboard1.Layout = "MyFavoriteKeyboard";
 			keyboard1.OperatingSystem = PlatformID.MacOSX; // pick something that for sure won't be our default
 			wsWithKnownKeyboards.AddKnownKeyboard(keyboard1);
 
-			var keyboard2 = new KeyboardDefinition();
+			var keyboard2 = new DefaultKeyboardDefinition();
 			keyboard2.Locale = "en-GB";
 			keyboard2.Layout = "SusannasFavoriteKeyboard";
 			keyboard2.OperatingSystem = PlatformID.Unix;
@@ -164,11 +166,29 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(keyboard1FromLdml.Layout, Is.EqualTo("MyFavoriteKeyboard"));
 			Assert.That(keyboard1FromLdml.Locale, Is.EqualTo("en-US"));
 			Assert.That(keyboard1FromLdml.OperatingSystem, Is.EqualTo(PlatformID.MacOSX));
+			Assert.That(keyboard1FromLdml, Is.InstanceOf<MyKeyboardDefn>(), "Reader should have used controller to create keyboard defn");
 
 			var keyboard2FromLdml = knownKeyboards[1];
 			Assert.That(keyboard2FromLdml.Layout, Is.EqualTo("SusannasFavoriteKeyboard"));
 			Assert.That(keyboard2FromLdml.Locale, Is.EqualTo("en-GB"));
 			Assert.That(keyboard2FromLdml.OperatingSystem, Is.EqualTo(PlatformID.Unix));
+		}
+
+		class MyKeyboardDefn : DefaultKeyboardDefinition
+		{
+		}
+
+		class MyKeyboardController : DefaultKeyboardController
+		{
+			public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+			{
+				return new MyKeyboardDefn()
+				{
+					Layout = layout,
+					Locale = locale,
+					OperatingSystem = Environment.OSVersion.Platform
+				};
+			}
 		}
 
 		[Test]

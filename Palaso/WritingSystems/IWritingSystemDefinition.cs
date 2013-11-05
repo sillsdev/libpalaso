@@ -138,7 +138,7 @@ namespace Palaso.WritingSystems
 		void AddKnownKeyboard(IKeyboardDefinition newKeyboard);
 
 		/// <summary>
-		/// Returns the available keyboards (known to Keyboarding.Controller) that are not KnownKeyboards for this writing system.
+		/// Returns the available keyboards (known to Keyboard.Controller) that are not KnownKeyboards for this writing system.
 		/// </summary>
 		IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards { get; }
 

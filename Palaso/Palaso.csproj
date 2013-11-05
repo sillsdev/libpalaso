@@ -287,14 +287,15 @@
 	<Compile Include="WritingSystems\DefaultKeyboardController.cs" />
 	<Compile Include="WritingSystems\EthnologueLookup.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
+	<Compile Include="WritingSystems\IInputLanguage.cs" />
 	<Compile Include="WritingSystems\IKeyboardController.cs" />
 	<Compile Include="WritingSystems\IKeyboardDefinition.cs" />
 	<Compile Include="WritingSystems\Iso15924Script.cs" />
 	<Compile Include="WritingSystems\Iso639LanguageCode.cs" />
 	<Compile Include="WritingSystems\IWritingSystemDefinition.cs" />
 	<Compile Include="WritingSystems\IWritingSystemRepository.cs" />
-	<Compile Include="WritingSystems\KeyboardDefinition.cs" />
-	<Compile Include="WritingSystems\Keyboarding.cs" />
+	<Compile Include="WritingSystems\DefaultKeyboardDefinition.cs" />
+	<Compile Include="WritingSystems\Keyboard.cs" />
 	<Compile Include="WritingSystems\LanguageRegistryResources.Designer.cs">
 	  <AutoGen>True</AutoGen>
 	  <DesignTime>True</DesignTime>

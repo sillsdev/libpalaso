@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using L10NSharp;
 using Microsoft.Win32;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -15,9 +16,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private class KeyboardAdapter
 		{
-			private KeyboardController.KeyboardDescriptor _descriptor;
+			private IKeyboardDefinition _descriptor;
 
-			public KeyboardAdapter(KeyboardController.KeyboardDescriptor descriptor)
+			public KeyboardAdapter(IKeyboardDefinition descriptor)
 			{
 				_descriptor = descriptor;
 			}
@@ -29,7 +30,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			public string Layout
 			{
-				get { return _descriptor.ShortName; }
+				get { return _descriptor.Layout; }
 			}
 
 			public string Locale
@@ -39,12 +40,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			public override string ToString()
 			{
-				return _descriptor.LongName;
+				return _descriptor.Name;
 			}
 		}
 
 		private WritingSystemSetupModel _model;
-		private string _defaultKeyboard;
+		private IKeyboardDefinition _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
 
@@ -84,6 +85,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		// in case the user changed things using the control panel.
 		private void WSKeyboardControl_Activated(object sender, EventArgs e)
 		{
+			Keyboard.Controller.UpdateAvailableKeyboards(); // Enhance JohnT: would it be cleaner to have a Model method to do this?
 			PopulateKeyboardList();
 			UpdateFromModel(); // to restore selection.
 		}
@@ -156,7 +158,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				var adapter = new KeyboardAdapter(keyboard);
 				var item = new ListViewItem(adapter.ToString());
 				item.Tag = adapter;
-				if (!keyboard.Available)
+				if (!keyboard.IsAvailable)
 				{
 					item.Font = unavailableFont;
 					item.ForeColor = _unavailableColor;
@@ -281,12 +283,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (_model.CurrentKeyboard.Layout != currentKeyboard.Layout ||
 					_model.CurrentKeyboard.Locale != currentKeyboard.Locale)
 				{
-					_model.CurrentKeyboard = new KeyboardDefinition()
-						{
-							Layout = currentKeyboard.Layout,
-							Locale = currentKeyboard.Locale,
-							OperatingSystem = Environment.OSVersion.Platform
-						};
+					_model.CurrentKeyboard = Keyboard.Controller.CreateKeyboardDefinition(currentKeyboard.Layout,
+						currentKeyboard.Locale);
 				}
 			}
 
@@ -298,7 +296,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
+			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
 			_model.ActivateCurrentKeyboard();
 		}
 
@@ -308,7 +306,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+			_defaultKeyboard.Activate();
 		}
 
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
