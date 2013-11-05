@@ -43,6 +43,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			ConversionMode = (int)(Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
 		}
 
+		internal WinKeyboardDescription(WinKeyboardDescription other): base(other)
+		{
+			ConversionMode = other.ConversionMode;
+			SentenceMode = other.SentenceMode;
+			WindowHandle = other.WindowHandle;
+		}
+
+		public override IKeyboardDefinition Clone()
+		{
+			return new WinKeyboardDescription(this);
+		}
+
 		public int ConversionMode { get; set; }
 		public int SentenceMode { get; set; }
 		public IntPtr WindowHandle { get; set; }

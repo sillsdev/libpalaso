@@ -35,6 +35,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			GroupIndex = groupIndex;
 		}
 
+		internal XkbKeyboardDescription(XkbKeyboardDescription other): base(other)
+		{
+			GroupIndex = other.GroupIndex;
+		}
+
+		public override IKeyboardDefinition Clone()
+		{
+			return new XkbKeyboardDescription(this);
+		}
+
 		/// <summary>
 		/// Gets the group index of this keyboard.
 		/// </summary>

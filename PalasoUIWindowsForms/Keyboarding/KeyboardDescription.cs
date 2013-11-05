@@ -7,6 +7,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 using System;
+using System.Diagnostics;
 using Palaso.Code;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
@@ -84,6 +85,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <returns></returns>
 		public override IKeyboardDefinition Clone()
 		{
+			Debug.Assert(GetType().Name == typeof(KeyboardDescription).Name,
+				"Derived class doesn't implement Clone()");
 			return new KeyboardDescription(this);
 		}
 
