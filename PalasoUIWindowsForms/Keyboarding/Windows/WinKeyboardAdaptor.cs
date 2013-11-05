@@ -114,8 +114,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					{
 						using (var klid = regKey.OpenSubKey(subKeyName))
 						{
-							if (klid != null && ((string) klid.GetValue("Layout ID")).Equals(layoutId, StringComparison.InvariantCultureIgnoreCase))
-								return (string) klid.GetValue("Layout Text");
+							if (klid != null)
+							{
+								var layoutIdSk = ((string) klid.GetValue("Layout ID"));
+								if (layoutIdSk != null && layoutIdSk.Equals(layoutId, StringComparison.InvariantCultureIgnoreCase))
+									return (string) klid.GetValue("Layout Text");
+							}
 						}
 					}
 				}
