@@ -1782,6 +1782,21 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SetLocalKeyboard_ToAlreadyKnownKeyboard_SetsModifiedFlag()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+
+			ws.AddKnownKeyboard(kbd1);
+			ws.LocalKeyboard = kbd2;
+			Assert.That(ws.Modified, Is.True); // worth checking, but it doesn't really prove the point, since it will have also changed KnownKeyboards
+			ws.Modified = false;
+			ws.LocalKeyboard = kbd1; // This time it's already a known keyboard so only the LocalKeyboard setter can be responsibe for setting the flag.
+			Assert.That(ws.Modified, Is.True);
+		}
+
+		[Test]
 		public void AddKnownKeyboard_Null_DoesNothing()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");

@@ -944,6 +944,7 @@ namespace Palaso.WritingSystems
 			{
 				_localKeyboard = value;
 				AddKnownKeyboard(value);
+				Modified = true;
 			}
 		}
 
