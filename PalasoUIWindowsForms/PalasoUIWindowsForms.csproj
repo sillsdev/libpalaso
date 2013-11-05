@@ -657,6 +657,7 @@
 	<Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
 	<Compile Include="Keyboarding\Linux\IBusCommunicator.cs" />
 	<Compile Include="Keyboarding\Linux\IIBusCommunicator.cs" />
+	<Compile Include="Keyboarding\Linux\IBusKeyboardDescription.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
