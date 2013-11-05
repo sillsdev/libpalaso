@@ -53,7 +53,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 				throw new NotImplementedException();
 			}
 
-			public void CreateInputContext(string name)
+			public void CreateInputContext()
 			{
 				throw new NotImplementedException();
 			}
@@ -68,7 +68,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 				get { return true; }
 			}
 
-			public void SetPreeditWindowLocationAndSize(int x, int y, int width, int height)
+			public void NotifySelectionLocationAndHeight(int x, int y, int height)
 			{
 				throw new NotImplementedException();
 			}
