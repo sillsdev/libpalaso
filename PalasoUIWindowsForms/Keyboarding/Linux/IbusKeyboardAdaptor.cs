@@ -132,7 +132,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Synchronize on a commit.
 		/// </summary>
-		private void ResetAndWaitForCommit(Control control)
+		/// <returns><c>true</c> if an open composition got cancelled, otherwise <c>false</c>.
+		/// </returns>
+		private bool ResetAndWaitForCommit(Control control)
 		{
 			IBusCommunicator.Reset();
 
@@ -142,7 +144,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			var eventHandler = GetEventHandlerForControl(control);
 			if (eventHandler != null)
-				eventHandler.Reset();
+				return eventHandler.Reset();
+			return false;
 		}
 
 		private static IIbusEventHandler GetEventHandlerForControl(Control control)
@@ -227,9 +230,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					return true;
 				}
 			}
-			// if ProcessKeyEvent doesn't consume the key, we need to kill any preedits and
-			// sync before continuing processing the keypress.
-			ResetAndWaitForCommit(control);
+			// If ProcessKeyEvent doesn't consume the key, we need to kill any preedits and
+			// sync before continuing processing the keypress. If it's a backspace we return
+			// true because it is consumed by removing the pre-edit. For other characters we
+			// return false so that the control can process the character.
+			if (ResetAndWaitForCommit(control) && keyChar == '\b')
+				return true;
 			return false;
 		}
 

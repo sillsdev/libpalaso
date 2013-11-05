@@ -34,7 +34,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		/// Called by the IBusKeyboardAdapter to cancel any open compositions, e.g. after the
 		/// user pressed the ESC key or if the application loses focus.
 		/// </summary>
-		void Reset();
+		/// <returns><c>true</c> if there was an open composition that got cancelled, otherwise
+		/// <c>false</c>.</returns>
+		bool Reset();
 
 		/// <summary>
 		/// Called by the IBusKeyboardAdapter to get the position (in pixels) and line height of

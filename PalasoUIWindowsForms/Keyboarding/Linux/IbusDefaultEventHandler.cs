@@ -41,11 +41,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			m_SelectionLength = -1;
 		}
 
-		private void Reset(bool cancel)
+		/// <summary>
+		/// Reset the selection and optionally cancel any open compositions.
+		/// </summary>
+		/// <param name="cancel">Set to <c>true</c> to also cancel the open composition.</param>
+		/// <returns><c>true</c> if there was an open composition that we cancelled, otherwise
+		/// <c>false</c>.</returns>
+		private bool Reset(bool cancel)
 		{
 			if (m_InReset)
-				return;
+				return false;
 
+			bool retVal = false;
 			m_InReset = true;
 			if (cancel && m_SelectionStart > -1)
 			{
@@ -53,12 +60,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_TextBox.Text = RemoveChars(m_TextBox.Text, preeditStart, preeditStart, m_PreeditLength);
 				m_TextBox.SelectionStart = m_SelectionStart;
 				m_TextBox.SelectionLength = m_SelectionLength;
+				retVal = true;
 			}
 
 			m_SelectionStart = -1;
 			m_SelectionLength = -1;
 			m_PreeditLength = 0;
 			m_InReset = false;
+			return retVal;
 		}
 
 		/// <summary>
@@ -237,10 +246,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Called by the IBusKeyboardAdapter to cancel any open compositions.
 		/// </summary>
-		public void Reset()
+		/// <returns><c>true</c> if there was an open composition that got cancelled, otherwise
+		/// <c>false</c>.</returns>
+		public bool Reset()
 		{
 			Debug.Assert(!m_TextBox.InvokeRequired);
-			Reset(true);
+			return Reset(true);
 		}
 
 		/// <summary>
