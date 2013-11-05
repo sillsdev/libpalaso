@@ -26,7 +26,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public static void Clear()
 		{
-			Keyboard = null;
 			InputContext = null;
 		}
 	}
