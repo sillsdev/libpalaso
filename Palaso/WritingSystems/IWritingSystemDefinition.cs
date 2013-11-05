@@ -257,9 +257,10 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// This field retrieves the value obtained from the FieldWorks LDML extension fw:windowsLCID.
 		/// This is used only when current information in LocalKeyboard or KnownKeyboards is not useable.
-		/// There is no public setter because it is not useful to modify this or set it in new LDML files.
+		/// It is not useful to modify this or set it in new LDML files; however, we need a public setter
+		/// because FieldWorks overrides the code that normally reads this from the LDML file.
 		/// </summary>
-		string WindowsLcid { get; }
+		string WindowsLcid { get; set; }
 
 		/// <summary>
 		/// Legacy keyboard information. Current code should use LocalKeyboard or KnownKeyboards.

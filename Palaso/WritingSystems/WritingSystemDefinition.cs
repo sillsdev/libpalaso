@@ -923,7 +923,7 @@ namespace Palaso.WritingSystems
 
 		private IKeyboardDefinition _localKeyboard;
 
-		public string WindowsLcid { get; internal set; }
+		public string WindowsLcid { get; set; }
 
 		public IKeyboardDefinition LocalKeyboard
 		{
