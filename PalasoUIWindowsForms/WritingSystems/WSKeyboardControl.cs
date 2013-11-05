@@ -210,8 +210,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_possibleKeyboardsList.SelectedItems.Count > 0)
 				currentKeyboard = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardAdapter;
 
-			if (currentKeyboard == null || _model.CurrentKeyboard.Layout != currentKeyboard.Layout
-				|| _model.CurrentKeyboard.Locale != currentKeyboard.Locale)
+			if (_model.CurrentKeyboard != null &&
+				(currentKeyboard == null || _model.CurrentKeyboard.Layout != currentKeyboard.Layout
+				|| _model.CurrentKeyboard.Locale != currentKeyboard.Locale))
 			{
 				foreach (ListViewItem item in _possibleKeyboardsList.Items)
 				{
