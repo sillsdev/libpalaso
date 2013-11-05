@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.WritingSystems;
 
 namespace TestAppKeyboard
 {
@@ -26,15 +27,14 @@ namespace TestAppKeyboard
 
 		public void LoadKeyboards(ComboBox comboBox)
 		{
-			var keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
+			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			foreach (var keyboard in keyboards)
 			{
 				comboBox.Items.Add(keyboard.Id);
 				Console.WriteLine("added keyboard id: {0}", keyboard.Id);
-				//comboBox.Items.Add(keyboard.ShortName);
-				Console.WriteLine("added keyboard sn: {0}", keyboard.ShortName);
+				//comboBox.Items.Add(keyboard.Name);
+				Console.WriteLine("added keyboard name: {0}", keyboard.Name);
 				//comboBox.Items.Add(keyboard.LongName);
-				Console.WriteLine("added keyboard ln: {0}", keyboard.LongName);
 			}
 			comboBox.SelectedIndex = 0;
 		}
@@ -45,7 +45,7 @@ namespace TestAppKeyboard
 			{
 				string wantKeyboard = (string)keyboardsA.SelectedItem;
 				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
-				KeyboardController.ActivateKeyboard(wantKeyboard);
+				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
 				Console.WriteLine("Enter A");
 			}
@@ -57,7 +57,7 @@ namespace TestAppKeyboard
 			{
 				string wantKeyboard = (string)keyboardsB.SelectedItem;
 				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
-				KeyboardController.ActivateKeyboard(wantKeyboard);
+				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
 				Console.WriteLine("Enter B");
 			}
@@ -69,7 +69,7 @@ namespace TestAppKeyboard
 			{
 				string wantKeyboard = (string)keyboardsC.SelectedItem;
 				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
-				KeyboardController.ActivateKeyboard(wantKeyboard);
+				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
 				Console.WriteLine("Enter C");
 			}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -102,7 +102,7 @@ namespace Palaso.WritingSystems
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
 			var TwoToThreeMap = new Dictionary<string, string>();
-			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string pair in encodingPairs)
 			{
 				var items = pair.Split('\t');
@@ -114,7 +114,7 @@ namespace Palaso.WritingSystems
 			string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
-				string[] subTagComponents = ianaSubtagAsString.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
 				if (subTagComponents[0].Contains("File-Date"))
 				{

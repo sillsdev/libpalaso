@@ -126,5 +126,17 @@ namespace Palaso.TestUtilities {
 				Assert.AreEqual(newPath, temp.Path);
 			}
 		}
+
+		[Test]
+		public void TrackExisting()
+		{
+			using (var tempFolder = new TemporaryFolder())
+			{
+				using (var sut = TemporaryFolder.TrackExisting(tempFolder.Path))
+				{
+				}
+				Assert.IsFalse(Directory.Exists(tempFolder.Path));
+			}
+		}
 	}
 }
