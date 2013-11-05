@@ -22,6 +22,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Types
 		/// These values are used with the ImmGetConversionStatus and ImmSetConversionStatus functions.
 		/// </summary>
 		[Flags]
+		[CLSCompliant(false)]
 		public enum IME_CMODE : uint
 		{
 			/// <summary>Alphanumeric input mode. This is the default.</summary>

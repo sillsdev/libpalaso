@@ -8,8 +8,10 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Forms;
 using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
@@ -96,11 +98,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 			private List<string> LanguagesAlreadyShownKeyboardNotFoundMessages { get; set; }
 			public KeyboardCollection Keyboards { get; private set; }
+			public Dictionary<Control, object> EventHandlers { get; private set; }
+			public event RegisterEventHandler ControlAdded;
+			public event ControlEventHandler ControlRemoving;
 
 			public KeyboardControllerImpl()
 			{
 				Keyboards = new KeyboardCollection();
 				ActiveKeyboard = new KeyboardDescriptionNull();
+				EventHandlers = new Dictionary<Control, object>();
 				LanguagesAlreadyShownKeyboardNotFoundMessages = new List<string>();
 			}
 
@@ -260,10 +266,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 			{
-			var existingKeyboard = AllAvailableKeyboards.FirstOrDefault(keyboard => keyboard.Layout == layout && keyboard.Locale == locale);
-			return existingKeyboard ??
-				Adaptors.First(adaptor => adaptor.Type == KeyboardType.System)
-					.CreateKeyboardDefinition(layout, locale);
+				var existingKeyboard = AllAvailableKeyboards.FirstOrDefault(keyboard => keyboard.Layout == layout && keyboard.Locale == locale);
+				return existingKeyboard ??
+					Adaptors.First(adaptor => adaptor.Type == KeyboardType.System)
+						.CreateKeyboardDefinition(layout, locale);
 			}
 
 			/// <summary>
@@ -293,6 +299,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 					return DefaultKeyboard;
 
 				return LegacyKeyboardHandling.GetKeyboardFromLegacyWritingSystem(legacyWs, this);
+			}
+
+			/// <summary>
+			/// Registers the control for keyboarding. Called by KeyboardController.Register.
+			/// </summary>
+			public void RegisterControl(Control control, object eventHandler)
+			{
+				EventHandlers.Add(control, eventHandler);
+				if (ControlAdded != null)
+					ControlAdded(this, new RegisterEventArgs(control, eventHandler));
+			}
+
+			/// <summary>
+			/// Unregisters the control from keyboarding. Called by KeyboardController.Unregister.
+			/// </summary>
+			/// <param name="control">Control.</param>
+			public void UnregisterControl(Control control)
+			{
+				if (ControlRemoving != null)
+					ControlRemoving(this, new ControlEventArgs(control));
+				EventHandlers.Remove(control);
 			}
 
 			#region Legacy keyboard handling
@@ -471,6 +498,34 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			get { return Instance.ActiveKeyboard; }
 		}
 
+		/// <summary>
+		/// Register the control for keyboarding, optionally providing an event handler for
+		/// a keyboarding adapter. If <paramref ref="eventHandler"/> is <c>null</c> the
+		/// default handler will be used.
+		/// The application should call this method for each control that needs IME input before
+		/// displaying the control, typically after calling the InitializeComponent() method.
+		/// </summary>
+		public static void Register(Control control, object eventHandler = null)
+		{
+			if (Instance == null)
+				throw new ApplicationException("KeyboardController is not initialized! Please call KeyboardController.Initialize() first.");
+			Instance.RegisterControl(control, eventHandler);
+		}
+
+		/// <summary>
+		/// Unregister the control from keyboarding. The application should call this method
+		/// prior to disposing the control so that the keyboard adapters can release unmanaged
+		/// resources.
+		/// </summary>
+		public static void Unregister(Control control)
+		{
+			Instance.UnregisterControl(control);
+		}
+
+		internal static IKeyboardControllerImpl EventProvider
+		{
+			get { return Instance; }
+		}
 		#endregion
 
 	}

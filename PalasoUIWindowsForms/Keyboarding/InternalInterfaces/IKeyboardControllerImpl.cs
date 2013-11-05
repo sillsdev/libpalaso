@@ -8,12 +8,14 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using Palaso.WritingSystems;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 {
+	internal delegate void RegisterEventHandler(object sender, RegisterEventArgs e);
+
 	/// <summary>
 	/// Internal interface for the implementation of the keyboard controller. Implement this
 	/// interface if you want to provide a double for unit testing. Otherwise the default
@@ -31,5 +33,33 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// change the keyboard behavior.
 		/// </summary>
 		IKeyboardDefinition ActiveKeyboard { get; set; }
+
+		/// <summary>
+		/// Registers the control for keyboarding. Called by KeyboardController when the
+		/// application registers a control by calling KeyboardController.Register.
+		/// </summary>
+		/// <param name="control">The control to register</param>
+		/// <param name="eventHandler">An event handler that receives events from the keyboard
+		/// adaptors. This gets passed in the ControlAdded event. Currently only IBus makes use
+		/// of the eventHandler. The event handler is adaptor specific,
+		/// therefore we use a generic object. If <c>null</c> a default handler is used.</param>
+		void RegisterControl(Control control, object eventHandler);
+
+		/// <summary>
+		/// Unregisters the control from keyboarding.
+		/// </summary>
+		void UnregisterControl(Control control);
+
+		/// <summary>
+		/// Occurs when the application registers the control by calling KeyboardController.Register.
+		/// </summary>
+		event RegisterEventHandler ControlAdded;
+
+		/// <summary>
+		/// Occurs when a control gets removed by calling KeyboardController.Unregister.
+		/// </summary>
+		event ControlEventHandler ControlRemoving;
+
+		Dictionary<Control, object> EventHandlers { get; }
 	}
 }

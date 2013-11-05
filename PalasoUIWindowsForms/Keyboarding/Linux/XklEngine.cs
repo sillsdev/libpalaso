@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using X11;
 
 namespace X11.XKlavier
 {
@@ -30,39 +31,13 @@ namespace X11.XKlavier
 
 		public XklEngine()
 		{
-			var display = GetDisplayConnection();
+			var display = X11Helper.GetDisplayConnection();
 			Engine = xkl_engine_get_instance(display);
 		}
 
 		public XklEngine(IntPtr display)
 		{
 			Engine = xkl_engine_get_instance(display);
-		}
-
-		/// <summary>
-		/// Gets the X11 display connection that Mono already has open, rather than
-		/// carefully opening and closing it on our own in a way that doesnt crash (FWNX-895).
-		/// </summary>
-		internal static IntPtr GetDisplayConnection()
-		{
-			// When running views tests that get to this code from C++ through libcom, using
-			// reflection to load the SWF assembly has trouble finding it unless first access
-			// SWF without reflection or load it from a more specific path.
-
-			// DisplayHandle is a static field but won't be initialized until a XplatUIX11 is constructed.
-			// Although a XplatUIX11 is already constructed when
-			// running Flex, it is not already constructed when running unit tests. So make sure
-			// it is constructed before requesting DisplayHandle so DisplayHandle is initialized.
-			var swfAssembly = Assembly.GetAssembly(typeof(System.Windows.Forms.Form));
-			var xplatuix11Type = swfAssembly.GetType("System.Windows.Forms.XplatUIX11");
-			xplatuix11Type.GetMethod("GetInstance", BindingFlags.Static | BindingFlags.Public).Invoke(null, null);
-
-			var displayHandleField = xplatuix11Type.GetField("DisplayHandle", BindingFlags.Static | BindingFlags.NonPublic);
-			var displayHandleValue = displayHandleField.GetValue(null);
-			var displayConnection = (IntPtr)displayHandleValue;
-
-			Debug.Assert(displayConnection != IntPtr.Zero, "Expected to have a handle on X11 display connection.");
-			return displayConnection;
 		}
 
 		public void Close()
