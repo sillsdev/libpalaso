@@ -36,7 +36,7 @@ namespace SIL.Archiving
 		/// any application-specific details about the archival process.</param>
 		/// <param name="programDialogFont">Application can set this to ensure a consistent look
 		/// in the UI (especially useful for when a localization requires a particular font).</param>
-		/// <param name="getFilesToArchive">delegate to retrieve the lists of files of files to
+		/// <param name="getFilesToArchive">delegate to retrieve the lists of files to
 		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
 		/// calling application. The key for each group will be supplied back to the calling app
 		/// for use in "normalizing" file names. For each group, in addition to the enumerated
