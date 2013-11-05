@@ -151,7 +151,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Rectangle originalBounds = _possibleKeyboardsList.Bounds;
 			_possibleKeyboardsList.Items.Clear();
 			_possibleKeyboardsList.Items.Add(MakeLabelItem(
-				LocalizationManager.GetString("WSKeyboardControl.KeyboardsPreviouslyUsed", "Keyboards used previously with this language")));
+				LocalizationManager.GetString("WSKeyboardControl.KeyboardsPreviouslyUsed", "Previously used keyboards")));
 			var unavailableFont = new Font(_possibleKeyboardsList.Font, FontStyle.Italic);
 			foreach (var keyboard in _model.KnownKeyboards)
 			{
@@ -166,7 +166,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_possibleKeyboardsList.Items.Add(item);
 			}
 			_possibleKeyboardsList.Items.Add(MakeLabelItem(
-				LocalizationManager.GetString("WSKeyboardControl.KeyboardsAvailable", "Keyboards available on this machine")));
+				LocalizationManager.GetString("WSKeyboardControl.KeyboardsAvailable", "Available keyboards")));
 			foreach (var keyboard in _model.OtherAvailableKeyboards)
 			{
 				var adapter = new KeyboardAdapter(keyboard);

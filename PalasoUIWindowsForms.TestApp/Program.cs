@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
+using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -56,6 +57,7 @@ namespace PalasoUIWindowsForms.TestApp
 //#if  TESTING_WS
 			string tempPath = Path.GetTempPath() + "WS-Test";
 			Directory.CreateDirectory(tempPath);
+			KeyboardController.Initialize();
 			try
 			{
 				var dialog = new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem);
@@ -63,6 +65,7 @@ namespace PalasoUIWindowsForms.TestApp
 				Application.Run(dialog);
 				Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
 				Settings.Default.Save();
+				KeyboardController.Shutdown();
 			}
 			catch (Exception)
 			{
