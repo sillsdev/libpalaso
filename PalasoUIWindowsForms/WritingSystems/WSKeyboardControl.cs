@@ -195,7 +195,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void UpdateFromModel()
 		{
-			if (!_model.HasCurrentSelection)
+			if (_model == null || !_model.HasCurrentSelection)
 			{
 				Enabled = false;
 				_selectKeyboardLabel.Visible = false;
