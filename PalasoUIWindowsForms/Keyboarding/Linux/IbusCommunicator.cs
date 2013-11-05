@@ -1,14 +1,18 @@
+// Copyright (c) 2013, SIL International.
+// Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
 using IBusDotNet;
+using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
+using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
-	/// <summary>Normal implementation of IIBusCommunicator</summary>
-	public class IBusCommunicator : IIBusCommunicator
+	/// <summary>Normal implementation of IIbusCommunicator</summary>
+	internal class IbusCommunicator : IIbusCommunicator
 	{
-		#region protected fields
+#region protected fields
 
 		/// <summary>
 		/// stores Dbus Connection to ibus
@@ -16,7 +20,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		protected IBusConnection m_connection;
 
 		/// <summary>
-		/// the input Context created for associated SimpleRootSite
+		/// the input Context created
 		/// </summary>
 		protected InputContext m_inputContext;
 
@@ -30,7 +34,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Create a Connection to Ibus. If successfull Connected property is true.
 		/// </summary>
-		public IBusCommunicator()
+		public IbusCommunicator()
 		{
 			m_connection = IBusConnectionFactory.Create();
 
@@ -43,6 +47,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 								{
 									if (m_connection != null)
 										m_connection.Dispose();
+									m_connection = null;
 								};
 
 			m_ibus = new IBusDotNet.InputBusWrapper(m_connection);
@@ -57,13 +62,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			{
 				action();
 			}
-			// Todo JohnT: reinstate this when we find the right version of NDesk.DBus?
-//			catch(NDesk.DBus.DBusConectionErrorException error)
-//			{
-//				m_ibus = null;
-//				m_inputContext = null;
-//				NotifyUserOfIBusConnectionDropped();
-//			}
+			catch(NDesk.DBus.DBusConectionErrorException)
+			{
+				m_ibus = null;
+				m_inputContext = null;
+				NotifyUserOfIBusConnectionDropped();
+			}
 			catch(System.NullReferenceException)
 			{
 			}
@@ -77,14 +81,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			MessageBox.Show(Form.ActiveForm, "Please restart IBus and the application.", "IBus connection has stopped.");
 		}
 
-		#region Disposable stuff
-		#if DEBUG
+#region Disposable stuff
+#if DEBUG
 		/// <summary/>
-		~IBusCommunicator()
+		~IbusCommunicator()
 		{
 			Dispose(false);
 		}
-		#endif
+#endif
 
 		/// <summary/>
 		public bool IsDisposed
@@ -115,7 +119,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 		#endregion
 
-		#region IIBusCommunicator Implementation
+#region IIBusCommunicator Implementation
 
 		/// <summary>
 		/// Returns true if we have a connection to Ibus.
@@ -123,6 +127,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public bool Connected
 			{
 			get { return m_connection != null; }
+		}
+
+		/// <summary>
+		/// Gets the connection to IBus.
+		/// </summary>
+		public IBusConnection Connection
+		{
+			get { return m_connection; }
 		}
 
 		/// <summary>
@@ -153,36 +165,41 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 
 		/// <summary>
-		/// Sets the cursor location of IBus input context.
+		/// Tells IBus the location and height of the selection
 		/// </summary>
-		public void SetCursorLocation(int x, int y, int width, int height)
+		public void NotifySelectionLocationAndHeight(int x, int y, int height)
 		{
 			if (m_inputContext == null)
 				return;
 
-			ProtectedIBusInvoke(() => m_inputContext.SetCursorLocation(x, y, width, height));
+			ProtectedIBusInvoke(() => m_inputContext.SetCursorLocation(x, y, 0, height));
 		}
 
 		/// <summary>
-		/// Send a KeyEvent to ibus.
+		/// Sends a key Event to the ibus current input context. This method will be called by
+		/// the IbusKeyboardAdapter on some KeyDown and all KeyPress events.
 		/// </summary>
-		public bool ProcessKeyEvent(uint keyval, uint keycode, uint state)
+		/// <param name="keySym">The X11 key symbol (for special keys) or the key code</param>
+		/// <param name="scanCode">The X11 scan code</param>
+		/// <param name="state">The modifier state, i.e. shift key etc.</param>
+		/// <returns><c>true</c> if the key event is handled by ibus.</returns>
+		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		public bool ProcessKeyEvent(int keySym, int scanCode, Keys state)
 		{
 			if (m_inputContext == null)
 				return false;
 
-			// Todo JohnT: reinstate this when we find the right version of NDesk.DBus?
-//			try
-//			{
-			return m_inputContext.ProcessKeyEvent(keyval, keycode, state);
-//			}
-//			catch(NDesk.DBus.DBusConectionErrorException error)
-//			{
-//				m_ibus = null;
-//				m_inputContext = null;
-//				NotifyUserOfIBusConnectionDropped();
-//				return false;
-//			}
+			try
+			{
+				return m_inputContext.ProcessKeyEvent((uint)keySym, (uint)scanCode, (uint)state);
+			}
+			catch(NDesk.DBus.DBusConectionErrorException)
+			{
+				m_ibus = null;
+				m_inputContext = null;
+				NotifyUserOfIBusConnectionDropped();
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -193,43 +210,58 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (m_inputContext == null)
 				return;
 
-			ProtectedIBusInvoke(() =>m_inputContext.Reset());
+			ProtectedIBusInvoke(m_inputContext.Reset);
 		}
 
 		/// <summary>
-		/// Setup ibus inputContext and setup callback handlers.
+		/// Create an input context and setup callback handlers. This method gets
+		/// called by the IbusKeyboardAdaptor.
 		/// </summary>
-		public void CreateInputContext(string name)
+		/// <remarks>One input context per application is sufficient.</remarks>
+		public void CreateInputContext()
 		{
-			m_inputContext = m_ibus.InputBus.CreateInputContext(name);
+			m_inputContext = m_ibus.InputBus.CreateInputContext("IbusCommunicator");
 
 			ProtectedIBusInvoke(() =>
 			{
-			m_inputContext.CommitText += CommitTextEventHandler;
-			m_inputContext.UpdatePreeditText += UpdatePreeditTextEventHandler;
-			m_inputContext.HidePreeditText += HidePreeditTextEventHandler;
-			m_inputContext.ForwardKeyEvent += ForwardKeyEventHandler;
+				m_inputContext.CommitText += OnCommitText;
+				m_inputContext.UpdatePreeditText += OnUpdatePreeditText;
+				m_inputContext.HidePreeditText += OnHidePreeditText;
+				m_inputContext.ForwardKeyEvent += OnKeyEvent;
 
-			m_inputContext.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText);
+				m_inputContext.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText);
+				m_inputContext.Enable();
 			});
+
+		}
+
+		/// <summary>
+		/// Return the DBUS 'path' name for the currently focused InputContext
+		/// </summary>
+		/// <exception cref="System.Exception">Throws: System.Exception with message
+		/// 'org.freedesktop.DBus.Error.Failed: No input context focused' if nothing is currently
+		/// focused.</exception>
+		public string GetFocusedInputContext()
+		{
+			return m_ibus.InputBus.CurrentInputContext();
 		}
 
 		/// <summary></summary>
 		public event Action<string> CommitText;
 
 		/// <summary></summary>
-		public event Action<string, uint, bool> UpdatePreeditText;
+		public event Action<string, int> UpdatePreeditText;
 
 		/// <summary></summary>
 		public event Action HidePreeditText;
 
 		/// <summary></summary>
-		public event Action<uint, uint, uint> ForwardKeyEvent;
+		public event Action<int, int, int> KeyEvent;
 		#endregion
 
-		#region private methods
+#region private methods
 
-		private void CommitTextEventHandler(object text)
+		private void OnCommitText(object text)
 		{
 			if (CommitText != null)
 			{
@@ -238,26 +270,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private void UpdatePreeditTextEventHandler(object text, uint cursor_pos, bool visible)
+		private void OnUpdatePreeditText(object text, uint cursor_pos, bool visible)
 		{
-			if (UpdatePreeditText != null)
+			if (UpdatePreeditText != null && visible)
 			{
 				IBusText t = (IBusText)Convert.ChangeType(text, typeof(IBusText));
 
-				UpdatePreeditText(t.Text, cursor_pos, visible);
+				UpdatePreeditText(t.Text, (int)cursor_pos);
 			}
 		}
 
-		private void HidePreeditTextEventHandler()
+		private void OnHidePreeditText()
 		{
 			if (HidePreeditText != null)
 				HidePreeditText();
 		}
 
-		private void ForwardKeyEventHandler(uint keyval, uint keycode, uint modifiers)
+		private void OnKeyEvent(uint keyval, uint keycode, uint modifiers)
 		{
-			if (ForwardKeyEvent != null)
-				ForwardKeyEvent(keyval, keycode, modifiers);
+			if (KeyEvent != null)
+				KeyEvent((int)keyval, (int)keycode, (int)modifiers);
 		}
 
 		#endregion

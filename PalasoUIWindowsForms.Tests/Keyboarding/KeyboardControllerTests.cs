@@ -1,20 +1,11 @@
-// ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-// ---------------------------------------------------------------------------------------------
+// Copyright (c) 2013, SIL International.
+// Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Code;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
@@ -194,6 +185,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Test]
 		public void DefaultForWritingSystem_OldPalasoIbusKeyboard()
 		{
+			#if __MonoCS__
+			// For this test on Linux we only use the XkbKeyboardAdaptor and simulate an available
+			// IBus keyboard. This is necessary because otherwise the test might return an
+			// installed Danish IBus keyboard (m17n:da:post) instead of our expected dummy one.
+			KeyboardController.Manager.SetKeyboardAdaptors(new[] { new Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor() });
+			#endif
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			var expectedKeyboard = new KeyboardDescription("m17n:da:post - English (US)", "m17n:da:post", "en-US", inputLanguage,
 				KeyboardController.Adaptors[0]);
@@ -247,6 +244,5 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			var ws = new MockWritingSystemDefinition { Keyboard = "IPA Unicode 1.1.1", WindowsLcid = 0x409.ToString() };
 			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws), Is.EqualTo(expectedKeyboard));
 		}
-
 	}
 }

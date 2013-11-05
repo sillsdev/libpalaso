@@ -173,6 +173,7 @@
 	<Compile Include="ErrorReporting\ErrorReportingTests.cs" />
 	<Compile Include="Progress\LogBox\LogBoxFormForTest.cs" />
 	<Compile Include="Progress\LogBox\LogBoxTests.cs" />
+	<Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">

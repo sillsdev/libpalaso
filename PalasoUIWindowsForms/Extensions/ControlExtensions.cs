@@ -42,5 +42,14 @@ namespace Palaso.UI.WindowsForms.Extensions
 				action();
 			}
 		}
+
+		/// <summary>
+		/// Calls BeginInvoke with the action. This overload can be used with a lambda expression.
+		/// </summary>
+		/// <example>control.BeginInvoke(() => DoSomething(x));</example>
+		public static void BeginInvoke(this Control control, Action action)
+		{
+			control.BeginInvoke(action);
+		}
 	}
 }

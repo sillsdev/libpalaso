@@ -1,4 +1,5 @@
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -15,12 +16,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
 			if (disposing)
 			{
+				if (components != null)
+					components.Dispose();
+
+				KeyboardController.Unregister(_testArea);
+
 				if (_hookedToForm)
 				{
 					_hookedToForm = false;
@@ -29,6 +31,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						form.Activated -= WSKeyboardControl_Activated;
 				}
 			}
+			components = null;
 			base.Dispose(disposing);
 		}
 

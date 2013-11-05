@@ -52,6 +52,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public WSKeyboardControl()
 		{
 			InitializeComponent();
+			KeyboardController.Register(_testArea);
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 			_defaultFontName = _testArea.Font.Name;
 #if MONO

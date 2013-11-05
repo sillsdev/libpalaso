@@ -19,7 +19,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Cache the keyboard of the InputContext.
 		/// </summary>
-		public static IBusKeyboardDescription Keyboard { get; set; }
+		public static IbusKeyboardDescription Keyboard { get; set; }
 
 		/// <summary>
 		/// Clear the cached InputContext details.

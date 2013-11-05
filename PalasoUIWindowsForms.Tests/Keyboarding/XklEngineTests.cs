@@ -61,7 +61,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetDisplayConnection()
 		{
-			var displayConnection = XklEngine.GetDisplayConnection();
+			var displayConnection = X11.X11Helper.GetDisplayConnection();
 			Assert.That(displayConnection, Is.Not.EqualTo(IntPtr.Zero), "Expected display connection");
 		}
 	}

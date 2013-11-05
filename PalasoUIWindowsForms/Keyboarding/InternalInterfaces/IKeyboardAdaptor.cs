@@ -7,6 +7,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 using System;
+using System.Drawing;
 using System.Collections.Generic;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.WritingSystems;
@@ -75,7 +76,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		IKeyboardDefinition DefaultKeyboard { get; }
 
 		/// <summary>
-		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
 		KeyboardType Type { get; }
 	}
