@@ -207,8 +207,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
+			var realLocale = locale;
+			if (locale == "zh")
+			{
+				realLocale = "zh-CN";	// Mono doesn't support bare "zh" until version 3 sometime
+			}
+			else if (locale == "x040F")
+			{
+				realLocale = "is";			// 0x040F is the numeric code for Icelandic.
+			}
 			return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
-				new InputLanguageWrapper(locale, IntPtr.Zero, layout), this, -1) {IsAvailable = false};
+				new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1) {IsAvailable = false};
 		}
 	}
 }

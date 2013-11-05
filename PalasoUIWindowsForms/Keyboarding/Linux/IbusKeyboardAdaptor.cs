@@ -340,6 +340,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public void Initialize()
 		{
 			InitKeyboards();
+			// Don't turn on any Ibus IME keyboard until requested explicitly.
+			// If we do nothing, the first Ibus IME keyboard is automatically activated.
+			IBusCommunicator.FocusIn();
+			if (GlobalCachedInputContext.InputContext != null)
+			{
+				var context = GlobalCachedInputContext.InputContext;
+				context.Reset();
+				GlobalCachedInputContext.Keyboard = null;
+				context.SetEngine("");
+				context.Disable();
+			}
+			IBusCommunicator.FocusOut();
 		}
 
 		public void UpdateAvailableKeyboards()

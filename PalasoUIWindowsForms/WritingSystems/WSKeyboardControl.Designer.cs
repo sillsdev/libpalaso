@@ -125,8 +125,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(154, 60);
 			this.label3.TabIndex = 3;
-			this.label3.Text = "If the keyboard you need is not listed, click the appropriate link below to set i" +
-	"t up";
+			this.label3.Text = "If the keyboard you need is not listed, click the appropriate link below to set it up";
 			//
 			// _possibleKeyboardsList
 			//
@@ -175,7 +174,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(454, 13);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "&Test Area:";
+			this.label1.Text = "&Test Area (Use this area to type something to test out your keyboard.)";
 			//
 			// _testArea
 			//
@@ -183,15 +182,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._testArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._testArea, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._testArea, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._testArea, "WSKeyboardControl.TestAreaInstructions");
 			this._testArea.Location = new System.Drawing.Point(0, 16);
 			this._testArea.Multiline = true;
 			this._testArea.Name = "_testArea";
 			this._testArea.Size = new System.Drawing.Size(460, 96);
 			this._testArea.TabIndex = 1;
-			this._testArea.Text = "Use this area to type something to test out your keyboard.";
 			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
 			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			//

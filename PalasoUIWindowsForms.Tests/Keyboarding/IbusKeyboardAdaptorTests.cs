@@ -35,7 +35,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			public void FocusOut()
 			{
-				throw new NotImplementedException();
+				GlobalCachedInputContext.Clear();
 			}
 
 			public void SetCursorLocation(int x, int y, int width, int height)

@@ -165,6 +165,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					item.ForeColor = _unavailableColor;
 				}
 				_possibleKeyboardsList.Items.Add(item);
+				if (keyboard == _model.CurrentKeyboard)
+					item.Selected = true;
 			}
 			_possibleKeyboardsList.Items.Add(MakeLabelItem(
 				LocalizationManager.GetString("WSKeyboardControl.KeyboardsAvailable", "Available keyboards")));
@@ -300,6 +302,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
 			_model.ActivateCurrentKeyboard();
+			SetTestAreaFont();
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)

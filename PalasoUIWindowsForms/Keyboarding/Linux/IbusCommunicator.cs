@@ -201,8 +201,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_ibus = null;
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
-				return false;
 			}
+			catch(System.NullReferenceException)
+			{
+			}
+			return false;
 		}
 
 		/// <summary>
