@@ -120,9 +120,10 @@ namespace Palaso.WritingSystems
 		float DefaultFontSize { get; set; }
 
 		/// <summary>
-		/// The preferred keyboard to use to generate data encoded in this writing system.
+		/// This tracks the keyboard that should be used for this writing system on this computer.
+		/// It is not shared with other users of the project.
 		/// </summary>
-		string Keyboard { get; set; }
+		IKeyboardDefinition LocalKeyboard { get; set; }
 
 		/// <summary>
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
@@ -243,5 +244,27 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		/// <param name="completeTag">A valid BCP47 tag</param>
 		void SetTagFromString(string completeTag);
+	}
+
+
+	/// <summary>
+	/// An additional interface that is typically implemented along with IWritingSystemDefinition. This interface gives access to two pieces of
+	/// information which may be present in an older LDML file, especially one which does not have KnownKeyboards, and which may be used
+	/// to determine a keyboard to be used when KnownKeyboards and LocalKeyboard are not set.
+	/// </summary>
+	public interface ILegacyWritingSystemDefinition
+	{
+		/// <summary>
+		/// This field retrieves the value obtained from the FieldWorks LDML extension fw:windowsLCID.
+		/// This is used only when current information in LocalKeyboard or KnownKeyboards is not useable.
+		/// There is no public setter because it is not useful to modify this or set it in new LDML files.
+		/// </summary>
+		string WindowsLcid { get; }
+
+		/// <summary>
+		/// Legacy keyboard information. Current code should use LocalKeyboard or KnownKeyboards.
+		/// This field is kept because it is useful in figuring out a keyboard to use when importing an old LDML file.
+		/// </summary>
+		string Keyboard { get; set; }
 	}
 }

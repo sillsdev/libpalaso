@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.IO;
 using NUnit.Framework;
@@ -170,6 +171,40 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(keyboard2FromLdml.OperatingSystem, Is.EqualTo(PlatformID.Unix));
 		}
 
+		[Test]
+		public void ReadWindowsLcid()
+		{
+			var ldmlAdaptor = new LdmlDataMapper();
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version
+			number='' />
+		<language
+			type='qaa' />
+		<variant
+			type='x-lel' />
+	</identity>
+	<collations />
+
+	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled
+			value='False' />
+		<fw:windowsLCID
+			value='1036' />
+	</special>
+</ldml>".Replace("'", "\""));
+				}
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+			Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
+		}
 
 		[Test]
 		//WS-33992

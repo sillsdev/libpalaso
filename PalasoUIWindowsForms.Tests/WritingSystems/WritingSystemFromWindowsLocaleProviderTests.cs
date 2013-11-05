@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
@@ -9,7 +11,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 	[TestFixture]
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
+
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
 #if MONO
 		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
 #endif
@@ -24,6 +28,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		/// keyboards set up for a language.
 		/// </summary>
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
 #if MONO
 		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
 #endif

@@ -252,7 +252,7 @@ namespace Palaso.WritingSystems
 
 		internal void SaveDefinition(IWritingSystemDefinition ws)
 		{
-			SaveDefinition(ws);
+			SaveDefinition((WritingSystemDefinition)ws);
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)

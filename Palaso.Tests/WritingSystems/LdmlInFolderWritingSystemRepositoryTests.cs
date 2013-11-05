@@ -383,7 +383,7 @@ namespace Palaso.Tests.WritingSystems
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
 				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
-				var ws2 = newCollection.Get("en");
+				var ws2 = (ILegacyWritingSystemDefinition)newCollection.Get("en");
 				Assert.AreEqual("Thai", ws2.Keyboard);
 			}
 		}

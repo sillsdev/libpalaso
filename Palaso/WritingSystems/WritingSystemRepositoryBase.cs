@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 using Palaso.Code;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems
 {
@@ -164,6 +167,15 @@ namespace Palaso.WritingSystems
 				_writingSystems.Remove(oldId);
 			}
 			_writingSystems[ws.Id] = ws;
+			// If the writing system already has a local keyboard, probably it has just been created in some dialog,
+			// and we should respect the one the user set...though this is a very unlikely scenario, as we probably
+			// don't have a local setting for a WS that is just being created.
+			IKeyboardDefinition keyboard;
+			if (_localKeyboardSettings != null && ((WritingSystemDefinition) ws).RawLocalKeyboard == null
+				&& _localKeyboardSettings.TryGetValue(ws.Id, out keyboard))
+			{
+				ws.LocalKeyboard = keyboard;
+			}
 			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
 				UpdateIdChangeMap(oldId, ws.Id);
@@ -307,6 +319,120 @@ namespace Palaso.WritingSystems
 
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
 
+		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
+		public string LocalKeyboardSettings
+		{
+			get
+			{
+				var root = new XElement("keyboards");
+				foreach (var ws in AllWritingSystems)
+				{
+					// We don't want to call LocalKeyboard here, because that will come up with some default.
+					// If RawLocalKeyboard is null, we have never typed in this WS.
+					// By the time we do, the user may have installed one of the keyboards in KnownKeyboards,
+					// or done a Send/Receive and obtained a better list of KnownKeyboards, and we can then
+					// make a better first guess than we can now. Calling LocalKeyboard and persisting the
+					// result would have the effect of making our current guess permanent.
+					var kbd = ((WritingSystemDefinition) ws).RawLocalKeyboard;
+					if (kbd == null)
+						continue;
+					root.Add(new XElement("keyboard",
+						new XAttribute("ws", ws.Id),
+						new XAttribute("layout", kbd.Layout),
+						new XAttribute("locale", kbd.Locale)));
+				}
+				return root.ToString();
+			}
+			set
+			{
+				_localKeyboardSettings = null;
+				if (string.IsNullOrWhiteSpace(value))
+					return;
+				var root = XElement.Parse(value);
+				_localKeyboardSettings = new Dictionary<string, IKeyboardDefinition>();
+				foreach (var kbd in root.Elements("keyboard"))
+				{
+					var keyboard = new KeyboardDefinition()
+						{
+							Layout = GetAttributeValue(kbd, "layout"),
+							Locale = GetAttributeValue(kbd, "locale"),
+							OperatingSystem = Environment.OSVersion.Platform
+						};
+					_localKeyboardSettings[kbd.Attribute("ws").Value] = keyboard;
+				}
+				// We do it like this rather than looking up the writing system by the ws attribute so as not to force the
+				// creation of any writing systems which may be in the local keyboard settings but not in the current repo.
+				foreach (var ws in AllWritingSystems)
+				{
+					IKeyboardDefinition localKeyboard;
+					if (_localKeyboardSettings.TryGetValue(ws.Id, out localKeyboard))
+						ws.LocalKeyboard = localKeyboard;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,
+		/// given the indicated candidates, and that wsCurrent is the preferred result if it is a possible WS for the specified culture.
+		/// wsCurrent is also returned if none of the candidates is found to match the specified inputs.
+		/// See interface comment for intended usage information.
+		/// Enhance JohnT: it may be helpful, if no WS has an exact match, to look for one where the culture prefix (before hyphen) matches,
+		/// thus finding a WS that has a keyboard for the same language as the one the user selected.
+		/// Could similarly match against WS ID's language ID, for WS's with no RawLocalKeyboard.
+		/// Could use LocalKeyboard instead of RawLocalKeyboard, thus allowing us to find keyboards for writing systems where the
+		/// local keyboard has not yet been determined. However, this would potentially establish a particular local keyboard for
+		/// a user who has never typed in that writing system or configured a keyboard for it, nor even selected any text in it.
+		/// In the expected usage of this library, there will be a RawLocalKeyboard for every writing system in which the user has
+		/// ever typed or selected text. That should have a high probability of catching anything actually useful.
+		/// </summary>
+		/// <param name="layoutName"></param>
+		/// <param name="cultureInfo"></param>
+		/// <param name="wsCurrent"></param>
+		/// <param name="options"></param>
+		/// <returns></returns>
+		public IWritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, IWritingSystemDefinition wsCurrent,
+			IWritingSystemDefinition[] options)
+		{
+			// See if the default is suitable.
+			if (WsMatchesLayout(layoutName, wsCurrent) && WsMatchesCulture(cultureInfo, wsCurrent))
+				return wsCurrent;
+			IWritingSystemDefinition layoutMatch = null;
+			IWritingSystemDefinition cultureMatch = null;
+			foreach (var ws in options)
+			{
+				bool matchesCulture = WsMatchesCulture(cultureInfo, ws);
+				if (WsMatchesLayout(layoutName, ws))
+				{
+					if (matchesCulture)
+						return ws;
+					if (layoutMatch == null || ws.Equals(wsCurrent))
+						layoutMatch = ws;
+				}
+				if (matchesCulture && (cultureMatch == null || ws.Equals(wsCurrent)))
+					cultureMatch = ws;
+			}
+			return layoutMatch ?? cultureMatch ?? wsCurrent;
+		}
+
+		bool WsMatchesLayout(string layoutName, IWritingSystemDefinition ws)
+		{
+			var wsd = ws as WritingSystemDefinition;
+			return wsd != null && wsd.RawLocalKeyboard != null && wsd.RawLocalKeyboard.Layout == layoutName;
+		}
+
+		private bool WsMatchesCulture(CultureInfo cultureInfo, IWritingSystemDefinition ws)
+		{
+			var wsd = ws as WritingSystemDefinition;
+			return wsd != null && wsd.RawLocalKeyboard != null && wsd.RawLocalKeyboard.Locale == cultureInfo.Name;
+		}
+
+		private string GetAttributeValue(XElement node, string attrName)
+		{
+			var attr = node.Attribute(attrName);
+			if (attr == null)
+				return "";
+			return attr.Value;
+		}
 	}
 
 	public class WritingSystemIdChangedEventArgs : EventArgs

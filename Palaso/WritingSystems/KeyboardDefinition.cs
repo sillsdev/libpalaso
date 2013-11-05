@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Palaso.Code;
 
 namespace Palaso.WritingSystems
 {
@@ -7,8 +8,18 @@ namespace Palaso.WritingSystems
 	/// A simple record of the properties we track in writing systems defining a keyboard and implementing the keyboard-related
 	/// writing system methods and properties.
 	/// </summary>
-	public class KeyboardDefinition : IKeyboardDefinition
+	public class KeyboardDefinition : IClonableGeneric<KeyboardDefinition>, IKeyboardDefinition
 	{
+		public KeyboardDefinition()
+		{
+		}
+		public KeyboardDefinition(KeyboardDefinition kd)
+		{
+			Layout = kd.Layout;
+			Locale = kd.Locale;
+			OperatingSystem = kd.OperatingSystem;
+		}
+
 		/// <summary>
 		/// The Locale of the keyboard. This is mainly significant on Windows, which distinguishes (for example)
 		/// a German keyboard used in Germany, Switzerland, and Holland.
@@ -45,6 +56,11 @@ namespace Palaso.WritingSystems
 			Keyboarding.Controller.Activate(this);
 		}
 
+		public KeyboardDefinition Clone()
+		{
+			return new KeyboardDefinition(this);
+		}
+
 		public override bool Equals(Object obj)
 		{
 			if (!(obj is KeyboardDefinition)) return false;
@@ -73,7 +89,7 @@ namespace Palaso.WritingSystems
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return Layout.GetHashCode() ^ Locale.GetHashCode() ^ OperatingSystem.GetHashCode();
 		}
 	}
 }

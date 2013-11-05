@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using Palaso.Tests.Code;
 using Palaso.WritingSystems;
 
 namespace Palaso.Tests.WritingSystems
@@ -27,6 +28,7 @@ namespace Palaso.Tests.WritingSystems
 			var keyboard1 = new KeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
 			var keyboard2 = new KeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
 			Assert.That(keyboard1 == keyboard2, Is.True);
+			Assert.That(keyboard1.GetHashCode() == keyboard2.GetHashCode());
 			Assert.That(keyboard1 != keyboard2, Is.False);
 			IKeyboardDefinition kbd1 = keyboard1;
 			IKeyboardDefinition kbd2 = keyboard2;
@@ -34,6 +36,7 @@ namespace Palaso.Tests.WritingSystems
 
 			keyboard2.Layout = "layout2";
 			Assert.That(keyboard1 == keyboard2, Is.False);
+			Assert.That(keyboard1.GetHashCode() != keyboard2.GetHashCode());
 			Assert.That(keyboard1 != keyboard2, Is.True);
 			Assert.That(kbd1.Equals(kbd2), Is.False);
 
@@ -41,6 +44,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(keyboard1 == keyboard2, Is.True);
 			keyboard2.Locale = "en-GB";
 			Assert.That(keyboard1 == keyboard2, Is.False);
+			Assert.That(keyboard1.GetHashCode() != keyboard2.GetHashCode());
 			Assert.That(keyboard1 != keyboard2, Is.True);
 			Assert.That(kbd1.Equals(kbd2), Is.False);
 
@@ -48,6 +52,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(keyboard1 == keyboard2, Is.True);
 			keyboard2.OperatingSystem = PlatformID.Unix;
 			Assert.That(keyboard1 == keyboard2, Is.False);
+			Assert.That(keyboard1.GetHashCode() != keyboard2.GetHashCode());
 			Assert.That(keyboard1 != keyboard2, Is.True);
 			Assert.That(kbd1.Equals(kbd2), Is.False);
 		}
@@ -93,6 +98,36 @@ namespace Palaso.Tests.WritingSystems
 			}
 
 			public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; set; }
+			public IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+			{
+				throw new NotImplementedException();
+			}
+		}
+	}
+
+	public class KeyboardDefinitionIClonableGenericTests : IClonableGenericTests<KeyboardDefinition>
+	{
+		public override KeyboardDefinition CreateNewClonable()
+		{
+			return new KeyboardDefinition();
+		}
+
+		public override string ExceptionList
+		{
+			get { return ""; }
+		}
+
+		protected override List<ValuesToSet> DefaultValuesForTypes
+		{
+			get
+			{
+				return new List<ValuesToSet>
+					{
+						new ValuesToSet(false, true),
+						new ValuesToSet("to be", "!(to be)"),
+						new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix)
+					};
+			}
 		}
 	}
 }

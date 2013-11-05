@@ -24,9 +24,30 @@ namespace Palaso.Tests.Code
 				NotEqualValueToSet = notEqualDefaultValue;
 			}
 
-			public Type TypeOfDefaultValue { get { return ValueToSet.GetType(); } }
+			public virtual Type TypeOfDefaultValue { get { return ValueToSet.GetType(); } }
 			public object ValueToSet { get; private set; }
 			public object NotEqualValueToSet { get; private set; }
+		}
+
+		/// <summary>
+		/// This class is useful where the type of the property is an interface or abstract class.
+		/// T should be the signature of the cloneable property.
+		/// Unlike ValuesToSet, this class allows the test instances to belong to a subclass.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		protected class SubclassValuesToSet<T> : ValuesToSet
+		{
+			public SubclassValuesToSet(T defaultValue, T notEqualDefaultValue) : base(defaultValue, notEqualDefaultValue)
+			{
+			}
+
+			public override Type TypeOfDefaultValue
+			{
+				get
+				{
+					return typeof(T);
+				}
+			}
 		}
 
 		// Put any fields to ignore in this string surrounded by "|"

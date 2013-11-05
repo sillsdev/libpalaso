@@ -552,7 +552,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if(CurrentDefinition==null)
 					return string.Empty;
-				return string.IsNullOrEmpty(CurrentDefinition.Keyboard) ? "(default)" : CurrentDefinition.Keyboard;
+				var legacyWritingSystemDefinition = ((ILegacyWritingSystemDefinition) CurrentDefinition);
+				return string.IsNullOrEmpty(legacyWritingSystemDefinition.Keyboard) ? "(default)" : legacyWritingSystemDefinition.Keyboard;
 			}
 			set
 			{
@@ -560,9 +561,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					value = string.Empty;
 				}
-				if (CurrentDefinition.Keyboard != value)
+				var legacyWritingSystemDefinition = ((ILegacyWritingSystemDefinition)CurrentDefinition);
+				if (legacyWritingSystemDefinition.Keyboard != value)
 				{
-					CurrentDefinition.Keyboard = value;
+					legacyWritingSystemDefinition.Keyboard = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -1309,9 +1311,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (CurrentDefinition == null)
 				return;
-			if (!string.IsNullOrEmpty(CurrentDefinition.Keyboard))
+			var legacyWritingSystemDefinition = ((ILegacyWritingSystemDefinition)CurrentDefinition);
+			if (!string.IsNullOrEmpty(legacyWritingSystemDefinition.Keyboard))
 			{
-				KeyboardController.ActivateKeyboard(CurrentDefinition.Keyboard);
+				KeyboardController.ActivateKeyboard(legacyWritingSystemDefinition.Keyboard);
 			}
 		}
 

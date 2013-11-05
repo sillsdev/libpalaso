@@ -14,8 +14,29 @@ namespace Palaso.WritingSystems
 	/// </summary>
 	public interface IKeyboardController
 	{
+		/// <summary>
+		/// Make this keyboard active.
+		/// Review: do we need some argument to indicate which window to make it active for?
+		/// </summary>
+		/// <param name="keyboard"></param>
 		void Activate(IKeyboardDefinition keyboard);
 
+		/// <summary>
+		/// Returns everything that is installed on the system and available to be used.
+		/// This would typically be used to populate a list of available keyboards in configuring a writing system.
+		/// Currently it is also used to evaluate whether a particular keyboard is available to use on this system.
+		/// Enhance: the latter task could be done more efficiently with another API function to indicate whether
+		/// a particular keyboard is available. Not sure whether the cost of building and searching the list is enough
+		/// to make this worthwhile.
+		/// </summary>
 		IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; }
+
+		/// <summary>
+		/// Figures out the system default keyboard for the specified writing system (the one to use if we have no available KnownKeyboards).
+		/// The implementation may use obsolete fields such as Keyboard
+		/// </summary>
+		/// <param name="ws"></param>
+		/// <returns></returns>
+		IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws);
 	}
 }

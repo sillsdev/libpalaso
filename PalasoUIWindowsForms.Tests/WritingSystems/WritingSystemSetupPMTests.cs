@@ -126,6 +126,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
 		public void FindInputLanguage_KnownLanguageCanBeFound()
 		{
 			string knownLanguage = "";

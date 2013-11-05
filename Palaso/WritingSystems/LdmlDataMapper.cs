@@ -204,9 +204,30 @@ namespace Palaso.WritingSystems
 				}
 				reader.ReadEndElement();
 			}
+			else if (reader.GetAttribute("xmlns:fw") != null)
+			{
+				ws.WindowsLcid = GetLcid(reader);
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					reader.Read();
+				}
+				reader.ReadEndElement();
+			}
 			else
 			{
 				reader.Skip();
+			}
+		}
+
+		private string GetLcid(XmlReader reader)
+		{
+			reader.MoveToContent();
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "special");
+			using (var lcidReader = reader.ReadSubtree())
+			{
+				lcidReader.ReadStartElement("special");
+				lcidReader.MoveToContent();
+				return GetSpecialValue(lcidReader, "fw", "windowsLCID");
 			}
 		}
 
@@ -625,7 +646,10 @@ namespace Palaso.WritingSystems
 			{
 				if (reader.NodeType == XmlNodeType.Element)
 				{
-					bool knownNS = IsKnownSpecialElement(reader);
+					// The 'special' element xmlns:fw is known, because it is in our namespace list
+					// so we can read the windowsLCID property out of it. But we don't ever write new
+					// information to it, so it is convenient to treat it as unknown and copy it here.
+					bool knownNS = reader.GetAttribute("xmlns:fw") == null && IsKnownSpecialElement(reader);
 					reader.MoveToElement();
 					if (knownNS)
 					{
@@ -689,6 +713,7 @@ namespace Palaso.WritingSystems
 		{
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			m.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
+			m.AddNamespace("fw", "urn://fieldworks.sil.org/ldmlExtensions/v1");
 		}
 
 		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)

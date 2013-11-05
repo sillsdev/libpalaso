@@ -18,5 +18,10 @@ namespace Palaso.WritingSystems
 		{
 			get {return new IKeyboardDefinition[0];}
 		}
+
+		public IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+		{
+			return new KeyboardDefinition() {Layout = "English", Locale = "en-US"};
+		}
 	}
 }
