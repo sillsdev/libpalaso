@@ -17,6 +17,7 @@ using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
+using Icu;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -43,25 +44,31 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			m_engine = Activator.CreateInstance(XklEngineType) as XklEngine;
 		}
 
+		private string GetLanguageCountry(Locale locale)
+		{
+			if (string.IsNullOrEmpty(locale.Country) && string.IsNullOrEmpty(locale.Language))
+				return string.Empty;
+			return locale.Language + "_" + locale.Country;
+		}
+
 		/// <summary>
 		/// Gets the IcuLocales by language and country. The 3-letter language and country codes
 		/// are concatenated with an underscore in between, e.g. fra_BEL
 		/// </summary>
-		private Dictionary<string, IcuLocale> IcuLocalesByLanguageCountry
+		private Dictionary<string, Icu.Locale> IcuLocalesByLanguageCountry
 		{
 			get
 			{
-				var localesByLanguageCountry = new Dictionary<string, IcuLocale>();
-				for (int i = 0; i < Icu.CountAvailableLocales(); i++)
+				var localesByLanguageCountry = new Dictionary<string, Locale>();
+				foreach (var locale in Locale.AvailableLocales)
 				{
-					var localeId = string.Copy(Icu.GetAvailableLocale(i));
-					var icuLocale = new IcuLocale(localeId);
-					if (string.IsNullOrEmpty(icuLocale.LanguageCountry) ||
-						localesByLanguageCountry.ContainsKey(icuLocale.LanguageCountry))
+					var languageCountry = GetLanguageCountry(locale);
+					if (string.IsNullOrEmpty(languageCountry) ||
+						localesByLanguageCountry.ContainsKey(languageCountry))
 					{
 						continue;
 					}
-					localesByLanguageCountry[icuLocale.LanguageCountry] = icuLocale;
+					localesByLanguageCountry[languageCountry] = locale;
 				}
 				return localesByLanguageCountry;
 			}
@@ -116,7 +123,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					CultureInfo culture = null;
 					try
 					{
-						culture = new CultureInfo(layout.Locale);
+						culture = new CultureInfo(layout.LocaleId);
 					}
 					catch (ArgumentException)
 					{
@@ -125,7 +132,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 						// See mono/tools/locale-builder.
 					}
 					var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
-					var keyboard = new XkbKeyboardDescription(description, layout.Language, layout.Locale,
+					var keyboard = new XkbKeyboardDescription(description, layout.Language, layout.LocaleId,
 						inputLanguage, this, iGroup);
 					KeyboardController.Manager.RegisterKeyboard(keyboard);
 				}

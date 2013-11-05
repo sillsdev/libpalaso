@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Icu;
 
 namespace X11.XKlavier
 {
@@ -52,11 +53,10 @@ namespace X11.XKlavier
 			/// <remarks>The ICU documentation says that the components should be separated by
 			/// an underscore, but that contradicts the way Windows does it. And ICU seems
 			/// to understand the '-' as well.</remarks>
-			public string Locale
+			public string LocaleId
 			{
 				get { return LanguageCode + "-" + CountryCode; }
 			}
-
 
 			/// <summary>
 			/// Gets or sets the 2-letter language abbreviation (mostly ISO 639-1).
@@ -70,11 +70,7 @@ namespace X11.XKlavier
 			{
 				get
 				{
-					string language;
-					Palaso.UI.WindowsForms.Keyboarding.Linux.Icu.UErrorCode err;
-					Palaso.UI.WindowsForms.Keyboarding.Linux.Icu.GetDisplayLanguage(Locale, CultureInfo.CurrentUICulture.Name,
-						out language, out err);
-					return language;
+					return new Locale(LocaleId).DisplayLanguage;
 				}
 			}
 
@@ -90,11 +86,7 @@ namespace X11.XKlavier
 			{
 				get
 				{
-					string country;
-					Palaso.UI.WindowsForms.Keyboarding.Linux.Icu.UErrorCode err;
-					Palaso.UI.WindowsForms.Keyboarding.Linux.Icu.GetDisplayCountry(Locale, CultureInfo.CurrentUICulture.Name,
-						out country, out err);
-					return country;
+					return new Locale(LocaleId).DisplayCountry;
 				}
 			}
 
@@ -103,7 +95,7 @@ namespace X11.XKlavier
 				return string.Format("[LayoutDescription: LayoutId={0}, Description={1}, " +
 					"LayoutVariant={2}, Locale={3}, LanguageCode={4}, Language={5}, " +
 					"CountryCode={6}, Country={7}]", LayoutId, Description, LayoutVariant,
-					Locale, LanguageCode, Language, CountryCode, Country);
+					LocaleId, LanguageCode, Language, CountryCode, Country);
 			}
 		}
 		#endregion
@@ -187,7 +179,7 @@ namespace X11.XKlavier
 			string newLangCode;
 			if (AlternateLanguageCodes.TryGetValue(langCode3letter, out newLangCode))
 				langCode3letter = newLangCode;
-			return Palaso.UI.WindowsForms.Keyboarding.Linux.Icu.GetLanguageCode(langCode3letter);
+			return new Locale(langCode3letter).Language;
 		}
 
 		private void ProcessLanguage(IntPtr configRegistry, ref XklConfigItem item, IntPtr unused)

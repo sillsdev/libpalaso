@@ -157,7 +157,7 @@ namespace X11.XKlavier
 			{
 				var window = xkl_engine_get_current_window(Engine);
 				IntPtr statePtr;
-				if (xkl_engine_get_state(Engine, window, statePtr))
+				if (xkl_engine_get_state(Engine, window, out statePtr))
 				{
 					var state = (XklState)Marshal.PtrToStructure(statePtr, typeof(XklState));
 					return state.Group;
@@ -209,7 +209,7 @@ namespace X11.XKlavier
 		[DllImport("libxklavier")]
 		private extern static IntPtr xkl_engine_get_current_window(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static bool xkl_engine_get_state(IntPtr engine, IntPtr win, IntPtr state_out);
+		private extern static bool xkl_engine_get_state(IntPtr engine, IntPtr win, out IntPtr state_out);
 		[DllImport("libxklavier")]
 		private extern static IntPtr xkl_get_last_error();
 	}

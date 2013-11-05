@@ -9,11 +9,13 @@
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.WritingSystems;
 using IBusDotNet;
+using Icu;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -142,7 +144,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			internal string FormatKeyboardIdentifier(IBusEngineDesc engineDesc)
 			{
 				string id = engineDesc.Language;
-				string languageName = string.IsNullOrEmpty(id) ? "Other Language" : Icu.GetDisplayName(id);
+				string languageName = string.IsNullOrEmpty(id) ? "Other Language" :
+					new Locale(id).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
 				return String.Format("{0} - {1}", languageName, engineDesc.Name);
 			}
 
