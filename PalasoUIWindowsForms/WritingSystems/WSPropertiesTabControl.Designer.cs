@@ -110,7 +110,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _spellingPage
 			//
 			this._spellingPage.Controls.Add(this._spellingControl);
-			this._spellingPage.Location = new System.Drawing.Point(4, 22);
+			this._spellingPage.Location = new System.Drawing.Point(3, 13);
 			this._spellingPage.Name = "_spellingPage";
 			this._spellingPage.Padding = new System.Windows.Forms.Padding(3);
 			this._spellingPage.Size = new System.Drawing.Size(670, 398);
@@ -123,14 +123,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._spellingControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this._spellingControl.Location = new System.Drawing.Point(6, 15);
+			this._spellingControl.Location = new System.Drawing.Point(3, 13);
 			this._spellingControl.Name = "_spellingControl";
 			this._spellingControl.Size = new System.Drawing.Size(661, 380);
 			this._spellingControl.TabIndex = 0;
 			//
 			// _identifiersPage
 			//
-			this._identifiersPage.BackColor = System.Drawing.Color.White;
 			this._identifiersPage.Controls.Add(this._identifiersControl);
 			this._identifiersPage.Location = new System.Drawing.Point(4, 22);
 			this._identifiersPage.Name = "_identifiersPage";
@@ -141,7 +140,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _identifiersControl
 			//
-			this._identifiersControl.Location = new System.Drawing.Point(0, 3);
+			this._identifiersControl.Location = new System.Drawing.Point(3, 13);
 			this._identifiersControl.Name = "_identifiersControl";
 			this._identifiersControl.Size = new System.Drawing.Size(577, 317);
 			this._identifiersControl.TabIndex = 0;

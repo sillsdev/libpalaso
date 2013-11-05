@@ -22,6 +22,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 			_defaultFontName = _testArea.Font.Name;
 			_defaultFontSize = _testArea.Font.SizeInPoints;
+			_fontComboBox.Text = _defaultFontName;
+			_fontSizeComboBox.Text = _defaultFontSize.ToString();
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 		}
 
@@ -71,11 +73,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if (_model.CurrentDefaultFontName != _fontComboBox.Text)
 			{
-				_fontComboBox.Text = _model.CurrentDefaultFontName;
+				if (string.IsNullOrEmpty(_model.CurrentDefaultFontName))
+				{
+					_fontComboBox.Text = _defaultFontName;
+				}
+				else
+				{
+					_fontComboBox.Text = _model.CurrentDefaultFontName;
+				}
+				_fontComboBox.SelectAll();
 			}
 			if (_model.CurrentDefaultFontSize != currentSize)
 			{
-				_fontSizeComboBox.Text = _model.CurrentDefaultFontSize.ToString();
+				if (_model.CurrentDefaultFontSize == 0)
+				{
+					_fontSizeComboBox.Text = _defaultFontSize.ToString();
+				}
+				else
+				{
+					_fontSizeComboBox.Text = _model.CurrentDefaultFontSize.ToString();
+				}
+				_fontSizeComboBox.SelectAll();
 			}
 			if (_rightToLeftCheckBox.Checked != _model.CurrentRightToLeftScript)
 			{
@@ -88,6 +106,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			// For clearing the list was resizing the combo box, so we save the original size and then reset it
 			Rectangle originalBounds = _fontComboBox.Bounds;
+			List<string> fontitems = new List<string>();
 			_fontComboBox.Items.Clear();
 			if (_model == null)
 			{
@@ -99,7 +118,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					continue;
 				}
-				_fontComboBox.Items.Add(fontFamily.Name);
+				fontitems.Add(fontFamily.Name);
+			}
+			fontitems.Sort();
+			foreach (string fontname in fontitems)
+			{
+				_fontComboBox.Items.Add(fontname);
 			}
 			_fontComboBox.Bounds = originalBounds;
 		}

@@ -1,4 +1,6 @@
-﻿namespace TestAppKeyboard
+﻿using Palaso.UI.WindowsForms.Keyboarding;
+
+namespace TestAppKeyboard
 {
 	partial class KeyboardForm
 	{
@@ -13,6 +15,7 @@
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
+			KeyboardController.DeactivateKeyboard();
 			if (disposing && (components != null))
 			{
 				components.Dispose();

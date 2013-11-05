@@ -37,6 +37,11 @@ namespace Palaso.UsbDrive.Linux
 			get { return TryGetDevicePropertyInteger(_volumeDevice, "volume.size"); }
 		}
 
+		public override string VolumeLabel
+		{
+			get { throw new NotImplementedException("VolumeLabel not implemented in HAL Mono yet."); }
+		}
+
 		public override ulong AvailableFreeSpace
 		{
 			get { throw new NotImplementedException("TotalFreeSpace not implemented in Mono yet."); }

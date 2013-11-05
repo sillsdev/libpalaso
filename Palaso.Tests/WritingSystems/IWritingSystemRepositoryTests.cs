@@ -46,6 +46,9 @@ namespace Palaso.Tests.WritingSystems
 		[TearDown]
 		public virtual void TearDown() { }
 
+// Disabled because linux nunit-test runner can't handle Tests in abastract base class
+// TODO: refactor or fix nunit-runner
+#if !MONO
 		[Test]
 		public void SetTwoDefinitions_CountEquals2()
 		{
@@ -973,5 +976,6 @@ namespace Palaso.Tests.WritingSystems
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsFr, new[] { wsFr, wsEn }), Is.EqualTo(wsFr));
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), null, new[] { wsFr, wsEn }), Is.Null);
 		}
+#endif
 	}
 }
