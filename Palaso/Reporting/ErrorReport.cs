@@ -55,7 +55,7 @@ namespace Palaso.Reporting
 
 		/// <summary>
 		/// Use this method if you want to override the default IErrorReporter.
-		/// This method should be called only once at application startup.
+		/// This method should normally be called only once at application startup.
 		/// </summary>
 		public static void SetErrorReporter(IErrorReporter reporter)
 		{
@@ -380,6 +380,7 @@ namespace Palaso.Reporting
 			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
 			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
 			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
+			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
 			foreach (var version in list)
 			{
 				if(version.Match(System.Environment.OSVersion))
