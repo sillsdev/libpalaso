@@ -45,7 +45,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		internal KeyboardDescription(string name, string layout, string locale,
 			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type)
 		{
-			Name = name;
+			InternalName = name;
 			Layout = layout;
 			Locale = locale;
 			Engine = engine;
@@ -58,7 +58,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		internal KeyboardDescription(KeyboardDescription other)
 			:base(other)
 		{
-			Name = other.Name;
+			InternalName = other.Name;
 			Engine = other.Engine;
 			IsAvailable = other.IsAvailable;
 			InputLanguage = other.InputLanguage;
@@ -106,27 +106,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return Name;
 		}
 
-		public static bool operator ==(KeyboardDescription left, KeyboardDescription right)
-		{
-			// Check for both being null
-			if (ReferenceEquals(null, left))
-				return ReferenceEquals(null, right);
-			return left.Equals(right);
-		}
-
-		public static bool operator !=(KeyboardDescription left, KeyboardDescription right)
-		{
-			return !(left == right);
-		}
-
 		internal IInputLanguage InputLanguage { get; private set; }
+
+		private string InternalName { get; set; }
 
 		#region IKeyboardDefinition Members
 
 		/// <summary>
 		/// Gets a human-readable name of the language.
 		/// </summary>
-		public string Name { get; private set; }
+		public override string Name { get { return InternalName; } }
 
 		/// <summary>
 		/// Activate this keyboard.

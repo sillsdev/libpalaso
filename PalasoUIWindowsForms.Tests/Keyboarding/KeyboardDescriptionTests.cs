@@ -36,7 +36,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		public override string EqualsExceptionList
 		{
-			get { return "|Type|Name|OperatingSystem|IsAvailable|"; }
+			get { return "|Type|Name|OperatingSystem|IsAvailable|InternalName|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes

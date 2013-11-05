@@ -202,13 +202,13 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// this.
 			Assert.That(keyboards.Length == 3 || keyboards.Length == 2);
 			var expectedKeyboards = new List<IKeyboardDefinition>()
-				{ CreateKeyboard("German (Belgium)", "de-BE") };
-			expectedKeyboards.Add(CreateKeyboard("French (Belgium)", "fr-BE"));
+				{ CreateKeyboard("German", "de-BE") };
+			expectedKeyboards.Add(CreateKeyboard("French", "fr-BE"));
 
 			if (keyboards.Length > 2)
-				expectedKeyboards.Add(CreateKeyboard("Dutch (Belgium)", "nl-BE"));
+				expectedKeyboards.Add(CreateKeyboard("Dutch", "nl-BE"));
 
-			CollectionAssert.AreEquivalent(expectedKeyboards, keyboards);
+			Assert.That(keyboards, Is.EquivalentTo(expectedKeyboards));
 		}
 
 		[Test]

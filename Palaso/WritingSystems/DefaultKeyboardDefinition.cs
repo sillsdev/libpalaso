@@ -50,7 +50,7 @@ namespace Palaso.WritingSystems
 		/// <summary>
 		/// Gets a human-readable name of the input language.
 		/// </summary>
-		public string Name
+		public virtual string Name
 		{
 			get { return string.Format("{0} - {1}", Layout, Locale); }
 		}

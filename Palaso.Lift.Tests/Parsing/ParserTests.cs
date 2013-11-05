@@ -1276,21 +1276,43 @@ namespace Palaso.Lift.Tests.Parsing
 			_mocks.VerifyAllExpectationsHaveBeenMet();
 		}
 
+		private class NewLineAgnosticEqualMatcher: NMock2.Matcher
+		{
+			public NewLineAgnosticEqualMatcher(string expected)
+			{
+				Expected = expected.Replace("\r\n", "\n");
+			}
+
+			private string Expected { get; set; }
+
+			public override void DescribeTo(TextWriter writer)
+			{
+				writer.Write("equal to ");
+				writer.Write(Expected);
+			}
+
+			public override bool Matches(object o)
+			{
+				var str = o as string;
+				if (str == null)
+					return false;
+
+				return Expected.Equals(str.Replace("\r\n", "\n"));
+			}
+		}
+
+		public static Matcher IsEqualToIgnoreNl(string expected)
+		{
+			return new NewLineAgnosticEqualMatcher(expected);
+		}
+
 		[Test]
 		public void ReadExternalLiftFile()
 		{
 			// For this test to work, the files test20080407.lift and test20080407.lift-ranges MUST
 			// be copied to the current working directory.
-#if MONO
-			const string NewLine = "\r\n";
-#else
 			const string NewLine = "\n";
-			// string NewLine = Environment.NewLine;
-			/* review: I (CP) am not clear why there is a difference in line endings between linux and windows.
-			 * Linux expects the windows convention \r\n (correctly) where as windows interprets \n to match the \r\n
-			 * used in the file.  Environment.NewLine also gives \r\n.  I would expect \r\n to work everywhere.
-			 */
-#endif
+
 			using (_mocks.Ordered)	// Ordered may be too strong if parse details change.
 			{
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
@@ -1298,7 +1320,7 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "The word is borrowed from another language")),
 						  Is.EqualTo(new LiftMultiText("en", "borrowed")),
 						  Is.EqualTo(new LiftMultiText()),
-						  Is.EqualTo("<range-element id=\"borrowed\">" + NewLine +
+						  IsEqualToIgnoreNl("<range-element id=\"borrowed\">" + NewLine +
 								"          <label>" + NewLine +
 								"            <form lang=\"en\"><text>borrowed</text></form>" + NewLine +
 								"          </label>" + NewLine +
@@ -1311,7 +1333,7 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "The proto form of the word in another language")),
 						  Is.EqualTo(new LiftMultiText("en", "proto")),
 						  Is.EqualTo(new LiftMultiText()),
-						  Is.EqualTo("<range-element id=\"proto\">" + NewLine +
+						  IsEqualToIgnoreNl("<range-element id=\"proto\">" + NewLine +
 								"          <label>" + NewLine +
 								"            <form lang=\"en\"><text>proto</text></form>" + NewLine +
 								"          </label>" + NewLine +
@@ -1325,7 +1347,7 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "modify verbs")),
 						  Is.EqualTo(new LiftMultiText("en", "Adverb")),
 						  Is.EqualTo(new LiftMultiText("en", "adv")),
-						  Is.EqualTo("<range-element guid=\"c528ee72-31a5-423d-833d-0c8454f345d3\" id=\"Adverb\">" + NewLine +
+						  IsEqualToIgnoreNl("<range-element guid=\"c528ee72-31a5-423d-833d-0c8454f345d3\" id=\"Adverb\">" + NewLine +
 								"      <label><form lang=\"en\"><text>Adverb</text></form></label>" + NewLine +
 								"      <abbrev><form lang=\"en\"><text>adv</text></form></abbrev>" + NewLine +
 								"      <description><form lang=\"en\"><text>modify verbs</text></form></description>" + NewLine +
@@ -1335,7 +1357,7 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "substantives and nominals")),
 						  Is.EqualTo(new LiftMultiText("en", "Noun")),
 						  Is.EqualTo(new LiftMultiText("en", "n")),
-						  Is.EqualTo("<range-element guid=\"0fae9a91-36c0-429f-9a31-fbef1292da6a\" id=\"Noun\">" + NewLine +
+						  IsEqualToIgnoreNl("<range-element guid=\"0fae9a91-36c0-429f-9a31-fbef1292da6a\" id=\"Noun\">" + NewLine +
 								"      <label><form lang=\"en\"><text>Noun</text></form></label>" + NewLine +
 								"      <abbrev><form lang=\"en\"><text>n</text></form></abbrev>" + NewLine +
 								"      <description><form lang=\"en\"><text>substantives and nominals</text></form></description>" + NewLine +
@@ -1345,7 +1367,7 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "signal events and actions")),
 						  Is.EqualTo(new LiftMultiText("en", "Verb")),
 						  Is.EqualTo(new LiftMultiText("en", "v")),
-						  Is.EqualTo("<range-element guid=\"4812abf3-31e5-450c-a15f-a830dfc7f223\" id=\"Verb\">" + NewLine +
+						  IsEqualToIgnoreNl("<range-element guid=\"4812abf3-31e5-450c-a15f-a830dfc7f223\" id=\"Verb\">" + NewLine +
 								"      <label><form lang=\"en\"><text>Verb</text></form></label>" + NewLine +
 								"      <abbrev><form lang=\"en\"><text>v</text></form></abbrev>" + NewLine +
 								"      <description><form lang=\"en\"><text>signal events and actions</text></form></description>" + NewLine +
