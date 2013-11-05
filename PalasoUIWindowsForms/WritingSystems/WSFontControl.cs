@@ -191,7 +191,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			}
 			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
-			_model.ActivateCurrentKeyboard();
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)

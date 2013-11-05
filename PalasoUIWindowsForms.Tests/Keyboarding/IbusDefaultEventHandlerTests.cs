@@ -33,8 +33,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[TestCase("abc", 0, 3, /* Input: */ "e", 1,/* expected: */ "abce", 0, 3, TestName="UpdatePreedit_ReplaceAll")]
 
 		// Chinese Pinyin ibus keyboard for some reason uses a 0-based index
-		[TestCase("b", 1, 0, /* Input: */ "保额", 0, /* expected: */ "b保额", 3, 0, TestName="UpdatePreedit_CursorPos0")]
-		[TestCase("b", 0, 1, /* Input: */ "保额", 0, /* expected: */ "b保额", 0, 1, TestName="UpdatePreedit_CursorPos0_RangeSelection")]
+		[TestCase("b", 1, 0, /* Input: */ "\u4FDD\u989D", 0, /* expected: */ "b\u4FDD\u989D", 3, 0, TestName="UpdatePreedit_CursorPos0")]
+		[TestCase("b", 0, 1, /* Input: */ "\u4FDD\u989D", 0, /* expected: */ "b\u4FDD\u989D", 0, 1, TestName="UpdatePreedit_CursorPos0_RangeSelection")]
 		public void UpdatePreedit(
 			string text, int selectionStart, int selectionLength,
 			string composition, int insertPos,
@@ -93,7 +93,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		// This test tests the scenario where the textbox has one character, b. The user
 		// positions the IP in front of the b and then types a and e with ibus (e.g. Danish keyboard).
 		// This test simulates the commit after typing the e.
-		[TestCase("ab", 0, 0, "e", 2, /* Input: */ "æ", /* expected: */ "æb", 1, 0, TestName="Commit_ExistingText_InsertSecondChar")]
+		[TestCase("ab", 0, 0, "e", 2, /* Input: */ "\u00E6", /* expected: */ "\u00E6b", 1, 0, TestName="Commit_ExistingText_InsertSecondChar")]
 
 		[TestCase("abc", 0, 1, "e", 1,/* Input: */ "e", /* expected: */ "ebc", 1, 0, TestName="Commit_ExistingText_RangeSelection")]
 		[TestCase("abc", 0, 3, "e", 1,/* Input: */ "e", /* expected: */ "e",   1, 0, TestName="Commit_ReplaceAll")]
@@ -130,9 +130,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.SelectionStart = 1;
 			m_TextBox.SelectionLength = 0;
 
-			m_Handler.OnCommitText("ŋ");
+			m_Handler.OnCommitText("\u014B");
 
-			Assert.That(m_TextBox.Text, Is.EqualTo("aŋ"));
+			Assert.That(m_TextBox.Text, Is.EqualTo("a\u014B"));
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
 			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(0));
 		}
@@ -154,9 +154,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			m_Handler.OnCommitText("n");
 			m_Handler.OnIbusKeyPress(KeySymBackspace, ScanCodeBackspace, 0);
-			m_Handler.OnCommitText("ŋ");
+			m_Handler.OnCommitText("\u014B");
 
-			Assert.That(m_TextBox.Text, Is.EqualTo("aŋ"));
+			Assert.That(m_TextBox.Text, Is.EqualTo("a\u014B"));
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
 			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(0));
 		}
@@ -167,7 +167,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.Text = "b";
 			m_TextBox.SelectionStart = 1;
 			m_TextBox.SelectionLength = 0;
-			m_Handler.OnUpdatePreeditText("保额", 0);
+			m_Handler.OnUpdatePreeditText("\u4FDD\u989D", 0);
 
 			m_Handler.Reset();
 
@@ -182,7 +182,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.Text = "b";
 			m_TextBox.SelectionStart = 0;
 			m_TextBox.SelectionLength = 1;
-			m_Handler.OnUpdatePreeditText("保额", 0);
+			m_Handler.OnUpdatePreeditText("\u4FDD\u989D", 0);
 
 			m_Handler.Reset();
 
