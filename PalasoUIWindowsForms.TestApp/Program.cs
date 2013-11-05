@@ -8,6 +8,7 @@ using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using PalasoUIWindowsForms.TestApp.Properties;
 
 namespace PalasoUIWindowsForms.TestApp
 {
@@ -57,7 +58,11 @@ namespace PalasoUIWindowsForms.TestApp
 			Directory.CreateDirectory(tempPath);
 			try
 			{
-				Application.Run(new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem));
+				var dialog = new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem);
+				dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
+				Application.Run(dialog);
+				Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
+				Settings.Default.Save();
 			}
 			catch (Exception)
 			{

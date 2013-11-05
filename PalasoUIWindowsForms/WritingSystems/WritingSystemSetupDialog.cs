@@ -64,6 +64,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
+		public IWritingSystemRepository WritingSystems
+		{
+			get { return _model.WritingSystems; }
+		}
+
 		public DialogResult ShowDialog(string initiallySelectWritingSystemBcp47)
 		{
 			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemBcp47);

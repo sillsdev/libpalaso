@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -35,6 +36,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	/// </code></example>
 	public class WritingSystemSetupModel
 	{
+		internal const string DefaultKeyboardName = "(default)";
 		private readonly bool _usingRepository;
 		private IWritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
@@ -50,6 +52,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
 		/// </summary>
 		public WritingSystemSuggestor WritingSystemSuggestor { get; private set; }
+
+		public IWritingSystemRepository WritingSystems { get { return _writingSystemRepository; } }
 
 		/// <summary>
 		/// UI layer can set this to something which shows a dialog to get the basic info
@@ -98,7 +102,56 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_usingRepository = false;
 		}
 
+		public IEnumerable<KeyboardController.KeyboardDescriptor> KnownKeyboards
+		{
+			get
+			{
+				var allKeyboards = KeyboardNames.ToList();
+				if (_currentWritingSystem != null)
+				{
+					foreach (var ws in _currentWritingSystem.KnownKeyboards)
+					{
+						var available =
+							(from kbd in allKeyboards where kbd.ShortName == ws.Layout && kbd.Locale == ws.Locale select kbd).
+								FirstOrDefault();
+						if (available != null)
+							yield return available;
+						else
+						{
+							var result = new KeyboardController.KeyboardDescriptor()
+								{
+									Available = false,
+									ShortName = ws.Layout,
+									Locale = ws.Locale,
+									Id = string.Format("{0}-{1}", ws.Layout, ws.Locale),
+									LongName = string.Format("{0} ({1})", ws.Layout, ws.Locale)
+								};
+							yield return result;
+						}
+					}
+				}
+			}
+		}
 
+		public IEnumerable<KeyboardController.KeyboardDescriptor> OtherAvailableKeyboards
+		{
+			get
+			{
+				var result = KeyboardNames.ToList();
+				if (_currentWritingSystem != null)
+				{
+					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
+					{
+						var known =
+							(from kbd in result where kbd.ShortName == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
+								FirstOrDefault();
+						if (known != null)
+							result.Remove(known);
+					}
+				}
+				return result;
+			}
+		}
 
 
 		#region Properties
@@ -111,9 +164,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				var defaultKeyboard = new KeyboardController.KeyboardDescriptor
 					{
-						LongName = "(default)",
-						ShortName = "(default)",
-						Id = "(default)"
+						LongName = DefaultKeyboardName,
+						ShortName = DefaultKeyboardName,
+						Id = DefaultKeyboardName
 					};
 				yield return defaultKeyboard;
 				foreach (var keyboard in KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
@@ -546,27 +599,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public string CurrentKeyboard
+		public IKeyboardDefinition CurrentKeyboard
 		{
 			get
 			{
 				if(CurrentDefinition==null)
-					return string.Empty;
-				var legacyWritingSystemDefinition = ((ILegacyWritingSystemDefinition) CurrentDefinition);
-				return string.IsNullOrEmpty(legacyWritingSystemDefinition.Keyboard) ? "(default)" : legacyWritingSystemDefinition.Keyboard;
+					return null;
+				if (CurrentDefinition.LocalKeyboard != null)
+					return CurrentDefinition.LocalKeyboard;
+				return null;
 			}
 			set
 			{
-				if (value == "(default)")
-				{
-					value = string.Empty;
-				}
-				var legacyWritingSystemDefinition = ((ILegacyWritingSystemDefinition)CurrentDefinition);
-				if (legacyWritingSystemDefinition.Keyboard != value)
-				{
-					legacyWritingSystemDefinition.Keyboard = value;
-					OnCurrentItemUpdated();
-				}
+				if (CurrentDefinition == null)
+					return; // Hopefully can't happen
+				if (CurrentDefinition.LocalKeyboard.Equals(value))
+					return;
+				CurrentDefinition.LocalKeyboard = value.Layout == DefaultKeyboardName ? null : value;
+				OnCurrentItemUpdated();
 			}
 		}
 

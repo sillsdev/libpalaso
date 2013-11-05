@@ -60,8 +60,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _sortControl
 			//
 			this._sortControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._sortControl.Location = new System.Drawing.Point(0, 14);
 			this._sortControl.Name = "_sortControl";
 			this._sortControl.Size = new System.Drawing.Size(670, 384);
@@ -80,8 +80,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _keyboardControl
 			//
 			this._keyboardControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._keyboardControl.Location = new System.Drawing.Point(0, 13);
 			this._keyboardControl.Name = "_keyboardControl";
 			this._keyboardControl.Size = new System.Drawing.Size(670, 385);
@@ -100,8 +100,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _fontControl
 			//
 			this._fontControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._fontControl.Location = new System.Drawing.Point(3, 13);
 			this._fontControl.Name = "_fontControl";
 			this._fontControl.Size = new System.Drawing.Size(667, 385);
@@ -121,8 +121,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// _spellingControl
 			//
 			this._spellingControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this._spellingControl.Location = new System.Drawing.Point(6, 15);
 			this._spellingControl.Name = "_spellingControl";
 			this._spellingControl.Size = new System.Drawing.Size(661, 380);
@@ -159,6 +159,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._tabControl.SelectedIndex = 0;
 			this._tabControl.Size = new System.Drawing.Size(678, 424);
 			this._tabControl.TabIndex = 0;
+			this._tabControl.SelectedIndexChanged += new System.EventHandler(this._tabControl_SelectedIndexChanged);
 			//
 			// WSPropertiesTabControl
 			//

@@ -28,6 +28,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			public Engines engine;
 			public string Id;
 			public string LongName;
+			public string Locale;
+			public bool Available = true;
 		}
 		public static List<KeyboardDescriptor> GetAvailableKeyboards(Engines engineKinds)
 		{
@@ -47,14 +49,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			if ((engineKinds & Engines.Windows) == Engines.Windows)
 			{
 				keyboards.AddRange(WindowsIMEAdaptor.KeyboardDescriptors);
-			}
-			if ((engineKinds & Engines.Keyman6) == Engines.Keyman6)
-			{
-				keyboards.AddRange(Keyman6Adaptor.KeyboardDescriptors);
-			}
-			if ((engineKinds & Engines.Keyman7) == Engines.Keyman7)
-			{
-				keyboards.AddRange(Keyman7Adaptor.KeyboardDescriptors);
 			}
 #endif
 
@@ -77,14 +71,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			if (WindowsIMEAdaptor.HasKeyboardNamed(name))
 			{
 				WindowsIMEAdaptor.ActivateKeyboard(name);
-			}
-			else if (Keyman6Adaptor.HasKeyboardNamed(name))
-			{
-				Keyman6Adaptor.ActivateKeyboard(name);
-			}
-			else if (Keyman7Adaptor.HasKeyboardNamed(name))
-			{
-				Keyman7Adaptor.ActivateKeyboard(name);
 			}
 #endif
 			else
@@ -112,15 +98,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			//if (!string.IsNullOrEmpty(name))
 			//    return name;
 #else
-			string name = Keyman6Adaptor.GetActiveKeyboard();
-			if (!string.IsNullOrEmpty(name))
-				return name;
-
-			name = Keyman7Adaptor.GetActiveKeyboard();
-			if (!string.IsNullOrEmpty(name))
-				return name;
-
-			name = WindowsIMEAdaptor.GetActiveKeyboard();
+			string name = WindowsIMEAdaptor.GetActiveKeyboard();
 			if (!string.IsNullOrEmpty(name))
 				return name;
 #endif
@@ -134,8 +112,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			// Scim no longer supported 2011-01-10 CP
 			//ScimAdaptor.Deactivate();
 #else
-			Keyman6Adaptor.Deactivate();
-			Keyman7Adaptor.Deactivate();
 			WindowsIMEAdaptor.Deactivate();
 #endif
 		}
@@ -156,14 +132,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			if ((engine & Engines.Windows) == Engines.Windows)
 			{
 				return WindowsIMEAdaptor.EngineAvailable;
-			}
-			if ((engine & Engines.Keyman6) == Engines.Keyman6)
-			{
-				return Keyman6Adaptor.EngineAvailable;
-			}
-			if ((engine & Engines.Keyman7) == Engines.Keyman7)
-			{
-				return Keyman7Adaptor.EngineAvailable;
 			}
 #endif
 			Debug.Fail("Unrecognized engine enumeration");

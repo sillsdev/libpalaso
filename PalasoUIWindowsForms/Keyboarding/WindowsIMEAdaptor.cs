@@ -117,6 +117,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 						descriptor.Id = MakeDescriptorId(lang);
 						descriptor.LongName = String.Format("{0} - {1}", lang.LayoutName, lang.Culture.DisplayName);
 						descriptor.engine = KeyboardController.Engines.Windows;
+						descriptor.Locale = lang.Culture.Name;
 						if (descriptors.Find(a => a.Id == descriptor.Id) == null)
 						{
 							descriptors.Add(descriptor);
