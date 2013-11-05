@@ -65,7 +65,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 	}
 
-	public class DefaultKeyboardDefinitionIClonableGenericTests : IClonableGenericTests<DefaultKeyboardDefinition>
+	public class DefaultKeyboardDefinitionIClonableGenericTests : IClonableGenericTests<DefaultKeyboardDefinition, IKeyboardDefinition>
 	{
 		public override DefaultKeyboardDefinition CreateNewClonable()
 		{

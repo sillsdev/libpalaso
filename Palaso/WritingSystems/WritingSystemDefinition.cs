@@ -169,10 +169,10 @@ namespace Palaso.WritingSystems
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 			if (ws._localKeyboard != null)
-				_localKeyboard = ((DefaultKeyboardDefinition)ws._localKeyboard).Clone();
+				_localKeyboard = ws._localKeyboard.Clone();
 			WindowsLcid = ws.WindowsLcid;
 			foreach (var kbd in ws._knownKeyboards)
-				_knownKeyboards.Add(((DefaultKeyboardDefinition)kbd).Clone());
+				_knownKeyboards.Add(kbd.Clone());
 			_id = ws._id;
 		}
 

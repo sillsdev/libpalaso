@@ -22,7 +22,7 @@ using Palaso.Tests.Code;
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
-	public class KeyboardDescriptionIClonableGenericTests : IClonableGenericTests<KeyboardDescription>
+	public class KeyboardDescriptionIClonableGenericTests : IClonableGenericTests<KeyboardDescription, IKeyboardDefinition>
 	{
 		public override KeyboardDescription CreateNewClonable()
 		{
@@ -51,6 +51,19 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 						new ValuesToSet(KeyboardType.System, KeyboardType.OtherIm)
 					};
 			}
+		}
+
+		/// <summary>
+		/// This test covers the subtle possible problem that Clone() doesn't make the right class of object
+		/// when applied to a variable of the interface base class. This fails, for example, if Clone()
+		/// is written as a new method rather than an override.
+		/// </summary>
+		[Test]
+		public void DefaultCloneReturnsKeyboardDescription()
+		{
+			IKeyboardDefinition input = new KeyboardDescription("foo", "foo", "en-US", null, null);
+			var test = input.Clone();
+			Assert.That(test, Is.InstanceOf<KeyboardDescription>());
 		}
 	}
 }

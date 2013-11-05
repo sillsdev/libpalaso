@@ -12,7 +12,7 @@ namespace Palaso.WritingSystems
 	/// the implementations of IKeyboardDefinition from PalasoUIWindowsForms or some similar library.
 	/// In particular while this class can store various data it does nothing about actually activating a keyboard.
 	/// Review: possibly that method and this class should be made abstract?</remarks>
-	public class DefaultKeyboardDefinition : IClonableGeneric<DefaultKeyboardDefinition>, IKeyboardDefinition
+	public class DefaultKeyboardDefinition : IClonableGeneric<IKeyboardDefinition>, IKeyboardDefinition
 	{
 		public DefaultKeyboardDefinition()
 		{
@@ -90,7 +90,7 @@ namespace Palaso.WritingSystems
 		{
 		}
 
-		public DefaultKeyboardDefinition Clone()
+		public virtual IKeyboardDefinition Clone()
 		{
 			return new DefaultKeyboardDefinition(this);
 		}

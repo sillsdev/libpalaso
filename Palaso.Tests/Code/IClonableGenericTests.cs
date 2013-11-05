@@ -7,8 +7,16 @@ using Palaso.Code;
 
 namespace Palaso.Tests.Code
 {
-
-	public abstract class IClonableGenericTests<T> where T:IClonableGeneric<T>
+	/// <summary>
+	/// Generic test that a cloneable object clones all required fields and uses them in equality testing.
+	/// The class we are testing (T) must implement IClonableGeneric<T>.
+	/// However, the Clone() method may not be defined to return type T. For example, DefaultKeyboardDefinition
+	/// has a Clone() method in its interface, which needs to return IKeyboardDefinition.
+	/// Thus, we have two Type parameters, one for the type that Clone() returns.
+	/// </summary>
+	/// <typeparam name="T">Implementation class</typeparam>
+	/// <typeparam name="TClone">Type that Clone() returns</typeparam>
+	public abstract class IClonableGenericTests<T, TClone> where T:IClonableGeneric<TClone>
 	{
 		public abstract T CreateNewClonable();
 
@@ -289,4 +297,14 @@ namespace Palaso.Tests.Code
 			Assert.That(iEquatableUnderTest.Equals(null), Is.False);
 		}
 	}
+
+	/// <summary>
+	/// This supports the common case where the Clone type is the same as the implementation type.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public abstract class IClonableGenericTests<T> : IClonableGenericTests<T, T> where T: IClonableGeneric<T>
+	{
+
+	}
+
 }

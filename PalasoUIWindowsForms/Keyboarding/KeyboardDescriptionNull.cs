@@ -25,6 +25,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		{
 		}
 
+		public IKeyboardDefinition Clone()
+		{
+			return new KeyboardDescriptionNull();
+		}
+
 		public string Id
 		{
 			get { return string.Empty; }

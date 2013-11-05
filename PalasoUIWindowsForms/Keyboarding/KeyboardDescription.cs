@@ -21,7 +21,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 	/// one, and records the engine (IKeyboardAdapter) which is associated with it and can perform such functions as really activating it.
 	/// This class is adequate for some engines; others subclass it.
 	/// </summary>
-	public class KeyboardDescription : DefaultKeyboardDefinition, IClonableGeneric<KeyboardDescription>, IKeyboardDefinition
+	public class KeyboardDescription : DefaultKeyboardDefinition
 	{
 		/// <summary>
 		/// The null keyboard description
@@ -82,7 +82,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// Deepclone
 		/// </summary>
 		/// <returns></returns>
-		public KeyboardDescription Clone()
+		public override IKeyboardDefinition Clone()
 		{
 			return new KeyboardDescription(this);
 		}

@@ -66,5 +66,11 @@ namespace Palaso.WritingSystems
 		/// Review JohnT: Do we need to pass the control or Form in which we want it activated?
 		/// </summary>
 		void Activate();
+
+		/// <summary>
+		/// Makes a deep clone.
+		/// </summary>
+		/// <returns></returns>
+		IKeyboardDefinition Clone();
 	}
 }
