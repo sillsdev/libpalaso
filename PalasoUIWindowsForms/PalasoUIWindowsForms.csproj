@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -80,15 +80,18 @@
 	<TargetFrameworkProfile>
 	</TargetFrameworkProfile>
   </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="icu.net">
+	  <HintPath>..\lib\common\icu.net.dll</HintPath>
+	</Reference>
+	<Reference Include="Enchant.Net">
+	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
+	</Reference>
+	<Reference Include="L10NSharp">
+	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	<Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
-	</Reference>
-	<Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
-	</Reference>
 	<Reference Include="irrKlang.NET2.0, Version=1.1.2.0, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\irrKlang.NET2.0.dll</HintPath>
@@ -99,11 +102,13 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
-	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
+	<Reference Include="NDesk.DBus">
+	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
+	<Reference Include="ibusdotnet">
+	  <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\commonMono\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
@@ -129,17 +134,9 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
 	</None>
-	<Reference Include="Enchant.Net, Version=1.4.3.1, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
-	</Reference>
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="L10NSharp, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
-	</Reference>
 	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86" Condition="'$(OS)'=='Windows_NT'">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
@@ -307,11 +304,25 @@
 	  <DependentUpon>SampleImages.resx</DependentUpon>
 	</Compile>
 	<Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
-	<Compile Include="Keyboarding\WindowsIMEAdaptor.cs" />
-	<Compile Include="Keyboarding\Keyman6Adaptor.cs" />
+	<Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
+	<Compile Include="Keyboarding\KeyboardDescription.cs" />
+	<Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
+	<Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
+	<Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Linux\X11.cs" />
+	<Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
+	<Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
+	<Compile Include="Keyboarding\Linux\XklEngine.cs" />
+	<Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
+	<Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
+	<Compile Include="Keyboarding\Types\MouseEvent.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
-	<Compile Include="Keyboarding\Keyman.cs" />
-	<Compile Include="Keyboarding\Keyman7Adaptor.cs" />
+	<Compile Include="Keyboarding\Types\Win32.cs" />
+	<Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
 	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
 	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
 	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
@@ -636,8 +647,6 @@
 	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
 	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
 	</Compile>
-	<Compile Include="Keyboarding\IBusAdaptor.cs" />
-	<Compile Include="Keyboarding\DBusInterfacesForIBus.cs" />
 	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
 	  <SubType>UserControl</SubType>
 	</Compile>
@@ -645,10 +654,15 @@
 	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
 	</Compile>
 	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
-	<Compile Include="Keyboarding\IBusConnection.cs" />
-	<Compile Include="Keyboarding\IBusConnectionFactory.cs" />
-	<Compile Include="Keyboarding\InputBusWrapper.cs" />
-	<Compile Include="Keyboarding\InputContextWrapper.cs" />
+	<Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
+	<Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
+	<Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
+	<Compile Include="Keyboarding\Interfaces\IIbusEventHandler.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IIbusCommunicator.cs" />
+	<Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
+	<Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
+	<Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
+	<Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
@@ -1050,10 +1064,8 @@
 	<None Include="Resources\spy16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets"
-		  Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets"
-		  Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\build\Download.targets" Condition="'$(OS)'!='Windows_NT' AND Exists('$(SolutionDir)\build\Download.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

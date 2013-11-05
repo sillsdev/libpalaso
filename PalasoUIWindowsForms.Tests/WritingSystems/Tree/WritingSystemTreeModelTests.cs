@@ -47,7 +47,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			public void SetDefinitionsInStore(IEnumerable<WritingSystemDefinition> defs)
 			{
-				MockSetupModel.SetupGet(x => x.WritingSystemDefinitions).Returns(new List<WritingSystemDefinition>(defs));
+				MockSetupModel.SetupGet(x => x.WritingSystemDefinitions).Returns(new List<IWritingSystemDefinition>(defs));
 			}
 
 			public void Dispose()

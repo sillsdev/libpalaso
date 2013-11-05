@@ -10,6 +10,7 @@ using Palaso.UI.WindowsForms.Progress;
 namespace PalasoUIWindowsForms.Tests.Progress
 {
 	[TestFixture]
+	[NUnit.Framework.Category("DesktopRequired")]
 	public class ProgressDialogTests
 	{
 		private int _countForWork;

@@ -21,8 +21,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public event EventHandler HelpWithDeletingWritingSystemsButtonClickedEvent;
 
-		public DeleteInputSystemDialog(WritingSystemDefinition wsToDelete,
-									   IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith, bool showHelpButton)
+		public DeleteInputSystemDialog(IWritingSystemDefinition wsToDelete,
+									   IEnumerable<IWritingSystemDefinition> possibleWritingSystemsToConflateWith, bool showHelpButton)
 		{
 			InitializeComponent();
 			if (!showHelpButton)
@@ -47,7 +47,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_deleteRadioButton.Checked = true;
 		}
 
-		private static string DisplayName(WritingSystemDefinition ws)
+		private static string DisplayName(IWritingSystemDefinition ws)
 		{
 			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.Id);
 		}
@@ -96,16 +96,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Close();
 		}
 
-		public WritingSystemDefinition WritingSystemToConflateWith
+		public IWritingSystemDefinition WritingSystemToConflateWith
 		{
 			get { return ((WritingSystemDisplayAdaptor) _wsSelectionComboBox.SelectedItem).AdaptedWs; }
 		}
 
 		private class WritingSystemDisplayAdaptor
 		{
-			private WritingSystemDefinition _wsToAdapt;
+			private IWritingSystemDefinition _wsToAdapt;
 
-			public WritingSystemDisplayAdaptor(WritingSystemDefinition wsToAdapt)
+			public WritingSystemDisplayAdaptor(IWritingSystemDefinition wsToAdapt)
 			{
 				_wsToAdapt = wsToAdapt;
 			}
@@ -115,7 +115,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return DisplayName(_wsToAdapt);
 			}
 
-			public WritingSystemDefinition AdaptedWs
+			public IWritingSystemDefinition AdaptedWs
 			{
 				get { return _wsToAdapt; }
 			}

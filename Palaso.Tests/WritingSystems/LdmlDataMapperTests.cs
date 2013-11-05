@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using System.Xml;
 using System.IO;
 using NUnit.Framework;
@@ -130,6 +132,99 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
 		}
 
+		[Test]
+		public void RoundtripKnownKeyboards()
+		{
+			var ldmlAdaptor = new LdmlDataMapper();
+
+			Keyboard.Controller = new MyKeyboardController();
+
+			const string sortRules = "(A̍ a̍)";
+			var wsWithKnownKeyboards = new WritingSystemDefinition();
+			var keyboard1 = new DefaultKeyboardDefinition();
+			keyboard1.Locale = "en-US";
+			keyboard1.Layout = "MyFavoriteKeyboard";
+			keyboard1.OperatingSystem = PlatformID.MacOSX; // pick something that for sure won't be our default
+			wsWithKnownKeyboards.AddKnownKeyboard(keyboard1);
+
+			var keyboard2 = new DefaultKeyboardDefinition();
+			keyboard2.Locale = "en-GB";
+			keyboard2.Layout = "SusannasFavoriteKeyboard";
+			keyboard2.OperatingSystem = PlatformID.Unix;
+			wsWithKnownKeyboards.AddKnownKeyboard(keyboard2);
+
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
+			{
+				ldmlAdaptor.Write(tempFile.Path, wsWithKnownKeyboards, null);
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+
+			var knownKeyboards = wsFromLdml.KnownKeyboards.ToList();
+			Assert.That(knownKeyboards, Has.Count.EqualTo(2), "restored WS should have known keyboards");
+			var keyboard1FromLdml = knownKeyboards[0];
+			Assert.That(keyboard1FromLdml.Layout, Is.EqualTo("MyFavoriteKeyboard"));
+			Assert.That(keyboard1FromLdml.Locale, Is.EqualTo("en-US"));
+			Assert.That(keyboard1FromLdml.OperatingSystem, Is.EqualTo(PlatformID.MacOSX));
+			Assert.That(keyboard1FromLdml, Is.InstanceOf<MyKeyboardDefn>(), "Reader should have used controller to create keyboard defn");
+
+			var keyboard2FromLdml = knownKeyboards[1];
+			Assert.That(keyboard2FromLdml.Layout, Is.EqualTo("SusannasFavoriteKeyboard"));
+			Assert.That(keyboard2FromLdml.Locale, Is.EqualTo("en-GB"));
+			Assert.That(keyboard2FromLdml.OperatingSystem, Is.EqualTo(PlatformID.Unix));
+		}
+
+		class MyKeyboardDefn : DefaultKeyboardDefinition
+		{
+		}
+
+		class MyKeyboardController : DefaultKeyboardController
+		{
+			public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+			{
+				return new MyKeyboardDefn()
+				{
+					Layout = layout,
+					Locale = locale,
+					OperatingSystem = Environment.OSVersion.Platform
+				};
+			}
+		}
+
+		[Test]
+		public void ReadWindowsLcid()
+		{
+			var ldmlAdaptor = new LdmlDataMapper();
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version
+			number='' />
+		<language
+			type='qaa' />
+		<variant
+			type='x-lel' />
+	</identity>
+	<collations />
+
+	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled
+			value='False' />
+		<fw:windowsLCID
+			value='1036' />
+	</special>
+</ldml>".Replace("'", "\""));
+				}
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+			Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
+		}
 
 		[Test]
 		//WS-33992
@@ -226,7 +321,7 @@ namespace Palaso.Tests.WritingSystems
 		<palaso:version
 			value='2' />
 	</special>
-</ldml>".Replace("'", "\"");
+</ldml>".Replace("'", "\"").Replace("\n", "\r\n");
 #endregion
 
 #else

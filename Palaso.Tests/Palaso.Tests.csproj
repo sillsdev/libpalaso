@@ -119,6 +119,9 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
+	<Reference Include="NDesk.DBus" Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Annotations\AnnotatableTests.cs" />
@@ -190,6 +193,7 @@
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
 	<Compile Include="WritingSystems\EthnologueLookupTests.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
+	<Compile Include="WritingSystems\DefaultKeyboardDefinitionTests.cs" />
 	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
