@@ -106,13 +106,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 			using (var regKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Keyboard Layouts"))
 			{
-				string layoutId = "0" + hkl.Substring(1, 3);
-				foreach (string subKeyName in regKey.GetSubKeyNames().Reverse())  // Scan in reverse order for efficiency, as the extended layouts are at the end.
+				if (regKey != null)
 				{
-					using (var klid = regKey.OpenSubKey(subKeyName))
+					string layoutId = "0" + hkl.Substring(1, 3);
+					foreach (string subKeyName in regKey.GetSubKeyNames().Reverse())
+						// Scan in reverse order for efficiency, as the extended layouts are at the end.
 					{
-						if (((string)klid.GetValue("Layout ID")).Equals(layoutId, StringComparison.InvariantCultureIgnoreCase))
-							return (string)klid.GetValue("Layout Text");
+						using (var klid = regKey.OpenSubKey(subKeyName))
+						{
+							if (klid != null && ((string) klid.GetValue("Layout ID")).Equals(layoutId, StringComparison.InvariantCultureIgnoreCase))
+								return (string) klid.GetValue("Layout Text");
+						}
 					}
 				}
 			}
