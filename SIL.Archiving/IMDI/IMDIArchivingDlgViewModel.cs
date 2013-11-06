@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -7,14 +8,14 @@ namespace SIL.Archiving.IMDI
 	/// <summary>Implements archiving for IMDI repositories</summary>
 	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
 	{
-		private readonly string _corpusName;
+		private readonly string _corpusName; // REVIEW: How is this different from the id?
 		private IMDIPackage _imdiData;
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 
 		/// <summary>Constructor</summary>
 		/// <param name="appName"></param>
-		/// <param name="corpusName"></param>
+		/// <param name="corpusName">REVIEW: How is this different from the id?</param>
 		/// <param name="title"></param>
 		/// <param name="id"></param>
 		/// <param name="outputFolder"></param>
@@ -29,11 +30,16 @@ namespace SIL.Archiving.IMDI
 		{
 			_imdiData = new IMDIPackage
 			{
-				Title = _title,
+				Title = _titles[_id],
 				Name = _corpusName
 			};
 
 			return true;
+		}
+
+		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <summary>Launch Arbil or Lamus</summary>

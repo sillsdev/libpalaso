@@ -130,17 +130,6 @@ namespace SIL.Archiving
 		public const string kAudienceInternal = "internal";
 		public const string kAudienceWide = "wider_audience";
 
-		// Mode constants
-		public const string kModeSpeech = "Speech";
-		public const string kModeVideo = "Video";
-		public const string kModeText = "Text";
-		public const string kModePhotograph = "Photograph";
-		public const string kModeGraphic = "Graphic";
-		public const string kModeMusicalNotation = "Musical notation";
-		public const string kModeDataset = "Dataset";
-		public const string kModeSoftwareOrFont = "Software application";
-		public const string kModePresentation = "Presentation";
-
 		// Material and Contents Types
 		public const string kVernacularMaterialScripture = "scripture";
 		public const string kVernacularMaterialGeneral = "generalVernacular";
@@ -152,32 +141,9 @@ namespace SIL.Archiving
 		public const string kRelationshipPresentation = "Presentation";
 		public const string kRelationshipSupporting = "Supporting";
 // ReSharper restore CSharpWarnings::CS1591
-
-		[Flags]
-		private enum MetsProperties
-		{
-			Audience = 1 << 0,
-			Domains = 1 << 1,
-			ContentLanguages = 1 << 2,
-			CreationDate = 1 << 3,
-			ModifiedDate = 1 << 4,
-			SchemaConformance = 1 << 5,
-			DatasetExtent = 1 << 6,
-			SubjectLanguage = 1 << 7,
-			SoftwareRequirements = 1 << 8,
-			Contributors = 1 << 9,
-			RecordingExtent = 1 << 10,
-			GeneralDescription = 1 << 11,
-			AbstractDescription = 1 << 12,
-			Promotion = 1 << 13,
-// ReSharper disable once UnusedMember.Local
-			Stage = 1 << 14,
-			Type = 1 << 15,
-		}
 		#endregion
 
 		private readonly List<string> _metsPairs;
-		private MetsProperties _metsPropertiesSet;
 		private AudienceType _metsAudienceType;
 		private string _metsFilePath;
 		private string _tempFolder;
@@ -190,20 +156,6 @@ namespace SIL.Archiving
 		#region properties
 		/// <summary>Path to the RAMP package</summary>
 		public string RampPackagePath { get; private set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Show the count of audio/video files rather than the length
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public bool ShowRecordingCountNotLength { get; set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Are image files to be counted as photographs or graphics
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public bool ImagesArePhotographs { get; set; }
 
 		#endregion
 
@@ -226,7 +178,7 @@ namespace SIL.Archiving
 			ShowRecordingCountNotLength = false;
 			ImagesArePhotographs = true;
 
-			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _title)});
+			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _titles[_id])});
 
 			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*" + kRampFileExtension))
 			{
@@ -258,21 +210,6 @@ namespace SIL.Archiving
 		#region Methods to add app-specific METS pairs
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Helper method to detect when caller tries to set a property that has already been
-		/// set and throw an InvalidOperationException if so.
-		/// </summary>
-		/// <param name="property">The property to check (and add to the list of properties that
-		/// can no longer be set again).</param>
-		/// ------------------------------------------------------------------------------------
-		private void PreventDuplicateMetsKey(MetsProperties property)
-		{
-			if (_metsPropertiesSet.HasFlag(property))
-				throw new InvalidOperationException(string.Format("{0} has already been set", property.ToString()));
-			_metsPropertiesSet |= property;
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
 		/// Sets the "Broad Type", the audience for which the resource being archived is
 		/// primarily intended. This is set automatically as a side-effect of setting the
 		/// stage or type.
@@ -280,14 +217,14 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetAudience(AudienceType audienceType)
 		{
-			if (_metsPropertiesSet.HasFlag(MetsProperties.Audience))
+			if (IsMetadataPropertySet(MetadataProperties.Audience))
 			{
 				if (_metsAudienceType != audienceType)
 					throw new InvalidOperationException(string.Format("Audience has already been set and cannot be changed to a different value."));
 				return; // Already added
 			}
 
-			_metsPropertiesSet |= MetsProperties.Audience;
+			MarkMetadataPropertyAsSet(MetadataProperties.Audience);
 			_metsAudienceType = audienceType;
 
 			string audience;
@@ -324,7 +261,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Vernacular);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			if (vernacularMaterialsTypes.HasFlag(VernacularMaterialsType.Scripture))
 			{
@@ -465,7 +402,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Training);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			// TODO: This is currently not used.
 			//string type;
@@ -492,7 +429,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Internal);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			string type;
 			switch (internalWorkType)
@@ -517,7 +454,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Wider);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			string type;
 			switch (scholarlyWorkType)
@@ -544,6 +481,8 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetStage(WorkStage stage)
 		{
+			PreventDuplicateMetadataProperty(MetadataProperties.Stage);
+
 			// Some of the work stages imply a particular audience and therefore have the appropriate audience bit set
 			if (stage.HasFlag(AudienceType.Vernacular))
 				SetAudience(AudienceType.Vernacular);
@@ -615,7 +554,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetDomains(SilDomain domains)
 		{
-			PreventDuplicateMetsKey(MetsProperties.Domains);
+			PreventDuplicateMetadataProperty(MetadataProperties.Domains);
 
 			if (domains.HasFlag(SilDomain.AcademicTraining))
 				AddDomain(kAcademicTrainingAbbrev, "Academic Training");
@@ -856,7 +795,7 @@ namespace SIL.Archiving
 			if (string.IsNullOrEmpty(date))
 				throw new ArgumentNullException("date");
 
-			PreventDuplicateMetsKey(MetsProperties.CreationDate);
+			PreventDuplicateMetadataProperty(MetadataProperties.CreationDate);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDateCreated, date));
 		}
@@ -868,7 +807,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetModifiedDate(DateTime date)
 		{
-			PreventDuplicateMetsKey(MetsProperties.ModifiedDate);
+			PreventDuplicateMetadataProperty(MetadataProperties.ModifiedDate);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDateModified, date.ToString("yyyy-MM-dd")));
 		}
@@ -883,7 +822,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetSubjectLanguage(string iso3Code, string languageName)
 		{
-			PreventDuplicateMetsKey(MetsProperties.SubjectLanguage);
+			PreventDuplicateMetadataProperty(MetadataProperties.SubjectLanguage);
 
 			SetFlag(kFlagHasSubjectLanguage);
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSubjectLanguage,
@@ -930,7 +869,7 @@ namespace SIL.Archiving
 // ReSharper disable PossibleMultipleEnumeration
 			if (requirements.Any())
 			{
-				PreventDuplicateMetsKey(MetsProperties.SoftwareRequirements);
+				PreventDuplicateMetadataProperty(MetadataProperties.SoftwareRequirements);
 
 				SetFlag(kFlagHasSoftwareOrFontRequirements);
 
@@ -995,7 +934,7 @@ namespace SIL.Archiving
 
 			if (languageValues.Any())
 			{
-				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
+				PreventDuplicateMetadataProperty(MetadataProperties.ContentLanguages);
 
 				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageValues));
 
@@ -1016,7 +955,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetSchemaConformance(string schemaDescriptor)
 		{
-			PreventDuplicateMetsKey(MetsProperties.SchemaConformance);
+			PreventDuplicateMetadataProperty(MetadataProperties.SchemaConformance);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kSchemaConformance, schemaDescriptor));
 		}
@@ -1032,7 +971,7 @@ namespace SIL.Archiving
 			if (string.IsNullOrEmpty(extent))
 				throw new ArgumentNullException("extent");
 
-			PreventDuplicateMetsKey(MetsProperties.DatasetExtent);
+			PreventDuplicateMetadataProperty(MetadataProperties.DatasetExtent);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDatasetExtent, extent));
 		}
@@ -1054,7 +993,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetAudioVideoExtent(string totalDuration)
 		{
-			PreventDuplicateMetsKey(MetsProperties.RecordingExtent);
+			PreventDuplicateMetadataProperty(MetadataProperties.RecordingExtent);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kRecordingExtent, totalDuration));
 		}
@@ -1072,7 +1011,7 @@ namespace SIL.Archiving
 			if (contributions.Count == 0)
 				return;
 
-			PreventDuplicateMetsKey(MetsProperties.Contributors);
+			PreventDuplicateMetadataProperty(MetadataProperties.Contributors);
 
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContributor,
 				contributions.Select(GetContributorsMetsPairs)));
@@ -1134,25 +1073,11 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void SetGeneralDescription(IEnumerable<string> abs)
 		{
-			PreventDuplicateMetsKey(MetsProperties.GeneralDescription);
+			PreventDuplicateMetadataProperty(MetadataProperties.GeneralDescription);
 
 			SetFlag(kFlagHasGeneralDescription);
 
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kGeneralDescription, abs));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Sets an abstract for this resource in a single language
-		/// </summary>
-		/// <param name="description">The abstract description</param>
-		/// <param name="language">ISO 639-2 3-letter language code (RAMP only supports about
-		/// 20 major LWCs. Not sure what happens if an unrecognized code gets passed to this.
-		/// Feel free to try it and find out.</param>
-		/// ------------------------------------------------------------------------------------
-		public void SetAbstract(string description, string language)
-		{
-			SetAbstractDescription(new[] { GetKvpsForLanguageSpecificString(language, description) });
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1164,33 +1089,11 @@ namespace SIL.Archiving
 		/// happens if an unrecognized code gets passed to this. Feel free to try it and find
 		/// out.</param>
 		/// ------------------------------------------------------------------------------------
-		public void SetAbstract(IDictionary<string, string> descriptions)
+		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
 		{
-			if (descriptions == null)
-				throw new ArgumentNullException("descriptions");
-
-			if (descriptions.Count == 0)
-				return;
-
-			List<string> abs = new List<string>();
-			foreach (var desc in descriptions)
-			{
-				if (desc.Key.Length != 3)
-					throw new ArgumentException();
-				abs.Add(GetKvpsForLanguageSpecificString(desc.Key, desc.Value));
-			}
-
-			SetAbstractDescription(abs);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void SetAbstractDescription(IEnumerable<string> abs)
-		{
-			PreventDuplicateMetsKey(MetsProperties.AbstractDescription);
-
 			SetFlag(kFlagHasAbstractDescription);
-
-			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kAbstractDescription, abs));
+			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kAbstractDescription,
+				descriptions.Select(desc => GetKvpsForLanguageSpecificString(desc.Key, desc.Value))));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1238,7 +1141,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void SetPromotion(IEnumerable<string> abs)
 		{
-			PreventDuplicateMetsKey(MetsProperties.Promotion);
+			PreventDuplicateMetadataProperty(MetadataProperties.Promotion);
 
 			SetFlag(kFlagHasPromotionDescription);
 
@@ -1488,54 +1391,19 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets the number of image files in the list(s) of files to archive.
-		/// </summary>
-		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
-		/// ------------------------------------------------------------------------------------
-		public int ImageCount
-		{
-			get
-			{
-				if (_fileLists != null && _imageCount < 0)
-					GetMode();
-				return _imageCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public int AudioCount
-		{
-			get
-			{
-				if (_fileLists != null && _audioCount < 0)
-					GetMode();
-				return _audioCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public int VideoCount
-		{
-			get
-			{
-				if (_fileLists != null && _videoCount < 0)
-					GetMode();
-				return _videoCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
 		/// Gets a comma-separated list of types found in the files to be archived
 		/// (e.g. Text, Video, etc.).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private string GetMode()
 		{
-			_imageCount = 0;
-			_audioCount = 0;
-			_videoCount = 0;
-			return GetMode(_fileLists.SelectMany(f => f.Value.Item1));
+			if (_modes == null)
+				ExtractInformationFromFiles();
+
+			if (IsMetadataPropertySet(MetadataProperties.DatasetExtent) && !_modes.Contains(kModeDataset))
+				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
+
+			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, _modes);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1543,60 +1411,16 @@ namespace SIL.Archiving
 		/// Gets a comma-separated list of types found in the files to be archived
 		/// (e.g. Text, Video, etc.).
 		/// </summary>
+		/// <remarks>This version with parameter is public to facilitate testing.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public string GetMode(IEnumerable<string> files)
 		{
 			if (files == null)
 				return null;
 
-			var list = new HashSet<string>();
+			ExtractInformationFromFiles(files);
 
-			AddModesToSet(list, files);
-
-			if (_metsPropertiesSet.HasFlag(MetsProperties.DatasetExtent) && !list.Contains(kModeDataset))
-				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
-
-			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, list);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void AddModesToSet(HashSet<string> list, IEnumerable<string> files)
-		{
-			foreach (var file in files)
-			{
-				if (FileUtils.GetIsZipFile(file))
-				{
-					using (var zipFile = new ZipFile(file))
-						AddModesToSet(list, zipFile.EntryFileNames);
-					continue;
-				}
-
-				if (FileUtils.GetIsAudio(file))
-				{
-					_audioCount++;
-					list.Add(kModeSpeech);
-				}
-				if (FileUtils.GetIsVideo(file))
-				{
-					_videoCount++;
-					list.Add(kModeVideo);
-				}
-				if (FileUtils.GetIsText(file))
-					list.Add(kModeText);
-				if (FileUtils.GetIsImage(file))
-				{
-					_imageCount++;
-					list.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
-				}
-				if (FileUtils.GetIsMusicalNotation(file))
-					list.Add(kModeMusicalNotation);
-				if (FileUtils.GetIsDataset(file))
-					list.Add(kModeDataset);
-				if (FileUtils.GetIsSoftwareOrFont(file))
-					list.Add(kModeSoftwareOrFont);
-				if (FileUtils.GetIsPresentation(file))
-					list.Add(kModePresentation);
-			}
+			return GetMode();
 		}
 
 		/// ------------------------------------------------------------------------------------

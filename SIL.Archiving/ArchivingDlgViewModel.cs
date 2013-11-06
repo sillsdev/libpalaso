@@ -5,16 +5,54 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Ionic.Zip;
 using L10NSharp;
+using Palaso.IO;
 
 namespace SIL.Archiving
 {
 	/// ------------------------------------------------------------------------------------
 	public abstract class ArchivingDlgViewModel
 	{
+		[Flags]
+		protected enum MetadataProperties
+		{
+			Audience = 1 << 0,
+			Domains = 1 << 1,
+			ContentLanguages = 1 << 2,
+			CreationDate = 1 << 3,
+			ModifiedDate = 1 << 4,
+			SchemaConformance = 1 << 5,
+			DatasetExtent = 1 << 6,
+			SubjectLanguage = 1 << 7,
+			SoftwareRequirements = 1 << 8,
+			Contributors = 1 << 9,
+			RecordingExtent = 1 << 10,
+			GeneralDescription = 1 << 11,
+			AbstractDescription = 1 << 12,
+			Promotion = 1 << 13,
+			Stage = 1 << 14,
+			Type = 1 << 15,
+			Title = 1 << 16,
+		}
+
+		#region Metadata constants
+		// Mode constants
+		public const string kModeSpeech = "Speech";
+		public const string kModeVideo = "Video";
+		public const string kModeText = "Text";
+		public const string kModePhotograph = "Photograph";
+		public const string kModeGraphic = "Graphic";
+		public const string kModeMusicalNotation = "Musical notation";
+		public const string kModeDataset = "Dataset";
+		public const string kModeSoftwareOrFont = "Software application";
+		public const string kModePresentation = "Presentation";
+		#endregion
+
 		#region Data members
-		protected readonly string _title;
-		protected readonly string _id;
+		protected readonly string _id; // ID/Name of the top-level element being archived (can be either a session or a project)
+		protected readonly Dictionary<string, string> _titles = new Dictionary<string, string>(); //Titles of elements being archived (keyed by element id)
+		private Dictionary<string, MetadataProperties> _propertiesSet = new Dictionary<string, MetadataProperties>(); // Metadata properties that have been set (keyed by element id)
 
 		protected bool _cancelProcess;
 		protected readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
@@ -23,6 +61,7 @@ namespace SIL.Archiving
 		protected int _imageCount = -1;
 		protected int _audioCount = -1;
 		protected int _videoCount = -1;
+		protected HashSet<string> _modes;
 		#endregion
 
 		#region Delegates and Events
@@ -80,7 +119,124 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public bool IsBusy { get; protected set; }
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Show the count of audio/video files rather than the length
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ShowRecordingCountNotLength { get; set; }
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Are image files to be counted as photographs or graphics
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ImagesArePhotographs { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of image files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
+		/// ------------------------------------------------------------------------------------
+		public int ImageCount
+		{
+			get
+			{
+				if (_fileLists != null && _imageCount < 0)
+					ExtractInformationFromFiles();
+				return _imageCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int AudioCount
+		{
+			get
+			{
+				if (_fileLists != null && _audioCount < 0)
+					ExtractInformationFromFiles();
+				return _audioCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int VideoCount
+		{
+			get
+			{
+				if (_fileLists != null && _videoCount < 0)
+					ExtractInformationFromFiles();
+				return _videoCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected void ExtractInformationFromFiles()
+		{
+			ExtractInformationFromFiles(_fileLists.SelectMany(f => f.Value.Item1));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected void ExtractInformationFromFiles(IEnumerable<string> files)
+		{
+			_imageCount = 0;
+			_audioCount = 0;
+			_videoCount = 0;
+			_modes = new HashSet<string>();
+
+			AddModesToSet(files);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void AddModesToSet(IEnumerable<string> files)
+		{
+			foreach (var file in files)
+			{
+				if (FileUtils.GetIsZipFile(file))
+				{
+					using (var zipFile = new ZipFile(file))
+						AddModesToSet(zipFile.EntryFileNames);
+					continue;
+				}
+
+				if (FileUtils.GetIsAudio(file))
+				{
+					_audioCount++;
+					_modes.Add(kModeSpeech);
+				}
+				if (FileUtils.GetIsVideo(file))
+				{
+					_videoCount++;
+					_modes.Add(kModeVideo);
+				}
+				if (FileUtils.GetIsText(file))
+					_modes.Add(kModeText);
+				if (FileUtils.GetIsImage(file))
+				{
+					_imageCount++;
+					_modes.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
+				}
+				if (FileUtils.GetIsMusicalNotation(file))
+					_modes.Add(kModeMusicalNotation);
+				if (FileUtils.GetIsDataset(file))
+					_modes.Add(kModeDataset);
+				if (FileUtils.GetIsSoftwareOrFont(file))
+					_modes.Add(kModeSoftwareOrFont);
+				if (FileUtils.GetIsPresentation(file))
+					_modes.Add(kModePresentation);
+			}
+		}
 
 		#endregion
 
@@ -134,12 +290,11 @@ namespace SIL.Archiving
 			AppName = appName;
 			if (title == null)
 				throw new ArgumentNullException("title");
-			_title = title;
 			if (id == null)
 				throw new ArgumentNullException("id");
 			_id = id;
-
-
+			_titles[id] = title;
+			_propertiesSet[id] = MetadataProperties.Title;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -212,6 +367,137 @@ namespace SIL.Archiving
 		}
 		#endregion
 
+		#region Helper methods
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Helper method to detect when caller tries to set a property (for the top-level
+		/// element) that has already been set and throw an InvalidOperationException if so.
+		/// </summary>
+		/// <param name="property">The property to check (and add to the list of properties that
+		/// can no longer be set again).</param>
+		/// ------------------------------------------------------------------------------------
+		protected void PreventDuplicateMetadataProperty(MetadataProperties property)
+		{
+			PreventDuplicateMetadataProperty(_id, property);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Helper method to detect when caller tries to set a property (for the specified
+		/// element) that has already been set and throw an InvalidOperationException if so.
+		/// </summary>
+		/// <param name="elementId">The element id </param>
+		/// <param name="property">The property to check (and add to the list of properties that
+		/// can no longer be set again).</param>
+		/// ------------------------------------------------------------------------------------
+		protected void PreventDuplicateMetadataProperty(string elementId, MetadataProperties property)
+		{
+			MetadataProperties propertiesSet;
+			if (_propertiesSet.TryGetValue(elementId, out propertiesSet))
+			{
+				if (propertiesSet.HasFlag(property))
+					throw new InvalidOperationException(string.Format("{0} has already been set", property.ToString()));
+				_propertiesSet[elementId] |= property;
+			}
+			else
+				_propertiesSet[elementId] = property;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Helper method to determine if the given property (for the top-level element) has
+		/// already been set.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected bool IsMetadataPropertySet(MetadataProperties property)
+		{
+			return IsMetadataPropertySet(_id, property);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Helper method to determine if the given property (for the specified element) has
+		/// already been set.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected bool IsMetadataPropertySet(string elementId, MetadataProperties property)
+		{
+			MetadataProperties propertiesSet;
+			if (!_propertiesSet.TryGetValue(elementId, out propertiesSet))
+				return false;
+			return propertiesSet.HasFlag(property);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Helper method to note that the given property (for the top-level element) has
+		/// been set.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected void MarkMetadataPropertyAsSet(MetadataProperties property)
+		{
+			MarkMetadataPropertyAsSet(_id, property);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Helper method to note that the given property (for the specified element) has
+		/// been set.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		protected void MarkMetadataPropertyAsSet(string elementId, MetadataProperties property)
+		{
+			if (!_propertiesSet.ContainsKey(elementId))
+				_propertiesSet[elementId] = property;
+			_propertiesSet[elementId] |= property;
+		}
+		#endregion
+
+		#region Methods for setting common fields
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Sets an abstract/description for this resource in a single language
+		/// </summary>
+		/// <param name="description">The abstract description</param>
+		/// <param name="language">ISO 639-2 3-letter language code</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetAbstract(string description, string language)
+		{
+			IDictionary<string, string> dictionary = new Dictionary<string, string>(1);
+			dictionary[language] = description;
+			SetAbstract(dictionary);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Sets abstracts/descriptions for this resource in (potentially) multiple languages
+		/// </summary>
+		/// <param name="descriptions">Dictionary of language->abstract, where the keys are ISO
+		/// 639-2 3-letter language codes</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetAbstract(IDictionary<string, string> descriptions)
+		{
+			if (descriptions == null)
+				throw new ArgumentNullException("descriptions");
+
+			if (descriptions.Count == 0)
+				return;
+
+			if (descriptions.Keys.Any(k => k.Length != 3))
+					throw new ArgumentException();
+
+			PreventDuplicateMetadataProperty(MetadataProperties.AbstractDescription);
+			SetAbstract_Impl(descriptions);
+		}
+
+		#region Abstract versions of methods
+		/// ------------------------------------------------------------------------------------
+		protected abstract void SetAbstract_Impl(IDictionary<string, string> descriptions);
+
+		#endregion
+
+		#endregion
+
 		/// ------------------------------------------------------------------------------------
 		public void DisplayMessage(string msg, MessageType type)
 		{
@@ -281,7 +567,7 @@ namespace SIL.Archiving
 		protected void ReportError(Exception e, string msg)
 		{
 			if (OnDisplayError != null)
-				OnDisplayError(msg, _title, e);
+				OnDisplayError(msg, _titles[_id], e);
 			else if (e != null)
 				throw e;
 
