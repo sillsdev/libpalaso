@@ -321,7 +321,7 @@ namespace Palaso.Tests.WritingSystems
 		<palaso:version
 			value='2' />
 	</special>
-</ldml>".Replace("'", "\"").Replace("\n", "\r\n");
+</ldml>".Replace("'", "\"");
 #endregion
 
 #else
