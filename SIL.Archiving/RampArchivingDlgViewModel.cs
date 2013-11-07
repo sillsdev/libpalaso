@@ -78,6 +78,17 @@ namespace SIL.Archiving
 		public const string kFlagHasPromotionDescription = "description.promotion.has";
 		public const string kTrue = "Y";
 
+		// Mode constants
+		public const string kModeSpeech = "Speech";
+		public const string kModeVideo = "Video";
+		public const string kModeText = "Text";
+		public const string kModePhotograph = "Photograph";
+		public const string kModeGraphic = "Graphic";
+		public const string kModeMusicalNotation = "Musical notation";
+		public const string kModeDataset = "Dataset";
+		public const string kModeSoftwareOrFont = "Software application";
+		public const string kModePresentation = "Presentation";
+
 		// work-stage constants
 		public const string kStageRoughDraft = "rough_draft";
 		public const string kStageReviewedDraft = "reviewed_draft";
@@ -143,6 +154,7 @@ namespace SIL.Archiving
 // ReSharper restore CSharpWarnings::CS1591
 		#endregion
 
+		#region Data members
 		private readonly List<string> _metsPairs;
 		private AudienceType _metsAudienceType;
 		private string _metsFilePath;
@@ -152,11 +164,134 @@ namespace SIL.Archiving
 		private string _rampProgramPath;
 		private Dictionary<string, string> _languageList;
 		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
+		private int _imageCount = -1;
+		private int _audioCount = -1;
+		private int _videoCount = -1;
+		private HashSet<string> _modes;
+		#endregion
 
 		#region properties
 		/// <summary>Path to the RAMP package</summary>
 		public string RampPackagePath { get; private set; }
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Show the count of audio/video files rather than the length
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ShowRecordingCountNotLength { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Are image files to be counted as photographs or graphics
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public bool ImagesArePhotographs { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of image files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
+		/// ------------------------------------------------------------------------------------
+		public int ImageCount
+		{
+			get
+			{
+				if (_fileLists != null && _imageCount < 0)
+					ExtractInformationFromFiles();
+				return _imageCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int AudioCount
+		{
+			get
+			{
+				if (_fileLists != null && _audioCount < 0)
+					ExtractInformationFromFiles();
+				return _audioCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int VideoCount
+		{
+			get
+			{
+				if (_fileLists != null && _videoCount < 0)
+					ExtractInformationFromFiles();
+				return _videoCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private void ExtractInformationFromFiles()
+		{
+			ExtractInformationFromFiles(_fileLists.SelectMany(f => f.Value.Item1));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private void ExtractInformationFromFiles(IEnumerable<string> files)
+		{
+			_imageCount = 0;
+			_audioCount = 0;
+			_videoCount = 0;
+			_modes = new HashSet<string>();
+
+			AddModesToSet(files);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void AddModesToSet(IEnumerable<string> files)
+		{
+			foreach (var file in files)
+			{
+				if (FileUtils.GetIsZipFile(file))
+				{
+					using (var zipFile = new ZipFile(file))
+						AddModesToSet(zipFile.EntryFileNames);
+					continue;
+				}
+
+				if (FileUtils.GetIsAudio(file))
+				{
+					_audioCount++;
+					_modes.Add(kModeSpeech);
+				}
+				if (FileUtils.GetIsVideo(file))
+				{
+					_videoCount++;
+					_modes.Add(kModeVideo);
+				}
+				if (FileUtils.GetIsText(file))
+					_modes.Add(kModeText);
+				if (FileUtils.GetIsImage(file))
+				{
+					_imageCount++;
+					_modes.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
+				}
+				if (FileUtils.GetIsMusicalNotation(file))
+					_modes.Add(kModeMusicalNotation);
+				if (FileUtils.GetIsDataset(file))
+					_modes.Add(kModeDataset);
+				if (FileUtils.GetIsSoftwareOrFont(file))
+					_modes.Add(kModeSoftwareOrFont);
+				if (FileUtils.GetIsPresentation(file))
+					_modes.Add(kModePresentation);
+			}
+		}
 		#endregion
 
 		#region construction and initialization
@@ -165,11 +300,14 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
+		/// which files should be archived (this is deferred to allow display of progress message)</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// ------------------------------------------------------------------------------------
 		public RampArchivingDlgViewModel(string appName, string title, string id,
-			Func<string, string, string> getFileDescription) : base(appName, title, id)
+			Action<ArchivingDlgViewModel> setFilesToArchive,
+			Func<string, string, string> getFileDescription) : base(appName, title, id, setFilesToArchive)
 		{
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
@@ -204,6 +342,14 @@ namespace SIL.Archiving
 			}
 
 			return (_rampProgramPath != null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override int CalculateMaxProgressBarValue()
+		{
+			// One for analyzing each list, one for copying each file, one for adding each file
+			// to the zip file and one for the mets.xml file.
+			return _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
 		}
 		#endregion
 
@@ -1358,15 +1504,19 @@ namespace SIL.Archiving
 		 /// ------------------------------------------------------------------------------------
 		private void SetMetsPairsForFiles()
 		{
-			if (_fileLists != null)
+			if (_fileLists.Any())
 			{
 				string value = GetMode();
 				if (value != null)
 					_metsPairs.Add(value);
 
-				// Return JSON array of files with their descriptions.
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSourceFilesForMets,
-					GetSourceFilesForMetsData(_fileLists)));
+				if (!IsMetadataPropertySet(MetadataProperties.Files))
+				{
+					// Return JSON array of files with their descriptions.
+					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSourceFilesForMets,
+						GetSourceFilesForMetsData(_fileLists)));
+					MarkMetadataPropertyAsSet(MetadataProperties.Files);
+				}
 
 				if (ImageCount > 0)
 					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} image{1}.",

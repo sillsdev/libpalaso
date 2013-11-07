@@ -16,7 +16,6 @@ namespace SIL.Archiving
 	{
 		private readonly FormSettings _settings;
 		private readonly ArchivingDlgViewModel _viewModel;
-		private readonly Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> _getFilesToArchive;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Caller can use this to retrieve and persist form settings (typicvally
@@ -36,24 +35,15 @@ namespace SIL.Archiving
 		/// any application-specific details about the archival process.</param>
 		/// <param name="programDialogFont">Application can set this to ensure a consistent look
 		/// in the UI (especially useful for when a localization requires a particular font).</param>
-		/// <param name="getFilesToArchive">delegate to retrieve the lists of files to
-		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
-		/// calling application. The key for each group will be supplied back to the calling app
-		/// for use in "normalizing" file names. For each group, in addition to the enumerated
-		/// files to include (in Item1 of the Tuple), the calling app can provide a progress
-		/// message (in Item2 of the Tuple) to be displayed when that group of files is being
-		/// zipped and added to the RAMP file.</param>
 		/// <param name="settings">Location, size, and state where the client would like the
 		/// dialog box to appear (can be null)</param>
 		/// ------------------------------------------------------------------------------------
 		public ArchivingDlg(ArchivingDlgViewModel model, string localizationManagerId,
-			string appSpecificArchivalProcessInfo, Font programDialogFont,
-			Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive, FormSettings settings)
+			string appSpecificArchivalProcessInfo, Font programDialogFont, FormSettings settings)
 		{
 			_settings = settings ?? FormSettings.Create(this);
 
 			_viewModel = model;
-			_getFilesToArchive = getFilesToArchive;
 
 			InitializeComponent();
 
@@ -204,11 +194,10 @@ namespace SIL.Archiving
 			try
 			{
 				WaitCursor.Show();
-				int maxProgBarValue;
 				_viewModel.IncrementProgressBarAction = () => _progressBar.Increment(1);
-				_buttonCreatePackage.Enabled = _viewModel.Initialize(_getFilesToArchive, out maxProgBarValue);
+				_buttonCreatePackage.Enabled = _viewModel.Initialize();
 				_logBox.ScrollToTop();
-				_progressBar.Maximum = maxProgBarValue;
+				_progressBar.Maximum = _viewModel.CalculateMaxProgressBarValue();
 				WaitCursor.Hide();
 			}
 			catch

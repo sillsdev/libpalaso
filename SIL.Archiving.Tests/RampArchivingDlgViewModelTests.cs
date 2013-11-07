@@ -17,6 +17,7 @@ namespace SIL.Archiving.Tests
 	public class SessionArchivingTests
 	{
 		private RampArchivingDlgViewModel _helper;
+		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
 
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
@@ -24,8 +25,10 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 
-			_helper = new RampArchivingDlgViewModel("Test App", "Test Title", "tst", GetFileDescription);
+			_helper = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
+				SetFilesToArchive, GetFileDescription);
 			_helper.AppSpecificFilenameNormalization = CustomFilenameNormalization;
+			_filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -53,17 +56,14 @@ namespace SIL.Archiving.Tests
 		[Category("SkipOnTeamCity")]
 		public void CreateRampPackageWithSessionArchiveAndMetsFile_CreatesRampPackage()
 		{
-
 			TemporaryFolder tmpFolder = new TemporaryFolder("ArchiveHelperTestFolder");
 			try
 			{
 				string fileName = Path.Combine(tmpFolder.Path, "ddo.session");
 				File.CreateText(fileName).Close();
-				var filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 				var fileList = new[] { Path.Combine(tmpFolder.Path, "ddo.session") };
-				filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
-				int dummy;
-				_helper.Initialize(() => filesToAdd, out dummy);
+				_filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
+				_helper.Initialize();
 				_helper.CreateMetsFile();
 				Assert.IsTrue(_helper.CreateRampPackage());
 				Assert.IsTrue(File.Exists(_helper.RampPackagePath));
@@ -635,6 +635,13 @@ namespace SIL.Archiving.Tests
 		}
 
 		#region Private helper methods
+		/// ------------------------------------------------------------------------------------
+		private void SetFilesToArchive(ArchivingDlgViewModel model)
+		{
+			foreach (var kvp in _filesToAdd)
+				model.AddFileGroup(kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		private string GetFileDescription(string key, string file)
 		{

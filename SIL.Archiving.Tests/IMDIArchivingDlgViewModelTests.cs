@@ -12,9 +12,8 @@ namespace SIL.Archiving.Tests
 		private IMDIArchivingDlgViewModel _helper;
 		private TemporaryFolder _tmpFolder;
 		private const string kAppName = "Tèst App Náme";
-		private const string kCorpusName = "Tèst Corpus Náme";  // include some invalid characters for testing
 		private const string kTitle = "Tèst Title";
-		private const string kArchiveId = "TestID";
+		private const string kArchiveId = "Tèst Corpus Náme";  // include some invalid characters for testing
 
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
@@ -22,7 +21,8 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 			_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
-			_helper = new IMDIArchivingDlgViewModel(kAppName, kCorpusName, kTitle, kArchiveId, _tmpFolder.Path);
+			_helper = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId,
+				SetFilesToArchive, _tmpFolder.Path);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -49,6 +49,12 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("T_st_Corpus_N_me", dirName);
 		}
 
-
+		#region Helper methods
+		/// ------------------------------------------------------------------------------------
+		private void SetFilesToArchive(ArchivingDlgViewModel obj)
+		{
+			throw new System.NotImplementedException();
+		}
+		#endregion
 	}
 }
