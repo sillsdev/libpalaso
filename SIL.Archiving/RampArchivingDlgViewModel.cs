@@ -1442,7 +1442,7 @@ namespace SIL.Archiving
 					if (_videoCount > 0)
 						avExtent.AppendLineFormat("{0} video recording file{1}", new object[] { _videoCount, (_videoCount == 1) ? "" : "s" }, delimiter);
 
-					SetAudioVideoExtent(avExtent.ToString() + ".");
+					SetAudioVideoExtent(avExtent + ".");
 				}
 			}
 		}
@@ -1782,13 +1782,13 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private static string GetLanguageFileLocation()
 		{
-			var exeFile = RampArchivingDlgViewModel.GetExeFileLocation();
+			var exeFile = GetExeFileLocation();
 			if (exeFile == null)
-				throw new DirectoryNotFoundException("The RAMP directory was not found.");
+				return null;
 
 			var dir = Path.GetDirectoryName(exeFile);
 			if (dir == null)
-				throw new DirectoryNotFoundException("The RAMP directory was not found.");
+				return null;
 
 			// on Linux the exe and data directory are not in the same directory
 			if (!Directory.Exists(Path.Combine(dir, "data")))
@@ -1798,22 +1798,14 @@ namespace SIL.Archiving
 					dir = Path.Combine(dir, "share");
 			}
 
-			// get the data directory
-			dir = Path.Combine(dir, "data");
+			// get the data/options directory
+			dir = Path.Combine(dir, "data", "options");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
-
-			// get the options directory
-			dir = Path.Combine(dir, "options");
-			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+				return null;
 
 			// get the languages.yaml file
 			var langFile = Path.Combine(dir, "languages.yaml");
-			if (!File.Exists(langFile))
-				throw new FileNotFoundException(string.Format("The file {0} was not found.", langFile));
-
-			return langFile;
+			return !File.Exists(langFile) ? null : langFile;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1830,15 +1822,19 @@ namespace SIL.Archiving
 				_languageList = new Dictionary<string, string>();
 				var langFile = GetLanguageFileLocation();
 
-				foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
+				if (langFile != null)
 				{
 					const int start = 9;
-					var end = fileLine.IndexOf('"', start);
-					if (end > start)
+
+					foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
 					{
-						var parts = fileLine.Substring(start, end - start).Split(':');
-						if (parts.Length == 2)
-							_languageList[parts[0]] = parts[1];
+						var end = fileLine.IndexOf('"', start);
+						if (end > start)
+						{
+							var parts = fileLine.Substring(start, end - start).Split(':');
+							if (parts.Length == 2)
+								_languageList[parts[0]] = parts[1];
+						}
 					}
 				}
 			}
@@ -1856,18 +1852,8 @@ namespace SIL.Archiving
 		public string GetLanguageName(string iso3Code)
 		{
 			// LT-15003: prevent crash while looking up language name if RAMP not installed
-			try
-			{
-				var langs = GetLanguageList();
-				if (langs != null)
-					return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
-			}
-			catch
-			{
-				return null;
-			}
-
-			return null;
+			var langs = GetLanguageList();
+			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
 		}
 		#endregion
 
