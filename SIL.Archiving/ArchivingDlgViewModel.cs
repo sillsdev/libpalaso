@@ -34,34 +34,26 @@ namespace SIL.Archiving
 			Stage = 1 << 14,
 			Type = 1 << 15,
 			Title = 1 << 16,
+			Files = 1 << 17,
 		}
-
-		#region Metadata constants
-		// Mode constants
-		public const string kModeSpeech = "Speech";
-		public const string kModeVideo = "Video";
-		public const string kModeText = "Text";
-		public const string kModePhotograph = "Photograph";
-		public const string kModeGraphic = "Graphic";
-		public const string kModeMusicalNotation = "Musical notation";
-		public const string kModeDataset = "Dataset";
-		public const string kModeSoftwareOrFont = "Software application";
-		public const string kModePresentation = "Presentation";
-		#endregion
 
 		#region Data members
 		protected readonly string _id; // ID/Name of the top-level element being archived (can be either a session or a project)
 		protected readonly Dictionary<string, string> _titles = new Dictionary<string, string>(); //Titles of elements being archived (keyed by element id)
 		private Dictionary<string, MetadataProperties> _propertiesSet = new Dictionary<string, MetadataProperties>(); // Metadata properties that have been set (keyed by element id)
+		private Action<ArchivingDlgViewModel> _setFilesToArchive;
 
 		protected bool _cancelProcess;
 		protected readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
-		protected IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists;
+		/// <summary>
+		/// Keyed and grouped according to whatever logical grouping makes sense in the
+		/// calling application. The key for each group will be supplied back to the calling app
+		/// for use in "normalizing" file names. In the Tuple for each group, Item1 contains the
+		/// enumerable list of files to include, and Item2 contains a progress message to be
+		/// displayed when that group of files is being processed.
+		/// </summary>
+		protected IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 		protected BackgroundWorker _worker;
-		protected int _imageCount = -1;
-		protected int _audioCount = -1;
-		protected int _videoCount = -1;
-		protected HashSet<string> _modes;
 		#endregion
 
 		#region Delegates and Events
@@ -118,126 +110,6 @@ namespace SIL.Archiving
 		public string AppName { get; private set; }
 		/// ------------------------------------------------------------------------------------
 		public bool IsBusy { get; protected set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Show the count of audio/video files rather than the length
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public bool ShowRecordingCountNotLength { get; set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Are image files to be counted as photographs or graphics
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public bool ImagesArePhotographs { get; set; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Gets the number of image files in the list(s) of files to archive.
-		/// </summary>
-		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
-		/// ------------------------------------------------------------------------------------
-		public int ImageCount
-		{
-			get
-			{
-				if (_fileLists != null && _imageCount < 0)
-					ExtractInformationFromFiles();
-				return _imageCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public int AudioCount
-		{
-			get
-			{
-				if (_fileLists != null && _audioCount < 0)
-					ExtractInformationFromFiles();
-				return _audioCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public int VideoCount
-		{
-			get
-			{
-				if (_fileLists != null && _videoCount < 0)
-					ExtractInformationFromFiles();
-				return _videoCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Gets a comma-separated list of types found in the files to be archived
-		/// (e.g. Text, Video, etc.).
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		protected void ExtractInformationFromFiles()
-		{
-			ExtractInformationFromFiles(_fileLists.SelectMany(f => f.Value.Item1));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Gets a comma-separated list of types found in the files to be archived
-		/// (e.g. Text, Video, etc.).
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		protected void ExtractInformationFromFiles(IEnumerable<string> files)
-		{
-			_imageCount = 0;
-			_audioCount = 0;
-			_videoCount = 0;
-			_modes = new HashSet<string>();
-
-			AddModesToSet(files);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void AddModesToSet(IEnumerable<string> files)
-		{
-			foreach (var file in files)
-			{
-				if (FileUtils.GetIsZipFile(file))
-				{
-					using (var zipFile = new ZipFile(file))
-						AddModesToSet(zipFile.EntryFileNames);
-					continue;
-				}
-
-				if (FileUtils.GetIsAudio(file))
-				{
-					_audioCount++;
-					_modes.Add(kModeSpeech);
-				}
-				if (FileUtils.GetIsVideo(file))
-				{
-					_videoCount++;
-					_modes.Add(kModeVideo);
-				}
-				if (FileUtils.GetIsText(file))
-					_modes.Add(kModeText);
-				if (FileUtils.GetIsImage(file))
-				{
-					_imageCount++;
-					_modes.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
-				}
-				if (FileUtils.GetIsMusicalNotation(file))
-					_modes.Add(kModeMusicalNotation);
-				if (FileUtils.GetIsDataset(file))
-					_modes.Add(kModeDataset);
-				if (FileUtils.GetIsSoftwareOrFont(file))
-					_modes.Add(kModeSoftwareOrFont);
-				if (FileUtils.GetIsPresentation(file))
-					_modes.Add(kModePresentation);
-			}
-		}
-
 		#endregion
 
 		#region callbacks
@@ -282,8 +154,11 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
+		/// which files should be archived (this is deferred to allow display of progress message)</param>
 		/// ------------------------------------------------------------------------------------
-		protected ArchivingDlgViewModel(string appName, string title, string id)
+		protected ArchivingDlgViewModel(string appName, string title, string id,
+			Action<ArchivingDlgViewModel> setFilesToArchive)
 		{
 			if (appName == null)
 				throw new ArgumentNullException("appName");
@@ -293,46 +168,28 @@ namespace SIL.Archiving
 			if (id == null)
 				throw new ArgumentNullException("id");
 			_id = id;
+			_setFilesToArchive = setFilesToArchive;
 			_titles[id] = title;
 			_propertiesSet[id] = MetadataProperties.Title;
 		}
 
 		/// ------------------------------------------------------------------------------------
-		/// <param name="getFilesToArchive">delegate to retrieve the lists of files of files to
-		/// archive, keyed and grouped according to whatever logical grouping makes sense in the
-		/// calling application. The key for each group will be supplied back to the calling app
-		/// for use in "normalizing" file names. For each group, in addition to the enumerated
-		/// files to include (in Item1 of the Tuple), the calling app can provide a progress
-		/// message (in Item2 of the Tuple) to be displayed when that group of files is being
-		/// zipped and added to the RAMP file.</param>
-		/// <param name="maxProgBarValue">Value calculated as the max value for the progress
-		/// bar so the dialog can set that correctly</param>
-
-		/// ------------------------------------------------------------------------------------
-		public bool Initialize(Func<IDictionary<string, Tuple<IEnumerable<string>, string>>> getFilesToArchive,
-			out int maxProgBarValue)
+		public bool Initialize()
 		{
 			IsBusy = true;
 
 			try
 			{
 				if (!DoArchiveSpecificInitialization())
-				{
-					maxProgBarValue = 0;
 					return false;
-				}
 
-				_fileLists = getFilesToArchive();
+				_setFilesToArchive(this);
 				foreach (var fileList in _fileLists.Where(fileList => fileList.Value.Item1.Any()))
 				{
 					string normalizedName = NormalizeFilename(fileList.Key, Path.GetFileName(fileList.Value.Item1.First()));
 					_progressMessages[normalizedName] = fileList.Value.Item2;
 				}
 				DisplayInitialSummary();
-
-				// One for analyzing each list, one for copying each file, one for saving each file in the zip file
-				// and one for the mets.xml file.
-				maxProgBarValue = _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
 
 				return true;
 			}
@@ -344,6 +201,17 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		protected abstract bool DoArchiveSpecificInitialization();
+
+		/// ------------------------------------------------------------------------------------
+		public abstract int CalculateMaxProgressBarValue();
+
+		/// ------------------------------------------------------------------------------------
+		public virtual void AddFileGroup(string groupId, IEnumerable<string> files, string progressMessage)
+		{
+			if (_fileLists.ContainsKey(groupId))
+				throw new ArgumentException("Duplicate file group ID.", "groupId");
+			_fileLists[groupId] = Tuple.Create(files, progressMessage);
+		}
 
 		/// ------------------------------------------------------------------------------------
 		private void DisplayInitialSummary()

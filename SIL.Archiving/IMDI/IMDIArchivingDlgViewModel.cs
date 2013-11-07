@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SIL.Archiving.IMDI
@@ -8,33 +9,43 @@ namespace SIL.Archiving.IMDI
 	/// <summary>Implements archiving for IMDI repositories</summary>
 	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
 	{
-		private readonly string _corpusName; // REVIEW: How is this different from the id?
 		private IMDIPackage _imdiData;
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 
+		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
-		/// <param name="appName"></param>
-		/// <param name="corpusName">REVIEW: How is this different from the id?</param>
-		/// <param name="title"></param>
-		/// <param name="id"></param>
-		/// <param name="outputFolder"></param>
-		public IMDIArchivingDlgViewModel(string appName, string corpusName, string title, string id, string outputFolder) : base(appName, title, id)
+		/// <param name="appName">The application name</param>
+		/// <param name="title">Title of the submission</param>
+		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
+		/// which files should be archived (this is deferred to allow display of progress message)</param>
+		/// <param name="outputFolder">Base folder where IMDI file structure is to be created</param>
+		/// ------------------------------------------------------------------------------------
+		public IMDIArchivingDlgViewModel(string appName, string title, string id,
+			Action<ArchivingDlgViewModel> setFilesToArchive, string outputFolder)
+			: base(appName, title, id, setFilesToArchive)
 		{
-			_corpusName = corpusName;
 			_outputFolder = outputFolder;
 		}
 
-		/// <summary>Initialization</summary>
+		/// ------------------------------------------------------------------------------------
 		protected override bool DoArchiveSpecificInitialization()
 		{
 			_imdiData = new IMDIPackage
 			{
 				Title = _titles[_id],
-				Name = _corpusName
+				Name = _id
 			};
 
 			return true;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override int CalculateMaxProgressBarValue()
+		{
+			// One for processing each list and one for copying each file
+			return _fileLists.Count + _fileLists.SelectMany(kvp => kvp.Value.Item1).Count();
 		}
 
 		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
@@ -88,12 +99,12 @@ namespace SIL.Archiving.IMDI
 
 				if (string.IsNullOrEmpty(_corpusDirectoryName))
 				{
-					var test = NormalizeDirectoryName(_corpusName);
+					var test = NormalizeDirectoryName(_id);
 					var i = 1;
 
 					while (Directory.Exists(Path.Combine(_outputFolder, test)))
 					{
-						test = NormalizeDirectoryName(_corpusName) + "_" + i.ToString("000");
+						test = NormalizeDirectoryName(_id) + "_" + i.ToString("000");
 						i++;
 					}
 					_corpusDirectoryName = test;

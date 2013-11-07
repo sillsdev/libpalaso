@@ -2,7 +2,6 @@
 
 namespace SIL.Archiving.Generic.AccessProtocol
 {
-
 	/// <summary>Access protocol for AILCA (The Archive of Indigenous Languages and Cultures of Asia)</summary>
 	/// <see cref="http://diha.ntu.edu.sg/home.html"/>
 	public class FURCSAccessProtocol : AccessProtocolBase, IAccessProtocol
