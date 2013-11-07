@@ -73,14 +73,16 @@ namespace Palaso.Tests.IO
 			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
 		}
 
+		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
+		//[Platform(Exclude="Unix")]
+		//[Category("KnownMonoIssue")]
 		public void LocateInProgramFiles_SendInvalidProgramNoDeepSearch_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.LocateInProgramFiles("blah.exe", false));
 		}
 
+		// 12 SEP 2013, Phil Hopper: This test not valid on Mono.
 		[Test]
 		[Platform(Exclude="Unix")]
 		[Category("SkipOnTeamCity;KnownMonoIssue")]
@@ -89,30 +91,46 @@ namespace Palaso.Tests.IO
 			Assert.IsNull(FileLocator.LocateInProgramFiles("msinfo32.exe", false));
 		}
 
+		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity;KnownMonoIssue")]
+		//[Platform(Exclude="Unix")]
+		//[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
 		{
-			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true));
+			var findFile = (IsMono ? "bash" : "msinfo32.exe");
+			Assert.IsNotNull(FileLocator.LocateInProgramFiles(findFile, true));
 		}
 
+		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity;KnownMonoIssue")]
+		//[Platform(Exclude="Unix")]
+		//[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
-			Assert.IsNotNull(FileLocator.LocateInProgramFiles("msinfo32.exe", true, "Common Files"));
+			var findFile = (IsMono ? "bash" : "msinfo32.exe");
+
+			// this will work on Mono because it ignores the subFoldersToSearch parameter
+			Assert.IsNotNull(FileLocator.LocateInProgramFiles(findFile, true, "Common Files"));
 		}
 
+		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("SkipOnTeamCity;KnownMonoIssue")]
+		//[Platform(Exclude="Unix")]
+		//[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
 		{
-			Assert.DoesNotThrow(() => FileLocator.LocateInProgramFiles("msinfo32.exe", true, "!~@blah"));
+			var findFile = (IsMono ? "bash" : "msinfo32.exe");
+			Assert.DoesNotThrow(() => FileLocator.LocateInProgramFiles(findFile, true, "!~@blah"));
 		}
 
 		//TODO: this could use lots more tests
+
+		/// <summary>
+		/// Using this function to avoid using conditional compile blocks
+		/// </summary>
+		private static bool IsMono
+		{
+			get { return (System.Type.GetType("Mono.Runtime") != null); }
+		}
 	}
 }

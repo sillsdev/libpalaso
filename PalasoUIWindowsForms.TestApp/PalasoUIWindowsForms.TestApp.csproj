@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -64,7 +64,9 @@
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="System" />
-	<Reference Include="System.Core" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Deployment" />
 	<Reference Include="System.Drawing" />
@@ -94,7 +96,9 @@
 	  <DependentUpon>Settings.settings</DependentUpon>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	</Compile>
-	<Compile Include="ArtOfReadingTestForm.cs" />
+	<Compile Include="ArtOfReadingTestForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
 	<Compile Include="ArtOfReadingTestForm.Designer.cs">
 	  <DependentUpon>ArtOfReadingTestForm.cs</DependentUpon>
 	</Compile>
@@ -106,7 +110,9 @@
 	  <DependentUpon>TestAppForm.cs</DependentUpon>
 	  <LogicalName>SIL.FieldWorks.TestApp.resources</LogicalName>
 	</EmbeddedResource>
-	<Compile Include="TestAppForm.cs" />
+	<Compile Include="TestAppForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
 	<Compile Include="TestAppForm.Designer.cs">
 	  <DependentUpon>TestAppForm.cs</DependentUpon>
 	</Compile>

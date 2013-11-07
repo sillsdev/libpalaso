@@ -103,13 +103,16 @@
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="System" />
-	<Reference Include="System.Core" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
 	<Reference Include="System.Data" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Management" />
 	<Reference Include="System.Security" />
 	<Reference Include="System.Xml" />
 	<None Include="app.config" />
+	<None Include="Properties\Settings.settings" />
 	<None Include="Reporting\ErrorReportSettings.settings">
 	  <Generator>PublicSettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
@@ -196,6 +199,7 @@
 	  <DesignTime>True</DesignTime>
 	  <DependentUpon>Resources.resx</DependentUpon>
 	</Compile>
+	<Compile Include="Properties\Settings.Designer.cs" />
 	<Compile Include="Reporting\AnalyticsEventSender.cs" />
 	<Compile Include="Reporting\ConfigurationException.cs" />
 	<Compile Include="Reporting\ConsoleErrorReporter.cs" />
@@ -335,6 +339,7 @@
 	<Compile Include="Xml\XmlDomExtensions.cs" />
 	<Compile Include="Xml\XmlHelpers.cs" />
 	<Compile Include="Xml\XmlNodeExtensions.cs" />
+	<Compile Include="Xml\XmlSerializationHelper.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
 	<Compile Include="Xml\XmlWriterExtensions.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -75,11 +76,11 @@ namespace Palaso.UI.WindowsForms.Progress
 			_tableLayout.Size = new Size(ClientSize.Width - (_tableLayout.Left + 1),
 				ClientSize.Height - (_tableLayout.Top + 1));
 
-			_verboseBox.Size = _box.Size = _panelBox.Size;
-			_verboseBox.Location = _box.Location = new Point(0, 0);
+			_box.Dock = DockStyle.Fill;
 			_synchronizationContext = SynchronizationContext.Current;
 		}
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public SynchronizationContext SyncContext
 		{
 			get { return _synchronizationContext; }
@@ -376,16 +377,16 @@ namespace Palaso.UI.WindowsForms.Progress
 			_verboseBox.Visible = _showDetailsMenu.Checked;
 			_box.Visible = !_showDetailsMenu.Checked;
 
-#if MONO  //mono (2.0?) doesn't update the size of the box when invisible, apparently
 			if (_showDetailsMenu.Checked)
 			{
-				_verboseBox.Bounds = _box.Bounds;
+				_box.Dock = DockStyle.None;
+				_verboseBox.Dock = DockStyle.Fill;
 			}
 			else
 			{
-				_box.Bounds = _verboseBox.Bounds;
+				_verboseBox.Dock = DockStyle.None;
+				_box.Dock = DockStyle.Fill;
 			}
-#endif
 		}
 
 		private void _copyToClipboardLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

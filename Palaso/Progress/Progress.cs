@@ -509,8 +509,15 @@ public class StringBuilderProgress : GenericProgress
 
 		public override void WriteMessage(string message, params object[] args)
 		{
-			_builder.Append("                          ".Substring(0, indent * 2));
-			_builder.AppendFormat(message+Environment.NewLine, args);
+			try
+			{
+				_builder.Append("                          ".Substring(0, indent * 2));
+				_builder.AppendFormat(message + Environment.NewLine, args);
+			}
+			catch //in case someone sneaks a { } into a user string, and cause that format to fail
+			{
+				_builder.Append(message + Environment.NewLine);//better than nothing
+			}
 		}
 
 		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
