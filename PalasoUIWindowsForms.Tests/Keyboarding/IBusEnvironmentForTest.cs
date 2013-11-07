@@ -4,7 +4,7 @@ using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
 
 #if MONO
-
+#if WANT_PORT
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	public class IBusEnvironmentForTest : IDisposable
@@ -69,5 +69,5 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 	}
 }
-
+#endif
 #endif

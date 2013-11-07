@@ -10,6 +10,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 	public class TransformWithProgressDialogTests
 	{
 		[Test]
+		[Category("DesktopRequired")] // not run on Jenkins
 		public void TranformIsAppliedCorrectly()
 		{
 			string outputPath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());

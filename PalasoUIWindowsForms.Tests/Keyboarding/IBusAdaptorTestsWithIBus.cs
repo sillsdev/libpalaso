@@ -5,6 +5,7 @@ using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
 using System.Collections.Generic;
 
+#if WANT_PORT
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
@@ -84,5 +85,5 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 	}
 }
-
+#endif
 #endif

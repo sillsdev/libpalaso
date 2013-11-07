@@ -10,7 +10,8 @@ namespace Palaso.Tests.Progress
 	public class CommandLineRunnerTests
 	{
 
-		[Test]
+		[Test, Category("KnownMonoIssue")]
+		[Platform(Exclude="Linux", Reason = "Test has problems on Mono")]
 		public void CommandWith10Line_NoCallbackOption_Get10LinesSynchronously()
 		{
 			var app = "PalasoUIWindowsForms.TestApp.exe";// FileLocator.GetFileDistributedWithApplication("PalasoUIWindowsForms.TestApp.exe");
@@ -21,7 +22,8 @@ namespace Palaso.Tests.Progress
 			Assert.IsTrue(result.StandardOutput.Contains("9"));
 		}
 
-		[Test]
+		[Test, Category("KnownMonoIssue")]
+		[Platform(Exclude="Linux", Reason = "Test has problems on Mono")]
 		public void CommandWith10Line_CallbackOption_Get10LinesAsynchronously()
 		{
 			var app = "PalasoUIWindowsForms.TestApp.exe";// FileLocator.GetFileDistributedWithApplication("PalasoUIWindowsForms.TestApp.exe");
