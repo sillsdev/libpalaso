@@ -17,6 +17,7 @@ namespace SIL.Archiving.Generic
 		{
 			Actors = new ArchivingActorCollection();
 			Files = new List<IArchivingFile>();
+			Location = new ArchivingLocation();
 		}
 	}
 }

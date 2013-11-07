@@ -59,6 +59,16 @@ written = '''if (this.writtenResourceField == null)
 \t\t\t\t\tthis.writtenResourceField = new List<WrittenResource_Type>();
 \t\t\t\treturn this.writtenResourceField;'''
 
+# create Actors_Type on demand
+actors = '''if (this.actorsField == null)
+\t\t\t\t\tthis.actorsField = new Actors_Type();
+\t\t\t\treturn this.actorsField;'''
+
+# create Languages_Type on demand
+languages = '''if (this.languagesField == null)
+\t\t\t\t\tthis.languagesField = new Languages_Type();
+\t\t\t\treturn this.languagesField;'''
+
 # comments and using
 comment = '''
 //
@@ -100,6 +110,8 @@ def replace_text(line):
 	line = line.replace('public partial class MediaFile_Type {', 'public partial class MediaFile_Type : IIMDISessionFile {')
 	line = line.replace('public Vocabulary_Type Size {', 'public String_Type Size {')
 	line = line.replace('private Vocabulary_Type sizeField;', 'private String_Type sizeField;')
+	line = line.replace('return this.actorsField;', actors)
+	line = line.replace('return this.languagesField;', languages)
 
 	return line
 
