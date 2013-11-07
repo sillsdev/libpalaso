@@ -93,8 +93,7 @@ namespace SIL.Archiving.IMDI
 			// languages
 
 			// location
-			if (Location != null)
-				session.MDGroup.Location = Location.ToIMDILocationType();
+			session.MDGroup.Location = Location.ToIMDILocationType();
 
 			// date
 			var sessionDate = GetDateCreated();

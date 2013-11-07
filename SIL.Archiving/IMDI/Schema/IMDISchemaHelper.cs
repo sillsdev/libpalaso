@@ -14,6 +14,24 @@ namespace SIL.Archiving.IMDI.Schema
 			return value == null ? null : new String_Type { Value = value };
 		}
 
+		/// <summary>Creates a new Vocabulary_Type object and sets the Value</summary>
+		/// <param name="value"></param>
+		/// <param name="isClosedVocabulary"></param>
+		/// <returns></returns>
+		public static Vocabulary_Type SetVocabulary(string value, bool isClosedVocabulary)
+		{
+			if (value == null)
+				return null;
+
+			return new Vocabulary_Type
+			{
+				Value = value,
+				Type = isClosedVocabulary
+					? VocabularyType_Value_Type.ClosedVocabulary
+					: VocabularyType_Value_Type.OpenVocabulary
+			};
+		}
+
 		/// <summary>Creates the IMDI xml file from an object</summary>
 		/// <param name="itemType"></param>
 		/// <param name="itemToWrite"></param>
