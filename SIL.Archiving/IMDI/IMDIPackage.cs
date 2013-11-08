@@ -7,6 +7,40 @@ namespace SIL.Archiving.IMDI
 	/// <summary>Collects the data and produces an IMDI corpus to upload</summary>
 	public class IMDIPackage : ArchivingPackage
 	{
+		private readonly bool _corpus;
+		private IMDIFile _baseImdiFile;
+		DirectoryInfo _corpusDirInfo;
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Constructor</summary>
+		/// <param name="corpus">Indicates whether this is for an entire project corpus or a
+		/// single session</param>
+		/// ------------------------------------------------------------------------------------
+		public IMDIPackage(bool corpus)
+		{
+			_corpus = corpus;
+		}
+
+		#region Properties
+		public IMDIFile BaseImdiFile
+		{
+			get
+			{
+				if (_baseImdiFile == null)
+				{
+					//REVIEW
+					_baseImdiFile = new IMDIFile(Path.Combine(_corpusDirInfo.FullName, "baseFileName"));
+					if (!_corpus)
+					{
+
+					}
+				}
+				return _baseImdiFile;
+			}
+		}
+
+	#endregion
+
 		// **** Corpus Layout ****
 		//
 		// Test_Corpus (directory)
@@ -23,19 +57,25 @@ namespace SIL.Archiving.IMDI
 		public bool CreateIMDIPackage(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// create the corpus directory
-			var corpusDirInfo = Directory.CreateDirectory(Path.Combine(outputDirectoryName, IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusDirectoryName)));
+			_corpusDirInfo = Directory.CreateDirectory(Path.Combine(outputDirectoryName, IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusDirectoryName)));
 
 			// create the session directories
 			foreach (IMDISession session in Sessions)
-				session.CreateIMDISession(corpusDirInfo.FullName);
+				session.CreateIMDISession(_corpusDirInfo.FullName);
 
 			// TODO: Determine if we need to create the package catalogue imdi file (may not be needed)
 
-			// TODO: Determine if we need to create the corpus imdi file (may not be needed)
+			if (_corpus)
+			{
+				// TODO: Create the corpus imdi file
+			}
 
 			return true;
 		}
 
-
+		public string GetImdiFileContents()
+		{
+			return BaseImdiFile.ToString();
+		}
 	}
 }

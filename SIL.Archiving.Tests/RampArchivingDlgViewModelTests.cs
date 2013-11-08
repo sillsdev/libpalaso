@@ -319,7 +319,7 @@ namespace SIL.Archiving.Tests
 		{
 			_helper.SetAudience(AudienceType.Vernacular);
 			_helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.LiteracyEducation_Riddles);
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kAudience + "\":\"" + RampArchivingDlgViewModel.kAudienceVernacular + "\",\"" +
 				RampArchivingDlgViewModel.kVernacularMaterialsType + "\":\"" + RampArchivingDlgViewModel.kVernacularMaterialGeneral + "\",\"" +
@@ -367,7 +367,7 @@ namespace SIL.Archiving.Tests
 			abstracts["fra"] = "C'est assez abstrait";
 			abstracts["spa"] = "Esto es bastante abstracto";
 			_helper.SetAbstract(abstracts);
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
 				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
 				"\"0\":{\" \":\"This is pretty abstract\",\"lang\":\"eng\"}," +
@@ -383,7 +383,7 @@ namespace SIL.Archiving.Tests
 		public void SetAudioVideoExtent_FreeFormString_IncludedInMetsData()
 		{
 			_helper.SetAudioVideoExtent("6 and a half seconds");
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kRecordingExtent + "\":\"6 and a half seconds\"}",
 				data);
@@ -395,7 +395,7 @@ namespace SIL.Archiving.Tests
 		{
 			TimeSpan duration = new TimeSpan(0, 2, 3, 4);
 			_helper.SetAudioVideoExtent(duration);
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kRecordingExtent + "\":\"02:03:04\"}",
 				data);
@@ -419,7 +419,7 @@ namespace SIL.Archiving.Tests
 		public void SetContentLanguages_TwoLanguages_IncludedInMetsData()
 		{
 			_helper.SetContentLanguages("eng", "fra");
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kContentLanguages + "\":{\"0\":{\" \":\"eng:English\"},\"1\":{\" \":\"fra:French\"}}}",
 				data);
@@ -448,10 +448,10 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetContributors_Empty_NoChangeToMetsData()
 		{
-			var dataBefore = _helper.GetUnencodedMetsData();
+			var dataBefore = _helper.GetMetadata();
 			var empty = new ContributionCollection();
 			_helper.SetContributors(empty);
-			var dataAfter = _helper.GetUnencodedMetsData();
+			var dataAfter = _helper.GetMetadata();
 			Assert.AreEqual(dataBefore, dataAfter);
 		}
 
@@ -464,7 +464,7 @@ namespace SIL.Archiving.Tests
 			contributors.Add(new Contribution("Erkel", olacSystem.GetRoleByCodeOrThrow("author")));
 			contributors.Add(new Contribution("Sungfu", olacSystem.GetRoleByCodeOrThrow("recorder")));
 			_helper.SetContributors(contributors);
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kContributor + "\":{\"0\":{\" \":\"Erkel\",\"role\":\"author\"},\"1\":{\" \":\"Sungfu\",\"role\":\"recorder\"}}}",
 				data);
@@ -490,7 +490,7 @@ namespace SIL.Archiving.Tests
 		public void SetCreationDate_FreeFormString_IncludedInMetsData()
 		{
 			_helper.SetCreationDate("four years ago");
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kDateCreated + "\":\"four years ago\"}",
 				data);
@@ -502,7 +502,7 @@ namespace SIL.Archiving.Tests
 		{
 			DateTime creationDate = new DateTime(2012, 4, 13);
 			_helper.SetCreationDate(creationDate);
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kDateCreated + "\":\"2012-04-13\"}",
 				data);
@@ -523,7 +523,7 @@ namespace SIL.Archiving.Tests
 		public void SetDatasetExtent_FreeFormString_IncludedInMetsData()
 		{
 			_helper.SetDatasetExtent("6 voice records and maybe an odd text file or two");
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kDatasetExtent + "\":\"6 voice records and maybe an odd text file or two\"}",
 				data);
@@ -550,9 +550,9 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetDescription_Empty_NoChangeToMetsData()
 		{
-			var dataBefore = _helper.GetUnencodedMetsData();
+			var dataBefore = _helper.GetMetadata();
 			_helper.SetDescription(new Dictionary<string, string>());
-			var dataAfter = _helper.GetUnencodedMetsData();
+			var dataAfter = _helper.GetMetadata();
 			Assert.AreEqual(dataBefore, dataAfter);
 		}
 
@@ -564,7 +564,7 @@ namespace SIL.Archiving.Tests
 			descriptions["eng"] = "General data";
 			descriptions["spa"] = "Datos generales";
 			_helper.SetDescription(descriptions);
-			var data = _helper.GetUnencodedMetsData();
+			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" + RampArchivingDlgViewModel.kFlagHasGeneralDescription + "\":\"Y\",\"" +
 				RampArchivingDlgViewModel.kGeneralDescription + "\":{\"0\":{\" \":\"General data\",\"lang\":\"eng\"},\"1\":{\" \":\"Datos generales\",\"lang\":\"spa\"}}}",
 				data);

@@ -5,9 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Ionic.Zip;
 using L10NSharp;
-using Palaso.IO;
 
 namespace SIL.Archiving
 {
@@ -373,6 +371,8 @@ namespace SIL.Archiving
 				OnDisplayMessage(msg, type);
 		}
 
+		/// ------------------------------------------------------------------------------------
+		public abstract string GetMetadata();
 		/// ------------------------------------------------------------------------------------
 		public abstract bool LaunchArchivingProgram();
 		/// ------------------------------------------------------------------------------------
