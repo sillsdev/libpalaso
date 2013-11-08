@@ -18,6 +18,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void SetUp()
 		{
 			m_TextBox = new TextBox();
+			m_TextBox.CreateControl();
+			m_TextBox.Focus();
+			Application.DoEvents();
 			m_Handler = new IbusDefaultEventHandler(m_TextBox);
 		}
 
