@@ -1,6 +1,5 @@
-﻿using System;
+﻿﻿using System;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace TestAppKeyboard
 {
@@ -14,7 +13,6 @@ namespace TestAppKeyboard
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			KeyboardController.Initialize();
 			Application.Run(new KeyboardForm());
 		}
 	}

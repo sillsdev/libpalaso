@@ -19,6 +19,10 @@ namespace TestAppKeyboard
 			if (DesignMode)
 				return;
 
+			KeyboardController.Initialize();
+			KeyboardController.Register(testAreaA);
+			KeyboardController.Register(testAreaB);
+			KeyboardController.Register(testAreaC);
 			LoadKeyboards(this.keyboardsA);
 			LoadKeyboards(this.keyboardsB);
 			LoadKeyboards(this.keyboardsC);
@@ -30,7 +34,7 @@ namespace TestAppKeyboard
 			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
 			foreach (var keyboard in keyboards)
 			{
-				comboBox.Items.Add(keyboard.Id);
+				comboBox.Items.Add(keyboard);
 				Console.WriteLine("added keyboard id: {0}", keyboard.Id);
 				//comboBox.Items.Add(keyboard.Name);
 				Console.WriteLine("added keyboard name: {0}", keyboard.Name);
@@ -43,7 +47,7 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				string wantKeyboard = (string)keyboardsA.SelectedItem;
+				var wantKeyboard = (KeyboardDescription)keyboardsA.SelectedItem;
 				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
 				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
@@ -55,7 +59,7 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				string wantKeyboard = (string)keyboardsB.SelectedItem;
+				var wantKeyboard = (KeyboardDescription)keyboardsB.SelectedItem;
 				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
 				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
@@ -67,7 +71,7 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				string wantKeyboard = (string)keyboardsC.SelectedItem;
+				var wantKeyboard = (KeyboardDescription)keyboardsC.SelectedItem;
 				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
 				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {

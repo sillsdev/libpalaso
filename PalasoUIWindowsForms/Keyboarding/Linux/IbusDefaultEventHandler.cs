@@ -121,6 +121,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_TextBox.BeginInvoke(() => OnCommitText(text));
 				return;
 			}
+			if (!m_TextBox.Focused)
+				return;
+
 			// Replace 'toRemove' characters starting at 'insertPos' with 'text'.
 			int insertPos, toRemove;
 			if (m_SelectionStart > -1)
@@ -164,6 +167,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_TextBox.BeginInvoke(() => OnUpdatePreeditText(compositionText, cursorPos));
 				return;
 			}
+
+			if (!m_TextBox.Focused)
+				return;
 
 			// Chinese Pinyin keyboard for some reason passes 0 (instead of 1) as the cursorPos
 			// of the first character it inserts, i.e. it uses a 0-based cursorPos instead of
@@ -219,6 +225,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_TextBox.BeginInvoke(OnHidePreeditText);
 				return;
 			}
+			if (!m_TextBox.Focused)
+				return;
+
 			Reset(true);
 		}
 
@@ -239,6 +248,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_TextBox.BeginInvoke(() => OnIbusKeyPress(keySym, scanCode, index));
 				return;
 			}
+			if (!m_TextBox.Focused)
+				return;
+
 			var inChar = (char)(0x00FF & keySym);
 			OnCommitText(inChar.ToString());
 		}
