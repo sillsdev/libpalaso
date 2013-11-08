@@ -55,6 +55,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			KeyboardController.Register(_testArea);
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 			_defaultFontName = _testArea.Font.Name;
+			_possibleKeyboardsList.ShowItemToolTips = true;
 #if MONO
 	// Keyman is not supported, setup link should not say "Windows".
 			_keymanConfigurationLink.Visible = false;
@@ -164,6 +165,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					item.Font = unavailableFont;
 					item.ForeColor = _unavailableColor;
 				}
+				item.ToolTipText = adapter.ToString();
 				_possibleKeyboardsList.Items.Add(item);
 				if (keyboard == _model.CurrentKeyboard)
 					item.Selected = true;
@@ -175,6 +177,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				var adapter = new KeyboardAdapter(keyboard);
 				var item = new ListViewItem(adapter.ToString());
 				item.Tag = adapter;
+				item.ToolTipText = adapter.ToString();
 				_possibleKeyboardsList.Items.Add(item);
 			}
 
