@@ -1461,7 +1461,7 @@ namespace SIL.Archiving
 
 		#region Methods for creating mets file.
 		/// ------------------------------------------------------------------------------------
-		public string GetUnencodedMetsData()
+		public override string GetMetadata()
 		{
 			var bldr = new StringBuilder();
 
@@ -1478,7 +1478,7 @@ namespace SIL.Archiving
 		{
 			try
 			{
-				var metsData = Resources.EmptyMets.Replace("<binData>", "<binData>" + JSONUtils.EncodeData(GetUnencodedMetsData()));
+				var metsData = Resources.EmptyMets.Replace("<binData>", "<binData>" + JSONUtils.EncodeData(GetMetadata()));
 				_tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 				Directory.CreateDirectory(_tempFolder);
 				_metsFilePath = Path.Combine(_tempFolder, "mets.xml");

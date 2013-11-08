@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Xml.Serialization;
+﻿using Palaso.Xml;
 
 namespace SIL.Archiving.IMDI.Schema
 {
@@ -27,10 +26,7 @@ namespace SIL.Archiving.IMDI.Schema
 				Items = new[] {itemToWrite}
 			};
 
-			XmlSerializer serializer = new XmlSerializer(typeof(METATRANSCRIPT_Type));
-			TextWriter writer = new StreamWriter(fileName);
-			serializer.Serialize(writer, wrapper);
-			writer.Close();
+			XmlSerializationHelper.SerializeToFile(fileName, wrapper);
 		}
 
 	}

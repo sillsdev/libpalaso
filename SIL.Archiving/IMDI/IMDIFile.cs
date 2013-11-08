@@ -1,5 +1,4 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
 
