@@ -73,6 +73,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		void OnUpdatePreeditText(string compositionText, int cursorPos);
 
 		/// <summary>
+		/// Called when the IBus DeleteSurroundingText is raised to delete surrounding
+		/// characters.
+		/// </summary>
+		/// <param name="offset">The character offset from the cursor position of the text to be
+		/// deleted. A negative value indicates a position before the cursor.</param>
+		/// <param name="nChars">The number of characters to be deleted.</param>
+		void OnDeleteSurroundingText(int offset, int nChars);
+
+		/// <summary>
 		/// Called when the IBus HidePreeditText event is raised to cancel/remove the composition,
 		/// e.g. after the user pressed the ESC key or the application lost focus. An implementor
 		/// will typically call Reset() in the implementation of this event handler method.

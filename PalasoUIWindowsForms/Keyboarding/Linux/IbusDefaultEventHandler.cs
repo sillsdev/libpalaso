@@ -216,6 +216,43 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 
 		/// <summary>
+		/// Called when the IBus DeleteSurroundingText is raised to delete surrounding
+		/// characters.
+		/// </summary>
+		/// <param name="offset">The character offset from the cursor position of the text to be
+		/// deleted. A negative value indicates a position before the cursor.</param>
+		/// <param name="nChars">The number of characters to be deleted.</param>
+		public void OnDeleteSurroundingText(int offset, int nChars)
+		{
+			if (m_TextBox.InvokeRequired)
+			{
+				m_TextBox.BeginInvoke(() => OnDeleteSurroundingText(offset, nChars));
+				return;
+			}
+
+			if (!m_TextBox.Focused || nChars <= 0)
+				return;
+
+			var selectionStart = m_TextBox.SelectionStart;
+			var startIndex = selectionStart + offset;
+			if (startIndex + nChars <= 0)
+				return;
+
+			startIndex = Math.Max(startIndex, 0);
+			startIndex = Math.Min(startIndex, m_TextBox.Text.Length);
+
+			if (startIndex + nChars > m_TextBox.Text.Length)
+				nChars = m_TextBox.Text.Length - startIndex;
+
+			if (startIndex < selectionStart)
+				selectionStart = Math.Max(selectionStart - nChars, 0);
+
+			m_TextBox.Text = m_TextBox.Text.Remove(startIndex, nChars);
+			m_TextBox.SelectionStart = selectionStart;
+			m_TextBox.SelectionLength = 0;
+		}
+
+		/// <summary>
 		/// Called when the IBus HidePreeditText event is raised to cancel/remove the composition.
 		/// </summary>
 		public void OnHidePreeditText()

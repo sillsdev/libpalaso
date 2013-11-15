@@ -234,8 +234,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_inputContext.UpdatePreeditText += OnUpdatePreeditText;
 				m_inputContext.HidePreeditText += OnHidePreeditText;
 				m_inputContext.ForwardKeyEvent += OnKeyEvent;
+				m_inputContext.DeleteSurroundingText += OnDeleteSurroundingText;
 
-				m_inputContext.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText);
+					m_inputContext.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText |
+						Capabilities.SurroundingText);
 				m_inputContext.Enable();
 			});
 
@@ -257,6 +259,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		/// <summary></summary>
 		public event Action<string, int> UpdatePreeditText;
+
+		/// <summary></summary>
+		public event Action<int, int> DeleteSurroundingText;
 
 		/// <summary></summary>
 		public event Action HidePreeditText;
@@ -284,6 +289,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 				UpdatePreeditText(t.Text, (int)cursor_pos);
 			}
+		}
+
+		private void OnDeleteSurroundingText(int offset, uint nChars)
+		{
+			if (DeleteSurroundingText != null)
+				DeleteSurroundingText(offset, (int)nChars);
 		}
 
 		private void OnHidePreeditText()

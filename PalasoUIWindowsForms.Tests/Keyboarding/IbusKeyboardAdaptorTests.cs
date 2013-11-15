@@ -24,6 +24,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			public event Action<string, int> UpdatePreeditText;
 
+			public event Action<int, int> DeleteSurroundingText;
+
 			public event Action HidePreeditText;
 
 			public event Action<int, int, int> KeyEvent;

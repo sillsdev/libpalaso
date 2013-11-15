@@ -181,6 +181,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				IBusCommunicator.UpdatePreeditText += eventHandler.OnUpdatePreeditText;
 				IBusCommunicator.HidePreeditText += eventHandler.OnHidePreeditText;
 				IBusCommunicator.KeyEvent += eventHandler.OnIbusKeyPress;
+				IBusCommunicator.DeleteSurroundingText += eventHandler.OnDeleteSurroundingText;
 
 				e.Control.GotFocus += HandleGotFocus;
 				e.Control.LostFocus += HandleLostFocus;
@@ -207,6 +208,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					IBusCommunicator.UpdatePreeditText -= eventHandler.OnUpdatePreeditText;
 					IBusCommunicator.HidePreeditText -= eventHandler.OnHidePreeditText;
 					IBusCommunicator.KeyEvent -= eventHandler.OnIbusKeyPress;
+					IBusCommunicator.DeleteSurroundingText -= eventHandler.OnDeleteSurroundingText;
 					KeyboardController.EventProvider.EventHandlers.Remove(e.Control);
 				}
 

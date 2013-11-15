@@ -144,10 +144,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		/// This test simulates a kind of keyboard similar to the IPA ibus keyboard which calls
 		/// commit after earch character. This test simulates the callbacks we get from the IPA
 		/// keyboard when the user presses 'n' + '>'. The IPA ibus keyboard commits the 'n',
-		/// sends us a backspace and then commits the 'ŋ'.
+		/// sends us a backspace and then commits the 'ŋ'. This hypothetical keyboard doesn't
+		/// use the SurroundingText IBus capability.
 		/// </summary>
 		[Test]
-		public void Commit_IpaTwoCommits()
+		public void Commit_IpaTwoCommits_NoSurroundingText()
 		{
 			const int KeySymBackspace = 65288;
 			const int ScanCodeBackspace = 14;
@@ -163,6 +164,65 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
 			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(0));
 		}
+
+		/// <summary>
+		/// This test simulates a kind of keyboard similar to the IPA ibus keyboard which calls
+		/// commit after earch character. This test simulates the callbacks we get from the IPA
+		/// keyboard when the user presses 'n' + '>'. The IPA ibus keyboard commits the 'n',
+		/// sends us a backspace and then commits the 'ŋ'. This keyboard does
+		/// use the SurroundingText IBus capability.
+		/// </summary>
+		[Test]
+		public void Commit_IpaTwoCommits_SurroundingText()
+		{
+			m_TextBox.Text = "a";
+			m_TextBox.SelectionStart = 1;
+			m_TextBox.SelectionLength = 0;
+
+			m_Handler.OnCommitText("n");
+			m_Handler.OnDeleteSurroundingText(-1, 1);
+			m_Handler.OnCommitText("\u014B");
+
+			Assert.That(m_TextBox.Text, Is.EqualTo("a\u014B"));
+			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
+			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(0));
+		}
+
+		/// <summary>
+		/// Unit tests for the OnDeleteSurroundingText method. These tests assume that offset
+		/// is 0-based, however the IBus docs don't say and I haven't found a keyboard in the
+		/// wild that uses positive offsets.
+		/// </summary>
+		[Test]
+		[TestCase(1, /* Input: */ -1, 1, /* expected: */ "bc", 0, TestName="DeleteSurroundingText_Before")]
+		[TestCase(1, /* Input: */  0, 1, /* expected: */ "ac", 1, TestName="DeleteSurroundingText_After")]
+		[TestCase(1, /* Input: */ -2, 1, /* expected: */ "abc",1, TestName="DeleteSurroundingText_IllegalBeforeIgnores")]
+		[TestCase(1, /* Input: */ -2, 2, /* expected: */ "c",  0, TestName="DeleteSurroundingText_ToManyBefore")]
+		[TestCase(2, /* Input: */ -1, 1, /* expected: */ "ac", 1, TestName="DeleteSurroundingText_BeforeUpdatesSelection")]
+		[TestCase(2, /* Input: */ -2, 2, /* expected: */ "c",  0, TestName="DeleteSurroundingText_MultipleBefore")]
+		[TestCase(1, /* Input: */  1, 1, /* expected: */ "ab", 1, TestName="DeleteSurroundingText_AfterWithOffset")]
+		[TestCase(1, /* Input: */  2, 1, /* expected: */ "abc",1, TestName="DeleteSurroundingText_IllegalAfterIgnores")]
+		[TestCase(1, /* Input: */  0, 2, /* expected: */ "a",  1, TestName="DeleteSurroundingText_MultipleAfter")]
+		[TestCase(1, /* Input: */  0, 3, /* expected: */ "a",  1, TestName="DeleteSurroundingText_ToManyAfterIgnoresRest")]
+		[TestCase(1, /* Input: */  0,-1, /* expected: */ "abc",1, TestName="DeleteSurroundingText_IllegalNumberOfChars")]
+		[TestCase(1, /* Input: */  0, 0, /* expected: */ "abc",1, TestName="DeleteSurroundingText_ZeroNumberOfChars")]
+		public void DeleteSurroundingText(int cursorPos, int offset, int nChars,
+			string expectedText, int expectedCursorPos)
+		{
+			// Setup
+			m_TextBox.Text = "abc";
+			m_TextBox.SelectionStart = cursorPos;
+			m_TextBox.SelectionLength = 0;
+
+			// Exercise
+			m_Handler.OnDeleteSurroundingText(offset, nChars);
+
+			// Verify
+			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
+			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(expectedCursorPos));
+			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(0));
+		}
+
 
 		[Test]
 		public void CancelPreedit()

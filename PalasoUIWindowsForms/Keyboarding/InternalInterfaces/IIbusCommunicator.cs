@@ -82,6 +82,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// string that is displayed to the user.</summary>
 		event Action<string, int> UpdatePreeditText;
 
+		/// <summary>IBus raises this event while processing a key event to delete surrounding
+		/// characters (before or after the current cursor position).</summary>
+		/// <seealso href="http://ibus.googlecode.com/svn/docs/ibus-1.5/IBusInputContext.html#IBusInputContext-delete-surrounding-text"/>
+		event Action<int, int> DeleteSurroundingText;
+
 		/// <summary>Occurs to remove the temporary composition string without committing it.
 		/// A client of IIbusCommunicator will typically call Reset() when this event gets
 		/// raised.</summary>
