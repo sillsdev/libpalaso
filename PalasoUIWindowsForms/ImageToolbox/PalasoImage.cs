@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using Palaso.Code;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
+using System.Linq;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -106,8 +108,60 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public void Save(string path)
 		{
 			ThrowIfDisposedOfAlready();
-			Image.Save(path);
-			Metadata.Write();
+			SaveImageSafely(path);
+			Metadata.Write(path);
+		}
+
+		private void SaveImageSafely(string path)
+		{
+			using (var image = new Bitmap(Image))
+			//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+			{
+				if (File.Exists(path))
+				{
+					try
+					{
+						File.Delete(path);
+					}
+					catch (System.IO.IOException error)
+					{
+						throw new ApplicationException("The program could not replace the image " + path +
+													   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again."+System.Environment.NewLine+error.Message);
+					}
+				}
+				image.Save(path, ShouldSaveAsJpeg ? ImageFormat.Jpeg : ImageFormat.Png);
+			}
+		}
+
+		private bool ShouldSaveAsJpeg
+		{
+			get
+			{
+				/*
+			 * Note, each guid is VERY SIMILAR. The difference is only in the last 2 digits of the 1st group.
+			   Undefined  B96B3CA9
+				MemoryBMP  B96B3CAA
+				BMP    B96B3CAB
+				EMF    B96B3CAC
+				WMF    B96B3CAD
+				JPEG    B96B3CAE
+				PNG    B96B3CAF
+				GIF    B96B3CB0
+				TIFF    B96B3CB1
+				EXIF    B96B3CB2
+				Icon    B96B3CB5
+			 */
+				if (ImageFormat.Jpeg.Guid == Image.RawFormat.Guid)
+					return true;
+
+				if (ImageFormat.Jpeg.Equals(Image.PixelFormat)) //review
+					return true;
+
+				if (string.IsNullOrEmpty(FileName))
+					return false;
+
+				return new[] {"jpg", "jpeg"}.Contains(Path.GetExtension(FileName).ToLower());
+			}
 		}
 
 		/// <summary>
