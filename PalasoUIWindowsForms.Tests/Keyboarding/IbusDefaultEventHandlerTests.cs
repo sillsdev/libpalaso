@@ -3,6 +3,7 @@
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
+using IBusDotNet;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.Keyboarding.Linux;
 
@@ -49,7 +50,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.SelectionLength = selectionLength;
 
 			// Exercise
-			m_Handler.OnUpdatePreeditText(composition, insertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(composition), insertPos);
 
 			// Verify
 			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
@@ -75,15 +76,39 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.Text = text;
 			m_TextBox.SelectionStart = selectionStart;
 			m_TextBox.SelectionLength = selectionLength;
-			m_Handler.OnUpdatePreeditText(firstComposition, firstInsertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(firstComposition), firstInsertPos);
 
 			// Exercise
-			m_Handler.OnUpdatePreeditText(composition, insertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(composition), insertPos);
 
 			// Verify
 			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(expectedSelectionStart), "SelectionStart");
 			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(expectedSelectionLength), "SelectionLength");
+		}
+
+		/// <summary>Unit tests for the CommitOrReset method</summary>
+		[Test]
+		[TestCase(IBusAttrUnderline.None,   /* expected: */ false, "a", 1, 0, TestName="CommitOrReset_Commits")]
+		[TestCase(IBusAttrUnderline.Single, /* expected: */ true, "", 0, 0, TestName="CommitOrReset_Resets")]
+		public void CommitOrReset(IBusAttrUnderline underline,
+			bool expectedRetVal, string expectedText, int expectedSelStart, int expectedSelLenth)
+		{
+			// Setup
+			m_TextBox.Text = string.Empty;
+			m_TextBox.SelectionStart = 0;
+			m_TextBox.SelectionLength = 0;
+			m_Handler.OnUpdatePreeditText(new IBusText("a",
+				new [] { new IBusUnderlineAttribute(underline, 0, 1)}), 1);
+
+			// Exercise
+			var ret = m_Handler.CommitOrReset();
+
+			// Verify
+			Assert.That(ret, Is.EqualTo(expectedRetVal));
+			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
+			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(expectedSelStart), "SelectionStart");
+			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(expectedSelLenth), "SelectionLength");
 		}
 
 		/// <summary>Unit tests for the OnCommitText method. These tests are very similar to
@@ -110,10 +135,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.Text = text;
 			m_TextBox.SelectionStart = selectionStart;
 			m_TextBox.SelectionLength = selectionLength;
-			m_Handler.OnUpdatePreeditText(composition, insertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(composition), insertPos);
 
 			// Exercise
-			m_Handler.OnCommitText(commitText);
+			m_Handler.OnCommitText(new IBusText(commitText));
 
 			// Verify
 			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
@@ -133,7 +158,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.SelectionStart = 1;
 			m_TextBox.SelectionLength = 0;
 
-			m_Handler.OnCommitText("\u014B");
+			m_Handler.OnCommitText(new IBusText("\u014B"));
 
 			Assert.That(m_TextBox.Text, Is.EqualTo("a\u014B"));
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
@@ -156,9 +181,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.SelectionStart = 1;
 			m_TextBox.SelectionLength = 0;
 
-			m_Handler.OnCommitText("n");
+			m_Handler.OnCommitText(new IBusText("n"));
 			m_Handler.OnIbusKeyPress(KeySymBackspace, ScanCodeBackspace, 0);
-			m_Handler.OnCommitText("\u014B");
+			m_Handler.OnCommitText(new IBusText("\u014B"));
 
 			Assert.That(m_TextBox.Text, Is.EqualTo("a\u014B"));
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
@@ -179,9 +204,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.SelectionStart = 1;
 			m_TextBox.SelectionLength = 0;
 
-			m_Handler.OnCommitText("n");
+			m_Handler.OnCommitText(new IBusText("n"));
 			m_Handler.OnDeleteSurroundingText(-1, 1);
-			m_Handler.OnCommitText("\u014B");
+			m_Handler.OnCommitText(new IBusText("\u014B"));
 
 			Assert.That(m_TextBox.Text, Is.EqualTo("a\u014B"));
 			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(2));
@@ -225,33 +250,20 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 
 		[Test]
-		public void CancelPreedit()
+		[TestCase(1, 0, TestName = "CancelPreedit_IP")]
+		[TestCase(0, 1, TestName = "CancelPreedit_RangeSelection")]
+		public void CancelPreedit(int selStart, int selLength)
 		{
 			m_TextBox.Text = "b";
-			m_TextBox.SelectionStart = 1;
-			m_TextBox.SelectionLength = 0;
-			m_Handler.OnUpdatePreeditText("\u4FDD\u989D", 0);
+			m_TextBox.SelectionStart = selStart;
+			m_TextBox.SelectionLength = selLength;
+			m_Handler.OnUpdatePreeditText(new IBusText("\u4FDD\u989D"), 0);
 
 			m_Handler.Reset();
 
 			Assert.That(m_TextBox.Text, Is.EqualTo("b"));
-			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(1));
-			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(0));
-		}
-
-		[Test]
-		public void CancelPreedit_RangeSelection()
-		{
-			m_TextBox.Text = "b";
-			m_TextBox.SelectionStart = 0;
-			m_TextBox.SelectionLength = 1;
-			m_Handler.OnUpdatePreeditText("\u4FDD\u989D", 0);
-
-			m_Handler.Reset();
-
-			Assert.That(m_TextBox.Text, Is.EqualTo("b"));
-			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(0));
-			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(1));
+			Assert.That(m_TextBox.SelectionStart, Is.EqualTo(selStart));
+			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(selLength));
 		}
 	}
 }

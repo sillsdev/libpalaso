@@ -107,23 +107,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return count;
 		}
 
-		#region IIbusEventHandler implementation
-		/// <summary>
-		/// This method gets called when the IBus CommitText event is raised and indicates that
-		/// the composition is ending. The temporarily inserted composition string will be
-		/// replaced with <paramref name="text"/>.
-		/// </summary>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
-		public void OnCommitText(string text)
+		private void OnCommitText(string text)
 		{
-			if (m_TextBox.InvokeRequired)
-			{
-				m_TextBox.BeginInvoke(() => OnCommitText(text));
-				return;
-			}
-			if (!m_TextBox.Focused)
-				return;
-
 			// Replace 'toRemove' characters starting at 'insertPos' with 'text'.
 			int insertPos, toRemove;
 			if (m_SelectionStart > -1)
@@ -151,25 +136,81 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			Reset(false);
 		}
 
-		/// <summary>
-		/// Called when the IBus UpdatePreeditText event is raised to update the composition.
-		/// </summary>
-		/// <param name="compositionText">New composition string that will replace the existing
-		/// composition (sub-)string.</param>
-		/// <param name="cursorPos">1-based index in the composition (pre-edit) window. The
-		/// composition string will be replaced with <paramref name="compositionText"/>starting
-		/// at this position.</param>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
-		public void OnUpdatePreeditText(string compositionText, int cursorPos)
+		// When the application loses focus the user expects different behavior for different
+		// ibus keyboards: for some keyboards (those that do the editing in-place and don't display
+		// a selection window, e.g. "Danish - post (m17n)") the user expects that what he
+		// typed remains, i.e. gets committed. Otherwise (e.g. with the Danish keyboard) it's not
+		// possible to type an "a" and then click in a different field or switch applications.
+		//
+		// For other keyboards (e.g. Chinese Pinyin) the commit is made when the user selects
+		// one of the possible characters in the pop-up window. If he clicks in a different
+		// field while the pop-up window is open the composition should be deleted.
+		//
+		// There doesn't seem to be a way to ask an IME keyboard if it shows a pop-up window or
+		// if we should commit or reset the composition. One indirect way however seems to be to
+		// check the attributes: it seems that keyboards where we can/should commit set the
+		// underline attribute to IBusAttrUnderline.None.
+		private bool IsCommittingKeyboard { get; set; }
+
+		private void CheckAttributesForCommittingKeyboard(IBusText text)
 		{
+			IsCommittingKeyboard = false;
+			foreach (var attribute in text.Attributes)
+			{
+				var iBusUnderlineAttribute = attribute as IBusUnderlineAttribute;
+				if (iBusUnderlineAttribute != null && iBusUnderlineAttribute.Underline == IBusAttrUnderline.None)
+					IsCommittingKeyboard = true;
+			}
+		}
+
+		#region IIbusEventHandler implementation
+		/// <summary>
+		/// This method gets called when the IBus CommitText event is raised and indicates that
+		/// the composition is ending. The temporarily inserted composition string will be
+		/// replaced with <paramref name="ibusText"/>.
+		/// </summary>
+		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		public void OnCommitText(object ibusText)
+		{
+			// Note: when we try to pass IBusText as ibusText parameter we get a compiler crash
+			// in FW.
+
 			if (m_TextBox.InvokeRequired)
 			{
-				m_TextBox.BeginInvoke(() => OnUpdatePreeditText(compositionText, cursorPos));
+				m_TextBox.BeginInvoke(() => OnCommitText(ibusText));
 				return;
 			}
 
 			if (!m_TextBox.Focused)
 				return;
+
+			OnCommitText(((IBusText)ibusText).Text);
+		}
+
+		/// <summary>
+		/// Called when the IBus UpdatePreeditText event is raised to update the composition.
+		/// </summary>
+		/// <param name="obj">New composition string that will replace the existing
+		/// composition (sub-)string.</param>
+		/// <param name="cursorPos">1-based index in the composition (pre-edit) window. The
+		/// composition string will be replaced with <paramref name="obj"/> starting
+		/// at this position.</param>
+		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		public void OnUpdatePreeditText(object obj, int cursorPos)
+		{
+			if (m_TextBox.InvokeRequired)
+			{
+				m_TextBox.BeginInvoke(() => OnUpdatePreeditText(obj, cursorPos));
+				return;
+			}
+
+			if (!m_TextBox.Focused)
+				return;
+
+			var text = obj as IBusText;
+			CheckAttributesForCommittingKeyboard(text);
+
+			var compositionText = text.Text;
 
 			// Chinese Pinyin keyboard for some reason passes 0 (instead of 1) as the cursorPos
 			// of the first character it inserts, i.e. it uses a 0-based cursorPos instead of
@@ -300,6 +341,29 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public bool Reset()
 		{
 			Debug.Assert(!m_TextBox.InvokeRequired);
+			return Reset(true);
+		}
+
+		/// <summary>
+		/// Called by the IbusKeyboardAdapter to commit or cancel any open compositions, e.g.
+		/// after the application loses focus.
+		/// </summary>
+		/// <returns><c>true</c> if there was an open composition that got cancelled, otherwise
+		/// <c>false</c>.</returns>
+		public bool CommitOrReset()
+		{
+			// don't check if we have focus - we won't if this gets called from OnLostFocus.
+			// However, the IbusKeyboardAdapter calls this method only for the control that just
+			// lost focus, so it's ok not to check :-)
+
+			if (IsCommittingKeyboard)
+			{
+				m_SelectionStart = -1;
+				m_SelectionLength = -1;
+				m_PreeditLength = 0;
+				return false;
+			}
+
 			return Reset(true);
 		}
 

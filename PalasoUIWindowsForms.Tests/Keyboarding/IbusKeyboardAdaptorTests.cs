@@ -20,9 +20,9 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	{
 		class DoNothingIbusCommunicator: IIbusCommunicator
 		{
-			public event Action<string> CommitText;
+			public event Action<object> CommitText;
 
-			public event Action<string, int> UpdatePreeditText;
+			public event Action<object, int> UpdatePreeditText;
 
 			public event Action<int, int> DeleteSurroundingText;
 

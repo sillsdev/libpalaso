@@ -75,12 +75,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 
 		/// <summary>Occurs when the composition string gets commited, e.g. after the user pressed
 		/// the space bar.</summary>
-		event Action<string> CommitText;
+		event Action<object> CommitText;
 
 		/// <summary>Occurs after the user pressed a key. IBus raises this event while processing
 		/// a key event (while we're in ProcessKeyEvent) to update the temporary composition
 		/// string that is displayed to the user.</summary>
-		event Action<string, int> UpdatePreeditText;
+		event Action<object, int> UpdatePreeditText;
 
 		/// <summary>IBus raises this event while processing a key event to delete surrounding
 		/// characters (before or after the current cursor position).</summary>

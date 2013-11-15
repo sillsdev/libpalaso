@@ -1,7 +1,9 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
+#if __MonoCS__
 using System;
 using System.Drawing;
+using IBusDotNet;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 {
@@ -31,15 +33,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 	{
 		#region Methods called by keyboard adapter
 		/// <summary>
-		/// Called by the IBusKeyboardAdapter to cancel any open compositions, e.g. after the
-		/// user pressed the ESC key or if the application loses focus.
+		/// Called by the IbusKeyboardAdapter to cancel any open compositions, e.g. after the
+		/// user pressed the ESC key.
 		/// </summary>
 		/// <returns><c>true</c> if there was an open composition that got cancelled, otherwise
 		/// <c>false</c>.</returns>
 		bool Reset();
 
 		/// <summary>
-		/// Called by the IBusKeyboardAdapter to get the position (in pixels) and line height of
+		/// Called by the IbusKeyboardAdapter to commit or cancel any open compositions, e.g.
+		/// after the application loses focus.
+		/// </summary>
+		/// <returns><c>true</c> if there was an open composition that got cancelled, otherwise
+		/// <c>false</c>.</returns>
+		/// <remarks>It is the responsibility of the event handler to decide wether the
+		/// composition should be committed or cancelled. Usually this depends on the current
+		/// keyboard.</remarks>
+		bool CommitOrReset();
+
+		/// <summary>
+		/// Called by the IbusKeyboardAdapter to get the position (in pixels) and line height of
 		/// the end of the selection. The position is relative to the screen in the
 		/// PointToScreen sense, that is (0,0) is the top left of the primary monitor.
 		/// IBus will use this information when it opens a pop-up window to present a list of
@@ -58,8 +71,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		/// window, or when he types a character that isn't part of the previous composition
 		/// sequence.
 		/// </summary>
+		/// <param name="text">An IBusText object</param>
 		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
-		void OnCommitText(string text);
+		void OnCommitText(object text);
 
 		/// <summary>
 		/// Called when the IBus UpdatePreeditText event is raised to update the composition.
@@ -69,8 +83,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		/// <param name="cursorPos">1-based index in the composition (pre-edit window). The
 		/// composition string will be replaced with <paramref name="compositionText"/> starting
 		/// at this position.</param>
+		/// <param name="compositionText">An IBusText object</param>
 		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
-		void OnUpdatePreeditText(string compositionText, int cursorPos);
+		void OnUpdatePreeditText(object compositionText, int cursorPos);
 
 		/// <summary>
 		/// Called when the IBus DeleteSurroundingText is raised to delete surrounding
@@ -105,3 +120,4 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		#endregion
 	}
 }
+#endif

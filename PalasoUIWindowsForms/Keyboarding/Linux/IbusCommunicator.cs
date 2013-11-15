@@ -255,10 +255,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 
 		/// <summary></summary>
-		public event Action<string> CommitText;
+		public event Action<object> CommitText;
 
 		/// <summary></summary>
-		public event Action<string, int> UpdatePreeditText;
+		public event Action<object, int> UpdatePreeditText;
 
 		/// <summary></summary>
 		public event Action<int, int> DeleteSurroundingText;
@@ -276,8 +276,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			if (CommitText != null)
 			{
-				IBusText t = (IBusText)Convert.ChangeType(text, typeof(IBusText));
-				CommitText(t.Text);
+				CommitText(IBusText.FromObject(text));
 			}
 		}
 
@@ -285,9 +284,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			if (UpdatePreeditText != null && visible)
 			{
-				IBusText t = (IBusText)Convert.ChangeType(text, typeof(IBusText));
-
-				UpdatePreeditText(t.Text, (int)cursor_pos);
+				UpdatePreeditText(IBusText.FromObject(text), (int)cursor_pos);
 			}
 		}
 

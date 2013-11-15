@@ -149,7 +149,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			var eventHandler = GetEventHandlerForControl(control);
 			if (eventHandler != null)
-				return eventHandler.Reset();
+				return eventHandler.CommitOrReset();
 			return false;
 		}
 
@@ -262,6 +262,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			IBusCommunicator.FocusOut();
+
+			var eventHandler = GetEventHandlerForControl(sender as Control);
+			if (eventHandler == null)
+				return;
+
+			eventHandler.CommitOrReset();
 		}
 
 		/// <summary>
