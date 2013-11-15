@@ -200,6 +200,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
+		private string _missingKeyboardFmt;
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
@@ -216,8 +217,31 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			{
 				realLocale = "is";			// 0x040F is the numeric code for Icelandic.
 			}
-			return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
-				new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1) {IsAvailable = false};
+			// Don't crash if the locale is unknown to the system.  (It may be that ibus is not running and
+			// this particular locale and layout refer to an ibus keyboard.)  Mark the keyboard description
+			// as missing, but create an English (US) keyboard underneath.
+			if (IsLocaleKnown(realLocale))
+				return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
+					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1) {IsAvailable = false};
+			if (_missingKeyboardFmt == null)
+				_missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
+			return new XkbKeyboardDescription(String.Format(_missingKeyboardFmt, locale, layout), layout, locale,
+				new InputLanguageWrapper("en", IntPtr.Zero, "US"), this, -1) {IsAvailable = false};
+		}
+
+		private static HashSet<string> _knownCultures;
+		/// <summary>
+		/// Check whether the locale is known to the system.
+		/// </summary>
+		private static bool IsLocaleKnown(string locale)
+		{
+			if (_knownCultures == null)
+			{
+				_knownCultures = new HashSet<string>();
+				foreach (var ci in CultureInfo.GetCultures(CultureTypes.AllCultures))
+					_knownCultures.Add(ci.Name);
+			}
+			return _knownCultures.Contains(locale);
 		}
 	}
 }
