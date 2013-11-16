@@ -111,6 +111,7 @@ namespace PalasoUIWindowsForms.Tests.Progress
 		/// Though the result here are great, I'm afraid this may look worse on a single-core machine
 		/// </summary>
 		[Test]
+		[NUnit.Framework.Category("SkipOnTeamCity")] // takes 33 milliseconds on my laptop, but currently 1054 on the TC windows agent.
 		public void DontBogDownWhenBombardedWithProgressUpdates()
 		{
 			Debug.WriteLine("Priming");
