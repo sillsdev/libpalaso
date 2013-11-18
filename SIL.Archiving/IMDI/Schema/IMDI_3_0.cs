@@ -3496,6 +3496,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public Actors_Type Actors {
 			get {
+				if (this.actorsField == null)
+					this.actorsField = new Actors_Type();
 				return this.actorsField;
 			}
 			set {
@@ -3697,6 +3699,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public Languages_Type Languages {
 			get {
+				if (this.languagesField == null)
+					this.languagesField = new Languages_Type();
 				return this.languagesField;
 			}
 			set {
@@ -4541,6 +4545,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public Languages_Type Languages {
 			get {
+				if (this.languagesField == null)
+					this.languagesField = new Languages_Type();
 				return this.languagesField;
 			}
 			set {

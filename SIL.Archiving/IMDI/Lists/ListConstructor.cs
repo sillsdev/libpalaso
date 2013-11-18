@@ -39,7 +39,7 @@ namespace SIL.Archiving.IMDI.Lists
 			listName = CleanListName(listName);
 
 			if (!_loadedLists.ContainsKey(listName))
-				_loadedLists.Add(listName, new IMDIItemList(GetNodeList(listName)));
+				_loadedLists.Add(listName, new ClosedIMDIItemList(GetNodeList(listName)));
 
 			return (ClosedIMDIItemList) _loadedLists[listName];
 		}

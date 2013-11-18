@@ -31,6 +31,12 @@ namespace SIL.Archiving.IMDI.Lists
 		{
 			return new Vocabulary_Type { Type = vocabularyType, Value = Value };
 		}
+
+		/// <summary>Convert to Boolean_Type</summary>
+		public Boolean_Type ToBooleanType()
+		{
+			return new Boolean_Type { Type = VocabularyType_Value_Type.ClosedVocabulary, Value = Value };
+		}
 	}
 
 	/// <summary>

@@ -41,10 +41,12 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <returns></returns>
 		public static Location_Type ToIMDILocationType(this ArchivingLocation archivingLocation)
 		{
-			var returnVal = new Location_Type();
-			returnVal.Continent.SetValue(archivingLocation.Continent, true);
-			returnVal.Country.SetValue(archivingLocation.Country, false);
-			returnVal.Address.SetValue(archivingLocation.Address);
+			var returnVal = new Location_Type
+			{
+				Continent = IMDISchemaHelper.SetVocabulary(archivingLocation.Continent, true),
+				Country = IMDISchemaHelper.SetVocabulary(archivingLocation.Country, false),
+				Address = IMDISchemaHelper.SetString(archivingLocation.Address)
+			};
 
 			// region is an array
 			if (!string.IsNullOrEmpty(archivingLocation.Region))
@@ -80,12 +82,13 @@ namespace SIL.Archiving.IMDI.Schema
 			newActor.FullName.SetValue(archivingActor.GetFullName());
 
 			// languages
+			ClosedIMDIItemList boolList = ListConstructor.GetClosedList(ListType.Boolean);
 			foreach (var langIso3 in archivingActor.Iso3LanguageIds)
 			{
 				var langType = LanguageList.FindByISO3Code(langIso3).ToLanguageType();
 				if (langType == null) continue;
-				langType.PrimaryLanguage = new Boolean_Type { Value = (archivingActor.PrimaryLanguageIso3Code == langIso3) ? "true" : "false" };
-				langType.MotherTongue = new Boolean_Type { Value = (archivingActor.MotherTongueLanguageIso3Code == langIso3) ? "true" : "false" };
+				langType.PrimaryLanguage = boolList.FindByValue((archivingActor.PrimaryLanguageIso3Code == langIso3) ? "true" : "false").ToBooleanType();
+				langType.MotherTongue = boolList.FindByValue((archivingActor.MotherTongueLanguageIso3Code == langIso3) ? "true" : "false").ToBooleanType();
 				newActor.Languages.Language.Add(langType);
 			}
 

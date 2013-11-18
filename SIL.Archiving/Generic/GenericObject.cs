@@ -1,6 +1,7 @@
 ﻿using System;
 using Palaso.Extensions;
 using SIL.Archiving.Generic.AccessProtocol;
+using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.Generic
 {
