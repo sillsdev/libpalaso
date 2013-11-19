@@ -349,9 +349,11 @@ namespace SIL.Archiving
 			if (descriptions.Count == 0)
 				return;
 
-			if (descriptions.Keys.Any(k => k.Length != 3))
+			if (descriptions.Count > 1)
+			{
+				if (descriptions.Keys.Any(k => k.Length != 3))
 					throw new ArgumentException();
-
+			}
 			PreventDuplicateMetadataProperty(MetadataProperties.AbstractDescription);
 			SetAbstract_Impl(descriptions);
 		}

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
 using NUnit.Framework;
 using Palaso.Reporting;
 using Palaso.TestUtilities;
@@ -53,11 +55,101 @@ namespace SIL.Archiving.Tests
 		}
 
 		[Test]
-		public void SetAbstract_AddsDescriptionToCorpusImdiFile()
+		public void SetAbstract_UnspecifiedLanguage_AddsDescriptionToCorpusImdiFile()
+		{
+			_model.Initialize();
+			_model.SetAbstract("Story about a frog", string.Empty);
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(_model.GetMetadata());
+			Assert.AreEqual(2, doc.ChildNodes.Count);
+			var root = doc.ChildNodes[1];
+			Assert.AreEqual("METATRANSCRIPT", root.Name);
+			Assert.AreEqual(1, root.ChildNodes.Count);
+			var corpus = root.ChildNodes[0];
+			Assert.AreEqual("Corpus", corpus.Name);
+			int cDescNodes = 0;
+			foreach (XmlNode node in corpus.ChildNodes)
+			{
+				if (node.Name == "Description")
+				{
+					Assert.AreEqual("Story about a frog", node.InnerText);
+					foreach (XmlAttribute attrib in node.Attributes)
+					{
+						if (attrib.Name == "LanguageId")
+							Assert.AreEqual(string.Empty, attrib.Value);
+					}
+					cDescNodes++;
+				}
+			}
+			Assert.AreEqual(1, cDescNodes);
+		}
+
+
+		[Test]
+		public void SetAbstract_SingleLanguage_AddsDescriptionToCorpusImdiFile()
 		{
 			_model.Initialize();
 			_model.SetAbstract("Story about a frog", "eng");
-			Assert.AreEqual("some cool XML data", _model.GetMetadata());
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(_model.GetMetadata());
+			Assert.AreEqual(2, doc.ChildNodes.Count);
+			var root = doc.ChildNodes[1];
+			Assert.AreEqual("METATRANSCRIPT", root.Name);
+			Assert.AreEqual(1, root.ChildNodes.Count);
+			var corpus = root.ChildNodes[0];
+			Assert.AreEqual("Corpus", corpus.Name);
+			int cDescNodes = 0;
+			foreach (XmlNode node in corpus.ChildNodes)
+			{
+				if (node.Name == "Description")
+				{
+					Assert.AreEqual("Story about a frog", node.InnerText);
+					Assert.AreEqual("ISO639-3:eng", node.Attributes.GetNamedItem("LanguageId").Value);
+					cDescNodes++;
+				}
+			}
+			Assert.AreEqual(1, cDescNodes);
+		}
+
+		[Test]
+		public void SetAbstract_MultipleLanguages_AddsDescriptionToCorpusImdiFile()
+		{
+			_model.Initialize();
+			Dictionary<string, string> descriptions = new Dictionary<string, string>();
+			descriptions["eng"] = "Story about a frog";
+			descriptions["deu"] = "Geschichte über einen Frosch";
+			descriptions["fra"] = "L'histoire d'une grenouille";
+			_model.SetAbstract(descriptions);
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(_model.GetMetadata());
+			Assert.AreEqual(2, doc.ChildNodes.Count);
+			var root = doc.ChildNodes[1];
+			Assert.AreEqual("METATRANSCRIPT", root.Name);
+			Assert.AreEqual(1, root.ChildNodes.Count);
+			var corpus = root.ChildNodes[0];
+			Assert.AreEqual("Corpus", corpus.Name);
+			foreach (XmlNode node in corpus.ChildNodes)
+			{
+				if (node.Name == "Description")
+				{
+					var lang = node.Attributes.GetNamedItem("LanguageId").Value;
+					Assert.IsTrue(lang.StartsWith("ISO639-3:"));
+					lang = lang.Substring("ISO639-3:".Length);
+					Assert.AreEqual(descriptions[lang], node.InnerText);
+					descriptions.Remove(lang);
+				}
+			}
+			Assert.AreEqual(0, descriptions.Count);
+		}
+
+		[Test]
+		public void SetAbstract_BogusLanguage_ThrowsException()
+		{
+			_model.Initialize();
+			Dictionary<string, string> descriptions = new Dictionary<string, string>();
+			descriptions["eng"] = "Story about a frog";
+			descriptions["frn"] = "L'histoire d'une grenouille";
+			Assert.Throws(typeof(ArgumentException), () => _model.SetAbstract(descriptions));
 		}
 
 		#region Helper methods
