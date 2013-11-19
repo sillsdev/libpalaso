@@ -122,7 +122,7 @@ namespace SIL.Archiving.IMDI.Lists
 				return listFileName;
 
 			// attempt to download if not already in list folder
-			var url = "http://www.mpi.nl/IMDI/Schema/" + listName;
+			var url = ListType.Link(listName);
 			Debug.WriteLine("Downloading from {0} to {1}", url, listFileName);
 			var wc = new WebClient();
 			wc.DownloadFile(url, listFileName);

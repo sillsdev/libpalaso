@@ -21,7 +21,7 @@ namespace SIL.Archiving.IMDI.Lists
 			return new Language_Type
 			{
 				Id = new LanguageId_Type { Value = Id },
-				Name = new[] { new LanguageName_Type { Value = Text } },
+				Name = new[] { new LanguageName_Type { Value = Text, Link = ListType.Link(ListType.MPILanguages) } },
 			};
 		}
 	}

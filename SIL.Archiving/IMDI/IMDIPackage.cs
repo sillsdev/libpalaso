@@ -73,6 +73,8 @@ namespace SIL.Archiving.IMDI
 			return true;
 		}
 
+		/// <summary></summary>
+		/// <returns></returns>
 		public string GetImdiFileContents()
 		{
 			return BaseImdiFile.ToString();

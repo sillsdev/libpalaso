@@ -24,7 +24,7 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 			_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
-			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId,
+			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, true,
 				SetFilesToArchive, _tmpFolder.Path);
 		}
 

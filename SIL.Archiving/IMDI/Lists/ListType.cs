@@ -43,5 +43,13 @@
 		public const string WrittenResourceSubTypePrimaryText = "WrittenResource-SubType-PrimaryText.xml";
 		public const string WrittenResourceType = "WrittenResource-Type.xml";
 // ReSharper restore CSharpWarnings::CS1591
+
+		/// <summary>Returns the value for the Link attribute</summary>
+		/// <param name="listName"></param>
+		/// <returns></returns>
+		public static string Link(string listName)
+		{
+			return "http://www.mpi.nl/IMDI/Schema/" + listName;
+		}
 	}
 }

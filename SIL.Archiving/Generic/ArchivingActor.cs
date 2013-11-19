@@ -19,6 +19,9 @@ namespace SIL.Archiving.Generic
 		/// <summary>If needed but not given, Name will be used</summary>
 		public string FullName;
 
+		/// <summary></summary>
+		public string Age;
+
 		/// <summary>Languages this actor knows</summary>
 		public HashSet<string> Iso3LanguageIds;
 
@@ -89,6 +92,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary />
 		public string Education;
+
+		/// <summary />
+		public string Occupation;
 
 		/// <summary>Compare 2 ArchivingActor objects. They are identical if they have the same FullName</summary>
 		public int CompareTo(object obj)
