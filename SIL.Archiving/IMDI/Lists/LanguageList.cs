@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Linq;
 using SIL.Archiving.IMDI.Schema;
 
@@ -54,7 +55,10 @@ namespace SIL.Archiving.IMDI.Lists
 		/// -------------------------------------------------------------------------------------------
 		public static LanguageItem FindByISO3Code(string iso3Code)
 		{
-			return (LanguageItem)(GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code)));
+			var item = GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code));
+			if (item == null)
+				throw new ArgumentException("Invalid ISO 639-3 code: " + iso3Code, "iso3Code");
+			return (LanguageItem)item;
 		}
 
 		/// -------------------------------------------------------------------------------------------

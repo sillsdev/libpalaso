@@ -42,7 +42,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public static void WriteImdiFile(Metatranscript_Value_Type itemType, object itemToWrite, string fileName)
 		{
 			// the IMDI file is always built from a METATRANSCRIPT_Type object
-			var wrapper = new METATRANSCRIPT_Type
+			var wrapper = new MetaTranscript
 			{
 				Type = itemType,
 				Items = new[] {itemToWrite}

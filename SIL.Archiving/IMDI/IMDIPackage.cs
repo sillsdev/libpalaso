@@ -1,14 +1,16 @@
 ﻿
+using System;
 using System.IO;
 using SIL.Archiving.Generic;
+using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI
 {
 	/// <summary>Collects the data and produces an IMDI corpus to upload</summary>
 	public class IMDIPackage : ArchivingPackage
 	{
+		public MetaTranscript BaseImdiFile { get; private set; }
 		private readonly bool _corpus;
-		private IMDIFile _baseImdiFile;
 		DirectoryInfo _corpusDirInfo;
 
 		/// ------------------------------------------------------------------------------------
@@ -19,24 +21,14 @@ namespace SIL.Archiving.IMDI
 		public IMDIPackage(bool corpus)
 		{
 			_corpus = corpus;
+			BaseImdiFile = new MetaTranscript(corpus ? Metatranscript_Value_Type.CORPUS :
+				Metatranscript_Value_Type.SESSION);
 		}
 
 		#region Properties
-		public IMDIFile BaseImdiFile
+		private IMDIMajorObject BaseMajorObject
 		{
-			get
-			{
-				if (_baseImdiFile == null)
-				{
-					//REVIEW
-					_baseImdiFile = new IMDIFile(Path.Combine(_corpusDirInfo.FullName, "baseFileName"));
-					if (!_corpus)
-					{
-
-					}
-				}
-				return _baseImdiFile;
-			}
+			get { return (IMDIMajorObject)BaseImdiFile.Items[0]; }
 		}
 
 	#endregion
@@ -60,8 +52,8 @@ namespace SIL.Archiving.IMDI
 			_corpusDirInfo = Directory.CreateDirectory(Path.Combine(outputDirectoryName, IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusDirectoryName)));
 
 			// create the session directories
-			foreach (IMDISession session in Sessions)
-				session.CreateIMDISession(_corpusDirInfo.FullName);
+			//foreach (var session in Sessions)
+			//    session.CreateIMDISession(_corpusDirInfo.FullName);
 
 			// TODO: Determine if we need to create the package catalogue imdi file (may not be needed)
 
@@ -73,11 +65,9 @@ namespace SIL.Archiving.IMDI
 			return true;
 		}
 
-		/// <summary></summary>
-		/// <returns></returns>
-		public string GetImdiFileContents()
+		public void AddDescription(LanguageString description)
 		{
-			return BaseImdiFile.ToString();
+			BaseMajorObject.AddDescription(description);
 		}
 	}
 }
