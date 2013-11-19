@@ -80,14 +80,14 @@ namespace SIL.Archiving.IMDI
 		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
 		{
 			foreach (var desc in descriptions)
-				_imdiData.Descriptions.Add(new LanguageString(desc.Value, desc.Key));
+				_imdiData.AddDescription(new LanguageString(desc.Value, desc.Key));
 		}
 
 		/// <summary></summary>
 		/// <returns></returns>
 		public override string GetMetadata()
 		{
-			return _imdiData.GetImdiFileContents();
+			return _imdiData.BaseImdiFile.ToString();
 		}
 
 		/// <summary>Launch Arbil or Lamus</summary>
