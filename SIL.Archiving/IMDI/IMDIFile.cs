@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SIL.Archiving.Generic;
+using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI
@@ -132,8 +133,8 @@ namespace SIL.Archiving.IMDI
 		private void SetResourceProperties(IIMDISessionFile resource, string sessionDirectoryName, string directorySeparator)
 		{
 			resource.ResourceLink = new ResourceLink_Type { Value = ResourceLink(sessionDirectoryName, directorySeparator, NormalizedName) };
-			resource.Format.SetValue(MimeType, false);
-			resource.Type.SetValue(GeneralType, true);
+			resource.Format.SetValue(MimeType, false, ListType.Link(ListType.MediaFileFormat));
+			resource.Type.SetValue(GeneralType, true, ListType.Link(ListType.MediaFileType));
 			resource.Size.SetValue(FileSize);
 
 			foreach (var description in Descriptions)
@@ -142,7 +143,7 @@ namespace SIL.Archiving.IMDI
 			if (AccessProtocol != null)
 			{
 				resource.Access = new Access_Type();
-				resource.Access.Availability.SetValue(AccessProtocol.GetAccessCode(), false);
+				resource.Access.Availability.SetValue(AccessProtocol.GetAccessCode());
 			}
 		}
 	}

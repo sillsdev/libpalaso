@@ -1,4 +1,6 @@
-﻿using Palaso.Xml;
+﻿using System.IO;
+using System.Xml.Serialization;
+using Palaso.Xml;
 
 namespace SIL.Archiving.IMDI.Schema
 {
@@ -16,8 +18,9 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary>Creates a new Vocabulary_Type object and sets the Value</summary>
 		/// <param name="value"></param>
 		/// <param name="isClosedVocabulary"></param>
+		/// <param name="link"></param>
 		/// <returns></returns>
-		public static Vocabulary_Type SetVocabulary(string value, bool isClosedVocabulary)
+		public static Vocabulary_Type SetVocabulary(string value, bool isClosedVocabulary, string link)
 		{
 			if (value == null)
 				return null;
@@ -27,7 +30,8 @@ namespace SIL.Archiving.IMDI.Schema
 				Value = value,
 				Type = isClosedVocabulary
 					? VocabularyType_Value_Type.ClosedVocabulary
-					: VocabularyType_Value_Type.OpenVocabulary
+					: VocabularyType_Value_Type.OpenVocabulary,
+				Link = link
 			};
 		}
 
@@ -44,7 +48,11 @@ namespace SIL.Archiving.IMDI.Schema
 				Items = new[] {itemToWrite}
 			};
 
-			XmlSerializationHelper.SerializeToFile(fileName, wrapper);
+			//XmlSerializationHelper.SerializeToFile(fileName, wrapper);
+			XmlSerializer serializer = new XmlSerializer(typeof(METATRANSCRIPT_Type));
+			TextWriter writer = new StreamWriter(fileName);
+			serializer.Serialize(writer, wrapper);
+			writer.Close();
 		}
 
 	}

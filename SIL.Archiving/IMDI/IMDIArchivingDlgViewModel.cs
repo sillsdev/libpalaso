@@ -57,6 +57,7 @@ namespace SIL.Archiving.IMDI
 		/// <summary>
 		/// Sets a description for the specified session in a single language
 		/// </summary>
+		/// <param name="sessionId"></param>
 		/// <param name="description">The abstract description</param>
 		/// <param name="language">ISO 639-2 3-letter language code</param>
 		/// ------------------------------------------------------------------------------------
@@ -74,12 +75,16 @@ namespace SIL.Archiving.IMDI
 			throw new NotImplementedException("Need to add description element to session IMDI package");
 		}
 
+		/// <summary></summary>
+		/// <param name="descriptions"></param>
 		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
 		{
 			foreach (var desc in descriptions)
 				_imdiData.Descriptions.Add(new LanguageString(desc.Value, desc.Key));
 		}
 
+		/// <summary></summary>
+		/// <returns></returns>
 		public override string GetMetadata()
 		{
 			return _imdiData.GetImdiFileContents();

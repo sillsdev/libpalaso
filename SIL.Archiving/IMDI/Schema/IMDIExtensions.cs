@@ -23,7 +23,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <param name="vocabularyType"></param>
 		/// <param name="value"></param>
 		/// <param name="isClosedVocabulary"></param>
-		public static void SetValue(this Vocabulary_Type vocabularyType, string value, bool isClosedVocabulary)
+		/// <param name="link"></param>
+		public static void SetValue(this Vocabulary_Type vocabularyType, string value, bool isClosedVocabulary, string link)
 		{
 			if (value == null) return;
 
@@ -34,6 +35,8 @@ namespace SIL.Archiving.IMDI.Schema
 			vocabularyType.Type = isClosedVocabulary
 				? VocabularyType_Value_Type.ClosedVocabulary
 				: VocabularyType_Value_Type.OpenVocabulary;
+
+			vocabularyType.Link = link;
 		}
 
 		/// <summary>Copy information from ArchivingLocation object to Location_Type object</summary>
@@ -43,10 +46,13 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			var returnVal = new Location_Type
 			{
-				Continent = IMDISchemaHelper.SetVocabulary(archivingLocation.Continent, true),
-				Country = IMDISchemaHelper.SetVocabulary(archivingLocation.Country, false),
+				Country = IMDISchemaHelper.SetVocabulary(archivingLocation.Country, false, ListType.Link(ListType.Countries)),
 				Address = IMDISchemaHelper.SetString(archivingLocation.Address)
 			};
+			ClosedIMDIItemList continentList = ListConstructor.GetClosedList(ListType.Continents);
+			returnVal.Continent =
+				continentList.FindByValue(archivingLocation.Continent)
+					.ToVocabularyType(VocabularyType_Value_Type.ClosedVocabulary, ListType.Link(ListType.Continents));
 
 			// region is an array
 			if (!string.IsNullOrEmpty(archivingLocation.Region))
@@ -71,15 +77,33 @@ namespace SIL.Archiving.IMDI.Schema
 			};
 		}
 
+		/// <summary>Converts a string to a Vocabulary_Type</summary>
+		/// <param name="stringValue"></param>
+		/// <param name="isClosedVocabulary"></param>
+		/// <param name="link"></param>
+		/// <returns></returns>
+		public static Vocabulary_Type ToVocabularyType(this string stringValue, bool isClosedVocabulary, string link)
+		{
+			Vocabulary_Type returnVal = new Vocabulary_Type();
+			returnVal.SetValue(stringValue, isClosedVocabulary, link);
+			return returnVal;
+		}
+
 		/// <summary>Add an Actor_Type to the collection</summary>
 		/// <param name="archivingActor"></param>
 		public static Actor_Type ToIMDIActorType(this ArchivingActor archivingActor)
 		{
 			var newActor = new Actor_Type
 			{
-				Name = new[] { new String_Type { Value = archivingActor.GetName() } }
+				Name = new[] { new String_Type { Value = archivingActor.GetName() } },
+				FullName = new String_Type { Value = archivingActor.GetFullName() }
 			};
-			newActor.FullName.SetValue(archivingActor.GetFullName());
+
+			if (!string.IsNullOrEmpty(archivingActor.Age))
+				newActor.Age = new AgeRange_Type { Value = archivingActor.Age };
+
+			if (!string.IsNullOrEmpty(archivingActor.Education))
+				newActor.Education = new String_Type { Value = archivingActor.Age };
 
 			// languages
 			ClosedIMDIItemList boolList = ListConstructor.GetClosedList(ListType.Boolean);
@@ -99,11 +123,15 @@ namespace SIL.Archiving.IMDI.Schema
 
 			// Sex
 			ClosedIMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
-			newActor.Sex = genderList.FindByValue(archivingActor.Gender).ToVocabularyType(VocabularyType_Value_Type.ClosedVocabulary);
+			newActor.Sex = genderList.FindByValue(archivingActor.Gender).ToVocabularyType(VocabularyType_Value_Type.ClosedVocabulary, ListType.Link(ListType.ActorSex));
 
 			// Education
 			if (!string.IsNullOrEmpty(archivingActor.Education))
 				newActor.Education.SetValue(archivingActor.Education);
+
+			// Occupation
+			if (!string.IsNullOrEmpty(archivingActor.Occupation))
+				newActor.FamilySocialRole = archivingActor.Occupation.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
 
 			return newActor;
 		}
