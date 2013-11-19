@@ -83,6 +83,115 @@ namespace SIL.Archiving.IMDI.Schema
 {
 '''
 
+# XXX
+xxx1 = '''
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
+		public string XXXType {
+			get {
+				return this.xXXTypeField;
+			}
+			set {
+				this.xXXTypeField = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
+		public bool XXXMultiple {
+			get {
+				return this.xXXMultipleField;
+			}
+			set {
+				this.xXXMultipleField = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		public bool XXXMultipleSpecified {
+			get {
+				return this.xXXMultipleFieldSpecified;
+			}
+			set {
+				this.xXXMultipleFieldSpecified = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
+		public bool XXXVisible {
+			get {
+				return this.xXXVisibleField;
+			}
+			set {
+				this.xXXVisibleField = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		public bool XXXVisibleSpecified {
+			get {
+				return this.xXXVisibleFieldSpecified;
+			}
+			set {
+				this.xXXVisibleFieldSpecified = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
+		public string XXXTag {
+			get {
+				return this.xXXTagField;
+			}
+			set {
+				this.xXXTagField = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
+		public string XXXHelpText {
+			get {
+				return this.xXXHelpTextField;
+			}
+			set {
+				this.xXXHelpTextField = value;
+			}
+		}
+
+		/// <remarks/>
+		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
+		public string XXXFollowUpDepend {
+			get {
+				return this.xXXFollowUpDependField;
+			}
+			set {
+				this.xXXFollowUpDependField = value;
+			}
+		}
+'''
+
+xxx2 = '''
+		private string xXXTypeField;
+
+		private bool xXXMultipleField;
+
+		private bool xXXMultipleFieldSpecified;
+
+		private bool xXXVisibleField;
+
+		private bool xXXVisibleFieldSpecified;
+
+		private string xXXTagField;
+
+		private string xXXHelpTextField;
+
+		private string xXXFollowUpDependField;
+'''
+
 # function to do the replacing
 def replace_text(line):
 	line = line.replace('    ', '\t')
@@ -112,6 +221,20 @@ def replace_text(line):
 	line = line.replace('private Vocabulary_Type sizeField;', 'private String_Type sizeField;')
 	line = line.replace('return this.actorsField;', actors)
 	line = line.replace('return this.languagesField;', languages)
+	line = line.replace('private Vocabulary_Type availabilityField;', 'private String_Type availabilityField;')
+	line = line.replace('public Vocabulary_Type Availability {', 'public String_Type Availability {')
+	line = line.replace(xxx1, '')
+	line = line.replace(xxx2, '')
+
+	# do not set default value attribute, the xmlserializer will not output the default value
+	pos = line.find('[System.ComponentModel.DefaultValueAttribute(')
+	while pos > -1:
+		pos2 = line.rfind('\n', 0, pos)
+		line1 = line[:pos2 + 1]
+		pos2 = line.find('\n', pos + 1)
+		line2 = line[pos2 + 1:]
+		line = line1 + line2
+		pos = line.find('[System.ComponentModel.DefaultValueAttribute(')
 
 	return line
 
