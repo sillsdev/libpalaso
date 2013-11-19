@@ -19,7 +19,7 @@ namespace Palaso.Xml
 	///</summary>
 	public class FastXmlElementSplitter : IDisposable
 	{
-		private readonly static Encoding EncUtf8 = Encoding.UTF8;
+		internal readonly static Encoding EncUtf8 = Encoding.UTF8;
 		private readonly static byte _openingAngleBracket = EncUtf8.GetBytes("<")[0];
 		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
 		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
@@ -30,6 +30,10 @@ namespace Palaso.Xml
 		private static byte[] endComment = EncUtf8.GetBytes("-->");
 
 		private ByteAccessor _input;
+
+		/// <summary>
+		/// The value of this boolean will only be set after calls are made to get the elements
+		/// </summary>
 		private bool _foundOptionalFirstElement;
 
 		/// <summary>
@@ -125,19 +129,10 @@ namespace Palaso.Xml
 		/// <summary>
 		/// Gets all second level elements that are in input file
 		/// </summary>
-		/// <returns>Enumeration of tuples containing element name and bytes for each element</returns>
-		public IEnumerable<Tuple<string, byte[]>> GetSecondLevelElementBytes()
+		/// <returns>Enumeration of SecondaryElements containing element name and bytes for each element</returns>
+		public IEnumerable<SecondaryElement> GetSecondLevelElements()
 		{
 			return GetSecondLevelElementBytesInternal(null, null);
-		}
-
-		/// <summary>
-		/// Gets all second level elements that are in the input file
-		/// </summary>
-		/// <returns>Enumeration of tuples containing element name and string value for each element</returns>
-		public IEnumerable<Tuple<string, string>> GetSecondLevelElementStrings()
-		{
-			return GetSecondLevelElementBytesInternal(null, null).Select(t => new Tuple<string, string>(t.Item1, EncUtf8.GetString(t.Item2)));
 		}
 
 		///<summary>
@@ -175,7 +170,7 @@ namespace Palaso.Xml
 		public List<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker,
 			out bool foundOptionalFirstElement)
 		{
-			var result = GetSecondLevelElementBytesInternal(firstElementMarker, recordMarker).Select(t => t.Item2).ToList();
+			var result = GetSecondLevelElementBytesInternal(firstElementMarker, recordMarker).Select(t => t.Bytes).ToList();
 			foundOptionalFirstElement = _foundOptionalFirstElement;
 			return result;
 		}
@@ -187,7 +182,7 @@ namespace Palaso.Xml
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker)
 		{
 			if (string.IsNullOrEmpty(recordMarker)) throw new ArgumentException("Null or empty string", "recordMarker");
-			return GetSecondLevelElementBytesInternal(firstElementMarker, recordMarker).Select(t => t.Item2);
+			return GetSecondLevelElementBytesInternal(firstElementMarker, recordMarker).Select(t => t.Bytes);
 		}
 
 		/// <summary>
@@ -196,7 +191,7 @@ namespace Palaso.Xml
 		/// <param name="firstElementMarker">if provided, first element will be checked to see if it matches this marker</param>
 		/// <param name="recordMarker">if provided, all second level elements besides the first must match this marker</param>
 		/// <returns>Enumeration of tuples containing marker name and bytes for all second level elements</returns>
-		private IEnumerable<Tuple<string, byte[]>> GetSecondLevelElementBytesInternal(string firstElementMarker, string recordMarker)
+		private IEnumerable<SecondaryElement> GetSecondLevelElementBytesInternal(string firstElementMarker, string recordMarker)
 		{
 			_foundOptionalFirstElement = false;
 			InitializeOffsets();
@@ -207,7 +202,7 @@ namespace Palaso.Xml
 				if (MatchMarker(firstElementMarkerAsBytes))
 				{
 					_foundOptionalFirstElement = true;
-					yield return new Tuple<string, byte[]>(firstElementMarker, MakeElement(firstElementMarkerAsBytes));
+					yield return new SecondaryElement(firstElementMarker, MakeElement(firstElementMarkerAsBytes));
 					AdvanceToOpenAngleBracket();
 				}
 			}
@@ -226,7 +221,7 @@ namespace Palaso.Xml
 						recordMarker);
 					throw new ArgumentException(msg);
 				}
-				yield return new Tuple<string, byte[]>(recordMarker ?? EncUtf8.GetString(recordMarkerAsBytes), MakeElement(recordMarkerAsBytes));
+				yield return new SecondaryElement(recordMarker ?? EncUtf8.GetString(recordMarkerAsBytes), MakeElement(recordMarkerAsBytes));
 				AdvanceToOpenAngleBracket();
 			}
 		}
@@ -735,11 +730,28 @@ namespace Palaso.Xml
 		public byte[] SubArray(int start, int count)
 		{
 			var result = new byte[count];
-			for (int i = 0; i < count; i++)
-				result[i] = _bytes[start + i];
+			Array.Copy(_bytes, start, result, 0, count);
 			return result;
 		}
 
 		#endregion
+	}
+
+	public class SecondaryElement
+	{
+		public string Name { get; private set; }
+
+		public byte[] Bytes { get; private set; }
+
+		public SecondaryElement(string name, byte[] bytes)
+		{
+			Name = name;
+			Bytes = bytes;
+		}
+
+		public string BytesAsString
+		{
+			get { return FastXmlElementSplitter.EncUtf8.GetString(Bytes); }
+		}
 	}
 }

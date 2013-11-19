@@ -583,24 +583,20 @@ namespace Palaso.Tests.Xml
 		private static void ProcessMultipleEntryContent(FastXmlElementSplitter fastXmlElementSplitter)
 		{
 			string[] expectedNames = new string[] { "Language", "FontName", "FontSize", "Analyses", "Entries" };
-			var elementBytes = fastXmlElementSplitter.GetSecondLevelElementBytes().ToList();
-			Assert.AreEqual(5, elementBytes.Count);
-			var elementStrings = fastXmlElementSplitter.GetSecondLevelElementStrings().ToList();
-			Assert.AreEqual(5, elementStrings.Count);
-			for (var i = 0; i < elementStrings.Count; ++i)
+			var elements = fastXmlElementSplitter.GetSecondLevelElements().ToList();
+			Assert.AreEqual(5, elements.Count);
+			for (var i = 0; i < elements.Count; ++i)
 			{
-				var curTuple = elementStrings[i];
-				Assert.AreEqual(curTuple.Item1, expectedNames[i]);
-				Assert.AreEqual(curTuple.Item1, elementBytes[i].Item1);
-				Assert.AreEqual(curTuple.Item2, Encoding.UTF8.GetString(elementBytes[i].Item2));
-				var el = XElement.Parse(curTuple.Item2);
+				var curElement = elements[i];
+				Assert.AreEqual(curElement.Name, expectedNames[i]);
+				var el = XElement.Parse(curElement.BytesAsString);
 				if (i >= 3)  // parse the sublist for Analyses and Entries
 				{
-					using (var splitter = new FastXmlElementSplitter(elementBytes[i].Item2))
+					using (var splitter = new FastXmlElementSplitter(curElement.Bytes))
 					{
-						var subElements = splitter.GetSecondLevelElementBytes().ToList();
+						var subElements = splitter.GetSecondLevelElements().ToList();
 						Assert.AreEqual(2, subElements.Count);
-						Assert.IsFalse(subElements.Any(t => t.Item1 != "item"));
+						Assert.IsFalse(subElements.Any(t => t.Name != "item"));
 					}
 				}
 			}
