@@ -1,74 +1,66 @@
 ﻿using System;
-using Palaso.Extensions;
 using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
 {
-	/// <summary>Base class for IMDI archiving objects</summary>
-	public abstract class ArchivingGenericObject
+	/// <summary>Base class for archiving objects</summary>
+	public interface IArchivingGenericObject
 	{
 		/// <summary>If needed but not given, Name will be used</summary>
-		public string Title;
+		string Title { get; set; }
 
 		/// <summary>If needed but not given, Title will be used</summary>
-		public string Name;
+		string Name { get; set; }
 
 		/// <summary />
-		public LanguageStringCollection Descriptions;
+		void AddDescription(LanguageString description);
 
 		/// <summary>Date the first entry was created</summary>
-		public DateTime DateCreatedFirst;
+		DateTime DateCreatedFirst { get; set; }
 
 		/// <summary>Date the last entry was created. Different archives use this differently</summary>
-		public DateTime DateCreatedLast;
+		DateTime DateCreatedLast { get; set; }
 
 		/// <summary />
-		public DateTime DateModified;
+		DateTime DateModified { get; set; }
 
 		/// <summary>Who has access, and how do you get access. Different archives use this differently</summary>
-		public IAccessProtocol AccessProtocol;
+		IAccessProtocol AccessProtocol { get; set; }
 
 		/// <summary />
-		public ArchivingLocation Location;
+		ArchivingLocation Location { get; set; }
 
-		/// <summary>Constructor</summary>
-		protected ArchivingGenericObject()
-		{
-			Descriptions = new LanguageStringCollection();
-		}
+	//    /// <summary />
+	//    public string GetName()
+	//    {
+	//        return Name ?? Title;
+	//    }
 
-		/// <summary />
-		public string GetName()
-		{
-			return Name ?? Title;
-		}
+	//    /// <summary />
+	//    public string GetTitle()
+	//    {
+	//        return Title ?? Name;
+	//    }
 
-		/// <summary />
-		public string GetTitle()
-		{
-			return Title ?? Name;
-		}
+	//    /// <summary>Get single value or year range</summary>
+	//    public string GetDateCreated()
+	//    {
+	//        var emptyDate = default(DateTime);
 
-		/// <summary>Get single value or year range</summary>
-		public string GetDateCreated()
-		{
-			var emptyDate = default(DateTime);
+	//        // no date given
+	//        if (DateCreatedFirst == emptyDate)
+	//            return null;
 
-			// no date given
-			if (DateCreatedFirst == emptyDate)
-				return null;
+	//        // just one date given
+	//        if (DateCreatedLast == emptyDate)
+	//            return DateCreatedFirst.ToISO8601DateOnlyString();
 
-			// just one date given
-			if (DateCreatedLast == emptyDate)
-				return DateCreatedFirst.ToISO8601DateOnlyString();
+	//        // both dates in same year
+	//        if (DateCreatedFirst.Year == DateCreatedLast.Year)
+	//            return string.Format("{0}", DateCreatedFirst.Year);
 
-			// both dates in same year
-			if (DateCreatedFirst.Year == DateCreatedLast.Year)
-				return string.Format("{0}", DateCreatedFirst.Year);
-
-			// return the date range
-			return string.Format("{0}-{1}", DateCreatedFirst.Year, DateCreatedLast.Year);
-		}
+	//        // return the date range
+	//        return string.Format("{0}-{1}", DateCreatedFirst.Year, DateCreatedLast.Year);
+	//    }
 	}
-
 }

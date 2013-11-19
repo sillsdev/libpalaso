@@ -61,12 +61,11 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <returns></returns>
 		public static Description_Type ToIMDIDescriptionType(this LanguageString langString)
 		{
-			var lang = LanguageList.FindByISO3Code(langString.Iso3LanguageId);
-			return new Description_Type
-			{
-				LanguageId = lang.Id,
-				Value = langString.Value
-			};
+			var desc = new Description_Type { Value = langString.Value };
+			if (!string.IsNullOrEmpty(langString.Iso3LanguageId))
+				desc.LanguageId = LanguageList.FindByISO3Code(langString.Iso3LanguageId).Id;
+
+			return desc;
 		}
 
 		/// <summary>Add an Actor_Type to the collection</summary>
