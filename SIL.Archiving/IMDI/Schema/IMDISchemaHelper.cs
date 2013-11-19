@@ -49,7 +49,7 @@ namespace SIL.Archiving.IMDI.Schema
 			};
 
 			//XmlSerializationHelper.SerializeToFile(fileName, wrapper);
-			XmlSerializer serializer = new XmlSerializer(typeof(METATRANSCRIPT_Type));
+			XmlSerializer serializer = new XmlSerializer(typeof(MetaTranscript));
 			TextWriter writer = new StreamWriter(fileName);
 			serializer.Serialize(writer, wrapper);
 			writer.Close();

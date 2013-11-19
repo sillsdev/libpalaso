@@ -6,7 +6,6 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Diagnostics;
 using System.ComponentModel;
-using Palaso.Xml;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Generic.AccessProtocol;
 
@@ -190,7 +189,6 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 	}
-
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
@@ -1149,6 +1147,7 @@ namespace SIL.Archiving.IMDI.Schema
 				return contactField;
 			}
 			set {
+
 				contactField = value;
 			}
 		}
@@ -1544,6 +1543,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public Languages_Type Languages {
 			get {
+
 				return languagesField;
 			}
 			set {
@@ -2354,8 +2354,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Source_TypeID {
-
+	public class Source_TypeID
+	{
 		private string valueField;
 
 		/// <remarks/>
@@ -2376,7 +2376,6 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Quality_Type
 	{
-
 		private string linkField;
 
 		private VocabularyType_Value_Type typeField;
@@ -2461,7 +2460,6 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class TimePosition_Type
 	{
-
 		private string valueField;
 
 		/// <remarks/>
@@ -2648,8 +2646,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_TypeSize {
-
+	public class LexiconComponent_TypeSize
+	{
 		private string valueField;
 
 		/// <remarks/>
@@ -3189,8 +3187,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconResource_TypeSize {
-
+	public class LexiconResource_TypeSize
+	{
 		private string valueField;
 
 		/// <remarks/>
@@ -3855,7 +3853,6 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class DateRange_Type
 	{
-
 		private string valueField;
 
 		/// <remarks/>
