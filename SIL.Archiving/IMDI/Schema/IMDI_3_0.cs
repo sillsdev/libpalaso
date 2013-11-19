@@ -55,22 +55,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private string archiveHandleField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string schemaLocation = "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd";
 
 		/// <remarks/>
@@ -192,95 +176,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.archiveHandleField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -290,111 +186,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class String_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute(DataType="token")]
@@ -416,111 +208,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class CommaSeparatedString_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -547,22 +235,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private LanguageName_Type nameField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		public LanguageId_Type Id {
 			get {
@@ -582,95 +254,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.nameField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -680,111 +264,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class LanguageId_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute(DataType="token")]
@@ -823,22 +303,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private string linkField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
 
 		/// <remarks/>
@@ -848,7 +312,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlAttributeAttribute()]
-		[System.ComponentModel.DefaultValueAttribute(VocabularyType_Value_Type.OpenVocabulary)]
 		public VocabularyType_Value_Type Type {
 			get {
 				return this.typeField;
@@ -877,94 +340,6 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 			set {
 				this.linkField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
 			}
 		}
 
@@ -1089,22 +464,6 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Boolean_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private VocabularyType_Value_Type typeField;
 
 		private string defaultLinkField;
@@ -1119,96 +478,7 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-
-		/// <remarks/>
 		[System.Xml.Serialization.XmlAttributeAttribute()]
-		[System.ComponentModel.DefaultValueAttribute(VocabularyType_Value_Type.ClosedVocabulary)]
 		public VocabularyType_Value_Type Type {
 			get {
 				return this.typeField;
@@ -1268,22 +538,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private string linkField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
 
 		/// <remarks/>
@@ -1327,94 +581,6 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 			set {
 				this.linkField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
 			}
 		}
 
@@ -1487,22 +653,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private String_Type publicationsField;
 
 		private Keys_Type keysField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public String_Type Name {
@@ -1762,95 +912,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.keysField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -1863,22 +925,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private List<Description_Type> descriptionField;
 
 		private SimpleLanguageType[] languageField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Description")]
@@ -1903,95 +949,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.languageField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -2004,22 +962,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private List<Description_Type> descriptionField;
 
 		private SubjectLanguageType[] languageField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Description")]
@@ -2044,95 +986,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.languageField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -2149,22 +1003,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private String_Type[] regionField;
 
 		private String_Type addressField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type Continent {
@@ -2206,95 +1044,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.addressField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -2369,22 +1119,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private string imageField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		public string Text {
 			get {
@@ -2424,95 +1158,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.imageField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -2522,111 +1168,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Date_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -2657,22 +1199,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Contact_Type contactField;
 
 		private List<Description_Type> descriptionField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public String_Type Name {
@@ -2726,95 +1252,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -2881,7 +1319,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Access_Type {
 
-		private Vocabulary_Type availabilityField;
+		private String_Type availabilityField;
 
 		private Date_Type dateField;
 
@@ -2893,24 +1331,8 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private List<Description_Type> descriptionField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
-		public Vocabulary_Type Availability {
+		public String_Type Availability {
 			get {
 				return this.availabilityField;
 			}
@@ -2971,95 +1393,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -3071,22 +1405,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private Key_Type[] keyField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Key")]
 		public Key_Type[] Key {
@@ -3097,95 +1415,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.keyField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -3212,22 +1442,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private string catalogueLinkField;
 
 		private string catalogueHandleField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public String_Type Name {
@@ -3328,95 +1542,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.catalogueHandleField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -3435,22 +1561,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Content_Type contentField;
 
 		private Actors_Type actorsField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Location_Type Location {
@@ -3504,95 +1614,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.actorsField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -3619,22 +1641,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Keys_Type keysField;
 
 		private List<Description_Type> descriptionField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type Genre {
@@ -3730,95 +1736,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -3935,22 +1853,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private List<Language_Type> languageField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Description")]
 		public List<Description_Type> Description {
@@ -3976,95 +1878,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.languageField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -4091,22 +1905,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private List<Description_Type> descriptionField;
 
 		private string resourceRefField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public LanguageId_Type Id {
@@ -4202,95 +2000,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.resourceRefField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -4303,22 +2013,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private List<Description_Type> descriptionField;
 
 		private List<Actor_Type> actorField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Description")]
@@ -4345,95 +2039,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.actorField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -4474,22 +2080,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private List<Description_Type> descriptionField;
 
 		private string resourceRefField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type Role {
@@ -4657,95 +2247,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.resourceRefField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -4755,111 +2257,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class AgeRange_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -4904,113 +2302,9 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class ResourceLink_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string archiveHandleField;
 
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlAttributeAttribute()]
@@ -5080,22 +2374,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private Integer_Type endField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		public Integer_Type Start {
 			get {
@@ -5115,95 +2393,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.endField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -5213,111 +2403,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Integer_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -5354,22 +2440,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private List<Description_Type> descriptionField;
 
 		private Keys_Type keysField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		private string resourceRefsField;
 
@@ -5457,94 +2527,6 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-
-		/// <remarks/>
 		[System.Xml.Serialization.XmlAttributeAttribute()]
 		public string ResourceRefs {
 			get {
@@ -5564,111 +2546,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Source_TypeID {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -5690,22 +2568,6 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class Quality_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string linkField;
 
 		private VocabularyType_Value_Type typeField;
@@ -5715,94 +2577,6 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public Quality_Type() {
 			this.typeField = VocabularyType_Value_Type.ClosedVocabulary;
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
 		}
 
 		/// <remarks/>
@@ -5818,7 +2592,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlAttributeAttribute()]
-		[System.ComponentModel.DefaultValueAttribute(VocabularyType_Value_Type.ClosedVocabulary)]
 		public VocabularyType_Value_Type Type {
 			get {
 				return this.typeField;
@@ -5852,22 +2625,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private TimePosition_Type endField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		public TimePosition_Type Start {
 			get {
@@ -5887,95 +2644,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.endField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -5985,111 +2654,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class TimePosition_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -6136,22 +2701,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Keys_Type keysField;
 
 		private string resourceIdField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public ResourceLink_Type ResourceLink {
@@ -6286,95 +2835,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.resourceIdField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -6384,111 +2845,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class LexiconComponent_TypeSize {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -6515,22 +2872,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Vocabulary_Type preferredParentField;
 
 		private LexiconComponent_TypeComponentChildNodes childNodesField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type possibleParents {
@@ -6561,95 +2902,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.childNodesField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -6930,22 +3183,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		private List<Description_Type> descriptionField;
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		/// <remarks/>
 		public Vocabulary_Type Language {
 			get {
@@ -6968,95 +3205,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -7093,22 +3242,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Keys_Type keysField;
 
 		private string resourceIdField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public ResourceLink_Type ResourceLink {
@@ -7254,95 +3387,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.resourceIdField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -7352,111 +3397,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class LexiconResource_TypeSize {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -7497,22 +3438,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Vocabulary_Type usageField;
 
 		private String_Type frequencyField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type HeadWordType {
@@ -7613,95 +3538,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.frequencyField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -7714,22 +3551,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Vocabulary_Type[] languageField;
 
 		private List<Description_Type> descriptionField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Language")]
@@ -7754,95 +3575,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -7859,22 +3592,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Integer_Type levelField;
 
 		private List<Description_Type> descriptionField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type Type {
@@ -7918,95 +3635,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -8049,22 +3678,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Keys_Type keysField;
 
 		private string resourceIdField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public ResourceLink_Type ResourceLink {
@@ -8239,95 +3852,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.resourceIdField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -8367,22 +3892,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Keys_Type keysField;
 
 		private string resourceIdField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public ResourceLink_Type ResourceLink {
@@ -8497,95 +4006,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.resourceIdField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -8602,22 +4023,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Vocabulary_Type formatField;
 
 		private string linkField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public Vocabulary_Type Type {
@@ -8659,95 +4064,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.linkField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -8757,111 +4074,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public partial class DateRange_Type {
 
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
-
 		private string valueField;
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
-			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlTextAttribute()]
@@ -8898,22 +4111,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Session_TypeResources resourcesField;
 
 		private Session_TypeReferences referencesField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		public String_Type Name {
@@ -9000,95 +4197,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.referencesField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -9109,22 +4218,6 @@ namespace SIL.Archiving.IMDI.Schema
 		private Source_Type[] sourceField;
 
 		private Anonyms_Type anonymsField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("MediaFile")]
@@ -9194,95 +4287,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.anonymsField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
@@ -9293,22 +4298,6 @@ namespace SIL.Archiving.IMDI.Schema
 	public partial class Session_TypeReferences {
 
 		private List<Description_Type> descriptionField;
-
-		private string xXXTypeField;
-
-		private bool xXXMultipleField;
-
-		private bool xXXMultipleFieldSpecified;
-
-		private bool xXXVisibleField;
-
-		private bool xXXVisibleFieldSpecified;
-
-		private string xXXTagField;
-
-		private string xXXHelpTextField;
-
-		private string xXXFollowUpDependField;
 
 		/// <remarks/>
 		[System.Xml.Serialization.XmlElementAttribute("Description")]
@@ -9322,95 +4311,7 @@ namespace SIL.Archiving.IMDI.Schema
 				this.descriptionField = value;
 			}
 		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Type")]
-		public string XXXType {
-			get {
-				return this.xXXTypeField;
 			}
-			set {
-				this.xXXTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Multiple")]
-		public bool XXXMultiple {
-			get {
-				return this.xXXMultipleField;
-			}
-			set {
-				this.xXXMultipleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXMultipleSpecified {
-			get {
-				return this.xXXMultipleFieldSpecified;
-			}
-			set {
-				this.xXXMultipleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Visible")]
-		public bool XXXVisible {
-			get {
-				return this.xXXVisibleField;
-			}
-			set {
-				this.xXXVisibleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		public bool XXXVisibleSpecified {
-			get {
-				return this.xXXVisibleFieldSpecified;
-			}
-			set {
-				this.xXXVisibleFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-Tag")]
-		public string XXXTag {
-			get {
-				return this.xXXTagField;
-			}
-			set {
-				this.xXXTagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-HelpText")]
-		public string XXXHelpText {
-			get {
-				return this.xXXHelpTextField;
-			}
-			set {
-				this.xXXHelpTextField = value;
-			}
-		}
-
-		/// <remarks/>
-		[System.Xml.Serialization.XmlAttributeAttribute("XXX-FollowUpDepend")]
-		public string XXXFollowUpDepend {
-			get {
-				return this.xXXFollowUpDependField;
-			}
-			set {
-				this.xXXFollowUpDependField = value;
-			}
-		}
-	}
 
 	/// <remarks/>
 	[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "2.0.50727.3038")]
