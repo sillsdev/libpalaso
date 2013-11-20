@@ -87,24 +87,24 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// <summary>Convert to MediaFile_Type for IMDI meta data file</summary>
-		public MediaFile_Type ToMediaFileType(string sessionDirectoryName, string directorySeparator)
+		public MediaFileType ToMediaFileType(string sessionDirectoryName, string directorySeparator)
 		{
-			var mediaFile = new MediaFile_Type();
+			var mediaFile = new MediaFileType();
 			SetResourceProperties(mediaFile, sessionDirectoryName, directorySeparator);
 
-			mediaFile.Quality = new Quality_Type { Type = VocabularyType_Value_Type.ClosedVocabulary, Value = "Unspecified" };
+			mediaFile.Quality = new QualityType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = "Unspecified" };
 
 			return mediaFile;
 		}
 
 		/// <summary>Convert to WrittenResource_Type for IMDI meta data file</summary>
-		public WrittenResource_Type ToWrittenResourceType(string sessionDirectoryName, string directorySeparator)
+		public WrittenResourceType ToWrittenResourceType(string sessionDirectoryName, string directorySeparator)
 		{
-			var written = new WrittenResource_Type();
+			var written = new WrittenResourceType();
 			SetResourceProperties(written, sessionDirectoryName, directorySeparator);
 
 			if (!string.IsNullOrEmpty(DescribesAnotherFile))
-				written.MediaResourceLink = new ResourceLink_Type {
+				written.MediaResourceLink = new ResourceLinkType {
 					Value = ResourceLink(sessionDirectoryName,
 					directorySeparator,
 					IMDIArchivingDlgViewModel.NormalizeFileName(DescribesAnotherFile))
@@ -132,18 +132,18 @@ namespace SIL.Archiving.IMDI
 		/// <param name="directorySeparator"></param>
 		private void SetResourceProperties(IIMDISessionFile resource, string sessionDirectoryName, string directorySeparator)
 		{
-			resource.ResourceLink = new ResourceLink_Type { Value = ResourceLink(sessionDirectoryName, directorySeparator, NormalizedName) };
+			resource.ResourceLink = new ResourceLinkType { Value = ResourceLink(sessionDirectoryName, directorySeparator, NormalizedName) };
 			resource.Format.SetValue(MimeType, false, ListType.Link(ListType.MediaFileFormat));
 			resource.Type.SetValue(GeneralType, true, ListType.Link(ListType.MediaFileType));
-			resource.Size.SetValue(FileSize);
+			resource.Size = FileSize;
 
 			foreach (var description in Descriptions)
 				resource.Description.Add(description.ToIMDIDescriptionType());
 
 			if (AccessProtocol != null)
 			{
-				resource.Access = new Access_Type();
-				resource.Access.Availability.SetValue(AccessProtocol.GetAccessCode());
+				resource.Access = new AccessType();
+				resource.Access.Availability = AccessProtocol.GetAccessCode();
 			}
 		}
 	}

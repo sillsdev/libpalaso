@@ -17,12 +17,12 @@ namespace SIL.Archiving.IMDI.Lists
 		public string Id { get { return Value;  } }
 
 		/// <summary>Convert to a Language_Type object</summary>
-		public Language_Type ToLanguageType()
+		public LanguageType ToLanguageType()
 		{
-			return new Language_Type
+			return new LanguageType
 			{
-				Id = new LanguageId_Type { Value = Id },
-				Name = new[] { new LanguageName_Type { Value = Text, Link = ListType.Link(ListType.MPILanguages) } },
+				Id = Id,
+				Name = new[] { new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) } },
 			};
 		}
 	}

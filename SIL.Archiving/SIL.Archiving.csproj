@@ -119,6 +119,7 @@
 	<Compile Include="IMDI\Schema\IMDI_3_0.cs" />
 	<Compile Include="IMDI\Schema\IMDISchemaHelper.cs" />
 	<Compile Include="Generic\AccessProtocol\TLAAccessProtocol.cs" />
+	<Compile Include="IMDI\Schema\IMDI_3_0_NotUsed.cs" />
 	<Compile Include="RampArchivingDlgViewModel.cs" />
 	<Compile Include="JSONUtils.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />

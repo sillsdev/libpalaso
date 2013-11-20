@@ -6,35 +6,22 @@ namespace SIL.Archiving.IMDI.Schema
 	/// <summary>Extension methods to simplify access to IMDI objects</summary>
 	public static class IMDIExtensions
 	{
-		/// <summary>Set the value of a String_Type variable</summary>
-		/// <param name="stringType"></param>
-		/// <param name="value"></param>
-		public static void SetValue(this String_Type stringType, string value)
-		{
-			if (value == null) return;
-
-			if (stringType == null)
-				stringType = new String_Type();
-
-			stringType.Value = value;
-		}
-
 		/// <summary>Set the value of a Vocabulary_Type variable</summary>
 		/// <param name="vocabularyType"></param>
 		/// <param name="value"></param>
 		/// <param name="isClosedVocabulary"></param>
 		/// <param name="link"></param>
-		public static void SetValue(this Vocabulary_Type vocabularyType, string value, bool isClosedVocabulary, string link)
+		public static void SetValue(this VocabularyType vocabularyType, string value, bool isClosedVocabulary, string link)
 		{
 			if (value == null) return;
 
 			if (vocabularyType == null)
-				vocabularyType = new Vocabulary_Type();
+				vocabularyType = new VocabularyType();
 
 			vocabularyType.Value = value;
 			vocabularyType.Type = isClosedVocabulary
-				? VocabularyType_Value_Type.ClosedVocabulary
-				: VocabularyType_Value_Type.OpenVocabulary;
+				? VocabularyTypeValueType.ClosedVocabulary
+				: VocabularyTypeValueType.OpenVocabulary;
 
 			vocabularyType.Link = link;
 		}
@@ -42,24 +29,19 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary>Copy information from ArchivingLocation object to Location_Type object</summary>
 		/// <param name="archivingLocation"></param>
 		/// <returns></returns>
-		public static Location_Type ToIMDILocationType(this ArchivingLocation archivingLocation)
+		public static LocationType ToIMDILocationType(this ArchivingLocation archivingLocation)
 		{
-			var returnVal = new Location_Type
+			var returnVal = new LocationType
 			{
-				Country = IMDISchemaHelper.SetVocabulary(archivingLocation.Country, false, ListType.Link(ListType.Countries)),
-				Address = IMDISchemaHelper.SetString(archivingLocation.Address)
+				Address = archivingLocation.Address
 			};
 			ClosedIMDIItemList continentList = ListConstructor.GetClosedList(ListType.Continents);
-			returnVal.Continent =
-				continentList.FindByValue(archivingLocation.Continent)
-					.ToVocabularyType(VocabularyType_Value_Type.ClosedVocabulary, ListType.Link(ListType.Continents));
+			returnVal.SetContinent(archivingLocation.Continent);
+			returnVal.SetCountry(archivingLocation.Country);
 
 			// region is an array
 			if (!string.IsNullOrEmpty(archivingLocation.Region))
-			{
-				var region = new[] { new String_Type { Value = archivingLocation.Region } };
-				returnVal.Region = region;
-			}
+				returnVal.Region.Add(archivingLocation.Region);
 
 			return returnVal;
 		}
@@ -67,9 +49,9 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary>Converts a LanguageString into a Description_Type</summary>
 		/// <param name="langString"></param>
 		/// <returns></returns>
-		public static Description_Type ToIMDIDescriptionType(this LanguageString langString)
+		public static DescriptionType ToIMDIDescriptionType(this LanguageString langString)
 		{
-			var desc = new Description_Type { Value = langString.Value };
+			var desc = new DescriptionType { Value = langString.Value };
 			if (!string.IsNullOrEmpty(langString.Iso3LanguageId))
 				desc.LanguageId = LanguageList.FindByISO3Code(langString.Iso3LanguageId).Id;
 
@@ -81,58 +63,56 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <param name="isClosedVocabulary"></param>
 		/// <param name="link"></param>
 		/// <returns></returns>
-		public static Vocabulary_Type ToVocabularyType(this string stringValue, bool isClosedVocabulary, string link)
+		public static VocabularyType ToVocabularyType(this string stringValue, bool isClosedVocabulary, string link)
 		{
-			Vocabulary_Type returnVal = new Vocabulary_Type();
+			VocabularyType returnVal = new VocabularyType();
 			returnVal.SetValue(stringValue, isClosedVocabulary, link);
 			return returnVal;
 		}
 
-		/// <summary>Add an Actor_Type to the collection</summary>
-		/// <param name="archivingActor"></param>
-		public static Actor_Type ToIMDIActorType(this ArchivingActor archivingActor)
-		{
-			var newActor = new Actor_Type
-			{
-				Name = new[] { new String_Type { Value = archivingActor.GetName() } },
-				FullName = new String_Type { Value = archivingActor.GetFullName() }
-			};
+		///// <summary>Add an Actor_Type to the collection</summary>
+		///// <param name="archivingActor"></param>
+		//public static Actor_Type ToIMDIActorType(this ArchivingActor archivingActor)
+		//{
+		//    var newActor = new Actor_Type
+		//    {
+		//        Name = new[] { archivingActor.GetName() },
+		//        FullName = archivingActor.GetFullName()
+		//    };
 
-			if (!string.IsNullOrEmpty(archivingActor.Age))
-				newActor.Age = new AgeRange_Type { Value = archivingActor.Age };
+		//    if (!string.IsNullOrEmpty(archivingActor.Age))
+		//        newActor.Age = archivingActor.Age;
 
-			if (!string.IsNullOrEmpty(archivingActor.Education))
-				newActor.Education = new String_Type { Value = archivingActor.Age };
 
-			// languages
-			ClosedIMDIItemList boolList = ListConstructor.GetClosedList(ListType.Boolean);
-			foreach (var langIso3 in archivingActor.Iso3LanguageIds)
-			{
-				var langType = LanguageList.FindByISO3Code(langIso3).ToLanguageType();
-				if (langType == null) continue;
-				langType.PrimaryLanguage = boolList.FindByValue((archivingActor.PrimaryLanguageIso3Code == langIso3) ? "true" : "false").ToBooleanType();
-				langType.MotherTongue = boolList.FindByValue((archivingActor.MotherTongueLanguageIso3Code == langIso3) ? "true" : "false").ToBooleanType();
-				newActor.Languages.Language.Add(langType);
-			}
+		//    // languages
+		//    ClosedIMDIItemList boolList = ListConstructor.GetClosedList(ListType.Boolean);
+		//    foreach (var langIso3 in archivingActor.Iso3LanguageIds)
+		//    {
+		//        var langType = LanguageList.FindByISO3Code(langIso3).ToLanguageType();
+		//        if (langType == null) continue;
+		//        langType.PrimaryLanguage = boolList.FindByValue((archivingActor.PrimaryLanguageIso3Code == langIso3) ? "true" : "false").ToBooleanType();
+		//        langType.MotherTongue = boolList.FindByValue((archivingActor.MotherTongueLanguageIso3Code == langIso3) ? "true" : "false").ToBooleanType();
+		//        newActor.Languages.Language.Add(langType);
+		//    }
 
-			// BirthDate (year)
-			var birthDate = archivingActor.GetBirthDate();
-			if (!string.IsNullOrEmpty(birthDate))
-				newActor.BirthDate = new Date_Type { Value = birthDate };
+		//    // BirthDate (year)
+		//    var birthDate = archivingActor.GetBirthDate();
+		//    if (!string.IsNullOrEmpty(birthDate))
+		//        newActor.SetBirthDate(birthDate);
 
-			// Sex
-			ClosedIMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
-			newActor.Sex = genderList.FindByValue(archivingActor.Gender).ToVocabularyType(VocabularyType_Value_Type.ClosedVocabulary, ListType.Link(ListType.ActorSex));
+		//    // Sex
+		//    ClosedIMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
+		//    newActor.SetSex(archivingActor.Gender);
 
-			// Education
-			if (!string.IsNullOrEmpty(archivingActor.Education))
-				newActor.Education.SetValue(archivingActor.Education);
+		//    // Education
+		//    if (!string.IsNullOrEmpty(archivingActor.Education))
+		//        newActor.Education = archivingActor.Education;
 
-			// Occupation
-			if (!string.IsNullOrEmpty(archivingActor.Occupation))
-				newActor.FamilySocialRole = archivingActor.Occupation.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
+		//    // Occupation
+		//    if (!string.IsNullOrEmpty(archivingActor.Occupation))
+		//        newActor.FamilySocialRole = archivingActor.Occupation.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
 
-			return newActor;
-		}
+		//    return newActor;
+		//}
 	}
 }
