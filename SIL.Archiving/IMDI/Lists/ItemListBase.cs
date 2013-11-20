@@ -27,15 +27,15 @@ namespace SIL.Archiving.IMDI.Lists
 		public override string ToString() { return Text; }
 
 		/// <summary>Convert to Vocabulary_Type</summary>
-		public Vocabulary_Type ToVocabularyType(VocabularyType_Value_Type vocabularyType, string link)
+		public VocabularyType ToVocabularyType(VocabularyTypeValueType vocabularyType, string link)
 		{
-			return new Vocabulary_Type { Type = vocabularyType, Value = Value, Link = link };
+			return new VocabularyType { Type = vocabularyType, Value = Value, Link = link };
 		}
 
 		/// <summary>Convert to Boolean_Type</summary>
-		public Boolean_Type ToBooleanType()
+		public BooleanType ToBooleanType()
 		{
-			return new Boolean_Type { Type = VocabularyType_Value_Type.ClosedVocabulary, Value = Value, Link = ListType.Link(ListType.Boolean) };
+			return new BooleanType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = Value, Link = ListType.Link(ListType.Boolean) };
 		}
 	}
 

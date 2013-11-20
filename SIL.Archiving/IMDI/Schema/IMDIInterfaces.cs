@@ -6,11 +6,11 @@ namespace SIL.Archiving.IMDI.Schema
 	/// <summary>Interface to simplify access to session files (media and written)</summary>
 	public interface IIMDISessionFile
 	{
-		ResourceLink_Type ResourceLink { get; set; }
-		Vocabulary_Type Format { get; set; }
-		Vocabulary_Type Type { get; set; }
-		String_Type Size { get; set; }
-		List<Description_Type> Description { get; set; }
-		Access_Type Access { get; set; }
+		ResourceLinkType ResourceLink { get; set; }
+		VocabularyType Format { get; set; }
+		VocabularyType Type { get; set; }
+		string Size { get; set; }
+		List<DescriptionType> Description { get; set; }
+		AccessType Access { get; set; }
 	}
 }

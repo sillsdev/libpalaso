@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.Reporting;
@@ -73,6 +72,7 @@ namespace SIL.Archiving.Tests
 				if (node.Name == "Description")
 				{
 					Assert.AreEqual("Story about a frog", node.InnerText);
+					Assert.NotNull(node.Attributes);
 					foreach (XmlAttribute attrib in node.Attributes)
 					{
 						if (attrib.Name == "LanguageId")
@@ -104,6 +104,7 @@ namespace SIL.Archiving.Tests
 				if (node.Name == "Description")
 				{
 					Assert.AreEqual("Story about a frog", node.InnerText);
+					Assert.NotNull(node.Attributes);
 					Assert.AreEqual("ISO639-3:eng", node.Attributes.GetNamedItem("LanguageId").Value);
 					cDescNodes++;
 				}
@@ -132,6 +133,7 @@ namespace SIL.Archiving.Tests
 			{
 				if (node.Name == "Description")
 				{
+					Assert.NotNull(node.Attributes);
 					var lang = node.Attributes.GetNamedItem("LanguageId").Value;
 					Assert.IsTrue(lang.StartsWith("ISO639-3:"));
 					lang = lang.Substring("ISO639-3:".Length);

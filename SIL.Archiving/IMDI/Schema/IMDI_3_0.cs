@@ -5,15 +5,17 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Diagnostics;
-using System.ComponentModel;
+using Palaso.Extensions;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Generic.AccessProtocol;
+using SIL.Archiving.IMDI.Lists;
 
 namespace SIL.Archiving.IMDI.Schema
 {
+	/// <summary>Shared properties and methods</summary>
 	public class IMDIMajorObject
 	{
-		private List<Description_Type> descriptionField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <summary>Name of object</summary>
 		[XmlElement("Name")]
@@ -25,23 +27,13 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <summary>Description of object</summary>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description
+		public List<DescriptionType> Description
 		{
-			get
-			{
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set
-			{
-				descriptionField = value;
-			}
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
-		/// <summary>
-		/// Adds a description (in a particular language)
-		/// </summary>
+		/// <summary>Adds a description (in a particular language)</summary>
 		public void AddDescription(LanguageString description)
 		{
 			Description.Add(description.ToIMDIDescriptionType());
@@ -55,32 +47,34 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlRootAttribute("METATRANSCRIPT", Namespace="http://www.mpi.nl/IMDI/Schema/IMDI", IsNullable=false)]
 	public class MetaTranscript
 	{
-		private DateTime dateField = DateTime.Today;
-
-		private string originatorField = "Palaso IMDI 0.0.1";
-
-		private string versionField = "0";
-
-		private string formatIdField = "IMDI 3.03";
-
-		private string schemaLocation = "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd";
-
+		/// <remarks/>
 		public MetaTranscript()
 		{
+			SchemaLocation = "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd";
+			Date = DateTime.Today;
+			Originator = "Palaso IMDI 0.0.1";
+			Version = "0";
+			FormatId = "IMDI 3.03";
 		}
 
-		public MetaTranscript(Metatranscript_Value_Type type)
+		/// <remarks/>
+		public MetaTranscript(MetatranscriptValueType type)
 		{
+			SchemaLocation = "http://www.mpi.nl/IMDI/Schema/IMDI http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd";
+			Date = DateTime.Today;
+			Originator = "Palaso IMDI 0.0.1";
+			Version = "0";
+			FormatId = "IMDI 3.03";
 			Type = type;
 			switch (type)
 			{
-				case Metatranscript_Value_Type.CORPUS:
+				case MetatranscriptValueType.CORPUS:
 					Items = new object[] { new Corpus() };
 					break;
-				case Metatranscript_Value_Type.SESSION:
+				case MetatranscriptValueType.SESSION:
 					Items = new object[] { new Session() };
 					break;
-				case Metatranscript_Value_Type.CATALOGUE:
+				case MetatranscriptValueType.CATALOGUE:
 					Items = new object[] { new Catalogue() };
 					break;
 			}
@@ -88,14 +82,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[XmlAttribute("schemaLocation", Namespace = XmlSchema.InstanceNamespace)]
-		public string SchemaLocation
-		{
-			get { return schemaLocation; }
-			set { schemaLocation = value; }
-		}
-
-		/// <remarks/>
-		public String_Type History { get; set; }
+		public string SchemaLocation { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Catalogue", typeof(Catalogue))]
@@ -104,64 +91,24 @@ namespace SIL.Archiving.IMDI.Schema
 		public object[] Items { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Profile { get; set; }
+		[XmlAttribute(DataType="date")]
+		public DateTime Date { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="date")]
-		public DateTime Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
+		[XmlAttribute]
+		public string Originator { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Originator {
-			get {
-				return originatorField;
-			}
-			set {
-				originatorField = value;
-			}
-		}
+		[XmlAttribute]
+		public string Version { get; set; }
+
+		/// <remarks/>
+		[XmlAttribute]
+		public string FormatId { get; set; }
 
 		/// <remarks/>
 		[XmlAttributeAttribute]
-		public string Version {
-			get {
-				return versionField;
-			}
-			set {
-				versionField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string FormatId {
-			get {
-				return formatIdField;
-			}
-			set {
-				formatIdField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute("History", DataType="anyURI")]
-		public string History1 { get; set; }
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public Metatranscript_Value_Type Type { get; set; }
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ArchiveHandle { get; set; }
+		public MetatranscriptValueType Type { get; set; }
 
 		/// <summary>
 		/// Gets the XML representation of this object
@@ -170,10 +117,12 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			using (var strWriter = new StringWriter())
 			{
-				var settings = new XmlWriterSettings();
-				settings.Indent = true;
-				settings.IndentChars = "\t";
-				settings.CheckCharacters = true;
+				var settings = new XmlWriterSettings
+				{
+					Indent = true,
+					IndentChars = "\t",
+					CheckCharacters = true
+				};
 
 				using (var xmlWriter = XmlWriter.Create(strWriter, settings))
 				{
@@ -188,36 +137,92 @@ namespace SIL.Archiving.IMDI.Schema
 				}
 			}
 		}
-	}
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class String_Type
-	{
-		[XmlTextAttribute(DataType="token")]
-		public string Value { get; set; }
-	}
 
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CommaSeparatedString_Type
-	{
+		/// <summary>Writes the IMDI file for this object</summary>
+		/// <param name="outputDirectoryName"></param>
+		/// <param name="corpusName"></param>
+		/// <returns></returns>
+		public bool WriteImdiFile(string outputDirectoryName, string corpusName)
+		{
+			string corpusDirectoryName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusName);
 
-		private string valueField;
+			switch (Type)
+			{
+				case MetatranscriptValueType.CORPUS:
+					WriteCorpusImdiFile();
+					break;
+
+				case MetatranscriptValueType.CATALOGUE:
+					WriteCatalogueImdiFile();
+					break;
+
+				case MetatranscriptValueType.SESSION:
+					WriteSessionImdiFile(outputDirectoryName, corpusDirectoryName);
+					break;
+			}
+
+			return true;
+		}
+
+		private void WriteCorpusImdiFile()
+		{
+
+		}
+
+		private void WriteCatalogueImdiFile()
+		{
+
+		}
+
+		private void WriteSessionImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		{
+			// session object
+			Session s = (Session)Items[0];
+
+			// normalize session name
+			var sessionDirectoryName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(s.Name);
+
+			// create the session directory
+			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName, sessionDirectoryName));
+
+			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName, sessionDirectoryName + ".imdi");
+
+			TextWriter writer = new StreamWriter(imdiFile);
+			writer.Write(ToString());
+			writer.Close();
+		}
+
+		// **************** do we need these? ****************
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		[XmlIgnore]
+		public string History { get; set; }
+
+		/// <remarks/>
+		[XmlIgnore]
+		[XmlAttributeAttribute("History", DataType = "anyURI")]
+		public string History1 { get; set; }
+
+		/// <remarks/>
+		[XmlIgnore]
+		[XmlAttributeAttribute]
+		public string Profile { get; set; }
+
+		/// <remarks/>
+		[XmlIgnore]
+		[XmlAttributeAttribute]
+		public string ArchiveHandle { get; set; }
+	}
+
+	/// <remarks/>
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class CommaSeparatedStringType
+	{
+		/// <remarks/>
+		[XmlText]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
@@ -225,136 +230,58 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class SimpleLanguageType {
-
-		private LanguageId_Type idField;
-
-		private LanguageName_Type nameField;
+	public class SimpleLanguageType
+	{
+		/// <remarks/>
+		public string Id { get; set; }
 
 		/// <remarks/>
-		public LanguageId_Type Id {
-			get {
-				return idField;
-			}
-			set {
-				idField = value;
-			}
-		}
-
-		/// <remarks/>
-		public LanguageName_Type Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
+		public LanguageNameType Name { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LanguageId_Type
+	public class LanguageNameType : VocabularyType
 	{
-
-		private string valueField;
-
-		/// <remarks/>
-		[XmlTextAttribute(DataType="token")]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
 	}
 
 	/// <remarks/>
+	[XmlIncludeAttribute(typeof(LanguageNameType))]
+	[XmlIncludeAttribute(typeof(KeyType))]
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LanguageName_Type : Vocabulary_Type
+	public class VocabularyType
 	{
-	}
-
-	/// <remarks/>
-	[XmlIncludeAttribute(typeof(LanguageName_Type))]
-	[XmlIncludeAttribute(typeof(Key_Type))]
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Vocabulary_Type
-	{
-
-		private VocabularyType_Value_Type typeField;
-
-		private string defaultLinkField;
-
-		private string linkField;
-
-		private string valueField;
-
 		/// <remarks/>
-		public Vocabulary_Type() {
-			typeField = VocabularyType_Value_Type.OpenVocabulary;
+		public VocabularyType() {
+			Type = VocabularyTypeValueType.OpenVocabulary;
 		}
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		[DefaultValueAttribute(VocabularyType_Value_Type.OpenVocabulary)]
-		public VocabularyType_Value_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
+		[XmlAttribute]
+		public VocabularyTypeValueType Type { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string DefaultLink {
-			get {
-				return defaultLinkField;
-			}
-			set {
-				defaultLinkField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string DefaultLink { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string Link {
-			get {
-				return linkField;
-			}
-			set {
-				linkField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string Link { get; set; }
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		[XmlText]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public enum VocabularyType_Value_Type
+	public enum VocabularyTypeValueType
 	{
-
 		/// <remarks/>
 		ClosedVocabulary,
 
@@ -372,78 +299,35 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Key_Type : Vocabulary_Type
+	public class KeyType : VocabularyType
 	{
-
-		private string nameField;
-
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
+		[XmlAttribute]
+		public string Name { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class SubjectLanguageType : SimpleLanguageType {
-
-		private Boolean_Type dominantField;
-
-		private Boolean_Type sourceLanguageField;
-
-		private Boolean_Type targetLanguageField;
-
-		private List<Description_Type> descriptionField;
+	public class SubjectLanguageType : SimpleLanguageType
+	{
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public Boolean_Type Dominant {
-			get {
-				return dominantField;
-			}
-			set {
-				dominantField = value;
-			}
-		}
+		public BooleanType Dominant { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type SourceLanguage {
-			get {
-				return sourceLanguageField;
-			}
-			set {
-				sourceLanguageField = value;
-			}
-		}
+		public BooleanType SourceLanguage { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type TargetLanguage {
-			get {
-				return targetLanguageField;
-			}
-			set {
-				targetLanguageField = value;
-			}
-		}
+		public BooleanType TargetLanguage { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 	}
 
@@ -451,139 +335,55 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Boolean_Type
+	public class BooleanType
 	{
-
-		private VocabularyType_Value_Type typeField;
-
-		private string defaultLinkField;
-
-		private string linkField;
-
-		private string valueField;
-
 		/// <remarks/>
-		public Boolean_Type() {
-			typeField = VocabularyType_Value_Type.ClosedVocabulary;
+		public BooleanType() {
+			Type = VocabularyTypeValueType.ClosedVocabulary;
 		}
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		[DefaultValueAttribute(VocabularyType_Value_Type.ClosedVocabulary)]
-		public VocabularyType_Value_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
+		[XmlAttribute]
+		public VocabularyTypeValueType Type { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string DefaultLink {
-			get {
-				return defaultLinkField;
-			}
-			set {
-				defaultLinkField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string DefaultLink { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string Link {
-			get {
-				return linkField;
-			}
-			set {
-				linkField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string Link { get; set; }
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		[XmlText]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Description_Type
+	public class DescriptionType
 	{
-
-		private string languageIdField;
-
-		private string nameField;
-
-		private string archiveHandleField;
-
-		private string linkField;
-
-		private string valueField;
+		/// <remarks/>
+		[XmlAttribute(DataType="token")]
+		public string LanguageId { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="token")]
-		public string LanguageId {
-			get {
-				return languageIdField;
-			}
-			set {
-				languageIdField = value;
-			}
-		}
+		[XmlAttribute]
+		public string Name { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
+		[XmlAttribute]
+		public string ArchiveHandle { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ArchiveHandle {
-			get {
-				return archiveHandleField;
-			}
-			set {
-				archiveHandleField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string Link { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string Link {
-			get {
-				return linkField;
-			}
-			set {
-				linkField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		[XmlText]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
@@ -592,401 +392,173 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Catalogue : IMDIMajorObject
 	{
-		private String_Type[] idField;
-
-		private CatalogueDocumentLanguages documentLanguagesField;
-
-		private CatalogueSubjectLanguages subjectLanguagesField;
-
-		private Location_Type[] locationField;
-
-		private Vocabulary_Type[] contentTypeField;
-
-		private CatalogueFormat formatField;
-
-		private CatalogueQuality qualityField;
-
-		private Vocabulary_Type smallestAnnotationUnitField;
-
-		private Vocabulary_Type applicationsField;
-
-		private Date_Type dateField;
-
-		private Project[] projectField;
-
-		private String_Type[] publisherField;
-
-		private CommaSeparatedString_Type[] authorField;
-
-		private String_Type sizeField;
-
-		private Vocabulary_Type distributionFormField;
-
-		private Access_Type accessField;
-
-		private String_Type pricingField;
-
-		private String_Type contactPersonField;
-
-		private String_Type referenceLinkField;
-
-		private String_Type metadataLinkField;
-
-		private String_Type publicationsField;
-
-		private Keys_Type keysField;
+		/// <remarks/>
+		[XmlElement("Id")]
+		public string[] Id { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Id")]
-		public String_Type[] Id {
-			get {
-				return idField;
-			}
-			set {
-				idField = value;
-			}
-		}
+		public CatalogueDocumentLanguages DocumentLanguages { get; set; }
 
 		/// <remarks/>
-		public CatalogueDocumentLanguages DocumentLanguages {
-			get {
-				return documentLanguagesField;
-			}
-			set {
-				documentLanguagesField = value;
-			}
-		}
+		public CatalogueSubjectLanguages SubjectLanguages { get; set; }
 
 		/// <remarks/>
-		public CatalogueSubjectLanguages SubjectLanguages {
-			get {
-				return subjectLanguagesField;
-			}
-			set {
-				subjectLanguagesField = value;
-			}
-		}
+		[XmlElement("Location")]
+		public LocationType[] Location { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Location")]
-		public Location_Type[] Location {
-			get {
-				return locationField;
-			}
-			set {
-				locationField = value;
-			}
-		}
+		[XmlElement("ContentType")]
+		public VocabularyType[] ContentType { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("ContentType")]
-		public Vocabulary_Type[] ContentType {
-			get {
-				return contentTypeField;
-			}
-			set {
-				contentTypeField = value;
-			}
-		}
+		public CatalogueFormat Format { get; set; }
 
 		/// <remarks/>
-		public CatalogueFormat Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
+		public CatalogueQuality Quality { get; set; }
 
 		/// <remarks/>
-		public CatalogueQuality Quality {
-			get {
-				return qualityField;
-			}
-			set {
-				qualityField = value;
-			}
-		}
+		public VocabularyType SmallestAnnotationUnit { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type SmallestAnnotationUnit {
-			get {
-				return smallestAnnotationUnitField;
-			}
-			set {
-				smallestAnnotationUnitField = value;
-			}
-		}
+		public VocabularyType Applications { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Applications {
-			get {
-				return applicationsField;
-			}
-			set {
-				applicationsField = value;
-			}
-		}
+		public string Date { get; set; }
 
 		/// <remarks/>
-		public Date_Type Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
+		[XmlElement("Project")]
+		public Project[] Project { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Project")]
-		public Project[] Project {
-			get {
-				return projectField;
-			}
-			set {
-				projectField = value;
-			}
-		}
+		[XmlElement("Publisher")]
+		public string[] Publisher { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Publisher")]
-		public String_Type[] Publisher {
-			get {
-				return publisherField;
-			}
-			set {
-				publisherField = value;
-			}
-		}
+		[XmlElement("Author")]
+		public CommaSeparatedStringType[] Author { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Author")]
-		public CommaSeparatedString_Type[] Author {
-			get {
-				return authorField;
-			}
-			set {
-				authorField = value;
-			}
-		}
+		public string Size { get; set; }
 
 		/// <remarks/>
-		public String_Type Size {
-			get {
-				return sizeField;
-			}
-			set {
-				sizeField = value;
-			}
-		}
+		public VocabularyType DistributionForm { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type DistributionForm {
-			get {
-				return distributionFormField;
-			}
-			set {
-				distributionFormField = value;
-			}
-		}
+		public AccessType Access { get; set; }
 
 		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
+		public string Pricing { get; set; }
 
 		/// <remarks/>
-		public String_Type Pricing {
-			get {
-				return pricingField;
-			}
-			set {
-				pricingField = value;
-			}
-		}
+		public string ContactPerson { get; set; }
 
 		/// <remarks/>
-		public String_Type ContactPerson {
-			get {
-				return contactPersonField;
-			}
-			set {
-				contactPersonField = value;
-			}
-		}
+		public string ReferenceLink { get; set; }
 
 		/// <remarks/>
-		public String_Type ReferenceLink {
-			get {
-				return referenceLinkField;
-			}
-			set {
-				referenceLinkField = value;
-			}
-		}
+		public string MetadataLink { get; set; }
 
 		/// <remarks/>
-		public String_Type MetadataLink {
-			get {
-				return metadataLinkField;
-			}
-			set {
-				metadataLinkField = value;
-			}
-		}
+		public string Publications { get; set; }
 
 		/// <remarks/>
-		public String_Type Publications {
-			get {
-				return publicationsField;
-			}
-			set {
-				publicationsField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
+		public KeysType Keys { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CatalogueDocumentLanguages {
-
-		private List<Description_Type> descriptionField;
-
-		private SimpleLanguageType[] languageField;
+	public class CatalogueDocumentLanguages
+	{
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("Language")]
-		public SimpleLanguageType[] Language {
-			get {
-				return languageField;
-			}
-			set {
-				languageField = value;
-			}
-		}
+		[XmlElement("Language")]
+		public SimpleLanguageType[] Language { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CatalogueSubjectLanguages {
-
-		private List<Description_Type> descriptionField;
-
-		private SubjectLanguageType[] languageField;
+	public class CatalogueSubjectLanguages
+	{
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("Language")]
-		public SubjectLanguageType[] Language {
-			get {
-				return languageField;
-			}
-			set {
-				languageField = value;
-			}
-		}
+		[XmlElement("Language")]
+		public SubjectLanguageType[] Language { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Location_Type
+	public class LocationType
 	{
-
-		private Vocabulary_Type continentField;
-
-		private Vocabulary_Type countryField;
-
-		private String_Type[] regionField;
-
-		private String_Type addressField;
+		private List<string> _regionField;
 
 		/// <remarks/>
-		public Vocabulary_Type Continent {
-			get {
-				return continentField;
-			}
-			set {
-				continentField = value;
-			}
+		public VocabularyType Continent { get; set; }
+
+		/// <remarks/>
+		public void SetContinent(string continent)
+		{
+			ClosedIMDIItemList continentList = ListConstructor.GetClosedList(ListType.Continents);
+			Continent = continentList.FindByValue(continent).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.Continents));
 		}
 
 		/// <remarks/>
-		public Vocabulary_Type Country {
-			get {
-				return countryField;
-			}
-			set {
-				countryField = value;
-			}
+		public VocabularyType Country { get; set; }
+
+		/// <remarks/>
+		public void SetCountry(string country)
+		{
+			Country = IMDISchemaHelper.SetVocabulary(country, false, ListType.Link(ListType.Countries));
 		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Region")]
-		public String_Type[] Region {
-			get {
-				return regionField;
-			}
-			set {
-				regionField = value;
-			}
+		public List<string> Region
+		{
+			get { return _regionField ?? (_regionField = new List<string>()); }
+			set { _regionField = value; }
 		}
 
 		/// <remarks/>
-		public String_Type Address {
-			get {
-				return addressField;
-			}
-			set {
-				addressField = value;
-			}
+		public string Address { get; set; }
+
+		/// <remarks/>
+		public ArchivingLocation ToArchivingLocation()
+		{
+			ArchivingLocation loc = new ArchivingLocation();
+			if (Continent != null)
+				loc.Continent = Continent.Value;
+
+			if (Country != null)
+				loc.Country = Country.Value;
+
+			if (Region.Count > 0)
+				loc.Region = Region[0];
+
+			loc.Address = Address;
+
+			return loc;
 		}
 	}
 
@@ -994,131 +566,38 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CatalogueFormat {
-
-		private Vocabulary_Type textField;
-
-		private Vocabulary_Type audioField;
-
-		private Vocabulary_Type videoField;
-
-		private Vocabulary_Type imageField;
-
-		/// <remarks/>
-		public Vocabulary_Type Text {
-			get {
-				return textField;
-			}
-			set {
-				textField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Audio {
-			get {
-				return audioField;
-			}
-			set {
-				audioField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Video {
-			get {
-				return videoField;
-			}
-			set {
-				videoField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Image {
-			get {
-				return imageField;
-			}
-			set {
-				imageField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CatalogueQuality {
-
-		private string textField;
-
-		private string audioField;
-
-		private string videoField;
-
-		private string imageField;
-
-		/// <remarks/>
-		public string Text {
-			get {
-				return textField;
-			}
-			set {
-				textField = value;
-			}
-		}
-
-		/// <remarks/>
-		public string Audio {
-			get {
-				return audioField;
-			}
-			set {
-				audioField = value;
-			}
-		}
-
-		/// <remarks/>
-		public string Video {
-			get {
-				return videoField;
-			}
-			set {
-				videoField = value;
-			}
-		}
-
-		/// <remarks/>
-		public string Image {
-			get {
-				return imageField;
-			}
-			set {
-				imageField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Date_Type
+	public class CatalogueFormat
 	{
-
-		private string valueField;
+		/// <remarks/>
+		public VocabularyType Text { get; set; }
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		public VocabularyType Audio { get; set; }
+
+		/// <remarks/>
+		public VocabularyType Video { get; set; }
+
+		/// <remarks/>
+		public VocabularyType Image { get; set; }
+	}
+
+	/// <remarks/>
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class CatalogueQuality
+	{
+		/// <remarks/>
+		public string Text { get; set; }
+
+		/// <remarks/>
+		public string Audio { get; set; }
+
+		/// <remarks/>
+		public string Video { get; set; }
+
+		/// <remarks/>
+		public string Image { get; set; }
 	}
 
 	/// <remarks/>
@@ -1127,157 +606,60 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Project : IMDIMajorObject
 	{
-		private String_Type idField;
-
-		private Contact_Type contactField;
+		/// <remarks/>
+		public string Id { get; set; }
 
 		/// <remarks/>
-		public String_Type Id {
-			get {
-				return idField;
-			}
-			set {
-				idField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Contact_Type Contact {
-			get {
-				return contactField;
-			}
-			set {
-
-				contactField = value;
-			}
-		}
+		public ContactType Contact { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Contact_Type
+	public class ContactType
 	{
-		private String_Type nameField;
-
-		private String_Type addressField;
-
-		private String_Type emailField;
-
-		private String_Type organisationField;
+		/// <remarks/>
+		public string Name { get; set; }
 
 		/// <remarks/>
-		public String_Type Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
+		public string Address { get; set; }
 
 		/// <remarks/>
-		public String_Type Address {
-			get {
-				return addressField;
-			}
-			set {
-				addressField = value;
-			}
-		}
+		public string Email { get; set; }
 
 		/// <remarks/>
-		public String_Type Email {
-			get {
-				return emailField;
-			}
-			set {
-				emailField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type Organisation {
-			get {
-				return organisationField;
-			}
-			set {
-				organisationField = value;
-			}
-		}
+		public string Organisation { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Access_Type
+	public class AccessType
 	{
-		private Date_Type dateField;
-
-		private String_Type ownerField;
-
-		private String_Type publisherField;
-
-		private Contact_Type contactField;
-
-		private List<Description_Type> descriptionField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public Vocabulary_Type Availability { get; set; }
+		public string Availability { get; set; }
 
 		/// <remarks/>
-		public Date_Type Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
+		public string Date { get; set; }
 
 		/// <remarks/>
-		public String_Type Owner {
-			get {
-				return ownerField;
-			}
-			set {
-				ownerField = value;
-			}
-		}
+		public string Owner { get; set; }
 
 		/// <remarks/>
-		public String_Type Publisher {
-			get {
-				return publisherField;
-			}
-			set {
-				publisherField = value;
-			}
-		}
+		public string Publisher { get; set; }
 
 		/// <remarks/>
-		public Contact_Type Contact {
-			get {
-				return contactField;
-			}
-			set {
-				contactField = value;
-			}
-		}
+		public ContactType Contact { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 	}
 
@@ -1285,21 +667,11 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Keys_Type
+	public class KeysType
 	{
-
-		private Key_Type[] keyField;
-
 		/// <remarks/>
-		[XmlElementAttribute("Key")]
-		public Key_Type[] Key {
-			get {
-				return keyField;
-			}
-			set {
-				keyField = value;
-			}
-		}
+		[XmlElement("Key")]
+		public KeyType[] Key { get; set; }
 	}
 
 	/// <remarks/>
@@ -1308,407 +680,161 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Corpus : IMDIMajorObject
 	{
-		private MDGroupType mDGroupField;
-
-		private CorpusLink_Type[] corpusLinkField;
-
-		private string searchServiceField;
-
-		private string corpusStructureServiceField;
-
-		private string catalogueLinkField;
-
-		private string catalogueHandleField;
+		private MDGroupType _mDGroupField;
 
 		/// <remarks/>
 		public MDGroupType MDGroup {
-			get {
-				if (mDGroupField == null)
-					mDGroupField = new MDGroupType();
-				return mDGroupField;
-			}
-			set {
-				mDGroupField = value;
-			}
+			get { return _mDGroupField ?? (_mDGroupField = new MDGroupType()); }
+			set { _mDGroupField = value; }
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("CorpusLink")]
-		public CorpusLink_Type[] CorpusLink {
-			get {
-				return corpusLinkField;
-			}
-			set {
-				corpusLinkField = value;
-			}
-		}
+		[XmlElement("CorpusLink")]
+		public CorpusLinkType[] CorpusLink { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string SearchService {
-			get {
-				return searchServiceField;
-			}
-			set {
-				searchServiceField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string SearchService { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string CorpusStructureService {
-			get {
-				return corpusStructureServiceField;
-			}
-			set {
-				corpusStructureServiceField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string CorpusStructureService { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string CatalogueLink {
-			get {
-				return catalogueLinkField;
-			}
-			set {
-				catalogueLinkField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string CatalogueLink { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string CatalogueHandle {
-			get {
-				return catalogueHandleField;
-			}
-			set {
-				catalogueHandleField = value;
-			}
-		}
+		[XmlAttribute]
+		public string CatalogueHandle { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class MDGroupType {
-
-		private Location_Type locationField;
-
-		private Project[] projectField;
-
-		private Keys_Type keysField;
-
-		private Content_Type contentField;
-
-		private Actors_Type actorsField;
-
-		/// <remarks/>
-		public Location_Type Location {
-			get {
-				return locationField;
-			}
-			set {
-				locationField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Project")]
-		public Project[] Project {
-			get {
-				return projectField;
-			}
-			set {
-				projectField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Content_Type Content {
-			get {
-				return contentField;
-			}
-			set {
-				contentField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Actors_Type Actors {
-			get {
-				return actorsField;
-			}
-			set {
-				actorsField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Content_Type
+	public class MDGroupType
 	{
-		private Vocabulary_Type genreField;
-
-		private Vocabulary_Type subGenreField;
-
-		private Vocabulary_Type taskField;
-
-		private Vocabulary_Type modalitiesField;
-
-		private Content_TypeSubject subjectField;
-
-		private Content_TypeCommunicationContext communicationContextField;
-
-		private Languages_Type languagesField;
-
-		private Keys_Type keysField;
-
-		private List<Description_Type> descriptionField;
+		private LocationType _locationField;
+		private ActorsType _actorsField;
 
 		/// <remarks/>
-		public Vocabulary_Type Genre {
-			get {
-				return genreField;
-			}
-			set {
-				genreField = value;
-			}
+		public LocationType Location {
+			get { return _locationField ?? (_locationField = new LocationType()); }
+			set { _locationField = value; }
 		}
 
 		/// <remarks/>
-		public Vocabulary_Type SubGenre {
-			get {
-				return subGenreField;
-			}
-			set {
-				subGenreField = value;
-			}
-		}
+		[XmlElement("Project")]
+		public Project[] Project { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Task {
-			get {
-				return taskField;
-			}
-			set {
-				taskField = value;
-			}
-		}
+		public KeysType Keys { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Modalities {
-			get {
-				return modalitiesField;
-			}
-			set {
-				modalitiesField = value;
-			}
-		}
+		public ContentType Content { get; set; }
 
 		/// <remarks/>
-		public Content_TypeSubject Subject {
-			get {
-				return subjectField;
-			}
-			set {
-				subjectField = value;
-			}
+		public ActorsType Actors {
+			get { return _actorsField ?? (_actorsField = new ActorsType()); }
+			set { _actorsField = value; }
 		}
+	}
+
+	/// <remarks/>
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class ContentType
+	{
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public Content_TypeCommunicationContext CommunicationContext {
-			get {
-				return communicationContextField;
-			}
-			set {
-				communicationContextField = value;
-			}
-		}
+		public VocabularyType Genre { get; set; }
 
 		/// <remarks/>
-		public Languages_Type Languages {
-			get {
-
-				return languagesField;
-			}
-			set {
-				languagesField = value;
-			}
-		}
+		public VocabularyType SubGenre { get; set; }
 
 		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
+		public VocabularyType Task { get; set; }
+
+		/// <remarks/>
+		public VocabularyType Modalities { get; set; }
+
+		/// <remarks/>
+		public ContentTypeSubject Subject { get; set; }
+
+		/// <remarks/>
+		public LanguagesType Languages { get; set; }
+
+		/// <remarks/>
+		public KeysType Keys { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
+
+		// **************** do we need these? ****************
+
+		///// <remarks/>
+		//public NotUsed.Content_TypeCommunicationContext CommunicationContext { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Content_TypeSubject : Vocabulary_Type
+	public class ContentTypeSubject : VocabularyType
 	{
-
-		private string encodingField;
-
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Encoding {
-			get {
-				return encodingField;
-			}
-			set {
-				encodingField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Content_TypeCommunicationContext
-	{
-		private Vocabulary_Type interactivityField;
-
-		private Vocabulary_Type planningTypeField;
-
-		private Vocabulary_Type involvementField;
-
-		private Vocabulary_Type socialContextField;
-
-		private Vocabulary_Type eventStructureField;
-
-		private Vocabulary_Type channelField;
-
-		/// <remarks/>
-		public Vocabulary_Type Interactivity {
-			get {
-				return interactivityField;
-			}
-			set {
-				interactivityField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type PlanningType {
-			get {
-				return planningTypeField;
-			}
-			set {
-				planningTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Involvement {
-			get {
-				return involvementField;
-			}
-			set {
-				involvementField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type SocialContext {
-			get {
-				return socialContextField;
-			}
-			set {
-				socialContextField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type EventStructure {
-			get {
-				return eventStructureField;
-			}
-			set {
-				eventStructureField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Channel {
-			get {
-				return channelField;
-			}
-			set {
-				channelField = value;
-			}
-		}
+		[XmlAttribute]
+		public string Encoding { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Languages_Type
+	public class LanguagesType
 	{
-		private List<Description_Type> descriptionField;
+		private List<DescriptionType> _descriptionField;
 
-		private List<Language_Type> languageField;
+		private List<LanguageType> _languageField;
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Language")]
-		public List<Language_Type> Language {
-			get {
-				if (languageField == null)
-					languageField = new List<Language_Type>();
-				return languageField;
+		public List<LanguageType> Language {
+			get { return _languageField ?? (_languageField = new List<LanguageType>()); }
+			set { _languageField = value; }
+		}
+
+		/// <summary></summary>
+		/// <param name="iso3CodeOrEnglishName"></param>
+		public static LanguageType GetLanguage(string iso3CodeOrEnglishName)
+		{
+			LanguageType langType;
+
+			try
+			{
+				langType = LanguageList.FindByISO3Code(iso3CodeOrEnglishName).ToLanguageType();
 			}
-			set {
-				languageField = value;
+			catch (ArgumentException)
+			{
+				// not found by iso3 code, try by name
+				langType = LanguageList.FindByEnglishName(iso3CodeOrEnglishName).ToLanguageType();
 			}
+
+			return langType;
 		}
 	}
 
@@ -1716,156 +842,65 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Language_Type
+	public class LanguageType
 	{
-		private LanguageId_Type idField;
-
-		private LanguageName_Type[] nameField;
-
-		private Boolean_Type motherTongueField;
-
-		private Boolean_Type primaryLanguageField;
-
-		private Boolean_Type dominantField;
-
-		private Boolean_Type sourceLanguageField;
-
-		private Boolean_Type targetLanguageField;
-
-		private List<Description_Type> descriptionField;
-
-		private string resourceRefField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public LanguageId_Type Id {
-			get {
-				return idField;
-			}
-			set {
-				idField = value;
-			}
-		}
+		public string Id { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Name")]
-		public LanguageName_Type[] Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
+		[XmlElement("Name")]
+		public LanguageNameType[] Name { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type MotherTongue {
-			get {
-				return motherTongueField;
-			}
-			set {
-				motherTongueField = value;
-			}
-		}
+		public BooleanType MotherTongue { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type PrimaryLanguage {
-			get {
-				return primaryLanguageField;
-			}
-			set {
-				primaryLanguageField = value;
-			}
-		}
+		public BooleanType PrimaryLanguage { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type Dominant {
-			get {
-				return dominantField;
-			}
-			set {
-				dominantField = value;
-			}
-		}
+		public BooleanType Dominant { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type SourceLanguage {
-			get {
-				return sourceLanguageField;
-			}
-			set {
-				sourceLanguageField = value;
-			}
-		}
+		public BooleanType SourceLanguage { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type TargetLanguage {
-			get {
-				return targetLanguageField;
-			}
-			set {
-				targetLanguageField = value;
-			}
-		}
+		public BooleanType TargetLanguage { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceRef {
-			get {
-				return resourceRefField;
-			}
-			set {
-				resourceRefField = value;
-			}
-		}
+		[XmlAttribute]
+		public string ResourceRef { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Actors_Type
+	public class ActorsType
 	{
-		private List<Description_Type> descriptionField;
-
-		private List<Actor_Type> actorField;
+		private List<DescriptionType> _descriptionField;
+		private List<ActorType> _actorField;
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Actor")]
-		public List<Actor_Type> Actor {
-			get {
-				if (actorField == null)
-					actorField = new List<Actor_Type>();
-				return actorField;
-			}
-			set {
-				actorField = value;
-			}
+		public List<ActorType> Actor {
+			get { return _actorField ?? (_actorField = new List<ActorType>()); }
+			set { _actorField = value; }
 		}
 	}
 
@@ -1873,1132 +908,334 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Actor_Type
+	public class ActorType
 	{
-		private Vocabulary_Type roleField;
+		private LanguagesType _languagesField;
+		private List<DescriptionType> _descriptionField;
 
-		private String_Type[] nameField;
+		/// <summary>Default constructor</summary>
+		public ActorType()
+		{
+		}
 
-		private String_Type fullNameField;
+		// TODO: Do we need this constructor?
+		/// <summary></summary>
+		public ActorType(ArchivingActor actor)
+		{
+			Name = new[] {actor.GetName()};
+			FullName = actor.GetFullName();
 
-		private String_Type codeField;
+			if (!string.IsNullOrEmpty(actor.Age))
+				Age = actor.Age;
 
-		private Vocabulary_Type familySocialRoleField;
-
-		private Languages_Type languagesField;
-
-		private Vocabulary_Type ethnicGroupField;
-
-		private AgeRange_Type ageField;
-
-		private Date_Type birthDateField;
-
-		private Vocabulary_Type sexField;
-
-		private String_Type educationField;
-
-		private Boolean_Type anonymizedField;
-
-		private Contact_Type contactField;
-
-		private Keys_Type keysField;
-
-		private List<Description_Type> descriptionField;
-
-		private string resourceRefField;
-
-		/// <remarks/>
-		public Vocabulary_Type Role {
-			get {
-				return roleField;
+			// languages
+			foreach (var langIso3 in actor.Iso3LanguageCodes)
+			{
+				var langType = LanguageList.FindByISO3Code(langIso3).ToLanguageType();
+				if (langType != null)
+					AddLanguage(langType, (actor.PrimaryLanguageIso3Code == langIso3), (actor.MotherTongueLanguageIso3Code == langIso3));
 			}
-			set {
-				roleField = value;
-			}
+
+			// BirthDate (year)
+			var birthDate = actor.GetBirthDate();
+			if (!string.IsNullOrEmpty(birthDate))
+				SetBirthDate(birthDate);
+
+			// Sex
+			if (!string.IsNullOrEmpty(actor.Gender))
+				SetSex(actor.Gender);
+
+
+			// Education
+			if (!string.IsNullOrEmpty(actor.Education))
+				Education = actor.Education;
+
+			//// Occupation
+			//if (!string.IsNullOrEmpty(actor.Occupation))
+			//    FamilySocialRole = actor.Occupation.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
 		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Name")]
-		public String_Type[] Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
+		public string[] Name { get; set; }
+
+		/// <remarks/>
+		public string FullName { get; set; }
+
+		/// <remarks/>
+		public string Code { get; set; }
+
+		/// <remarks/>
+		public LanguagesType Languages {
+			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
+			set { _languagesField = value; }
+		}
+
+		/// <summary></summary>
+		/// <param name="language"></param>
+		/// <param name="primaryLanguage"></param>
+		/// <param name="motherTongue"></param>
+		public void AddLanguage(LanguageType language, bool primaryLanguage, bool motherTongue)
+		{
+			ClosedIMDIItemList boolList = ListConstructor.GetClosedList(ListType.Boolean);
+			language.PrimaryLanguage = boolList.FindByValue((primaryLanguage) ? "true" : "false").ToBooleanType();
+			language.MotherTongue = boolList.FindByValue((motherTongue) ? "true" : "false").ToBooleanType();
+			Languages.Language.Add(language);
 		}
 
 		/// <remarks/>
-		public String_Type FullName {
-			get {
-				return fullNameField;
-			}
-			set {
-				fullNameField = value;
-			}
+		public string Age { get; set; }
+
+		/// <remarks/>
+		public string BirthDate { get; set; }
+
+		/// <remarks/>
+		public void SetBirthDate(DateTime birthDate)
+		{
+			BirthDate = birthDate.ToISO8601DateOnlyString();
 		}
 
 		/// <remarks/>
-		public String_Type Code {
-			get {
-				return codeField;
-			}
-			set {
-				codeField = value;
-			}
+		public void SetBirthDate(string birthDate)
+		{
+			BirthDate = birthDate;
 		}
 
 		/// <remarks/>
-		public Vocabulary_Type FamilySocialRole {
-			get {
-				return familySocialRoleField;
-			}
-			set {
-				familySocialRoleField = value;
-			}
+		public VocabularyType Sex { get; set; }
+
+		/// <remarks/>
+		public void SetSex(string gender)
+		{
+			ClosedIMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
+			Sex = genderList.FindByValue(gender).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ActorSex));
 		}
 
 		/// <remarks/>
-		public Languages_Type Languages {
-			get {
-				return languagesField;
+		public string Education { get; set; }
+
+		// TODO: Do we need this method?
+		/// <remarks/>
+		public ArchivingActor ToArchivingActor()
+		{
+			ArchivingActor actr = new ArchivingActor
+			{
+				Age = Age,
+				Education = Education,
+				FullName = FullName
+			};
+
+			if (Sex != null)
+				actr.Gender = Sex.Value;
+
+			if (Name.Length > 0)
+				actr.Name = Name[0];
+
+			if (!string.IsNullOrEmpty(BirthDate))
+				actr.BirthDate = BirthDate;
+
+			foreach (LanguageType lang in Languages.Language)
+			{
+				var iso3 = lang.Id.Substring(lang.Id.Length - 3);
+
+				actr.Iso3LanguageCodes.Add(iso3);
+
+				if (lang.PrimaryLanguage.Value == "true")
+					actr.PrimaryLanguageIso3Code = iso3;
+
+				if (lang.MotherTongue.Value == "true")
+					actr.MotherTongueLanguageIso3Code = iso3;
 			}
-			set {
-				languagesField = value;
-			}
+
+			return actr;
 		}
 
-		/// <remarks/>
-		public Vocabulary_Type EthnicGroup {
-			get {
-				return ethnicGroupField;
-			}
-			set {
-				ethnicGroupField = value;
-			}
-		}
+		//*********************************************************************
+		// these possibly will not be used
 
 		/// <remarks/>
-		public AgeRange_Type Age {
-			get {
-				return ageField;
-			}
-			set {
-				ageField = value;
-			}
-		}
+		public VocabularyType Role { get; set; }
 
 		/// <remarks/>
-		public Date_Type BirthDate {
-			get {
-				return birthDateField;
-			}
-			set {
-				birthDateField = value;
-			}
-		}
+		public VocabularyType FamilySocialRole { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Sex {
-			get {
-				return sexField;
-			}
-			set {
-				sexField = value;
-			}
-		}
+		public VocabularyType EthnicGroup { get; set; }
 
 		/// <remarks/>
-		public String_Type Education {
-			get {
-				return educationField;
-			}
-			set {
-				educationField = value;
-			}
-		}
+		public BooleanType Anonymized { get; set; }
 
 		/// <remarks/>
-		public Boolean_Type Anonymized {
-			get {
-				return anonymizedField;
-			}
-			set {
-				anonymizedField = value;
-			}
-		}
+		public ContactType Contact { get; set; }
 
 		/// <remarks/>
-		public Contact_Type Contact {
-			get {
-				return contactField;
-			}
-			set {
-				contactField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
+		public KeysType Keys { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
 		[XmlAttributeAttribute]
-		public string ResourceRef {
-			get {
-				return resourceRefField;
-			}
-			set {
-				resourceRefField = value;
-			}
-		}
+		public string ResourceRef { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class AgeRange_Type
+	public class CorpusLinkType : ResourceLinkType
 	{
+		/// <remarks/>
+		[XmlAttribute]
+		public string Name { get; set; }
+	}
 
-		private string valueField;
+	/// <remarks/>
+	[XmlIncludeAttribute(typeof(CorpusLinkType))]
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class ResourceLinkType
+	{
+		/// <remarks/>
+		[XmlAttribute]
+		public string ArchiveHandle { get; set; }
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		[XmlText(DataType="anyURI")]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CorpusLink_Type : ResourceLink_Type
+	public class AnonymsType
 	{
-
-		private string nameField;
+		/// <remarks/>
+		public ResourceLinkType ResourceLink { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[XmlIncludeAttribute(typeof(CorpusLink_Type))]
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ResourceLink_Type
-	{
-		private string archiveHandleField;
-
-		private string valueField;
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ArchiveHandle {
-			get {
-				return archiveHandleField;
-			}
-			set {
-				archiveHandleField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlTextAttribute(DataType="anyURI")]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		public AccessType Access { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Anonyms_Type
+	public class CounterPositionType
 	{
-		private ResourceLink_Type resourceLinkField;
-
-		private Access_Type accessField;
+		/// <remarks/>
+		public IntegerType Start { get; set; }
 
 		/// <remarks/>
-		public ResourceLink_Type ResourceLink {
-			get {
-				return resourceLinkField;
-			}
-			set {
-				resourceLinkField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
+		public IntegerType End { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CounterPosition_Type
+	public class IntegerType
 	{
-		private Integer_Type startField;
-
-		private Integer_Type endField;
-
 		/// <remarks/>
-		public Integer_Type Start {
-			get {
-				return startField;
-			}
-			set {
-				startField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Integer_Type End {
-			get {
-				return endField;
-			}
-			set {
-				endField = value;
-			}
-		}
+		[XmlText]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Integer_Type
+	public class SourceType
 	{
-		private string valueField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Source_Type
-	{
-		private Source_TypeID idField;
-
-		private Vocabulary_Type formatField;
-
-		private Quality_Type qualityField;
-
-		private CounterPosition_Type counterPositionField;
-
-		private TimePositionRange_Type timePositionField;
-
-		private Access_Type accessField;
-
-		private List<Description_Type> descriptionField;
-
-		private Keys_Type keysField;
-
-		private string resourceRefsField;
+		public string Id { get; set; }
 
 		/// <remarks/>
-		public Source_TypeID Id {
-			get {
-				return idField;
-			}
-			set {
-				idField = value;
-			}
-		}
+		public VocabularyType Format { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
+		public QualityType Quality { get; set; }
 
 		/// <remarks/>
-		public Quality_Type Quality {
-			get {
-				return qualityField;
-			}
-			set {
-				qualityField = value;
-			}
-		}
+		public CounterPositionType CounterPosition { get; set; }
 
 		/// <remarks/>
-		public CounterPosition_Type CounterPosition {
-			get {
-				return counterPositionField;
-			}
-			set {
-				counterPositionField = value;
-			}
-		}
-
-		/// <remarks/>
-		public TimePositionRange_Type TimePosition {
-			get {
-				return timePositionField;
-			}
-			set {
-				timePositionField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
+		public AccessType Access { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
+		public KeysType Keys { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceRefs {
-			get {
-				return resourceRefsField;
-			}
-			set {
-				resourceRefsField = value;
-			}
-		}
-	}
+		[XmlAttribute]
+		public string ResourceRefs { get; set; }
 
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Source_TypeID
-	{
-		private string valueField;
+		// **************** do we need these? ****************
 
-		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		///// <remarks/>
+		//public TimePositionRange_Type TimePosition { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Quality_Type
+	public class QualityType
 	{
-		private string linkField;
-
-		private VocabularyType_Value_Type typeField;
-
-		private string valueField;
-
 		/// <remarks/>
-		public Quality_Type() {
-			typeField = VocabularyType_Value_Type.ClosedVocabulary;
+		public QualityType() {
+			Type = VocabularyTypeValueType.ClosedVocabulary;
 		}
 
 		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string Link {
-			get {
-				return linkField;
-			}
-			set {
-				linkField = value;
-			}
-		}
+		[XmlAttribute(DataType="anyURI")]
+		public string Link { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		[DefaultValueAttribute(VocabularyType_Value_Type.ClosedVocabulary)]
-		public VocabularyType_Value_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
+		[XmlAttribute]
+		public VocabularyTypeValueType Type { get; set; }
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		[XmlText]
+		public string Value { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class TimePositionRange_Type
+	public class ValidationType
 	{
-
-		private TimePosition_Type startField;
-
-		private TimePosition_Type endField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public TimePosition_Type Start {
-			get {
-				return startField;
-			}
-			set {
-				startField = value;
-			}
-		}
+		public VocabularyType Type { get; set; }
 
 		/// <remarks/>
-		public TimePosition_Type End {
-			get {
-				return endField;
-			}
-			set {
-				endField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class TimePosition_Type
-	{
-		private string valueField;
+		public VocabularyType Methodology { get; set; }
 
 		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_Type
-	{
-
-		private ResourceLink_Type resourceLinkField;
-
-		private Date_Type dateField;
-
-		private Vocabulary_Type typeField;
-
-		private Vocabulary_Type formatField;
-
-		private String_Type characterEncodingField;
-
-		private LexiconComponent_TypeSize sizeField;
-
-		private LexiconComponent_TypeComponent componentField;
-
-		private LexiconComponent_TypeLexicalInfo lexicalInfoField;
-
-		private LexiconComponent_TypeMetaLanguages metaLanguagesField;
-
-		private Access_Type accessField;
-
-		private List<Description_Type> descriptionField;
-
-		private Keys_Type keysField;
-
-		private string resourceIdField;
-
-		/// <remarks/>
-		public ResourceLink_Type ResourceLink {
-			get {
-				return resourceLinkField;
-			}
-			set {
-				resourceLinkField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Date_Type Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type CharacterEncoding {
-			get {
-				return characterEncodingField;
-			}
-			set {
-				characterEncodingField = value;
-			}
-		}
-
-		/// <remarks/>
-		public LexiconComponent_TypeSize Size {
-			get {
-				return sizeField;
-			}
-			set {
-				sizeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public LexiconComponent_TypeComponent Component {
-			get {
-				return componentField;
-			}
-			set {
-				componentField = value;
-			}
-		}
-
-		/// <remarks/>
-		public LexiconComponent_TypeLexicalInfo LexicalInfo {
-			get {
-				return lexicalInfoField;
-			}
-			set {
-				lexicalInfoField = value;
-			}
-		}
-
-		/// <remarks/>
-		public LexiconComponent_TypeMetaLanguages MetaLanguages {
-			get {
-				return metaLanguagesField;
-			}
-			set {
-				metaLanguagesField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
+		public IntegerType Level { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceId {
-			get {
-				return resourceIdField;
-			}
-			set {
-				resourceIdField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_TypeSize
-	{
-		private string valueField;
-
-		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_TypeComponent {
-
-		private Vocabulary_Type possibleParentsField;
-
-		private Vocabulary_Type preferredParentField;
-
-		private LexiconComponent_TypeComponentChildNodes childNodesField;
-
-		/// <remarks/>
-		public Vocabulary_Type possibleParents {
-			get {
-				return possibleParentsField;
-			}
-			set {
-				possibleParentsField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type preferredParent {
-			get {
-				return preferredParentField;
-			}
-			set {
-				preferredParentField = value;
-			}
-		}
-
-		/// <remarks/>
-		public LexiconComponent_TypeComponentChildNodes childNodes {
-			get {
-				return childNodesField;
-			}
-			set {
-				childNodesField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_TypeComponentChildNodes {
-
-		private Vocabulary_Type childComponentsField;
-
-		private Vocabulary_Type childCategoriesField;
-
-		/// <remarks/>
-		public Vocabulary_Type childComponents {
-			get {
-				return childComponentsField;
-			}
-			set {
-				childComponentsField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type childCategories {
-			get {
-				return childCategoriesField;
-			}
-			set {
-				childCategoriesField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_TypeLexicalInfo {
-
-		private bool orthographyField;
-
-		private bool orthographyFieldSpecified;
-
-		private bool morphologyField;
-
-		private bool morphologyFieldSpecified;
-
-		private bool morphoSyntaxField;
-
-		private bool morphoSyntaxFieldSpecified;
-
-		private bool syntaxField;
-
-		private bool syntaxFieldSpecified;
-
-		private bool phonologyField;
-
-		private bool phonologyFieldSpecified;
-
-		private bool semanticsField;
-
-		private bool semanticsFieldSpecified;
-
-		private bool etymologyField;
-
-		private bool etymologyFieldSpecified;
-
-		private bool usageField;
-
-		private bool usageFieldSpecified;
-
-		private bool frequencyField;
-
-		private bool frequencyFieldSpecified;
-
-		/// <remarks/>
-		public bool Orthography {
-			get {
-				return orthographyField;
-			}
-			set {
-				orthographyField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool OrthographySpecified {
-			get {
-				return orthographyFieldSpecified;
-			}
-			set {
-				orthographyFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Morphology {
-			get {
-				return morphologyField;
-			}
-			set {
-				morphologyField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool MorphologySpecified {
-			get {
-				return morphologyFieldSpecified;
-			}
-			set {
-				morphologyFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool MorphoSyntax {
-			get {
-				return morphoSyntaxField;
-			}
-			set {
-				morphoSyntaxField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool MorphoSyntaxSpecified {
-			get {
-				return morphoSyntaxFieldSpecified;
-			}
-			set {
-				morphoSyntaxFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Syntax {
-			get {
-				return syntaxField;
-			}
-			set {
-				syntaxField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool SyntaxSpecified {
-			get {
-				return syntaxFieldSpecified;
-			}
-			set {
-				syntaxFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Phonology {
-			get {
-				return phonologyField;
-			}
-			set {
-				phonologyField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool PhonologySpecified {
-			get {
-				return phonologyFieldSpecified;
-			}
-			set {
-				phonologyFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Semantics {
-			get {
-				return semanticsField;
-			}
-			set {
-				semanticsField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool SemanticsSpecified {
-			get {
-				return semanticsFieldSpecified;
-			}
-			set {
-				semanticsFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Etymology {
-			get {
-				return etymologyField;
-			}
-			set {
-				etymologyField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool EtymologySpecified {
-			get {
-				return etymologyFieldSpecified;
-			}
-			set {
-				etymologyFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Usage {
-			get {
-				return usageField;
-			}
-			set {
-				usageField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool UsageSpecified {
-			get {
-				return usageFieldSpecified;
-			}
-			set {
-				usageFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		public bool Frequency {
-			get {
-				return frequencyField;
-			}
-			set {
-				frequencyField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool FrequencySpecified {
-			get {
-				return frequencyFieldSpecified;
-			}
-			set {
-				frequencyFieldSpecified = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconComponent_TypeMetaLanguages {
-
-		private Vocabulary_Type languageField;
-
-		private List<Description_Type> descriptionField;
-
-		/// <remarks/>
-		public Vocabulary_Type Language {
-			get {
-				return languageField;
-			}
-			set {
-				languageField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 	}
 
@@ -3006,865 +1243,122 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconResource_Type
+	public class WrittenResourceType : IIMDISessionFile
 	{
-
-		private ResourceLink_Type resourceLinkField;
-
-		private Date_Type dateField;
-
-		private Vocabulary_Type typeField;
-
-		private Vocabulary_Type formatField;
-
-		private String_Type characterEncodingField;
-
-		private LexiconResource_TypeSize sizeField;
-
-		private Integer_Type noHeadEntriesField;
-
-		private Integer_Type noSubEntriesField;
-
-		private LexiconResource_TypeLexicalEntry[] lexicalEntryField;
-
-		private LexiconResource_TypeMetaLanguages metaLanguagesField;
-
-		private Access_Type accessField;
-
-		private List<Description_Type> descriptionField;
-
-		private Keys_Type keysField;
-
-		private string resourceIdField;
+		private string _dateField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public ResourceLink_Type ResourceLink {
+		public ResourceLinkType ResourceLink { get; set; }
+
+		/// <remarks/>
+		public ResourceLinkType MediaResourceLink { get; set; }
+
+		/// <remarks/>
+		public string Date {
 			get {
-				return resourceLinkField;
+				return _dateField;
 			}
 			set {
-				resourceLinkField = value;
+				_dateField = value;
 			}
 		}
 
 		/// <remarks/>
-		public Date_Type Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
+		public VocabularyType Type { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
+		public VocabularyType SubType { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
+		public VocabularyType Format { get; set; }
 
 		/// <remarks/>
-		public String_Type CharacterEncoding {
-			get {
-				return characterEncodingField;
-			}
-			set {
-				characterEncodingField = value;
-			}
-		}
+		public string Size { get; set; }
 
 		/// <remarks/>
-		public LexiconResource_TypeSize Size {
-			get {
-				return sizeField;
-			}
-			set {
-				sizeField = value;
-			}
-		}
+		public ValidationType Validation { get; set; }
 
 		/// <remarks/>
-		public Integer_Type NoHeadEntries {
-			get {
-				return noHeadEntriesField;
-			}
-			set {
-				noHeadEntriesField = value;
-			}
-		}
+		public VocabularyType Derivation { get; set; }
 
 		/// <remarks/>
-		public Integer_Type NoSubEntries {
-			get {
-				return noSubEntriesField;
-			}
-			set {
-				noSubEntriesField = value;
-			}
-		}
+		public string CharacterEncoding { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("LexicalEntry")]
-		public LexiconResource_TypeLexicalEntry[] LexicalEntry {
-			get {
-				return lexicalEntryField;
-			}
-			set {
-				lexicalEntryField = value;
-			}
-		}
+		public string ContentEncoding { get; set; }
 
 		/// <remarks/>
-		public LexiconResource_TypeMetaLanguages MetaLanguages {
-			get {
-				return metaLanguagesField;
-			}
-			set {
-				metaLanguagesField = value;
-			}
-		}
+		public VocabularyType LanguageId { get; set; }
 
 		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
+		public BooleanType Anonymized { get; set; }
+
+		/// <remarks/>
+		public AccessType Access { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
+		public KeysType Keys { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceId {
-			get {
-				return resourceIdField;
-			}
-			set {
-				resourceIdField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconResource_TypeSize
-	{
-		private string valueField;
-
-		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconResource_TypeLexicalEntry {
-
-		private Vocabulary_Type headWordTypeField;
-
-		private Vocabulary_Type orthographyField;
-
-		private Vocabulary_Type morphologyField;
-
-		private Vocabulary_Type morphoSyntaxField;
-
-		private Vocabulary_Type syntaxField;
-
-		private Vocabulary_Type phonologyField;
-
-		private Vocabulary_Type semanticsField;
-
-		private Vocabulary_Type etymologyField;
-
-		private Vocabulary_Type usageField;
-
-		private String_Type frequencyField;
-
-		/// <remarks/>
-		public Vocabulary_Type HeadWordType {
-			get {
-				return headWordTypeField;
-			}
-			set {
-				headWordTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Orthography {
-			get {
-				return orthographyField;
-			}
-			set {
-				orthographyField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Morphology {
-			get {
-				return morphologyField;
-			}
-			set {
-				morphologyField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type MorphoSyntax {
-			get {
-				return morphoSyntaxField;
-			}
-			set {
-				morphoSyntaxField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Syntax {
-			get {
-				return syntaxField;
-			}
-			set {
-				syntaxField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Phonology {
-			get {
-				return phonologyField;
-			}
-			set {
-				phonologyField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Semantics {
-			get {
-				return semanticsField;
-			}
-			set {
-				semanticsField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Etymology {
-			get {
-				return etymologyField;
-			}
-			set {
-				etymologyField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Usage {
-			get {
-				return usageField;
-			}
-			set {
-				usageField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type Frequency {
-			get {
-				return frequencyField;
-			}
-			set {
-				frequencyField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LexiconResource_TypeMetaLanguages {
-
-		private Vocabulary_Type[] languageField;
-
-		private List<Description_Type> descriptionField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Language")]
-		public Vocabulary_Type[] Language {
-			get {
-				return languageField;
-			}
-			set {
-				languageField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
-		}
+		[XmlAttribute]
+		public string ResourceId { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class Validation_Type
+	public class MediaFileType : IIMDISessionFile
 	{
-
-		private Vocabulary_Type typeField;
-
-		private Vocabulary_Type methodologyField;
-
-		private Integer_Type levelField;
-
-		private List<Description_Type> descriptionField;
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
-		public Vocabulary_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
+		public ResourceLinkType ResourceLink { get; set; }
 
 		/// <remarks/>
-		public Vocabulary_Type Methodology {
-			get {
-				return methodologyField;
-			}
-			set {
-				methodologyField = value;
-			}
-		}
+		public VocabularyType Type { get; set; }
 
 		/// <remarks/>
-		public Integer_Type Level {
-			get {
-				return levelField;
-			}
-			set {
-				levelField = value;
-			}
-		}
+		public VocabularyType Format { get; set; }
+
+		/// <remarks/>
+		public string Size { get; set; }
+
+		/// <remarks/>
+		public QualityType Quality { get; set; }
+
+		/// <remarks/>
+		public string RecordingConditions { get; set; }
+
+		/// <remarks/>
+		public AccessType Access { get; set; }
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class WrittenResource_Type : IIMDISessionFile {
-
-		private ResourceLink_Type resourceLinkField;
-
-		private ResourceLink_Type mediaResourceLinkField;
-
-		private WrittenResource_TypeDate dateField;
-
-		private Vocabulary_Type typeField;
-
-		private Vocabulary_Type subTypeField;
-
-		private Vocabulary_Type formatField;
-
-		private String_Type sizeField;
-
-		private Validation_Type validationField;
-
-		private Vocabulary_Type derivationField;
-
-		private String_Type characterEncodingField;
-
-		private String_Type contentEncodingField;
-
-		private Vocabulary_Type languageIdField;
-
-		private Boolean_Type anonymizedField;
-
-		private Access_Type accessField;
-
-		private List<Description_Type> descriptionField;
-
-		private Keys_Type keysField;
-
-		private string resourceIdField;
-
-		/// <remarks/>
-		public ResourceLink_Type ResourceLink {
-			get {
-				return resourceLinkField;
-			}
-			set {
-				resourceLinkField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
-		public ResourceLink_Type MediaResourceLink {
-			get {
-				return mediaResourceLinkField;
-			}
-			set {
-				mediaResourceLinkField = value;
-			}
-		}
+		public KeysType Keys { get; set; }
 
 		/// <remarks/>
-		public WrittenResource_TypeDate Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
+		[XmlAttribute]
+		public string ResourceId { get; set; }
 
-		/// <remarks/>
-		public Vocabulary_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
+		// **************** do we need these? ****************
 
-		/// <remarks/>
-		public Vocabulary_Type SubType {
-			get {
-				return subTypeField;
-			}
-			set {
-				subTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type Size {
-			get {
-				return sizeField;
-			}
-			set {
-				sizeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Validation_Type Validation {
-			get {
-				return validationField;
-			}
-			set {
-				validationField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Derivation {
-			get {
-				return derivationField;
-			}
-			set {
-				derivationField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type CharacterEncoding {
-			get {
-				return characterEncodingField;
-			}
-			set {
-				characterEncodingField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type ContentEncoding {
-			get {
-				return contentEncodingField;
-			}
-			set {
-				contentEncodingField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type LanguageId {
-			get {
-				return languageIdField;
-			}
-			set {
-				languageIdField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Boolean_Type Anonymized {
-			get {
-				return anonymizedField;
-			}
-			set {
-				anonymizedField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceId {
-			get {
-				return resourceIdField;
-			}
-			set {
-				resourceIdField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class WrittenResource_TypeDate : Date_Type
-	{
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class MediaFile_Type : IIMDISessionFile {
-
-		private ResourceLink_Type resourceLinkField;
-
-		private Vocabulary_Type typeField;
-
-		private Vocabulary_Type formatField;
-
-		private String_Type sizeField;
-
-		private Quality_Type qualityField;
-
-		private String_Type recordingConditionsField;
-
-		private TimePositionRange_Type timePositionField;
-
-		private Access_Type accessField;
-
-		private List<Description_Type> descriptionField;
-
-		private Keys_Type keysField;
-
-		private string resourceIdField;
-
-		/// <remarks/>
-		public ResourceLink_Type ResourceLink {
-			get {
-				return resourceLinkField;
-			}
-			set {
-				resourceLinkField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type Size {
-			get {
-				return sizeField;
-			}
-			set {
-				sizeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Quality_Type Quality {
-			get {
-				return qualityField;
-			}
-			set {
-				qualityField = value;
-			}
-		}
-
-		/// <remarks/>
-		public String_Type RecordingConditions {
-			get {
-				return recordingConditionsField;
-			}
-			set {
-				recordingConditionsField = value;
-			}
-		}
-
-		/// <remarks/>
-		public TimePositionRange_Type TimePosition {
-			get {
-				return timePositionField;
-			}
-			set {
-				timePositionField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Access_Type Access {
-			get {
-				return accessField;
-			}
-			set {
-				accessField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Keys_Type Keys {
-			get {
-				return keysField;
-			}
-			set {
-				keysField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceId {
-			get {
-				return resourceIdField;
-			}
-			set {
-				resourceIdField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ExternalResourceReference_Type
-	{
-
-		private Vocabulary_Type typeField;
-
-		private Vocabulary_Type subTypeField;
-
-		private Vocabulary_Type formatField;
-
-		private string linkField;
-
-		/// <remarks/>
-		public Vocabulary_Type Type {
-			get {
-				return typeField;
-			}
-			set {
-				typeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type SubType {
-			get {
-				return subTypeField;
-			}
-			set {
-				subTypeField = value;
-			}
-		}
-
-		/// <remarks/>
-		public Vocabulary_Type Format {
-			get {
-				return formatField;
-			}
-			set {
-				formatField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute(DataType="anyURI")]
-		public string Link {
-			get {
-				return linkField;
-			}
-			set {
-				linkField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class DateRange_Type
-	{
-		private string valueField;
-
-		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
+		///// <remarks/>
+		//public NotUsed.TimePositionRange_Type TimePosition { get; set; }
 	}
 
 	/// <remarks/>
@@ -3873,74 +1367,92 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Session : IMDIMajorObject, IArchivingSession
 	{
-		private ExternalResourceReference_Type[] externalResourceReferenceField;
-
-		private MDGroupType mDGroupField;
-
-		private SessionResources resourcesField;
-
-		private SessionReferences referencesField;
+		private MDGroupType _mDGroupField;
+		private SessionResources _resourcesField;
 
 		/// <remarks/>
-		public DateRange_Type Date { get; set; }
+		[XmlElement("Date")]
+		public string Date { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("ExternalResourceReference")]
-		public ExternalResourceReference_Type[] ExternalResourceReference {
-			get {
-				return externalResourceReferenceField;
-			}
-			set {
-				externalResourceReferenceField = value;
-			}
+		public void SetDate(DateTime date)
+		{
+			Date = date.ToISO8601DateOnlyString();
 		}
 
 		/// <remarks/>
-		public MDGroupType MDGroup {
-			get {
-				if (mDGroupField == null)
-					mDGroupField = new MDGroupType();
-				return mDGroupField;
-			}
-			set {
-				mDGroupField = value;
-			}
+		public void SetDate(string date)
+		{
+			Date = date;
 		}
 
 		/// <remarks/>
-		public SessionResources Resources {
-			get {
-				return resourcesField;
-			}
-			set {
-				resourcesField = value;
-			}
+		public MDGroupType MDGroup
+		{
+			get { return _mDGroupField ?? (_mDGroupField = new MDGroupType()); }
+			set { _mDGroupField = value; }
 		}
 
 		/// <remarks/>
-		public SessionReferences References {
-			get {
-				return referencesField;
-			}
-			set {
-				referencesField = value;
-			}
+		public SessionResources Resources
+		{
+			get { return _resourcesField ?? (_resourcesField = new SessionResources()); }
+			set { _resourcesField = value; }
 		}
+
+		/// <remarks/>
+		[XmlIgnore]
+		public ArchivingLocation Location
+		{
+			get { return MDGroup.Location.ToArchivingLocation(); }
+			set
+			{
+				var loc = MDGroup.Location;
+
+				if (!string.IsNullOrEmpty(value.Continent))
+					loc.SetContinent(value.Continent);
+
+				if (!string.IsNullOrEmpty(value.Country))
+					loc.SetCountry(value.Country);
+
+				if (!string.IsNullOrEmpty(value.Region))
+					loc.Region.Add(value.Region);
+
+				loc.Address = value.Address;
+			}
+
+		}
+
+		/// <remarks/>
+		public void AddActor(ArchivingActor actor)
+		{
+			MDGroup.Actors.Actor.Add(new ActorType(actor));
+		}
+
+		// **************** do we need these? ****************
+
+		///// <remarks/>
+		//public SessionReferences References { get; set; }
+
+		///// <remarks/>
+		//[XmlElementAttribute("ExternalResourceReference")]
+		//public NotUsed.ExternalResourceReference_Type[] ExternalResourceReference { get; set; }
 
 		// Don't know which of the following we really need:
 
+		/// <remarks/>
 		[XmlIgnore]
 		public DateTime DateCreatedFirst { get; set; }
+		/// <remarks/>
 		[XmlIgnore]
 		public DateTime DateCreatedLast { get; set; }
+		/// <remarks/>
 		[XmlIgnore]
 		public DateTime DateModified { get; set; }
+		/// <remarks/>
 		[XmlIgnore]
 		public IAccessProtocol AccessProtocol { get; set; }
-		[XmlIgnore]
-		public ArchivingLocation Location { get; set; }
-		[XmlIgnore]
-		public ArchivingActorCollection Actors { get; set; }
+		/// <remarks/>
 		[XmlIgnore]
 		public List<IArchivingFile> Files { get; set; }
 	}
@@ -3949,118 +1461,65 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class SessionResources {
-
-		private List<MediaFile_Type> mediaFileField;
-
-		private List<WrittenResource_Type> writtenResourceField;
-
-		private LexiconResource_Type[] lexiconResourceField;
-
-		private LexiconComponent_Type[] lexiconComponentField;
-
-		private Source_Type[] sourceField;
-
-		private Anonyms_Type anonymsField;
+	public class SessionResources
+	{
+		private List<MediaFileType> _mediaFileField;
+		private List<WrittenResourceType> _writtenResourceField;
 
 		/// <remarks/>
 		[XmlElementAttribute("MediaFile")]
-		public List<MediaFile_Type> MediaFile {
-			get {
-				if (mediaFileField == null)
-					mediaFileField = new List<MediaFile_Type>();
-				return mediaFileField;
-			}
-			set {
-				mediaFileField = value;
-			}
+		public List<MediaFileType> MediaFile {
+			get { return _mediaFileField ?? (_mediaFileField = new List<MediaFileType>()); }
+			set { _mediaFileField = value; }
 		}
 
 		/// <remarks/>
 		[XmlElementAttribute("WrittenResource")]
-		public List<WrittenResource_Type> WrittenResource {
-			get {
-				if (writtenResourceField == null)
-					writtenResourceField = new List<WrittenResource_Type>();
-				return writtenResourceField;
-			}
-			set {
-				writtenResourceField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("LexiconResource")]
-		public LexiconResource_Type[] LexiconResource {
-			get {
-				return lexiconResourceField;
-			}
-			set {
-				lexiconResourceField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("LexiconComponent")]
-		public LexiconComponent_Type[] LexiconComponent {
-			get {
-				return lexiconComponentField;
-			}
-			set {
-				lexiconComponentField = value;
-			}
+		public List<WrittenResourceType> WrittenResource {
+			get { return _writtenResourceField ?? (_writtenResourceField = new List<WrittenResourceType>()); }
+			set { _writtenResourceField = value; }
 		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Source")]
-		public Source_Type[] Source {
-			get {
-				return sourceField;
-			}
-			set {
-				sourceField = value;
-			}
-		}
+		public SourceType[] Source { get; set; }
 
 		/// <remarks/>
-		public Anonyms_Type Anonyms {
-			get {
-				return anonymsField;
-			}
-			set {
-				anonymsField = value;
-			}
-		}
+		public AnonymsType Anonyms { get; set; }
+
+		// **************** do we need these? ****************
+
+		///// <remarks/>
+		//[XmlElementAttribute("LexiconResource")]
+		//public NotUsed.LexiconResource_Type[] LexiconResource { get; set; }
+
+		///// <remarks/>
+		//[XmlElementAttribute("LexiconComponent")]
+		//public NotUsed.LexiconComponent_Type[] LexiconComponent { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class SessionReferences {
-
-		private List<Description_Type> descriptionField;
+	public class SessionReferences
+	{
+		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
+		public List<DescriptionType> Description {
+			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+			set { _descriptionField = value; }
 		}
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public enum Metatranscript_Value_Type
+	public enum MetatranscriptValueType
 	{
-
+		// ReSharper disable InconsistentNaming
 		/// <remarks/>
 		SESSION,
 
@@ -4088,153 +1547,6 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlEnumAttribute("CORPUS.Profile")]
 		CORPUSProfile,
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	[XmlRootAttribute("VocabularyDef", Namespace="http://www.mpi.nl/IMDI/Schema/IMDI", IsNullable=false)]
-	public class VocabularyDef_Type
-	{
-
-		private List<Description_Type> descriptionField;
-
-		private VocabularyDef_TypeEntry[] entryField;
-
-		private string nameField;
-
-		private DateTime dateField;
-
-		private DateTime tagField;
-
-		private bool tagFieldSpecified;
-
-		private string linkField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<Description_Type> Description {
-			get {
-				if (descriptionField == null)
-					descriptionField = new List<Description_Type>();
-				return descriptionField;
-			}
-			set {
-				descriptionField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Entry")]
-		public VocabularyDef_TypeEntry[] Entry {
-			get {
-				return entryField;
-			}
-			set {
-				entryField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Name {
-			get {
-				return nameField;
-			}
-			set {
-				nameField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute(DataType="date")]
-		public DateTime Date {
-			get {
-				return dateField;
-			}
-			set {
-				dateField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute(DataType="date")]
-		public DateTime Tag {
-			get {
-				return tagField;
-			}
-			set {
-				tagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlIgnoreAttribute]
-		public bool TagSpecified {
-			get {
-				return tagFieldSpecified;
-			}
-			set {
-				tagFieldSpecified = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute(DataType="anyURI")]
-		public string Link {
-			get {
-				return linkField;
-			}
-			set {
-				linkField = value;
-			}
-		}
-	}
-
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class VocabularyDef_TypeEntry {
-
-		private string tagField;
-
-		private string valueField;
-
-		private string value1Field;
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Tag {
-			get {
-				return tagField;
-			}
-			set {
-				tagField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string Value {
-			get {
-				return valueField;
-			}
-			set {
-				valueField = value;
-			}
-		}
-
-		/// <remarks/>
-		[XmlTextAttribute]
-		public string Value1 {
-			get {
-				return value1Field;
-			}
-			set {
-				value1Field = value;
-			}
-		}
+		// ReSharper restore InconsistentNaming
 	}
 }

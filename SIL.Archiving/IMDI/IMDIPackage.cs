@@ -21,8 +21,8 @@ namespace SIL.Archiving.IMDI
 		public IMDIPackage(bool corpus)
 		{
 			_corpus = corpus;
-			BaseImdiFile = new MetaTranscript(corpus ? Metatranscript_Value_Type.CORPUS :
-				Metatranscript_Value_Type.SESSION);
+			BaseImdiFile = new MetaTranscript(corpus ? MetatranscriptValueType.CORPUS :
+				MetatranscriptValueType.SESSION);
 		}
 
 		#region Properties
