@@ -227,7 +227,7 @@ namespace Palaso.WritingSystems
 			{
 				lcidReader.ReadStartElement("special");
 				lcidReader.MoveToContent();
-				return GetSpecialValue(lcidReader, "fw", "windowsLCID");
+				return GetSpecialValue(lcidReader, "fw", "windowsLCID", "urn://fieldworks.sil.org/ldmlExtensions/v1");
 			}
 		}
 
@@ -692,12 +692,17 @@ namespace Palaso.WritingSystems
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
-			{
-				return string.Empty;
-			}
-			return reader.GetAttribute("value") ?? string.Empty;
+			return GetSpecialValue(reader, ns, field, _nameSpaceManager.LookupNamespace(ns));
 		}
+
+		  protected string GetSpecialValue(XmlReader reader, string ns, string field, string nameSpaceUri)
+		  {
+			  if(!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, nameSpaceUri, string.Compare))
+			  {
+				  return string.Empty;
+			  }
+			  return reader.GetAttribute("value") ?? string.Empty;
+		  }
 
 		private string GetSubNodeAttributeValue(XmlReader reader, string elementName, string attributeName)
 		{
