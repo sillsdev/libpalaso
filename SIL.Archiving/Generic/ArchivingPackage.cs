@@ -31,17 +31,31 @@ namespace SIL.Archiving.Generic
 			Contacts = new ArchivingContactCollection();
 		}
 
+		/// <summary></summary>
 		public string Title { get; set; }
+
+		/// <summary></summary>
 		public string Name { get; set; }
+
+		/// <summary></summary>
 		public void AddDescription(LanguageString description)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary></summary>
 		public DateTime DateCreatedFirst { get; set; }
+
+		/// <summary></summary>
 		public DateTime DateCreatedLast { get; set; }
+
+		/// <summary></summary>
 		public DateTime DateModified { get; set; }
+
+		/// <summary></summary>
 		public IAccessProtocol AccessProtocol { get; set; }
+
+		/// <summary></summary>
 		public ArchivingLocation Location { get; set; }
 	}
 }

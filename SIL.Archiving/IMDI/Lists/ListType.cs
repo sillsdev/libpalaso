@@ -11,8 +11,10 @@
 		public const string ActorSex = "Actor-Sex.xml";
 		public const string Boolean = "Boolean.xml";
 		public const string ContentChannel = "Content-Channel.xml";
+		public const string ContentEventStructure = "Content-EventStructure.xml";
 		public const string ContentGenre = "Content-Genre.xml";
 		public const string ContentInteractivity = "Content-Interactivity.xml";
+		public const string ContentInvolvement = "Content-Involvement.xml";
 		public const string ContentModalities = "Content-Modalities.xml";
 		public const string ContentPlanningType = "Content-PlanningType.xml";
 		public const string ContentSocialContext = "Content-SocialContext.xml";

@@ -149,11 +149,11 @@ namespace SIL.Archiving.IMDI.Schema
 			switch (Type)
 			{
 				case MetatranscriptValueType.CORPUS:
-					WriteCorpusImdiFile();
+					WriteCorpusImdiFile(outputDirectoryName, corpusDirectoryName);
 					break;
 
 				case MetatranscriptValueType.CATALOGUE:
-					WriteCatalogueImdiFile();
+					WriteCatalogueImdiFile(outputDirectoryName, corpusDirectoryName);
 					break;
 
 				case MetatranscriptValueType.SESSION:
@@ -164,14 +164,28 @@ namespace SIL.Archiving.IMDI.Schema
 			return true;
 		}
 
-		private void WriteCorpusImdiFile()
+		private void WriteCorpusImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
+			// create the corpus directory
+			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName));
 
+			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName + ".imdi");
+
+			TextWriter writer = new StreamWriter(imdiFile);
+			writer.Write(ToString());
+			writer.Close();
 		}
 
-		private void WriteCatalogueImdiFile()
+		private void WriteCatalogueImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
+			// create the corpus directory
+			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName));
 
+			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName, corpusDirectoryName + "_Catalogue.imdi");
+
+			TextWriter writer = new StreamWriter(imdiFile);
+			writer.Write(ToString());
+			writer.Close();
 		}
 
 		private void WriteSessionImdiFile(string outputDirectoryName, string corpusDirectoryName)
@@ -356,7 +370,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[XmlText]
-		public string Value { get; set; }
+		public BooleanEnum Value { get; set; }
 	}
 
 	/// <remarks/>
@@ -680,14 +694,6 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Corpus : IMDIMajorObject
 	{
-		private MDGroupType _mDGroupField;
-
-		/// <remarks/>
-		public MDGroupType MDGroup {
-			get { return _mDGroupField ?? (_mDGroupField = new MDGroupType()); }
-			set { _mDGroupField = value; }
-		}
-
 		/// <remarks/>
 		[XmlElement("CorpusLink")]
 		public CorpusLinkType[] CorpusLink { get; set; }
@@ -717,9 +723,11 @@ namespace SIL.Archiving.IMDI.Schema
 	{
 		private LocationType _locationField;
 		private ActorsType _actorsField;
+		private ContentType _contentField;
 
 		/// <remarks/>
-		public LocationType Location {
+		public LocationType Location
+		{
 			get { return _locationField ?? (_locationField = new LocationType()); }
 			set { _locationField = value; }
 		}
@@ -732,10 +740,15 @@ namespace SIL.Archiving.IMDI.Schema
 		public KeysType Keys { get; set; }
 
 		/// <remarks/>
-		public ContentType Content { get; set; }
+		public ContentType Content
+		{
+			get { return _contentField ?? (_contentField = new ContentType()); }
+			set { _contentField = value; }
+		}
 
 		/// <remarks/>
-		public ActorsType Actors {
+		public ActorsType Actors
+		{
 			get { return _actorsField ?? (_actorsField = new ActorsType()); }
 			set { _actorsField = value; }
 		}
@@ -748,24 +761,23 @@ namespace SIL.Archiving.IMDI.Schema
 	public class ContentType
 	{
 		private List<DescriptionType> _descriptionField;
+		private ContentTypeCommunicationContext _contextField;
+		private LanguagesType _languagesField;
 
-		/// <remarks/>
+		/// <remarks>Open vocabulary, Content-Genre.xml</remarks>
 		public VocabularyType Genre { get; set; }
 
-		/// <remarks/>
+		/// <remarks>Open vocabulary, Content-SubGenre.xml</remarks>
 		public VocabularyType SubGenre { get; set; }
 
-		/// <remarks/>
+		/// <remarks>Open vocabulary, Content-Task.xml</remarks>
 		public VocabularyType Task { get; set; }
 
-		/// <remarks/>
+		/// <remarks>Open vocabulary, Content-Modalities.xml</remarks>
 		public VocabularyType Modalities { get; set; }
 
-		/// <remarks/>
+		/// <remarks>Open vocabulary, Content-Subject.xml</remarks>
 		public ContentTypeSubject Subject { get; set; }
-
-		/// <remarks/>
-		public LanguagesType Languages { get; set; }
 
 		/// <remarks/>
 		public KeysType Keys { get; set; }
@@ -777,10 +789,103 @@ namespace SIL.Archiving.IMDI.Schema
 			set { _descriptionField = value; }
 		}
 
-		// **************** do we need these? ****************
+		/// <remarks/>
+		[XmlElement("Languages")]
+		public LanguagesType Languages
+		{
+			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
+			set { _languagesField = value; }
+		}
 
-		///// <remarks/>
-		//public NotUsed.Content_TypeCommunicationContext CommunicationContext { get; set; }
+		/// <summary>Adds a language, setting some attributes also</summary>
+		/// <param name="iso3Code"></param>
+		/// <param name="dominantLanguage"></param>
+		/// <param name="sourceLanguage"></param>
+		/// <param name="targetLanguage"></param>
+		public void AddLanguage(string iso3Code, BooleanEnum dominantLanguage, BooleanEnum sourceLanguage, BooleanEnum targetLanguage)
+		{
+			var language = LanguageList.FindByISO3Code(iso3Code).ToLanguageType();
+			if (language == null) return;
+
+			language.Dominant = new BooleanType { Value = dominantLanguage };
+			language.SourceLanguage = new BooleanType { Value = sourceLanguage };
+			language.TargetLanguage = new BooleanType { Value = targetLanguage };
+			Languages.Language.Add(language);
+		}
+
+		/// <remarks/>
+		public ContentTypeCommunicationContext CommunicationContext
+		{
+			get { return _contextField ?? (_contextField = new ContentTypeCommunicationContext()); }
+			set { _contextField = value; }
+		}
+
+		/// <remarks/>
+		public void SetInteractivity(string interactivity)
+		{
+			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInteractivity);
+			CommunicationContext.Interactivity = list.FindByValue(interactivity).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInteractivity));
+		}
+
+		/// <remarks/>
+		public void SetPlanningType(string planningType)
+		{
+			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType);
+			CommunicationContext.PlanningType = list.FindByValue(planningType).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentPlanningType));
+		}
+
+		/// <remarks/>
+		public void SetInvolvement(string involvement)
+		{
+			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement);
+			CommunicationContext.Involvement = list.FindByValue(involvement).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInvolvement));
+		}
+
+		/// <remarks/>
+		public void SetSocialContext(string socialContext)
+		{
+			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentSocialContext);
+			CommunicationContext.SocialContext = list.FindByValue(socialContext).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentSocialContext));
+		}
+
+		/// <remarks/>
+		public void SetEventStructure(string eventStructure)
+		{
+			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentEventStructure);
+			CommunicationContext.EventStructure = list.FindByValue(eventStructure).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentEventStructure));
+		}
+
+		/// <remarks/>
+		public void SetChannel(string channel)
+		{
+			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentChannel);
+			CommunicationContext.Channel = list.FindByValue(channel).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentChannel));
+		}
+	}
+
+	/// <remarks/>
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class ContentTypeCommunicationContext
+	{
+		/// <remarks>Closed vocabulary, Content-Interactivity.xml</remarks>
+		public VocabularyType Interactivity { get; set; }
+
+		/// <remarks>Closed vocabulary, Content-PlanningType.xml</remarks>
+		public VocabularyType PlanningType { get; set; }
+
+		/// <remarks>Closed vocabulary, Content-Involvement.xml</remarks>
+		public VocabularyType Involvement { get; set; }
+
+		/// <remarks>Closed vocabulary, Content-SocialContext.xml</remarks>
+		public VocabularyType SocialContext { get; set; }
+
+		/// <remarks>Closed vocabulary, Content-EventStructure.xml</remarks>
+		public VocabularyType EventStructure { get; set; }
+
+		/// <remarks>Closed vocabulary, Content-Channel.xml</remarks>
+		public VocabularyType Channel { get; set; }
 	}
 
 	/// <remarks/>
@@ -910,15 +1015,14 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class ActorType
 	{
-		private LanguagesType _languagesField;
 		private List<DescriptionType> _descriptionField;
+		private LanguagesType _languagesField;
 
 		/// <summary>Default constructor</summary>
 		public ActorType()
 		{
 		}
 
-		// TODO: Do we need this constructor?
 		/// <summary></summary>
 		public ActorType(ArchivingActor actor)
 		{
@@ -929,14 +1033,24 @@ namespace SIL.Archiving.IMDI.Schema
 				Age = actor.Age;
 
 			// languages
+			bool hasPrimary = !string.IsNullOrEmpty(actor.PrimaryLanguageIso3Code);
+			bool hasMother = !string.IsNullOrEmpty(actor.MotherTongueLanguageIso3Code);
+
 			foreach (var langIso3 in actor.Iso3LanguageCodes)
 			{
-				var langType = LanguageList.FindByISO3Code(langIso3).ToLanguageType();
-				if (langType != null)
-					AddLanguage(langType, (actor.PrimaryLanguageIso3Code == langIso3), (actor.MotherTongueLanguageIso3Code == langIso3));
+				BooleanEnum isPrimary = (hasPrimary)
+					? (actor.PrimaryLanguageIso3Code == langIso3) ? BooleanEnum.@true : BooleanEnum.@false
+					: BooleanEnum.Unspecified;
+
+				BooleanEnum isMother = (hasMother)
+					? (actor.MotherTongueLanguageIso3Code == langIso3) ? BooleanEnum.@true : BooleanEnum.@false
+					: BooleanEnum.Unspecified;
+
+				AddLanguage(langIso3, isPrimary, isMother);
 			}
 
-			// BirthDate (year)
+
+			// BirthDate (can be just year)
 			var birthDate = actor.GetBirthDate();
 			if (!string.IsNullOrEmpty(birthDate))
 				SetBirthDate(birthDate);
@@ -964,24 +1078,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public string Code { get; set; }
-
-		/// <remarks/>
-		public LanguagesType Languages {
-			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
-			set { _languagesField = value; }
-		}
-
-		/// <summary></summary>
-		/// <param name="language"></param>
-		/// <param name="primaryLanguage"></param>
-		/// <param name="motherTongue"></param>
-		public void AddLanguage(LanguageType language, bool primaryLanguage, bool motherTongue)
-		{
-			ClosedIMDIItemList boolList = ListConstructor.GetClosedList(ListType.Boolean);
-			language.PrimaryLanguage = boolList.FindByValue((primaryLanguage) ? "true" : "false").ToBooleanType();
-			language.MotherTongue = boolList.FindByValue((motherTongue) ? "true" : "false").ToBooleanType();
-			Languages.Language.Add(language);
-		}
 
 		/// <remarks/>
 		public string Age { get; set; }
@@ -1014,6 +1110,28 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public string Education { get; set; }
 
+		/// <remarks/>
+		[XmlElement("Languages")]
+		public LanguagesType Languages
+		{
+			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
+			set { _languagesField = value; }
+		}
+
+		/// <summary>Adds a language, setting some attributes also</summary>
+		/// <param name="iso3Code"></param>
+		/// <param name="primaryLanguage"></param>
+		/// <param name="motherTongue"></param>
+		public void AddLanguage(string iso3Code, BooleanEnum primaryLanguage, BooleanEnum motherTongue)
+		{
+			var language = LanguageList.FindByISO3Code(iso3Code).ToLanguageType();
+			if (language == null) return;
+
+			language.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = ListType.Link(ListType.Boolean) };
+			language.MotherTongue = new BooleanType { Value = motherTongue, Link = ListType.Link(ListType.Boolean) };
+			Languages.Language.Add(language);
+		}
+
 		// TODO: Do we need this method?
 		/// <remarks/>
 		public ArchivingActor ToArchivingActor()
@@ -1040,10 +1158,10 @@ namespace SIL.Archiving.IMDI.Schema
 
 				actr.Iso3LanguageCodes.Add(iso3);
 
-				if (lang.PrimaryLanguage.Value == "true")
+				if (lang.PrimaryLanguage.Value == BooleanEnum.@true)
 					actr.PrimaryLanguageIso3Code = iso3;
 
-				if (lang.MotherTongue.Value == "true")
+				if (lang.MotherTongue.Value == BooleanEnum.@true)
 					actr.MotherTongueLanguageIso3Code = iso3;
 			}
 

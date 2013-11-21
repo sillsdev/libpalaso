@@ -12,10 +12,12 @@ namespace SIL.Archiving.Generic
 		/// <summary>The ISO3 code for the language this object is in</summary>
 		public string Iso3LanguageId;
 
+		/// <summary></summary>
 		public LanguageString()
 		{
 		}
 
+		/// <summary></summary>
 		public LanguageString(string value, string languageId)
 		{
 			Value = value;

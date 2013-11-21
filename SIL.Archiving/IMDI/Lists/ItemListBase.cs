@@ -26,16 +26,19 @@ namespace SIL.Archiving.IMDI.Lists
 
 		public override string ToString() { return Text; }
 
-		/// <summary>Convert to Vocabulary_Type</summary>
+		/// <summary>Convert to VocabularyType</summary>
 		public VocabularyType ToVocabularyType(VocabularyTypeValueType vocabularyType, string link)
 		{
 			return new VocabularyType { Type = vocabularyType, Value = Value, Link = link };
 		}
 
-		/// <summary>Convert to Boolean_Type</summary>
+		/// <summary>Convert to BooleanType</summary>
 		public BooleanType ToBooleanType()
 		{
-			return new BooleanType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = Value, Link = ListType.Link(ListType.Boolean) };
+			BooleanEnum boolEnum;
+			return Enum.TryParse(Value, true, out boolEnum)
+				? new BooleanType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = boolEnum, Link = ListType.Link(ListType.Boolean) }
+				: new BooleanType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = BooleanEnum.Unknown, Link = ListType.Link(ListType.Boolean) };
 		}
 	}
 
