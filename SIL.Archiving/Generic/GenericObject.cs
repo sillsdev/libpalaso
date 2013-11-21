@@ -1,6 +1,5 @@
 ﻿using System;
 using SIL.Archiving.Generic.AccessProtocol;
-using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.Generic
 {

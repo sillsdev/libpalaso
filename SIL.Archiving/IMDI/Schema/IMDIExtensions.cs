@@ -35,7 +35,6 @@ namespace SIL.Archiving.IMDI.Schema
 			{
 				Address = archivingLocation.Address
 			};
-			ClosedIMDIItemList continentList = ListConstructor.GetClosedList(ListType.Continents);
 			returnVal.SetContinent(archivingLocation.Continent);
 			returnVal.SetCountry(archivingLocation.Country);
 

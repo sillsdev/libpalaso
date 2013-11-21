@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Linq;
+using L10NSharp;
 using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI.Lists
@@ -36,10 +37,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <returns></returns>
 		public static LanguageList GetList()
 		{
-			if (_instance == null)
-				_instance = new LanguageList();
-
-			return _instance;
+			return _instance ?? (_instance = new LanguageList());
 		}
 
 		/// ---------------------------------------------------------------------------------------
@@ -56,9 +54,13 @@ namespace SIL.Archiving.IMDI.Lists
 		public static LanguageItem FindByISO3Code(string iso3Code)
 		{
 			var item = GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code));
-			if (item == null)
-				throw new ArgumentException("Invalid ISO 639-3 code: " + iso3Code, "iso3Code");
-			return (LanguageItem)item;
+
+			// return language item if found
+			if (item != null) return (LanguageItem) item;
+
+			// if not found, throw exception
+			var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.InvalidLanguageCode", "Invalid ISO 639-3 code: {0}");
+			throw new ArgumentException(string.Format(msg, iso3Code), "iso3Code");
 		}
 
 		/// -------------------------------------------------------------------------------------------
