@@ -353,7 +353,9 @@ namespace Palaso.Tests.WritingSystems
 			value='2' />
 	</special>
 </ldml>".Replace("'", "\"");
+
 #endregion
+
 #endif
 			using (var file = new TempFile())
 			{
@@ -831,7 +833,74 @@ namespace Palaso.Tests.WritingSystems
 				WriteVersion0Ldml("en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				var dataMapper = new LdmlDataMapper();
-				Assert.That(() => dataMapper.Read(file.Path, ws), Throws.Exception.TypeOf<ApplicationException>().With.Property("Message").EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {1} was expected.", file.Path, WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+				Assert.That(() => dataMapper.Read(file.Path, ws),
+								Throws.Exception.TypeOf<ApplicationException>()
+										.With.Property("Message")
+										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {1} was expected.", file.Path,
+																	  WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+			}
+		}
+
+		[Test]
+		public void RoundTrippingLdmlDoesNotDuplicateSections()
+		{
+			using(var roundTripOut2 = new TempFile())
+			using(var roundTripOut = new TempFile())
+			using(var tempFile = new TempFile())
+			{
+
+				using(var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+						@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version
+			number='' />
+		<language
+			type='qaa' />
+		<variant
+			type='x-lel' />
+	</identity>
+	<collations />
+
+	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled
+			value='False' />
+		<fw:windowsLCID
+			value='1036' />
+	</special>
+</ldml>".Replace("'", "\""));
+				}
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, ws);
+				var keyboard1 = new DefaultKeyboardDefinition();
+				keyboard1.Locale = "en-US";
+				keyboard1.Layout = "MyFavoriteKeyboard";
+				keyboard1.OperatingSystem = PlatformID.MacOSX; // pick something that for sure won't be our default
+				ws.AddKnownKeyboard(keyboard1);
+				using(var fileStream = new FileStream(tempFile.Path, FileMode.Open))
+				{
+					dataMapper.Write(roundTripOut.Path, ws, fileStream);
+				}
+				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='windowsLCID']", 1);
+				var secondTripMapper = new LdmlDataMapper();
+				var secondTripWs = new WritingSystemDefinition();
+				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
+				secondTripWs.AddKnownKeyboard(new DefaultKeyboardDefinition()
+					{
+						Locale = "qaa",
+						Layout = "x-tel",
+						OperatingSystem = PlatformID.Xbox
+					});
+				secondTripWs.WindowsLcid = "1037";
+				using(var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
+				{
+					secondTripMapper.Write(roundTripOut2.Path, secondTripWs, fileStream);
+				}
+				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='windowsLCID']", 1); //Element duplicated on round trip
 			}
 		}
 

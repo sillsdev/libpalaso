@@ -646,17 +646,14 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(reader != null);
-			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
-				&& (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
+			while(!reader.EOF && reader.NodeType != XmlNodeType.EndElement
+					 && (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
 			{
-				if (reader.NodeType == XmlNodeType.Element)
+				if(reader.NodeType == XmlNodeType.Element)
 				{
-					// The 'special' element xmlns:fw is known, because it is in our namespace list
-					// so we can read the windowsLCID property out of it. But we don't ever write new
-					// information to it, so it is convenient to treat it as unknown and copy it here.
-					bool knownNS = reader.GetAttribute("xmlns:fw") == null && IsKnownSpecialElement(reader);
+					bool knownNS = IsKnownSpecialElement(reader);
 					reader.MoveToElement();
-					if (knownNS)
+					if(knownNS)
 					{
 						reader.Skip();
 						continue;
@@ -718,7 +715,6 @@ namespace Palaso.WritingSystems
 		{
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 			m.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
-			m.AddNamespace("fw", "urn://fieldworks.sil.org/ldmlExtensions/v1");
 		}
 
 		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)
