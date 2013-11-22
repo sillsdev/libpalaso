@@ -41,5 +41,14 @@ namespace SIL.Archiving.Properties {
 				return ((string)(this["RampContributorRoles"]));
 			}
 		}
+
+		[global::System.Configuration.ApplicationScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("http://www.mpi.nl/imdi/")]
+		public string IMDIWebSite {
+			get {
+				return ((string)(this["IMDIWebSite"]));
+			}
+		}
 	}
 }

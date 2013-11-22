@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using L10NSharp;
 using SIL.Archiving.Generic;
+using SIL.Archiving.Properties;
 
 namespace SIL.Archiving.IMDI
 {
@@ -15,34 +18,114 @@ namespace SIL.Archiving.IMDI
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 
+		#region Properties
+		/// ------------------------------------------------------------------------------------
+		internal override string ArchiveType
+		{
+			get
+			{
+				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIArchiveType", "IMDI",
+					"This is the abbreviation for Isle Metadata Initiative (http://www.mpi.nl/imdi/). " +
+						"Typically this probably does not need to be localized.");
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string NameOfProgramToLaunch
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(PathToProgramToLaunch))
+					return null;
+				string exe = Path.GetFileNameWithoutExtension(PathToProgramToLaunch);
+				string dir = Path.GetDirectoryName(PathToProgramToLaunch);
+				if (!string.IsNullOrEmpty(dir))
+				{
+					dir = Path.GetFileNameWithoutExtension(dir);
+					if (dir.Length > 0 && exe.ToLowerInvariant().Contains(dir.ToLowerInvariant()))
+						return dir;
+				}
+				return exe;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string InformativeText
+		{
+			get
+			{
+				string programInfo = string.IsNullOrEmpty(NameOfProgramToLaunch) ?
+					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText",
+					"The {0} package will be created in {1}.",
+					"Parameter 0 is 'IMDI'; " +
+					"Parameter 1 is the path where the package is created."),
+					ArchiveType, PackagePath)
+					:
+					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIProgramInfoText",
+					"This tool will help you use {0} to archive your {1} data. When the {1} package has been " +
+					"created, you can launch {0} and enter any additional information before doing the actual submission.",
+					"Parameter 0 is the name of the program that will be launched to further prepare the IMDI data for submission; " +
+					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.)"), NameOfProgramToLaunch, AppName);
+				return string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIOverviewText",
+					"{0} ({1}) is a metadata standard to describe multi-media and multi-modal language " +
+					"resources. The standard provides interoperability for browsable and searchable " +
+					"corpus structures and resource descriptions.",
+					"Parameter 0  is 'Isle Metadata Initiative' (the first occurrence will be turned into a hyperlink); " +
+					"Parameter 1 is 'IMDI'"),
+					ArchiveInfoHyperlinkText, ArchiveType) +
+					" " + _appSpecificArchivalProcessInfo +
+					" " + programInfo;
+			}
+		}
+
+		public override string ArchiveInfoHyperlinkText
+		{
+			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IsleMetadataInitiative",
+				"Isle Metadata Initiative", "Typically this probably does not need to be localized."); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string ArchiveInfoUrl
+		{
+			get { return Settings.Default.IMDIWebSite; }
+		}
+		#endregion
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
 		/// <param name="corpus">Indicates whether this is for an entire project corpus or a
 		/// single session</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
 		/// which files should be archived (this is deferred to allow display of progress message)</param>
 		/// <param name="outputFolder">Base folder where IMDI file structure is to be created</param>
 		/// ------------------------------------------------------------------------------------
-		public IMDIArchivingDlgViewModel(string appName, string title, string id, bool corpus,
+		public IMDIArchivingDlgViewModel(string appName, string title, string id,
+			string appSpecificArchivalProcessInfo, bool corpus,
 			Action<ArchivingDlgViewModel> setFilesToArchive, string outputFolder)
-			: base(appName, title, id, setFilesToArchive)
+			: base(appName, title, id, appSpecificArchivalProcessInfo, setFilesToArchive)
 		{
 			_corpus = corpus;
 			_outputFolder = outputFolder;
+
+			PackagePath = Path.Combine(_outputFolder, NormalizeDirectoryName(id));
+
+			_imdiData = new IMDIPackage(_corpus, PackagePath)
+			{
+				Title = _titles[_id],
+				Name = _id
+			};
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override bool DoArchiveSpecificInitialization()
 		{
-			_imdiData = new IMDIPackage(_corpus)
-			{
-				Title = _titles[_id],
-				Name = _id
-			};
-
+			// no-op
 			return true;
 		}
 
@@ -90,10 +173,12 @@ namespace SIL.Archiving.IMDI
 			return _imdiData.BaseImdiFile.ToString();
 		}
 
-		/// <summary>Launch Arbil or Lamus</summary>
-		public override bool LaunchArchivingProgram()
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Launch Arbil or Lamus or whatever</summary>
+		/// ------------------------------------------------------------------------------------
+		internal override void LaunchArchivingProgram()
 		{
-			throw new NotImplementedException();
+			LaunchArchivingProgram(null);
 		}
 
 		/// <summary></summary>
