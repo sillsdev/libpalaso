@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,7 @@ namespace SIL.Archiving
 
 		#region Data members
 		protected readonly string _id; // ID/Name of the top-level element being archived (can be either a session or a project)
+		protected readonly string _appSpecificArchivalProcessInfo;
 		protected readonly Dictionary<string, string> _titles = new Dictionary<string, string>(); //Titles of elements being archived (keyed by element id)
 		private Dictionary<string, MetadataProperties> _propertiesSet = new Dictionary<string, MetadataProperties>(); // Metadata properties that have been set (keyed by element id)
 		private Action<ArchivingDlgViewModel> _setFilesToArchive;
@@ -104,8 +106,47 @@ namespace SIL.Archiving
 		#endregion
 
 		#region properties
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Short name/description of the archiving program or standard used for this type of
+		/// archiving. (Should fit in the frame "Archive using ___".)
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		internal abstract string ArchiveType { get; }
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Short name of the archiving program to launch once package is created.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public abstract string NameOfProgramToLaunch { get; }
+
+		/// ------------------------------------------------------------------------------------
+		public abstract string InformativeText { get; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Implement ArchiveInfoHyperlinkText to define text (first occurrence only) in the
+		/// InformativeText that will be makred as a hyperlink to ArchiveInfoUrl.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public abstract string ArchiveInfoHyperlinkText { get; }
+		/// ------------------------------------------------------------------------------------
+		public abstract string ArchiveInfoUrl { get; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Path to the program to launch</summary>
+		/// ------------------------------------------------------------------------------------
+		public string PathToProgramToLaunch { get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Path to the generated package</summary>
+		/// ------------------------------------------------------------------------------------
+		public string PackagePath { get; protected set; }
+
 		/// ------------------------------------------------------------------------------------
 		public string AppName { get; private set; }
+
 		/// ------------------------------------------------------------------------------------
 		public bool IsBusy { get; protected set; }
 		#endregion
@@ -152,11 +193,14 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
 		/// which files should be archived (this is deferred to allow display of progress message)</param>
 		/// ------------------------------------------------------------------------------------
 		protected ArchivingDlgViewModel(string appName, string title, string id,
-			Action<ArchivingDlgViewModel> setFilesToArchive)
+			string appSpecificArchivalProcessInfo, Action<ArchivingDlgViewModel> setFilesToArchive)
 		{
 			if (appName == null)
 				throw new ArgumentNullException("appName");
@@ -166,6 +210,7 @@ namespace SIL.Archiving
 			if (id == null)
 				throw new ArgumentNullException("id");
 			_id = id;
+			_appSpecificArchivalProcessInfo = appSpecificArchivalProcessInfo;
 			_setFilesToArchive = setFilesToArchive;
 			_titles[id] = title;
 			_propertiesSet[id] = MetadataProperties.Title;
@@ -375,8 +420,36 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		public abstract string GetMetadata();
+
 		/// ------------------------------------------------------------------------------------
-		public abstract bool LaunchArchivingProgram();
+		internal abstract void LaunchArchivingProgram();
+
+		/// ------------------------------------------------------------------------------------
+		protected void LaunchArchivingProgram(Action HandleInvalidOperation)
+		{
+			if (string.IsNullOrEmpty(PathToProgramToLaunch) || !File.Exists(PathToProgramToLaunch))
+				return;
+
+			try
+			{
+				var prs = new Process();
+				prs.StartInfo.FileName = PathToProgramToLaunch;
+				if (!string.IsNullOrEmpty(PackagePath))
+					prs.StartInfo.Arguments = "\"" + PackagePath + "\"";
+				prs.Start();
+			}
+			catch (Exception e)
+			{
+				if (e is InvalidOperationException && HandleInvalidOperation != null)
+					HandleInvalidOperation();
+				else
+				{
+					ReportError(e, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
+						"There was an error attempting to open the archive package in {0}."), PathToProgramToLaunch));
+				}
+			}
+		}
+
 		/// ------------------------------------------------------------------------------------
 		public abstract bool CreatePackage();
 

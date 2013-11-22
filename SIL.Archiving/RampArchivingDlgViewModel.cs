@@ -132,7 +132,7 @@ namespace SIL.Archiving
 		public const string kRecordingExtent = "format.extent.recording";
 		public const string kAudience = "broad_type";
 		public const string kRole = "role";
-		public const string kAbstractLanguageName = "lang";
+		public const string kLanguageName = "lang";
 		public const string kPromotionDescription = "sil.description.promotion";
 
 		// Audience ("Broad Type") constants
@@ -161,7 +161,6 @@ namespace SIL.Archiving
 		private string _tempFolder;
 		private Timer _timer;
 		private bool _workerException;
-		private string _rampProgramPath;
 		private Dictionary<string, string> _languageList;
 		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
 		private int _imageCount = -1;
@@ -171,8 +170,46 @@ namespace SIL.Archiving
 		#endregion
 
 		#region properties
-		/// <summary>Path to the RAMP package</summary>
-		public string RampPackagePath { get; private set; }
+		/// ------------------------------------------------------------------------------------
+		internal override string ArchiveType
+		{
+			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RAMPArchiveType", "RAMP (SIL Only)"); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string NameOfProgramToLaunch
+		{
+			get { return kRampProcessName; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string InformativeText
+		{
+			get
+			{
+				return string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RAMPOverviewText",
+					"{0} is a utility for entering metadata and uploading submissions to SIL's internal archive, " +
+					"REAP. If you have access to this archive, this tool will help you use {0} to archive your " +
+					"{1} data. {2} When the {0} package has been created, you can  launch {0} and enter any " +
+					"additional information before doing the actual submission.",
+					"Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); " +
+					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); " +
+					"Parameter 2 is additional app-specifc information."), NameOfProgramToLaunch, AppName,
+					_appSpecificArchivalProcessInfo);
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string ArchiveInfoHyperlinkText
+		{
+			get { return NameOfProgramToLaunch; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string ArchiveInfoUrl
+		{
+			get { return Settings.Default.RampWebSite; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -300,14 +337,18 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
 		/// which files should be archived (this is deferred to allow display of progress message)</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// ------------------------------------------------------------------------------------
 		public RampArchivingDlgViewModel(string appName, string title, string id,
-			Action<ArchivingDlgViewModel> setFilesToArchive,
-			Func<string, string, string> getFileDescription) : base(appName, title, id, setFilesToArchive)
+			string appSpecificArchivalProcessInfo, Action<ArchivingDlgViewModel> setFilesToArchive,
+			Func<string, string, string> getFileDescription) : base(appName, title, id,
+			appSpecificArchivalProcessInfo, setFilesToArchive)
 		{
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
@@ -333,15 +374,16 @@ namespace SIL.Archiving
 				"Searching for the RAMP program..."), MessageType.Volatile);
 
 			Application.DoEvents();
-			_rampProgramPath = GetExeFileLocation();
+			PathToProgramToLaunch = GetExeFileLocation();
 
-			if (_rampProgramPath == null)
+			if (PathToProgramToLaunch == null)
 			{
 				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
 					"The RAMP program cannot be found!"), MessageType.Error);
+				return false;
 			}
 
-			return (_rampProgramPath != null);
+			return true;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1307,43 +1349,21 @@ namespace SIL.Archiving
 			if (lang.Length != 3)
 				throw new ArgumentException("Language must be specified as a valid 3-letter code as specified in ISO-639-2.");
 
-			return JSONUtils.MakeKeyValuePair(kDefaultKey, s) + kSeparator + JSONUtils.MakeKeyValuePair(kAbstractLanguageName, lang);
+			return JSONUtils.MakeKeyValuePair(kDefaultKey, s) + kSeparator + JSONUtils.MakeKeyValuePair(kLanguageName, lang);
 		}
 		#endregion
 
 		#region RAMP calling methods
 		/// ------------------------------------------------------------------------------------
-		public override bool LaunchArchivingProgram()
+		internal override void LaunchArchivingProgram()
 		{
-			if (!File.Exists(RampPackagePath))
+			if (!File.Exists(PackagePath))
 			{
-				ReportError(null, string.Format("RAMP package prematurely removed: {0}", RampPackagePath));
-				return false;
+				ReportError(null, string.Format("RAMP package prematurely removed: {0}", PackagePath));
+				return;
 			}
 
-			try
-			{
-				var prs = new Process();
-				prs.StartInfo.FileName = _rampProgramPath;
-				prs.StartInfo.Arguments = "\"" + RampPackagePath + "\"";
-				if (!prs.Start())
-					return false;
-
-				prs.WaitForInputIdle(8000);
-				EnsureRampHasFocusAndWaitForPackageToUnlock();
-				return true;
-			}
-			catch (InvalidOperationException)
-			{
-				EnsureRampHasFocusAndWaitForPackageToUnlock();
-				return true;
-			}
-			catch (Exception e)
-			{
-				ReportError(e, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
-					"There was an error attempting to open the archive package in RAMP."));
-				return false;
-			}
+			LaunchArchivingProgram(EnsureRampHasFocusAndWaitForPackageToUnlock);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1360,7 +1380,7 @@ namespace SIL.Archiving
 
 			// Every 4 seconds we'll check to see if the RAMP package is locked. When
 			// it gets unlocked by RAMP, then we'll delete it.
-			_timer = new Timer(CheckIfPackageFileIsLocked, RampPackagePath, 2000, 4000);
+			_timer = new Timer(CheckIfPackageFileIsLocked, PackagePath, 2000, 4000);
 		}
 
 		private static void BringToFrontWindows()
@@ -1611,7 +1631,7 @@ namespace SIL.Archiving
 		{
 			try
 			{
-				RampPackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
+				PackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
 
 				using (_worker = new BackgroundWorker())
 				{
@@ -1640,9 +1660,9 @@ namespace SIL.Archiving
 				_worker = null;
 			}
 
-			if (!File.Exists(RampPackagePath))
+			if (!File.Exists(PackagePath))
 			{
-				ReportError(null, string.Format("Failed to make the RAMP package: {0}", RampPackagePath));
+				ReportError(null, string.Format("Failed to make the RAMP package: {0}", PackagePath));
 				return false;
 			}
 
@@ -1721,7 +1741,7 @@ namespace SIL.Archiving
 					zip.AddFiles(filesToCopyAndZip.Values, @"\");
 					zip.AddFile(_metsFilePath, string.Empty);
 					zip.SaveProgress += HandleZipSaveProgress;
-					zip.Save(RampPackagePath);
+					zip.Save(PackagePath);
 
 					if (!_cancelProcess && IncrementProgressBarAction != null)
 						Thread.Sleep(800);

@@ -11,16 +11,18 @@ namespace SIL.Archiving.IMDI
 	{
 		public MetaTranscript BaseImdiFile { get; private set; }
 		private readonly bool _corpus;
-		DirectoryInfo _corpusDirInfo;
+		private DirectoryInfo _corpusDirInfo;
+		private string _packagePath;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
 		/// <param name="corpus">Indicates whether this is for an entire project corpus or a
 		/// single session</param>
 		/// ------------------------------------------------------------------------------------
-		public IMDIPackage(bool corpus)
+		public IMDIPackage(bool corpus, string packagePath)
 		{
 			_corpus = corpus;
+			_packagePath = packagePath;
 			BaseImdiFile = new MetaTranscript(corpus ? MetatranscriptValueType.CORPUS :
 				MetatranscriptValueType.SESSION);
 		}
@@ -46,10 +48,10 @@ namespace SIL.Archiving.IMDI
 
 		/// <summary>Creates the corpus directory structure, meta data files, and copies content files</summary>
 		/// <returns></returns>
-		public bool CreateIMDIPackage(string outputDirectoryName, string corpusDirectoryName)
+		public bool CreateIMDIPackage()
 		{
 			// create the corpus directory
-			_corpusDirInfo = Directory.CreateDirectory(Path.Combine(outputDirectoryName, IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusDirectoryName)));
+			_corpusDirInfo = Directory.CreateDirectory(_packagePath);
 
 			// create the session directories
 			//foreach (var session in Sessions)

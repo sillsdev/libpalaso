@@ -25,7 +25,7 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 
-			_helper = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
+			_helper = new RampArchivingDlgViewModel("Test App", "Test Title", "tst", null,
 				SetFilesToArchive, GetFileDescription);
 			_helper.AppSpecificFilenameNormalization = CustomFilenameNormalization;
 			_filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
@@ -37,7 +37,7 @@ namespace SIL.Archiving.Tests
 		{
 			_helper.CleanUp();
 
-			try { File.Delete(_helper.RampPackagePath); }
+			try { File.Delete(_helper.PackagePath); }
 // ReSharper disable once EmptyGeneralCatchClause
 			catch { }
 		}
@@ -66,7 +66,7 @@ namespace SIL.Archiving.Tests
 				_helper.Initialize();
 				_helper.CreateMetsFile();
 				Assert.IsTrue(_helper.CreateRampPackage());
-				Assert.IsTrue(File.Exists(_helper.RampPackagePath));
+				Assert.IsTrue(File.Exists(_helper.PackagePath));
 			}
 			finally
 			{

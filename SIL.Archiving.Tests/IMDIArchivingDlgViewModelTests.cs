@@ -19,13 +19,14 @@ namespace SIL.Archiving.Tests
 		private const string kArchiveId = "Tèst Corpus Náme";  // include some invalid characters for testing
 		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
 
+		#region Setup and Teardown
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
 		public void Setup()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 			_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
-			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, true,
+			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, null, true,
 				SetFilesToArchive, _tmpFolder.Path);
 		}
 
@@ -36,7 +37,9 @@ namespace SIL.Archiving.Tests
 			_model.CleanUp();
 			_tmpFolder.Dispose();
 		}
+		#endregion
 
+		#region Miscellaneous Tests
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void NormalizeFilename_FileName_NormalizedFileName()
@@ -46,13 +49,44 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("My+File+Name_.mp3", normalized);
 		}
 
+		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void CorpusDirectoryName_ValidNameForNewDirectory()
 		{
 			var dirName = _model.CorpusDirectoryName;
 			Assert.AreEqual("T_st_Corpus_N_me", dirName);
 		}
+		#endregion
 
+		#region GetNameOfProgramToLaunch tests
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetNameOfProgramToLaunch_ShortExeName_ReturnsExeNameWithoutExtension()
+		{
+			_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\Arbil.exe";
+			Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetNameOfProgramToLaunch_PathNotSet_ReturnsNull()
+		{
+			_model.PathToProgramToLaunch = null;
+			Assert.IsNull(_model.NameOfProgramToLaunch);
+			_model.PathToProgramToLaunch = string.Empty;
+			Assert.IsNull(_model.NameOfProgramToLaunch);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetNameOfProgramToLaunch_ExeNameContainsFolderName_ReturnsFolderName()
+		{
+			_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\arbil-stable.exe";
+			Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
+		}
+		#endregion
+
+		#region SetAbstract Tests
 		[Test]
 		public void SetAbstract_UnspecifiedLanguage_AddsDescriptionToCorpusImdiFile()
 		{
@@ -153,6 +187,7 @@ namespace SIL.Archiving.Tests
 			descriptions["frn"] = "L'histoire d'une grenouille";
 			Assert.Throws(typeof(ArgumentException), () => _model.SetAbstract(descriptions));
 		}
+		#endregion
 
 		#region Helper methods
 		/// ------------------------------------------------------------------------------------
