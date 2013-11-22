@@ -74,6 +74,15 @@ namespace Palaso.UI.WindowsForms.Extensions
 			}
 		}
 
+		/// <summary>
+		/// Calls BeginInvoke with the action. This overload can be used with a lambda expression.
+		/// </summary>
+		/// <example>control.BeginInvoke(() => DoSomething(x));</example>
+		public static void BeginInvoke(this Control control, Action action)
+		{
+			control.BeginInvoke(action);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Turns window redrawing on or off. After turning on, the window will be invalidated.

@@ -5,10 +5,12 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.ImageGallery;
+using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.SIL;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using PalasoUIWindowsForms.TestApp.Properties;
 
 namespace PalasoUIWindowsForms.TestApp
 {
@@ -33,55 +35,10 @@ namespace PalasoUIWindowsForms.TestApp
 				return;
 			}
 
-#if  TESTING_FolderBrowserControl
-			var form = new Form();
-			var browser = new Palaso.UI.WindowsForms.FolderBrowserControl.FolderBrowserControl();
-			browser.Location = new Point(0,0);
-			browser.Width = form.ClientSize.Width;
-			browser.Height = form.ClientSize.Height;
-			browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			browser.ShowOnlyMappedDrives = false;
-			browser.ShowAddressbar = true;
-			form.Controls.Add(browser);
-			form.ShowDialog();
-			return;
-#endif
+			Application.Run(new TestAppForm());
 
-#if  TESTING_ISOLookup
-			var dialog = new LookupISOCodeDialog();
-			dialog.ISOCode = "etr";
-			Application.Run(dialog);
-#endif
+	   }
 
-//#if  TESTING_WS
-			string tempPath = Path.GetTempPath() + "WS-Test";
-			Directory.CreateDirectory(tempPath);
-			try
-			{
-				Application.Run(new WritingSystemSetupDialog(tempPath, onMigration, onLoadProblem));
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-//#endif
-#if TESTING_ARTOFREADING
-			var images = new ArtOfReadingImageCollection();
-			images.LoadIndex(@"C:\palaso\output\debug\ImageGallery\artofreadingindexv3_en.txt");
-			images.RootImagePath = @"c:\art of reading\images";
-			var form = new PictureChooser(images, "duck");
-			Application.Run(form);
-			Console.WriteLine("REsult: " + form.ChosenPath);
-#endif
-		}
-
-		public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
-		{
-		}
-
-		public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> migrationInfo)
-		{
-		}
 
 
 	}

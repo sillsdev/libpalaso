@@ -10,9 +10,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public WSPropertiesTabControl()
 		{
 			InitializeComponent();
-#if MONO
-			this._tabControl.Controls.Remove(this._keyboardsPage);
-#endif
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
@@ -26,9 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model = model;
 			_identifiersControl.BindToModel(_model);
 			_fontControl.BindToModel(_model);
-#if !MONO // disable keyboard switching on mono because of ibus problems
 			_keyboardControl.BindToModel(_model);
-#endif
 			_sortControl.BindToModel(_model);
 			_spellingControl.BindToModel(_model);
 
@@ -56,9 +51,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				this._tabControl.Controls.Add(this._spellingPage);
 				this._tabControl.Controls.Add(this._fontsPage);
-#if !MONO // disable keyboard switching on mono because of ibus problems
 				this._tabControl.Controls.Add(this._keyboardsPage);
-#endif
 				this._tabControl.Controls.Add(this._sortingPage);
 			}
 		}
@@ -77,6 +70,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public void UnwireBeforeClosing()
 		{
 			_identifiersControl.UnwireBeforeClosing();
+		}
+
+		private void _tabControl_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_tabControl.SelectedTab == _keyboardsPage)
+				_keyboardControl.Focus();
 		}
 	}
 }

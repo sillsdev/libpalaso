@@ -1,9 +1,12 @@
 #if MONO
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Keyboarding.Linux;
+using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
@@ -13,10 +16,34 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	{
 		private Form _window;
 
+		[TestFixtureSetUp]
+		public void FixtureSetup()
+		{
+			KeyboardController.Initialize();
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			KeyboardController.Shutdown();
+		}
+
 		[SetUp]
 		public void Setup()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
+		}
+
+		[TearDown]
+		public void Teardown()
+		{
+			if (_window != null)
+			{
+				_window.Close();
+				Application.DoEvents();
+				_window.Dispose();
+				_window = null;
+			}
 		}
 
 		private void RequiresWindowForFocus()
@@ -31,28 +58,18 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Application.DoEvents();
 		}
 
-		[TearDown]
-		public void Teardown()
-		{
-			if (_window != null)
-			{
-				_window.Close();
-				_window.Dispose();
-			}
-		}
-
 		[Test]
 		public void GetAllKeyboards_GivesSeveral()
 		{
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
+			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
+			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
 		[Test]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.ActivateKeyboard("foobar")
+				() => Keyboard.Controller.SetKeyboard("foobar")
 			);
 		}
 
@@ -63,16 +80,17 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			const string keyboardName = "This should never be the same as the name of an installed keyboard";
 			try
 			{
-				KeyboardController.ActivateKeyboard(keyboardName);
+				Keyboard.Controller.SetKeyboard(keyboardName);
 				Assert.Fail("Should have thrown exception but didn't.");
 			}
 			catch (ErrorReport.ProblemNotificationSentToUserException)
 			{
 
 			}
-			KeyboardController.ActivateKeyboard(keyboardName);
+			Keyboard.Controller.SetKeyboard(keyboardName);
 		}
 
+#if WANT_PORT
 		/// <summary>
 		/// The main thing here is that it doesn't crash doing a LoadLibrary()
 		/// </summary>
@@ -113,7 +131,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
 			RequiresWindowForFocus();
-			KeyboardController.ActivateKeyboard("English/European");
+			Keyboard.Controller.SetKeyboard("English/European");
 			KeyboardController.DeactivateKeyboard();
 			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
 		}
@@ -124,7 +142,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			RequiresWindowForFocus();
 			ResetKeyboardToDefault();
-			KeyboardController.ActivateKeyboard("English/European");
+			Keyboard.Controller.SetKeyboard("English/European");
 			Assert.AreEqual("English/European", KeyboardController.GetActiveKeyboard());
 			ResetKeyboardToDefault();
 		}
@@ -134,30 +152,34 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
 		{
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.ActivateKeyboard("Nonexistent Keyboard")
+				() => Keyboard.Controller.SetKeyboard("Nonexistent Keyboard")
 			);
 		}
 
+		[Test]
+		[Ignore("SCIM deprecated")]
+		[Category("No IM Running")]
+		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
+		{
+			var availableKeyboards = Keyboard.Controller.AllAvailableKeyboards.Where(kbd => kbd is KeyboardDescription && ((KeyboardDescription)kbd).Engine == "SCIM");
+			Assert.AreEqual(0, availableKeyboards.Count());
+		}
+
+#endif
+
 		private static void ResetKeyboardToDefault()
 		{
-			KeyboardController.DeactivateKeyboard();
+			Keyboard.Controller.ActivateDefaultKeyboard();
 		}
 
 		[Test]
 		[Category("No IM Running")]
 		public void Deactivate_NoIMRunning_DoesNotThrow()
 		{
-			KeyboardController.DeactivateKeyboard();
+			Keyboard.Controller.ActivateDefaultKeyboard();
 		}
 
-		[Test]
-		[Category("No IM Running")]
-		public void GetAvailableKeyboards_NoIMRunning_ReturnsEmptyList()
-		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
-			Assert.AreEqual(0, availableKeyboards.Count);
-		}
-
+#if WANT_PORT
 		[Test]
 		[Category("IBus not Running")]
 		public void EngineAvailable_IBusIsnotRunning_returnsFalse()
@@ -174,56 +196,37 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.IBus));
 		}
-
-		[Test]
-		[Category("IBus")]
-		public void GetActiveKeyboard_IBusIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
-		{
-			// needed for focus
-			RequiresWindowForFocus();
-
-			KeyboardController.DeactivateKeyboard();
-			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.GetActiveKeyboard()
-			);
-		}
-
-		[Test]
-		[Category("IBus")]
-		public void KeyboardDescriptors_IBusIsSetUpAndConfiguredToDefault_0KeyboardsReturned()
-		{
-			// needed for focus
-			RequiresWindowForFocus();
-
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.IBus);
-
-			// Assuming default ibus install doesn't have any active keyboards
-			Assert.AreEqual(0, availableKeyboards.Count);
-		}
+#endif
 
 		[Test]
 		[Category("IBus")]
 		public void Deactivate_IBusIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
+			if (Keyboard.Controller.AllAvailableKeyboards.Count(kbd => kbd.Layout == "m17n:am:sera") <= 0)
+				Assert.Ignore("Can't run this test without ibus keyboard 'm17n:am:sera' being installed.");
+
 			// needed for focus
 			RequiresWindowForFocus();
 
-			KeyboardController.ActivateKeyboard("m17n:am:sera");
-			KeyboardController.DeactivateKeyboard();
-			Assert.AreEqual("m17n:am:sera", KeyboardController.GetActiveKeyboard());
+			Keyboard.Controller.SetKeyboard("m17n:am:sera");
+			Keyboard.Controller.ActivateDefaultKeyboard();
+			Assert.AreEqual("m17n:am:sera", Keyboard.Controller.ActiveKeyboard);
 		}
 
 		[Test]
 		[Category("IBus")]
 		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
+			if (Keyboard.Controller.AllAvailableKeyboards.Count(kbd => kbd.Layout == "m17n:am:sera") <= 0)
+				Assert.Ignore("Can't run this test without ibus keyboard 'm17n:am:sera' being installed.");
+
 			// needed for focus
 			RequiresWindowForFocus();
 
-			KeyboardController.DeactivateKeyboard();
-			KeyboardController.ActivateKeyboard("m17n:am:sera");
-			Assert.AreEqual("m17n:am:sera", KeyboardController.GetActiveKeyboard());
-			KeyboardController.DeactivateKeyboard();
+			Keyboard.Controller.ActivateDefaultKeyboard();
+			Keyboard.Controller.SetKeyboard("m17n:am:sera");
+			Assert.AreEqual("m17n:am:sera", Keyboard.Controller.ActiveKeyboard);
+			Keyboard.Controller.ActivateDefaultKeyboard();
 		}
 
 		[Test]
@@ -233,9 +236,19 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			// needed for focus
 			RequiresWindowForFocus();
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.ActivateKeyboard("Nonexistent Keyboard")
+				() => Keyboard.Controller.SetKeyboard("Nonexistent Keyboard")
 			);
 		}
+
+		[Test]
+		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
+		{
+			// REVIEW: adjust this test
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			Assert.That(keyboard, Is.Not.Null);
+			Assert.That(keyboard, Is.TypeOf<XkbKeyboardDescription>());
+		}
+
 	}
 }
 #endif
