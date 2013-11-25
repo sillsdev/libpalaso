@@ -1280,8 +1280,15 @@ namespace SIL.Archiving
 		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
 		{
 			SetFlag(kFlagHasAbstractDescription);
-			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kAbstractDescription,
-				descriptions.Select(desc => GetKvpsForLanguageSpecificString(desc.Key, desc.Value))));
+
+			IEnumerable<string> metsDescriptions;
+
+			if (descriptions.Count == 1 && string.IsNullOrEmpty(descriptions.Keys.ElementAt(0)))
+				metsDescriptions = new [] {JSONUtils.MakeKeyValuePair(kDefaultKey, descriptions.Values.ElementAt(0))};
+			else
+				metsDescriptions = descriptions.Select(desc => GetKvpsForLanguageSpecificString(desc.Key, desc.Value));
+
+			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kAbstractDescription, metsDescriptions));
 		}
 
 		/// ------------------------------------------------------------------------------------
