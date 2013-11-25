@@ -340,6 +340,23 @@ namespace SIL.Archiving.Tests
 		#region SetAbstract tests
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		public void SetAbstract_SetSingleAbstractWithoutLanguage_IncludedInMetsData()
+		{
+			_helper.SetAbstract("SayMore doesn't let the user specify the language explicitly.", string.Empty);
+			var data = _helper.GetMetadata();
+			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
+				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
+				"\"0\":{\" \":\"SayMore doesn't let the user specify the language explicitly.\"}}}",
+				data);
+
+			//"{\"dc.title\":\"what\",\"broad_type\":\"wider_audience\",\"dc.type.mode\":[\"Text\"],\"dc.description.stage\":\"rough_draft\"," +
+			//    "\"version.type\":\"first\",\"dc.type.scholarlyWork\":\"Data set\",\"dc.subject.subjectLanguage\":{\"0\":{\"dialect\":\"\"}}," +
+			//    "\"dc.language.iso\":{\"0\":{\"dialect\":\"\"}},\"dc.subject.silDomain\":[\"LING:Linguistics\"],\"sil.sensitivity.metadata\":\"Public\"," +
+			//    "\"files\":{\"0\":{\" \":\"gmreadme.txt\",\"description\":\"junk\"}},\"status\":\"ready\"," +
+			//    "\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{\"0\":{\" \":\"\"SayMore doesn't let the use specify the language explicitly.\"}}}"
+		}
+
+		[Test]
 		public void SetAbstract_SetTwice_ThrowsInvalidOperationException()
 		{
 			_helper.SetAbstract("This is pretty abstract", "eng");
