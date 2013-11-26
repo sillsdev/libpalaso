@@ -56,7 +56,7 @@ namespace SIL.Archiving.Generic
 			Files = new List<IArchivingFile>();
 		}
 
-		/// <summary>Value can be either DateTime or string</summary>
+		/// <summary>Value can be either DateTime (birth date), int (birth year), or string</summary>
 		public object BirthDate
 		{
 			set
