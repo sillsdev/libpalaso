@@ -22,12 +22,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// the input Context created
 		/// </summary>
-		protected InputContext m_inputContext;
+		protected IInputContext m_inputContext;
 
 		/// <summary>
 		/// Ibus helper class
 		/// </summary>
-		protected IBusDotNet.InputBusWrapper m_ibus;
+		protected InputBus m_ibus;
 
 		#endregion
 
@@ -50,7 +50,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 									m_connection = null;
 								};
 
-			m_ibus = new IBusDotNet.InputBusWrapper(m_connection);
+			m_ibus = new InputBus(m_connection);
 		}
 
 		/// <summary>
@@ -194,7 +194,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				if (!m_inputContext.IsEnabled())
 					return false;
 
-				return m_inputContext.ProcessKeyEvent((uint)keySym, (uint)scanCode, (uint)state);
+				return m_inputContext.ProcessKeyEvent(keySym, scanCode, (int)state);
 			}
 			catch(NDesk.DBus.DBusConectionErrorException)
 			{
@@ -226,7 +226,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <remarks>One input context per application is sufficient.</remarks>
 		public void CreateInputContext()
 		{
-			m_inputContext = m_ibus.InputBus.CreateInputContext("IbusCommunicator");
+			m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
 
 			ProtectedIBusInvoke(() =>
 			{
@@ -251,7 +251,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// focused.</exception>
 		public string GetFocusedInputContext()
 		{
-			return m_ibus.InputBus.CurrentInputContext();
+			return m_ibus.CurrentInputContext();
 		}
 
 		/// <summary></summary>

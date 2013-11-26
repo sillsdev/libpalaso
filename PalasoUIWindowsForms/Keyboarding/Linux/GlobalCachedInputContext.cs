@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using IBusDotNet;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -13,7 +14,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Caches the current InputContext.
 		/// </summary>
-		public static IBusDotNet.InputContext InputContext { get; set; }
+		public static IInputContext InputContext { get; set; }
 		/// <summary>
 		/// Cache the keyboard of the InputContext.
 		/// </summary>

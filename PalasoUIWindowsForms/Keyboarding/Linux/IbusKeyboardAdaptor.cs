@@ -66,15 +66,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private IEnumerable<IBusEngineDesc> GetIBusKeyboards()
+		private IBusEngineDesc[] GetIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
-				yield break;
+				return null;
 
-			var ibusWrapper = new IBusDotNet.InputBusWrapper(IBusCommunicator.Connection);
-			object[] engines = ibusWrapper.InputBus.ListActiveEngines();
-			foreach (var engine in engines)
-				yield return IBusEngineDescFactory.GetEngineDesc(engine);
+			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
+			return ibusWrapper.ListActiveEngines();
 		}
 
 		private bool SetIMEKeyboard(IbusKeyboardDescription keyboard)
