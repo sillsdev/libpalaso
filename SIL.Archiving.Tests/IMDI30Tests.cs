@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI;
@@ -165,7 +166,7 @@ namespace SIL.Archiving.Tests
 			obj.AddDescription(desc2);
 
 			Assert.AreEqual(1, obj.Description.Count);
-			Assert.AreEqual("First description", obj.Description[0].Value);
+			Assert.AreEqual("First description", obj.Description.First().Value);
 		}
 
 

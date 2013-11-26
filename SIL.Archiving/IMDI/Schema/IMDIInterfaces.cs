@@ -1,6 +1,4 @@
 ﻿
-using System.Collections.Generic;
-
 namespace SIL.Archiving.IMDI.Schema
 {
 	/// <summary>Interface to simplify access to session files (media and written)</summary>
@@ -19,7 +17,7 @@ namespace SIL.Archiving.IMDI.Schema
 		string Size { get; set; }
 
 		/// <summary></summary>
-		List<DescriptionType> Description { get; set; }
+		DescriptionTypeCollection Description { get; set; }
 
 		/// <summary></summary>
 		AccessType Access { get; set; }
