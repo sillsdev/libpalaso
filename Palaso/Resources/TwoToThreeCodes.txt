@@ -181,5 +181,5 @@ xh	xho
 yi	yid
 yo	yor
 za	zha
-zh	cmn
+zh	zho
 zu	zul

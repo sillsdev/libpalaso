@@ -134,5 +134,14 @@ namespace Palaso.Tests.WritingSystems
 			Assert.True(languages.Any(l => l.Names.Contains("Andaki")));
 			Assert.True(languages.Any(l => l.Names.Contains("Churuba")));
 		}
+		[Test]
+		public void SuggestLanguages_cmn_ResultIncludesMandarinChinese()
+		{
+			// regression test for bug http://jira.palaso.org/issues/browse/WS-34714
+			var languages = _ethnologue.SuggestLanguages("cmn");
+			Assert.True(languages.Any(l => l.Code == "cmn"));
+			Assert.True(languages.Any(l => l.Names.Contains("Chinese, Mandarin")));
+			Assert.True(languages.Any(l => l.Names.Contains("Mandarin")));
+		}
 	}
 }
