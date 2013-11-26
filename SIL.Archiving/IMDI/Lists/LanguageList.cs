@@ -17,13 +17,33 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <summary>This is provided because the XSD uses the term "LanguageId"</summary>
 		public string Id { get { return Value;  } }
 
-		/// <summary>Convert to a Language_Type object</summary>
+		/// <summary>Convert to a LanguageType object</summary>
 		public LanguageType ToLanguageType()
 		{
 			return new LanguageType
 			{
 				Id = Id,
 				Name = new[] { new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) } },
+			};
+		}
+
+		/// <summary>Convert to a SimpleLanguageType object</summary>
+		public SimpleLanguageType ToSimpleLanguageType()
+		{
+			return new SimpleLanguageType
+			{
+				Id = Id,
+				Name = new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) }
+			};
+		}
+
+		/// <summary>Convert to a SimpleLanguageType object</summary>
+		public SubjectLanguageType ToSubjectLanguageType()
+		{
+			return new SubjectLanguageType
+			{
+				Id = Id,
+				Name = new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) }
 			};
 		}
 	}
