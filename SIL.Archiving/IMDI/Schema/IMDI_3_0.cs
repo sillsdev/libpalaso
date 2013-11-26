@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -15,10 +14,8 @@ using SIL.Archiving.IMDI.Lists;
 namespace SIL.Archiving.IMDI.Schema
 {
 	/// <summary>Shared properties and methods</summary>
-	public class IMDIMajorObject
+	public class IMDIMajorObject : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
 		/// <summary>Name of object</summary>
 		[XmlElement("Name")]
 		public string Name { get; set; }
@@ -27,20 +24,9 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Title")]
 		public string Title { get; set; }
 
-		/// <summary>Description of object</summary>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description
-		{
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
-
 		/// <summary>Adds a description (in a particular language)</summary>
 		public void AddDescription(LanguageString description)
 		{
-			if (Description.Any(desc => desc.LanguageId.EndsWith(description.Iso3LanguageId)))
-				return;
-
 			Description.Add(description.ToIMDIDescriptionType());
 		}
 	}
@@ -338,7 +324,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class SubjectLanguageType : SimpleLanguageType
 	{
-		private List<DescriptionType> _descriptionField;
+		private DescriptionTypeCollection _descriptionField;
 
 		/// <remarks/>
 		public BooleanType Dominant { get; set; }
@@ -351,8 +337,9 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
+		public DescriptionTypeCollection Description
+		{
+			get { return _descriptionField ?? (_descriptionField = new DescriptionTypeCollection()); }
 			set { _descriptionField = value; }
 		}
 	}
@@ -389,7 +376,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class DescriptionType : LanguageString
+	public partial class DescriptionType
 	{
 		/// <remarks/>
 		[XmlAttribute(DataType="token")]
@@ -428,31 +415,15 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public CatalogueDocumentLanguages DocumentLanguages
 		{
-			get
-			{
-				if (_documentLanguages == null)
-					_documentLanguages = new CatalogueDocumentLanguages();
-				return _documentLanguages;
-			}
-			set
-			{
-				_documentLanguages = value;
-			}
+			get { return _documentLanguages ?? (_documentLanguages = new CatalogueDocumentLanguages()); }
+			set { _documentLanguages = value; }
 		}
 
 		/// <remarks/>
 		public CatalogueSubjectLanguages SubjectLanguages
 		{
-			get
-			{
-				if (_subjectLanguages == null)
-					_subjectLanguages = new CatalogueSubjectLanguages();
-				return _subjectLanguages;
-			}
-			set
-			{
-				_subjectLanguages = value;
-			}
+			get { return _subjectLanguages ?? (_subjectLanguages = new CatalogueSubjectLanguages()); }
+			set { _subjectLanguages = value; }
 		}
 
 		/// <remarks/>
@@ -522,17 +493,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CatalogueDocumentLanguages
+	public class CatalogueDocumentLanguages : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
-
 		/// <remarks/>
 		[XmlElement("Language")]
 		public List<SimpleLanguageType> Language { get; set; }
@@ -548,17 +510,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class CatalogueSubjectLanguages
+	public class CatalogueSubjectLanguages : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
-
 		/// <remarks/>
 		[XmlElement("Language")]
 		public List<SubjectLanguageType> Language { get; set; }
@@ -701,10 +654,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class AccessType
+	public class AccessType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
 		/// <remarks/>
 		public string Availability { get; set; }
 
@@ -719,13 +670,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public ContactType Contact { get; set; }
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 	}
 
 	/// <remarks/>
@@ -826,9 +770,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ContentType
+	public class ContentType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
 		private ContentTypeCommunicationContext _contextField;
 		private LanguagesType _languagesField;
 		private KeysType _keysField;
@@ -853,13 +796,6 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			get { return _keysField ?? (_keysField = new KeysType()); }
 			set { _keysField = value; }
-		}
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
 		}
 
 		/// <remarks/>
@@ -976,18 +912,9 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LanguagesType
+	public class LanguagesType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
 		private List<LanguageType> _languageField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Language")]
@@ -1020,10 +947,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class LanguageType
+	public class LanguageType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
 		/// <remarks/>
 		public string Id { get; set; }
 
@@ -1047,13 +972,6 @@ namespace SIL.Archiving.IMDI.Schema
 		public BooleanType TargetLanguage { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
-
-		/// <remarks/>
 		[XmlAttribute]
 		public string ResourceRef { get; set; }
 	}
@@ -1062,17 +980,9 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ActorsType
+	public class ActorsType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
 		private List<ActorType> _actorField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Actor")]
@@ -1086,9 +996,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ActorType
+	public class ActorType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
 		private LanguagesType _languagesField;
 
 		/// <summary>Default constructor</summary>
@@ -1263,13 +1172,6 @@ namespace SIL.Archiving.IMDI.Schema
 		public KeysType Keys { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
-
-		/// <remarks/>
 		[XmlAttributeAttribute]
 		public string ResourceRef { get; set; }
 	}
@@ -1342,10 +1244,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class SourceType
+	public class SourceType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
 		/// <remarks/>
 		public string Id { get; set; }
 
@@ -1360,13 +1260,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public AccessType Access { get; set; }
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 
 		/// <remarks/>
 		public KeysType Keys { get; set; }
@@ -1409,10 +1302,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ValidationType
+	public class ValidationType : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
 		/// <remarks/>
 		public VocabularyType Type { get; set; }
 
@@ -1421,23 +1312,15 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public IntegerType Level { get; set; }
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class WrittenResourceType : IIMDISessionFile
+	public class WrittenResourceType : IMDIDescription, IIMDISessionFile
 	{
 		private string _dateField;
-		private List<DescriptionType> _descriptionField;
 
 		/// <remarks/>
 		public ResourceLinkType ResourceLink { get; set; }
@@ -1489,13 +1372,6 @@ namespace SIL.Archiving.IMDI.Schema
 		public AccessType Access { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
-
-		/// <remarks/>
 		public KeysType Keys { get; set; }
 
 		/// <remarks/>
@@ -1507,10 +1383,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class MediaFileType : IIMDISessionFile
+	public class MediaFileType : IMDIDescription, IIMDISessionFile
 	{
-		private List<DescriptionType> _descriptionField;
-
 		/// <remarks/>
 		public ResourceLinkType ResourceLink { get; set; }
 
@@ -1531,13 +1405,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public AccessType Access { get; set; }
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 
 		/// <remarks/>
 		public KeysType Keys { get; set; }
@@ -1699,16 +1566,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class SessionReferences
+	public class SessionReferences : IMDIDescription
 	{
-		private List<DescriptionType> _descriptionField;
-
-		/// <remarks/>
-		[XmlElementAttribute("Description")]
-		public List<DescriptionType> Description {
-			get { return _descriptionField ?? (_descriptionField = new List<DescriptionType>()); }
-			set { _descriptionField = value; }
-		}
 	}
 
 	/// <remarks/>
