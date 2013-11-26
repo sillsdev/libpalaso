@@ -69,7 +69,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		private IBusEngineDesc[] GetIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
-				return null;
+				return new IBusEngineDesc[0];
 
 			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
 			return ibusWrapper.ListActiveEngines();
