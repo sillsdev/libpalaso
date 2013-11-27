@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="IMDIArchivingDlgViewModelTests.cs" />
+	<Compile Include="IMDI30Tests.cs" />
 	<Compile Include="RampArchivingDlgViewModelTests.cs" />
 	<Compile Include="JSONUtilsTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
