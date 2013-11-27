@@ -1,324 +1,248 @@
+// Copyright (c) 2013, SIL International.
+// Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Keyboarding.Types;
+using Palaso.WritingSystems;
+using Palaso.WritingSystems.Collation;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class KeyboardControllerTests
 	{
-		private Form _window;
-
 		[SetUp]
 		public void Setup()
 		{
-			ErrorReport.IsOkToInteractWithUser = false;
-		}
-
-		private void RequiresWindow()
-		{
-			_window = new Form();
-			TextBox box = new TextBox();
-			box.Dock = DockStyle.Fill;
-			_window.Controls.Add(box);
-
-			_window.Show();
-			box.Select();
-			Application.DoEvents();
+			KeyboardController.Initialize();
 		}
 
 		[TearDown]
-		public void Teardown()
+		public void TearDown()
 		{
-			if (_window != null)
+			KeyboardController.Shutdown();
+		}
+
+		[Test]
+		public void CreateKeyboardDefinition_ExistingKeyboard_ReturnsReference()
+		{
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			var expectedKeyboard = new KeyboardDescription("foo - English (US)", "foo", "en-US", inputLanguage,
+				KeyboardController.Adaptors[0]);
+			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			Assert.That(keyboard, Is.SameAs(expectedKeyboard));
+			Assert.That(keyboard, Is.TypeOf<KeyboardDescription>());
+			Assert.That((keyboard as KeyboardDescription).InputLanguage, Is.EqualTo(inputLanguage));
+		}
+
+		[Test]
+		public void GetKeyboard_FromInputLanguage_ExistingKeyboardReturnsKeyboard()
+		{
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			Assert.That(Keyboard.Controller.GetKeyboard(inputLanguage), Is.EqualTo(keyboard));
+		}
+
+		[Test]
+		public void GetKeyboard_FromInputLanguage_NonExistingKeyboard()
+		{
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			Assert.That(Keyboard.Controller.GetKeyboard(inputLanguage), Is.EqualTo(KeyboardDescription.Zero));
+		}
+
+		private class MockWritingSystemDefinition: IWritingSystemDefinition, ILegacyWritingSystemDefinition
+		{
+			#region Implementation of IWritingSystemDefinition
+			public bool RequiresValidTag { get; set; }
+			public string VersionNumber { get; set; }
+			public string VersionDescription { get; set; }
+			public DateTime DateModified { get; set; }
+			public IEnumerable<Iso639LanguageCode> ValidLanguages { get; private set; }
+			public IEnumerable<Iso15924Script> ValidScript { get; private set; }
+			public IEnumerable<IanaSubtag> ValidRegions { get; private set; }
+			public IEnumerable<IanaSubtag> ValidVariants { get; private set; }
+			public IpaStatusChoices IpaStatus { get; set; }
+			public bool IsVoice { get; set; }
+			public string Variant { get; set; }
+			public string Region { get; set; }
+			public string Language { get; set; }
+			public string Abbreviation { get; set; }
+			public string Script { get; set; }
+			public string LanguageName { get; set; }
+			public string StoreID { get; set; }
+			public string DisplayLabel { get; private set; }
+			public string ListLabel { get; private set; }
+			public string Bcp47Tag { get; private set; }
+			public string Id { get; private set; }
+			public bool Modified { get; set; }
+			public bool MarkedForDeletion { get; set; }
+			public string DefaultFontName { get; set; }
+			public float DefaultFontSize { get; set; }
+			public IKeyboardDefinition LocalKeyboard { get; set; }
+			public IEnumerable<IKeyboardDefinition> KnownKeyboards { get; private set; }
+			public void AddKnownKeyboard(IKeyboardDefinition newKeyboard)
 			{
-				_window.Close();
-				_window.Dispose();
 			}
-		}
-
-		[Test]
-		[Category("Windows IME")]
-		public void GetAllKeyboards_GivesSeveral()
-		{
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
-		}
-
-		[Test, ExpectedException(typeof(ErrorReport.ProblemNotificationSentToUserException))]
-		public void ActivateKeyboard_BogusName_RaisesMessageBox()
-		{
-			KeyboardController.ActivateKeyboard("foobar");
-		}
-
-		[Test]
-		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
-		{
-			// the keyboardName for this test and above need to be different
-			string keyboardName = "This should never be the same as the name of an installed keyboard";
-			try
+			public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards { get; private set; }
+			public bool RightToLeftScript { get; set; }
+			public string NativeName { get; set; }
+			public WritingSystemDefinition.SortRulesType SortUsing { get; set; }
+			public string SortRules { get; set; }
+			public string SpellCheckingId { get; set; }
+			public ICollator Collator { get; private set; }
+			public bool IsUnicodeEncoded { get; set; }
+			public void AddToVariant(string registeredVariantOrPrivateUseSubtag)
 			{
-				KeyboardController.ActivateKeyboard(keyboardName);
-				Assert.Fail("Should have thrown exception but didn't.");
 			}
-			catch (ErrorReport.ProblemNotificationSentToUserException)
+			public void SetAllComponents(string language, string script, string region, string variant)
 			{
-
 			}
-			KeyboardController.ActivateKeyboard(keyboardName);
-		}
-
-		[Test]
-		[Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
-		{
-			RequiresWindowsIME();
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
-			Assert.Greater(keyboards.Count, 0, "This test requires that the Windows IME has at least one language installed.");
-			KeyboardController.KeyboardDescriptor d = keyboards[0];
-			KeyboardController.ActivateKeyboard(d.Name);
-			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
-		}
-
-		[Test]
-		[Category("Windows IME")]
-		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
-		{
-			RequiresWindowsIME();
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
-			KeyboardController.KeyboardDescriptor d = keyboards[1];
-			KeyboardController.ActivateKeyboard(d.Name);
-			KeyboardController.DeactivateKeyboard();
-			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
-		}
-		[Test]
-		[Category("Windows IME")]
-		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
-		{
-			RequiresWindowsIME();
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Windows);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
-			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
+			public float GetDefaultFontSizeOrMinimum()
 			{
-				Assert.AreEqual(KeyboardController.Engines.Windows, keyboard.engine);
+				throw new NotImplementedException();
 			}
-		}
-
-
-		[Test]
-		[Category("Keyman6")]
-		public void Keyman6_GetKeyboards_GivesAtLeastOneAndOnlyKeyman6Ones()
-		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			public void SortUsingOtherLanguage(string languageCode)
 			{
-				return; // doesn't need to run on Unix
 			}
-			RequiresKeyman6();
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6);
-			Assert.Greater(keyboards.Count, 0);
-			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
+			public void SortUsingCustomICU(string sortRules)
 			{
-				Assert.AreEqual(KeyboardController.Engines.Keyman6, keyboard.engine);
 			}
-		}
-
-		[Test]
-		[Category("Keyman6")]
-		public void Keyman6_ActivateKeyboard_ReportsItWasActivated()
-		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			public void SortUsingCustomSimple(string sortRules)
 			{
-				return; // doesn't need to run on Unix
 			}
-			RequiresKeyman6();
-			RequiresWindow();
-			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
-			Application.DoEvents();//required
-			KeyboardController.ActivateKeyboard(d.Name);
-			Application.DoEvents();//required
-			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
-		}
-
-		[Test]
-		[Category("Keyman6")]
-		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
-		{
-			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			public bool ValidateCollationRules(out string message)
 			{
-				return; // doesn't need to run on Unix
+				throw new NotImplementedException();
 			}
-
-			RequiresKeyman6();
-			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
-			KeyboardController.ActivateKeyboard(d.Name);
-			Application.DoEvents();//required
-			KeyboardController.DeactivateKeyboard();
-			Application.DoEvents();//required
-			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
-		}
-
-		[Test]
-		[Category("Keyman7")]
-		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
-		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			public WritingSystemDefinition Clone()
 			{
-				return; // doesn't need to run on Unix
+				throw new NotImplementedException();
 			}
-			RequiresKeyman7();
-			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
-			KeyboardController.ActivateKeyboard(d.Name);
-			Application.DoEvents();//required
-			Assert.AreEqual(d.Name, KeyboardController.GetActiveKeyboard());
-		}
-
-
-		[Test]
-		[Category("Keyman7")]
-		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
-		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			public bool Equals(WritingSystemDefinition other)
 			{
-				return; // doesn't need to run on Unix
+				throw new NotImplementedException();
 			}
-			RequiresKeyman7();
-			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
-			KeyboardController.ActivateKeyboard(d.Name);
-			Application.DoEvents();//required
-			KeyboardController.DeactivateKeyboard();
-			Application.DoEvents();//required
-			Assert.AreNotEqual(d.Name, KeyboardController.GetActiveKeyboard());
-		}
-
-		[Test]
-		[Category("Keyman7")]
-		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()
-		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			public void SetTagFromString(string completeTag)
 			{
-				return; // doesn't need to run on Unix
 			}
-			RequiresKeyman7();
-			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7);
-			Assert.Greater(keyboards.Count, 0);
-			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
-			{
-				Assert.AreEqual(KeyboardController.Engines.Keyman7, keyboard.engine);
-			}
-		}
+			#endregion
 
-		 /// <summary>
-		/// The main thing here is that it doesn't crash doing a LoadLibrary()
-		/// </summary>
-		[Test]
-		public void NoKeyman7_GetKeyboards_DoesNotCrash()
-		{
-		   KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7);
-		}
-
-
-		private static void RequiresWindowsIME()
-		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Windows),
-						  "Windows IME Not available");
-		}
-
-		private static void RequiresKeyman6()
-		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6),
-						  "Keyman 6 Not available");
-
-		}
-		private static void RequiresKeyman7()
-		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman7),
-						  "Keyman 7 Not available");
+			#region Implementation of ILegacyWritingSystemDefinition
+			public string WindowsLcid { get; set; }
+			public string Keyboard { get; set; }
+			#endregion
 		}
 
 		[Test]
-		[Category("Scim")]
-		public void EngineAvailable_ScimIsSetUpAndConfiguredCorrectly_ReturnsTrue()
+		public void DefaultForWritingSystem_NullInput_ReturnsSystemDefault()
 		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(null),
+				Is.EqualTo(KeyboardController.Adaptors[0].DefaultKeyboard));
 		}
 
 		[Test]
-		[Category("Scim")]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
-		public void GetActiveKeyboard_ScimIsSetUpAndConfiguredToDefault_ReturnsEnglishKeyboard()
+		public void DefaultForWritingSystem_NoLegacyKeyboardSet_ReturnsSystemDefault()
 		{
-			ResetKeyboardToDefault();
-			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
+			var ws = new MockWritingSystemDefinition();
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws),
+				Is.EqualTo(KeyboardController.Adaptors[0].DefaultKeyboard));
 		}
 
 		[Test]
-		[Category("Scim")]
-		public void KeyboardDescriptors_ScimIsSetUpAndConfiguredToDefault_3KeyboardsReturned()
+		public void DefaultForWritingSystem_OldPalasoWinIMEKeyboard()
 		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
-			Assert.AreEqual("English/European", availableKeyboards[0].Name);
-			Assert.AreEqual("RAW CODE", availableKeyboards[1].Name);
-			Assert.AreEqual("English/Keyboard", availableKeyboards[2].Name);
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			var expectedKeyboard = new KeyboardDescription("foo - English (US)", "foo", "en-US", inputLanguage,
+				KeyboardController.Adaptors[0]);
+			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+
+			// Palaso sets the keyboard property for Windows system keyboards to <layoutname>-<locale>
+			var ws = new MockWritingSystemDefinition { Keyboard = "foo-en-US" };
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws), Is.EqualTo(expectedKeyboard));
 		}
 
 		[Test]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
-		[Category("Scim")]
-		public void Deactivate_ScimIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
+		public void DefaultForWritingSystem_OldPalasoKeymanKeyboard()
 		{
-			KeyboardController.ActivateKeyboard("English/European");
-			KeyboardController.DeactivateKeyboard();
-			Assert.AreEqual("English/Keyboard", KeyboardController.GetActiveKeyboard());
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			var expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", "en-US", inputLanguage,
+				KeyboardController.Adaptors[0]);
+			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+
+			// Palaso sets the keyboard property for Keyman keyboards to <layoutname>
+			var ws = new MockWritingSystemDefinition { Keyboard = "IPA Unicode 1.1.1" };
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws), Is.EqualTo(expectedKeyboard));
 		}
 
 		[Test]
-		[Ignore("Ignored because of Mono's buggy late input context switching.")]
-		[Category("Scim")]
-		public void ActivateKeyBoard_ScimHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
+		public void DefaultForWritingSystem_OldPalasoIbusKeyboard()
 		{
-			ResetKeyboardToDefault();
-			KeyboardController.ActivateKeyboard("English/European");
-			Assert.AreEqual("English/European", KeyboardController.GetActiveKeyboard());
-			ResetKeyboardToDefault();
+			#if __MonoCS__
+			// For this test on Linux we only use the XkbKeyboardAdaptor and simulate an available
+			// IBus keyboard. This is necessary because otherwise the test might return an
+			// installed Danish IBus keyboard (m17n:da:post) instead of our expected dummy one.
+			KeyboardController.Manager.SetKeyboardAdaptors(new[] { new Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor() });
+			#endif
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			var expectedKeyboard = new KeyboardDescription("m17n:da:post - English (US)", "m17n:da:post", "en-US", inputLanguage,
+				KeyboardController.Adaptors[0]);
+			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+
+			// Palaso sets the keyboard property for Ibus keyboards to <ibus longname>
+			var ws = new MockWritingSystemDefinition { Keyboard = "m17n:da:post" };
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws), Is.EqualTo(expectedKeyboard));
 		}
 
 		[Test]
-		[Category("Scim")]
-		[ExpectedException( typeof(Palaso.Reporting.ErrorReport.ProblemNotificationSentToUserException))]
-		public void ActivateKeyBoard_ScimDoesNotHaveKeyboard_Throws()
+		public void DefaultForWritingSystem_OldFwSystemKeyboard()
 		{
-			KeyboardController.ActivateKeyboard("Nonexistant Keyboard");
-		}
+			// 0x001C is Albanian (see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx).
+			// Make sure it's not installed on current system.
+			if (InputLanguage.InstalledInputLanguages.Cast<InputLanguage>().Any(lang => lang.Culture.LCID == 0x041C))
+				Assert.Ignore("Input language 'Albanian (Albania)' is installed on current system. Can't run this test.");
 
-		private void ResetKeyboardToDefault()
-		{
-			KeyboardController.DeactivateKeyboard();
-		}
+			var inputLanguage = new InputLanguageWrapper("sq-AL", IntPtr.Zero, "US");
+			var expectedKeyboard = new KeyboardDescription("US - Albanian (Albania)", "US", "sq-AL", inputLanguage,
+				KeyboardController.Adaptors[0]);
+			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
 
-		[Test]
-		[Category("Scim not Running")]
-		public void Deactivate_ScimIsNotRunning_DoesNotThrow()
-		{
-			KeyboardController.DeactivateKeyboard();
-		}
-
-		[Test]
-		[Category("Scim not Running")]
-		public void KeyboardDescriptors_ScimIsNotRunning_ReturnsEmptyList()
-		{
-			List<KeyboardController.KeyboardDescriptor> availableKeyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Scim);
-			Assert.AreEqual(0, availableKeyboards.Count);
+			// FieldWorks sets the WindowsLcid property for System keyboards to <lcid>
+			var ws = new MockWritingSystemDefinition { WindowsLcid = 0x041C.ToString() };
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws), Is.EqualTo(expectedKeyboard));
 		}
 
 		[Test]
-		[Category("Scim not Running")]
-		public void EngineAvailable_ScimIsnotRunning_returnsFalse()
+		public void DefaultForWritingSystem_OldNonexistingFwSystemKeyboard()
 		{
-			Assert.IsFalse(KeyboardController.EngineAvailable(KeyboardController.Engines.Scim));
+			// 0x001C is Albanian. Make sure it's not installed on current system.
+			if (InputLanguage.InstalledInputLanguages.Cast<InputLanguage>().Any(lang => lang.Culture.LCID == 0x041C))
+				Assert.Ignore("Input language 'Albanian (Albania)' is installed on current system. Can't run this test.");
+
+			// FieldWorks sets the WindowsLcid property for System keyboards to <lcid>
+			var ws = new MockWritingSystemDefinition { WindowsLcid = 0x041C.ToString() };
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws),
+				Is.EqualTo(KeyboardController.Adaptors[0].DefaultKeyboard));
+		}
+
+		[Test]
+		public void DefaultForWritingSystem_OldFwKeymanKeyboard()
+		{
+			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
+			var expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", "en-US", inputLanguage,
+				KeyboardController.Adaptors[0]);
+			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+
+			// FieldWorks sets the keyboard property for Keyman keyboards to <layoutname> and WindowsLcid to <lcid>
+			var ws = new MockWritingSystemDefinition { Keyboard = "IPA Unicode 1.1.1", WindowsLcid = 0x409.ToString() };
+			Assert.That(Keyboard.Controller.DefaultForWritingSystem(ws), Is.EqualTo(expectedKeyboard));
 		}
 	}
 }

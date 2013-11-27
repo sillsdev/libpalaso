@@ -91,11 +91,11 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void GetHashCode_Null_Throws()
 		{
 			var comparer = new DictionaryEqualityComparer<string, string>();
-			comparer.GetHashCode(null);
+			Assert.Throws<ArgumentNullException>(
+				() => comparer.GetHashCode(null));
 		}
 
 		[Test]

@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tmx version="1.4">
+  <header srclang="es" adminlang="en" creationtool="Palaso Localization Manager" creationtoolversion="1.1.10.0" segtype="block" datatype="unknown" o-tmf="PalasoTMXUtils">
+	<prop type="x-appversion">1.0.8.0</prop>
+	<prop type="x-hardlinebreakreplacement">\n</prop>
+  </header>
+  <body>
+	<tu tuid="AboutDialog.AboutDialogWindowTitle">
+	  <tuv xml:lang="en">
+		<seg>About</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Acerca de</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="Common.CancelButton">
+	  <tuv xml:lang="en">
+		<seg>&amp;Cancel</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>&amp;Cancelar</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="Common.No">
+	  <tuv xml:lang="en">
+		<seg>No</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>No</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="Common.OKButton">
+	  <tuv xml:lang="en">
+		<seg>&amp;OK</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Aceptar</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="Common.Yes">
+	  <tuv xml:lang="en">
+		<seg>Yes</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Si</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.ArtOfReading">
+	  <tuv xml:lang="en">
+		<seg>Art Of Reading</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Art Of Reading</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.Camera">
+	  <tuv xml:lang="en">
+		<seg>Camera</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Camera</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.Crop">
+	  <tuv xml:lang="en">
+		<seg>Crop</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Recortar</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.EditMetadataLink">
+	  <tuv xml:lang="en">
+		<seg>Edit...</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Editar...</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.FileButton">
+	  <tuv xml:lang="en">
+		<seg>File</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Archivo</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.GenericGettingImageProblem">
+	  <tuv xml:lang="en">
+		<seg>Sorry, something went wrong while getting the image.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Lo siento, algo salió mal al tratar de obtener la ilustración.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.GenericProblem">
+	  <tuv xml:lang="en">
+		<seg>Sorry, something went wrong with the ImageToolbox</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Lo siento, algo salió mal con el cuadro de herramientas de ilustraciones</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.GetPicture">
+	  <tuv xml:lang="en">
+		<seg>Get Picture</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Obtener ilustración</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.ImageToolboxWindowTitle">
+	  <tuv xml:lang="en">
+		<seg>Image Toolbox</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Cuadro de herramientas de ilustraciones</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.NoMatchingImages">
+	  <tuv xml:lang="en">
+		<seg>Found no matching images</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>No hay ilustraciones que coincidan encontrados</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.PictureFiles">
+	  <note>Shown in the file-picking dialog to describe what kind of files the dialog is filtering for</note>
+	  <tuv xml:lang="en">
+		<seg>picture files</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>archivos de ilustraciones</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.ProblemGettingImageFromDevice">
+	  <tuv xml:lang="en">
+		<seg>Problem Getting Image</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Problema obteniendo la ilustración</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.ProblemLoadingImage">
+	  <tuv xml:lang="en">
+		<seg>Sorry, there was a problem loading that image.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Lo sentimos, hubo un problema al cargar la ilustración.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.PromptForMissingMetadata">
+	  <tuv xml:lang="en">
+		<seg>This image does not know:\n\nWho created it?\nWho can use it?</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>La ilustración no sabe:\n\n¿Quién lo creó?\n¿Quién puede utilizarlo?</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.Scanner">
+	  <tuv xml:lang="en">
+		<seg>Scanner</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Escáner</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="ImageToolbox.SetUpMetadataLink">
+	  <tuv xml:lang="en">
+		<seg>Set up metadata...</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Configurar metadatos...</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.AlternateNamesHeader">
+	  <tuv xml:lang="en">
+		<seg>Other Names</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Otros nombres</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.CannotFindMyLanguage.LinkToEthnologue">
+	  <note>It's ok to change what this shows; the underlying destination will remain ethnologue.com</note>
+	  <tuv xml:lang="en">
+		<seg>Ethnologue.com</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Ethnologue.com</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.CannotFindMyLanguage.LinkToSILInformationAboutLanguageCodes">
+	  <tuv xml:lang="en">
+		<seg>About Language 639-3 Codes &amp; How To Apply For New Ones</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Acerca de códigos de idioma 639-3 &amp; Cómo solicitar nuevos</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.CannotFindMyLanguageWindowTitle">
+	  <tuv xml:lang="en">
+		<seg>About The ISO Language Registry</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Acerca del registro de idiomas ISO</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.CodeHeader">
+	  <tuv xml:lang="en">
+		<seg>Code</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Código</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.CountryHeader">
+	  <tuv xml:lang="en">
+		<seg>Country</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>País</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.DesiredLanguageDisplayNameLabel">
+	  <tuv xml:lang="en">
+		<seg>You can change how the language name will be displayed here:</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Puede cambiar cómo se mostrarán aquí el nombre del idioma:</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.LanguageLookupDialogWindowTitle">
+	  <tuv xml:lang="en">
+		<seg>Lookup Language Code...</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Búsqueda del código del idioma...</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.LookupISOControl._searchText">
+	  <tuv xml:lang="en">
+		<seg>?</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>?</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.PrimaryNameHeader">
+	  <tuv xml:lang="en">
+		<seg>Name</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Nombre</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup.UnlistedLanguage">
+	  <tuv xml:lang="en">
+		<seg>Unlisted Language</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Idioma no enumerado</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="LanguageLookup._cannotFindLanguageLink">
+	  <tuv xml:lang="en">
+		<seg>Can't find your language?</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>¿No encuentra su idioma?</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataDisplay.Creator">
+	  <tuv xml:lang="en">
+		<seg>Creator: {0}</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Creador: {0}</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataDisplay.LicenseInfo">
+	  <tuv xml:lang="en">
+		<seg>License Info</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Información de la licencia</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataDisplay.NoLicense">
+	  <tuv xml:lang="en">
+		<seg>No license specified</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Ninguna licencia especificada</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.AllowCommercialUse">
+	  <tuv xml:lang="en">
+		<seg>Allow commercial uses of your work?</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>¿Permite usos comerciales de su trabajo?</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.AllowDerivatives">
+	  <tuv xml:lang="en">
+		<seg>Allow modifications of your work?</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>¿Permite modificaciones de su trabajo?</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.CopyrightHolder">
+	  <tuv xml:lang="en">
+		<seg>By</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Por</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.CopyrightYear">
+	  <tuv xml:lang="en">
+		<seg>Copyright Year</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Año de derechos de autor</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.CreativeCommons">
+	  <tuv xml:lang="en">
+		<seg>Creative Commons</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Creative Commons</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.CreatorLabel">
+	  <tuv xml:lang="en">
+		<seg>Creator</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Creador</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.CustomLicense">
+	  <tuv xml:lang="en">
+		<seg>Custom</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Custom</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.License">
+	  <tuv xml:lang="en">
+		<seg>License</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Licencia</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.TitleNoCredit">
+	  <tuv xml:lang="en">
+		<seg>Copyright, &amp; License</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Derechos de autor &amp; licencia</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.TitleWithCredit">
+	  <tuv xml:lang="en">
+		<seg>Credit, Copyright, &amp; License</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Crédito, derechos de autor &amp; licencia</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.UnknownLicense">
+	  <tuv xml:lang="en">
+		<seg>Contact the copyright holder for any permissions</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Póngase en contacto con el titular del copyright para los permisos</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="MetadataEditor.YesShareAlike">
+	  <tuv xml:lang="en">
+		<seg>Yes, as long as others share alike</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Sí, mientras otros comparten por igual</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.AlsoHideOthersNotice">
+	  <tuv xml:lang="en">
+		<seg>This may also hide other buttons which are not needed by the non-advanced user.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Esto puede también ocultar otros botones que no sean necesarios por parte del usuario no avanzado.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.CtrlShiftHint">
+	  <tuv xml:lang="en">
+		<seg>The button will show up when you hold down the Ctrl and Shift keys together.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>El botón se mostrará cuando se mantiene presionada juntos las teclas Ctrl y Mayús.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.LauncherButtonLabel">
+	  <tuv xml:lang="en">
+		<seg>Settings Protection...</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Protección de configuración...</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.NormallyHiddenCheckbox">
+	  <tuv xml:lang="en">
+		<seg>Hide the button that opens settings.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Ocultar el botón que abre la configuración.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.PasswordDialog.FactoryPassword">
+	  <tuv xml:lang="en">
+		<seg>Factory Password</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Contraseña de fábrica</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.PasswordDialog.Password.Explanation">
+	  <tuv xml:lang="en">
+		<seg>To prevent accidental changes which could cause this tool to stop working for you, these settings have been locked.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Para evitar modificaciones accidentales que podrían causar esta herramienta de dejar de funcionar, estas configuraciones han sido bloqueados.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.PasswordDialog.SettingsPasswordWindowTitle">
+	  <tuv xml:lang="en">
+		<seg>Settings Protection Password</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Contraseña para protección de la configuración</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.PasswordDialog.ShowCharactersCheckbox">
+	  <tuv xml:lang="en">
+		<seg>Show Characters</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Mostrar caracteres</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.PasswordNotice">
+	  <tuv xml:lang="en">
+		<seg>Factory password for these settings is "{0}".  If you forget it, you can always google for "{1}" and "factory password"</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Contraseña de fábrica para estos ajustes es "{0}".  Si lo olvida, siempre puedes usar Google para buscar "{1}" y "factory password"</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.RequirePasswordCheckBox">
+	  <tuv xml:lang="en">
+		<seg>Require the factory password to get into settings.</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Requiere la contraseña de fábrica para entrar en la configuración.</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="SettingsProtection.SettingProtectionDialogTitle">
+	  <tuv xml:lang="en">
+		<seg>Settings Protection</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Protección de configuración</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="Use {0}">
+	  <tuv xml:lang="en">
+		<seg>ImageToolbox.CopyExemplarMetadata</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>ImageToolbox.CopyExemplarMetadata</seg>
+	  </tuv>
+	</tu>
+  </body>
+</tmx>

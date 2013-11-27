@@ -1,33 +1,46 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Palaso.Code;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPickerUsingComboBox : ComboBox
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 		private bool _changingSelection;
 
 		public event EventHandler SelectedComboIndexChanged;
 
+		/// <summary>
+		/// This one is for supporting the designer, and must be followed by a call to BindToModel
+		/// </summary>
 		public WSPickerUsingComboBox()
 		{
 			InitializeComponent();
 			SelectedIndexChanged += ComboSelectionChanged;
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public WSPickerUsingComboBox(WritingSystemSetupModel model):this()
 		{
-			Debug.Assert(model != null);
-			if (_model != null)
-			{
-				_model.ItemAddedOrDeleted -= ModelItemAddedOrDeleted;
-				_model.ListColumnsChanged -= ModelListColumnsChanged;
-				_model.SelectionChanged -= ModelSelectionChanged;
-				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
-			}
+		   BindToModel(model);
+		}
+
+		/// <summary>
+		/// Call this explicitly if using the constructor which does not set the model
+		/// </summary>
+		/// <param name="model"></param>
+		public void BindToModel(WritingSystemSetupModel model)
+		{
+			Guard.AgainstNull(model,"model");
 			_model = model;
+			//in case this is called twice, don't double subscribe
+			_model.ItemAddedOrDeleted -= ModelItemAddedOrDeleted;
+			_model.ListColumnsChanged -= ModelListColumnsChanged;
+			_model.SelectionChanged -= ModelSelectionChanged;
+			_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
+			this.Disposed -= OnDisposed;
+
 			ReloadItems();
 			_model.ItemAddedOrDeleted += ModelItemAddedOrDeleted;
 			_model.ListColumnsChanged += ModelListColumnsChanged;
@@ -105,6 +118,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_changingSelection)
 				return;
 			if (SelectedIndex == _model.CurrentIndex)
+				return;
+			// Some views have more indexes than we do, so do nothing if we can't do anything useful.
+			// review: shouldn't these controls have their own model.
+			if (_model.CurrentIndex >= Items.Count)
 				return;
 			_changingSelection = true;
 			try

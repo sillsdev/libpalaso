@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms;
 
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	[ProvideProperty("SuperStuff", typeof (Control))]
 	[ToolboxItemFilter("System.Windows.Forms")]

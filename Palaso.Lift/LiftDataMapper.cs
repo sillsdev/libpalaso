@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using LiftIO;
-using LiftIO.Merging;
 using Palaso.Code;
 using Palaso.Data;
+using Palaso.Lift.Merging;
 using Palaso.Lift.Migration;
 using Palaso.Progress;
 using Palaso.Reporting;
@@ -169,12 +168,23 @@ namespace Palaso.Lift
 			get { return true; }
 		}
 
+
 		private void LoadAllLexEntries()
 		{
 			using (ILiftReader<T> reader = _ioProvider.CreateReader())
 			{
+				CustomizeReader(reader);
 				reader.Read(_liftFilePath, _backend);
 			}
+		}
+
+		/// <summary>
+		/// for subclasses
+		/// </summary>
+		/// <param name="reader"></param>
+		protected virtual void CustomizeReader(ILiftReader<T> reader)
+		{
+
 		}
 
 		private string LiftDirectory
@@ -339,7 +349,7 @@ namespace Palaso.Lift
 				}
 				catch (Exception e)
 				{
-					ErrorReport.NotifyUserOfProblem(
+					ErrorReport.NotifyUserOfProblem(e,
 							"Could not finish updating LIFT dictionary file. Will try again later." + Environment.NewLine + " (" + e.Message + ")");
 				}
 #if DEBUG

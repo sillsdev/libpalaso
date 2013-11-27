@@ -30,17 +30,17 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepository_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void Construct_NullRepositoryId_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null)));
 		}
 
 		[Test]
@@ -52,32 +52,28 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepository_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(null,
-													   new Dictionary<string, object>(),
-													   new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(null, new Dictionary<string, object>(), new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullResults_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8)));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, null, new TestRepositoryId(8))));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void ConstructWithResults_NullRepositoryId_Throws()
 		{
-			Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper,
-													   new Dictionary<string, object>(),
-													   null));
+			Assert.Throws<ArgumentNullException>(
+				() => Assert.IsNotNull(new RecordToken<PalasoTestItem>(_dataMapper, new Dictionary<string, object>(), null)));
 		}
 	}
 
-	public class RecordTokenTestsBase
+	public abstract class RecordTokenTestsBase
 	{
 		private RecordToken<PalasoTestItem> _token;
 
@@ -96,10 +92,10 @@ namespace Palaso.Tests.Data
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void GetIndexer_NullFieldName_Throws()
 		{
-			Token[null] = null;
+			Assert.Throws<ArgumentNullException>(
+				() => Token[null] = null);
 		}
 
 		[Test]
@@ -149,6 +145,7 @@ namespace Palaso.Tests.Data
 	{
 		private MemoryDataMapper<PalasoTestItem> dataMapper;
 
+
 		[SetUp]
 		public void Setup()
 		{
@@ -183,6 +180,28 @@ namespace Palaso.Tests.Data
 		{
 			dataMapper.Dispose();
 		}
+
+		[Test]
+		public void RecordTokensAddedToSortedDictionary_RecordTokensDifferOnlyInForm_DoesNotThrow()
+		{
+			var results1 = new Dictionary<string, object>();
+			results1.Add("Form", "សង្ឃនៃអំបូរអឺរ៉ុន");
+			//results1.Add("Form", "form1");
+			results1.Add("Sense", 0);
+			var results2 = new Dictionary<string, object>();
+			results2.Add("Form", "បូជាចារ្យនៃអំបូរអឺរ៉ុន");
+			//results2.Add("Form", "form2");
+			results2.Add("Sense", 0);
+			var rt1 = new RecordToken<PalasoTestItem>(dataMapper, results1, new TestRepositoryId(8));
+			var rt2 = new RecordToken<PalasoTestItem>(dataMapper, results2, new TestRepositoryId(8));
+			var sortedDictionary = new SortedDictionary<RecordToken<PalasoTestItem>, object>();
+			sortedDictionary.Add(rt1, null);
+			sortedDictionary.Add(rt2, null);
+			Console.WriteLine("");
+		}
+
+
+
 
 		[Test]
 		public void GetIndexer_ExistingFieldName_ConstructedValue()

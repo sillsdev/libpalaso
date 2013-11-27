@@ -1,23 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using LiftIO.Validation;
 using Palaso.Annotations;
 using Palaso.DictionaryServices.Model;
 using Palaso.Extensions;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Lift.Validation;
 using Palaso.Text;
+using Palaso.Xml;
 
 namespace Palaso.DictionaryServices.Lift
 {
-	public class LiftWriter : ILiftWriter<LexEntry>
+   public class LiftWriter : ILiftWriter<LexEntry>
 	{
-		public const string LiftDateTimeFormat = "yyyy-MM-ddThh:mm:ssZ";
 		private readonly XmlWriter _writer;
 		private readonly Dictionary<string, int> _allIdsExportedSoFar;
 
@@ -35,41 +36,37 @@ namespace Palaso.DictionaryServices.Lift
 			_allIdsExportedSoFar = new Dictionary<string, int>();
 		}
 
-		public LiftWriter(string path): this()
+		public enum ByteOrderStyle
+		{
+			BOM,
+			NoBOM
+		} ;
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="includeByteOrderMark">PrinceXML (at least v7 chokes if given a BOM, Lexique Pro chokes without it) </param>
+		public LiftWriter(string path, ByteOrderStyle byteOrderStyle)
+			: this()
 		{
 			_disposed = true; // Just in case we throw in the constructor
-			_writer = XmlWriter.Create(path, PrepareSettings(false));
+			var settings = CanonicalXmlSettings.CreateXmlWriterSettings();
+			settings.Encoding = new UTF8Encoding(byteOrderStyle == ByteOrderStyle.BOM);
+			_writer = XmlWriter.Create(path, settings);
 			Start();
 			_disposed = false;
 		}
 
 		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
 		{
-			_writer = XmlWriter.Create(builder, PrepareSettings(produceFragmentOnly));
+			_writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings(
+				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document)
+			);
 			if (!produceFragmentOnly)
 			{
 				Start();
 			}
-		}
-
-		private static XmlWriterSettings PrepareSettings(bool produceFragmentOnly)
-		{
-			XmlWriterSettings settings = new XmlWriterSettings();
-			if (produceFragmentOnly)
-			{
-				settings.ConformanceLevel = ConformanceLevel.Fragment;
-				settings.Indent = false; //helps with tests that just do a string compare
-			}
-			else
-			{
-				settings.Indent = true;
-			}
-			// this will give you a bom, which messes up princexml :settings.Encoding = Encoding.UTF8;
-			Encoding utf8NoBom = new UTF8Encoding(false);
-			settings.Encoding = utf8NoBom;
-			settings.NewLineOnAttributes = false;
-			settings.CloseOutput = true;
-			return settings;
 		}
 
 		private void Start()
@@ -81,9 +78,16 @@ namespace Palaso.DictionaryServices.Lift
 			// _writer.WriteAttributeString("xmlns", "flex", null, "http://fieldworks.sil.org");
 		}
 
+		public void WriteHeader(string headerConentsNotIncludingHeaderElement)
+		{
+			Writer.WriteStartElement("header");
+			Writer.WriteRaw(headerConentsNotIncludingHeaderElement);
+			Writer.WriteEndElement();
+		}
+
 		public static string ProducerString
 		{
-			get { return "WeSay " + Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return "Palaso.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 
 		protected XmlWriter Writer
@@ -95,8 +99,19 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			if (Writer.Settings.ConformanceLevel != ConformanceLevel.Fragment)
 			{
+#if MONO
+				// If there are no open elements and you try to WriteEndElement then mono throws a
+				// InvalidOperationException: There is no more open element
+				// WriteEndDocument will close any open elements anyway
+				//
+				// If you try to WriteEndDocument on a closed writer then mono throws a
+				// InvalidOperationException: This XmlWriter does not accept EndDocument at this state Closed
+				if (Writer.WriteState != WriteState.Closed)
+					Writer.WriteEndDocument();
+#else
 				Writer.WriteEndElement(); //lift
 				Writer.WriteEndDocument();
+#endif
 			}
 			Writer.Flush();
 			Writer.Close();
@@ -121,10 +136,10 @@ namespace Palaso.DictionaryServices.Lift
 
 			Debug.Assert(entry.CreationTime.Kind == DateTimeKind.Utc);
 			Writer.WriteAttributeString("dateCreated",
-										entry.CreationTime.ToString(LiftDateTimeFormat));
+										entry.CreationTime.ToLiftDateTimeFormat());
 			Debug.Assert(entry.ModificationTime.Kind == DateTimeKind.Utc);
 			Writer.WriteAttributeString("dateModified",
-										entry.ModificationTime.ToString(LiftDateTimeFormat));
+										entry.ModificationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("guid", entry.Guid.ToString());
 			// _writer.WriteAttributeString("flex", "id", "http://fieldworks.sil.org", entry.Guid.ToString());
 			WriteMultiWithWrapperIfNonEmpty(LexEntry.WellKnownProperties.LexicalUnit,
@@ -145,7 +160,77 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				Add(sense);
 			}
+			foreach (var variant in entry.Variants)
+			{
+				AddVariant(variant);
+			}
+			foreach (var phonetic in entry.Pronunciations)
+			{
+				AddPronunciation(phonetic);
+			}
+			foreach (var etymology in entry.Etymologies)
+			{
+				AddEtymology(etymology);
+			}
+			foreach (var note in entry.Notes)
+			{
+				AddNote(note);
+			}
 			Writer.WriteEndElement();
+		}
+
+		private void AddEtymology(LexEtymology etymology)
+		{
+//  ok if no form is given          if (!MultiTextBase.IsEmpty(etymology))
+//            {
+				Writer.WriteStartElement("etymology");
+				//type is required, so add the attribute even if it's emtpy
+				Writer.WriteAttributeString("type", etymology.Type.Trim());
+
+				//source is required, so add the attribute even if it's emtpy
+				Writer.WriteAttributeString("source", etymology.Source.Trim());
+				AddMultitextGlosses(string.Empty, etymology.Gloss);
+				WriteCustomMultiTextField("comment", etymology.Comment);
+				AddMultitextForms(string.Empty, etymology);
+				Writer.WriteEndElement();
+//           }
+		}
+		private void AddPronunciation(LexPhonetic phonetic)
+		{
+			WriteMultiWithWrapperIfNonEmpty(string.Empty, "pronunciation", phonetic);
+		}
+
+		public void AddVariant(LexVariant variant)
+		{
+			WriteMultiWithWrapperIfNonEmpty(string.Empty, "variant", variant);
+		}
+
+		public void AddNote(LexNote note)
+		{
+			if (!MultiTextBase.IsEmpty(note))
+			{
+				Writer.WriteStartElement("note");
+				if(!string.IsNullOrEmpty(note.Type))
+				{
+					Writer.WriteAttributeString("type", note.Type.Trim());
+				}
+				AddMultitextForms(string.Empty, note);
+				Writer.WriteEndElement();
+			}
+		}
+
+		public void AddReversal(LexReversal reversal)
+		{
+			if (!MultiTextBase.IsEmpty(reversal))
+			{
+				Writer.WriteStartElement("reversal");
+				if (!string.IsNullOrEmpty(reversal.Type))
+				{
+					Writer.WriteAttributeString("type", reversal.Type.Trim());
+				}
+				AddMultitextForms(string.Empty, reversal);
+				Writer.WriteEndElement();
+			}
 		}
 
 		/// <summary>
@@ -213,10 +298,8 @@ namespace Palaso.DictionaryServices.Lift
 			}
 			if (ShouldOutputProperty(LexSense.WellKnownProperties.Gloss))
 			{
-				WriteOneElementPerFormIfNonEmpty(LexSense.WellKnownProperties.Gloss,
-												 "gloss",
-												 sense.Gloss,
-												 ';');
+				// review: I (cp) don't think this has the same checking for round tripping that AddMultiText... methods have.
+				WriteGlossOneElementPerFormIfNonEmpty(sense.Gloss);
 				propertiesAlreadyOutput.Add(LexSense.WellKnownProperties.Gloss);
 			}
 
@@ -227,6 +310,14 @@ namespace Palaso.DictionaryServices.Lift
 			foreach (LexExampleSentence example in sense.ExampleSentences)
 			{
 				Add(example);
+			}
+			foreach (var reversal in sense.Reversals)
+			{
+				AddReversal(reversal);
+			}
+			foreach (var note in sense.Notes)
+			{
+				AddNote(note);
 			}
 			WriteWellKnownCustomMultiText(sense,
 										  PalasoDataObject.WellKnownProperties.Note,
@@ -256,6 +347,10 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteStartElement("grammatical-info");
 			Writer.WriteAttributeString("value", pos.Value);
 			WriteFlags(pos);
+			foreach (string rawXml in pos.EmbeddedXmlElements)
+			{
+				Writer.WriteRaw(rawXml);
+			}
 			Writer.WriteEndElement();
 		}
 
@@ -290,7 +385,7 @@ namespace Palaso.DictionaryServices.Lift
 		private void WriteCustomProperties(PalasoDataObject item,
 										   ICollection<string> propertiesAlreadyOutput)
 		{
-			foreach (KeyValuePair<string, object> pair in item.Properties)
+			foreach (KeyValuePair<string, IPalasoDataObjectProperty> pair in item.Properties)
 			{
 				if (propertiesAlreadyOutput.Contains(pair.Key))
 				{
@@ -333,7 +428,7 @@ namespace Palaso.DictionaryServices.Lift
 				PictureRef pictureRef = pair.Value as PictureRef;
 				if (pictureRef != null)
 				{
-					WriteURLRef("illustration", pictureRef.Value, pictureRef.Caption);
+					WriteIllustrationElement(pictureRef);
 					continue;
 				}
 				throw new ApplicationException(
@@ -342,6 +437,11 @@ namespace Palaso.DictionaryServices.Lift
 								pair.Key,
 								pair.Value.GetType()));
 			}
+		}
+
+		protected virtual void WriteIllustrationElement(PictureRef pictureRef)
+		{
+			WriteURLRef("illustration", pictureRef.Value, pictureRef.Caption);
 		}
 
 		protected virtual bool ShouldOutputProperty(string key)
@@ -357,7 +457,7 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void WriteURLRef(string key, string href, MultiText caption)
+		protected void WriteURLRef(string key, string href, MultiText caption)
 		{
 			if (!string.IsNullOrEmpty(href))
 			{
@@ -391,14 +491,30 @@ namespace Palaso.DictionaryServices.Lift
 			{
 				if(string.IsNullOrEmpty(relation.Key))
 					continue;
+				if(!EntryDoesExist(relation.TargetId))
+					continue;
 
 				Writer.WriteStartElement("relation");
 				Writer.WriteAttributeString("type", GetOutputRelationName(relation));
 				Writer.WriteAttributeString("ref", relation.Key);
 				WriteRelationTarget(relation);
+
+				WriteExtensible(relation);
+
+				foreach (string rawXml in relation.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}
+
+		protected virtual bool EntryDoesExist(string id)
+		{
+			return true;// real implementations would check
+		}
+
 
 		protected virtual string GetOutputRelationName(LexRelation relation)
 		{
@@ -425,14 +541,14 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void WriteCustomMultiTextField(string tag, MultiText text)  // review cp see WriteEmbeddedXmlCollection
+		private void WriteCustomMultiTextField(string type, MultiText text)  // review cp see WriteEmbeddedXmlCollection
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement("field");
 
-				Writer.WriteAttributeString("type", tag);
-				WriteMultiTextNoWrapper(tag, text);
+				Writer.WriteAttributeString("type", type);
+				WriteMultiTextNoWrapper(type, text);
 				Writer.WriteEndElement();
 			}
 		}
@@ -444,6 +560,12 @@ namespace Palaso.DictionaryServices.Lift
 				Writer.WriteStartElement("trait");
 				Writer.WriteAttributeString("name", key);
 				Writer.WriteAttributeString("value", optionRef.Value);
+
+				foreach (string rawXml in optionRef.EmbeddedXmlElements)
+				{
+					Writer.WriteRaw(rawXml);
+				}
+
 				Writer.WriteEndElement();
 			}
 		}
@@ -472,6 +594,7 @@ namespace Palaso.DictionaryServices.Lift
 
 			WriteMultiTextNoWrapper(LexExampleSentence.WellKnownProperties.ExampleSentence,
 									example.Sentence);
+			propertiesAlreadyOutput.Add(LexExampleSentence.WellKnownProperties.ExampleSentence);
 			//  WriteMultiWithWrapperIfNonEmpty(LexExampleSentence.WellKnownProperties.Translation, "translation", example.Translation);
 
 			if (!MultiTextBase.IsEmpty(example.Translation))
@@ -484,8 +607,9 @@ namespace Palaso.DictionaryServices.Lift
 					propertiesAlreadyOutput.Add("type");
 				}
 
-				Add(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
+				AddMultitextForms(LexExampleSentence.WellKnownProperties.Translation, example.Translation);
 				Writer.WriteEndElement();
+				propertiesAlreadyOutput.Add(LexExampleSentence.WellKnownProperties.Translation);
 			}
 
 			if (ShouldOutputProperty(LexExampleSentence.WellKnownProperties.ExampleSentence))
@@ -499,12 +623,47 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteEndElement();
 		}
 
-		public void Add(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
+		public void AddMultitextGlosses(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
 		{
-			Add(GetOrderedAndFilteredForms(text, propertyName), false);
+			WriteLanguageFormsInWrapper(GetOrderedAndFilteredForms(text, propertyName), "gloss", false);
 			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
 			WriteEmbeddedXmlCollection(text);
 		}
+
+		public void AddMultitextForms(string propertyName, MultiText text) // review cp see WriteEmbeddedXmlCollection
+		{
+			WriteLanguageFormsInWrapper(GetOrderedAndFilteredForms(text, propertyName), "form", false);
+			WriteFormsThatNeedToBeTheirOwnFields(text, propertyName);
+			WriteEmbeddedXmlCollection(text);
+		}
+
+		private void WriteExtensible(IExtensible extensible)
+		{
+			foreach (var trait in extensible.Traits)
+			{
+				WriteTrait(trait);
+			}
+			foreach (var field in extensible.Fields)
+			{
+				Writer.WriteStartElement("field");
+				Writer.WriteAttributeString("type", field.Type);
+				WriteMultiTextNoWrapper(string.Empty /*what's this for*/ , field);
+				foreach (var trait in field.Traits)
+				{
+					WriteTrait(trait);
+				}
+				Writer.WriteEndElement();
+			}
+		}
+
+		private void WriteTrait(LexTrait trait)
+		{
+			Writer.WriteStartElement("trait");
+			Writer.WriteAttributeString("name", trait.Name);
+			Writer.WriteAttributeString("value", trait.Value.Trim());
+			Writer.WriteEndElement();
+		}
+
 		private void WriteEmbeddedXmlCollection(MultiText text)
 		{
 			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to Palaso.Lift / Palaso.Data also then can use MultiTextBase here (or a better interface).
@@ -517,24 +676,25 @@ namespace Palaso.DictionaryServices.Lift
 		{
 		}
 
-		protected void Add(IEnumerable<LanguageForm> forms, bool doMarkTheFirst)
+		protected void WriteLanguageFormsInWrapper(IEnumerable<LanguageForm> forms, string wrapper, bool doMarkTheFirst)
 		{
 			foreach (LanguageForm form in forms)
 			{
-				Writer.WriteStartElement("form");
+				Writer.WriteStartElement(wrapper);
 				Writer.WriteAttributeString("lang", form.WritingSystemId);
 				if (doMarkTheFirst)
 				{
 					doMarkTheFirst = false;
 					Writer.WriteAttributeString("first", "true"); //useful for headword
 				}
-				string wrappedTextToExport = "<text>" + form.Form + "</text>";
+//                string wrappedTextToExport = "<text>" + form.Form + "</text>";
+//                string wrappedTextToExport = form.Form;
 				XmlReaderSettings fragmentReaderSettings = new XmlReaderSettings();
 				fragmentReaderSettings.ConformanceLevel = ConformanceLevel.Fragment;
 
-				string scaryUnicodeEscaped = wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml();
+				string scaryUnicodeEscaped = form.Form.EscapeAnyUnicodeCharactersIllegalInXml();
 				string safeFromScaryUnicodeSoItStaysEscaped = scaryUnicodeEscaped.Replace("&#x", "");
-				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader(safeFromScaryUnicodeSoItStaysEscaped));
+				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader("<temp>" + safeFromScaryUnicodeSoItStaysEscaped + "</temp>"));
 
 				bool isTextWellFormedXml = true;
 				try
@@ -551,7 +711,10 @@ namespace Palaso.DictionaryServices.Lift
 
 				if(isTextWellFormedXml)
 				{
-					Writer.WriteRaw(wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml());// .WriteRaw(wrappedTextToExport);
+					Writer.WriteStartElement("text");
+					Writer.WriteRaw(form.Form.EscapeAnyUnicodeCharactersIllegalInXml());
+					Writer.WriteEndElement();
+//                    Writer.WriteRaw(wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml());// .WriteRaw(wrappedTextToExport);
 				}
 				else
 				{
@@ -579,45 +742,45 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
-				Add(propertyName, text);
+				AddMultitextForms(propertyName, text);
 			}
 		}
 
-		private void WriteOneElementPerFormIfNonEmpty(string propertyName,
-													  string wrapperName,
-													  MultiTextBase text,
-													  char delimeter)
+		private void WriteGlossOneElementPerFormIfNonEmpty(MultiTextBase text)
 		{
-			if (!MultiTextBase.IsEmpty(text))
+			if (MultiTextBase.IsEmpty(text))
 			{
-				foreach (LanguageForm alternative in GetOrderedAndFilteredForms(text, propertyName))
+				return;
+			}
+			foreach (var form in GetOrderedAndFilteredForms(text, LexSense.WellKnownProperties.Gloss))
+			{
+				if (string.IsNullOrEmpty(form.Form))
 				{
-					foreach (string part in alternative.Form.Split(new char[] {delimeter}))
-					{
-						string trimmed = part.Trim();
-						if (part != string.Empty)
-						{
-							Writer.WriteStartElement(wrapperName);
-							Writer.WriteAttributeString("lang", alternative.WritingSystemId);
-							Writer.WriteStartElement("text");
-							Writer.WriteString(trimmed);
-							Writer.WriteEndElement();
-							WriteFlags(alternative);
-							Writer.WriteEndElement();
-						}
-					}
+					continue;
 				}
+				Writer.WriteStartElement("gloss");
+				Writer.WriteAttributeString("lang", form.WritingSystemId);
+				Writer.WriteStartElement("text");
+				Writer.WriteString(form.Form);
+				Writer.WriteEndElement();
+				WriteFlags(form);
+				Writer.WriteEndElement();
 			}
 		}
 
-		private bool WriteMultiWithWrapperIfNonEmpty(string propertyName,
+	   private bool WriteMultiWithWrapperIfNonEmpty(string propertyName,
 													 string wrapperName,
 													 MultiText text)  // review cp see WriteEmbeddedXmlCollection
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement(wrapperName);
-				Add(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+				AddMultitextForms(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+
+				if (text is IExtensible)
+				{
+					WriteExtensible((IExtensible)text);
+				}
 				Writer.WriteEndElement();
 				return true;
 			}
@@ -628,9 +791,9 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			Writer.WriteStartElement("entry");
 			Writer.WriteAttributeString("dateCreated",
-										entry.CreationTime.ToString(LiftDateTimeFormat));
+										entry.CreationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("dateModified",
-										entry.ModificationTime.ToString(LiftDateTimeFormat));
+										entry.ModificationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("guid", entry.Guid.ToString());
 			Writer.WriteEndElement();
 		}
@@ -640,11 +803,11 @@ namespace Palaso.DictionaryServices.Lift
 			Writer.WriteStartElement("entry");
 			Writer.WriteAttributeString("id", GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, _allIdsExportedSoFar));
 			Writer.WriteAttributeString("dateCreated",
-										entry.CreationTime.ToString(LiftDateTimeFormat));
+										entry.CreationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("dateModified",
-										entry.ModificationTime.ToString(LiftDateTimeFormat));
+										entry.ModificationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("guid", entry.Guid.ToString());
-			Writer.WriteAttributeString("dateDeleted", DateTime.UtcNow.ToString(LiftDateTimeFormat));
+			Writer.WriteAttributeString("dateDeleted", DateTime.UtcNow.ToLiftDateTimeFormat());
 
 			Writer.WriteEndElement();
 		}
@@ -677,6 +840,8 @@ namespace Palaso.DictionaryServices.Lift
 				if (disposing)
 				{
 					// dispose-only, i.e. non-finalizable logic
+					if(_writer !=null)
+						_writer.Close();
 				}
 
 				// shared (dispose and finalizable) cleanup logic

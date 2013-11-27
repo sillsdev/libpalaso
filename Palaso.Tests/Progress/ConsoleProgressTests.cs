@@ -30,7 +30,7 @@ namespace Palaso.Tests.Progress
 		public void LongRunningMethodUsingConsoleHandler_ProducesLog()
 		{
 			Assert.IsFalse((_logBuilder.ToString().Contains("99")));
-			ConsoleProgress progress = new ConsoleProgress();
+			var progress = new ConsoleProgressState();
 			progress.Log += new EventHandler<ProgressState.LogEvent>(OnProgressStateLog);
 			BackgroundWorker cacheBuildingWork = new BackgroundWorker();
 			cacheBuildingWork.DoWork += new DoWorkEventHandler(OnDoBackgroundWorkerWork);
@@ -40,7 +40,7 @@ namespace Palaso.Tests.Progress
 			Assert.IsTrue(_logBuilder.ToString().Contains("99"));
 		}
 
-		private void WaitForFinish(ConsoleProgress progress, ProgressState.StateValue expectedResult)
+		private void WaitForFinish(ConsoleProgressState progress, ProgressState.StateValue expectedResult)
 		{
 			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
 			while (progress.State != expectedResult)
