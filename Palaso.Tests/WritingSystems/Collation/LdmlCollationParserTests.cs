@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
@@ -462,7 +462,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset>(</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("& \\(", icu);
+			Assert.AreEqual("& '('", icu);
 		}
 
 		[Test]
@@ -482,6 +482,29 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		public void IcuEscapableSequence_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset>k .w</reset></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& k' .'w", icu);
+		}
+
+		[Test]
+		public void IcuSingleQuote_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset>k'w'</reset></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& k''w''", icu);
+		}
+
+		[Test]
+		public void IcuComplexIcRuleWithMultipleEscapableChars_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset><last_tertiary_ignorable/></reset><ic>-()ʼ</ic></rules>";
+			Assert.AreEqual("& [last tertiary ignorable] = '-' = '(' = ')' = ʼ", LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml));
+		}
+
+		[Test]
 		public void InvalidLdml_Throws()
 		{
 			_collationXml = "<rules><m>a</m></rules>";
@@ -494,7 +517,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			// certainly some of this actually doesn't form semantically vaild ICU, but it should be syntactically correct
 			string icuExpected = "[strength 3]\r\n[alternate shifted]\r\n[backwards 2]\r\n& [before 1] [first regular] < b < A < cde\r\n"
-				+ "& gh << p < K | Q / \\< < [last variable] << 4 < [variable top] < 9";
+				+ "& gh << p < K | Q / '<' < [last variable] << 4 < [variable top] < 9";
 			string xml = "<settings strength=\"tertiary\" alternate=\"shifted\" backwards=\"on\" variableTop=\"u34\" />"
 				+ "<rules><reset before=\"primary\"><first_non_ignorable /></reset>"
 				+ "<pc>bA</pc><p>cde</p><reset>gh</reset><s>p</s>"
