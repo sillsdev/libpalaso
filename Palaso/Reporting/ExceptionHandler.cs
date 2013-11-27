@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
-
 
 namespace Palaso.Reporting
 {
@@ -21,7 +16,6 @@ namespace Palaso.Reporting
 			new HashSet<CancelExceptionHandlingEventHandler>();
 
 		private static ExceptionHandler _singleton;
-
 
 		/// ------------------------------------------------------------------------------------
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
@@ -37,30 +31,8 @@ namespace Palaso.Reporting
 		{
 			if (_singleton == null)
 			{
-				var topMostAssembly = Assembly.GetEntryAssembly();
-				if (topMostAssembly != null)
-				{
-					var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
-					var palasoUiWindowsFormsInializeAssemblyName =
-						referencedAssemblies.FirstOrDefault(a => a.Name.Contains("PalasoUIWindowsForms"));
-					if (palasoUiWindowsFormsInializeAssemblyName != null)
-					{
-						var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInializeAssemblyName);
-						//Make this go find the actual winFormsErrorReporter as opposed to looking for the interface
-						var interfaceToFind = typeof (ExceptionHandler);
-						var typeImplementingInterface =
-							toInitializeAssembly.GetTypes().Where(p => interfaceToFind.IsAssignableFrom(p));
-						foreach (var type in typeImplementingInterface)
-						{
-							_singleton = type.GetConstructor(Type.EmptyTypes).Invoke(null) as ExceptionHandler;
-						}
-					}
-					//If we can't find the WinFormsExceptionHandler we'll use the Console
-					if (_singleton == null)
-					{
-						_singleton = new ConsoleExceptionHandler();
-					}
-				}
+				//If we can't find the WinFormsExceptionHandler we'll use the Console
+				_singleton = GetObjectFromPalasoUiWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
 			}
 			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
 		}
@@ -77,6 +49,75 @@ namespace Palaso.Reporting
 				_singleton = handler;
 			}
 			else{throw new InvalidOperationException("An ExceptionHandler has already been set.");}
+		}
+
+		/// <summary>
+		/// Get all the types we can load from the assembly.
+		/// In case we can't load a particular type (e.g., TextBoxSpellChecker, because the
+		/// application doesn't use it and is not installing Enchant.dll), just skip it.
+		/// </summary>
+		/// <returns>The types loaded.</returns>
+		/// <param name="assembly">Assembly.</param>
+		internal static Type[] GetLoadableTypes(Assembly assembly)
+		{
+			Type[] types;
+			try
+			{
+				types = assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				types = e.Types.Where(t => t != null).ToArray();
+			}
+
+			return types;
+		}
+
+		internal static T GetObjectFromPalasoUiWindowsForms<T>() where T : class
+		{
+			const string palasoUiWindowsFormsAssemblyName = "PalasoUIWindowsForms";
+
+			var topMostAssembly = Assembly.GetEntryAssembly();
+			if (topMostAssembly != null)
+			{
+				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+				var palasoUiWindowsFormsInitializeAssemblyName =
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
+				if (palasoUiWindowsFormsInitializeAssemblyName != null)
+				{
+					var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
+					//TomB: this comment (presumably an idea for future enhancement) was in both versions of the code from which
+					// this method was created, even though it really only seems to apply to the one that was formerly in
+					// ErrorReport: "Make this go find the actual winFormsErrorReporter as opposed to looking for the interface"
+					// Not sure exactly what the author of that comment had in mind (perhaps to look for an explicit type name),
+					// but now that this method is called from two different places, it might be harder to do this.
+					var interfaceToFind = typeof(T);
+					var typeImplementingInterface = GetLoadableTypes(toInitializeAssembly).FirstOrDefault(
+						t =>
+						{
+						try
+						{
+							// Even though we supposedly filtered all the types we can't load,
+							// we STILL get an exception here when Enchant.dll is missing.
+							// (Nor is just this check enough...GetTypes() indeed throws also.
+							return interfaceToFind.IsAssignableFrom(t);
+						}
+						catch(System.TypeLoadException)
+						{
+							return false;
+						}
+						});
+					if (typeImplementingInterface != null)
+					{
+						var winFormsExceptionHandlerConstructor = typeImplementingInterface.GetConstructor(Type.EmptyTypes);
+						if (winFormsExceptionHandlerConstructor != null)
+						{
+							return winFormsExceptionHandlerConstructor.Invoke(null) as T;
+						}
+					}
+				}
+			}
+			return null;
 		}
 
 		/// ------------------------------------------------------------------------------------

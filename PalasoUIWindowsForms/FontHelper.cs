@@ -219,24 +219,40 @@ namespace Palaso.UI.WindowsForms
 		/// ------------------------------------------------------------------------------------
 		public static Font MakeFont(string fontName, float size, FontStyle style)
 		{
+			// On Mono there is an 139 exit code if we pass a reference to the FontFamily
+			// to the Font constructor, but not if we pass the FontFamily.Name.
 			try
 			{
-				var family = FontFamily.Families.SingleOrDefault(f => f.Name == fontName);
-				if (family != null)
+				string familyName = null;
+				bool supportsStyle = false;
+
+				// on Linux it is possible to get multiple font families with the same name
+				foreach (var family in FontFamily.Families.Where(f => f.Name == fontName))
 				{
+					// if the font supports the requested style, use it now
 					if (family.IsStyleAvailable(style))
-						return new Font(family, size, style, GraphicsUnit.Point);
+						return new Font(family.Name, size, style, GraphicsUnit.Point);
 
-					for (style = (FontStyle)0; (int)style <= 3; style = (FontStyle)(int)style + 1)
-					{
-						if (family.IsStyleAvailable(style))
-							return new Font(family, size, style, GraphicsUnit.Point);
-					}
+					// keep looking if the font has the correct name, but does not support the desired style
+					familyName = family.Name;
 				}
-			}
-			catch { }
 
-			return (Font)UIFont.Clone();
+				// if the requested font was not found, use the default font
+				if (string.IsNullOrEmpty(familyName))
+				{
+					familyName = UIFont.FontFamily.Name;
+					supportsStyle = UIFont.FontFamily.IsStyleAvailable(style);
+				}
+
+				return supportsStyle
+					? new Font(familyName, size, style, GraphicsUnit.Point)
+					: new Font(familyName, size, GraphicsUnit.Point);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
 		}
 
 		/// --------------------------------------------------------------------------------

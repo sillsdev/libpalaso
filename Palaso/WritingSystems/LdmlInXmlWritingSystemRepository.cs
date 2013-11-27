@@ -22,7 +22,7 @@ namespace Palaso.WritingSystems
 		public void SaveAllDefinitions(XmlWriter xmlWriter)
 		{
 			xmlWriter.WriteStartElement("writingsystems");
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			foreach (WritingSystemDefinition ws in AllWritingSystems)
 			{
 				LdmlDataMapper adaptor = CreateLdmlAdaptor();
 				adaptor.Write(xmlWriter, ws, null);
@@ -41,7 +41,7 @@ namespace Palaso.WritingSystems
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			foreach (XPathNavigator nav in nodes)
 			{
-				WritingSystemDefinition ws = CreateNew();
+				var ws = (WritingSystemDefinition)CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
 				adaptor.Read(xmlReader, ws);
 				ws.StoreID = ws.Bcp47Tag;
@@ -57,7 +57,7 @@ namespace Palaso.WritingSystems
 			{
 				while (xmlReader.ReadToFollowing("ldml"))
 				{
-					WritingSystemDefinition ws = CreateNew();
+					var ws = (WritingSystemDefinition)CreateNew();
 					adaptor.Read(xmlReader.ReadSubtree(), ws);
 					ws.StoreID = ws.Bcp47Tag;
 					Set(ws);

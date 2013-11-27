@@ -867,6 +867,9 @@ namespace Palaso.Lift.Parsing
 					}
 					ReadRanges(reader); // can exist here or before fields
 
+					// Not sure why this is needed, but the assert is sometimes thrown otherwise if
+					// whitespace separates the end elements here.
+					reader.MoveToContent();
 					Debug.Assert(reader.LocalName == "header");
 					reader.ReadEndElement(); // </header>
 				}

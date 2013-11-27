@@ -64,7 +64,7 @@ namespace Palaso.Tests.UsbDrive.Linux
 			}
 		}
 
-		[Test]
+		[Test, Ignore("not all usb drives have partitions")]
 		public void EnumerateUSB_HasOnlyPartitions()
 		{
 			var disks = new UDisks();

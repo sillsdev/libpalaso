@@ -8,6 +8,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -17,7 +18,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private readonly Hashtable _sortUsingValueMap;
 		private Hashtable _languageOptionMap;
 		private bool _changingModel;
-		private string _defaultKeyboard;
+		private IKeyboardDefinition _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
 
@@ -142,6 +143,7 @@ peach";
 				return;
 			}
 			string newValue = (string)_sortUsingValueMap[_sortUsingComboBox.SelectedIndex];
+			_changingModel = true;
 			try
 			{
 				_model.CurrentSortUsing = newValue;
@@ -165,7 +167,6 @@ peach";
 				_sortrules_panel.Visible = true;
 				_sortRulesTextBox.Text = _model.CurrentSortRules;
 			}
-			_changingModel = true;
 		}
 
 		private void _languageComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -228,7 +229,7 @@ peach";
 			{
 				return;
 			}
-			_defaultKeyboard = KeyboardController.GetActiveKeyboard();
+			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
 			_model.ActivateCurrentKeyboard();
 		}
 
@@ -238,7 +239,7 @@ peach";
 			{
 				return;
 			}
-			KeyboardController.ActivateKeyboard(_defaultKeyboard);
+			_defaultKeyboard.Activate();
 			if (_rulesValidationTimer.Enabled)
 			{
 				_rulesValidationTimer.Enabled = false;

@@ -64,7 +64,8 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 			RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
 			RowHeadersWidth = 22;
 			Color clr = SystemColors.Window;
-			GridColor = Color.FromArgb(clr.R - 30, clr.G - 30, clr.B - 30);
+			GridColor = Color.FromArgb(CalculateContrastiveGridLineColorComponent(clr.R),
+				CalculateContrastiveGridLineColorComponent(clr.G), CalculateContrastiveGridLineColorComponent(clr.B));
 			MultiSelect = false;
 			PaintHeaderAcrossFullGridWidth = true;
 			TextBoxEditControlBorderColor = Color.Silver;
@@ -266,6 +267,17 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 			}
 		}
 		#endregion
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a R, G, or B value that is noticeably distinct (somewhat lighter or darker)
+		/// from the given value.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private int CalculateContrastiveGridLineColorComponent(int backgroundColorComponent)
+		{
+			return backgroundColorComponent >= 30 ? backgroundColorComponent - 30 : backgroundColorComponent + 30;
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>

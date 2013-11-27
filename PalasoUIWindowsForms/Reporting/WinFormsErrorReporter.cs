@@ -4,7 +4,7 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	class WinFormsErrorReporter:IErrorReporter
+	public class WinFormsErrorReporter : IErrorReporter
 	{
 
 		public void ReportFatalException(Exception e)
@@ -48,7 +48,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 		{
 			if (policy.ShouldShowErrorReportDialog(exception))
 			{
-				ErrorReport.SendExceptionToParseDotCom(false, "", exception, "");
 				if (ErrorReport.IsOkToInteractWithUser)
 				{
 					ExceptionReportingDialog.ReportException(exception, null, false);
@@ -66,7 +65,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 		public void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
 			var s = string.Format(message, args);
-			ErrorReport.SendExceptionToParseDotCom(false, "", error, s);
 			ExceptionReportingDialog.ReportMessage(s, error, false);
 		}
 
@@ -78,16 +76,13 @@ namespace Palaso.UI.WindowsForms.Reporting
 		{
 			var s = string.Format(message, args);
 			var stack = new System.Diagnostics.StackTrace(true);
-			ErrorReport.SendExceptionToParseDotCom(false, "", null, s);
 			ExceptionReportingDialog.ReportMessage(s, stack, false);
-
 		}
 
 		public void ReportFatalMessageWithStackTrace(string message, object[] args)
 		{
 			var s = string.Format(message, args);
 			var stack = new System.Diagnostics.StackTrace(true);
-			ErrorReport.SendExceptionToParseDotCom(false, stack.ToString(), null, s);
 			ExceptionReportingDialog.ReportMessage(s, stack, true);
 		}
 

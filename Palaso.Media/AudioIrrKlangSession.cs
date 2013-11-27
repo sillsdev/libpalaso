@@ -6,7 +6,7 @@ using IrrKlang;
 
 namespace Palaso.Media
 {
-	public class AudioIrrKlangSession : ISimpleAudioSession
+	public class AudioIrrKlangSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
 		private IAudioRecorder _recorder;
 		private ISoundEngine _engine;
@@ -15,6 +15,13 @@ namespace Palaso.Media
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
 		private readonly string _path;
+		private ISoundStopEventReceiver _irrklangEventProxy;
+		private ISoundSource _soundSource;
+
+		/// <summary>
+		/// Will be raised when playing is over
+		/// </summary>
+		public event EventHandler PlaybackStopped;
 
 
 		public AudioIrrKlangSession(string filePath)
@@ -22,6 +29,7 @@ namespace Palaso.Media
 			_engine = new ISoundEngine();
 			_recorder = new IAudioRecorder(_engine);
 			_path = filePath;
+			_irrklangEventProxy = new ProxyForIrrklangEvents(this);
 		}
 
 		public void Test()
@@ -139,32 +147,50 @@ namespace Palaso.Media
 
 			var engine = new IrrKlang.ISoundEngine();
 
-			//all this is about getting names with non-latin to play.
-			//we have to copy them to a temp file first
-			string tempPath;
-			if (MakeTempCopyIfNeededBecauseOfUnicode(_path, out tempPath))
+
+			// we have to read it into memory and then play from memory,
+			// because the built-in Irrklang play from file function keeps
+			// the file open and locked
+			byte[] audioData = File.ReadAllBytes(_path);	//REVIEW: will this leak?
+			 _soundSource = engine.AddSoundSourceFromMemory(audioData, _path);
+			_sound = engine.Play2D(_soundSource, false, false, false);
+			_sound.setSoundStopEventReceiver(_irrklangEventProxy,engine);
+		}
+
+		/// <summary>
+		/// This is better than putting the ISoundStopEventReceiver on our class, because doing *that* requires clients then to reference the irrklang assembly, where it is defined.
+		/// And this is just a private mater, since we expose the event through a normal .net event handler
+		/// </summary>
+		private class ProxyForIrrklangEvents : ISoundStopEventReceiver
 			{
-				try
+			private readonly AudioIrrKlangSession _session;
+
+			public ProxyForIrrklangEvents(AudioIrrKlangSession session)
 				{
-					_sound = engine.Play2D(tempPath);
+				_session = session;
 				}
-				finally
+
+			public void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
 				{
-					try
-					{
-						File.Delete(tempPath);
-					}
-					catch(Exception)
-					{
-						//swallow
-					}
-				}
-			}
-			else
-			{
-				_sound = engine.Play2D(_path);
+				_session.OnSoundStopped(sound,reason,userData);
 			}
 		}
+
+		private void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
+					{
+			if (_soundSource != null)
+				_soundSource.Dispose();
+			_soundSource = null;
+
+			//this dispose is here because sometimes sounds (over 4 seconds) were getting left in a locked state
+			//but this didn't actually help.
+			((IrrKlang.ISoundEngine)userData).Dispose();
+
+
+			var handler = PlaybackStopped;
+			if (handler != null) handler(this, EventArgs.Empty);
+					}
+
 
 		/// <summary>
 		/// this version of irrklang can't play if there's non-latin in there

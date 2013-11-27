@@ -119,22 +119,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				_rfc4646.Text = _model.CurrentDefinition.Bcp47Tag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
+				_languageName.Font = SystemFonts.MessageBoxFont;
+				_rfc4646.Font = SystemFonts.MessageBoxFont;
 			}
 		}
 
 		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			using (var dlg = new LookupISOCodeDialog())
+			using (var dlg = new LookupISOCodeDialog() { ShowDesiredLanguageNameField =false})
 			{
 				dlg.ShowDialog();
 				if (dlg.DialogResult != DialogResult.OK)
 					return null;
 				var variant = String.Empty;
-				if (dlg.ISOCode == WellKnownSubTags.Unlisted.Language)
+				if (dlg.SelectedLanguage.Code == WellKnownSubTags.Unlisted.Language)
 				{
 					variant = "x-" + "Unlisted";
 				}
-				return new WritingSystemDefinition(dlg.ISOCode, string.Empty, string.Empty, variant, dlg.ISOCode, false);
+				return new WritingSystemDefinition(dlg.SelectedLanguage.Code, string.Empty, string.Empty, variant, dlg.SelectedLanguage.Code, false);
 			}
 		}
 

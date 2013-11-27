@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using Microsoft.Win32;
 using Palaso.Code;
 using Palaso.Reporting;
@@ -16,7 +15,9 @@ namespace Palaso.IO
 		string LocateFile(string fileName);
 		string LocateFile(string fileName, string descriptionForErrorMessage);
 		string LocateOptionalFile(string fileName);
+		string LocateFileWithThrow(string fileName);
 		string LocateDirectory(string directoryName);
+		string LocateDirectoryWithThrow(string directoryName);
 		string LocateDirectory(string directoryName, string descriptionForErrorMessage);
 		IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths);
 	}
@@ -93,7 +94,22 @@ namespace Palaso.IO
 			}
 			return path;
 		}
+		public string LocateDirectoryWithThrow(string directoryName)
+		{
+			var path = LocateDirectory(directoryName);
+			if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
+			{
+				throw new ApplicationException(String.Format("Could not find {0}.  It expected to find it in one of these locations: {1}",
+					directoryName, _searchPaths.Concat(Environment.NewLine)));
+			}
+			return path;
+		}
 
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns>null if not found</returns>
 		public string LocateOptionalFile(string fileName)
 		{
 			var path = LocateFile(fileName);
@@ -104,6 +120,18 @@ namespace Palaso.IO
 			return path;
 		}
 
+		/// <summary>
+		/// Throws ApplicationException if not found.
+		/// </summary>
+		public string LocateFileWithThrow(string fileName)
+		{
+			var path = LocateFile(fileName);
+			if (string.IsNullOrEmpty(path) || !File.Exists(path))
+			{
+				throw new ApplicationException("Could not find " + fileName + ". It expected to find it in one of these locations: " + Environment.NewLine + _searchPaths.Concat(Environment.NewLine));
+			}
+			return path;
+		}
 		/// <summary>
 		/// Gives the directory of either the project folder (if running from visual studio), or
 		/// the installation folder.  Helpful for finding templates and things; by using this,
@@ -217,7 +245,16 @@ namespace Palaso.IO
 			{
 				path = System.IO.Path.Combine(path, part);
 			}
+			if (Directory.Exists(path))
+				return path;
 
+			//try src (e.g. Bloom keeps its javascript under source directory (and in distfiles only when installed)
+			path = FileLocator.DirectoryOfApplicationOrSolution;
+			path = Path.Combine(path, "src");
+			foreach (var part in partsOfTheSubPath)
+			{
+				path = System.IO.Path.Combine(path, part);
+			}
 
 			if (optional && !Directory.Exists(path))
 				return null;
@@ -265,20 +302,33 @@ namespace Palaso.IO
 		///		  (sub folders) is searched.
 		///		- If fallBackToDeepSearch is false, then only the top-level program files
 		///		  folder is searched.
+		///
+		/// Note: For Mono the deep search and shallow search are the same because there
+		///		normally are no sub-directories in the program files directories.
+		///
+		/// Note: For Mono the subFoldersToSearch parameter is ignored.
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string LocateInProgramFiles(string exeName, bool fallBackToDeepSearch,
 			params string[] subFoldersToSearch)
 		{
+#if !__MonoCS__
 			var tgtPath = LocateInProgramFilesUsingShallowSearch(exeName, subFoldersToSearch);
 			if (tgtPath != null)
 				return tgtPath;
 
 			return (!fallBackToDeepSearch ? null :
 				LocateInProgramFilesUsingDeepSearch(exeName, subFoldersToSearch));
+#else
+			// For Mono, the deep search and shallow search are the same because there
+			// normally are no sub-directories in the program files directories.
+
+			// The subFoldersToSearch parameter is not valid on Linux.
+			return LocateInProgramFilesUsingDeepSearch(exeName);
+#endif
 		}
 
-		/// ------------------------------------------------------------------------------------
 		private static string LocateInProgramFilesUsingShallowSearch(string exeName,
 			params string[] subFoldersToSearch)
 		{
@@ -331,9 +381,21 @@ namespace Palaso.IO
 		/// ------------------------------------------------------------------------------------
 		public static string GetFromRegistryProgramThatOpensFileType(string fileExtension)
 		{
-#if MONO
+#if __MonoCS__
+			//------------------------------------------------------------------------------------
+			// The following command will output the mime type of an existing file, Phil.html:
+			//    file -b --mime-type ~/Phil.html
+			//
+			// This command will tell you the default application to open the file Phil.html:
+			//    ext=$(grep "$(file -b --mime-type ~/Phil.html)" /etc/mime.types
+			//        | awk '{print $1}') && xdg-mime query default $ext
+			//
+			// This command will open the file Phil.html using the default application:
+			//    xdg-open ~/Page.html
+			//------------------------------------------------------------------------------------
+
 			throw new NotImplementedException("GetFromRegistryProgramThatOpensFileType not implemented on Mono yet.");
-#else
+#endif
 			var ext = fileExtension.Trim();
 			if (!ext.StartsWith("."))
 				ext = "." + ext;
@@ -360,7 +422,6 @@ namespace Palaso.IO
 
 			value = value.Trim('\"', '%', '1', ' ');
 			return (!File.Exists(value) ? null : value);
-#endif
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -372,9 +433,16 @@ namespace Palaso.IO
 		/// ------------------------------------------------------------------------------------
 		private static IEnumerable<string> GetPossibleProgramFilesFolders()
 		{
+#if !__MonoCS__
 			var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			yield return pf.Replace(" (x86)", string.Empty);
 			yield return pf.Replace(" (x86)", string.Empty) + " (x86)";
+#else
+			yield return "/opt"; // RAMP is installed in the /opt directory by default
+			yield return "/usr/local/bin";
+			yield return "/usr/bin";
+			yield return "/bin";
+#endif
 		}
 
 		#endregion

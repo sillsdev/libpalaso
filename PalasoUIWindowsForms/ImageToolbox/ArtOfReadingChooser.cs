@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using L10NSharp;
 using Palaso.UI.WindowsForms.ImageGallery;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
@@ -68,7 +69,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					if (results.Count() == 0)
 					{
 						_messageLabel.Visible = true;
-						_searchResultStats.Text = "Found no matching images";
+						_searchResultStats.Text = "Found no matching images".Localize("ImageToolbox.NoMatchingImages");
 					}
 					else
 					{

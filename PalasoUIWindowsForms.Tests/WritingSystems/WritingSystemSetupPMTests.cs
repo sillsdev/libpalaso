@@ -4,7 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using NUnit.Framework;
+using Palaso.Code;
 using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
 using System.Linq;
@@ -87,6 +89,18 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			}
 		}
 
+		[TestFixtureSetUp]
+		public void FixtureSetup()
+		{
+			KeyboardController.Initialize();
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			KeyboardController.Shutdown();
+		}
+
 		[SetUp]
 		public void Setup()
 		{
@@ -105,14 +119,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void KeyboardNames_HasAtLeastOneKeyboard()
+		public void KeyboardNames_FirstKeyboardIsDefault()
 		{
-			foreach (var keyboard in WritingSystemSetupModel.KeyboardNames)
-			{
-				Assert.AreEqual("(default)", keyboard.LongName);
-				return;
-			}
-			Assert.Fail("No keyboards");
+			Assert.That(WritingSystemSetupModel.PossibleKeyboardsToChoose.First().Name, Is.EqualTo("(default)"));
 		}
 
 		[Test]
@@ -126,6 +135,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
 		public void FindInputLanguage_KnownLanguageCanBeFound()
 		{
 			string knownLanguage = "";

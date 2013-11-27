@@ -8,7 +8,7 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	internal class WinFormsExceptionHandler: ExceptionHandler
+	public class WinFormsExceptionHandler: ExceptionHandler
 	{
 
 		/// ------------------------------------------------------------------------------------
@@ -91,7 +91,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 
 		protected override bool DisplayError(Exception exception)
 		{
-			ErrorReport.SendExceptionToParseDotCom(false,"",exception,"");
 			UsageReporter.ReportException(false, null, exception, null);
 			try
 			{
@@ -132,7 +131,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 					{
 						// bool fIsLethal = !(exception is Reporting.ConfigurationException);
 						//ErrorReporter.ReportException(exception, parent, fIsLethal);
-
 						ExceptionReportingDialog.ReportException(exception);
 						return false;
 					}

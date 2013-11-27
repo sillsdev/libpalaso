@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Miscellaneous;
 
 namespace Palaso.UI.WindowsForms.Reporting
@@ -40,17 +39,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 				d.ShowDialog();
 		}
 
-//        public static void Show(string message, string dialogTitle, string buttonLabel, string reocurrenceMessage)
-//        {
-//            ProblemNotificationDialog d = new ProblemNotificationDialog();
-//
-//            d.Text = dialogTitle;
-//            d._message.Text = message;
-//            d._reoccurenceMessage.Text = reocurrenceMessage;
-//
-//            d.ShowDialog();
-//        }
-
 		private ProblemNotificationDialog()
 		{
 			InitializeComponent();
@@ -81,8 +69,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 
 		   Text = dialogTitle;
 			_message.Text = message;
-
-
 		}
 
 		private void _acceptButton_Click(object sender, EventArgs e)
@@ -107,30 +93,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 
 		private void HandleMessageTextChanged(object sender, EventArgs e)
 		{
-			AdjustHeights();
-		}
-
-		private void AdjustHeights()
-		{
-			//hack: I don't know why this is needed, but it was chopping off the last line in the case of the following message:
-			// "There was a problem connecting to the Internet.\r\nWarning: This machine does not have a live network connection.\r\nConnection attempt failed."
-			const int kFudge = 50;
-			_message.Height = GetDesiredTextBoxHeight()+kFudge;
-
-
-			var desiredWindowHeight = tableLayout.Height + Padding.Top +
-				Padding.Bottom + (Height - ClientSize.Height);
-
-			var scn = Screen.FromControl(this);
-			int maxWindowHeight = scn.WorkingArea.Height - 25;
-
-			if (desiredWindowHeight > maxWindowHeight)
-			{
-				_message.Height -= (desiredWindowHeight - maxWindowHeight);
-				_message.ScrollBars = ScrollBars.Vertical;
-			}
-
-			Height = Math.Min(desiredWindowHeight, maxWindowHeight);
+			_message.ScrollBars = _message.Height < GetDesiredTextBoxHeight() ? ScrollBars.Vertical : ScrollBars.None;
 		}
 
 		private int GetDesiredTextBoxHeight()
@@ -140,7 +103,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 
 			using (var g = _message.CreateGraphics())
 			{
-				const TextFormatFlags flags = TextFormatFlags.NoClipping | TextFormatFlags.NoPadding |
+				const TextFormatFlags flags = TextFormatFlags.NoClipping |
 					TextFormatFlags.TextBoxControl | TextFormatFlags.WordBreak;
 
 				return TextRenderer.MeasureText(g, _message.Text, _message.Font,

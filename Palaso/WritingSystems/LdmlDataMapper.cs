@@ -194,9 +194,69 @@ namespace Palaso.WritingSystems
 				}
 				reader.ReadEndElement();
 			}
+			else if (reader.GetAttribute("xmlns:palaso2") != null)
+			{
+				reader.ReadStartElement("special");
+				GetKnownKeyboards(reader, ws);
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					reader.Read();
+				}
+				reader.ReadEndElement();
+			}
+			else if (reader.GetAttribute("xmlns:fw") != null)
+			{
+				ws.WindowsLcid = GetLcid(reader);
+				while (reader.NodeType != XmlNodeType.EndElement)
+				{
+					reader.Read();
+				}
+				reader.ReadEndElement();
+			}
 			else
 			{
 				reader.Skip();
+			}
+		}
+
+		private string GetLcid(XmlReader reader)
+		{
+			reader.MoveToContent();
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == "special");
+			using (var lcidReader = reader.ReadSubtree())
+			{
+				lcidReader.ReadStartElement("special");
+				lcidReader.MoveToContent();
+				return GetSpecialValue(lcidReader, "fw", "windowsLCID", "urn://fieldworks.sil.org/ldmlExtensions/v1");
+			}
+		}
+
+		private void GetKnownKeyboards(XmlReader reader, IWritingSystemDefinition ws)
+		{
+			reader.MoveToContent();
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == Palaso2NamespaceName+ ":" + KnownKeyboardsElementName);
+			using (var knownKeyboardsReader = reader.ReadSubtree())
+			{
+				knownKeyboardsReader.MoveToContent();
+				knownKeyboardsReader.ReadStartElement(Palaso2NamespaceName + ":" + KnownKeyboardsElementName);
+				knownKeyboardsReader.MoveToContent();
+				while (knownKeyboardsReader.NodeType == XmlNodeType.Element && knownKeyboardsReader.Name == Palaso2NamespaceName + ":" + KeyboardElementName)
+				{
+					var keyboard = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboardsReader.GetAttribute(LayoutAttrName),
+						knownKeyboardsReader.GetAttribute(LocaleAttrName));
+					var kd = keyboard as DefaultKeyboardDefinition;
+					// Review EberhardB (JohnT): do we actually want to store OS in the LDML, or at all? If not, get rid of this.
+					// If so, we need to make sure it can be loaded into the objects made by the real KeyboardController.
+					if (kd != null)
+					{
+						PlatformID id;
+						PlatformID.TryParse(knownKeyboardsReader.GetAttribute(OSAttrName), out id);
+						kd.OperatingSystem = id;
+					}
+					knownKeyboardsReader.Read();
+					FindElement(knownKeyboardsReader, KeyboardElementName);
+					ws.AddKnownKeyboard(keyboard);
+				}
 			}
 		}
 
@@ -586,14 +646,14 @@ namespace Palaso.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(reader != null);
-			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
-				&& (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
+			while(!reader.EOF && reader.NodeType != XmlNodeType.EndElement
+					 && (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
 			{
-				if (reader.NodeType == XmlNodeType.Element)
+				if(reader.NodeType == XmlNodeType.Element)
 				{
 					bool knownNS = IsKnownSpecialElement(reader);
 					reader.MoveToElement();
-					if (knownNS)
+					if(knownNS)
 					{
 						reader.Skip();
 						continue;
@@ -632,12 +692,17 @@ namespace Palaso.WritingSystems
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
-			{
-				return string.Empty;
-			}
-			return reader.GetAttribute("value") ?? string.Empty;
+			return GetSpecialValue(reader, ns, field, _nameSpaceManager.LookupNamespace(ns));
 		}
+
+		  protected string GetSpecialValue(XmlReader reader, string ns, string field, string nameSpaceUri)
+		  {
+			  if(!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, nameSpaceUri, string.Compare))
+			  {
+				  return string.Empty;
+			  }
+			  return reader.GetAttribute("value") ?? string.Empty;
+		  }
 
 		private string GetSubNodeAttributeValue(XmlReader reader, string elementName, string attributeName)
 		{
@@ -654,6 +719,7 @@ namespace Palaso.WritingSystems
 		protected virtual void AddNamespaces(XmlNamespaceManager m)
 		{
 			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			m.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
 		}
 
 		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)
@@ -828,6 +894,12 @@ namespace Palaso.WritingSystems
 			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
 		}
 
+		private const string KnownKeyboardsElementName = "knownKeyboards";
+		private const string Palaso2NamespaceName = "palaso2";
+		private const string KeyboardElementName = "keyboard";
+		private const string LayoutAttrName = "layout";
+		private const string LocaleAttrName = "locale";
+		private const string OSAttrName = "os";
 		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
 			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
@@ -850,6 +922,25 @@ namespace Palaso.WritingSystems
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
+
+			if (ws.KnownKeyboards.Any())
+			{
+				var p2Namespace = _nameSpaceManager.LookupNamespace(Palaso2NamespaceName);
+				WriteBeginSpecialElement(writer, Palaso2NamespaceName);
+				writer.WriteStartElement(KnownKeyboardsElementName, p2Namespace);
+				foreach (var keyboard in ws.KnownKeyboards)
+				{
+					writer.WriteStartElement(KeyboardElementName, p2Namespace);
+					writer.WriteAttributeString(LayoutAttrName, keyboard.Layout);
+					writer.WriteAttributeString(LocaleAttrName, keyboard.Locale);
+					writer.WriteAttributeString(OSAttrName, keyboard.OperatingSystem.ToString());
+					writer.WriteEndElement(); // Keyboard
+				}
+				writer.WriteEndElement(); // KnownKeyboards
+				WriteFlexOrPalasoConformElement(writer, reader, Palaso2NamespaceName, "version",
+					WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
+				writer.WriteEndElement(); // Special
+			}
 		}
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)

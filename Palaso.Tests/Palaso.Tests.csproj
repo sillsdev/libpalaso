@@ -36,7 +36,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -47,7 +47,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -56,7 +56,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
@@ -65,7 +65,7 @@
 	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
@@ -121,6 +121,9 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
+	<Reference Include="NDesk.DBus" Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Annotations\AnnotatableTests.cs" />
@@ -142,9 +145,9 @@
 	<Compile Include="Extensions\DateTimeExtensionTests.cs" />
 	<Compile Include="Extensions\StringExtensionTests.cs" />
 	<Compile Include="i18n\StringCatalogTests.cs" />
+	<Compile Include="IO\DirectoryUtilitiesTests.cs" />
 	<Compile Include="IO\FileLocatorTests.cs" />
-	<Compile Include="IO\FileUtil.Tests.cs" />
-	<Compile Include="IO\FolderUtilsTests.cs" />
+	<Compile Include="IO\FileUtilsTests.cs" />
 	<Compile Include="IO\TempFileTests.cs" />
 	<Compile Include="Migration\DefaultVersionTests.cs" />
 	<Compile Include="Migration\FileMigratorTests.cs" />
@@ -157,6 +160,7 @@
 	<Compile Include="Progress\MultiProgressTests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
+	<Compile Include="reporting\AnalyticsEventSenderTests.cs" />
 	<Compile Include="reporting\ErrorReportTests.cs" />
 	<Compile Include="reporting\UsageReporter.Tests.cs" />
 	<Compile Include="SFMReaderTest.cs" />
@@ -189,7 +193,9 @@
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
 	<Compile Include="WritingSystems\Collation\SortingTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
+	<Compile Include="WritingSystems\EthnologueLookupTests.cs" />
 	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
+	<Compile Include="WritingSystems\DefaultKeyboardDefinitionTests.cs" />
 	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
 	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
 	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
@@ -216,6 +222,7 @@
 	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
 	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
 	<Compile Include="Xml\XmlHelpers.Tests.cs" />
+	<Compile Include="Progress\StringBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">

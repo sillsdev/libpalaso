@@ -528,10 +528,7 @@ namespace Palaso.UI.WindowsForms.Widgets
 			if(e.Graphics == null)
 				return;
 
-			return;
-
-
-
+#if ENABLE_BITMAPBUTTON_PAINT_INNERBORDER
 			Graphics g = e.Graphics;
 			System.Drawing.Rectangle rect = new Rectangle(0,0,Size.Width,Size.Height);
 
@@ -617,7 +614,9 @@ namespace Palaso.UI.WindowsForms.Widgets
 			//
 			pen0.Dispose();
 			brush.Dispose();
+#endif
 		}
+
 		/// <summary>
 		/// This method paints the text and text shadow for the button.
 		/// </summary>

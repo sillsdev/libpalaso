@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using Palaso.Code;
+using L10NSharp;
 using Palaso.IO;
 using Palaso.Reporting;
 #if !MONO
@@ -92,7 +91,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 
 				//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-				dlg.Filter = "picture files(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+				dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for")+"(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
 
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
@@ -105,7 +104,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					}
 					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
 					{
-						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.");
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
 						return;
 					}
 					_pictureBox.Image = _currentImage.Image;
@@ -231,9 +230,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 									 "Note: this program works with devices that have a 'WIA' driver, not the old-style 'TWAIN' driver";
 				_messageLabel.Visible = true;
 			}
+			catch (WIA_Version2_MissingException error)
+			{
+				_messageLabel.Text = "Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to downloand and follow the directions at http://vbnet.mvps.org/files/updates/wiaautsdk.zip";
+				_messageLabel.Visible = true;
+			}
 			catch (Exception error)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image");
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
 			}
 		}
 		#endif

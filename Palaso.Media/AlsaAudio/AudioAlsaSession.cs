@@ -46,12 +46,11 @@ namespace Palaso.Media
 		{
 			if (!CanRecord)
 				throw new ApplicationException("AlsaAudioSession: Already recording or playing on the ALSA sound device");
+			_stopRecordingTime = DateTime.MinValue;
+			_startRecordingTime = DateTime.Now;
 			bool fOk = _device.StartRecording();
 			if (!fOk)
 				throw new Exception("AlsaAudioSession: Cannot open the ALSA sound device");
-			_stopRecordingTime = DateTime.MinValue;
-			_startRecordingTime = DateTime.Now;
-			//Console.WriteLine("AlsaAudioSession: Recording started at {0}", _startRecordingTime);
 		}
 
 		/// <summary>
@@ -76,7 +75,7 @@ namespace Palaso.Media
 				if (_startRecordingTime == DateTime.MinValue || _stopRecordingTime == DateTime.MinValue)
 					return 0.0;
 				else
-					return (_stopRecordingTime - _startRecordingTime).Milliseconds;
+					return (_stopRecordingTime - _startRecordingTime).TotalMilliseconds;
 			}
 		}
 

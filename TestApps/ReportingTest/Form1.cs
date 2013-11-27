@@ -15,8 +15,6 @@ namespace TestApp
 		public Form1()
 		{
 			InitializeComponent();
-
-			ErrorReport.SetUpForParseDotCom("https://parse.com/apps/palasoreportingtest", "xnOou71DhkahT0rOn5NU6TmTq1lg3XKParHnI3Pb", "VtMY6GSkk5wdP6m1yiuUCSP8iEAb7rDmgt19WWJR");
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -39,18 +37,22 @@ namespace TestApp
 
 		private void _keyman7TestBox_Enter(object sender, EventArgs e)
 		{
+#if WANT_PORT
 			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].ShortName;
 			KeyboardController.ActivateKeyboard(name);
+#endif
 		}
 
 		private void _keyman6TestBox_Enter(object sender, EventArgs e)
 		{
+#if WANT_PORT
 			if(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6))
 			{
 				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].ShortName;
 				KeyboardController.ActivateKeyboard(name);
 			}
 			MessageBox.Show("keyman 6 not available");
+#endif
 		}
 
 		private void OnExceptionWithPolicyClick(object sender, EventArgs e)
@@ -124,7 +126,7 @@ the end.");
 
 		private void button10_Click(object sender, EventArgs e)
 		{
-			throw new ApplicationException("test2");
+			throw new ApplicationException("test");
 		}
 	}
 }

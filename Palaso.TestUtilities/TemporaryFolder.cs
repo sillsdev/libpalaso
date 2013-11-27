@@ -120,20 +120,25 @@ namespace Palaso.TestUtilities
 		/// </summary>
 		static public TemporaryFolder TrackExisting(string path)
 		{
-			Debug.Assert(Directory.Exists(path));
-			var f = new TemporaryFolder(); // This creates a new directory called "unnamedTestFolder", which is not deleted on Dispose.
-			if (f.Path.EndsWith("unnamedTestFolder") && Directory.Exists(f.Path))
-				Directory.Delete(f.Path);
+			Debug.Assert(Directory.Exists(path), @"TrackExisting given non existant folder to track.");
+			var f = new TemporaryFolder(false);
 			f._path = path;
 			return f;
 		}
 
 		[Obsolete("Go ahead and give it a name related to the test.  Makes it easier to track down problems.")]
 		public TemporaryFolder()
-			: this("unnamedTestFolder")
+			: this(System.IO.Path.GetRandomFileName())
 		{
 		}
 
+		/// <summary>
+		/// Private constructor that doesn't create a file. Used when tracking a pre-existing
+		/// directory.
+		/// </summary>
+		private TemporaryFolder(bool ignored)
+		{
+		}
 
 		public TemporaryFolder(string name)
 		{

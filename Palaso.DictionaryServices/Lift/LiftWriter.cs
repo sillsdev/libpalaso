@@ -299,10 +299,7 @@ namespace Palaso.DictionaryServices.Lift
 			if (ShouldOutputProperty(LexSense.WellKnownProperties.Gloss))
 			{
 				// review: I (cp) don't think this has the same checking for round tripping that AddMultiText... methods have.
-				WriteOneElementPerFormIfNonEmpty(LexSense.WellKnownProperties.Gloss,
-												 "gloss",
-												 sense.Gloss,
-												 ';');
+				WriteGlossOneElementPerFormIfNonEmpty(sense.Gloss);
 				propertiesAlreadyOutput.Add(LexSense.WellKnownProperties.Gloss);
 			}
 
@@ -749,34 +746,29 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void WriteOneElementPerFormIfNonEmpty(string propertyName,
-													  string wrapperName,
-													  MultiTextBase text,
-													  char delimeter)
+		private void WriteGlossOneElementPerFormIfNonEmpty(MultiTextBase text)
 		{
-			if (!MultiTextBase.IsEmpty(text))
+			if (MultiTextBase.IsEmpty(text))
 			{
-				foreach (LanguageForm alternative in GetOrderedAndFilteredForms(text, propertyName))
+				return;
+			}
+			foreach (var form in GetOrderedAndFilteredForms(text, LexSense.WellKnownProperties.Gloss))
+			{
+				if (string.IsNullOrEmpty(form.Form))
 				{
-					foreach (string part in alternative.Form.Split(new char[] {delimeter}))
-					{
-						string trimmed = part.Trim();
-						if (part != string.Empty)
-						{
-							Writer.WriteStartElement(wrapperName);
-							Writer.WriteAttributeString("lang", alternative.WritingSystemId);
-							Writer.WriteStartElement("text");
-							Writer.WriteString(trimmed);
-							Writer.WriteEndElement();
-							WriteFlags(alternative);
-							Writer.WriteEndElement();
-						}
-					}
+					continue;
 				}
+				Writer.WriteStartElement("gloss");
+				Writer.WriteAttributeString("lang", form.WritingSystemId);
+				Writer.WriteStartElement("text");
+				Writer.WriteString(form.Form);
+				Writer.WriteEndElement();
+				WriteFlags(form);
+				Writer.WriteEndElement();
 			}
 		}
 
-		private bool WriteMultiWithWrapperIfNonEmpty(string propertyName,
+	   private bool WriteMultiWithWrapperIfNonEmpty(string propertyName,
 													 string wrapperName,
 													 MultiText text)  // review cp see WriteEmbeddedXmlCollection
 		{

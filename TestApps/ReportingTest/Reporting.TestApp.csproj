@@ -97,6 +97,7 @@
 	  <HintPath>..\..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
+	<Reference Include="System.configuration" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
 	</Reference>
@@ -149,9 +150,12 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
 	</None>
-	<Compile Include="Properties\Settings.Designer.cs">
+	<Compile Include="Properties\Settings1.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	  <DependentUpon>Settings.settings</DependentUpon>
 	</Compile>
+	<Compile Include="Settings.cs" />
 	<Compile Include="WritingSystemPickerTestForm.cs">
 	  <SubType>Form</SubType>
 	</Compile>

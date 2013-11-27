@@ -1,5 +1,5 @@
 //from http://www.codeproject.com/cs/internet/SendFileToNET.asp
-
+#if !MONO
 using System;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -240,3 +240,4 @@ namespace Palaso.Email
 		public IntPtr	entryID;
 	}
 }
+#endif

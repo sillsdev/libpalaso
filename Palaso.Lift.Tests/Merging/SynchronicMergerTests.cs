@@ -77,7 +77,7 @@ namespace Palaso.Lift.Tests.Merging
 			Assert.AreEqual(4, doc.SelectNodes("//entry").Count);
 		}
 
-		[Test, Category("KnownMonoIssue")]
+		[Test]
 		public void NewEntriesAdded_MultipleFilesSucessiveChanges()
 		{
 			//This test demonstrates that LiftUpdate files are applied in the order they are created when time stamps are used to order the names up the LIFTUpdate files.
@@ -88,11 +88,17 @@ namespace Palaso.Lift.Tests.Merging
 			//Create a .lift.update file with three entries.  One to replace the second entry in the original LIFT file.
 			//The other two are new and should be appended to the original LIFT file.
 			WriteFile("LiftChangeFileB" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdate1, _directory);
+#if MONO
+			Thread.Sleep(1000);		// Wait long enough to ensure different timestamps.  This is a problem for Linux/Mono.
+#endif
 			//Create a .lift.update file with two entries.  One to replace one of the changes from the first LiftUpdate file and one new entry.
 			WriteFile("LiftChangeFileA" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdate2, _directory);
 			FileInfo[] files = SynchronicMerger.GetPendingUpdateFiles(Path.Combine(_directory, _baseLiftFileName));
 
 			XmlDocument doc = MergeAndGetResult(true, _directory, files);
+			Console.WriteLine("------------------------BEGIN DEBUG----------------------");
+			Console.WriteLine(doc.OuterXml);
+			Console.WriteLine("------------------------END DEBUG----------------------");
 			Assert.AreEqual(6, doc.SelectNodes("//entry").Count, "Should have been 6 entries");
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one']").Count, "should have been one entry with id of one");
 			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='two']").Count, "should not have been any entries with id of two");

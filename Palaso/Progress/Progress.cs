@@ -310,7 +310,7 @@ namespace Palaso.Progress
 		{
 			foreach (var h in _progressHandlers.Where(h => h.CanHandleMessages))
 			{
-				h.Handler.WriteMessage(colorName, message, args);
+				h.Handler.WriteMessageWithColor(colorName, message, args);
 			}
 		}
 
@@ -509,8 +509,15 @@ public class StringBuilderProgress : GenericProgress
 
 		public override void WriteMessage(string message, params object[] args)
 		{
-			_builder.Append("                          ".Substring(0, indent * 2));
-			_builder.AppendFormat(message+Environment.NewLine, args);
+			try
+			{
+				_builder.Append("                          ".Substring(0, indent * 2));
+				_builder.AppendFormat(message + Environment.NewLine, args);
+			}
+			catch //in case someone sneaks a { } into a user string, and cause that format to fail
+			{
+				_builder.Append(message + Environment.NewLine);//better than nothing
+			}
 		}
 
 		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
