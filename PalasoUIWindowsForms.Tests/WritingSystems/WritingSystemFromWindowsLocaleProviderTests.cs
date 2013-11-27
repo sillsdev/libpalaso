@@ -1,33 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 
-namespace PalasoUIWindowsForms.Tests
+namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
 	[TestFixture]
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
-		[SetUp]
-		public void Setup()
-		{
 
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-
-		}
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
+#if MONO
+		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
+#endif
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
-			IEnumerable<WritingSystemDefinition> provider =
-				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
 			Assert.IsNotNull(provider.First());
 		}
 
@@ -36,12 +28,15 @@ namespace PalasoUIWindowsForms.Tests
 		/// keyboards set up for a language.
 		/// </summary>
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
+#if MONO
+		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
+#endif
 		public void GetEnumerator_IfHaveMultipleSystemKeyboardsForSameLanguage_OnlyReturnsOneForEachLanguage()
 		{
-			IEnumerable<WritingSystemDefinition> provider =
-				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
 			Assert.IsNotNull(provider.First());
-			foreach (var group in provider.GroupBy(d=>d.RFC5646))
+			foreach (var group in provider.GroupBy(d=>d.Bcp47Tag))
 			{
 				Assert.AreEqual(1, group.Count());
 			}
@@ -54,7 +49,7 @@ namespace PalasoUIWindowsForms.Tests
 //                new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
 //            foreach (WritingSystemDefinition language in provider.WritingSystems)
 //            {
-////                if (language.ISO639 == "eng")
+////                if (language.Language == "eng")
 ////                {
 ////                    Assert.AreEqual("Latn",language.Script);
 ////                    Assert.AreEqual("en-Latn", language.RFC5646);

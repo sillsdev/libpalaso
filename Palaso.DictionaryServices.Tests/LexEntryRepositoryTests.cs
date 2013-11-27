@@ -33,7 +33,7 @@ namespace WeSay.LexicalModel.Tests
 		public void TearDown()
 		{
 			_repository.Dispose();
-			_temporaryFolder.Delete();
+			_temporaryFolder.Dispose();
 		}
 
 		private void MakeTestLexEntry(string writingSystemId, string lexicalForm)
@@ -71,7 +71,7 @@ namespace WeSay.LexicalModel.Tests
 		private static WritingSystemDefinition WritingSystemDefinitionForTest(string languageISO)
 		{
 			var retval = new WritingSystemDefinition();
-			retval.ISO639 = languageISO;
+			retval.Language = languageISO;
 			return retval;
 		}
 

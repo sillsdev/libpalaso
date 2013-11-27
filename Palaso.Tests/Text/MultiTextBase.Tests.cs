@@ -1,11 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Xml.Serialization;
 //using Exortech.NetReflector;
 using NUnit.Framework;
-using System.ComponentModel;
 using Palaso.Text;
 using System.Collections;
 
@@ -308,6 +307,74 @@ namespace Palaso.Tests.Text
 				get { return _name; }
 				set { _name = value; }
 			}
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentNumberOfForms_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			x["ws2"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y["ws"] = "test";
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_SameContent_True()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y.MergeIn(x);
+			Assert.IsTrue(x.Equals((object) y));
+			Assert.IsTrue(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_Identity_True()
+		{
+			MultiTextBase x = new MultiTextBase();
+			Assert.IsTrue(x.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentValues_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y["ws"] = "test1";
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentWritingSystems_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y["ws1"] = "test";
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_Null_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			Assert.IsFalse(x.Equals((object) null));
+		}
+
+		[Test]
+		public void Equals_Null_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			Assert.IsFalse(x.Equals(null));
 		}
 
 		[Test]

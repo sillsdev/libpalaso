@@ -77,6 +77,78 @@ namespace Palaso.Lift.Tests.Merging
 			Assert.AreEqual(4, doc.SelectNodes("//entry").Count);
 		}
 
+		[Test]
+		public void NewEntriesAdded_MultipleFilesSucessiveChanges()
+		{
+			//This test demonstrates that LiftUpdate files are applied in the order they are created when time stamps are used to order the names up the LIFTUpdate files.
+			//Notice that the files names of the LIFT update files are purposely created so that the alphabetical ordering does not match the time stamp ordering.
+
+			//Create a LIFT file with 3 entries which will have updates applied to it.
+			WriteFile(_baseLiftFileName, s_LiftData1, _directory);
+			//Create a .lift.update file with three entries.  One to replace the second entry in the original LIFT file.
+			//The other two are new and should be appended to the original LIFT file.
+			WriteFile("LiftChangeFileB" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdate1, _directory);
+#if MONO
+			Thread.Sleep(1000);		// Wait long enough to ensure different timestamps.  This is a problem for Linux/Mono.
+#endif
+			//Create a .lift.update file with two entries.  One to replace one of the changes from the first LiftUpdate file and one new entry.
+			WriteFile("LiftChangeFileA" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdate2, _directory);
+			FileInfo[] files = SynchronicMerger.GetPendingUpdateFiles(Path.Combine(_directory, _baseLiftFileName));
+
+			XmlDocument doc = MergeAndGetResult(true, _directory, files);
+			Console.WriteLine("------------------------BEGIN DEBUG----------------------");
+			Console.WriteLine(doc.OuterXml);
+			Console.WriteLine("------------------------END DEBUG----------------------");
+			Assert.AreEqual(6, doc.SelectNodes("//entry").Count, "Should have been 6 entries");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one']").Count, "should have been one entry with id of one");
+			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='two']").Count, "should not have been any entries with id of two");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='twoblatblat']").Count, "should have had one entry with id twoblatblat");
+			Assert.AreEqual(0, doc.SelectNodes("//entry[@id='four']").Count, "should have been no entries with id four");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='fourChangedFirstAddition']").Count, "should have been one entry with id 'forchangedfirstaddition'");
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='six']").Count, "should have been one entry with id of 6");
+		}
+
+		private static readonly string s_LiftData1 =
+			"<entry id='one' guid='0ae89610-fc01-4bfd-a0d6-1125b7281dd1'></entry>"
+			+ "<entry id='two' guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22'><lexical-unit><form lang='nan'><text>test</text></form></lexical-unit></entry>"
+			+ "<entry id='three' guid='80677C8E-9641-486e-ADA1-9D20ED2F5B69'></entry>";
+
+		private static readonly string s_LiftUpdate1 =
+			"<entry id='four' guid='6216074D-AD4F-4dae-BE5F-8E5E748EF68A'></entry>"
+			+ "<entry id='twoblatblat' guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22'></entry>"
+			+ "<entry id='five' guid='6D2EC48D-C3B5-4812-B130-5551DC4F13B6'></entry>";
+
+		private static readonly string s_LiftUpdate2 =
+			"<entry id='fourChangedFirstAddition' guid='6216074D-AD4F-4dae-BE5F-8E5E748EF68A'></entry>"
+			+ "<entry id='six' guid='107136D0-5108-4b6b-9846-8590F28937E8'></entry>";
+
+
+		[Test]
+		public void EntryDeleted_DeletionDateAdded()
+		{
+			//This test demonstrates that a deletion of an entry is applied to a LIFT file.
+			//Now 'tomb stoning' is done.  The entry is not actually deleted, but a dateDeleted attribute is added
+
+			//Create a LIFT file with 3 entries which will have updates applied to it.
+			WriteFile(_baseLiftFileName, s_LiftData1, _directory);
+			//Create a .lift.update file with and entry which is indicating that an entry was deleted (tombstone).
+			WriteFile("LiftChangeFile" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdateDeleteEntry, _directory);
+			FileInfo[] files = SynchronicMerger.GetPendingUpdateFiles(Path.Combine(_directory, _baseLiftFileName));
+			XmlDocument doc = MergeAndGetResult(true, _directory, files);
+			Assert.AreEqual(4, doc.SelectNodes("//entry").Count);
+			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one']").Count);
+			XmlNodeList nodesDeleted = doc.SelectNodes("//entry[@id='two' and @guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22']");
+			Assert.AreEqual(1, nodesDeleted.Count);   //ensure there is only one entry with this guid
+			XmlNode nodeDeleted = nodesDeleted[0];
+			//Make sure the contents of the node was changed to match the deleted entry from the .lift.update file
+			Assert.AreEqual("2012-05-08T06:40:44Z", nodeDeleted.Attributes["dateDeleted"].Value);
+			Assert.IsNullOrEmpty(nodeDeleted.InnerXml);
+		}
+
+		private static readonly string s_LiftUpdateDeleteEntry =
+			"<entry id='two' dateCreated='2012-05-04T04:19:57Z' dateModified='2012-05-04T04:19:57Z' guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22' dateDeleted='2012-05-08T06:40:44Z'></entry>"
+			+ "<entry id='six' guid='107136D0-5108-4b6b-9846-8590F28937E8'></entry>";
+
 		[Category("Fails on Linux because of New Lines as well as xml namespaces")]
 		[Test]
 		public void NewEntries_SingleLineXml_FormattedCorrectly()
@@ -122,8 +194,14 @@ namespace Palaso.Lift.Tests.Merging
 		{
 			get
 			{
+#if MONO
+				// mono inserts \r\n\t before xmlns where windows doesn't
+				return
+					"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<lift\r\n\tversion=\"0.13\"\r\n\tproducer=\"WeSay.1Pt0Alpha\"\r\n\txmlns:flex=\"http://fieldworks.sil.org\">\r\n\t<entry\r\n\t\tid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\"\r\n\t\tdateCreated=\"2009-10-07T04:07:54Z\"\r\n\t\tdateModified=\"2009-10-07T04:10:34Z\"\r\n\t\tguid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"nan\">\r\n\t\t\t\t<text>test</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"e6f93a8d-7883-4c1c-877e-e34db9f06cdc\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>difficult; slow</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n\t<entry\r\n\t\tid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef8\"\r\n\t\tdateCreated=\"2009-10-07T04:07:54Z\"\r\n\t\tdateModified=\"2009-10-07T04:10:34Z\"\r\n\t\tguid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef8\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"nan\">\r\n\t\t\t\t<text>test</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"e6f93a8d-7883-4c1c-877e-e34db9f06cdd\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>difficult; slow</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n\t<entry\r\n\t\tid=\"Xtest3_92f0c58a-9ad6-4715-ad9b-d56597217ac3\"\r\n\t\tdateCreated=\"2010-02-04T03:58:33Z\"\r\n\t\tdateModified=\"2010-02-04T03:58:40Z\"\r\n\t\tguid=\"92f0c58a-9ad6-4715-ad9b-d56597217ac3\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"v\">\r\n\t\t\t\t<text>Xtest3</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"4bc90f1e-1d4a-418f-a6e0-a4191b3e04f3\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>test3</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n</lift>";
+#else
 				return
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<lift\r\n\tversion=\"0.13\"\r\n\tproducer=\"WeSay.1Pt0Alpha\" xmlns:flex=\"http://fieldworks.sil.org\">\r\n\t<entry\r\n\t\tid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\"\r\n\t\tdateCreated=\"2009-10-07T04:07:54Z\"\r\n\t\tdateModified=\"2009-10-07T04:10:34Z\"\r\n\t\tguid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"nan\">\r\n\t\t\t\t<text>test</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"e6f93a8d-7883-4c1c-877e-e34db9f06cdc\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>difficult; slow</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n\t<entry\r\n\t\tid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef8\"\r\n\t\tdateCreated=\"2009-10-07T04:07:54Z\"\r\n\t\tdateModified=\"2009-10-07T04:10:34Z\"\r\n\t\tguid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef8\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"nan\">\r\n\t\t\t\t<text>test</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"e6f93a8d-7883-4c1c-877e-e34db9f06cdd\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>difficult; slow</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n\t<entry\r\n\t\tid=\"Xtest3_92f0c58a-9ad6-4715-ad9b-d56597217ac3\"\r\n\t\tdateCreated=\"2010-02-04T03:58:33Z\"\r\n\t\tdateModified=\"2010-02-04T03:58:40Z\"\r\n\t\tguid=\"92f0c58a-9ad6-4715-ad9b-d56597217ac3\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"v\">\r\n\t\t\t\t<text>Xtest3</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"4bc90f1e-1d4a-418f-a6e0-a4191b3e04f3\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>test3</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n</lift>";
+#endif
 			}
 		}
 
@@ -131,8 +209,14 @@ namespace Palaso.Lift.Tests.Merging
 		{
 			get
 			{
+#if MONO
+				// mono inserts \r\n\t before xmlns where windows doesn't
+				return
+					"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<lift\r\n\tversion=\"0.13\"\r\n\tproducer=\"WeSay.1Pt0Alpha\"\r\n\txmlns:flex=\"http://fieldworks.sil.org\">\r\n\t<entry\r\n\t\tid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\"\r\n\t\tdateCreated=\"2009-10-07T04:07:54Z\"\r\n\t\tdateModified=\"2009-10-07T04:10:34Z\"\r\n\t\tguid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"nan\">\r\n\t\t\t\t<text>test</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"e6f93a8d-7883-4c1c-877e-e34db9f06cdc\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>difficult; slow</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n\t<entry\r\n\t\tid=\"Xtest3_92f0c58a-9ad6-4715-ad9b-d56597217ac3\"\r\n\t\tdateCreated=\"2010-02-04T03:58:33Z\"\r\n\t\tdateModified=\"2010-02-04T03:58:40Z\"\r\n\t\tguid=\"92f0c58a-9ad6-4715-ad9b-d56597217ac3\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"v\">\r\n\t\t\t\t<text>Xtest3</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"4bc90f1e-1d4a-418f-a6e0-a4191b3e04f3\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>test3</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n</lift>";
+#else
 				return
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<lift\r\n\tversion=\"0.13\"\r\n\tproducer=\"WeSay.1Pt0Alpha\" xmlns:flex=\"http://fieldworks.sil.org\">\r\n\t<entry\r\n\t\tid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\"\r\n\t\tdateCreated=\"2009-10-07T04:07:54Z\"\r\n\t\tdateModified=\"2009-10-07T04:10:34Z\"\r\n\t\tguid=\"03d4b59a-9673-4f16-964e-4ea9f0636ef7\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"nan\">\r\n\t\t\t\t<text>test</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"e6f93a8d-7883-4c1c-877e-e34db9f06cdc\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>difficult; slow</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n\t<entry\r\n\t\tid=\"Xtest3_92f0c58a-9ad6-4715-ad9b-d56597217ac3\"\r\n\t\tdateCreated=\"2010-02-04T03:58:33Z\"\r\n\t\tdateModified=\"2010-02-04T03:58:40Z\"\r\n\t\tguid=\"92f0c58a-9ad6-4715-ad9b-d56597217ac3\">\r\n\t\t<lexical-unit>\r\n\t\t\t<form\r\n\t\t\t\tlang=\"v\">\r\n\t\t\t\t<text>Xtest3</text>\r\n\t\t\t</form>\r\n\t\t</lexical-unit>\r\n\t\t<sense\r\n\t\t\tid=\"4bc90f1e-1d4a-418f-a6e0-a4191b3e04f3\">\r\n\t\t\t<definition>\r\n\t\t\t\t<form\r\n\t\t\t\t\tlang=\"en\">\r\n\t\t\t\t\t<text>test3</text>\r\n\t\t\t\t</form>\r\n\t\t\t</definition>\r\n\t\t</sense>\r\n\t</entry>\r\n</lift>";
+#endif
 			}
 		}
 
@@ -231,6 +315,7 @@ namespace Palaso.Lift.Tests.Merging
 		{
 			WriteFile(_baseLiftFileName, "<entry id='one' greeting='hi'></entry><entry id='two' guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22'></entry>", _directory);
 			WriteFile(GetNextUpdateFileName(), "<entry id='one' guid='0ae89610-fc01-4bfd-a0d6-1125b7281dd2' greeting='hello'></entry>", _directory);
+
 			Merge(_directory);
 		}
 
@@ -336,32 +421,54 @@ namespace Palaso.Lift.Tests.Merging
 		[Test, ExpectedException(typeof(IOException))]
 		public void LockedBaseFile_Throws()
 		{
+			Exception ex = null;
 			string baseFilePath = Path.Combine(this._directory, _baseLiftFileName);
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, GetNextUpdateFileName());
 			using(File.Open(baseFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
 			{
-				Merge(_directory);
+				try
+				{
+					Merge(_directory);
+				}
+				catch (Exception err)
+				{
+					ex = err;
+				}
 			}
 
 			XmlDocument doc = GetResult(_directory);
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one' and @greeting='hi']").Count);
 			ExpectFileCount(2, _directory);
+
+			if (ex != null)
+				throw ex;
 		}
 
 		[Test, ExpectedException(typeof(IOException))]
 		public void LockedUpdate_Throws()
 		{
+			Exception ex = null;
 			string updateFilePath = Path.Combine(this._directory, GetNextUpdateFileName());
 
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, updateFilePath);
 			using (File.Open(updateFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
 			{
-				Merge(_directory);
+				try
+				{
+					Merge(_directory);
+				}
+				catch(Exception err)
+				{
+					ex = err; // Rethrow it later, after the end code has been run.
+				}
 			}
 
-			XmlDocument doc = GetResult(_directory);
+			var doc = GetResult(_directory);
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one' and @greeting='hi']").Count);
 			ExpectFileCount(2, _directory);
+
+			if (ex != null)
+				throw ex;
 		}
 
 
@@ -484,6 +591,14 @@ namespace Palaso.Lift.Tests.Merging
 			return GetResult(directory);
 		}
 
+		private XmlDocument MergeAndGetResult(bool isBackupFileExpected, string directory, FileInfo[] files)
+		{
+			Merge(directory, files);
+			ExpectFileCount(isBackupFileExpected ? 2 : 1, directory);
+
+			return GetResult(directory);
+		}
+
 		private static XmlDocument GetResult(string directory) {
 			XmlDocument doc = new XmlDocument();
 			string outputPath = Path.Combine(directory,_baseLiftFileName);
@@ -494,6 +609,11 @@ namespace Palaso.Lift.Tests.Merging
 
 		private void Merge(string directory) {
 			this._merger.MergeUpdatesIntoFile(Path.Combine(directory, _baseLiftFileName));
+		}
+
+		private void Merge(string directory, FileInfo[] files)
+		{
+			this._merger.MergeUpdatesIntoFile(Path.Combine(directory, _baseLiftFileName), files);
 		}
 
 		static private void ExpectFileCount(int count, string directory)

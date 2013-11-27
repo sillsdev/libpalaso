@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Palaso.Code;
 using Palaso.Lift.Parsing;
 using Palaso.Text;
 using Palaso.Extensions;
@@ -20,7 +21,7 @@ namespace Palaso.Lift
 	//NO: we haven't been able to do a reasonalbly compact xml representation except with custom deserializer
 	//[ReflectorType("multiText")]
 	[XmlInclude(typeof (LanguageForm))]
-	public class MultiText: MultiTextBase, IParentable, IReportEmptiness, IXmlSerializable
+	public class MultiText : MultiTextBase, IPalasoDataObjectProperty, IReportEmptiness, IXmlSerializable
 	{
 		private PalasoDataObject _parent;
 		public List<string> EmbeddedXmlElements = new List<string>();
@@ -310,6 +311,36 @@ namespace Palaso.Lift
 		public bool ContainsEqualForm(string form, string writingSystemId)
 		{
 			return null != this.Forms.FirstOrDefault(f=> f.WritingSystemId ==writingSystemId && f.Form == form);
+		}
+
+		public virtual IPalasoDataObjectProperty Clone()
+		{
+			var clone = new MultiText();
+			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
+			clone.Forms = Forms.Select(f => (LanguageForm) f.Clone()).ToArray();
+			return clone;
+		}
+
+		public virtual bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals((MultiText) other);
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (obj == null) return false;
+			if (obj.GetType() != typeof(MultiText)) return false;
+			return Equals((MultiText)obj);
+		}
+
+		public bool Equals(MultiText multiText)
+		{
+			if (ReferenceEquals(null, multiText)) return false;
+			if (ReferenceEquals(this, multiText)) return true;
+			if (EmbeddedXmlElements.Count != multiText.EmbeddedXmlElements.Count) return false;
+			if (!EmbeddedXmlElements.SequenceEqual(multiText.EmbeddedXmlElements)) return false;
+			if (!base.Equals(multiText)) return false;
+			return true;
 		}
 	}
 }

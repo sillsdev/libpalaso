@@ -29,6 +29,22 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void CodeFaHasIso3Pes()
+		{
+			var codes = StandardTags.ValidIso639LanguageCodes;
+			var target = codes.Where(code => code.Code == "fa").First();
+			Assert.That(target.ISO3Code, Is.EqualTo("pes"));
+		}
+
+		[Test]
+		public void ValidIso639LanguageCodes_HasISO3CodeForEnglish()
+		{
+			var codes = StandardTags.ValidIso639LanguageCodes;
+			var english = codes.Where(code => code.Code == "en").First();
+			Assert.That(english.ISO3Code, Is.EqualTo("eng"));
+		}
+
+		[Test]
 		public void ValidIso639LanguageCodes_HasFonipa_False()
 		{
 			var codes = StandardTags.ValidIso639LanguageCodes;
@@ -176,6 +192,23 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void IsValidIso15924ScriptCode_Qaaa_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsValidIso15924ScriptCode("Qaaa"));
+		}
+		[Test]
+		public void IsStandardIso15924ScriptCode_Qaaa_ReturnsFalse()
+		{
+			Assert.IsFalse(StandardTags.IsStandardIso15924ScriptCode("Qaaa"));
+		}
+
+		[Test]
+		public void IsStandardIso15924ScriptCode_Latn_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsStandardIso15924ScriptCode("Latn"));
+		}
+
+		[Test]
 		public void IsValidIso15924ScriptCode_fonipa_ReturnsFalse()
 		{
 			Assert.IsFalse(StandardTags.IsValidIso15924ScriptCode("fonipa"));
@@ -185,6 +218,25 @@ namespace Palaso.Tests.WritingSystems
 		public void IsValidIso3166Region_US_ReturnsTrue()
 		{
 			Assert.IsTrue(StandardTags.IsValidIso3166Region("US"));
+		}
+
+		[Test]
+		public void IsStandardIso3166Region_US_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsStandardIso3166Region("US"));
+		}
+
+		[Test]
+		public void IsValidIso3166Region_QM_ReturnsTrue()
+		{
+			Assert.IsTrue(StandardTags.IsValidIso3166Region("QM"));
+			Assert.IsTrue(StandardTags.IsValidIso3166Region("qm"));
+		}
+
+		[Test]
+		public void IsStandardIso3166Region_QM_ReturnsFalse()
+		{
+			Assert.IsFalse(StandardTags.IsStandardIso3166Region("QM"));
 		}
 
 		[Test]
@@ -214,6 +266,19 @@ namespace Palaso.Tests.WritingSystems
 		public void ValidIso639LanguageCodes_DoesNotContainCodeRanges()
 		{
 			Assert.AreEqual(0, StandardTags.ValidIso639LanguageCodes.Where(iso639 => iso639.Code.Contains("..")).Count());
+		}
+
+		[Test]
+		public void VariantTagPrefixes()
+		{
+			var monotonPrefixes = StandardTags.ValidRegisteredVariants.Where(variant => variant.Subtag == "monoton").First().Prefixes;
+			Assert.That(monotonPrefixes, Has.Length.EqualTo(1));
+			Assert.That(monotonPrefixes, Has.Member("el"));
+
+			var pinyinPrefixes = StandardTags.ValidRegisteredVariants.Where(variant => variant.Subtag == "pinyin").First().Prefixes;
+			Assert.That(pinyinPrefixes, Has.Length.EqualTo(2));
+			Assert.That(pinyinPrefixes, Has.Member("zh-Latn"));
+			Assert.That(pinyinPrefixes, Has.Member("bo-Latn"));
 		}
 	}
 }

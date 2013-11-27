@@ -59,7 +59,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		public static LiftDataMapper CreateDataMapper(string filePath)
@@ -95,6 +95,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.AreEqual(2, dom.ChildNodes.Count);
 			Assert.AreEqual("lift", dom.ChildNodes[1].Name);
 			Assert.AreEqual(0, dom.ChildNodes[1].ChildNodes.Count);
+			File.Delete(nonExistentFileToBeCreated);
 		}
 
 		[Test]
@@ -108,6 +109,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			doc.Load(emptyFileToBeFilled);
 			XmlNode root = doc.DocumentElement;
 			Assert.AreEqual("lift", root.Name);
+			File.Delete(emptyFileToBeFilled);
 		}
 
 		[Test]
@@ -152,7 +154,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void  LastModified_IsSetToMostRecentItemInPersistedDatasLastModifiedTime_v()
@@ -192,7 +194,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -222,7 +224,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -251,7 +253,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -282,7 +284,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void RepopulateRepositoryFromPersistedData()

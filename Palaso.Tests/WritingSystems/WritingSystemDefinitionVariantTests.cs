@@ -12,9 +12,9 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemDefinitionVariantTests
 	{
 		[Test]
-		public void LatestVersion_IsOne()
+		public void LatestVersion_IsTwo()
 		{
-			Assert.AreEqual(1, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+			Assert.AreEqual(2, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		[Test]
@@ -42,6 +42,45 @@ namespace Palaso.Tests.WritingSystems
 			ws.Variant = "1901-biske-fonipa";
 			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.AreEqual("1901-biske-fonipa", ws.Variant);
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToPhoneticOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-etic"));
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToIpaOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private"));
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToPhonemicOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-emic"));
 		}
 
 		[Test]

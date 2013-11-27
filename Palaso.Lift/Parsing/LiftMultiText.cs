@@ -15,6 +15,7 @@ namespace Palaso.Lift.Parsing
 		string _lang;		// lang attribute value for the span, if any
 		string _class;		// class attribute value for the span, if any
 		string _linkurl;	// href attribute value for the span, if any
+		readonly List<LiftSpan> _spans = new List<LiftSpan>();
 
 		/// <summary>
 		/// Constructor.
@@ -87,6 +88,14 @@ namespace Palaso.Lift.Parsing
 		public string LinkURL
 		{
 			get { return _linkurl; }
+		}
+
+		/// <summary>
+		/// Return the list of format specifications, if any.
+		/// </summary>
+		public List<LiftSpan> Spans
+		{
+			get { return _spans; }
 		}
 	}
 
@@ -372,7 +381,7 @@ namespace Palaso.Lift.Parsing
 		/// <summary>
 		/// Add another span to the given alternative, creating the alternative if needed.
 		/// </summary>
-		public void AddSpan(string key, string lang, string style, string href, int length)
+		public LiftSpan AddSpan(string key, string lang, string style, string href, int length)
 		{
 			LiftString alternative;
 			if (!TryGetValue(key, out alternative))
@@ -383,7 +392,9 @@ namespace Palaso.Lift.Parsing
 			int start = alternative.Text.Length;
 			if (lang == key)
 				lang = null;
-			alternative.Spans.Add(new LiftSpan(start, length, lang, style, href));
+			var span = new LiftSpan(start, length, lang, style, href);
+			alternative.Spans.Add(span);
+			return span;
 		}
 	}
 }

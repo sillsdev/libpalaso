@@ -129,6 +129,7 @@ namespace Palaso.Data
 
 		public int CompareTo(RecordToken<T> other)
 		{
+			// Evaluate order in increasing expense, returning order at the earliest opportunity.
 			if (other == null)
 				return 1;
 
@@ -172,6 +173,20 @@ namespace Palaso.Data
 				if(order != 0)
 				{
 					return order;
+				}
+
+				// bugfix WS-33997.  Khmer (invariant culture) strings when compared return "same",
+				// when in fact they are different strings.  In this case, use an ordinal compare.
+				if (_queryResults[key] != null && _queryResults[key].GetHashCode() != theirResults[key].GetHashCode())
+				{
+					string a = _queryResults[key].ToString();
+					string b = theirResults[key].ToString();
+
+					order = String.Compare(a, b, StringComparison.Ordinal);
+					if (order != 0)
+					{
+						return order;
+					}
 				}
 				++i;
 			}

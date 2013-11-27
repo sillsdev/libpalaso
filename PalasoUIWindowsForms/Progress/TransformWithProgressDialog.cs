@@ -82,10 +82,10 @@ namespace Palaso.UI.WindowsForms.Progress
 				if (dlg.ProgressStateResult!=null && dlg.ProgressStateResult.ExceptionThatWasEncountered != null)
 				{
 					if(failureWouldBeFatal)
-						Reporting.ErrorReport.ReportFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
+						Palaso.Reporting.ErrorReport.ReportFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
 				   else
 					{
-						Reporting.ErrorReport.ReportNonFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
+						Palaso.Reporting.ErrorReport.ReportNonFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
 					}
 					return false;
 				}

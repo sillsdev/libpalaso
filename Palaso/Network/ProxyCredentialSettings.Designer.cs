@@ -13,7 +13,7 @@ namespace Palaso.Network {
 
 	[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "10.0.0.0")]
-	internal sealed partial class ProxyCredentialSettings : global::System.Configuration.ApplicationSettingsBase {
+	public sealed partial class ProxyCredentialSettings : global::System.Configuration.ApplicationSettingsBase {
 
 		private static ProxyCredentialSettings defaultInstance = ((ProxyCredentialSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new ProxyCredentialSettings())));
 

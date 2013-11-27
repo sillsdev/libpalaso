@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using Palaso.Reporting;
 
 namespace Palaso.Media
 {
@@ -21,6 +23,45 @@ namespace Palaso.Media
 			_hint.Left = _recordButton.Right + 5;
 			_poorMansWaveform.Left = _hint.Left;
 			_hint.Text = "";
+			_recordButton.MouseEnter += delegate(object o, EventArgs args) { ButtonEnter(args); };
+			_recordButton.MouseLeave += delegate(object o, EventArgs args) { ButtonLeave(args); };
+			_playButton.MouseEnter += delegate(object o, EventArgs args) { ButtonEnter(args); };
+			_playButton.MouseLeave += delegate(object o, EventArgs args) { ButtonLeave(args); };
+			_deleteButton.MouseLeave += delegate(object o, EventArgs args) { ButtonLeave(args); };
+		}
+
+		private void UpdateButtonAppearances(bool enable)
+		{
+			UpdateScreen();
+			SetButtonAppearanceEnabled(enable); //we are really in
+		}
+
+		protected void ButtonEnter(EventArgs e)
+		{
+			UpdateButtonAppearances(true);
+		}
+
+		protected void ButtonLeave(EventArgs e)
+		{
+			UpdateButtonAppearances(false);
+		}
+
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			UpdateScreen();
+		}
+
+		protected override void OnMouseEnter(EventArgs e)
+		{
+			base.OnMouseEnter(e);
+			UpdateButtonAppearances(true);
+		}
+
+		protected override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			UpdateButtonAppearances(false);
 		}
 
 		public bool PlayOnly
@@ -36,8 +77,7 @@ namespace Palaso.Media
 
 		private void Shutdown()
 		{
-			_timer.Tick -= new System.EventHandler(timer1_Tick);
-			_timer.Stop();
+			;
 		}
 
 		protected override void OnParentChanged(EventArgs e)
@@ -45,6 +85,8 @@ namespace Palaso.Media
 			base.OnParentChanged(e);
 			if (Parent == null)
 				Shutdown();
+			else
+				UpdateScreen();
 		}
 
 		public string Path
@@ -55,7 +97,7 @@ namespace Palaso.Media
 				_path = value;
 				_recorder = AudioFactory.AudioSession(Path);
 				toolTip1.SetToolTip(_deleteButton, _deleteButtonInstructions +"\r\n"+_path);
-				_timer.Enabled = true;
+				UpdateScreen();
 			}
 		}
 
@@ -63,26 +105,26 @@ namespace Palaso.Media
 		{
 			bool exists = File.Exists(Path);
 			if (Parent == null)
-				return; // somehow the timer is still ticking, though we are gone and done away with; don't crash
+			{
+				// Screen update was attempted while the screen is not currently displayed;
+				// set up a blank state to avoid confusion on inits, and then return as any other display
+				// activity would cause a crash.
+				_playButton.Visible = false;
+				_recordButton.Visible = false;
+				_poorMansWaveform.Visible = false;
+				_deleteButton.Visible = false;
+				return;
+			}
 			bool mouseIsWithin = Parent.RectangleToScreen(Bounds).Contains(MousePosition);
-
-			if(mouseIsWithin)
-			{
-				_playButton.Image = global::Palaso.Media.Properties.Resources.play14x16;
-				_recordButton.Image = global::Palaso.Media.Properties.Resources.record16x16;
-			}
-			else
-			{
-				_playButton.Image = global::Palaso.Media.Properties.Resources.playDisabled14x16;
-				_recordButton.Image = global::Palaso.Media.Properties.Resources.recordDisabled16x16;
-			}
-
+			SetButtonAppearanceEnabled(mouseIsWithin);
+			bool mouseOverRecordButton = RectangleToScreen(_recordButton.Bounds).Contains(MousePosition);
 			_recordButton.Enabled = _deleteButton.Enabled = !PlayOnly && mouseIsWithin;
-			_playButton.Enabled = mouseIsWithin && !_recorder.IsPlaying;
-			_recordButton.FlatAppearance.BorderSize = mouseIsWithin ? 1 : 0;
+			_recordButton.FlatAppearance.BorderSize = mouseOverRecordButton ? 1 : 0;
 
-			_playButton.Visible =  exists && (_recorder.IsPlaying || _recorder.CanPlay);
-			 _deleteButton.Visible = mouseIsWithin && exists && !PlayOnly ;
+			_playButton.Enabled = mouseIsWithin && !_recorder.IsPlaying;
+
+			_playButton.Visible = exists && (_recorder.IsPlaying || _recorder.CanPlay);
+			_deleteButton.Visible = mouseIsWithin && exists && !PlayOnly;
 
 			 bool mouseOverDeleteButton = RectangleToScreen(_deleteButton.Bounds).Contains(MousePosition);
 			 _deleteButton.FlatAppearance.BorderSize = mouseOverDeleteButton ? 1 : 0;
@@ -92,13 +134,21 @@ namespace Palaso.Media
 
 			_poorMansWaveform.Visible = false;//this was a good idea, but made the screen too busy //exists;
 			_recordButton.Visible = !exists && !PlayOnly;
-
-
 		}
 
-		private void timer1_Tick(object sender, EventArgs e)
+		private void SetButtonAppearanceEnabled(bool mouseIsWithin)
 		{
-			UpdateScreen();
+			if (mouseIsWithin)
+			{
+				_playButton.Image = global::Palaso.Media.Properties.Resources.play14x16;
+				_recordButton.Image = global::Palaso.Media.Properties.Resources.record16x16;
+			}
+			else
+			{
+				_playButton.Image = global::Palaso.Media.Properties.Resources.playDisabled14x16;
+				_recordButton.Image = global::Palaso.Media.Properties.Resources.recordDisabled16x16;
+				_recordButton.FlatAppearance.BorderSize = _playButton.FlatAppearance.BorderSize = _deleteButton.FlatAppearance.BorderSize = 0;
+			}
 		}
 
 		private void OnDeleteClick(object sender, EventArgs e)
@@ -110,6 +160,7 @@ namespace Palaso.Media
 				if (SoundDeleted != null)
 				{
 					SoundDeleted.Invoke(this, null);
+					UsageReporter.SendNavigationNotice("AudioDeleted");
 				}
 			}
 		}
@@ -131,7 +182,14 @@ namespace Palaso.Media
 			if (File.Exists(Path))
 				File.Delete(Path);
 
-			_recorder.StartRecording();
+			try
+			{
+				_recorder.StartRecording();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Sound Problem");
+			}
 			UpdateScreen();
 
 		}
@@ -165,6 +223,7 @@ namespace Palaso.Media
 			if(SoundRecorded!=null)
 			{
 				SoundRecorded.Invoke(this, null);
+				UsageReporter.SendNavigationNotice("AudioRecorded");
 			}
 		}
 
@@ -198,7 +257,21 @@ namespace Palaso.Media
 
 		private void OnClickPlay(object sender, MouseEventArgs e)
 		{
-			_recorder.Play();
+			if (_recorder != null && File.Exists(Path)) //avoid crashes in situations where play should not have been available
+			{
+				try
+				{
+					_recorder.Play();
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message, "Sound Problem");
+				}
+			}
+			else
+			{
+				Debug.Assert(_recorder != null && File.Exists(Path), "The play button should not be enabled, there is nothing to play.");
+			}
 			UpdateScreen();
 		}
 	}

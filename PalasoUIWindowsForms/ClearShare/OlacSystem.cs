@@ -6,10 +6,9 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using Palaso.Code;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.Properties;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	///-----------------------------------------------------------------------------------------
 	/// <summary>

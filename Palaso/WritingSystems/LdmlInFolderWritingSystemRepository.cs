@@ -1,45 +1,91 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using Palaso.WritingSystems;
+using System.Linq;
+using Palaso.WritingSystems.Migration;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.WritingSystems
 {
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
+		///<summary>
+		/// Returns an instance of an ldml in folder writing system reposistory.
+		///</summary>
+		///<param name="basePath">base location of the global writing system repository</param>
+		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		public static LdmlInFolderWritingSystemRepository Initialize(
+			string basePath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler
+		)
+		{
+			return Initialize(basePath, migrationHandler, loadProblemHandler, WritingSystemCompatibility.Strict);
+		}
+
+		///<summary>
+		/// Returns an instance of an ldml in folder writing system reposistory.
+		///</summary>
+		///<param name="basePath">base location of the global writing system repository</param>
+		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		///<param name="roundtripFlex70PrivateUse"></param>
+		public static LdmlInFolderWritingSystemRepository Initialize(
+			string basePath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler,
+			WritingSystemCompatibility compatibilityMode
+		)
+		{
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, compatibilityMode);
+			migrator.Migrate();
+
+			var instance = new LdmlInFolderWritingSystemRepository(basePath, compatibilityMode);
+			instance.LoadAllDefinitions();
+
+			// Call the loadProblemHandler with both migration problems and load problems
+			var loadProblems = new List<WritingSystemRepositoryProblem>();
+			loadProblems.AddRange(migrator.MigrationProblems);
+			loadProblems.AddRange(instance.LoadProblems);
+			if (loadProblems.Count > 0)
+			{
+				loadProblemHandler(loadProblems);
+			}
+
+			return instance;
+		}
+
 		private const string _kExtension = ".ldml";
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
-
-		public static int LatestVersion
-		{
-			get{ return 1;}
-		}
+		private readonly WritingSystemChangeLog _changeLog;
+		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
 
 		/// <summary>
-		/// Use the default repository
+		/// use a special path for the repository
 		/// </summary>
-		public LdmlInFolderWritingSystemRepository()
+		/// <param name="basePath"></param>
+		protected internal LdmlInFolderWritingSystemRepository(string basePath) :
+			this(basePath, WritingSystemCompatibility.Strict)
 		{
-			string p =
-				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
-			Directory.CreateDirectory(p);
-			p = Path.Combine(p, "WritingSystemRepository");
-			Directory.CreateDirectory(p);
-			PathToWritingSystems = p;
-			LoadAllDefinitions();
 		}
 
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		/// <param name="path"></param>
-		public LdmlInFolderWritingSystemRepository(string path)
+		/// <param name="basePath"></param>
+		/// <param name="compatibilityMode"></param>
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, WritingSystemCompatibility compatibilityMode) :
+			base(compatibilityMode)
 		{
-			PathToWritingSystems = path;
-			LoadAllDefinitions();
+			PathToWritingSystems = basePath;
+			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
+		}
+
+		public IList<WritingSystemRepositoryProblem> LoadProblems
+		{
+			get { return _loadProblems; }
 		}
 
 		public string PathToWritingSystems
@@ -66,31 +112,22 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private string GetFilePath(WritingSystemDefinition ws)
-		{
-			return Path.Combine(PathToWritingSystems, GetFileName(ws));
-		}
-
-		private string GetFilePathFromIdentifier(string identifier)
+		///<summary>
+		/// Returns the full path to the underlying store for this writing system.
+		///</summary>
+		///<param name="identifier"></param>
+		///<returns>FilePath</returns>
+		public string GetFilePathFromIdentifier(string identifier)
 		{
 			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(identifier));
 		}
 
-		public string GetFileName(WritingSystemDefinition ws)
+		protected static string GetFileNameFromIdentifier(string identifier)
 		{
-			return GetFileNameFromIdentifier(ws.RFC5646);
-		}
-
-		private static string GetFileNameFromIdentifier(string identifier)
-		{
-			if (string.IsNullOrEmpty(identifier))
-			{
-				return "unknown"+_kExtension;
-			}
 			return identifier + _kExtension;
 		}
 
-		private void LoadAllDefinitions()
+		protected void LoadAllDefinitions()
 		{
 			Clear();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
@@ -102,120 +139,65 @@ namespace Palaso.WritingSystems
 				}
 				catch(Exception e)
 				{
-					throw new ApplicationException(
-						String.Format("Unfortunately we were not able to load all of your writing systems. the problem occurred in file {0}. The exact error message was: ", filePath) +
-						e.Message);
+					// Add the exception to our list of problems and continue loading
+					var problem = new WritingSystemRepositoryProblem
+						{
+							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+							Exception = e,
+							FilePath = filePath
+						};
+					_loadProblems.Add(problem);
+					continue;
 				}
-				if(wsFromFile.StoreID != wsFromFile.RFC5646)
+
+				if (String.Compare(wsFromFile.StoreID, wsFromFile.Bcp47Tag, true) != 0)
 				{
-					throw new ApplicationException(String.Format("The writing system file {0} seems to be named inconsistently. Please rename this file to reflect the contained Rfc5646Tag. This should have happened upon migration of the writing systems.", filePath));
+					bool badFileName = true;
+					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+					{
+						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
+						if (interpreter.RFC5646Tag.Equals(wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase))
+						{
+							badFileName = false;
+						}
+					}
+					if(badFileName)
+					{// Add the exception to our list of problems and continue loading
+						var problem = new WritingSystemRepositoryProblem
+						{
+							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+							Exception = new ApplicationException(
+								String.Format(
+									"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
+									filePath, wsFromFile.Bcp47Tag)),
+							FilePath = filePath
+						};
+						_loadProblems.Add(problem);
+					}
 				}
-				Set(wsFromFile);
+				try
+				{
+					Set(wsFromFile);
+				}
+				catch(Exception e){
+					// Add the exception to our list of problems and continue loading
+					var problem = new WritingSystemRepositoryProblem
+					{
+						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+						Exception = e,
+						FilePath = filePath
+					};
+					_loadProblems.Add(problem);
+				}
 			}
-		}
-
-		private List<WritingSystemDefinition> ReadAndDisambiguateWritingSystems()
-		{
-			List<WritingSystemDefinition> loadedWritingSystems = new List<WritingSystemDefinition>();
-			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
-			{
-				//WritingSystemDefinition wsFromFile;
-				//wsFromFile = GetWritingSystemFromLdml(filePath);
-				//WritingSystemDefinition writingSystemWithIdenticalRfc5646Tag =
-				//    loadedWritingSystems.Find(ws => ws.Rfc5646TagOnLoad.CompleteTag == wsFromFile.Rfc5646TagOnLoad.CompleteTag);
-
-				//if (writingSystemWithIdenticalRfc5646Tag != null)
-				//{
-				//    throw new ArgumentException
-				//        (
-				//      String.Format("Ldml files {0} and {1} contain writing systems with identical Rfc5646 tags. Please disambiguate these writing systems.",
-				//        GetFilePathFromIdentifier(wsFromFile.StoreID), GetFilePathFromIdentifier(writingSystemWithIdenticalRfc5646Tag.StoreID))
-				//        );
-				//}
-				//wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
-				//MakeWritingSystemRfc5646TagsUniqueIfNecassary(wsFromFile, loadedWritingSystems);
-				//loadedWritingSystems.Add(wsFromFile);
-			}
-			return loadedWritingSystems;
-		}
-
-		private void SafelyRenameFilesAndUpdateStoreIdsToMatchWritingSystems(List<WritingSystemDefinition> loadedWritingSystems)
-		{
-			string pathToFolderForSafeFileRenaming = CreateFolderForSafeFileRenaming();
-			MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(loadedWritingSystems, pathToFolderForSafeFileRenaming);
-			MoveFilesToFinalDestination(loadedWritingSystems, pathToFolderForSafeFileRenaming);
-			Directory.Delete(pathToFolderForSafeFileRenaming);
-		}
-
-		private void MoveFilesToFinalDestination(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
-		{
-			throw new NotImplementedException("broken for now");
-			//foreach (WritingSystemDefinition ws in loadedWritingSystems)
-			//{
-			//    if (!ws.Rfc5646TagOnLoad.IsValid) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
-			//    {
-			//        string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
-			//                                                              GetFileName(ws));
-			//        File.Move(pathInFolderForSafeFileRenaming, GetFilePathFromIdentifier(ws.RFC5646));
-			//        ws.StoreID = ws.RFC5646;
-			//    }
-			//}
-			//        }
-			//        else
-			//        {
-			//            File.Move(sourceFilePath, targetFilePath);
-			//        }
-		}
-
-		private void MoveFilesForFixedWritingSystemsIntoFolderForSafeFileRenaming(List<WritingSystemDefinition> loadedWritingSystems, string pathToFolderForSafeFileRenaming)
-		{
-			throw new NotImplementedException("broken for now");
-			//foreach (WritingSystemDefinition ws in loadedWritingSystems)
-			//{
-			//    if (!ws.Rfc5646TagOnLoad.IsValid) // review TODO: Should also rewrite if the StoreID is invalid. e.g. should conform to bcp47, use underscore etc. CP 2010-12
-			//    {
-			//        string pathInFolderForSafeFileRenaming = Path.Combine(pathToFolderForSafeFileRenaming,
-			//                                                              GetFileName(ws));
-			//        File.Move(GetFilePathFromIdentifier(ws.StoreID), pathInFolderForSafeFileRenaming);
-			//    }
-			//}
-		}
-
-		private string CreateFolderForSafeFileRenaming()
-		{
-			string pathToFolderForSafeFileRenaming = Path.Combine(_path, "TemporaryFolderForSafeLoad");
-			if(Directory.Exists(pathToFolderForSafeFileRenaming))
-			{
-				Directory.Delete(pathToFolderForSafeFileRenaming, true);
-			}
-			Directory.CreateDirectory(pathToFolderForSafeFileRenaming);
-			return pathToFolderForSafeFileRenaming;
-		}
-
-		private static void MakeWritingSystemRfc5646TagsUniqueIfNecassary(WritingSystemDefinition wsFromFile, List<WritingSystemDefinition> listOfAlreadyLoadedWritingSystems)
-		{
-			throw new NotImplementedException("broken for now");
-			//var existingWritingSystem = listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == wsFromFile.RFC5646); //.ContainsKey(wsFromFile.RFC5646))
-			//if (existingWritingSystem == null)
-			//{
-			//    return;
-			//}
-			//var wsToMakeUnique = (!wsFromFile.Rfc5646TagOnLoad.IsValid) ? wsFromFile : existingWritingSystem;
-			//var newTag = new RFC5646Tag(wsToMakeUnique.ISO639, wsToMakeUnique.Script, wsToMakeUnique.Region, wsToMakeUnique.Variant);
-			//do
-			//{
-			//    newTag.Variant += "-x-dupl";
-			//} while (listOfAlreadyLoadedWritingSystems.Find(ws => ws.RFC5646 == newTag.CompleteTag) != null);
-			//wsToMakeUnique.ISO639 = newTag.Language;
-			//wsToMakeUnique.Script = newTag.Script;
-			//wsToMakeUnique.Region = newTag.Region;
-			//wsToMakeUnique.Variant = newTag.Variant;
+			LoadIdChangeMapFromExistingWritingSystems();
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
 		{
-			WritingSystemDefinition ws = CreateNew();
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
+			var ws = (WritingSystemDefinition)CreateNew();
+			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			if (File.Exists(filePath))
 			{
 				adaptor.Read(filePath, ws);
@@ -235,9 +217,9 @@ namespace Palaso.WritingSystems
 		{
 				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 				{
-					if (null == FindAlreadyLoadedWritingSystem(ws.RFC5646))
+					if (null == FindAlreadyLoadedWritingSystem(ws.Bcp47Tag))
 					{
-						if (!HaveMatchingDefinitionInTrash(ws.RFC5646))
+						if (!HaveMatchingDefinitionInTrash(ws.Bcp47Tag))
 						{
 							Set(ws);
 						}
@@ -263,69 +245,67 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string rfc4646)
+		private IWritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
 		{
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
-			{
-				if(ws.RFC5646 == rfc4646 )
-					return ws;
-			}
-			return null;
+			return AllWritingSystems.FirstOrDefault(ws => ws.Bcp47Tag == bcp47Tag);
 		}
 
-		public void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		internal void SaveDefinition(IWritingSystemDefinition ws)
 		{
-			base.OnWritingSystemIDChange(ws, oldId);
-			throw new NotImplementedException();
+			SaveDefinition((WritingSystemDefinition)ws);
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)
 		{
-			string incomingFileName = GetFileNameFromIdentifier(ws.StoreID);
 			Set(ws);
-			string writingSystemFileName = GetFileName(ws);
-			string writingSystemFilePath = GetFilePath(ws);
+			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			MemoryStream oldData = null;
 			if (!ws.Modified && File.Exists(writingSystemFilePath))
 			{
 				return; // no need to save (better to preserve the modified date)
 			}
-			if (!String.IsNullOrEmpty(incomingFileName))
+			if (File.Exists(writingSystemFilePath))
 			{
-				string previousFilePath = Path.Combine(PathToWritingSystems, incomingFileName);
-				if (File.Exists(previousFilePath))
+				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
+				try
 				{
-					// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
-					try
-					{
-						oldData = new MemoryStream(File.ReadAllBytes(previousFilePath), false);
-					}
-					catch {}
-					if (writingSystemFileName != incomingFileName)
-					{
-						// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-						File.Delete(previousFilePath); //!!! Should this be move to trash?
-					}
+					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
 				}
+				catch {}
+				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
+				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
 			}
-			LdmlAdaptor adaptor = CreateLdmlAdaptor();
+			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
 			ws.Modified = false;
+
+			if (_idChangeMap.Any(p => p.Value == ws.StoreID))
+			{
+				// log this id change to the writing system change log
+				var pair = _idChangeMap.First(p => p.Value == ws.StoreID);
+				_changeLog.LogChange(pair.Key, pair.Value);
+			} else
+			{
+				// log this addition
+				_changeLog.LogAdd(ws.StoreID);
+			}
 		}
 
-		public string FilePathToWritingSystem(WritingSystemDefinition ws)
+		public override void Conflate(string wsToConflate, string wsToConflateWith)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileName(ws));
+			//conflation involves deleting the old writing system. That deletion should not appear int he log. which is what the "_conflating" is used for
+			base.Conflate(wsToConflate, wsToConflateWith);
+			_changeLog.LogConflate(wsToConflate, wsToConflateWith);
 		}
 
 		override public void Remove(string identifier)
 		{
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Exists(identifier))
+			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Contains(identifier))
 			{
-				WritingSystemDefinition ws = Get(identifier);
+				var ws = Get(identifier);
 				SaveDefinition(ws);
 			}
 
@@ -341,6 +321,11 @@ namespace Palaso.WritingSystems
 				File.Move(GetFilePathFromIdentifier(identifier), destination);
 			}
 			base.Remove(identifier);
+			if (!Conflating)
+			{
+				_changeLog.LogDelete(identifier);
+			}
+
 		}
 
 		private string PathToWritingSystemTrash()
@@ -350,11 +335,11 @@ namespace Palaso.WritingSystems
 
 		override public void Save()
 		{
-			//delete anything we're going to delete first, to prevent loosing
+			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
-			List<string> idsToRemove = new List<string>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var idsToRemove = new List<string>();
+			foreach (var ws in AllWritingSystems)
 			{
 				if (ws.MarkedForDeletion)
 				{
@@ -369,15 +354,15 @@ namespace Palaso.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			List<WritingSystemDefinition> allDefs = new List<WritingSystemDefinition>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var allDefs = new List<IWritingSystemDefinition>();
+			foreach (var ws in AllWritingSystems)
 			{
 				if (CanSet(ws))
 				{
 					allDefs.Add(ws);
 				}
 			}
-			foreach (WritingSystemDefinition ws in allDefs)
+			foreach (var ws in allDefs)
 			{
 				SaveDefinition(ws);
 				if (!ws.Modified)
@@ -385,27 +370,38 @@ namespace Palaso.WritingSystems
 					OnChangeNotifySharedStore(ws);
 				}
 			}
+
+
+			LoadIdChangeMapFromExistingWritingSystems();
 		}
 
-		public override void Set(WritingSystemDefinition ws)
+		public override void Set(IWritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
 				throw new ArgumentNullException("ws");
 			}
-			// Renaming files on Set keeps the file names consistent with StoreID which is changed in the base.
-			// This allows us to avoid creating duplicate files and to preserve LDML data which is not used
-			// in palaso.
-			string oldFileName = GetFileNameFromIdentifier(ws.StoreID);
-			string oldFilePath = string.IsNullOrEmpty(oldFileName) ? string.Empty : Path.Combine(PathToWritingSystems, oldFileName);
-			string oldID = ws.StoreID;
+			var oldStoreId = ws.StoreID;
 			base.Set(ws);
-			if (oldID == ws.StoreID || string.IsNullOrEmpty(oldFileName) || !File.Exists(oldFilePath))
+			//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
+			//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
+			//helps us avoid having to deal with situations where a writing system id is changed to be
+			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
+			//The inconsistency is resolved on Save()
+			if (oldStoreId != ws.StoreID && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
 			{
-				return;
+				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreID));
 			}
-			string writingSystemFilePath = GetFilePath(ws);
-			File.Move(oldFilePath, writingSystemFilePath);
+		}
+
+		public override bool WritingSystemIdHasChanged(string id)
+		{
+			return _changeLog.HasChangeFor(id);
+		}
+
+		public override string WritingSystemIdHasChangedTo(string id)
+		{
+			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 	}
 }

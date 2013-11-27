@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {
 	/// <summary>
 	/// Records a single contribution of a single individual to a single "work".
@@ -30,12 +30,7 @@ namespace Palaso.ClearShare
 		/// The date the contribution was made. Seems like it would be rarely used,
 		/// but an early SayMore user asked for this specifically.
 		/// </summary>
-		/// <remarks>olac would like us to control the format of this, but we would either
-		/// * need UI which can be flexible (just a year, or a date), or
-		/// * parse the string from the UI in such a way that we get it into a standard
-		/// format
-		/// </remarks>
-		public string Date { get; set; }
+		public DateTime Date { get; set; }
 
 		/// <summary>
 		/// Normally a short note about the contribution (e.g., a more specific description
@@ -64,7 +59,7 @@ namespace Palaso.ClearShare
 			get
 			{
 				return (string.IsNullOrEmpty(ContributorName) && Role == null &&
-					ApprovedLicense == null && string.IsNullOrEmpty(Date) &&
+					ApprovedLicense == null &&
 					string.IsNullOrEmpty(Comments));
 			}
 		}

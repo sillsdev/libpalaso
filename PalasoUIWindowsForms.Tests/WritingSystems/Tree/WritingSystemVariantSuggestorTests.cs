@@ -23,7 +23,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
 
-			Assert.AreEqual("etr", ipa.ISO639);
+			Assert.AreEqual("etr", ipa.Language);
 			Assert.AreEqual("fonipa", ipa.Variant);
 			Assert.AreEqual("Edolo", ipa.LanguageName);
 			Assert.IsTrue(string.IsNullOrEmpty(ipa.NativeName));
@@ -34,7 +34,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			Assert.IsTrue(ipa.Keyboard.ToLower().Contains("ipa"));
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetSuggestions_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
@@ -46,11 +46,29 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			Assert.IsFalse(suggestions.Any(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Variant == "fonipa"));
 		}
 
+		[Test]
+		public void OtherKnownWritingSystems_TokPisinDoesNotAlreadyExist_HasTokPisin()
+		{
+			var suggestor = new WritingSystemSuggestor();
+
+			var existingWritingSystems = new List<WritingSystemDefinition>();
+			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws=>ws.Label == "Tok Pisin"), Is.True);
+		}
+
+		[Test]
+		public void OtherKnownWritingSystems_TokPisinAlreadyExists_DoesNotHaveTokPisin()
+		{
+			var suggestor = new WritingSystemSuggestor();
+
+			var existingWritingSystems = new List<WritingSystemDefinition>{WritingSystemDefinition.Parse("tpi")};
+			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws => ws.Label == "Tok Pisin"), Is.False);
+		}
+
 
 		/// <summary>
 		/// For English, it's very unlikely that they'll want to add IPA, in a app like wesay
 		/// </summary>
-		[Test]
+		[Test, Category("KnownMonoIssue")]
 		public void GetSuggestions_MajorWorlLanguage_SuggestsOnlyIfSuppressSuggesstionsForMajorWorldLanguagesIsFalse()
 		{
 			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);

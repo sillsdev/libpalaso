@@ -38,5 +38,27 @@ namespace Palaso.Tests.WritingSystems.Collation
 			_collator = new SystemCollator("en");
 			Assert.IsNotNull(_collator);
 		}
+
+		[Test]
+		public void Compare_EnglishCultureEnglishStrings_AreNotSame()
+		{
+			string a = "an english sentence";
+			string b = "some words";
+
+			_collator = new SystemCollator("en");
+			var order = _collator.Compare(a, b);
+			Assert.That(order, Is.Not.EqualTo(0));
+		}
+
+		[Test]
+		public void Compare_InvariantCultureKhmerStrings_AreNotSame()
+		{
+			string a = "សង្ឃនៃអំបូរអឺរ៉ុន";
+			string b = "បូជាចារ្យនៃអំបូរអឺរ៉ុន";
+
+			_collator = new SystemCollator("");
+			var order = _collator.Compare(a, b);
+			Assert.That(order, Is.Not.EqualTo(0));
+		}
 	}
 }

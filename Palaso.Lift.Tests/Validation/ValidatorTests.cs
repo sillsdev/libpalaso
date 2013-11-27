@@ -23,10 +23,10 @@ namespace Palaso.Lift.Tests.Validation
 		}
 
 		[Test]
-		public void Validate_EmptyFile_Validates()
+		public void Validate_NoEntriesValidates()
 		{
 			string contents = string.Format("<lift version='{0}'></lift>", Validator.LiftVersion);
-			Validate(contents, true);
+			Validate(contents, ValidationOptions.All, true);
 		}
 
 		[Test]
@@ -42,7 +42,7 @@ namespace Palaso.Lift.Tests.Validation
 					</lexical-unit>
 				</entry>
 				</lift>", Validator.LiftVersion);
-			Validate(contents, true);
+			Validate(contents, ValidationOptions.All, true);
 		}
 
 
@@ -54,7 +54,7 @@ namespace Palaso.Lift.Tests.Validation
 				 <entry id='one&#x1F;'>
 				</entry>
 				</lift>", Validator.LiftVersion);
-			Validate(contents, true);
+			Validate(contents, ValidationOptions.All, true);
 		}
 
 
@@ -62,36 +62,62 @@ namespace Palaso.Lift.Tests.Validation
 		public void Validate_BadLift_DoesNotValidate()
 		{
 			string contents = "<lift version='0.10'><header></header><header></header></lift>";
-			Validate(contents, false);
+			Validate(contents, ValidationOptions.All, false);
 		}
 
 		[Test]
 		public void WrongVersionNumberGivesHelpfulMessage()
 		{
 			string contents = "<lift version='0.8'><header></header><header></header></lift>";
-			string errors = Validate(contents, false);
+			string errors = Validate(contents, ValidationOptions.All, false);
 			Assert.IsTrue(errors.Contains("This file claims to be version "));
 		}
 
-		private static string Validate(string contents, bool shouldPass)
+		[Test]
+		public void ValidateGUIDs_FileHasDuplicateEntryGuids_DoesNotValidate()
+		{
+			string contents = string.Format(@"
+			<lift version='{0}'>
+				 <entry guid='1'>
+				</entry>
+				 <entry guid='1'>
+				</entry>
+				</lift>", Validator.LiftVersion);
+			Validate(contents, ValidationOptions.CheckGUIDs, false);
+		}
+		[Test]
+		public void ValidateGUIDs_FileHasNoDuplicateGuids_Validates()
+		{
+			string contents = string.Format(@"
+			<lift version='{0}'>
+				 <entry guid='1'>
+				</entry>
+				 <entry guid='2'>
+				</entry>
+				</lift>", Validator.LiftVersion);
+			Validate(contents, ValidationOptions.CheckGUIDs, true);
+		}
+
+
+		private static string Validate(string contents, ValidationOptions validationOptions, bool shouldPass)
 		{
 			string f = Path.GetTempFileName();
 			File.WriteAllText(f, contents);
 			string errors;
 			try
 			{
-				errors = Validator.GetAnyValidationErrors(f);
-				if(shouldPass)
+				errors = Validator.GetAnyValidationErrors(f, new NullValidationProgress(),  validationOptions);
+				if (shouldPass)
 				{
 					if (errors != null)
 					{
 						Console.WriteLine(errors);
 					}
-					Assert.IsNull(errors);
+					Assert.IsNullOrEmpty(errors);
 				}
 				else
 				{
-					Assert.IsNotNull(errors);
+					Assert.Greater(errors.Length,0);
 				}
 			}
 			finally
@@ -100,6 +126,5 @@ namespace Palaso.Lift.Tests.Validation
 			}
 			return errors;
 		}
-
 	}
 }

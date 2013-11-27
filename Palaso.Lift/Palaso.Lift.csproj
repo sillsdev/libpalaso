@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +10,7 @@
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>Palaso.Lift</RootNamespace>
 	<AssemblyName>Palaso.Lift</AssemblyName>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<FileUpgradeFlags>
 	</FileUpgradeFlags>
@@ -36,39 +36,45 @@
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<DocumentationFile>..\output\Debug\Palaso.Lift.XML</DocumentationFile>
 	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
 	<DocumentationFile>..\output\Debug\Palaso.Lift.XML</DocumentationFile>
 	<DebugType>full</DebugType>
-	<PlatformTarget>x86</PlatformTarget>
-	<LangVersion>default</LangVersion>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="Commons.Xml.Relaxng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -76,18 +82,9 @@
 	  <HintPath>..\lib\common\Commons.Xml.Relaxng.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
-	<Reference Include="System.Windows.Forms" />
-	<Reference Include="System.Xml.Linq">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
-	<Reference Include="System.Data.DataSetExtensions">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
-	<Reference Include="System.Data" />
+	<Reference Include="System.Core" />
 	<Reference Include="System.Xml" />
+	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="CommonEnumerations.cs" />
@@ -97,6 +94,7 @@
 	<Compile Include="ILiftReaderWriterProvider.cs" />
 	<Compile Include="ILiftWriter.cs" />
 	<Compile Include="LiftDataMapper.cs" />
+	<Compile Include="LiftSorter.cs" />
 	<Compile Include="Merging\LiftChangeDetector.cs" />
 	<Compile Include="Merging\SynchronicMerger.cs" />
 	<Compile Include="Migration\LiftPreparer.cs" />
@@ -106,6 +104,7 @@
 	<Compile Include="Options\OptionRef.cs" />
 	<Compile Include="Options\OptionRefCollection.cs" />
 	<Compile Include="Options\OptionsList.cs" />
+	<Compile Include="Options\WritingSystemsInOptionsListFileHelper.cs" />
 	<Compile Include="PalasoDataObject.cs" />
 	<Compile Include="Parsing\Annotation.cs" />
 	<Compile Include="Parsing\Extensible.cs" />
@@ -141,6 +140,7 @@
 	<Compile Include="Merging\xmldiff\DiffResult.cs" />
 	<Compile Include="Merging\xmldiff\XmlDiff.cs" />
 	<Compile Include="Merging\xmldiff\XmlInput.cs" />
+	<Compile Include="WritingSystemsInLiftFileHelper.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
@@ -166,16 +166,35 @@
 	</BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl" />
-	<EmbeddedResource Include="Migration\LIFT-0.11-0.12.xsl" />
-	<EmbeddedResource Include="Migration\LIFT-0.12-0.13.xsl" />
-	<EmbeddedResource Include="Migration\ReverseLIFT-0.13-0.12.xsl" />
+	<EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl">
+	  <LogicalName>Palaso.Lift.Migration.LIFT-0.10-0.11.xsl</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Migration\LIFT-0.11-0.12.xsl">
+	  <LogicalName>Palaso.Lift.Migration.LIFT-0.11-0.12.xsl</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Migration\LIFT-0.12-0.13.xsl">
+	  <LogicalName>Palaso.Lift.Migration.LIFT-0.12-0.13.xsl</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Migration\ReverseLIFT-0.13-0.12.xsl">
+	  <LogicalName>Palaso.Lift.Migration.ReverseLIFT-0.13-0.12.xsl</LogicalName>
+	</EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="Validation\lift-0.10.rng" />
-	<EmbeddedResource Include="Validation\lift-0.11.rng" />
-	<EmbeddedResource Include="Validation\lift-0.12.rng" />
-	<EmbeddedResource Include="Validation\lift.rng" />
+	<EmbeddedResource Include="Validation\lift-0.10.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift-0.10.rng</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Validation\lift-0.11.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift-0.11.rng</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Validation\lift-0.12.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift-0.12.rng</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Validation\lift.rng">
+	  <LogicalName>Palaso.Lift.Validation.lift.rng</LogicalName>
+	</EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+	<EmbeddedResource Include="canonicalizeLift.xsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

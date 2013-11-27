@@ -109,12 +109,12 @@ namespace Palaso.DictionaryServices.Lift
 		/// </summary>
 		internal void FixUpOldLiteralMeaningMistake(LexEntry entry, LexSense sense)
 		{
-			KeyValuePair<string, object> prop = sense.Properties.Find(p => p.Key == "LiteralMeaning");
+			KeyValuePair<string, IPalasoDataObjectProperty> prop = sense.Properties.Find(p => p.Key == "LiteralMeaning");
 			if (prop.Key != null)
 			{
 				sense.Properties.Remove(prop);
 				//change the label and move it up to lex entry
-				var newGuy = new KeyValuePair<string, object>("literal-meaning", prop.Value);
+				var newGuy = new KeyValuePair<string, IPalasoDataObjectProperty>("literal-meaning", prop.Value);
 				entry.Properties.Add(newGuy);
 			}
 		}

@@ -2,8 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Palaso.Reporting" GeneratedClassName="ErrorReportSettings">
   <Profiles />
   <Settings>
-	<Setting Name="ReportingMethog" Type="System.String" Scope="User">
+	<Setting Name="ReportingMethod" Type="System.String" Scope="User">
 	  <Value Profile="(Default)">mapiWithPopup</Value>
+	</Setting>
+	<Setting Name="AnalyticsCookie" Type="System.String" Scope="User">
+	  <Value Profile="(Default)" />
 	</Setting>
   </Settings>
 </SettingsFile>

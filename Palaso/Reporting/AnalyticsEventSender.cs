@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+
 using Palaso.Network;
 
 namespace Palaso.Reporting
@@ -19,9 +21,12 @@ namespace Palaso.Reporting
 		private readonly DateTime _previousLaunch;
 		private readonly int _launches;
 		private readonly bool _reportAsDeveloper;
+		private readonly Action<Cookie> _rememberGoogleCookie;
 		private int _sequence;
+		private Cookie _googleCookie;
 
-		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch, int launches, bool reportAsDeveloper)
+
+		public AnalyticsEventSender(string domain, string googleAccountCode, Guid userId, DateTime firstLaunch, DateTime previousLaunch, int launches, bool reportAsDeveloper, Action<Cookie> RememberGoogleCookie, Cookie googleCookie)
 		{
 			_domain = domain;
 			_googleAccountCode = googleAccountCode;
@@ -30,6 +35,8 @@ namespace Palaso.Reporting
 			_previousLaunch = previousLaunch;
 			_launches = launches;
 			_reportAsDeveloper = reportAsDeveloper;
+			   _rememberGoogleCookie = RememberGoogleCookie;
+			_googleCookie = googleCookie;
 
 
 			//I don't acutally know how this is used by google... we don't have a way of giving a sequence order across
@@ -114,12 +121,56 @@ namespace Palaso.Reporting
 		private void SendUrlRequest(Dictionary<string, string> parameters)
 		{
 			string requestUriString = GetUrl(parameters);
-			RobustNetworkOperation.Do(proxy =>
-										  {
-											  var request = WebRequest.Create(requestUriString);
-											  request.Proxy = proxy;
-											  request.BeginGetResponse(new AsyncCallback(RespCallback), null);
-										  }, null);
+
+			var bw = new BackgroundWorker();
+			bw.DoWork += (o, args) =>
+							 {
+//                RobustNetworkOperation.Do(proxy =>
+//                                              {
+								 try
+								 {
+//jh: i got tired of seeing this in the logs
+//                                     Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
+//                                                            requestUriString);
+
+									 HttpWebRequest request = (HttpWebRequest) WebRequest.Create(requestUriString);
+									 request.CookieContainer = new CookieContainer();
+									 //                                                    request.Proxy = proxy;
+									 if(_googleCookie!=null)
+										 request.CookieContainer.Add(request.RequestUri, _googleCookie);
+
+									 //warning, this uses the ui thread:
+									 //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
+									 //since we're in the background anyway...
+									 //review but on a single core machine, might this still hang us up, or does it sleep, internally?
+									 HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+
+									 //Review: is it the request or the response that should have the cookie?  Neither do
+
+									 CookieCollection cookieCollection = response.Cookies;
+									 if(cookieCollection!=null && cookieCollection.Count>0)
+									 {
+										 _rememberGoogleCookie(cookieCollection[0]);
+										 Debug.Assert(cookieCollection.Count==1, "(Debug mode only Did not expect multiple cookies from google analytics.");
+									 }
+									 Debug.WriteLine("Succesful SendUrlRequestAsync");// ah well
+								 }
+								 catch (WebException e)
+								 {
+									 if (e.Status == WebExceptionStatus.Timeout)
+									 {
+										 Debug.WriteLine("  TimedOut SendUrlRequestAsync");// ah well
+									 }
+									 else
+									 {
+#if DEBUG
+										 throw e;
+#endif
+									 }
+								 }
+							 };
+//                                              }, null);
+			 bw.RunWorkerAsync();
 		}
 
 		private static void RespCallback(IAsyncResult ar)
@@ -145,7 +196,6 @@ namespace Palaso.Reporting
 			//http://www.google-analytics.com/__utm.gif?utmwv=4&utmn=769876874&utmhn=example.com&utmcs=ISO-8859-1&utmsr=1280x1024&utmsc=32-bit&utmul=en-us&utmje=1&utmfl=9.0%20%20r115&utmcn=1&utmdt=GATC012%20setting%20variables&utmhid=2059107202&utmr=0&utmp=/auto/GATC012.html?utm_source=www.gatc012.org&utm_campaign=campaign+gatc012&utm_term=keywords+gatc012&utm_content=content+gatc012&utm_medium=medium+gatc012&utmac=UA-30138-1&utmcc=__utma%3D97315849.1774621898.1207701397.1207701397.1207701397.1%3B...
 
 			// http://www.google-analytics.com/__utm.gif?utmwv=4.6.5&utmn=488134812&utmhn=facebook.com&utmcs=UTF-8&utmsr=1024x576&utmsc=24-bit&utmul=en-gb&utmje=0&utmfl=10.0%20r42&utmdt=Facebook%20Contact%20Us&utmhid=700048481&utmr=-&utmp=%2Fwebdigi%2Fcontact&utmac=UA-3659733-5&utmcc=__utma%3D155417661.474914265.1263033522.1265456497.1265464692.6%3B%2B__utmz%3D155417661.1263033522.1.1.utmcsr%3D(direct)%7Cutmccn%3D(direct)%7Cutmcmd%3D(none)%3B
-
 
 			var parameters = new Dictionary<string, string>();
 			var randomGenerator = new Random();
@@ -190,12 +240,16 @@ namespace Palaso.Reporting
 
 		private string UtmcCookieString
 		{
+			//http://www.morevisibility.com/analyticsblog/from-__utma-to-__utmz-google-analytics-cookies.html
+
+			//http://www.randycullom.com/chatterbox/archives/2008/10/google_analytic.html
+
 			//<domain hash>.<unique visitor id>.<timstamp of first visit>.<timestamp of previous (most recent) visit>.<timestamp of current visit>.<visit count>
 			get
 			{
 				string utma = String.Format("{0}.{1}.{2}.{3}.{4}.{5}",
 											DomainHash,
-											_userId.GetHashCode(), //pseudo-unique visitor id
+											GetUserId(_userId), //pseudo-unique visitor id
 											DateTimeToUnixFormat(_firstLaunch), //enhance       //timstamp of first visit.
 											DateTimeToUnixFormat(_previousLaunch),//enhance        //timestamp of previous (most recent) visit
 											DateTimeToUnixFormat(DateTime.UtcNow),//timestamp of current visit
@@ -213,7 +267,7 @@ namespace Palaso.Reporting
 
 				string utmcc = Uri.EscapeDataString(String.Format("__utma={0};+__utmz={1};", utma, utmz));
 
-				return (utmcc);
+				return (utmcc); ;
 			}
 		}
 
@@ -224,27 +278,50 @@ namespace Palaso.Reporting
 
 		private int DomainHash
 		{
-			get
+			get { return GetDomainHash(_domain); }
+
+		}
+
+		internal static int GetDomainHash(string input)
+		{
+			// converted from the google domain hash code listed here:
+			//http://www.google.com/support/forum/p/Google+Analytics/thread?tid=626b0e277aaedc3c&hl=en
+			// Note JohnT: the original code is JavaScript. This means it does basic arithmetic with floats, but
+			// shifts and similar ops with 32-bit ints. There may be some pathological case where doing it
+			// all with 32-bit ints will give a different answer, but if so I haven't found it. It works
+			// at least specifically for the known client urls (see unit tests).
+			int a = 0;
+			for (int index = input.Length - 1; index >= 0; index--)
 			{
-				return 0;
-
-				// converted from the google domain hash code listed here:
-				//http://www.google.com/support/forum/p/Google+Analytics/thread?tid=626b0e277aaedc3c&hl=en
-				int a = 0;
-				for (int index = _domain.Length - 1; index >= 0; index--)
-				{
-					char character = char.Parse(_domain.Substring(index, 1));
-					int intCharacter = character;
-					a = (a << 6 & 268435455) + intCharacter + (intCharacter << 14);
-					int c = a & 266338304;
-					a = c != 0 ? a ^ c >> 21 : a;
-				}
-
-				return a;
-
+				char character = input[index];
+				int intCharacter = character;
+				a = (a << 6 & 268435455) + intCharacter + (intCharacter << 14);
+				int c = a & 266338304;
+				a = c != 0 ? a ^ c >> 21 : a;
 			}
 
+			return a;
+		}
+
+		/// <summary>
+		/// Return a value suitable for the user ID part of a __utma cookie based on the given guid.
+		/// We want something reasonably dependent on the guid and somewhat scattered over the range 1000000000,2147483647.
+		/// This is not a very clever hash function but we expect guids to be pretty well distributed to begin with.
+		/// </summary>
+		/// <param name="guid"></param>
+		/// <returns></returns>
+		internal static int GetUserId(Guid guid)
+		{
+			int start = 0;
+			foreach (var b in guid.ToByteArray())
+				start = start << 2 ^ b ^ start >> 10;
+			while (start < 1000000000)
+				start += 1000000000;
+			return start;
 		}
 
 	}
 }
+
+
+

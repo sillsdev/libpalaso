@@ -46,7 +46,7 @@ namespace Palaso.Tests.WritingSystems
 
 			xmlWriter.WriteStartElement("someroot");
 			xmlWriter.WriteStartElement("writingsystems");
-			LdmlAdaptor adaptor = new LdmlAdaptor();
+			LdmlDataMapper adaptor = new LdmlDataMapper();
 			foreach (WritingSystemDefinition ws in writingSystems)
 			{
 				adaptor.Write(xmlWriter, ws, null);
@@ -72,11 +72,11 @@ namespace Palaso.Tests.WritingSystems
 		public void SaveAllToXmlReaderReadAsFile_ReadsBackCorrect()
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			_writingSystemRepository.Set(ws1);
 
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO639 = "fr";
+			ws2.Language = "fr";
 			_writingSystemRepository.Set(ws2);
 			Assert.AreEqual(2, _writingSystemRepository.Count);
 
@@ -98,11 +98,11 @@ namespace Palaso.Tests.WritingSystems
 		public void SaveAllToXmlReaderReadAsXmlReader_ReadsBackCorrect()
 		{
 			WritingSystemDefinition ws1 = new WritingSystemDefinition();
-			ws1.ISO639 = "en";
+			ws1.Language = "en";
 			_writingSystemRepository.Set(ws1);
 
 			WritingSystemDefinition ws2 = new WritingSystemDefinition();
-			ws2.ISO639 = "fr";
+			ws2.Language = "fr";
 			_writingSystemRepository.Set(ws2);
 			Assert.AreEqual(2, _writingSystemRepository.Count);
 

@@ -130,23 +130,31 @@ namespace Palaso.Lift.Tests.Parsing
 			Assert.AreEqual(4, t["x"].Spans[1].Length);
 		}
 
-		[Test, Ignore("Nested spans are not yet implemented.")]
+		[Test]
 		public void MultiTextWithNestedSpan()
 		{
 			_doc.LoadXml("<foobar><form lang='x'><text>one <span class='emphasis'>inner <span class='vernacular' lang='y'>text</span></span> node</text></form></foobar>");
-			LiftMultiText t = _parser.ReadMultiText(_doc.FirstChild);
-			Assert.AreEqual("one inner text node", t["x"].Text);
-			Assert.AreEqual(2, t["x"].Spans.Count);
-			Assert.AreEqual("emphasis", t["x"].Spans[0].Class);
-			Assert.AreEqual(null, t["x"].Spans[0].Lang);
-			Assert.AreEqual(null, t["x"].Spans[0].LinkURL);
-			Assert.AreEqual(4, t["x"].Spans[0].Index);
-			Assert.AreEqual(10, t["x"].Spans[0].Length);
-			Assert.AreEqual("vernacular", t["x"].Spans[1].Class);
-			Assert.AreEqual("y", t["x"].Spans[1].Lang);
-			Assert.AreEqual(null, t["x"].Spans[1].LinkURL);
-			Assert.AreEqual(10, t["x"].Spans[1].Index);
-			Assert.AreEqual(4, t["x"].Spans[1].Length);
+			var t = _parser.ReadMultiText(_doc.FirstChild);
+			var tx = t["x"];
+			Assert.IsNotNull(tx);
+			Assert.AreEqual("one inner text node", tx.Text);
+			Assert.AreEqual(1, tx.Spans.Count);
+			var span = tx.Spans[0];
+			Assert.IsNotNull(span);
+			Assert.AreEqual("emphasis", span.Class);
+			Assert.AreEqual(null, span.Lang);
+			Assert.AreEqual(null, span.LinkURL);
+			Assert.AreEqual(4, span.Index);
+			Assert.AreEqual(10, span.Length);
+			Assert.AreEqual(1, span.Spans.Count);
+			var subspan = span.Spans[0];
+			Assert.IsNotNull(subspan);
+			Assert.AreEqual("vernacular", subspan.Class);
+			Assert.AreEqual("y", subspan.Lang);
+			Assert.AreEqual(null, subspan.LinkURL);
+			Assert.AreEqual(10, subspan.Index);
+			Assert.AreEqual(4, subspan.Length);
+			Assert.AreEqual(0, subspan.Spans.Count);
 		}
 
 		[Test]
@@ -1165,10 +1173,17 @@ namespace Palaso.Lift.Tests.Parsing
 		public void GetNumberOfEntriesInFile_3Entries_Returns3()
 		{
 			string path = Path.GetTempFileName();
-			File.WriteAllText(path, @"<lift><entry></entry>
+			try
+			{
+				File.WriteAllText(path, @"<lift><entry></entry>
 				<entry id='foo'/><entry/></lift>");
-			int count = LiftParser<DummyBase, Dummy, Dummy, Dummy>.GetEstimatedNumberOfEntriesInFile(path);
-			Assert.AreEqual(3, count);
+				int count = LiftParser<DummyBase, Dummy, Dummy, Dummy>.GetEstimatedNumberOfEntriesInFile(path);
+				Assert.AreEqual(3, count);
+			}
+			finally
+			{
+				File.Delete(path);
+			}
 		}
 
 		[Test]
@@ -1261,11 +1276,43 @@ namespace Palaso.Lift.Tests.Parsing
 			_mocks.VerifyAllExpectationsHaveBeenMet();
 		}
 
+		private class NewLineAgnosticEqualMatcher: NMock2.Matcher
+		{
+			public NewLineAgnosticEqualMatcher(string expected)
+			{
+				Expected = expected.Replace("\r\n", "\n");
+			}
+
+			private string Expected { get; set; }
+
+			public override void DescribeTo(TextWriter writer)
+			{
+				writer.Write("equal to ");
+				writer.Write(Expected);
+			}
+
+			public override bool Matches(object o)
+			{
+				var str = o as string;
+				if (str == null)
+					return false;
+
+				return Expected.Equals(str.Replace("\r\n", "\n"));
+			}
+		}
+
+		public static Matcher IsEqualToIgnoreNl(string expected)
+		{
+			return new NewLineAgnosticEqualMatcher(expected);
+		}
+
 		[Test]
 		public void ReadExternalLiftFile()
 		{
 			// For this test to work, the files test20080407.lift and test20080407.lift-ranges MUST
 			// be copied to the current working directory.
+			const string NewLine = "\n";
+
 			using (_mocks.Ordered)	// Ordered may be too strong if parse details change.
 			{
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
@@ -1273,32 +1320,58 @@ namespace Palaso.Lift.Tests.Parsing
 						  Is.EqualTo(new LiftMultiText("en", "The word is borrowed from another language")),
 						  Is.EqualTo(new LiftMultiText("en", "borrowed")),
 						  Is.EqualTo(new LiftMultiText()),
-						  Is.EqualTo("<range-element id=\"borrowed\"><label><form lang=\"en\"><text>borrowed</text></form></label><description><form lang=\"en\"><text>The word is borrowed from another language</text></form></description></range-element>"));
+						  IsEqualToIgnoreNl("<range-element id=\"borrowed\">" + NewLine +
+								"          <label>" + NewLine +
+								"            <form lang=\"en\"><text>borrowed</text></form>" + NewLine +
+								"          </label>" + NewLine +
+								"          <description>" + NewLine +
+								"            <form lang=\"en\"><text>The word is borrowed from another language</text></form>" + NewLine +
+								"          </description>" + NewLine +
+								"        </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("etymology"), Is.EqualTo("proto"), Is.Null, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "The proto form of the word in another language")),
 						  Is.EqualTo(new LiftMultiText("en", "proto")),
 						  Is.EqualTo(new LiftMultiText()),
-						  Is.EqualTo("<range-element id=\"proto\"><label><form lang=\"en\"><text>proto</text></form></label><description><form lang=\"en\"><text>The proto form of the word in another language</text></form></description></range-element>"));
+						  IsEqualToIgnoreNl("<range-element id=\"proto\">" + NewLine +
+								"          <label>" + NewLine +
+								"            <form lang=\"en\"><text>proto</text></form>" + NewLine +
+								"          </label>" + NewLine +
+								"          <description>" + NewLine +
+								"            <form lang=\"en\"><text>The proto form of the word in another language</text></form>" + NewLine +
+								"          </description>" + NewLine +
+								"        </range-element>"));
 				// The following range elements are from an external range file.
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Adverb"), Is.NotNull, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "modify verbs")),
 						  Is.EqualTo(new LiftMultiText("en", "Adverb")),
 						  Is.EqualTo(new LiftMultiText("en", "adv")),
-						  Is.EqualTo("<range-element guid=\"c528ee72-31a5-423d-833d-0c8454f345d3\" id=\"Adverb\"><label><form lang=\"en\"><text>Adverb</text></form></label><abbrev><form lang=\"en\"><text>adv</text></form></abbrev><description><form lang=\"en\"><text>modify verbs</text></form></description></range-element>"));
+						  IsEqualToIgnoreNl("<range-element guid=\"c528ee72-31a5-423d-833d-0c8454f345d3\" id=\"Adverb\">" + NewLine +
+								"      <label><form lang=\"en\"><text>Adverb</text></form></label>" + NewLine +
+								"      <abbrev><form lang=\"en\"><text>adv</text></form></abbrev>" + NewLine +
+								"      <description><form lang=\"en\"><text>modify verbs</text></form></description>" + NewLine +
+								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Noun"), Is.NotNull, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "substantives and nominals")),
 						  Is.EqualTo(new LiftMultiText("en", "Noun")),
 						  Is.EqualTo(new LiftMultiText("en", "n")),
-						  Is.EqualTo("<range-element guid=\"0fae9a91-36c0-429f-9a31-fbef1292da6a\" id=\"Noun\"><label><form lang=\"en\"><text>Noun</text></form></label><abbrev><form lang=\"en\"><text>n</text></form></abbrev><description><form lang=\"en\"><text>substantives and nominals</text></form></description></range-element>"));
+						  IsEqualToIgnoreNl("<range-element guid=\"0fae9a91-36c0-429f-9a31-fbef1292da6a\" id=\"Noun\">" + NewLine +
+								"      <label><form lang=\"en\"><text>Noun</text></form></label>" + NewLine +
+								"      <abbrev><form lang=\"en\"><text>n</text></form></abbrev>" + NewLine +
+								"      <description><form lang=\"en\"><text>substantives and nominals</text></form></description>" + NewLine +
+								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
 					.With(Is.EqualTo("grammatical-info"), Is.EqualTo("Verb"), Is.NotNull, Is.Null,
 						  Is.EqualTo(new LiftMultiText("en", "signal events and actions")),
 						  Is.EqualTo(new LiftMultiText("en", "Verb")),
 						  Is.EqualTo(new LiftMultiText("en", "v")),
-						  Is.EqualTo("<range-element guid=\"4812abf3-31e5-450c-a15f-a830dfc7f223\" id=\"Verb\"><label><form lang=\"en\"><text>Verb</text></form></label><abbrev><form lang=\"en\"><text>v</text></form></abbrev><description><form lang=\"en\"><text>signal events and actions</text></form></description></range-element>"));
+						  IsEqualToIgnoreNl("<range-element guid=\"4812abf3-31e5-450c-a15f-a830dfc7f223\" id=\"Verb\">" + NewLine +
+								"      <label><form lang=\"en\"><text>Verb</text></form></label>" + NewLine +
+								"      <abbrev><form lang=\"en\"><text>v</text></form></abbrev>" + NewLine +
+								"      <description><form lang=\"en\"><text>signal events and actions</text></form></description>" + NewLine +
+								"    </range-element>"));
 				Expect.Exactly(1).On(_merger).Method("ProcessFieldDefinition")
 					.With(Is.EqualTo("cv-pattern"),
 						  Is.EqualTo(new LiftMultiText("en", "the syllable pattern for a pronunciation")));

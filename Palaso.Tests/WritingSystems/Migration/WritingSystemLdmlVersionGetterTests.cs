@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
+using Palaso.TestUtilities;
 using Palaso.WritingSystems.Migration;
 
 namespace Palaso.Tests.WritingSystems.Migration
@@ -10,7 +11,7 @@ namespace Palaso.Tests.WritingSystems.Migration
 	{
 		private class TestEnvironment : IDisposable
 		{
-			readonly string _pathToLdml = Path.GetTempFileName();
+			private readonly string _pathToLdml;
 
 			public TestEnvironment()
 			{
@@ -36,13 +37,13 @@ namespace Palaso.Tests.WritingSystems.Migration
 		private TestEnvironment _environment;
 
 		[Test]
-		public void WritingSystemLdmlVersionGetterGetFileVersion_FileHasNoVersion_Returns0()
+		public void WritingSystemLdmlVersionGetterGetFileVersion_FileHasNoVersion_ReturnsminusOne()
 		{
 			using (_environment = new TestEnvironment())
 			{
 				_environment.WriteContentToWritingSystemLdmlFile(LdmlContentForTests.Version0English());
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(0, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
+				Assert.AreEqual(-1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
 			}
 		}
 

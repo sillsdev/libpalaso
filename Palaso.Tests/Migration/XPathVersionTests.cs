@@ -25,6 +25,29 @@ namespace Palaso.Tests.Migration
 		}
 
 		[Test]
+		public void GetFileVersion_WithVersionAsDoubleUsingDelegate_CorrectVersion()
+		{
+			string xml = @"<?xml version='1.0' encoding='UTF-8' ?>
+<configuration version='3.0'>
+  <blah />
+</configuration>
+".Replace("'", "\"");
+
+			using (var file = new TempFile(xml))
+			{
+				var xPathVersion = new XPathVersion(10, "/configuration/@version");
+				xPathVersion.VersionParser = delegate(string version)
+					 {
+						 double v = double.Parse(version);
+						 return (int) v;
+					 };
+				int result = xPathVersion.GetFileVersion(file.Path);
+				Assert.That(result, Is.EqualTo(3));
+			}
+		}
+
+
+		[Test]
 		public void GetFileVersion_WithNameSpace_CorrectVersion()
 		{
 			string xml = @"<?xml version='1.0' encoding='utf-8'?>

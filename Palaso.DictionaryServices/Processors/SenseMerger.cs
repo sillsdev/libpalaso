@@ -3,16 +3,16 @@ using System.Linq;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
-using Palaso.Progress.LogBox;
+using Palaso.Progress;
 
 namespace Palaso.DictionaryServices.Processors
 {
 	public class SenseMerger
 	{
-		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, IProgress progress)
+		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			//can we unify the properites?
-			if (!TryMergeProperties(targetSense, incomingSense, "senses of " + targetSense.Parent.ToString(), progress))
+			if (!TryMergeProperties(targetSense, incomingSense, traitsWithMultiplicity, "senses of " + targetSense.Parent.ToString(), progress))
 			{
 				return false;
 			}
@@ -29,8 +29,14 @@ namespace Palaso.DictionaryServices.Processors
 			return true;
 		}
 
-		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem, string itemDescriptionForMessage, IProgress progress)
+		public static bool TryMergeProperties(PalasoDataObject targetItem, PalasoDataObject incomingItem, string[] traitsWithMultiplicity, string itemDescriptionForMessage, IProgress progress)
 		{
+			var knownMergableOptionCollectionTraits = new[] { LexSense.WellKnownProperties.SemanticDomainDdp4 };
+			if (traitsWithMultiplicity == null)
+			{
+				traitsWithMultiplicity = new string[0];
+			}
+
 			foreach (var incomingProperty in incomingItem.Properties)
 			{
 				if (targetItem.Properties.Any(p => p.Key == incomingProperty.Key))
@@ -42,16 +48,42 @@ namespace Palaso.DictionaryServices.Processors
 					{
 						continue;
 					}
-					//NB: we are only attempting to merge the normal, single value OptionRefCollection, which is actuall
-					//a <trait> in LIFT land (<field> too?  I dunno)
-					if (incomingProperty.Value is OptionRefCollection && targetProperty.Value is OptionRefCollection &&
 
-						((OptionRefCollection)incomingProperty.Value).Count == 1 &&
-						((OptionRefCollection)targetProperty.Value).Count == 1 &&
-						((OptionRef)((OptionRefCollection)incomingProperty.Value).Members[0]).Key == ((OptionRef)((OptionRefCollection)targetProperty.Value).Members[0]).Key &&
-						((OptionRef)((OptionRefCollection)incomingProperty.Value).Members[0]).Value == ((OptionRef)((OptionRefCollection)targetProperty.Value).Members[0]).Value)
+				   //NB: Some of the complexity here is that we can't really tell from here if what the multiplicity is of the <trait>, unless we
+					//recognize the trait (e.d. semantic domains) or we see that one side has > 1 values already.
+
+					 if (incomingProperty.Value is OptionRefCollection && targetProperty.Value is OptionRefCollection)
 					{
-						continue;
+						var targetCollection = ((OptionRefCollection)targetProperty.Value);
+						var incomingCollection = ((OptionRefCollection)incomingProperty.Value);
+						var clearlyHasMultiplicityGreaterThan1 = (incomingCollection.Count > 1 || targetCollection.Count > 1);
+						var atLeastOneSideIsEmpty = (incomingCollection.Count == 0 || targetCollection.Count == 0);
+						if (knownMergableOptionCollectionTraits.Contains(targetProperty.Key)
+							|| traitsWithMultiplicity.Contains(targetProperty.Key)
+							|| clearlyHasMultiplicityGreaterThan1
+							|| atLeastOneSideIsEmpty)
+						{
+							var mergeSuccess = targetCollection.MergeByKey(
+								(OptionRefCollection) incomingProperty.Value);
+							if (mergeSuccess)
+								continue;
+							else
+							{
+								progress.WriteMessageWithColor("gray",
+															   "Attempting to merge " + itemDescriptionForMessage +
+															   ", but could not due to inability to merge contents of the property '{0}' (possibly due to incompatible embedded xml).",
+															   targetProperty.Key, targetProperty.Value,
+															   incomingProperty.Value);
+								return false;
+							}
+						}
+						else
+							//at this point, we know that both sides have a count of 1, a common thing for a <trait> with multiplicity of 1
+							if (((OptionRef) incomingCollection.Members[0]).Key == ((OptionRef) targetCollection.Members[0]).Key &&
+								((OptionRef) incomingCollection.Members[0]).Value == ((OptionRef) targetCollection.Members[0]).Value)
+							{
+								continue; //same, single value
+							}
 					}
 
 					if (incomingProperty.Value is OptionRef && targetProperty.Value is OptionRef &&
@@ -70,7 +102,9 @@ namespace Palaso.DictionaryServices.Processors
 
 			//at this point, we're committed
 
-			foreach (var pair in incomingItem.Properties)
+			//I (JH) once saw this foreach break saying the collection was modified, so I'm makinkg this safeProperties thing
+			var safeProperties = new List<KeyValuePair<string, IPalasoDataObjectProperty>>(incomingItem.Properties.ToArray());
+			foreach (var pair in safeProperties)
 			{
 				var match = targetItem.Properties.FirstOrDefault(p => p.Key == pair.Key);
 
@@ -82,7 +116,7 @@ namespace Palaso.DictionaryServices.Processors
 				}
 				else
 				{
-					targetItem.CopyProperty(pair);
+					targetItem.MergeProperty(pair);
 				}
 			}
 			return true;

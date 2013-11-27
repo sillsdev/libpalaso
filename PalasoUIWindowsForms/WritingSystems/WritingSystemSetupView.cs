@@ -13,6 +13,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class WritingSystemSetupView : UserControl
 	{
 		private WritingSystemSetupModel _model;
+		public event EventHandler UserWantsHelpWithDeletingWritingSystems;
 
 		public WritingSystemSetupView()
 		{
@@ -36,7 +37,49 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_treeView.BindToModel(treeModel);
 			_model.SelectionChanged += UpdateHeaders;
 			_model.CurrentItemUpdated += UpdateHeaders;
+			_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted += OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted;
 			UpdateHeaders(null, null);
+		}
+
+		private void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
+		{
+			//If no one is listening for the help button we won't offer it to the user
+			bool showHelpButton = UserWantsHelpWithDeletingWritingSystems != null;
+			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions, showHelpButton))
+			{
+				deleteDialog.HelpWithDeletingWritingSystemsButtonClickedEvent +=
+					OnHelpWithDeletingWritingSystemsButtonClicked;
+				var dialogResult = deleteDialog.ShowDialog();
+
+				if (dialogResult != DialogResult.OK)
+				{
+					args.WhatToDo = WhatToDos.Nothing;
+				}
+				else
+				{
+					switch (deleteDialog.Choice)
+					{
+						case DeleteInputSystemDialog.Choices.Cancel:
+							args.WhatToDo = WhatToDos.Nothing;
+							break;
+						case DeleteInputSystemDialog.Choices.Merge:
+							args.WhatToDo = WhatToDos.Conflate;
+							args.WritingSystemIdToConflateWith = deleteDialog.WritingSystemToConflateWith;
+							break;
+						case DeleteInputSystemDialog.Choices.Delete:
+							args.WhatToDo = WhatToDos.Delete;
+							break;
+					}
+				}
+			}
+		}
+
+		private void OnHelpWithDeletingWritingSystemsButtonClicked(object sender, EventArgs e)
+		{
+			if(UserWantsHelpWithDeletingWritingSystems != null)
+			{
+				UserWantsHelpWithDeletingWritingSystems(sender, e);
+			}
 		}
 
 		/// <summary>
@@ -56,7 +99,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void SetWritingSystemsInRepo()
 		{
+			_propertiesTabControl.MoveDataFromViewToModel();
 			_model.SetAllPossibleAndRemoveOthers();
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			_propertiesTabControl.UnwireBeforeClosing();
 		}
 
 		private void UpdateHeaders(object sender, EventArgs e)
@@ -68,18 +117,27 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			else
 			{
-				_rfc4646.Text = _model.CurrentDefinition.RFC5646;
+				_rfc4646.Text = _model.CurrentDefinition.Bcp47Tag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
+				_languageName.Font = SystemFonts.MessageBoxFont;
+				_rfc4646.Font = SystemFonts.MessageBoxFont;
 			}
 		}
 
 		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			var dlg= new LookupISOCodeDialog();
-			dlg.ShowDialog();
-			if(dlg.DialogResult!=DialogResult.OK)
-				return null;
-			return new WritingSystemDefinition(dlg.ISOCode, string.Empty,string.Empty,string.Empty, dlg.ISOCode,false);
+			using (var dlg = new LookupISOCodeDialog() { ShowDesiredLanguageNameField =false})
+			{
+				dlg.ShowDialog();
+				if (dlg.DialogResult != DialogResult.OK)
+					return null;
+				var variant = String.Empty;
+				if (dlg.SelectedLanguage.Code == WellKnownSubTags.Unlisted.Language)
+				{
+					variant = "x-" + "Unlisted";
+				}
+				return new WritingSystemDefinition(dlg.SelectedLanguage.Code, string.Empty, string.Empty, variant, dlg.SelectedLanguage.Code, false);
+			}
 		}
 
 		private void _propertiesTabControl_Load(object sender, EventArgs e)
