@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Icu.Collation;
+using Spart;
 using Spart.Actions;
 using Spart.Parsers;
 using Spart.Parsers.NonTerminal;
@@ -26,7 +27,7 @@ namespace Palaso.WritingSystems.Collation
 			}
 			catch (DllNotFoundException e)
 			{
-				throw new DllNotFoundException("Currently SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
+				throw new DllNotFoundException("SimpleRulesCollator uses Icu and thus requires the ICU dlls to be present", e);
 			}
 		}
 
@@ -34,6 +35,25 @@ namespace Palaso.WritingSystems.Collation
 		{
 			SimpleCollationRuleParser ruleConverter = new SimpleCollationRuleParser();
 			return ruleConverter.ConvertToIcuTailoringRule(rules);
+		}
+
+		static public bool ValidateSimpleRules(string rules, out string message)
+		{
+			SimpleCollationRuleParser ruleParser = new SimpleCollationRuleParser();
+			if (!ruleParser.ValidateSimpleCollationRules(rules, out message))
+			{
+				return false;
+			}
+			try
+			{
+				new SimpleRulesCollator(rules);
+			}
+			catch (Exception e)
+			{
+				message = String.Format("Invalid simple rules: {0}", e.Message);
+				return false;
+			}
+			return true;
 		}
 
 		public SortKey GetSortKey(string source)
@@ -54,6 +74,11 @@ namespace Palaso.WritingSystems.Collation
 		public int Compare(string string1, string string2)
 		{
 			return _collator.Compare(string1, string2);
+		}
+
+		public int Compare(object x, object y)
+		{
+			return Compare((string)x, (string)y);
 		}
 
 		private class SimpleCollationRuleParser
@@ -191,22 +216,57 @@ namespace Palaso.WritingSystems.Collation
 			/// <summary>
 			/// Parse a string and return parse match
 			/// </summary>
-			/// <param name="s"></param>
+			/// <param name="rules"></param>
 			/// <returns></returns>
-			public string ConvertToIcuTailoringRule(String s)
+			public string ConvertToIcuTailoringRule(String rules)
 			{
-				result = string.Empty;
+				_result = string.Empty;
 				_currentCollationElement = new StringBuilder();
 				_currentCollationLines = new Queue<string>();
 				_currentCollationGroups = new Queue<string>();
 				_currentCollationElements = new Queue<string>();
 				_usedCollationElements = new List<string>();
 
-				StringScanner sc = new StringScanner(s);
+				StringScanner sc = new StringScanner(rules);
 				ParserMatch match = _collationRules.Parse(sc);
 				Debug.Assert(match.Success);
 				Debug.Assert(sc.AtEnd);
-				return result;
+				return _result;
+			}
+
+			public bool ValidateSimpleCollationRules(string rules, out string message)
+			{
+				_currentCollationElement = new StringBuilder();
+				_currentCollationLines = new Queue<string>();
+				_currentCollationGroups = new Queue<string>();
+				_currentCollationElements = new Queue<string>();
+				_usedCollationElements = new List<string>();
+
+				StringScanner sc = new StringScanner(rules);
+				message = null;
+				try
+				{
+					ParserMatch match = _collationRules.Parse(sc);
+					if (!match.Success || !sc.AtEnd)
+					{
+						message = "Invalid simple rules.";
+						return false;
+					}
+				}
+				catch (ParserErrorException e)
+				{
+					string errString = sc.InputString.Split(new char[] { '\n' })[e.ParserError.Line - 1];
+					int startingPos = Math.Max((int)e.ParserError.Column - 2, 0);
+					errString = errString.Substring(startingPos, Math.Min(10, errString.Length - startingPos));
+					message = String.Format("{0}: '{1}'", e.ParserError.ErrorText, errString);
+					return false;
+				}
+				catch (Exception e)
+				{
+					message = e.Message;
+					return false;
+				}
+				return true;
 			}
 
 			private StringBuilder _currentCollationElement;
@@ -216,7 +276,7 @@ namespace Palaso.WritingSystems.Collation
 
 			private List<string> _usedCollationElements;
 
-			private string result;
+			private string _result;
 
 			#region Semantic Actions
 
@@ -241,7 +301,7 @@ namespace Palaso.WritingSystems.Collation
 					{
 						if (!Char.IsLetterOrDigit(c))
 						{
-							result.Replace(c.ToString(), "\\u" + ((int) c).ToString("X4"));
+							result.Replace(c.ToString(), "\\" + c);
 						}
 					}
 				}
@@ -347,7 +407,7 @@ namespace Palaso.WritingSystems.Collation
 					}
 				}
 
-				result = sb.ToString();
+				_result = sb.ToString();
 			}
 
 			#endregion

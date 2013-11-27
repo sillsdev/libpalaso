@@ -1,8 +1,9 @@
 using System;
 using NUnit.Framework;
+using Palaso.WritingSystems.Collation;
 using Spart;
 
-namespace Palaso.WritingSystems.Collation.Tests
+namespace Palaso.Tests.WritingSystems.Collation
 {
 	[TestFixture]
 	public class SimpleRulesCollatorTests
@@ -112,6 +113,15 @@ namespace Palaso.WritingSystems.Collation.Tests
 		{
 			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
 		}
+
+
+		[Test]
+		public void ConvertToIcuRules_NoHyphenInRules_HasIgnoreHyphen()
+		{
+			//&[last primary ignorable] <<< '-' <<<
+			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
+		}
+
 
 		[Test]
 		public void ConvertToIcuRules_SingleElementWithBlanks()
@@ -385,188 +395,211 @@ namespace Palaso.WritingSystems.Collation.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithNoData_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "()", 1, 2);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "()", 1, 2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithBlank_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "( )", 1, 3);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "( )", 1, 3)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithSingleItem_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(a)", 1, 3);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(a)", 1, 3)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithSingleDigraph_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(ab)", 1, 4);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(ab)", 1, 4)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithSingleUnicodeCharacterReference_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(\\u0061)", 1, 8);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(\\u0061)", 1, 8)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithCharacterAndUnicodeCharacterReference_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(b\\u0061)", 1, 9);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(b\\u0061)", 1, 9)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithDigraphUnicodeCharacterReference_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(\\uA123\\uABCD)", 1, 14);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(\\uA123\\uABCD)", 1, 14)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_ParenthesisWithUnicodeCharacterReferenceAndCharacter_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(\\uA123p)", 1, 9);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(\\uA123p)", 1, 9)
+			);
 		}
 
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_NestedParenthesis_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "((a A) b)", 1,2);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "((a A) b)", 1,2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_SingleCollatingElementInParenthesis_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "b (B)\n(\\u0101) a A", 1, 5);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "b (B)\n(\\u0101) a A", 1, 5)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutCloseOnSameLineOneGroup_Throws()
 		{
-			//Expected: group close ')'
-			VerifyParserError("scr0005", "(a A \\u0301\n)", 1, 12);
+			Assert.Throws<ParserErrorException>(
+				//Expected: group close ')'
+				() => VerifyParserError("scr0005", "(a A \\u0301\n)", 1, 12)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutCloseOnSameLine_Throws()
 		{
-			//Expected: group close ')'
-			VerifyParserError("scr0005", "a(A \\u0301\n)", 1, 11);
+			Assert.Throws<ParserErrorException>(
+				//Expected: group close ')'
+				() => VerifyParserError("scr0005", "a(A \\u0301\n)", 1, 11)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutClose_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "(", 1, 2);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "(", 1, 2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_OpenParenthesisWithoutCloseWithBlanks_Throws()
 		{
-			// expected 2 or more collation elements in collation group
-			VerifyParserError("scr0003", "( \n  ", 1, 3);
+			Assert.Throws<ParserErrorException>(
+				// expected 2 or more collation elements in collation group
+				() => VerifyParserError("scr0003", "( \n  ", 1, 3)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnmatchedCloseParenthesis_Throws()
 		{
-			// Invalid Character
-			VerifyParserError("scr0006", ")", 1, 1);
+			Assert.Throws<ParserErrorException>(
+				// Invalid Character
+				() => VerifyParserError("scr0006", ")", 1, 1)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_UnmatchedCloseParenthesisWithBlanks_Throws()
 		{
-			// Invalid Character
-			VerifyParserError("scr0006", " ) \n  ", 1, 2);
+			Assert.Throws<ParserErrorException>(
+				// Invalid Character
+				() => VerifyParserError("scr0006", " ) \n  ", 1, 2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_BackslashWithNoCharacterFollowing_Throws()
 		{
-			// Invalid unicode character escape sequence
-			VerifyParserError("scr0001", "\\", 1, 2);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence
+				() => VerifyParserError("scr0001", "\\", 1, 2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithSpaceAfterBackSlash_Throws()
 		{
-			// Invalid unicode character escape sequence
-			VerifyParserError("scr0001", "\\ u0301", 1, 2);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence
+				() => VerifyParserError("scr0001", "\\ u0301", 1, 2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithUpperCaseU_Throws()
 		{
-			// Invalid unicode character escape sequence
-			VerifyParserError("scr0001", "\\U1234", 1, 2);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence
+				() => VerifyParserError("scr0001", "\\U1234", 1, 2)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithSpaceAfterU_Throws()
 		{
-			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
-			VerifyParserError("scr0002", "\\u 0301", 1, 3);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
+				() => VerifyParserError("scr0002", "\\u 0301", 1, 3)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithOnlyOneHexDigit_Throws()
 		{
-			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
-			VerifyParserError("scr0002", "\\u1", 1,4);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
+				() => VerifyParserError("scr0002", "\\u1", 1,4)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithOnlyTwoHexDigits_Throws()
 		{
-			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
-			VerifyParserError("scr0002", "\\u12",1,5);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
+				() => VerifyParserError("scr0002", "\\u12",1,5)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithOnlyThreeHexDigits_Throws()
 		{
-			// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
-			VerifyParserError("scr0002", "\\u123",1,6);
+			Assert.Throws<ParserErrorException>(
+				// Invalid unicode character escape sequence: missing hexadecimal digit after '\u'
+				() => VerifyParserError("scr0002", "\\u123",1,6)
+			);
 		}
 
 		[Test]
@@ -635,26 +668,28 @@ namespace Palaso.WritingSystems.Collation.Tests
 
 
 		[Test]
-		[ExpectedException(typeof (ParserErrorException))]
 		public void ConvertToIcuRules_CollationElementUsedTwice_Throws()
 		{
-			// duplicate collation element
-			VerifyParserError("scr0100", "a \\u0061", 1, 9);
+			Assert.Throws<ParserErrorException>(
+				// duplicate collation element
+				() => VerifyParserError("scr0100", "a \\u0061", 1, 9)
+			);
 		}
 
 		[Test]
 		public void ConvertToIcuRules_AsciiCharacterNotLetterOrDigit_RequiresIcuEscaping()
 		{
 			VerifyExpectedIcuFromActualSimple(
-				ICUstart + "\\u005C << \\u003C << \\u003C\\u003C << \\u003C\\u003C\\u003C << \\u003D << \\u0026",
+				ICUstart + "\\\\ << \\< << \\<\\< << \\<\\<\\< << \\= << \\&",
 				"\\u005c < << <<< = &");
 		}
 
 		[Test]
-		[ExpectedException(typeof(ParserErrorException))]
 		public void ParseError_CorrectLineAndOffset()
 		{
-			VerifyParserError("scr0006", "ph\na A)\nb B\nc C",2,4);
+			Assert.Throws<ParserErrorException>(
+				() => VerifyParserError("scr0006", "ph\na A)\nb B\nc C",2,4)
+			);
 		}
 
 
@@ -743,6 +778,33 @@ namespace Palaso.WritingSystems.Collation.Tests
 			{
 				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
 			}
+		}
+
+		private void VerifyExpectedSort(string simpleRules, string[] original, string[] expected)
+		{
+			Assert.AreEqual(original.Length, expected.Length);
+
+			SimpleRulesCollator collator = new SimpleRulesCollator(simpleRules);
+			Array.Sort(original, collator);
+
+
+			for (int i = 0; i < original.Length; i++)
+			{
+				Assert.AreEqual(expected[i], original[i], "at index {0}", i);
+			}
+		}
+
+		[Test]
+		public void Compare_Hyphens()
+		{
+			var original = new string[] {"anna",
+										"-ana",
+										  "ana"};
+
+			var expected = new string[] { "ana",
+										   "anna",
+										   "-ana"};
+			VerifyExpectedSort("a\nb\n-", original, expected);
 		}
 
 		[Test]

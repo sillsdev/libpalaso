@@ -29,7 +29,7 @@ using NUnit.Framework;
 using Spart.Parsers;
 using Spart.Parsers.Primitives;
 
-namespace Spart.Tests.Parsers.Primitives
+namespace Palaso.Tests.Spart.Parsers.Primitives
 {
 	public class Helper
 	{

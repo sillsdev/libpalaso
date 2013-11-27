@@ -6,7 +6,7 @@ using Spart.Parsers;
 using Spart.Parsers.NonTerminal;
 using Spart.Scanners;
 
-namespace Spart.Demo
+namespace Palaso.Tests.Spart
 {
 	public class Calculator
 	{

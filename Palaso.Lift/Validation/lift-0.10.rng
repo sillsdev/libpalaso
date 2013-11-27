@@ -1,0 +1,522 @@
+<grammar datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+		 xmlns="http://relaxng.org/ns/structure/1.0"
+		 xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+
+
+  <!-- ==================================================== date or dateTime -->
+  <define name="date.or.dateTime">
+	<choice>
+	  <data type="date"/>
+	  <data type="dateTime"/>
+	</choice>
+  </define>
+
+  <!-- ============================================================== refid -->
+  <define name="refid">
+	<attribute name="ref"/>
+  </define>
+
+  <!-- ======================================================== form-content -->
+  <define name="form-content">
+	<attribute name="lang"/>    <!-- rfc 4646 -->
+	<ref name="form-no-lang-content"/>
+  </define>
+
+  <define name="form-no-lang-content">
+	<interleave>
+	  <element name="text">
+		<ref name="span-content"/>
+	  </element>
+	  <zeroOrMore>
+		<element name="trait">
+		  <ref name="trait-content"/>
+		</element>
+	  </zeroOrMore>
+	</interleave>
+  </define>
+
+  <!-- ======================================================== span-content -->
+  <define name="span-content">
+	<interleave>
+	  <text/>
+	  <zeroOrMore>
+		<element name="span">
+		  <ref name="inner-span-content"/>
+		</element>
+	  </zeroOrMore>
+	</interleave>
+  </define>
+
+  <!-- ================================================== inner-span-content -->
+  <define name="inner-span-content">
+	<optional>
+	  <attribute name="lang"/>
+	  <!-- rfc 4646 -->
+	</optional>
+	<optional>
+	  <attribute name="href">
+		<data type="anyURI"/>
+	  </attribute>
+	</optional>
+	<optional>
+	  <attribute name="class"/>
+	</optional>
+	<ref name="span-content"/>
+  </define>
+
+  <!-- =================================================== multitext-content -->
+  <define name="multitext-content">
+	<zeroOrMore>
+	  <element name="form">
+		<ref name="form-content"/>
+		<sch:rule context="form" >
+		  <sch:assert test="not(preceding-sibling::form[@type=current()/@lang])">
+			Forms should be in different langs.
+			There is only one form with a given lang allowed in any parent element.
+		  </sch:assert>
+		</sch:rule>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ====================================================== URLRef-content -->
+  <define name="URLRef-content">
+	<attribute name="href">
+	  <data type="anyURI"/>
+	</attribute>
+	<optional>
+	  <element name="label">
+		<ref name="multitext-content"/>
+	  </element>
+	</optional>
+  </define>
+
+  <!-- ======================================================= field-content -->
+  <define name="field-content">
+	<ref name="multitext-content"/>
+	<attribute name="tag"/>
+	<optional>
+	  <attribute name="dateCreated">
+		<ref name="date.or.dateTime"/>
+	  </attribute>
+	</optional>
+	<optional>
+	  <attribute name="dateModified">
+		<ref name="date.or.dateTime"/>
+	  </attribute>
+	</optional>
+  </define>
+
+<!-- ========================================================= trait-content -->
+  <define name="trait-content">
+	<attribute name="name"/>
+	<!-- restrict to one trait per parent-->
+	<attribute name="value"/>
+	<zeroOrMore>
+	  <element name="annotation">
+		<ref name="annotation-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ================================================== annotation-content -->
+  <define name="annotation-content">
+	<ref name="multitext-content"/>
+	<optional>
+	  <attribute name="value"/>
+	</optional>
+	<optional>
+	  <attribute name="who"/>
+	</optional>
+	<optional>
+	  <attribute name="when">
+		<ref name="date.or.dateTime"/>
+	  </attribute>
+	</optional>
+  </define>
+
+  <!-- ================================================== extensible-content -->
+  <define name="extensible-content">
+	<interleave>
+	  <optional>
+		<attribute name="dateCreated">
+		  <ref name="date.or.dateTime"/>
+		</attribute>
+	  </optional>
+	  <optional>
+		<attribute name="dateModified">
+		  <ref name="date.or.dateTime"/>
+		</attribute>
+	  </optional>
+	  <zeroOrMore>
+		<element name="field">
+		  <ref name="field-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="trait">
+		  <ref name="trait-content"/>
+		</element>
+	  </zeroOrMore>
+	</interleave>
+  </define>
+
+  <!-- ======================================================== note-content -->
+  <define name="note-content">
+	<ref name="multitext-content"/>
+	<ref name="extensible-content"/>
+	<optional>
+	  <attribute name="type"/>
+	</optional>
+	<sch:rule context="note" >
+	  <sch:assert test="not(preceding-sibling::note[@type=current()/@type])">
+		Notes should be of different types.
+		There is only one note with a given type allowed in any parent element.
+	  </sch:assert>
+	</sch:rule>
+  </define>
+
+  <!-- =============================================== pronunciation-content -->
+  <define name="pronunciation-content">
+	<ref name="multitext-content"/>
+	<ref name="extensible-content"/>
+	<zeroOrMore>
+	  <element name="media">
+		<ref name="URLRef-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- =================================================== etymology-content -->
+  <define name="etymology-content">
+	<ref name="extensible-content"/>
+
+	<attribute name="type"/>
+	<attribute name="source"/>
+	<interleave>
+	  <optional>
+		<element name="form">
+		  <ref name="form-no-lang-content"/>
+		</element>
+	  </optional>
+	  <zeroOrMore>
+		<element name="gloss">
+		  <ref name="form-content"/>
+		</element>
+	  </zeroOrMore>
+
+	</interleave>
+  </define>
+
+  <!-- ============================================ grammatical-info-content -->
+  <define name="grammatical-info-content">
+	<attribute name="value"/>
+	<zeroOrMore>
+	  <element name="trait">
+		<ref name="trait-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ==================================================== reversal-content -->
+  <define name="reversal-content">
+	<ref name="multitext-content"/>
+	<optional>
+	  <attribute name="type"/>
+	</optional>
+	<optional>
+	  <ref name="reversal-main"/>
+	</optional>
+  </define>
+
+  <!-- ======================================================= reversal-main -->
+  <define name="reversal-main">
+	<element name="main">
+	  <ref name="multitext-content"/>
+	  <sch:rule context="main">
+		<sch:assert test="parent::*/form">
+		  A main should not exist without a parent form
+		</sch:assert>
+	  </sch:rule>
+	  <optional>
+		<ref name="reversal-main"/>
+	  </optional>
+	</element>
+  </define>
+
+  <!-- ================================================= translation-content -->
+  <define name="translation-content">
+	<ref name="multitext-content"/>
+	<optional>
+	  <attribute name="type"/>
+	  <!-- back | free | literal -->
+	</optional>
+	<sch:rule context="translation" >
+	  <sch:assert test="not(preceding-sibling::translation[@type=current()/@type])">
+		Translations should be of different types.
+	  </sch:assert>
+	</sch:rule>
+  </define>
+
+  <!-- ===================================================== example-content -->
+  <define name="example-content">
+	<ref name="multitext-content"/>
+	<ref name="extensible-content"/>
+	<optional>
+	  <attribute name="source"/> <!-- a key-->
+	</optional>
+	<zeroOrMore>
+	  <element name="translation">
+		<ref name="translation-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ==================================================== relation-content -->
+  <define name="relation-content">
+	<!-- @ref is a @name relation of parent-->
+	<ref name="extensible-content"/>
+	<attribute name="name"/>
+	<ref name="refid"/>
+	<optional>
+	  <attribute name="order">
+		<data type="integer"/>
+	  </attribute>
+	</optional>
+	<optional>
+	  <element name="usage">
+		<ref name="multitext-content"/>
+	  </element>
+	</optional>
+  </define>
+
+  <!-- ===================================================== variant-content -->
+  <define name="variant-content">
+	<ref name="extensible-content"/>
+	<ref name="multitext-content"/>
+	<optional>
+	  <ref name="refid"/>
+	</optional>
+	<zeroOrMore>
+	  <element name="pronunciation">
+		<ref name="pronunciation-content"/>
+	  </element>
+	</zeroOrMore>
+	<zeroOrMore>
+	  <element name="relation">
+		<ref name="relation-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ======================================================= sense-content -->
+  <define name="sense-content">
+	<!--Handbook of Lexicography:
+	a sense is a hypothesis that one meaning has derived from a previous meaning
+	(i.e. the meanings are semantically related but have a distinct central meaning).-->
+	<optional>
+	  <attribute name="id"/>
+	</optional>
+	<optional>
+	  <attribute name="order">
+		<data type="integer"/>
+	  </attribute>
+	</optional>
+
+	<interleave>
+	  <ref name="extensible-content"/>
+	  <optional>
+		<element name="grammatical-info">
+		  <ref name="grammatical-info-content"/>
+		</element>
+	  </optional>
+	  <zeroOrMore>
+		<element name="gloss">
+		  <ref name="form-content"/>
+		</element>
+	  </zeroOrMore>
+	  <optional>
+		<element name="definition">
+		  <ref name="multitext-content"/>
+		</element>
+	  </optional>
+	  <zeroOrMore>
+		<element name="relation">
+		  <ref name="relation-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="etymology">
+		  <ref name="etymology-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="note">
+		  <ref name="note-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="example">
+		  <ref name="example-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="reversal">
+		  <ref name="reversal-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="picture">
+		  <ref name="URLRef-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="subsense">
+		  <ref name="sense-content"/>
+		</element>
+	  </zeroOrMore>
+	</interleave>
+  </define>
+
+  <!-- ======================================================= entry-content -->
+  <define name="entry-content">
+	<optional>
+	  <attribute name="id"/>
+	</optional>
+	<optional>
+	  <attribute name="guid"/>
+	</optional>
+	<optional>
+	  <attribute name="order">
+		<data type="integer"/>
+	  </attribute>
+	</optional>
+	<optional>
+	  <attribute name="dateDeleted">
+		<ref name="date.or.dateTime"/>
+	  </attribute>
+	</optional>
+
+	<interleave>
+	  <ref name="extensible-content"/>
+	  <optional>
+		<element name="lexical-unit">
+		  <ref name="multitext-content"/>
+		</element>
+	  </optional>
+	  <optional>
+		<element name="citation">
+		  <ref name="multitext-content"/>
+		</element>
+	  </optional>
+	  <zeroOrMore>
+		<element name="pronunciation">
+		  <ref name="pronunciation-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="variant">
+		  <ref name="variant-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="sense">
+		  <ref name="sense-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="note">
+		  <ref name="note-content"/>
+		</element>
+	  </zeroOrMore>
+	  <zeroOrMore>
+		<element name="relation">
+		  <ref name="relation-content"/>
+		</element>
+	  </zeroOrMore>
+	</interleave>
+  </define>
+
+  <!-- ================================================== field-defn-content -->
+  <define name="field-defn-content">
+	<ref name="multitext-content"/>
+	<attribute name="tag"/>
+  </define>
+
+  <!-- ================================================= field-defns-content -->
+  <define name="field-defns-content">
+	<zeroOrMore>
+	  <element name="field">
+		<ref name="field-defn-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- =================================================== range-ref-content -->
+  <define name="range-ref-content">
+	<attribute name="id"/>
+	<attribute name="href">
+	  <data type="anyURI"/>
+	</attribute>
+	<optional>
+	  <attribute name="guid"/>
+	</optional>
+  </define>
+
+  <!-- ====================================================== ranges-content -->
+  <define name="ranges-content">
+	<zeroOrMore>
+	  <element name="range">
+		<ref name="range-ref-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ====================================================== header-content -->
+  <define name="header-content">
+	<interleave>
+	  <optional>
+		<element name="description">
+		  <ref name="multitext-content"/>
+		</element>
+	  </optional>
+	  <optional>
+		<element name="ranges">
+		  <ref name="ranges-content"/>
+		</element>
+	  </optional>
+	  <optional>
+		<element name="fields">
+		  <ref name="field-defns-content"/>
+		</element>
+	  </optional>
+	</interleave>
+  </define>
+
+  <!-- ======================================================== lift-content -->
+  <define name="lift-content">
+	<attribute name="version">
+	  <value>0.10</value>
+	</attribute>
+	<optional>
+	  <attribute name="producer"/>
+	</optional>
+	<optional>
+	  <element name="header">
+		<ref name="header-content"/>
+	  </element>
+	</optional>
+	<zeroOrMore>
+	  <element name="entry">
+		<ref name="entry-content"/>
+	  </element>
+	</zeroOrMore>
+  </define>
+
+  <!-- ================================== start ============================ -->
+  <start>
+	<element name="lift">
+	  <ref name="lift-content"/>
+	</element>
+  </start>
+</grammar>

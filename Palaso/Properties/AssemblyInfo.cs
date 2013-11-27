@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Palaso")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Houghton College")]
+[assembly: AssemblyCompany("SIL")]
 [assembly: AssemblyProduct("Palaso")]
-[assembly: AssemblyCopyright("Copyright © Houghton College 2007")]
+[assembly: AssemblyCopyright("Copyright © SIL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,4 +34,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: System.CLSCompliant(true)]
+[assembly: CLSCompliant(true)]
+[assembly: InternalsVisibleTo("Palaso.Tests")]

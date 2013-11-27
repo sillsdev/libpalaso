@@ -1,3 +1,5 @@
+using Palaso.UI.WindowsForms.SuperToolTip;
+
 namespace WritingSystemSetup.Tests
 {
 	partial class SuperToolTipTestForm
@@ -29,11 +31,11 @@ namespace WritingSystemSetup.Tests
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfo superToolTipInfo1 = new Elsehemy.SuperToolTipInfo();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new Elsehemy.SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfo superToolTipInfo1 = new SuperToolTipInfo();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new SuperToolTipInfoWrapper();
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-			this.superToolTip1 = new Elsehemy.SuperToolTip(this.components);
+			this.superToolTip1 = new SuperToolTip(this.components);
 			this.button1 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
@@ -85,7 +87,7 @@ namespace WritingSystemSetup.Tests
 		#endregion
 
 		private System.Windows.Forms.RichTextBox richTextBox1;
-		private Elsehemy.SuperToolTip superToolTip1;
+		private SuperToolTip superToolTip1;
 		private System.Windows.Forms.Button button1;
 	}
 }

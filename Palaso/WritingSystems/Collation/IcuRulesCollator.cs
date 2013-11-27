@@ -10,12 +10,31 @@ namespace Palaso.WritingSystems.Collation
 		{
 			try
 			{
-				this._collator = new Icu.Collation.RuleBasedCollator(rules);
+				this._collator = new Icu.Collation.RuleBasedCollator(LdmlCollationParser.ReplaceUnicodeEscapesForICU(rules));
 			}
 			catch (DllNotFoundException e)
 			{
 				throw new DllNotFoundException("IcuRulesCollator requires the ICU dlls to be present", e);
 			}
+		}
+
+		public static bool ValidateSortRules(string rules, out string message)
+		{
+			IcuRulesParser parser = new IcuRulesParser();
+			if (!parser.ValidateIcuRules(rules, out message))
+			{
+				return false;
+			}
+			try
+			{
+				new IcuRulesCollator(rules);
+			}
+			catch (Exception e)
+			{
+				message = String.Format("Invalid ICU sort rules: {0}", e.Message);
+				return false;
+			}
+			return true;
 		}
 
 		public SortKey GetSortKey(string source)
@@ -36,6 +55,11 @@ namespace Palaso.WritingSystems.Collation
 		public int Compare(string string1, string string2)
 		{
 			return _collator.Compare(string1, string2);
+		}
+
+		public int Compare(object x, object y)
+		{
+			return Compare((string) x, (string) y);
 		}
 	}
 }

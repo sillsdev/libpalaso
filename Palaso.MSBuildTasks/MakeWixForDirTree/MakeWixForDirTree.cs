@@ -34,6 +34,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		private string _outputFilePath;
 		private string[] _filesAndDirsToExclude = null;
 		private Regex _fileMatchPattern = new Regex(@".*");
+		private Regex _ignoreFilePattern = new Regex(@"IGNOREME");
 
 		//todo: this should just be a list
 		private Dictionary<string, string> m_exclude = new Dictionary<string, string>();
@@ -66,7 +67,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 
 		/// <summary>
-		/// Subfolders and files to exclude.
+		/// Subfolders and files to exclude. Kinda wonky. Using Ignore makes more sense.
 		/// </summary>
 		public string[] Exclude
 		{
@@ -91,6 +92,15 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		{
 			get { return _fileMatchPattern.ToString(); }
 			set { _fileMatchPattern = new Regex(value, RegexOptions.IgnoreCase); }
+		}
+
+		/// <summary>
+		/// Will exclude if either the filename or the full path matches the expression.
+		/// </summary>
+		public string IgnoreRegExPattern
+		{
+			get { return _ignoreFilePattern.ToString(); }
+			set { _ignoreFilePattern = new Regex(value, RegexOptions.IgnoreCase); }
 		}
 
 		/// <summary>
@@ -167,6 +177,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				// write out components into a group
 				XmlElement elemGroup = doc.CreateElement("ComponentGroup", XMLNS);
 				elemGroup.SetAttribute("Id", _componentGroupId);
+
 				elemFrag.AppendChild(elemGroup);
 
 				AddComponentRefsToDom(doc, elemGroup);
@@ -182,16 +193,31 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			return !HasLoggedErrors;
 		}
 
+		/// <summary>
+		/// Though the guid-tracking *should* get stuff uninstalled, sometimes it does. So as an added precaution, delete the files on install and uninstall.
+		/// Note that the *.* here should uninstall even files that were in the previous install but not this one.
+		/// </summary>
+		/// <param name="elemFrag"></param>
+		private void InsertFileDeletionInstruction(XmlElement elemFrag)
+		{
+			//awkwardly, wix only allows this in <component>, not <directory>. Further, the directory deletion equivalent (RemoveFolder) can only delete completely empty folders.
+			var node = elemFrag.OwnerDocument.CreateElement("RemoveFile", XMLNS);
+			node.SetAttribute("Id", "_"+Guid.NewGuid().ToString().Replace("-",""));
+			node.SetAttribute("On", "both");//both = install time and uninstall time "uninstall");
+			node.SetAttribute("Name", "*.*");
+			elemFrag.AppendChild(node);
+		}
+
 		private void WriteDomToFile(XmlDocument doc)
 		{
 // write the XML out onlystringles have been modified
 			if (!m_checkOnly && m_filesChanged)
 			{
-				XmlWriterSettings settings = new XmlWriterSettings();
+				var settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = "    ";
 				settings.Encoding = Encoding.UTF8;
-				using (XmlWriter xmlWriter = XmlWriter.Create(_outputFilePath, settings))
+				using (var xmlWriter = XmlWriter.Create(_outputFilePath, settings))
 				{
 					doc.WriteTo(xmlWriter);
 				}
@@ -222,11 +248,6 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 					m_exclude.Add(key, s);
 				}
 			}
-		}
-
-		public void LogMessage(MessageImportance messageImportance, string s)
-		{
-			Log.LogMessage(messageImportance, s);
 		}
 
 		public bool HasLoggedErrors
@@ -268,11 +289,9 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			Log.LogWarning(s);
 		}
 
-
-
 		private void ProcessDir(XmlElement parent, string dirPath, string outerDirectoryId)
 		{
-			Log.LogMessage(MessageImportance.Low, "Processing dir {0}", dirPath);
+			LogMessage(MessageImportance.Low, "Processing dir {0}", dirPath);
 
 			XmlDocument doc = parent.OwnerDocument;
 			List<string> files = new List<string>();
@@ -284,7 +303,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			// Build a list of the files in this directory removing any that have been exluded
 			foreach (string f in Directory.GetFiles(dirPath))
 			{
-				if (_fileMatchPattern.IsMatch(f) && !m_exclude.ContainsKey(f.ToLower())
+				if (_fileMatchPattern.IsMatch(f) && !_ignoreFilePattern.IsMatch(f) && !_ignoreFilePattern.IsMatch(Path.GetFileName(f)) && !m_exclude.ContainsKey(f.ToLower())
 					&& !f.Contains(kFileNameOfGuidDatabase) )
 					files.Add(f);
 			}
@@ -293,7 +312,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			bool isFirst = true;
 			foreach (string path in files)
 			{
-				ProcessFile(parent, path, doc, guidDatabase, isFirst);
+				ProcessFile(parent, path, doc, guidDatabase, isFirst, outerDirectoryId);
 				isFirst = false;
 			}
 
@@ -330,7 +349,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 						</Component>
 					 */
 
-				string id = GetSafeDirectoryId(dirPath, parentDirectoryId);
+				string id = GetSafeDirectoryId(string.Empty, parentDirectoryId);
 
 				XmlElement componentElement = doc.CreateElement("Component", XMLNS);
 				componentElement.SetAttribute("Id", id);
@@ -360,22 +379,29 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			if (Path.GetFullPath(_rootDir) != directoryPath)
 			{
 				id+="." + Path.GetFileName(directoryPath);
+				id = id.TrimEnd('.'); //for the case where directoryPath is intentionally empty
 			}
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 			return id;
 		}
 
-		private void ProcessFile(XmlElement parent, string path, XmlDocument doc, IdToGuidDatabase guidDatabase, bool isFirst)
+		private void ProcessFile(XmlElement parent, string path, XmlDocument doc, IdToGuidDatabase guidDatabase, bool isFirst, string directoryId)
 		{
 
 			string guid;
 			string name = Path.GetFileName(path);
-			string id = name;
-			if (!Char.IsLetter(id[0]) && id[0] != '_')
+			string id = directoryId+"."+name; //includ the parent directory id so that files with the same name (e.g. "index.html") found twice in the system will get different ids.
+
+			const int kMaxLength = 50; //I have so far not found out what the max really is
+			if (id.Length > kMaxLength)
+			{
+				id = id.Substring(id.Length - kMaxLength, kMaxLength); //get the last chunk of it
+			}
+			if (!Char.IsLetter(id[0]) && id[0] != '_')//probably not needed now that we're prepending the parent directory id, accept maybe at the root?
 				id = '_' + id;
 			id = Regex.Replace(id, @"[^\p{Lu}\p{Ll}\p{Nd}._]", "_");
 
-			Log.LogMessage(MessageImportance.Normal, "Adding file {0} with id {1}", path, id);
+			LogMessage(MessageImportance.Normal, "Adding file {0} with id {1}", path, id);
 			string key = id.ToLower();
 			if (m_suffixes.ContainsKey(key))
 			{
@@ -415,7 +441,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 
 
 			elemComp.AppendChild(elemFile);
-
+			InsertFileDeletionInstruction(elemComp);
 			m_components.Add(id);
 
 			// check whether the file is newer
@@ -430,6 +456,49 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			persmission.SetAttribute("User", "Everyone");
 			elementToAddPermissionTo.AppendChild(persmission);
 		}
+
+		private void LogMessage(string message, params object[] args)
+		{
+			LogMessage(MessageImportance.Normal, message, args);
+		}
+
+		public void LogMessage(MessageImportance importance, string message)
+		{
+			try
+			{
+				Log.LogMessage(importance.ToString(), message);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+		private void LogMessage(MessageImportance importance, string message, params object[] args)
+		{
+			try
+			{
+				Log.LogMessage(importance.ToString(), message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+		private void LogError(string message, params object[] args)
+		{
+			try
+			{
+				Log.LogError(message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+
 
 		#endregion
 	}

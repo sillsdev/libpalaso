@@ -1,11 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Xml.Serialization;
 //using Exortech.NetReflector;
 using NUnit.Framework;
-using System.ComponentModel;
 using Palaso.Text;
 using System.Collections;
 
@@ -46,7 +45,7 @@ namespace Palaso.Tests.Text
 			Assert.AreSame(string.Empty, text["foo"]);
 		}
 
-		//        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		//        [Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
 		//        public void GetIndexerThrowsWhenAltIsMissing()
 		//        {
 		//            MultiTextBase text = new MultiTextBase();
@@ -54,7 +53,7 @@ namespace Palaso.Tests.Text
 		//            string s = text["gee"];
 		//        }
 		//
-		//        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		//        [Test, NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ArgumentOutOfRangeException))]
 		//        public void GetExactThrowsWhenAltIsMissing()
 		//        {
 		//            MultiTextBase text = new MultiTextBase();
@@ -308,6 +307,74 @@ namespace Palaso.Tests.Text
 				get { return _name; }
 				set { _name = value; }
 			}
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentNumberOfForms_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			x["ws2"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y["ws"] = "test";
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_SameContent_True()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y.MergeIn(x);
+			Assert.IsTrue(x.Equals((object) y));
+			Assert.IsTrue(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_Identity_True()
+		{
+			MultiTextBase x = new MultiTextBase();
+			Assert.IsTrue(x.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentValues_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y["ws"] = "test1";
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_DifferentWritingSystems_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			MultiTextBase y = new MultiTextBase();
+			y["ws1"] = "test";
+			Assert.IsFalse(x.Equals((object) y));
+			Assert.IsFalse(y.Equals((object) x));
+		}
+
+		[Test]
+		public void ObjectEquals_Null_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			Assert.IsFalse(x.Equals((object) null));
+		}
+
+		[Test]
+		public void Equals_Null_False()
+		{
+			MultiTextBase x = new MultiTextBase();
+			x["ws"] = "test";
+			Assert.IsFalse(x.Equals(null));
 		}
 
 		[Test]
@@ -583,6 +650,97 @@ namespace Palaso.Tests.Text
 			Assert.AreEqual(2, forms.Length);
 			Assert.AreEqual("1", forms[0].Form);
 			Assert.AreEqual("3", forms[1].Form);
+		}
+
+		[Test]
+		public void SetAlternative_ThreeDifferentLanguages_LanguageFormsAreSortedbyWritingSystem()
+		{
+
+			MultiTextBase multiTextBaseToPopulate = new MultiTextBase();
+			multiTextBaseToPopulate.SetAlternative("fr", "fr Word3");
+			multiTextBaseToPopulate.SetAlternative("de", "de Word1");
+			multiTextBaseToPopulate.SetAlternative("en", "en Word2");
+			Assert.AreEqual(3, multiTextBaseToPopulate.Forms.Length);
+			Assert.AreEqual("de", multiTextBaseToPopulate.Forms[0].WritingSystemId);
+			Assert.AreEqual("en", multiTextBaseToPopulate.Forms[1].WritingSystemId);
+			Assert.AreEqual("fr", multiTextBaseToPopulate.Forms[2].WritingSystemId);
+		}
+
+		[Test]
+		public void CompareTo_Null_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = null;
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithFewerForms_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithMoreForms_ReturnsLess()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(-1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalWritingSystemsAndFirstNonidenticalWritingSystemIsAlphabeticallyEarlier_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("en", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalWritingSystemsAndFirstNonidenticalWritingSystemIsAlphabeticallyLater_ReturnsLess()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("en", "Word 1");
+			Assert.AreEqual(-1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalFormsAndFirstNonidenticalFormIsAlphabeticallyEarlier_ReturnsGreater()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 2");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_MultiTextWithNonIdenticalFormsAndFirstNonidenticalformIsAlphabeticallyLater_ReturnsLess()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 2");
+			Assert.AreEqual(-1, multiTextBase.CompareTo(multiTextBaseToCompare));
+		}
+
+		[Test]
+		public void CompareTo_IdenticalMultiText_ReturnsEqual()
+		{
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAlternative("de", "Word 1");
+			MultiTextBase multiTextBaseToCompare = new MultiTextBase();
+			multiTextBaseToCompare.SetAlternative("de", "Word 1");
+			Assert.AreEqual(0, multiTextBase.CompareTo(multiTextBaseToCompare));
 		}
 	}
 }
