@@ -186,6 +186,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				e.Control.MouseDown += HandleMouseDown;
 				e.Control.PreviewKeyDown += HandlePreviewKeyDown;
 				e.Control.KeyPress += HandleKeyPress;
+
+				var scrollableControl = e.Control as ScrollableControl;
+				if (scrollableControl != null)
+					scrollableControl.Scroll += HandleScroll;
 			}
 		}
 
@@ -198,6 +202,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				e.Control.MouseDown -= HandleMouseDown;
 				e.Control.PreviewKeyDown -= HandlePreviewKeyDown;
 				e.Control.KeyPress -= HandleKeyPress;
+
+				var scrollableControl = e.Control as ScrollableControl;
+				if (scrollableControl != null)
+					scrollableControl.Scroll -= HandleScroll;
 
 				var eventHandler = GetEventHandlerForControl(e.Control);
 				if (eventHandler != null)
@@ -337,6 +345,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			ResetAndWaitForCommit(sender as Control);
 			SetImePreeditWindowLocationAndSize(sender as Control);
 		}
+
+		private void HandleScroll(object sender, ScrollEventArgs e)
+		{
+			if (!IBusCommunicator.Connected)
+				return;
+
+			SetImePreeditWindowLocationAndSize(sender as Control);
+		}
+
 		#endregion
 
 		#region IKeyboardAdaptor implementation
