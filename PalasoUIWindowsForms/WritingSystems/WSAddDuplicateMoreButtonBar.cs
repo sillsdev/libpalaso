@@ -1,17 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSAddDuplicateMoreButtonBar : UserControl
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 
 		public WSAddDuplicateMoreButtonBar()
 		{
@@ -19,16 +15,34 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			CreateMoreButtonImage();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			Debug.Assert(model != null);
 			if (_model != null)
 			{
 				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= OnCurrentItemUpdated;
 			}
 			_model = model;
 			SetButtonStatus();
 			_model.SelectionChanged += ModelSelectionChanged;
+			_model.CurrentItemUpdated += OnCurrentItemUpdated;
+
+			Disposed += OnDisposed;
+		}
+
+		private void OnCurrentItemUpdated(object sender, EventArgs e)
+		{
+			SetButtonStatus();
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+			{
+				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= OnCurrentItemUpdated;
+			}
 		}
 
 		private void CreateMoreButtonImage()
@@ -36,7 +50,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Bitmap downArrow = new Bitmap(11, 6);
 			Graphics g = Graphics.FromImage(downArrow);
 			g.FillRectangle(Brushes.Transparent, 0, 0, 11, 5);
-			g.FillPolygon(Brushes.Black, new Point[] { new Point(0, 0), new Point(10, 0), new Point(5, 5) });
+			g.FillPolygon(Brushes.Black, new[] { new Point(0, 0), new Point(10, 0), new Point(5, 5) });
 			_moreButton.Image = downArrow;
 		}
 
@@ -50,7 +64,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_model == null)
 				return;
 			bool enabled = _model.HasCurrentSelection;
-			_duplicateButton.Enabled = enabled;
+			_exportMenuItem.Enabled = enabled;
+			_duplicateMenuItem.Enabled = enabled;
+			if(enabled)
+			{
+				var label = _model.CurrentDefinition == null ? "" : _model.CurrentDefinition.ListLabel;
+				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", label);
+				_deleteMenuItem.Text = string.Format("Delete {0}...", label);
+				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", label);
+			}
 			_deleteMenuItem.Enabled = enabled;
 		}
 
@@ -86,5 +108,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_model.ImportFile(dialog.FileName);
 			}
 		}
+
+		private void ExportMenuClick(object sender, EventArgs e)
+		{
+			SaveFileDialog dialog = new SaveFileDialog ();
+			dialog.Filter = "LDML files (*.ldml;*.xml)|*.ldml;*.xml|All files (*.*)|*.*";
+			dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			dialog.RestoreDirectory = true;
+			if (dialog.ShowDialog (this) == DialogResult.OK)
+			{
+				_model.ExportCurrentWritingSystemAsFile(dialog.FileName);
+			}
+		}
+
 	}
 }

@@ -12,7 +12,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSPickerUsingListView : UserControl
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 		private bool _changingSelection;
 
 		public event EventHandler SelectedIndexChanged;
@@ -23,7 +23,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_listView.SelectedIndexChanged += ListViewSelectionChanged;
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			Debug.Assert(model != null);
 			if (_model != null)
@@ -39,8 +39,19 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_model.ListColumnsChanged += ModelListColumnsChanged;
 			_model.SelectionChanged += ModelSelectionChanged;
 			_model.CurrentItemUpdated += ModelCurrentItemUpdated;
+			this.Disposed += OnDisposed;
 		}
 
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+			{
+				_model.ItemAddedOrDeleted -= ModelItemAddedOrDeleted;
+				_model.ListColumnsChanged -= ModelListColumnsChanged;
+				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
+			}
+		}
 		private void ModelItemAddedOrDeleted(object sender, EventArgs e)
 		{
 			RefreshListViewItems();
@@ -137,7 +148,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			try
 			{
 				_listView.SelectedIndices.Clear();
-				_listView.SelectedIndices.Add(_model.CurrentIndex);
+				if(_model.CurrentIndex > -1 && _model.CurrentIndex < _listView.Items.Count)
+					_listView.SelectedIndices.Add(_model.CurrentIndex);
 				OnSelectedIndexChanged();
 			}
 			finally
@@ -192,6 +204,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void ModelCurrentItemUpdated(object sender, EventArgs e)
 		{
+			if(SelectedIndex<0)
+				return;
+
 			string[] currentItem = _model.WritingSystemListCurrentItem;
 			ListViewItem listViewItem = _listView.Items[SelectedIndex];
 			listViewItem.Text = currentItem[0];

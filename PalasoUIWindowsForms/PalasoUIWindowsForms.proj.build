@@ -23,13 +23,16 @@
 			output="${project.output.dir}/PalasoUIWindowsForms.dll"
 			doc="${project.output.dir}/doc/PalasoUIWindowsForms.xml"
 			debug="${build.debug}"
+			unsafe="true"
 			define="${build.defines}">
 			<nowarn>
 				<warning number="618,672"/>
+				<warning number="1570,1587"/> <!-- mono xml bugs -->
 				<warning number="1699" if="${runtime.version=='2.0'}"/>
 			</nowarn>
 			<sources basedir=".">
 				<include name="**/*.cs" />
+				<exclude name="WritingSystems/Deprecated/**" />
 			</sources>
 			<references basedir="${project.output.dir}">
 				<include name="System.dll" />
@@ -37,9 +40,11 @@
 				<include name="System.Data.dll" />
 				<include name="System.Windows.Forms.dll" />
 				<include name="Enchant.Net.dll" />
+				<include name="NDesk.DBus.dll" />
 				<include name="Palaso.dll" />
 				<include name="PalasoReporting.dll" />
 				<include name="System.Design.dll" />
+				<include name="NDesk.DBus.dll" />
 			</references>
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
 				<include name="${build.namespace.dir}/**/*.resources" />

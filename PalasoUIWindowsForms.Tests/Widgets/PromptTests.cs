@@ -66,31 +66,34 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void CanExtend_CalledAfterDisposed_Throws()
 		{
-			Prompt prompt = new Prompt();
+			var prompt = new Prompt();
 			prompt.Dispose();
-			using (TextBox textBox = new TextBox())
+			using (var textBox = new TextBox())
 			{
-				prompt.CanExtend(textBox);
+				Assert.Throws<ObjectDisposedException>(
+					() => prompt.CanExtend(textBox)
+				);
 			}
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void GetPrompt_Null_Throws()
 		{
-			_prompt.GetPrompt(null);
+			Assert.Throws<ArgumentNullException>(
+				() => _prompt.GetPrompt(null)
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
 		public void GetPrompt_ComboBox_Throws()
 		{
-			using (ComboBox comboBox = new ComboBox())
+			using (var comboBox = new ComboBox())
 			{
-				_prompt.GetPrompt(comboBox);
+				Assert.Throws<ArgumentException>(
+					() => _prompt.GetPrompt(comboBox)
+				);
 			}
 		}
 
@@ -115,14 +118,15 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void GetPrompt_CalledAfterDisposed_Throws()
 		{
-			Prompt prompt = new Prompt();
+			var prompt = new Prompt();
 			prompt.Dispose();
-			using (TextBox textBox = new TextBox())
+			using (var textBox = new TextBox())
 			{
-				prompt.GetPrompt(textBox);
+				Assert.Throws<ObjectDisposedException>(
+					() => prompt.GetPrompt(textBox)
+				);
 			}
 		}
 
@@ -137,19 +141,21 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void SetPrompt_NullControl_EmptyString()
 		{
-			_prompt.SetPrompt(null, "value");
+			Assert.Throws<ArgumentNullException>(
+				() => _prompt.SetPrompt(null, "value")
+			);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
 		public void SetPrompt_ComboBox_Throws()
 		{
-			using (ComboBox comboBox = new ComboBox())
+			using (var comboBox = new ComboBox())
 			{
-				_prompt.SetPrompt(comboBox, "value");
+				Assert.Throws<ArgumentException>(
+					() => _prompt.SetPrompt(comboBox, "value")
+				);
 			}
 		}
 
@@ -168,14 +174,15 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void SetPrompt_CalledAfterDisposed_Throws()
 		{
-			Prompt prompt = new Prompt();
+			var prompt = new Prompt();
 			prompt.Dispose();
-			using (TextBox textBox = new TextBox())
+			using (var textBox = new TextBox())
 			{
-				prompt.SetPrompt(textBox, "prompt");
+				Assert.Throws<ObjectDisposedException>(
+					() => prompt.SetPrompt(textBox, "prompt")
+				);
 			}
 		}
 
@@ -204,33 +211,39 @@ namespace PalasoUIWindowsForms.Tests.Widgets
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void GetIsPromptVisible_CalledAfterDisposed_Throws()
 		{
-			Prompt prompt = new Prompt();
+			var prompt = new Prompt();
 			prompt.Dispose();
-			using (TextBox textBox = new TextBox())
+			using (var textBox = new TextBox())
 			{
-				prompt.GetIsPromptVisible(textBox);
+				Assert.Throws<ObjectDisposedException>(
+					() => prompt.GetIsPromptVisible(textBox)
+				);
 			}
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void GetSite_CalledAfterDisposed_Throws()
 		{
-			Prompt prompt = new Prompt();
+#pragma warning disable 219
+			var prompt = new Prompt();
 			prompt.Dispose();
-			ISite site = prompt.Site;
+			ISite site;
+			Assert.Throws<ObjectDisposedException>(
+				() => site = prompt.Site
+			);
+#pragma warning restore 219
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void SetSite_CalledAfterDisposed_Throws()
 		{
-			Prompt prompt = new Prompt();
+			var prompt = new Prompt();
 			prompt.Dispose();
-			prompt.Site = null;
+			Assert.Throws<ObjectDisposedException>(
+				() => prompt.Site = null
+			);
 		}
 	}
 }

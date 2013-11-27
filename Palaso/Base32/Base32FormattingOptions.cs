@@ -15,9 +15,11 @@ namespace Palaso.Base32
 		/// of 8
 		/// </summary>
 		InsertTrailingPadding = 1,
+		/*
 		/// <summary>
 		/// Inserts line breaks every 76 characters in the string representation
 		/// </summary>
-		//InsertLineBreaks = 2
+		InsertLineBreaks = 2
+		*/
 	}
 }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using NUnit.Framework;
-using Palaso.IO;
-using Palaso.Tests;
-using Palaso.UI.WindowsForms.ImageGallery;
 using System.Linq;
 
+using Palaso.UI.WindowsForms.ImageGallery;
 
-namespace WeSay.LexicalTools.Tests
+using NUnit.Framework;
+
+namespace PalasoUIWindowsForms.Tests.ImageGallery
 {
 
 
@@ -34,7 +31,8 @@ namespace WeSay.LexicalTools.Tests
 		[Test]
 		public void GetMatchingPictures_OnKeyWordHasManyMatches_GetManyMatches()
 		{
-			var matches = _artCollection.GetMatchingPictures("duck");
+			bool foundExactMatches;
+			var matches = _artCollection.GetMatchingPictures("duck", out foundExactMatches);
 			Assert.Less(30, matches.Count());
 		}
 
@@ -49,7 +47,8 @@ namespace WeSay.LexicalTools.Tests
 		[Test]
 		public void GetMatchingPictures_OnKeyWordHasTwoMatches_GetTwoMatches()
 		{
-			var matches = _artCollection.GetMatchingPictures("xyz");
+			bool foundExactMatches;
+			var matches = _artCollection.GetMatchingPictures("xyz", out foundExactMatches);
 			Assert.AreEqual(0, matches.Count());
 		}
 
@@ -65,26 +64,39 @@ namespace WeSay.LexicalTools.Tests
 		[Test]
 		public void GetMatchingPictures_TwoKeyWords_GetMatchesOnBoth()
 		{
-			var duckMatches = _artCollection.GetMatchingPictures("duck");
-			var bothMatches = _artCollection.GetMatchingPictures("duck sheep");
+			bool foundExactMatches;
+			var duckMatches = _artCollection.GetMatchingPictures("duck", out foundExactMatches);
+			var bothMatches = _artCollection.GetMatchingPictures("duck sheep", out foundExactMatches);
 			Assert.Greater(bothMatches.Count(), duckMatches.Count());
 		}
 
 		[Test]
+		public void GetMatchingPictures_UpperCaseQuery_GetsMatches()
+		{
+			bool foundExactMatches;
+			var treesMatches = _artCollection.GetMatchingPictures("trees", out foundExactMatches);
+			var TREESMatches = _artCollection.GetMatchingPictures("TREES", out foundExactMatches);
+			Assert.AreEqual(treesMatches.Count(), TREESMatches.Count());
+		}
+
+
+		[Test]
 		public void GetMatchingPictures_WordsFollowedByPunctuation_StillMatches()
 		{
-			var duckMatches = _artCollection.GetMatchingPictures("duck, blah");
+			bool foundExactMatches;
+			var duckMatches = _artCollection.GetMatchingPictures("duck, blah", out foundExactMatches);
 			Assert.Less(0, duckMatches.Count());
 		}
 
 		[Test]
 		public void GetMatchingPictures_KeyWordsMatchSamePicture_PictureOnlyListedOnce()
 		{
-			var batMatches = _artCollection.GetMatchingPictures("bat");
-			var bothMatches = _artCollection.GetMatchingPictures("bat bat");
+			bool foundExactMatches;
+			var batMatches = _artCollection.GetMatchingPictures("bat", out foundExactMatches);
+			var bothMatches = _artCollection.GetMatchingPictures("bat bat", out foundExactMatches);
 			Assert.AreEqual(bothMatches.Count(), batMatches.Count());
 
-			bothMatches = _artCollection.GetMatchingPictures("bat animal");
+			bothMatches = _artCollection.GetMatchingPictures("bat animal", out foundExactMatches);
 			List<string> found = new List<string>();
 			foreach (var s in bothMatches)
 			{
@@ -92,5 +104,20 @@ namespace WeSay.LexicalTools.Tests
 				found.Add(s.ToString());
 			}
 		}
+
+		[Test]
+		public void FromStandardLocations_NoArtOfReadingInstalled_Null()
+		{
+			try
+			{
+				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = true;
+				Assert.IsNull(ArtOfReadingImageCollection.FromStandardLocations());
+			}
+			finally
+			{
+				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = false;
+			}
+		}
+
 	}
 }

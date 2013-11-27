@@ -5,12 +5,14 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using Enchant;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSSpellingControl : UserControl
 	{
-		private WritingSystemSetupPM _model;
+		private WritingSystemSetupModel _model;
+		private bool _updatingFromModel;
 		private bool _changingModel;
 
 		public WSSpellingControl()
@@ -18,7 +20,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			InitializeComponent();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			if (_model != null)
 			{
@@ -32,10 +34,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				model.CurrentItemUpdated += ModelCurrentItemUpdated;
 				model.SelectionChanged += ModelSelectionChanged;
 			}
+			this.Disposed += OnDisposed;
+		}
+
+		void OnDisposed(object sender, EventArgs e)
+		{
+			if (_model != null)
+			{
+				_model.CurrentItemUpdated -= ModelCurrentItemUpdated;
+				_model.SelectionChanged -= ModelSelectionChanged;
+			}
 		}
 
 		private void ModelSelectionChanged(object sender, EventArgs e)
 		{
+			_spellCheckingIdComboBox.Items.Clear();
+			_spellCheckingIdComboBox.Items.AddRange(_model.GetSpellCheckComboBoxItems().ToArray());
+
 			UpdateFromModel();
 		}
 
@@ -50,26 +65,34 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void UpdateFromModel()
 		{
+			_updatingFromModel = true;
 			if (!_model.HasCurrentSelection)
 			{
 				Enabled = false;
 				return;
 			}
 			Enabled = true;
-			_spellCheckingIdTextBox.Text = _model.CurrentSpellCheckingId;
+			_spellCheckingIdComboBox.SelectedItem = _model.CurrentSpellChecker;
+			_updatingFromModel = false;
 		}
 
-		private void _spellCheckingIdTextBox_TextChanged(object sender, EventArgs e)
+		private void _spellCheckingIdComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_changingModel = true;
+			if (_updatingFromModel)
+			{
+				return;
+			}
 			try
 			{
-				_model.CurrentSpellCheckingId = _spellCheckingIdTextBox.Text;
+				_changingModel = true;
+				_model.CurrentSpellChecker = (WritingSystemSetupModel.SpellCheckInfo) _spellCheckingIdComboBox.SelectedItem;
 			}
 			finally
 			{
 				_changingModel = false;
 			}
 		}
+
+
 	}
 }

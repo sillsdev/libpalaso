@@ -1,6 +1,4 @@
-﻿using Palaso.UI.WindowsForms.ImageGallery;
-
-namespace WeSay.LexicalTools.AddPictures
+﻿namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	partial class PictureChooser
 	{
@@ -37,7 +35,7 @@ namespace WeSay.LexicalTools.AddPictures
 			this._okButton = new System.Windows.Forms.Button();
 			this._notFoundLabel = new System.Windows.Forms.Label();
 			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
-			this._localizationHelper = new Palaso.UI.WindowsForms.i8n.LocalizationHelper(this.components);
+			this._localizationHelper = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -51,11 +49,10 @@ namespace WeSay.LexicalTools.AddPictures
 			//
 			// label1
 			//
-			this.label1.AutoSize = true;
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
 			this.label1.Location = new System.Drawing.Point(12, 21);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(91, 15);
+			this.label1.Size = new System.Drawing.Size(91, 28);
 			this.label1.TabIndex = 2;
 			this.label1.Text = "~Search Words";
 			//
@@ -134,7 +131,9 @@ namespace WeSay.LexicalTools.AddPictures
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "~Search Image Gallery";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.PictureChooser_Load);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PictureChooser_FormClosing);
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -149,7 +148,7 @@ namespace WeSay.LexicalTools.AddPictures
 		private System.Windows.Forms.Button _searchButton;
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Label _notFoundLabel;
-		private Palaso.UI.WindowsForms.i8n.LocalizationHelper _localizationHelper;
+		private Palaso.UI.WindowsForms.i18n.LocalizationHelper _localizationHelper;
 
 	}
 }
