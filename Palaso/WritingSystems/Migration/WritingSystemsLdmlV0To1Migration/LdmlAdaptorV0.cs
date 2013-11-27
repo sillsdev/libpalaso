@@ -376,9 +376,10 @@ namespace Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					readerSettings.ValidationType = ValidationType.None;
 					readerSettings.XmlResolver = null;
 					readerSettings.ProhibitDtd = false;
+					readerSettings.IgnoreWhitespace = true;
 					reader = XmlReader.Create(oldFile, readerSettings);
 				}
-				using (XmlWriter writer = XmlWriter.Create(filePath, writerSettings))
+				using (XmlWriter writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
 				{
 					writer.WriteStartDocument();
 					WriteLdml(writer, reader, ws);

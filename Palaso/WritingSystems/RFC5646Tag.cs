@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using Palaso.Code;
 using Palaso.Data;
 
 namespace Palaso.WritingSystems
 {
-	internal class RFC5646Tag : Object
+	/// <summary>
+	/// The RFC5646Tag class represents a language tag that conforms to Rfc5646. It relies heavily on the StandardTags class for
+	/// valid Language, Script, Region and Variant subtags. The RFC5646 class enforces strict adherence to the Rfc5646 spec.
+	/// Exceptions are:
+	/// - does not support singletons other than "x-"
+	/// - does not support grandfathered, regular or irregular tags
+	/// </summary>
+	internal class RFC5646Tag : Object, IClonableGeneric<RFC5646Tag>
 	{
-		internal class SubTag
+		internal class SubTag: IClonableGeneric<SubTag>
 		{
 			private List<string> _subTagParts;
 
@@ -65,14 +74,6 @@ namespace Palaso.WritingSystems
 				List<string> partsOfStringToAdd = ParseSubtagForParts(partsToAdd);
 				foreach (string part in partsOfStringToAdd)
 				{
-					if (StringContainsNonAlphaNumericCharacters(part))
-					{
-						throw new ArgumentException(String.Format("Rfc5646 tags may only contain alphanumeric characters. '{0}' can not be added to the Rfc5646 tag.", part));
-					}
-					if (Contains(part))
-					{
-						throw new ArgumentException(String.Format("Subtags may not contain duplicates. The subtag '{0}' was already contained.", part));
-					}
 					_subTagParts.Add(part);
 				}
 			}
@@ -131,6 +132,29 @@ namespace Palaso.WritingSystems
 				}
 			}
 
+			public SubTag Clone()
+			{
+				return new SubTag(this);
+			}
+
+			public override bool Equals(object other)
+			{
+				if (!(other is SubTag)) return false;
+				return Equals((SubTag) other);
+			}
+
+			public bool Equals(SubTag other)
+			{
+				if (other == null) return false;
+				if (!_subTagParts.SequenceEqual(other._subTagParts)) return false;
+				return true;
+			}
+
+			public IEnumerable<string> GetPrivateUseSubtagsMatchingRegEx(string pattern)
+			{
+				var regex = new Regex(pattern);
+				return _subTagParts.Where(part => regex.IsMatch(part));
+			}
 		}
 
 		private string _language = "";
@@ -138,6 +162,7 @@ namespace Palaso.WritingSystems
 		private string _region = "";
 		private SubTag _variant = new SubTag();
 		private SubTag _privateUse = new SubTag();
+		private bool _requiresValidTag = true;
 
 		public RFC5646Tag() :
 			this("qaa", String.Empty, String.Empty, String.Empty, String.Empty)
@@ -165,10 +190,13 @@ namespace Palaso.WritingSystems
 			_region = rhs._region;
 			_variant = new SubTag(rhs._variant);
 			_privateUse = new SubTag(rhs._privateUse);
+			_requiresValidTag = rhs._requiresValidTag;
 		}
 
 		private void Validate()
 		{
+			if (!RequiresValidTag)
+				return;
 			ValidateLanguage();
 			ValidateScript();
 			ValidateRegion();
@@ -176,7 +204,20 @@ namespace Palaso.WritingSystems
 			ValidatePrivateUse();
 			if (!(HasLanguage || (!HasLanguage && !HasScript && !HasRegion && !HasVariant && HasPrivateUse)))
 			{
-				throw new ValidationException("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags.");
+				throw new ValidationException(string.Format("An Rfc5646 tag must have a language subtag or consist entirely of private use subtags (Language={0}  Script={1} Region={2} Variant={3} Private={4})", Language,Script,Region,Variant,PrivateUse));
+			}
+		}
+
+		/// <summary>
+		/// Setting this true will throw unless the tag has previously been put into a valid state.
+		/// </summary>
+		internal bool RequiresValidTag
+		{
+			get { return _requiresValidTag; }
+			set
+			{
+				_requiresValidTag = value;
+				Validate();
 			}
 		}
 
@@ -379,6 +420,7 @@ namespace Palaso.WritingSystems
 					String.Format("'{0}' is not a valid registered variant code.", invalidPart)
 				);
 			}
+			_variant.ThrowIfSubtagContainsDuplicates();
 		}
 
 		public new string ToString()
@@ -436,16 +478,20 @@ namespace Palaso.WritingSystems
 					rfc5646Tag.AddToVariant(token);
 					continue;
 				}
+				throw new ValidationException(String.Format("The RFC tag '{0}' could not be parsed.", inputString));
 			}
 			return rfc5646Tag;
 		}
 
 		public override bool Equals(Object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (RFC5646Tag)) return false;
+			if (!(obj is RFC5646Tag)) return false;
 			return Equals((RFC5646Tag) obj);
+		}
+
+		public RFC5646Tag Clone()
+		{
+			return new RFC5646Tag(this);
 		}
 
 		public bool Equals(RFC5646Tag other)
@@ -457,7 +503,8 @@ namespace Palaso.WritingSystems
 			bool regionsAreEqual = Equals(other.Region, Region);
 			bool variantsArEqual = Equals(other.Variant, Variant);
 			bool privateUseArEqual = Equals(other.PrivateUse, PrivateUse);
-			return languagesAreEqual && scriptsAreEqual && regionsAreEqual && variantsArEqual && privateUseArEqual;
+			bool requiresValidTagIsEqual = Equals(other._requiresValidTag, _requiresValidTag);
+			return languagesAreEqual && scriptsAreEqual && regionsAreEqual && variantsArEqual && privateUseArEqual && requiresValidTagIsEqual;
 		}
 
 		public override int GetHashCode()
@@ -495,9 +542,9 @@ namespace Palaso.WritingSystems
 			return _privateUse.Contains(tagToFind);
 		}
 
-		private string StripLeadingPrivateUseMarker(string tag)
+		public static string StripLeadingPrivateUseMarker(string tag)
 		{
-			if (tag.StartsWith("x-"))
+			if (tag.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 			{
 				tag = tag.Substring(2); // strip the leading x-. Ideally we would throw if WritingSystemDefinition exposed the Private Use tags.
 				// throw new ArgumentException("RFC Private Use tags may not start with 'x-', try giving the tag only");
@@ -522,5 +569,9 @@ namespace Palaso.WritingSystems
 			return _variant.Contains(tagToFind);
 		}
 
+		public IEnumerable<string> GetPrivateUseSubtagsMatchingRegEx(string pattern)
+		{
+			return _privateUse.GetPrivateUseSubtagsMatchingRegEx(pattern);
+		}
 	}
 }

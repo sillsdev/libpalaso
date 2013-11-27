@@ -34,7 +34,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
-		public void ParseSubtagForParts_SubtagconatinsOnlyDashes_ListisEmpty()
+		public void ParseSubtagForParts_SubtagcontainsOnlyDashes_ListisEmpty()
 		{
 			List<string> parts = RFC5646Tag.SubTag.ParseSubtagForParts("-------");
 			Assert.IsTrue(parts.Count == 0);

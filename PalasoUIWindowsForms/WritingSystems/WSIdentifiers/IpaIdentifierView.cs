@@ -53,21 +53,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
-			if (_model != null && _model.CurrentDefinition != null)
+			if (_model != null)
 			{
-				_model.CurrentVariant = string.Empty;
-				_model.CurrentRegion = string.Empty;
-				_model.CurrentScriptCode = string.Empty;
-				_model.CurrentIsVoice = false;
-
-				//if we're here, the user wants some kind of ipa
-				if (_model.CurrentIpaStatus == IpaStatusChoices.NotIpa)
-				{
-					_model.CurrentIpaStatus = IpaStatusChoices.Ipa;
-				}
+				_model.IdentifierIpaSelected();
 			}
 			UpdateDisplayFromModel(null, null);
 
+		}
+
+		public void MoveDataFromViewToModel()
+		{
+			//do nothing
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			//do nothing
 		}
 
 		#endregion

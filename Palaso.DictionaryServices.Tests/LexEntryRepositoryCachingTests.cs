@@ -28,6 +28,7 @@ namespace Palaso.DictionaryServices.Tests
 		public void Teardown()
 		{
 			_repository.Dispose();
+			_tempfolder.Dispose();
 		}
 
 		[Test]
@@ -56,7 +57,7 @@ namespace Palaso.DictionaryServices.Tests
 		private static WritingSystemDefinition WritingSystemDefinitionForTest(string languageISO, Font font)
 		{
 			var retval = new WritingSystemDefinition();
-			retval.ISO639 = languageISO;
+			retval.Language = languageISO;
 			retval.DefaultFontName = font.Name;
 			retval.DefaultFontSize = font.Size;
 			return retval;

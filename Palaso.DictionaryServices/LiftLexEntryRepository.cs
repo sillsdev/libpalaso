@@ -5,6 +5,7 @@ using Palaso.Code;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
+using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.UiBindings;
 using Palaso.Progress;
@@ -598,7 +599,7 @@ namespace Palaso.DictionaryServices
 							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
 							foreach (LexSense sense in entry.Senses)
 							{
-								foreach (KeyValuePair<string, object> pair in sense.Properties)
+								foreach (KeyValuePair<string, IPalasoDataObjectProperty> pair in sense.Properties)
 								{
 									if (pair.Key == fieldName)
 									{

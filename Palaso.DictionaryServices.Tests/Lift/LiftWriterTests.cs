@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Xml;
-using LiftIO.Validation;
 using Palaso.DictionaryServices.Model;
+using Palaso.Lift.Validation;
 using Palaso.TestUtilities;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.DictionaryServices.Lift;
 
 using NUnit.Framework;
-using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {
@@ -26,7 +27,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			private readonly StringBuilder _stringBuilder;
 			protected readonly string _filePath;
 
-			public LiftExportTestSessionBase()
+			protected LiftExportTestSessionBase()
 			{
 				_filePath = Path.GetTempFileName();
 				_stringBuilder = new StringBuilder();
@@ -67,7 +68,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				return StringBuilder.ToString();
 			}
 
-			public void AddTestLexEntry(string lexicalForm)
+			private void AddTestLexEntry(string lexicalForm)
 			{
 				LexEntry entry = CreateItem();
 				entry.LexicalForm["test"] = lexicalForm;
@@ -281,7 +282,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr","one");
 				e.Variants.Add(variant);
 				variant = new LexVariant();
@@ -301,7 +302,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexEtymology etymology = new LexEtymology("theType", "theSource");
+				var etymology = new LexEtymology("theType", "theSource");
 				etymology.SetAlternative("etr", "one");
 				e.Etymologies.Add(etymology);
 				session.LiftWriter.Add(e);
@@ -317,7 +318,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexEtymology etymology = new LexEtymology("theType", "theSource");
+				var etymology = new LexEtymology("theType", "theSource");
 				etymology.SetAlternative("etr", "theProtoform");
 				etymology.Gloss.SetAlternative("en", "engloss");
 				etymology.Gloss.SetAlternative("fr", "frgloss");
@@ -352,7 +353,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var e = session.CreateItem();
-				LexPhonetic phonetic = new LexPhonetic();
+				var phonetic = new LexPhonetic();
 				phonetic.SetAlternative("ipa", "one");
 				e.Pronunciations.Add(phonetic);
 				session.LiftWriter.Add(e);
@@ -387,8 +388,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var sense = new LexSense();
-				var reversal = new LexReversal();
-				reversal.Type = "revType";
+				var reversal = new LexReversal {Type = "revType"};
 				reversal.SetAlternative("en", "one");
 				sense.Reversals.Add(reversal);
 				var reversal2 = new LexReversal();
@@ -424,7 +424,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr", "one");
 				variant.Traits.Add(new LexTrait("a", "A"));
 				variant.Traits.Add(new LexTrait("b", "B"));
@@ -440,7 +440,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr", "one");
 				var fieldA = new LexField("a");
 				fieldA.SetAlternative("en", "aaa");
@@ -460,7 +460,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
-				LexVariant variant = new LexVariant();
+				var variant = new LexVariant();
 				variant.SetAlternative("etr", "one");
 				var fieldA = new LexField("a");
 				fieldA.SetAlternative("en", "aaa");
@@ -888,7 +888,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				string result = session.StringBuilder.ToString();
 				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-					String.Format("//entry[@dateCreated=\"{0}\"]", entry.CreationTime.ToString("yyyy-MM-ddThh:mm:ssZ"))
+					String.Format("//entry[@dateCreated=\"{0}\"]", entry.CreationTime.ToString("yyyy-MM-ddTHH:mm:ssZ"))
 				);
 			}
 		}
@@ -906,8 +906,37 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				string result = session.StringBuilder.ToString();
 				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-					String.Format("//entry[@dateModified=\"{0}\"]", entry.ModificationTime.ToString("yyyy-MM-ddThh:mm:ssZ"))
+					String.Format("//entry[@dateModified=\"{0}\"]", entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ"))
 				);
+			}
+		}
+
+		/// <summary>
+		/// Regression: WS-34576
+		/// </summary>
+		[Test]
+		public void Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon()
+		{
+			var culture = new CultureInfo("en-US");
+			culture.DateTimeFormat.TimeSeparator = ".";
+
+			Thread.CurrentThread.CurrentCulture = culture;
+
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				LexEntry entry = session.CreateItem();
+				entry.LexicalForm["test"] = "lexicalForm";
+				// make dateModified different than dateCreated
+				//_lexEntryRepository.SaveItem(entry);
+				session.LiftWriter.Add(entry);
+				session.LiftWriter.End();
+				string result = session.StringBuilder.ToString();
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					String.Format("//entry[@dateModified=\"{0}\"]",
+								  entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture))
+					);
+				Assert.IsTrue(result.Contains(":"), "should contain colons");
+				Assert.IsFalse(result.Contains("."), "should not contain periods");
 			}
 		}
 
@@ -960,10 +989,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				example.Sentence["red"] = "red sunset tonight";
 				example.Translation["green"] = "blah blah";
 				session.LiftWriter.Add(example);
+				var outPut = session.OutputString();
 				AssertEqualsCanonicalString(
-					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>",
-					session.OutputString()
-				);
+					"<example><form lang=\"blue\"><text>ocean's eleven</text></form><form lang=\"red\"><text>red sunset tonight</text></form><translation><form lang=\"green\"><text>blah blah</text></form></translation></example>", outPut);
 			}
 		}
 
@@ -1195,7 +1223,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 
-		[Test]
+		[Test] // Ummmm no it shouldn't CP 2013-05.  Flex expects the opposite of this.
 		public void Gloss_MultipleGlossesSplitIntoSeparateEntries()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
@@ -1205,10 +1233,8 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				sense.Gloss["x"] = "xx";
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				AssertHasAtLeastOneMatch("sense[count(gloss)=4]", session);
-				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='aaa']", session);
-				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='bbb']", session);
-				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='ccc']", session);
+				AssertHasAtLeastOneMatch("sense[count(gloss)=2]", session);
+				AssertHasAtLeastOneMatch("sense/gloss[@lang='a' and text='aaa; bbb; ccc']", session);
 				AssertHasAtLeastOneMatch("sense/gloss[@lang='x' and text='xx']", session);
 			}
 		}
@@ -1556,7 +1582,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				);
 
 				var relations = new LexRelationCollection();
-				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+				sense.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>("relations", relations));
 
 				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "one", sense));
 				relations.Relations.Add(new LexRelation(synonymRelationType.ID, "two", sense));
@@ -1613,7 +1639,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 				);
 
 				var relations = new LexRelationCollection();
-				sense.Properties.Add(new KeyValuePair<string, object>("relations", relations));
+				sense.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>("relations", relations));
 
 				var lexRelation = new LexRelation(synonymRelationType.ID, "one", sense);
 				lexRelation.EmbeddedXmlElements.Add("<trait name='x' value='X'/>");
@@ -1709,6 +1735,21 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			{
 				var multiText = new MultiText();
 				multiText.SetAlternative("de", "This <span href=\"reference\">is not well formed<span> XML!");
+				session.LiftWriter.AddMultitextForms(null, multiText);
+				session.LiftWriter.End();
+				Assert.AreEqual(expected, session.OutputString());
+			}
+		}
+
+		[Test]
+		public void Add_TextWithSpanAndMeaningfulWhiteSpace_FormattingAndWhitespaceIsUntouched()
+		{
+			const string formattedText = "\rThis's <span href=\"reference\">\n is a\t\t\n\r\t span</span> with annoying whitespace!\r\n";
+			const string expected = "<form\r\n\tlang=\"de\">\r\n\t<text>" + formattedText + "</text>\r\n</form>";
+			using (var session = new LiftExportAsFragmentTestSession())
+			{
+				var multiText = new MultiText();
+				multiText.SetAlternative("de", formattedText);
 				session.LiftWriter.AddMultitextForms(null, multiText);
 				session.LiftWriter.End();
 				Assert.AreEqual(expected, session.OutputString());

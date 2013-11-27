@@ -1,42 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using L10NSharp;
 using Palaso.UI.WindowsForms.ImageGallery;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public partial class ArtOfReadingChooser : UserControl, IImageToolboxControl
 	{
-		private readonly IImageCollection _imageCollection;
+		private IImageCollection _imageCollection;
 		private PalasoImage _previousImage;
+		public bool InSomeoneElesesDesignMode;
 
 		public ArtOfReadingChooser()
 		{
 			InitializeComponent();
-			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
-			if (_imageCollection == null)
-			{
-				label1.Visible= _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
-				_messageLabel.Visible = true;
-				_messageLabel.Text = "The Art Of Reading collection was not found on this computer.";
-				_messageLabel.Text=@"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet. If you can find a copy of it, you can freely copy the images to this comptuer, according to its license. But you must only copy the images (which SIL owns), not the software (which is commercial). To do this, follow these steps:
-1) Create a folder named 'Art of Reading' at the root of your 'C:\' drive.
-2) Copy the 'Images' folder from the Art of Reading DVD into that folder.
-
-If you can't get a copy of Art Of Reading locally, you can purchase the DVD from www.ethnologue.com.";
-			}
-			else
-			{
-#if DEBUG
-				_searchTermsBox.Text = @"flower";
-#endif
-				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
-			}
+			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
+			_searchResultStats.Text = "";
 		}
 
+		public void Dispose()
+		{
+			_thumbnailViewer.Closing(); //this guy was working away in the background
+		}
+
+		/// <summary>
+		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
+		/// </summary>
+		/// <param name="searchTerm"></param>
+		public void SetIntialSearchTerm(string searchTerm)
+		{
+			_searchTermsBox.Text = searchTerm;
+		}
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -46,25 +46,43 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 			}
 		}
 
+		private void _thumbnailViewer_DoubleClick(object sender, EventArgs e)
+		{
+			if (ImageChangedAndAccepted != null && _thumbnailViewer.SelectedItems.Count > 0)
+			{
+				ImageChangedAndAccepted.Invoke(this, null);
+			}
+		}
+
 		private void _searchButton_Click(object sender, EventArgs e)
 		{
 			Cursor.Current = Cursors.WaitCursor;
 			_searchButton.Enabled = false;
+
 			try
 			{
 				_thumbnailViewer.Clear();
 				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
 				{
-					IEnumerable<object> results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text);
+					bool foundExactMatches;
+					IEnumerable<object> results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches);
 					if (results.Count() == 0)
 					{
 						_messageLabel.Visible = true;
+						_searchResultStats.Text = "Found no matching images".Localize("ImageToolbox.NoMatchingImages");
 					}
 					else
 					{
 						_messageLabel.Visible = false;
 						_thumbnailViewer.LoadItems(_imageCollection.GetPathsFromResults(results, true));
+						_searchResultStats.Text = string.Format("Found {0} images", results.Count());
+						if (!foundExactMatches)
+							_searchResultStats.Text += string.Format(" with names close to {0}.", _searchTermsBox.Text);
 					}
+				}
+				else
+				{
+
 				}
 
 			}
@@ -77,13 +95,6 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 			Cursor.Current = Cursors.Default;
 		}
 
-		private void PictureChooser_Load(object sender, EventArgs e)
-		{
-			_thumbnailViewer.CaptionMethod = _imageCollection.CaptionMethod;
-
-			if (_searchTermsBox.Text.Length > 0)
-				_searchButton_Click(this, null);
-		}
 		public string ChosenPath { get { return _thumbnailViewer.SelectedPath; } }
 
 		public bool HaveImageCollectionOnThisComputer
@@ -122,25 +133,67 @@ If you can't get a copy of Art Of Reading locally, you can purchase the DVD from
 		}
 
 		public event EventHandler ImageChanged;
+		/// <summary>
+		/// happens when you double click an item
+		/// </summary>
+		public event EventHandler ImageChangedAndAccepted;
 
 		private void _searchTermsBox_KeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.KeyCode  ==Keys.Enter)
 			{
+				e.SuppressKeyPress = true;
 				_searchButton_Click(sender, null);
+			}
+			else
+			{
+				_searchResultStats.Text = "";
+			}
+		}
+
+		private new bool DesignMode
+		{
+			get
+			{
+				return (base.DesignMode || GetService(typeof(IDesignerHost)) != null) ||
+					(LicenseManager.UsageMode == LicenseUsageMode.Designtime);
 			}
 		}
 
 		private void ArtOfReadingChooser_Load(object sender, EventArgs e)
 		{
+			if (DesignMode)
+				return;
+
+			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
+			if (_imageCollection == null)
+			{
+				//label1.Visible = _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
+				_messageLabel.Visible = true;
+				_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
+				_messageLabel.Text = @"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet.";
+				betterLinkLabel1.Visible = true;
+			}
+			else
+			{
+#if DEBUG
+				//  _searchTermsBox.Text = @"flower";
+#endif
+				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
+			}
+
 #if DEBUG
 			if (!HaveImageCollectionOnThisComputer)
 				return;
 			//when just testing, I just want to see some choices.
-			_searchTermsBox.Text = @"flower";
+		   // _searchTermsBox.Text = @"flower";
 			_searchButton_Click(this,null);
 #endif
 
+			_messageLabel.BackColor = Color.White;
+			_searchTermsBox.Focus();
 		}
+
+
 	}
 }

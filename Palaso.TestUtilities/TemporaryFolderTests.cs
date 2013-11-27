@@ -8,14 +8,13 @@ namespace Palaso.TestUtilities {
 	[TestFixture]
 	public class TemporaryFolderTests
 	{
-		private TemporaryFolder _temporaryFolder;
-
 		[Test]
 		public void Constructor_CreatesTemporarySubDirectory()
 		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder();
+			var temporaryFolder = new TemporaryFolder();
 			Assert.IsTrue(Directory.Exists(temporaryFolder.FolderPath));
-			temporaryFolder.Delete();
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
@@ -32,19 +31,22 @@ namespace Palaso.TestUtilities {
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("Constructor_PathDirectoryName_CreatesTemporarySubDirectoryAtPathWithGivenName");
 			Assert.IsTrue(Directory.Exists(temporaryFolder.FolderPath));
-			temporaryFolder.Delete();
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
 		public void Constructor_TemporarySubDirectoryAlreadyExistsAndHasFilesInIt_EmptyTheTemporarySubDirectory()
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");
-			string pathToFile = Path.Combine(temporaryFolder.FolderPath, Path.GetRandomFileName());
+			string pathToFile = Path.Combine(temporaryFolder.Path, Path.GetRandomFileName());
 			FileStream file = File.Create(pathToFile);
 			file.Close();
 			TemporaryFolder temporaryFolderUsingSameDirectory = new TemporaryFolder("NonStandard");
-			Assert.AreEqual(0, Directory.GetFiles(temporaryFolder.FolderPath).Length);
-			temporaryFolder.Delete();
+			Assert.AreEqual(0, Directory.GetFiles(temporaryFolder.Path).Length);
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
+			Assert.IsFalse(Directory.Exists(temporaryFolderUsingSameDirectory.Path));
 		}
 
 		[Test]
@@ -53,7 +55,8 @@ namespace Palaso.TestUtilities {
 			TemporaryFolder temporaryFolder = new TemporaryFolder();
 			string pathToFile = temporaryFolder.GetTemporaryFile();
 			Assert.IsTrue(File.Exists(pathToFile));
-			temporaryFolder.Delete();
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
@@ -62,8 +65,9 @@ namespace Palaso.TestUtilities {
 			TemporaryFolder temporaryFolder = new TemporaryFolder();
 			string pathToFile = temporaryFolder.GetTemporaryFile("blah");
 			Assert.IsTrue(File.Exists(pathToFile));
-			Assert.AreEqual(pathToFile, Path.Combine(temporaryFolder.FolderPath, "blah"));
-			temporaryFolder.Delete();
+			Assert.AreEqual(pathToFile, Path.Combine(temporaryFolder.Path, "blah"));
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
@@ -72,8 +76,9 @@ namespace Palaso.TestUtilities {
 			TemporaryFolder temporaryFolder = new TemporaryFolder();
 			temporaryFolder.GetTemporaryFile();
 			temporaryFolder.GetTemporaryFile();
-			Assert.AreEqual(2, Directory.GetFiles(temporaryFolder.FolderPath).Length);
-			temporaryFolder.Delete();
+			Assert.AreEqual(2, Directory.GetFiles(temporaryFolder.Path).Length);
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
@@ -81,7 +86,7 @@ namespace Palaso.TestUtilities {
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");
 			temporaryFolder.Delete();
-			Assert.IsFalse(Directory.Exists(temporaryFolder.FolderPath));
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
@@ -91,18 +96,18 @@ namespace Palaso.TestUtilities {
 			string pathToFile = Path.Combine(temporaryFolder.FolderPath, Path.GetRandomFileName());
 			FileStream file = File.Create(pathToFile);
 			file.Close();
-			temporaryFolder.Delete();
-			Assert.IsFalse(Directory.Exists(temporaryFolder.FolderPath));
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
 		public void Delete_SubDirectoriesInDirectory_RemovesTemporaryDirectory()
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");
-			string pathToSubdirectory = Path.Combine(temporaryFolder.FolderPath, Path.GetRandomFileName());
+			string pathToSubdirectory = Path.Combine(temporaryFolder.Path, Path.GetRandomFileName());
 			Directory.CreateDirectory(pathToSubdirectory);
-			temporaryFolder.Delete();
-			Assert.IsFalse(Directory.Exists(temporaryFolder.FolderPath));
+			temporaryFolder.Dispose();
+			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
 		[Test]
@@ -119,6 +124,18 @@ namespace Palaso.TestUtilities {
 				Assert.IsFalse(File.Exists(oldPath));
 				Assert.IsTrue(File.Exists(newPath));
 				Assert.AreEqual(newPath, temp.Path);
+			}
+		}
+
+		[Test]
+		public void TrackExisting()
+		{
+			using (var tempFolder = new TemporaryFolder())
+			{
+				using (var sut = TemporaryFolder.TrackExisting(tempFolder.Path))
+				{
+				}
+				Assert.IsFalse(Directory.Exists(tempFolder.Path));
 			}
 		}
 	}

@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Linq;
+using Palaso.Code;
 
 namespace Palaso.Lift.Options
 {
 	/// <summary>
 	/// Used to refer to this option from a field
 	/// </summary>
-	public class OptionRefCollection: IParentable,
+	public class OptionRefCollection : IPalasoDataObjectProperty,
 									  INotifyPropertyChanged,
-									  // ICollection<string>,
 									  IReportEmptiness,
 									  IComparable
 	{
@@ -21,13 +22,13 @@ namespace Palaso.Lift.Options
 		/// This "backreference" is used to notify the parent of changes.
 		/// IParentable gives access to this during explicit construction.
 		/// </summary>
-		private IReceivePropertyChangeNotifications _whomToNotify;
+		private IReceivePropertyChangeNotifications _parent;
 
 		public OptionRefCollection(): this(null) {}
 
-		public OptionRefCollection(IReceivePropertyChangeNotifications whomToNotify)
+		public OptionRefCollection(IReceivePropertyChangeNotifications parent)
 		{
-			_whomToNotify = whomToNotify;
+			_parent = parent;
 			//_keys = new List<string>();
 			_members = new BindingList<OptionRef>();
 			_members.ListChanged += _members_ListChanged;
@@ -144,7 +145,7 @@ namespace Palaso.Lift.Options
 
 		public PalasoDataObject Parent
 		{
-			set { _whomToNotify = value; }
+			set { _parent = value; }
 		}
 
 		#endregion
@@ -159,7 +160,10 @@ namespace Palaso.Lift.Options
 			}
 
 			//tell our parent
-			_whomToNotify.NotifyPropertyChanged("option");
+			if (_parent != null)
+			{
+				_parent.NotifyPropertyChanged("option");
+			}
 		}
 
 		/// <summary>
@@ -290,7 +294,7 @@ namespace Palaso.Lift.Options
 		//                {
 		//                    OptionRef or = new OptionRef();
 		//                    or.Key = key;
-		//                    or.Parent = (PalasoDataObject) _whomToNotify ;
+		//                    or.Parent = (PalasoDataObject) _parent ;
 		//
 		//                    _optionRefProxyList.Add(or);
 		//                }
@@ -323,7 +327,7 @@ namespace Palaso.Lift.Options
 			}
 			if (!(obj is OptionRefCollection))
 			{
-				throw new ArgumentException("Can not compare to anythiong but OptionRefs.");
+				throw new ArgumentException("Can not compare to anything but OptionRefs.");
 			}
 			OptionRefCollection other = (OptionRefCollection) obj;
 			int order = _members.Count.CompareTo(other.Members.Count);
@@ -350,6 +354,63 @@ namespace Palaso.Lift.Options
 				builder.Append(optionRef.ToString()+", ");
 			}
 			return builder.ToString().TrimEnd(new char[] {',', ' '});
+		}
+
+		public bool MergeByKey(OptionRefCollection incoming)
+		{
+			var combined = new List<OptionRef>(_members);
+			foreach (OptionRef optionRef in incoming.Members)
+			{
+				var match = this.FindByKey(optionRef.Key);
+				if(match == null)
+				{
+					combined.Add(optionRef);
+				}
+				else
+				{   //now, if we don't have embedded xml and they do, take on theirs
+					if (match.EmbeddedXmlElements == null || match.EmbeddedXmlElements.Count == 0)
+						match.EmbeddedXmlElements = optionRef.EmbeddedXmlElements;
+					else if(optionRef.EmbeddedXmlElements.Count>0)
+					{
+						return false; //we don't know how to combine these
+					}
+				}
+			}
+			_members.Clear();
+			foreach (var optionRef in combined)
+			{
+				_members.Add(optionRef);
+			}
+			return true;
+		}
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new OptionRefCollection();
+			foreach (var memberToClone in _members)
+			{
+				clone._members.Add((OptionRef) memberToClone.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is OptionRefCollection)) return false;
+			return Equals((OptionRefCollection)obj);
+		}
+
+		public bool Equals(OptionRefCollection other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!_members.SequenceEqual(other._members)) return false;
+			return true;
+		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals((object) other);
 		}
 	}
 }

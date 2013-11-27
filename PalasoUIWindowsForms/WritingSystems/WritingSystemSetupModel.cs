@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -8,9 +9,15 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Enchant;
 using Palaso.Code;
 using Palaso.Data;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
+using Palaso.UI.WindowsForms.Progress;
+using Palaso.i18n;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 
@@ -31,11 +38,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public class WritingSystemSetupModel
 	{
 		private readonly bool _usingRepository;
-		private WritingSystemDefinition _currentWritingSystem;
+		private IWritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
 		private readonly IWritingSystemRepository _writingSystemRepository;
-		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
-		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
+		private readonly List<IWritingSystemDefinition> _writingSystemDefinitions;
+		private readonly List<IWritingSystemDefinition> _deletedWritingSystemDefinitions;
+
+		internal string DefaultCustomSimpleSortRules = "A a-B b-C c-D d-E e-F f-G g-H h-I i-J j-K k-L l-M m-N n-O o-P p-Q q-R r-S s-T t-U u-V v-W w-X x-Y y-Z z".Replace("-", "\r\n");
 
 
 		/// <summary>
@@ -44,10 +53,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public WritingSystemSuggestor WritingSystemSuggestor { get; private set; }
 
+		public IWritingSystemRepository WritingSystems { get { return _writingSystemRepository; } }
+
 		/// <summary>
 		/// UI layer can set this to something which shows a dialog to get the basic info
 		/// </summary>
 		public Func<WritingSystemDefinition> MethodToShowUiToBootstrapNewDefinition;
+
+		private List<SpellCheckInfo> _spellCheckerItems = new List<SpellCheckInfo>();
 
 		/// <summary>
 		/// Creates the presentation model object based off of a writing system store of some sort.
@@ -61,8 +74,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
 			_writingSystemRepository = writingSystemRepository;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.WritingSystemDefinitions);
-			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
+			_writingSystemDefinitions = new List<IWritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
+			_deletedWritingSystemDefinitions = new List<IWritingSystemDefinition>();
 			_currentIndex = -1;
 			_usingRepository = true;
 		}
@@ -83,71 +96,94 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
 			_writingSystemRepository = null;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
+			_writingSystemDefinitions = new List<IWritingSystemDefinition>(1);
 			WritingSystemDefinitions.Add(ws);
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
 		}
 
-		internal static string ValidVariantString(string unknownString)
+		public IEnumerable<IKeyboardDefinition> KnownKeyboards
 		{
-			// var1-var2-var3
-			// var1-privateUse1-x-privateUse2
-			unknownString = unknownString.Trim();
-			unknownString = Regex.Replace(unknownString, @"[ ,.]", "-");
-			unknownString = Regex.Replace(unknownString, @"-+", "-");
-			var tokens = unknownString.Split('-');
-			var variants = new List<string>();
-			var privateUse = new List<string>();
-			bool haveSeenX = false;
+			get
+			{
+				var allKeyboards = PossibleKeyboardsToChoose.ToList();
+				if (_currentWritingSystem != null)
+				{
+					// If there aren't any known, possibly this WS is being migrated from a legacy writing system.
+					// If so, we'd like to show the keyboard indicated by the legacy fields as a known keyboard.
+					// It's tempting to actually modify the KnownKeyboards list and put it in, but that would be a
+					// very dubious thing for a getter to do, and also, would put it there permanently, even
+					// if the user does not confirm it.
+					if (_currentWritingSystem != null && !_currentWritingSystem.KnownKeyboards.Any())
+					{
+						var legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+						if (legacyKeyboard != null)
+							yield return legacyKeyboard;
+					}
+					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
+					{
+						var available =
+							(from kbd in allKeyboards where kbd.Layout == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
+								FirstOrDefault();
+						if (available != null)
+							yield return available;
+						else
+						{
+							var result = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboard.Layout,
+								knownKeyboard.Locale);
+							((KeyboardDescription)result).IsAvailable = false;
+							yield return result;
+						}
+					}
+				}
+			}
+		}
 
-			foreach (var token in tokens)
+		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards
+		{
+			get
 			{
-				if (token == "x")
+				var result = PossibleKeyboardsToChoose.ToList();
+				if (_currentWritingSystem != null)
 				{
-					haveSeenX = true;
-					continue;
+					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
+					{
+						var known =
+							(from kbd in result where kbd.Layout == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
+								FirstOrDefault();
+						if (known != null)
+							result.Remove(known);
+					}
 				}
-				if (!haveSeenX && StandardTags.IsValidRegisteredVariant(token))
+				if (!_currentWritingSystem.KnownKeyboards.Any())
 				{
-					variants.Add(token);
+					// If there's a legacy keyboard and no known keyboards, we move the legacy one to 'known';
+					// so don't show it here.
+					var legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+					if (legacyKeyboard != null)
+						result.Remove(legacyKeyboard);
 				}
-				else
-				{
-					privateUse.Add(token);
-				}
+				return result;
 			}
-			string combinedVariant = String.Join("-", variants.ToArray());
-			string combinedPrivateUse = String.Join("-", privateUse.ToArray());
-			string variantString = combinedVariant;
-			if (!String.IsNullOrEmpty(combinedPrivateUse))
-			{
-				variantString = "x-" + combinedPrivateUse;
-				if (!String.IsNullOrEmpty(combinedVariant))
-				{
-					variantString = combinedVariant + "-" + variantString;
-				}
-			}
-			return variantString;
 		}
 
 
 		#region Properties
 		/// <summary>
-		/// Provides a list of all possible installed keyboards.
+		/// Provides a list of all possible installed keyboards, preceded by the 'default' option which does nothing.
+		/// This is typically used to populate a list of keyboards that could be chosen.
 		/// </summary>
-		public static IEnumerable<String> KeyboardNames
+		public static IEnumerable<IKeyboardDefinition> PossibleKeyboardsToChoose
 		{
 			get
 			{
-				List<String> keyboards = new List<string>();
-				keyboards.Add("(default)");
-				foreach (KeyboardController.KeyboardDescriptor keyboard in
-					KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.All))
+				// Returns default keyboard as first item
+				yield return KeyboardDescription.Zero;
+
+				foreach (var keyboard in Keyboard.Controller.AllAvailableKeyboards)
 				{
-					keyboards.Add(keyboard.Name);
+					yield return keyboard;
 				}
-				return keyboards;
 			}
 		}
 
@@ -171,7 +207,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// available on WritingSystemDefinition.  This is needed to ensure that the UI
 		/// stays up to date with any changes to the underlying WritingSystemDefinition.
 		/// </summary>
-		internal WritingSystemDefinition CurrentDefinition
+		internal IWritingSystemDefinition CurrentDefinition
 		{
 			get
 			{
@@ -198,7 +234,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.RFC5646 == rfc4646);
+			var index = WritingSystemDefinitions.FindIndex(d => d.Bcp47Tag == rfc4646);
 			if(index<0)
 			{
 				return false;
@@ -207,7 +243,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			return true;
 		}
 
-		public virtual bool SetCurrentDefinition(WritingSystemDefinition definition)
+		public virtual bool SetCurrentDefinition(IWritingSystemDefinition definition)
 		{
 			var index = WritingSystemDefinitions.FindIndex(d => d == definition);
 			if (index < 0)
@@ -239,7 +275,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					throw new ArgumentOutOfRangeException();
 				}
 				_currentIndex = value;
-				WritingSystemDefinition oldCurrentWS = _currentWritingSystem;
+				var oldCurrentWS = _currentWritingSystem;
 				_currentWritingSystem = value == -1 ? null : WritingSystemDefinitions[value];
 				// we can't just check indexes as it doesn't work if the list has changed
 				if (oldCurrentWS != _currentWritingSystem)
@@ -314,7 +350,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = _writingSystemRepository.GetNewStoreIDWhenSet(WritingSystemDefinitions[i]);
+					string id = WritingSystemDefinitions[i].Id;
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -407,21 +443,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				List<string> prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.RFC5646))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.Bcp47Tag))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.RFC5646);
+					prohibitedList.Add(CurrentDefinition.Bcp47Tag);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					WritingSystemDefinition ws = WritingSystemDefinitions[i];
+					var ws = WritingSystemDefinitions[i];
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
-						&& !string.IsNullOrEmpty(ws.RFC5646) && prohibitedList.Contains(ws.SortRules)
-						&& !prohibitedList.Contains(ws.RFC5646))
+						&& !string.IsNullOrEmpty(ws.Bcp47Tag) && prohibitedList.Contains(ws.SortRules)
+						&& !prohibitedList.Contains(ws.Bcp47Tag))
 					{
-						prohibitedList.Add(ws.RFC5646);
+						prohibitedList.Add(ws.Bcp47Tag);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -446,7 +482,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					yield return new KeyValuePair<string, string>(string.Empty, "-----");
 				}
 				// populate the rest of the list with all languages from the OS
-				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures))
+				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(info => info.IetfLanguageTag))
 				{
 					if(prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
 					{
@@ -483,11 +519,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			get { return CurrentDefinition.LanguageName ?? string.Empty; }
 			set
 			{
-				if (CurrentDefinition.LanguageName != value)
+				var valueBeforeSet = CurrentDefinition.LanguageName;
+				CurrentDefinition.LanguageName = value;
+				if (CurrentDefinition.LanguageName != valueBeforeSet)
 				{
-					CurrentDefinition.LanguageName = value;
 					OnCurrentItemUpdated();
 				}
+				//if (CurrentDefinition.LanguageName != value)
+				//{
+				//    var languageNameBeforeSet = CurrentDefinition.LanguageName;
+				//    CurrentDefinition.LanguageName = value;
+				//    //When we set the LanguageName on a writingSystem to Empty and call get it returns the
+				//    //ianasubtag registry default. So if the result
+				//    if (languageNameBeforeSet == CurrentDefinition.LanguageName)
+				//    {
+				//        return;
+				//    }
+				//    OnCurrentItemUpdated();
+				//}
 			}
 		}
 
@@ -550,36 +599,35 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentISO
 		{
-			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.ISO639 ?? string.Empty); }
+			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.Language ?? string.Empty); }
 			set
 			{
-				if (CurrentDefinition.ISO639 != value)
+				if (CurrentDefinition.Language != value)
 				{
-					CurrentDefinition.ISO639 = value;
+					CurrentDefinition.Language = value;
 					OnCurrentItemUpdated();
 				}
 			}
 		}
 
-		public string CurrentKeyboard
+		public IKeyboardDefinition CurrentKeyboard
 		{
 			get
 			{
 				if(CurrentDefinition==null)
-					return string.Empty;
-				return string.IsNullOrEmpty(CurrentDefinition.Keyboard) ? "(default)" : CurrentDefinition.Keyboard;
+					return null;
+				if (CurrentDefinition.LocalKeyboard != null)
+					return CurrentDefinition.LocalKeyboard;
+				return null;
 			}
 			set
 			{
-				if (value == "(default)")
-				{
-					value = string.Empty;
-				}
-				if (CurrentDefinition.Keyboard != value)
-				{
-					CurrentDefinition.Keyboard = value;
-					OnCurrentItemUpdated();
-				}
+				if (CurrentDefinition == null)
+					return; // Hopefully can't happen
+				if (CurrentDefinition.LocalKeyboard.Equals(value))
+					return;
+				CurrentDefinition.LocalKeyboard = value.Layout == KeyboardDescriptionNull.DefaultKeyboardName ? null : value;
+				OnCurrentItemUpdated();
 			}
 		}
 
@@ -598,11 +646,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentRegion
 		{
-			get { return  CurrentDefinition==null? string.Empty : (CurrentDefinition.Region ?? string.Empty); }
+			get { return  CurrentDefinition==null ? string.Empty : (CurrentDefinition.Region ?? string.Empty); }
 			set
 			{
 				if (CurrentDefinition.Region != value)
 				{
+					if (String.IsNullOrEmpty(CurrentDefinition.Language))
+					{
+						CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
+					}
 					CurrentDefinition.Region = value;
 					OnCurrentItemUpdated();
 				}
@@ -619,7 +671,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					return CurrentDefinition.RFC5646 ?? string.Empty;
+					return CurrentDefinition.Bcp47Tag ?? string.Empty;
 				}
 			}
 //            set
@@ -649,6 +701,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (CurrentDefinition.Script != value)
 				{
+					if(String.IsNullOrEmpty(CurrentDefinition.Language))
+					{
+						CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
+					}
 					CurrentDefinition.Script = value;
 					OnCurrentItemUpdated();
 				}
@@ -679,13 +735,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					try
 					{
-						CurrentDefinition.Variant = ValidVariantString(value);
+						var fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
+						if (String.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+						{
+							CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
+						}
+						CurrentDefinition.Variant = fixedVariant;
 						OnCurrentItemUpdated();
 					}
-					catch (Exception e)
+					catch (ArgumentException e)
 					{
 						CurrentDefinition.Variant = original;
-						MessageBox.Show(e.Message);
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e.Message);
 					}
 
 				}
@@ -701,7 +762,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		virtual public string VerboseDescription(WritingSystemDefinition writingSystem)
+		virtual public string VerboseDescription(IWritingSystemDefinition writingSystem)
 		{
 			var summary = new StringBuilder();
 			summary.AppendFormat(" {0}", writingSystem.LanguageName);
@@ -714,7 +775,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortLabel());
 			}
 
-			summary.AppendFormat(". ({0})", writingSystem.RFC5646);
+			summary.AppendFormat(". ({0})", writingSystem.Bcp47Tag);
 			return summary.ToString().Trim();
 		}
 
@@ -768,19 +829,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public string CurrentSpellCheckingId
-		{
-			get { return CurrentDefinition.SpellCheckingId ?? string.Empty; }
-			set
-			{
-				if (CurrentDefinition.SpellCheckingId != value)
-				{
-					CurrentDefinition.SpellCheckingId = value;
-					OnCurrentItemUpdated();
-				}
-			}
-		}
-
 		public string CurrentSortUsing
 		{
 			get { return CurrentDefinition.SortUsing.ToString(); }
@@ -800,7 +848,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public string CurrentSortRules
 		{
-			get { return CurrentDefinition.SortRules ?? string.Empty; }
+			get
+			{
+				if (String.IsNullOrEmpty(CurrentDefinition.SortRules) && CurrentSortUsing == "CustomSimple")
+				{
+					return DefaultCustomSimpleSortRules;
+				}
+				else
+				{
+					return CurrentDefinition.SortRules ?? string.Empty;
+				}
+			}
 			set
 			{
 				if (CurrentDefinition.SortRules != value)
@@ -811,7 +869,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
-		public virtual List<WritingSystemDefinition> WritingSystemDefinitions
+		public virtual List<IWritingSystemDefinition> WritingSystemDefinitions
 		{
 			get { return _writingSystemDefinitions; }
 		}
@@ -823,44 +881,34 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			Ipa=1,
 			Voice=2,
 			ScriptRegionVariant=3,
-			Custom=4
+			UnlistedLanguageDetails=4
 		}
+
 		public SelectionsForSpecialCombo SelectionForSpecialCombo
 		{
 			get
 			{
-				//TODO: this is really too simplistic
-
+				// TODO: this is really too simplistic
+				// Changed 2011-04 CP, seems ok to me.
 
 				if (_currentWritingSystem.IsVoice)
 				{
 					return SelectionsForSpecialCombo.Voice;
 				}
-//                if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
-//                {
-//                    return SelectionsForSpecialCombo.Custom;
-//                }
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Script))
-				{
-					if(WritingSystemDefinition.ScriptOptions.Any(s=>s.Code==_currentWritingSystem.Script))
-					{
-						return SelectionsForSpecialCombo.ScriptRegionVariant;
-					}
-					return SelectionsForSpecialCombo.Custom;
-				}
-
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Region))
-				{
-					return SelectionsForSpecialCombo.ScriptRegionVariant;
-				}
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Variant))
-				{
-					if(!_currentWritingSystem.Variant.StartsWith("fonipa"))
-						return SelectionsForSpecialCombo.ScriptRegionVariant;
-				}
 				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
 				{
 					return SelectionsForSpecialCombo.Ipa;
+				}
+				if (_currentWritingSystem.Language == WellKnownSubTags.Unlisted.Language)
+				{
+					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
+				}
+				if (!string.IsNullOrEmpty(_currentWritingSystem.Script) ||
+					!string.IsNullOrEmpty(_currentWritingSystem.Region) ||
+					!string.IsNullOrEmpty(_currentWritingSystem.Variant)
+				)
+				{
+					return SelectionsForSpecialCombo.ScriptRegionVariant;
 				}
 				return SelectionsForSpecialCombo.None;
 			}
@@ -879,12 +927,166 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				Guard.AgainstNull(_currentWritingSystem, "CurrentWritingSystem");
 				if (_currentWritingSystem.IpaStatus != value)
 				{
+					if(String.IsNullOrEmpty(_currentWritingSystem.Language))
+					{
+						_currentWritingSystem.Language = WellKnownSubTags.Unlisted.Language;
+					}
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
 				}
 			}
 		}
 
+		// This is currently only useful for setting the region combobox, since it is expecting an IANASubtag
+		public IanaSubtag CurrentRegionTag
+		{
+			get
+			{
+				if (CurrentDefinition == null)
+				{
+					return null;
+				}
+				return StandardTags.ValidIso3166Regions.FirstOrDefault(regionInfo => regionInfo.Subtag == CurrentRegion);
+			}
+			set { throw new NotImplementedException(); }
+		}
+		#endregion
+
+		#region Spellcheck methods and SpellCheckInfo class
+
+		public string CurrentSpellCheckingId
+		{
+			get
+			{
+				if (CurrentDefinition == null)
+				{
+					return string.Empty;
+				}
+				return CurrentDefinition.SpellCheckingId ?? string.Empty;
+			}
+			set
+			{
+				if (CurrentDefinition.SpellCheckingId != value)
+				{
+					CurrentDefinition.SpellCheckingId = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public SpellCheckInfo CurrentSpellChecker
+		{
+			get
+			{
+				if (_spellCheckerItems == null || _spellCheckerItems.Count == 0)
+					return null;
+				return _spellCheckerItems.FirstOrDefault(item => item.GetSpellCheckingId() == CurrentSpellCheckingId);
+			}
+			set
+			{
+				CurrentSpellCheckingId = value.GetSpellCheckingId();
+			}
+		}
+
+		public List<SpellCheckInfo> GetSpellCheckComboBoxItems()
+		{
+			_spellCheckerItems.Clear();
+
+			// add None option
+			_spellCheckerItems.Add(new SpellCheckInfo(""));
+
+			try
+			{
+				using (Broker broker = new Broker())
+				{
+					// add installed dictionaries
+					_spellCheckerItems.AddRange(broker.Dictionaries.Select(dictionaryInfo => new SpellCheckInfo(dictionaryInfo)));
+
+					// add current dictionary, if not installed
+					if (!string.IsNullOrEmpty(CurrentSpellCheckingId))
+					{
+						if (!broker.DictionaryExists(CurrentSpellCheckingId))
+						{
+							_spellCheckerItems.Add(new SpellCheckInfo(CurrentSpellCheckingId));
+						}
+					}
+				}
+			}
+			catch (DllNotFoundException)
+			{
+				//If Enchant is not installed we expect an exception.
+			}
+			catch (Exception e)//there are other errors we can get from the enchant binding
+			{
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+												"The Enchant Spelling engine encountered an error: " + e.Message);
+			}
+
+			return _spellCheckerItems;
+		}
+
+		public class SpellCheckInfo
+		{
+			private DictionaryInfo _info = null;
+			private string _id = "";
+
+			public SpellCheckInfo(DictionaryInfo info)
+			{
+				_info = info;
+			}
+
+			public SpellCheckInfo(string notInstalledId)
+			{
+				_id = notInstalledId;
+			}
+
+			public bool HasDictionaryInfo()
+			{
+				if (_info != null)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			public DictionaryInfo GetDictionaryInfo()
+			{
+				return _info;
+			}
+
+			public override string ToString()
+			{
+				if (_info != null)
+				{
+					try
+					{
+						string id = _info.Language.Replace('_', '-');
+						CultureInfo cultureInfo = CultureInfo.GetCultureInfoByIetfLanguageTag(id);
+						return _info.Language + " (" + cultureInfo.NativeName + ")";
+					}
+					catch
+					{
+						// don't care if this fails it was just to add a little more info to user.
+						//mono doesn't support this now
+						return _info.Language;
+					}
+				}
+				if (!String.IsNullOrEmpty(_id))
+				{
+					return _id + " (" + StringCatalog.Get("Not installed") + ")";
+				}
+				return "None";
+			}
+
+			public string GetSpellCheckingId()
+			{
+				if (HasDictionaryInfo())
+				{
+					return GetDictionaryInfo().Language;
+				}
+				return _id;
+			}
+		}
 		#endregion
 
 
@@ -914,6 +1116,25 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// is changed.
 		/// </summary>
 		public event EventHandler CurrentItemUpdated;
+
+		/// <summary>
+		/// Fired when the user chooses to "Conflate" a writing systems but before the WS is deleted in the repo.
+		/// Used to notify the consuming application of a conflation and process a boolean response
+		/// from the app as to whether it can conflate the WS or not (i.e. the WS is in use)
+		/// </summary>
+		public event AskIfOkToConflateEventHandler AskIfOkToConflateWritingSystems;
+
+		/// <summary>
+		/// Fired when the user chooses to "Delete" a writing systems but before the WS is deleted in the repo.
+		/// Used to notify the consuming application of a deletion and process a boolean response
+		/// from the app as to whether it can delete the WS or not (i.e. the WS is in use)
+		/// </summary>
+		public event AskIfOkToDeleteEventHandler AskIfOkToDeleteWritingSystems;
+
+		/// <summary>
+		/// Fired when we need to know what writing systems to conflate.
+		/// </summary>
+		public event DecideWhatToDoWithDataInWritingSystemToBeDeleteEventHandler AskUserWhatToDoWithDataInWritingSystemToBeDeleted;
 
 		#endregion
 
@@ -950,18 +1171,68 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to delete current selection when there is no current selection.");
 			}
+
+			var whatToDo = new WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(CurrentDefinition);
+			if(AskUserWhatToDoWithDataInWritingSystemToBeDeleted != null)
+			{
+				AskUserWhatToDoWithDataInWritingSystemToBeDeleted(this, whatToDo);
+			}
+
+			switch(whatToDo.WhatToDo)
+			{
+				case WhatToDos.Nothing:
+						return;
+				case WhatToDos.Conflate:
+					var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
+						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.Id,
+																					wsToConflateWith.Id);
+						if (AskIfOkToConflateWritingSystems != null)
+						{
+							AskIfOkToConflateWritingSystems(this, okToConflateEventArgs);
+						}
+						if (!okToConflateEventArgs.CanConflate)
+						{
+							string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
+							ErrorReport.NotifyUserOfProblem(
+								String.Format("Can not conflate the input system {0} to {1}. {2}",
+												CurrentDefinition.Id,
+												wsToConflateWith, message));
+							return;
+						}
+						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+						{
+							if (wsToConflateWith != null)
+							{
+								_writingSystemRepository.Conflate(CurrentDefinition.Id, wsToConflateWith.Id);
+							}
+						}
+					break;
+				case WhatToDos.Delete:
+					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
+					if (AskIfOkToDeleteWritingSystems != null)
+					{
+						AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
+					}
+					if (!okToDeleteEventArgs.CanDelete)
+					{
+						string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
+						ErrorReport.NotifyUserOfProblem(
+							String.Format("Can not delete the input system {0}. {1}",
+											CurrentDefinition.Id, message));
+						return;
+					}
+					if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+					{
+						_writingSystemRepository.Remove(CurrentDefinition.Id);
+					}
+					break;
+			}
 			// new index will be next writing system or previous if this was the last in the list
 			int newIndex = (CurrentIndex == WritingSystemCount - 1) ? CurrentIndex - 1 : CurrentIndex;
-			string idToDelete = CurrentDefinition.StoreID;
 			CurrentDefinition.MarkedForDeletion = true;
 			_deletedWritingSystemDefinitions.Add(CurrentDefinition);
 			WritingSystemDefinitions.RemoveAt(CurrentIndex);
 			CurrentIndex = newIndex;
-			// if it doesn't have a store ID, it shouldn't be in the store
-			if (!string.IsNullOrEmpty(idToDelete))
-			{
-				_writingSystemRepository.Remove(idToDelete);
-			}
 			OnAddOrDelete();
 		}
 
@@ -978,7 +1249,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			WritingSystemDefinition ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
+			var ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -992,9 +1263,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (!_usingRepository)
 			{
-				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+				throw new InvalidOperationException("Unable to add new input system definition when there is no store.");
 			}
-			WritingSystemDefinition ws=null;
+			IWritingSystemDefinition ws=null;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
 			{
 				ws = _writingSystemRepository.CreateNew();
@@ -1006,9 +1277,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if(ws==null)//cancelled
 				return;
+
+			if (ws.Abbreviation == WellKnownSubTags.Unlisted.Language) // special case for Unlisted Language
+			{
+				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
+			}
 			WritingSystemDefinitions.Add(ws);
-			OnAddOrDelete();
 			CurrentDefinition = ws;
+			OnAddOrDelete();
 		}
 
 		private void OnAddOrDelete()
@@ -1065,22 +1341,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (!HasCurrentSelection) {
 				throw new InvalidOperationException ("Unable to export current selection when there is no current selection.");
 			}
-			LdmlAdaptor adaptor = new LdmlAdaptor ();
-			adaptor.Write (filePath, _currentWritingSystem, null);
+			LdmlDataMapper adaptor = new LdmlDataMapper ();
+			adaptor.Write (filePath, (WritingSystemDefinition)_currentWritingSystem, null);
 		}
 
-		private void SetAllPossibleAndRemoveOthers()
+		public void SetAllPossibleAndRemoveOthers()
 		{
-			// Set everything that we can, then change stuff until we can set it, then change it back and try again.
-			// The reason to do this is to solve problems with cycles that could prevent saving.
-			// Example:
-			// ws1 has ID "a" and ws2 has ID "b"
-			// Set ws1 to ID "b" and ws2 to ID "a"
-			// The store will not allow you to set either of these because of the conflict
 			// NOTE: It is not a good idea to remove and then add all writing systems, even though it would
 			// NOTE: accomplish the same goal as any information in the LDML file not used by palaso would be lost.
-			Dictionary<WritingSystemDefinition, string> cantSet = new Dictionary<WritingSystemDefinition, string>();
-			foreach (WritingSystemDefinition ws in WritingSystemDefinitions)
+			var unsettableWritingSystems = new List<IWritingSystemDefinition>();
+			foreach (var ws in WritingSystemDefinitions)
 			{
 				if (_writingSystemRepository.CanSet(ws))
 				{
@@ -1088,28 +1358,20 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				else
 				{
-					cantSet.Add(ws, ws.ISO639);
+					unsettableWritingSystems.Add(ws);
 				}
 			}
-			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
+			foreach (var unsettableWs in unsettableWritingSystems)
 			{
-				while (!_writingSystemRepository.CanSet(kvp.Key))
-				{
-					kvp.Key.ISO639 += "X";
-				}
-				_writingSystemRepository.Set(kvp.Key);
-			}
-			foreach (KeyValuePair<WritingSystemDefinition, string> kvp in cantSet)
-			{
-				kvp.Key.ISO639 = kvp.Value;
-				if (_writingSystemRepository.CanSet(kvp.Key))
-				{
-					_writingSystemRepository.Set(kvp.Key);
-				}
-				else
-				{
-					_writingSystemRepository.Remove(kvp.Key.StoreID);
-				}
+				//create a writing system just to get the unique id, then copy that id to the writing system that we want to set
+				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
+						_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
+				unsettableWs.Language = uniqueWs.Language;
+				unsettableWs.Script = uniqueWs.Script;
+				unsettableWs.Region = uniqueWs.Region;
+				unsettableWs.Variant = uniqueWs.Variant;
+				OnAddOrDelete();
+				_writingSystemRepository.Set(unsettableWs);
 			}
 		}
 
@@ -1118,12 +1380,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		public void ActivateCurrentKeyboard()
 		{
-			if (CurrentDefinition == null)
-				return;
-			if (!string.IsNullOrEmpty(CurrentDefinition.Keyboard))
-			{
-				KeyboardController.ActivateKeyboard(CurrentDefinition.Keyboard);
-			}
+			if (CurrentDefinition != null && CurrentDefinition.LocalKeyboard != null)
+				CurrentDefinition.LocalKeyboard.Activate();
 		}
 
 		/// <summary>
@@ -1187,9 +1445,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new ArgumentException("File does not exist.", "fileName");
 			}
-			LdmlAdaptor _adaptor = new LdmlAdaptor();
-			WritingSystemDefinition ws = _writingSystemRepository.CreateNew();
-			_adaptor.Read(fileName, ws);
+			LdmlDataMapper _adaptor = new LdmlDataMapper();
+			var ws = _writingSystemRepository.CreateNew();
+			_adaptor.Read(fileName, (WritingSystemDefinition)ws);
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1203,15 +1461,215 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //        {
 //
 //        }
-		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
+		public virtual void AddPredefinedDefinition(IWritingSystemDefinition definition)
 		{
 			if (!_usingRepository)
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
 			WritingSystemDefinitions.Add(definition);
-			OnAddOrDelete();
 			CurrentDefinition = definition;
+			OnAddOrDelete();
 		}
+
+		internal void RenameIsoCode(IWritingSystemDefinition existingWs)
+		{
+			WritingSystemDefinition newWs = null;
+			if (!_usingRepository)
+			{
+				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
+			}
+			if (MethodToShowUiToBootstrapNewDefinition != null)
+			{
+				 newWs = MethodToShowUiToBootstrapNewDefinition();
+			}
+			if (newWs == null) //cancelled
+				return;
+
+			existingWs.Language = newWs.Language;
+			existingWs.LanguageName = newWs.LanguageName;
+
+			// Remove First Not WellKnownPrivateUseTag
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+			WritingSystemDefinition.SplitVariantAndPrivateUse(existingWs.Variant, out rfcVariant, out rfcPrivateUse);
+			List<string> privateUseTokens = new List<string>(rfcPrivateUse.Split('-'));
+			string oldIsoCode = WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens).FirstOrDefault();
+			if (!String.IsNullOrEmpty(oldIsoCode))
+			{
+				privateUseTokens.Remove(oldIsoCode);
+			}
+			string newPrivateUse = "x-" + String.Join("-", privateUseTokens.ToArray()); //would be nice if writingsystemdefintion.ConcatenateVariantAndPrivateUse would add the x for us
+			existingWs.Variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, newPrivateUse);
+
+			OnSelectionChanged();
+			OnCurrentItemUpdated();
+		}
+
+		internal void SetCurrentVariantFromUnlistedLanguageName(string languageName)
+		{
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+
+			string trimmedLanguageName = TrimLanguageNameForPrivateUse(languageName);
+
+			WritingSystemDefinition.SplitVariantAndPrivateUse(CurrentVariant, out rfcVariant, out rfcPrivateUse);
+			List<string> privateUseTokens = rfcPrivateUse.Split('-').ToList();
+			if (privateUseTokens.Contains(trimmedLanguageName, StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+
+			// check if there is already a code in private use
+			string previousPrivateUseCode = "";
+			foreach (var notWellKnownTag in WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens))
+			{
+				previousPrivateUseCode = notWellKnownTag;
+				break;
+			}
+
+			// remove previous private use code if present
+			if (!string.IsNullOrEmpty(previousPrivateUseCode))
+			{
+				privateUseTokens.Remove(previousPrivateUseCode);
+			}
+
+			if (languageName != "Language Not Listed" && !string.IsNullOrEmpty(languageName))
+			{
+				privateUseTokens.Insert(0, trimmedLanguageName);
+			}
+
+			rfcPrivateUse = string.Join("-", privateUseTokens.ToArray());
+			CurrentVariant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, rfcPrivateUse);
+		}
+
+
+		internal static string TrimLanguageNameForPrivateUse(string languageName)
+		{
+			languageName = Regex.Replace(languageName, @"[^a-zA-Z]", "");
+			if (languageName.Length > 8)
+			{
+				languageName = languageName.Substring(0, 8);
+			}
+			return languageName;
+		}
+
+		public void IdentifierVoiceSelected()
+		{
+			CurrentIsVoice = true;
+		}
+
+		public void IdentifierNothingSelected()
+		{
+			CurrentLanguageName = string.Empty;
+			CurrentVariant = string.Empty;
+			CurrentRegion = string.Empty;
+			CurrentScriptCode = string.Empty;
+		}
+
+		public void IdentifierIpaSelected()
+		{
+			CurrentIsVoice = false;
+			CurrentScriptCode = string.Empty;
+
+			//if we're here, the user wants some kind of ipa
+			if (CurrentIpaStatus == IpaStatusChoices.NotIpa)
+			{
+				CurrentIpaStatus = IpaStatusChoices.Ipa;
+			}
+		}
+
+		public void IdentifierScriptRegionVariantSelected()
+		{
+			if (CurrentDefinition != null)
+			{
+				CurrentVariant = CurrentDefinition.Variant;
+				CurrentRegion = CurrentDefinition.Region;
+				CurrentScriptCode = CurrentDefinition.Script;
+				CurrentIsVoice = CurrentDefinition.IsVoice;
+				CurrentIpaStatus = CurrentDefinition.IpaStatus;
+			}
+		}
+
+		public void IdentifierUnlistedLanguageSelected()
+		{
+			// doesn't do anything at the moment
+		}
+	}
+
+	public delegate void AskIfDataExistsInWritingSystemToBeDeletedEventHandler(object sender, AskIfDataExistsInWritingSystemToBeDeletedEventArgs args);
+
+	public class AskIfDataExistsInWritingSystemToBeDeletedEventArgs : EventArgs
+	{
+		public AskIfDataExistsInWritingSystemToBeDeletedEventArgs(string writingSystemid)
+		{
+			WritingSystemId = writingSystemid;
+		}
+		public string WritingSystemId{get; private set;}
+		public bool ProjectContainsDataInWritingSystemToBeDeleted = false;
+		public string ErrorMessage { get; set; }
+	}
+
+	public delegate void AskIfOkToConflateEventHandler(object sender, AskIfOkToConflateEventArgs args);
+
+	public class AskIfOkToConflateEventArgs : EventArgs
+	{
+		public AskIfOkToConflateEventArgs(string writingSystemIdToConflate, string writingSystemIdToConflateWith)
+		{
+			WritingSystemIdToConflate = writingSystemIdToConflate;
+			WritingSystemIdToConflateWith = writingSystemIdToConflateWith;
+		}
+		public string WritingSystemIdToConflate { get; private set; }
+		public string WritingSystemIdToConflateWith { get; private set; }
+		public bool CanConflate = true;
+		public string ErrorMessage { get; set; }
+	}
+
+	public delegate void AskIfOkToDeleteEventHandler(object sender, AskIfOkToDeleteEventArgs args);
+
+	public class AskIfOkToDeleteEventArgs : EventArgs
+	{
+		public AskIfOkToDeleteEventArgs(string writingSystemIdToDelete)
+		{
+			WritingSystemIdToDelete = writingSystemIdToDelete;
+		}
+		public string WritingSystemIdToDelete { get; private set; }
+		public bool CanDelete = true;
+		public string ErrorMessage { get; set; }
+	}
+
+	public delegate void DecideWhatToDoWithDataInWritingSystemToBeDeleteEventHandler(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args);
+
+	public class WhatToDoWithDataInWritingSystemToBeDeletedEventArgs : EventArgs
+	{
+		private IWritingSystemDefinition _writingSystemIdToConflateWith;
+
+		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(IWritingSystemDefinition writingSystemIdToDelete)
+		{
+			WritingSystemIdToDelete = writingSystemIdToDelete;
+			WhatToDo = WhatToDos.Delete;
+		}
+
+		public WhatToDos WhatToDo { get; set; }
+		public IWritingSystemDefinition WritingSystemIdToDelete { get; private set; }
+		public IWritingSystemDefinition WritingSystemIdToConflateWith
+		{
+			get
+			{
+				if(WhatToDo==WhatToDos.Nothing || WhatToDo==WhatToDos.Delete)
+				{
+					return null;
+				}
+				return _writingSystemIdToConflateWith;
+			}
+			set { _writingSystemIdToConflateWith = value; }
+		}
+	}
+
+	public enum WhatToDos
+	{
+		Nothing,
+		Conflate,
+		Delete
 	}
 }

@@ -466,6 +466,22 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		public void IcuEscapedCharacter_ProducesCorrectEscapeSequence()
+		{
+			_collationXml = "<rules><reset>\\(</reset></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& \\(", icu);
+		}
+
+		[Test]
+		public void IcuUnicodeEscapes_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset>\\u0062</reset><p>\\U00000061</p></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& \\u0062 < \\U00000061", icu);
+		}
+
+		[Test]
 		public void InvalidLdml_Throws()
 		{
 			_collationXml = "<rules><m>a</m></rules>";

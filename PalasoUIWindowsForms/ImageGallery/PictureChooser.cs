@@ -26,7 +26,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				_thumbnailViewer.Clear();
 				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
 				{
-					IEnumerable<object> results = _images.GetMatchingPictures(_searchTermsBox.Text);
+					bool foundExactMatches;
+					IEnumerable<object> results = _images.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches);
 					if (results.Count() == 0)
 					{
 						_notFoundLabel.Visible = true;

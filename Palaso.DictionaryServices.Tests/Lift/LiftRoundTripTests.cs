@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using LiftIO.Parsing;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
+using Palaso.Lift.Parsing;
 using Palaso.TestUtilities;
 
 namespace Palaso.DictionaryServices.Tests.Lift

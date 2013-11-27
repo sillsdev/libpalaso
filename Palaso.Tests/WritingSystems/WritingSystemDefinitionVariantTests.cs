@@ -4,6 +4,7 @@ using System.Reflection;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.WritingSystems;
+using System.Linq;
 
 namespace Palaso.Tests.WritingSystems
 {
@@ -11,9 +12,9 @@ namespace Palaso.Tests.WritingSystems
 	public class WritingSystemDefinitionVariantTests
 	{
 		[Test]
-		public void LatestVersion_IsOne()
+		public void LatestVersion_IsTwo()
 		{
-			Assert.AreEqual(1, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+			Assert.AreEqual(2, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		[Test]
@@ -41,6 +42,45 @@ namespace Palaso.Tests.WritingSystems
 			ws.Variant = "1901-biske-fonipa";
 			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.AreEqual("1901-biske-fonipa", ws.Variant);
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToPhoneticOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-etic"));
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToIpaOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.Ipa;
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private"));
+		}
+
+
+		[Test]
+		public void IpaStatus_SetToPhonemicOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
+		{
+			var ws = WritingSystemDefinition.Parse("x-private");
+			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Script, Is.EqualTo(""));
+			Assert.That(ws.Region, Is.EqualTo(""));
+			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-emic"));
 		}
 
 		[Test]
@@ -262,6 +302,184 @@ namespace Palaso.Tests.WritingSystems
 		public void Script_SetToIDontKnowWhatScriptItShouldBewhileIpaStatusIsSetToAnyThingButNotIpa_Throws()
 		{
 			throw new NotImplementedException();
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasOnlyWellKnownTags_EmptyList()
+		{
+			string[] listToFilter = {WellKnownSubTags.Audio.PrivateUseSubtag,
+										WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag,
+										WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag
+									};
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Is.Empty);
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasWellKnownTagsAndUnknownTags_ListWithUnknownTags()
+		{
+			string[] listToFilter = { "v", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag, WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag };
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Has.Member("v"));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasUpperCaseWellKnownTagsAndUnknownTags_ListWithUnknownTags()
+		{
+			string[] listToFilter = { "v", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.ToUpper(), WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.ToUpper() };
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Has.Member("v"));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.ToUpper()));
+			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.ToUpper()));
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_EmptyList_EmptyList()
+		{
+			string[] listToFilter = {};
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Is.Empty);
+		}
+
+		[Test]
+		public void FilterWellKnownPrivateUseTags_HasOnlyUnknownTags_ListWithUnknownTags()
+		{
+			string[] listToFilter = { "v", "puu", "yuu" };
+			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
+			Assert.That(result, Has.Member("v"));
+			Assert.That(result, Has.Member("puu"));
+			Assert.That(result, Has.Member("yuu"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_VariantOnly_ReturnsVariant()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("1901", String.Empty);
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("1901"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_VariantAndPrivateUseWithxDash_ReturnsConcatenatedVariantAndPrivateUse()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("1901", "x-audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("1901-x-audio"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_VariantAndPrivateUseWithoutxDash_ReturnsConcatenatedVariantAndPrivateUse()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("1901", "audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("1901-x-audio"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_PrivateUseWithoutxDashOnly_ReturnsPrivateUseWithxDash()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("", "audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("x-audio"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_PrivateUseWithxDashOnly_ReturnsPrivateUseWithxDash()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("", "x-audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("x-audio"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_PrivateUseWithCapitalXDashOnly_ReturnsPrivateUseWithxDash()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("", "X-audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("X-audio"));
+		}
+
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_VariantAndPrivateUseWithCapitalXDash_ReturnsConcatenatedVariantAndPrivateUse()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("1901", "X-audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("1901-X-audio"));
+		}
+
+		//this test shows that there is no checking involved as to wether your variants and private use are rfc/writingsystemdefinition conform. All the method does is glue two strings together while handling the "x-"
+		[Test]
+		public void ConcatenateVariantAndPrivateUse_BogusVariantBadprivateUse_HappilyGluesTheTwoTogether()
+		{
+			string concatenatedVariantAndPrivateUse = WritingSystemDefinition.ConcatenateVariantAndPrivateUse("bogusvariant", "etic-emic-audio");
+			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("bogusvariant-x-etic-emic-audio"));
+		}
+
+		//Split
+		[Test]
+		public void SplitVariantAndPrivateUse_VariantOnly_ReturnsVariant()
+		{
+			string variant;
+			string privateUse;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("1901", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo("1901"));
+			Assert.That(privateUse, Is.EqualTo(String.Empty));
+		}
+
+		[Test]
+		public void SplitVariantAndPrivateUse_VariantAndPrivateUse_ReturnsVariantAndPrivateUse()
+		{
+			string variant;
+			string privateUse;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("1901-x-audio", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo("1901"));
+			Assert.That(privateUse, Is.EqualTo("audio"));
+		}
+
+		[Test]
+		public void SplitVariantAndPrivateUse_NoxDash_ReturnsVariantOnly()
+		{
+			string variant;
+			string privateUse;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("1901-audio", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo("1901-audio"));
+			Assert.That(privateUse, Is.EqualTo(String.Empty));
+		}
+
+		[Test]
+		public void SplitVariantAndPrivateUse_PrivateUseWithxDashOnly_ReturnsPrivateUseWithxDash()
+		{
+			string variant;
+			string privateUse;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("x-audio", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo(String.Empty));
+			Assert.That(privateUse, Is.EqualTo("audio"));
+		}
+
+		[Test]
+		public void SplitVariantAndPrivateUse_PrivateUseWithCapitalXDashOnly_ReturnsPrivateUseWithxDash()
+		{
+			string variant;
+			string privateUse;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("X-audio", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo(String.Empty));
+			Assert.That(privateUse, Is.EqualTo("audio"));
+		}
+
+		[Test]
+		public void SplitVariantAndPrivateUse_VariantAndPrivateUseWithCapitalXDash_ReturnsConcatenatedVariantAndPrivateUse()
+		{
+			string variant = String.Empty;
+			string privateUse = String.Empty;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("1901-X-audio", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo("1901"));
+			Assert.That(privateUse, Is.EqualTo("audio"));
+		}
+
+		//this test shows that there is no checking involved as to wether your variants and private use are rfc/writingsystemdefinition conform. All the method does is split on x-
+		[Test]
+		public void SplitVariantAndPrivateUse_BogusVariantBadPrivateUse_HappilysplitsOnxDash()
+		{
+			string variant;
+			string privateUse;
+			WritingSystemDefinition.SplitVariantAndPrivateUse("bogusVariant-X-audio-emic-etic", out variant, out privateUse);
+			Assert.That(variant, Is.EqualTo("bogusVariant"));
+			Assert.That(privateUse, Is.EqualTo("audio-emic-etic"));
 		}
 	}
 }

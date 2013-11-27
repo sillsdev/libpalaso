@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using LiftIO.Parsing;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Lift.Parsing;
 using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Lift
@@ -302,7 +302,8 @@ namespace Palaso.DictionaryServices.Lift
 										string parent,
 										LiftMultiText description,
 										LiftMultiText label,
-										LiftMultiText abbrev) {}
+										LiftMultiText abbrev,
+										string rawXml) {}
 
 		public void ProcessFieldDefinition(string tag, LiftMultiText description) {}
 
@@ -374,7 +375,7 @@ namespace Palaso.DictionaryServices.Lift
 			//enchance: instead of KeyValuePair, make a LiftField class, so we can either keep the
 			// other field stuff as xml (in order to round-trip it) or model it.
 
-			extensible.Properties.Add(new KeyValuePair<string, object>(typeAttribute, t));
+			extensible.Properties.Add(new KeyValuePair<string, IPalasoDataObjectProperty>(typeAttribute, t));
 
 			if (traits != null)
 			{

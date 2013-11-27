@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using NUnit.Framework;
-using Palaso.DictionaryServices;
+using Palaso.DictionaryServices.Lift;
+using Palaso.Extensions;
 using Palaso.Tests.Data;
 using Palaso.TestUtilities;
 using Palaso.DictionaryServices.Model;
 
-namespace WeSay.LexicalModel.Tests
+namespace Palaso.DictionaryServices.Tests
 {
 
 	internal static class LiftFileInitializer
@@ -21,8 +24,8 @@ namespace WeSay.LexicalModel.Tests
 					producer='WeSay 1.0.0.0'>
 					<entry
 						id='Sonne_c753f6cc-e07c-4bb1-9e3c-013d09629111'
-						dateCreated='2008-07-01T06:29:23Z'
-						dateModified='2008-07-01T06:29:57Z'
+						dateCreated='2008-07-01T16:29:23Z'
+						dateModified='2008-07-01T17:29:57Z'
 						guid='c753f6cc-e07c-4bb1-9e3c-013d09629111'>
 						<lexical-unit>
 							<form
@@ -63,6 +66,39 @@ namespace WeSay.LexicalModel.Tests
 			DataMapperUnderTest.Dispose();
 			_tempFolder.Delete();
 		}
+
+		[Test]
+		public void Read_CreateTime_ReadsCorrectly()
+		{
+			SetState();
+			const string expectedCreationDateTime = "2008-07-01T16:29:23Z";
+			string actualCreationDateTime = Item.CreationTime.ToUniversalTime().ToLiftDateTimeFormat();
+			Assert.AreEqual(expectedCreationDateTime, actualCreationDateTime);
+		}
+
+		[Test]
+		public void Read_ProblematicCulture_ReadsCorrectly()
+		{
+			var culture = new CultureInfo("en-US");
+			culture.DateTimeFormat.TimeSeparator = ".";
+
+			Thread.CurrentThread.CurrentCulture = culture;
+
+			SetState();
+			const string expectedCreationDateTime = "2008-07-01T16:29:23Z";
+			string actualCreationDateTime = Item.CreationTime.ToUniversalTime().ToLiftDateTimeFormat();
+			Assert.AreEqual(expectedCreationDateTime, actualCreationDateTime);
+		}
+
+		[Test]
+		public void SaveItem_CreateTime_Unchanged()
+		{
+			SetState();
+			MakeItemDirty(Item);
+			DataMapperUnderTest.SaveItem(Item);
+			AssertThatXmlIn.File(_persistedFilePath).HasAtLeastOneMatchForXpath("/lift/entry[@dateCreated='2008-07-01T16:29:23Z']");
+		}
+
 
 		[Test]
 		public override void SaveItem_LastModifiedIsChangedToLaterTime()

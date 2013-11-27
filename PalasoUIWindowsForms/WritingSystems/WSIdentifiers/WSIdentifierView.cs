@@ -9,7 +9,7 @@ using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 {
-	public partial class WSIdentifierView : UserControl
+	public partial class WSIdentifierView : UserControl, ISelectableIdentifierOptions
 	{
 		private WritingSystemSetupModel _model;
 
@@ -56,15 +56,35 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_abbreviation.Text = _model.CurrentAbbreviation;
 //                _name.Text = _model.CurrentLanguageName;
 				//_code.Text=_model.CurrentISO;
+				UpdateSpecialComboBox();
 				comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
 			}
 			else
 			{
 				this.Enabled = false;
 				_abbreviation.Text = string.Empty;
+				_detailPanel.Controls.Clear();
   //              _name.Text = string.Empty;
 			   // _code.Text = string.Empty;
 				comboBox1.SelectedIndex = 0;
+			}
+		}
+
+		private void UpdateSpecialComboBox()
+		{
+			if (_model.CurrentISO == WellKnownSubTags.Unlisted.Language)
+			{
+				if (comboBox1.Items.Count == 4)
+				{
+					AddDetailsControl(new UnlistedLanguageView(_model));
+				}
+			}
+			else
+			{
+				if (comboBox1.Items.Count == 5)
+				{
+					comboBox1.Items.RemoveAt(4);
+				}
 			}
 		}
 
@@ -77,19 +97,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			if (_model != null)
 				_model.SelectionChanged -= ModelSelectionChanged;
-		}
-
-		private void _isoSearchButton_Click(object sender, EventArgs e)
-		{
-			var dlg = new LookupISOCodeDialog();
-			dlg.ShowDialog();
-			if (dlg.DialogResult == DialogResult.OK)
-			{
-				_model.CurrentISO = dlg.ISOCode;
-				_model.CurrentLanguageName = dlg.ISOCodeAndName.Name;
-				_model.CurrentAbbreviation = dlg.ISOCode;
-				UpdateFromModel();
-			}
 		}
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -113,6 +120,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 
 		}
 
+		private void OnVisibleChanged(object sender, EventArgs e)
+		{
+			//UpdateSpecialComboBox();
+
+		}
+
+		public void Selected()
+		{
+			comboBox1_SelectedIndexChanged(null, null);
+		}
+
 		private void _abbreviation_TextChanged(object sender, EventArgs e)
 		{
 			var s = _abbreviation.Text.Trim();
@@ -121,10 +139,22 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 				_model.CurrentAbbreviation = s;
 			}
 		}
+
+		public void MoveDataFromViewToModel()
+		{
+			((ISelectableIdentifierOptions)comboBox1.SelectedItem).MoveDataFromViewToModel();
+		}
+
+		public void UnwireBeforeClosing()
+		{
+			((ISelectableIdentifierOptions)comboBox1.SelectedItem).UnwireBeforeClosing();
+		}
 	}
 
 	public interface ISelectableIdentifierOptions
 	{
 		void Selected();
+		void MoveDataFromViewToModel();
+		void UnwireBeforeClosing();
 	}
 }
