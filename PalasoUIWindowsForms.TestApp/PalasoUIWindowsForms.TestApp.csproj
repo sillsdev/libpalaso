@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,6 +48,8 @@
 	<ErrorReport>prompt</ErrorReport>
 	<TargetFrameworkProfile>
 	</TargetFrameworkProfile>
+	<WarningLevel>4</WarningLevel>
+	<Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
 	<OutputPath>..\output\ReleaseMono</OutputPath>
@@ -58,6 +60,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<TargetFrameworkProfile>
 	</TargetFrameworkProfile>
+	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
 	<Reference Include="System" />
@@ -92,6 +95,26 @@
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Settings.settings</DependentUpon>
 	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	</Compile>
+	<Compile Include="ArtOfReadingTestForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="ArtOfReadingTestForm.Designer.cs">
+	  <DependentUpon>ArtOfReadingTestForm.cs</DependentUpon>
+	</Compile>
+	<EmbeddedResource Include="ArtOfReadingTestForm.resx">
+	  <DependentUpon>ArtOfReadingTestForm.cs</DependentUpon>
+	  <LogicalName>SIL.FieldWorks.ArtOfReadingTestForm.resources</LogicalName>
+	</EmbeddedResource>
+	<EmbeddedResource Include="TestApp.resx">
+	  <DependentUpon>TestAppForm.cs</DependentUpon>
+	  <LogicalName>SIL.FieldWorks.TestApp.resources</LogicalName>
+	</EmbeddedResource>
+	<Compile Include="TestAppForm.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="TestAppForm.Designer.cs">
+	  <DependentUpon>TestAppForm.cs</DependentUpon>
 	</Compile>
   </ItemGroup>
   <ItemGroup>

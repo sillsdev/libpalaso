@@ -128,6 +128,7 @@ namespace SIL.Archiving.Generic
 			{".dwf", "drawing/x-dwf"},
 			{".dwp", "application/octet-stream"},
 			{".dxr", "application/x-director"},
+			{".eaf", "text/x-eaf+xml"},
 			{".eml", "message/rfc822"},
 			{".emz", "application/octet-stream"},
 			{".eot", "application/octet-stream"},

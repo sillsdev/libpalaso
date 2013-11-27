@@ -78,6 +78,17 @@ namespace SIL.Archiving
 		public const string kFlagHasPromotionDescription = "description.promotion.has";
 		public const string kTrue = "Y";
 
+		// Mode constants
+		public const string kModeSpeech = "Speech";
+		public const string kModeVideo = "Video";
+		public const string kModeText = "Text";
+		public const string kModePhotograph = "Photograph";
+		public const string kModeGraphic = "Graphic";
+		public const string kModeMusicalNotation = "Musical notation";
+		public const string kModeDataset = "Dataset";
+		public const string kModeSoftwareOrFont = "Software application";
+		public const string kModePresentation = "Presentation";
+
 		// work-stage constants
 		public const string kStageRoughDraft = "rough_draft";
 		public const string kStageReviewedDraft = "reviewed_draft";
@@ -121,7 +132,7 @@ namespace SIL.Archiving
 		public const string kRecordingExtent = "format.extent.recording";
 		public const string kAudience = "broad_type";
 		public const string kRole = "role";
-		public const string kAbstractLanguageName = "lang";
+		public const string kLanguageName = "lang";
 		public const string kPromotionDescription = "sil.description.promotion";
 
 		// Audience ("Broad Type") constants
@@ -129,17 +140,6 @@ namespace SIL.Archiving
 		public const string kAudienceTraining = "training";
 		public const string kAudienceInternal = "internal";
 		public const string kAudienceWide = "wider_audience";
-
-		// Mode constants
-		public const string kModeSpeech = "Speech";
-		public const string kModeVideo = "Video";
-		public const string kModeText = "Text";
-		public const string kModePhotograph = "Photograph";
-		public const string kModeGraphic = "Graphic";
-		public const string kModeMusicalNotation = "Musical notation";
-		public const string kModeDataset = "Dataset";
-		public const string kModeSoftwareOrFont = "Software application";
-		public const string kModePresentation = "Presentation";
 
 		// Material and Contents Types
 		public const string kVernacularMaterialScripture = "scripture";
@@ -152,44 +152,64 @@ namespace SIL.Archiving
 		public const string kRelationshipPresentation = "Presentation";
 		public const string kRelationshipSupporting = "Supporting";
 // ReSharper restore CSharpWarnings::CS1591
-
-		[Flags]
-		private enum MetsProperties
-		{
-			Audience = 1 << 0,
-			Domains = 1 << 1,
-			ContentLanguages = 1 << 2,
-			CreationDate = 1 << 3,
-			ModifiedDate = 1 << 4,
-			SchemaConformance = 1 << 5,
-			DatasetExtent = 1 << 6,
-			SubjectLanguage = 1 << 7,
-			SoftwareRequirements = 1 << 8,
-			Contributors = 1 << 9,
-			RecordingExtent = 1 << 10,
-			GeneralDescription = 1 << 11,
-			AbstractDescription = 1 << 12,
-			Promotion = 1 << 13,
-// ReSharper disable once UnusedMember.Local
-			Stage = 1 << 14,
-			Type = 1 << 15,
-		}
 		#endregion
 
+		#region Data members
 		private readonly List<string> _metsPairs;
-		private MetsProperties _metsPropertiesSet;
 		private AudienceType _metsAudienceType;
 		private string _metsFilePath;
 		private string _tempFolder;
 		private Timer _timer;
 		private bool _workerException;
-		private string _rampProgramPath;
 		private Dictionary<string, string> _languageList;
 		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
+		private int _imageCount = -1;
+		private int _audioCount = -1;
+		private int _videoCount = -1;
+		private HashSet<string> _modes;
+		#endregion
 
 		#region properties
-		/// <summary>Path to the RAMP package</summary>
-		public string RampPackagePath { get; private set; }
+		/// ------------------------------------------------------------------------------------
+		internal override string ArchiveType
+		{
+			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RAMPArchiveType", "RAMP (SIL Only)"); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string NameOfProgramToLaunch
+		{
+			get { return kRampProcessName; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string InformativeText
+		{
+			get
+			{
+				return string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RAMPOverviewText",
+					"{0} is a utility for entering metadata and uploading submissions to SIL's internal archive, " +
+					"REAP. If you have access to this archive, this tool will help you use {0} to archive your " +
+					"{1} data. {2} When the {0} package has been created, you can  launch {0} and enter any " +
+					"additional information before doing the actual submission.",
+					"Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); " +
+					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); " +
+					"Parameter 2 is additional app-specifc information."), NameOfProgramToLaunch, AppName,
+					_appSpecificArchivalProcessInfo);
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string ArchiveInfoHyperlinkText
+		{
+			get { return NameOfProgramToLaunch; }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string ArchiveInfoUrl
+		{
+			get { return Settings.Default.RampWebSite; }
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -205,6 +225,110 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public bool ImagesArePhotographs { get; set; }
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of image files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
+		/// ------------------------------------------------------------------------------------
+		public int ImageCount
+		{
+			get
+			{
+				if (_fileLists != null && _imageCount < 0)
+					ExtractInformationFromFiles();
+				return _imageCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int AudioCount
+		{
+			get
+			{
+				if (_fileLists != null && _audioCount < 0)
+					ExtractInformationFromFiles();
+				return _audioCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public int VideoCount
+		{
+			get
+			{
+				if (_fileLists != null && _videoCount < 0)
+					ExtractInformationFromFiles();
+				return _videoCount;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private void ExtractInformationFromFiles()
+		{
+			ExtractInformationFromFiles(_fileLists.SelectMany(f => f.Value.Item1));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a comma-separated list of types found in the files to be archived
+		/// (e.g. Text, Video, etc.).
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private void ExtractInformationFromFiles(IEnumerable<string> files)
+		{
+			_imageCount = 0;
+			_audioCount = 0;
+			_videoCount = 0;
+			_modes = new HashSet<string>();
+
+			AddModesToSet(files);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void AddModesToSet(IEnumerable<string> files)
+		{
+			foreach (var file in files)
+			{
+				if (FileUtils.GetIsZipFile(file))
+				{
+					using (var zipFile = new ZipFile(file))
+						AddModesToSet(zipFile.EntryFileNames);
+					continue;
+				}
+
+				if (FileUtils.GetIsAudio(file))
+				{
+					_audioCount++;
+					_modes.Add(kModeSpeech);
+				}
+				if (FileUtils.GetIsVideo(file))
+				{
+					_videoCount++;
+					_modes.Add(kModeVideo);
+				}
+				if (FileUtils.GetIsText(file))
+					_modes.Add(kModeText);
+				if (FileUtils.GetIsImage(file))
+				{
+					_imageCount++;
+					_modes.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
+				}
+				if (FileUtils.GetIsMusicalNotation(file))
+					_modes.Add(kModeMusicalNotation);
+				if (FileUtils.GetIsDataset(file))
+					_modes.Add(kModeDataset);
+				if (FileUtils.GetIsSoftwareOrFont(file))
+					_modes.Add(kModeSoftwareOrFont);
+				if (FileUtils.GetIsPresentation(file))
+					_modes.Add(kModePresentation);
+			}
+		}
 		#endregion
 
 		#region construction and initialization
@@ -213,11 +337,18 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
+		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
+		/// which files should be archived (this is deferred to allow display of progress message)</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// ------------------------------------------------------------------------------------
 		public RampArchivingDlgViewModel(string appName, string title, string id,
-			Func<string, string, string> getFileDescription) : base(appName, title, id)
+			string appSpecificArchivalProcessInfo, Action<ArchivingDlgViewModel> setFilesToArchive,
+			Func<string, string, string> getFileDescription) : base(appName, title, id,
+			appSpecificArchivalProcessInfo, setFilesToArchive)
 		{
 			if (getFileDescription == null)
 				throw new ArgumentNullException("getFileDescription");
@@ -226,7 +357,7 @@ namespace SIL.Archiving
 			ShowRecordingCountNotLength = false;
 			ImagesArePhotographs = true;
 
-			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _title)});
+			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _titles[_id])});
 
 			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*" + kRampFileExtension))
 			{
@@ -243,34 +374,28 @@ namespace SIL.Archiving
 				"Searching for the RAMP program..."), MessageType.Volatile);
 
 			Application.DoEvents();
-			_rampProgramPath = GetExeFileLocation();
+			PathToProgramToLaunch = GetExeFileLocation();
 
-			if (_rampProgramPath == null)
+			if (PathToProgramToLaunch == null)
 			{
 				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
 					"The RAMP program cannot be found!"), MessageType.Error);
+				return false;
 			}
 
-			return (_rampProgramPath != null);
+			return true;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override int CalculateMaxProgressBarValue()
+		{
+			// One for analyzing each list, one for copying each file, one for adding each file
+			// to the zip file and one for the mets.xml file.
+			return _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
 		}
 		#endregion
 
 		#region Methods to add app-specific METS pairs
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Helper method to detect when caller tries to set a property that has already been
-		/// set and throw an InvalidOperationException if so.
-		/// </summary>
-		/// <param name="property">The property to check (and add to the list of properties that
-		/// can no longer be set again).</param>
-		/// ------------------------------------------------------------------------------------
-		private void PreventDuplicateMetsKey(MetsProperties property)
-		{
-			if (_metsPropertiesSet.HasFlag(property))
-				throw new InvalidOperationException(string.Format("{0} has already been set", property.ToString()));
-			_metsPropertiesSet |= property;
-		}
-
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets the "Broad Type", the audience for which the resource being archived is
@@ -280,14 +405,14 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetAudience(AudienceType audienceType)
 		{
-			if (_metsPropertiesSet.HasFlag(MetsProperties.Audience))
+			if (IsMetadataPropertySet(MetadataProperties.Audience))
 			{
 				if (_metsAudienceType != audienceType)
 					throw new InvalidOperationException(string.Format("Audience has already been set and cannot be changed to a different value."));
 				return; // Already added
 			}
 
-			_metsPropertiesSet |= MetsProperties.Audience;
+			MarkMetadataPropertyAsSet(MetadataProperties.Audience);
 			_metsAudienceType = audienceType;
 
 			string audience;
@@ -324,7 +449,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Vernacular);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			if (vernacularMaterialsTypes.HasFlag(VernacularMaterialsType.Scripture))
 			{
@@ -465,7 +590,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Training);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			// TODO: This is currently not used.
 			//string type;
@@ -492,7 +617,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Internal);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			string type;
 			switch (internalWorkType)
@@ -517,7 +642,7 @@ namespace SIL.Archiving
 		{
 			SetAudience(AudienceType.Wider);
 
-			PreventDuplicateMetsKey(MetsProperties.Type);
+			PreventDuplicateMetadataProperty(MetadataProperties.Type);
 
 			string type;
 			switch (scholarlyWorkType)
@@ -544,6 +669,8 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetStage(WorkStage stage)
 		{
+			PreventDuplicateMetadataProperty(MetadataProperties.Stage);
+
 			// Some of the work stages imply a particular audience and therefore have the appropriate audience bit set
 			if (stage.HasFlag(AudienceType.Vernacular))
 				SetAudience(AudienceType.Vernacular);
@@ -615,7 +742,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetDomains(SilDomain domains)
 		{
-			PreventDuplicateMetsKey(MetsProperties.Domains);
+			PreventDuplicateMetadataProperty(MetadataProperties.Domains);
 
 			if (domains.HasFlag(SilDomain.AcademicTraining))
 				AddDomain(kAcademicTrainingAbbrev, "Academic Training");
@@ -856,7 +983,7 @@ namespace SIL.Archiving
 			if (string.IsNullOrEmpty(date))
 				throw new ArgumentNullException("date");
 
-			PreventDuplicateMetsKey(MetsProperties.CreationDate);
+			PreventDuplicateMetadataProperty(MetadataProperties.CreationDate);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDateCreated, date));
 		}
@@ -868,7 +995,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetModifiedDate(DateTime date)
 		{
-			PreventDuplicateMetsKey(MetsProperties.ModifiedDate);
+			PreventDuplicateMetadataProperty(MetadataProperties.ModifiedDate);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDateModified, date.ToString("yyyy-MM-dd")));
 		}
@@ -883,7 +1010,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetSubjectLanguage(string iso3Code, string languageName)
 		{
-			PreventDuplicateMetsKey(MetsProperties.SubjectLanguage);
+			PreventDuplicateMetadataProperty(MetadataProperties.SubjectLanguage);
 
 			SetFlag(kFlagHasSubjectLanguage);
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSubjectLanguage,
@@ -930,7 +1057,7 @@ namespace SIL.Archiving
 // ReSharper disable PossibleMultipleEnumeration
 			if (requirements.Any())
 			{
-				PreventDuplicateMetsKey(MetsProperties.SoftwareRequirements);
+				PreventDuplicateMetadataProperty(MetadataProperties.SoftwareRequirements);
 
 				SetFlag(kFlagHasSoftwareOrFontRequirements);
 
@@ -995,7 +1122,7 @@ namespace SIL.Archiving
 
 			if (languageValues.Any())
 			{
-				PreventDuplicateMetsKey(MetsProperties.ContentLanguages);
+				PreventDuplicateMetadataProperty(MetadataProperties.ContentLanguages);
 
 				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguages, languageValues));
 
@@ -1016,7 +1143,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetSchemaConformance(string schemaDescriptor)
 		{
-			PreventDuplicateMetsKey(MetsProperties.SchemaConformance);
+			PreventDuplicateMetadataProperty(MetadataProperties.SchemaConformance);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kSchemaConformance, schemaDescriptor));
 		}
@@ -1032,7 +1159,7 @@ namespace SIL.Archiving
 			if (string.IsNullOrEmpty(extent))
 				throw new ArgumentNullException("extent");
 
-			PreventDuplicateMetsKey(MetsProperties.DatasetExtent);
+			PreventDuplicateMetadataProperty(MetadataProperties.DatasetExtent);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDatasetExtent, extent));
 		}
@@ -1054,7 +1181,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetAudioVideoExtent(string totalDuration)
 		{
-			PreventDuplicateMetsKey(MetsProperties.RecordingExtent);
+			PreventDuplicateMetadataProperty(MetadataProperties.RecordingExtent);
 
 			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kRecordingExtent, totalDuration));
 		}
@@ -1072,7 +1199,7 @@ namespace SIL.Archiving
 			if (contributions.Count == 0)
 				return;
 
-			PreventDuplicateMetsKey(MetsProperties.Contributors);
+			PreventDuplicateMetadataProperty(MetadataProperties.Contributors);
 
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContributor,
 				contributions.Select(GetContributorsMetsPairs)));
@@ -1134,25 +1261,11 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void SetGeneralDescription(IEnumerable<string> abs)
 		{
-			PreventDuplicateMetsKey(MetsProperties.GeneralDescription);
+			PreventDuplicateMetadataProperty(MetadataProperties.GeneralDescription);
 
 			SetFlag(kFlagHasGeneralDescription);
 
 			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kGeneralDescription, abs));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Sets an abstract for this resource in a single language
-		/// </summary>
-		/// <param name="description">The abstract description</param>
-		/// <param name="language">ISO 639-2 3-letter language code (RAMP only supports about
-		/// 20 major LWCs. Not sure what happens if an unrecognized code gets passed to this.
-		/// Feel free to try it and find out.</param>
-		/// ------------------------------------------------------------------------------------
-		public void SetAbstract(string description, string language)
-		{
-			SetAbstractDescription(new[] { GetKvpsForLanguageSpecificString(language, description) });
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1164,33 +1277,18 @@ namespace SIL.Archiving
 		/// happens if an unrecognized code gets passed to this. Feel free to try it and find
 		/// out.</param>
 		/// ------------------------------------------------------------------------------------
-		public void SetAbstract(IDictionary<string, string> descriptions)
+		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
 		{
-			if (descriptions == null)
-				throw new ArgumentNullException("descriptions");
-
-			if (descriptions.Count == 0)
-				return;
-
-			List<string> abs = new List<string>();
-			foreach (var desc in descriptions)
-			{
-				if (desc.Key.Length != 3)
-					throw new ArgumentException();
-				abs.Add(GetKvpsForLanguageSpecificString(desc.Key, desc.Value));
-			}
-
-			SetAbstractDescription(abs);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void SetAbstractDescription(IEnumerable<string> abs)
-		{
-			PreventDuplicateMetsKey(MetsProperties.AbstractDescription);
-
 			SetFlag(kFlagHasAbstractDescription);
 
-			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kAbstractDescription, abs));
+			IEnumerable<string> metsDescriptions;
+
+			if (descriptions.Count == 1 && string.IsNullOrEmpty(descriptions.Keys.ElementAt(0)))
+				metsDescriptions = new [] {JSONUtils.MakeKeyValuePair(kDefaultKey, descriptions.Values.ElementAt(0))};
+			else
+				metsDescriptions = descriptions.Select(desc => GetKvpsForLanguageSpecificString(desc.Key, desc.Value));
+
+			_metsPairs.Add(JSONUtils.MakeArrayFromValues(kAbstractDescription, metsDescriptions));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1238,7 +1336,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void SetPromotion(IEnumerable<string> abs)
 		{
-			PreventDuplicateMetsKey(MetsProperties.Promotion);
+			PreventDuplicateMetadataProperty(MetadataProperties.Promotion);
 
 			SetFlag(kFlagHasPromotionDescription);
 
@@ -1258,43 +1356,21 @@ namespace SIL.Archiving
 			if (lang.Length != 3)
 				throw new ArgumentException("Language must be specified as a valid 3-letter code as specified in ISO-639-2.");
 
-			return JSONUtils.MakeKeyValuePair(kDefaultKey, s) + kSeparator + JSONUtils.MakeKeyValuePair(kAbstractLanguageName, lang);
+			return JSONUtils.MakeKeyValuePair(kDefaultKey, s) + kSeparator + JSONUtils.MakeKeyValuePair(kLanguageName, lang);
 		}
 		#endregion
 
 		#region RAMP calling methods
 		/// ------------------------------------------------------------------------------------
-		public override bool LaunchArchivingProgram()
+		internal override void LaunchArchivingProgram()
 		{
-			if (!File.Exists(RampPackagePath))
+			if (!File.Exists(PackagePath))
 			{
-				ReportError(null, string.Format("RAMP package prematurely removed: {0}", RampPackagePath));
-				return false;
+				ReportError(null, string.Format("RAMP package prematurely removed: {0}", PackagePath));
+				return;
 			}
 
-			try
-			{
-				var prs = new Process();
-				prs.StartInfo.FileName = _rampProgramPath;
-				prs.StartInfo.Arguments = "\"" + RampPackagePath + "\"";
-				if (!prs.Start())
-					return false;
-
-				prs.WaitForInputIdle(8000);
-				EnsureRampHasFocusAndWaitForPackageToUnlock();
-				return true;
-			}
-			catch (InvalidOperationException)
-			{
-				EnsureRampHasFocusAndWaitForPackageToUnlock();
-				return true;
-			}
-			catch (Exception e)
-			{
-				ReportError(e, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
-					"There was an error attempting to open the archive package in RAMP."));
-				return false;
-			}
+			LaunchArchivingProgram(EnsureRampHasFocusAndWaitForPackageToUnlock);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1311,7 +1387,7 @@ namespace SIL.Archiving
 
 			// Every 4 seconds we'll check to see if the RAMP package is locked. When
 			// it gets unlocked by RAMP, then we'll delete it.
-			_timer = new Timer(CheckIfPackageFileIsLocked, RampPackagePath, 2000, 4000);
+			_timer = new Timer(CheckIfPackageFileIsLocked, PackagePath, 2000, 4000);
 		}
 
 		private static void BringToFrontWindows()
@@ -1412,7 +1488,7 @@ namespace SIL.Archiving
 
 		#region Methods for creating mets file.
 		/// ------------------------------------------------------------------------------------
-		public string GetUnencodedMetsData()
+		public override string GetMetadata()
 		{
 			var bldr = new StringBuilder();
 
@@ -1429,7 +1505,7 @@ namespace SIL.Archiving
 		{
 			try
 			{
-				var metsData = Resources.EmptyMets.Replace("<binData>", "<binData>" + JSONUtils.EncodeData(GetUnencodedMetsData()));
+				var metsData = Resources.EmptyMets.Replace("<binData>", "<binData>" + JSONUtils.EncodeData(GetMetadata()));
 				_tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 				Directory.CreateDirectory(_tempFolder);
 				_metsFilePath = Path.Combine(_tempFolder, "mets.xml");
@@ -1455,15 +1531,19 @@ namespace SIL.Archiving
 		 /// ------------------------------------------------------------------------------------
 		private void SetMetsPairsForFiles()
 		{
-			if (_fileLists != null)
+			if (_fileLists.Any())
 			{
 				string value = GetMode();
 				if (value != null)
 					_metsPairs.Add(value);
 
-				// Return JSON array of files with their descriptions.
-				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSourceFilesForMets,
-					GetSourceFilesForMetsData(_fileLists)));
+				if (!IsMetadataPropertySet(MetadataProperties.Files))
+				{
+					// Return JSON array of files with their descriptions.
+					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSourceFilesForMets,
+						GetSourceFilesForMetsData(_fileLists)));
+					MarkMetadataPropertyAsSet(MetadataProperties.Files);
+				}
 
 				if (ImageCount > 0)
 					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} image{1}.",
@@ -1488,54 +1568,19 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets the number of image files in the list(s) of files to archive.
-		/// </summary>
-		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
-		/// ------------------------------------------------------------------------------------
-		public int ImageCount
-		{
-			get
-			{
-				if (_fileLists != null && _imageCount < 0)
-					GetMode();
-				return _imageCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public int AudioCount
-		{
-			get
-			{
-				if (_fileLists != null && _audioCount < 0)
-					GetMode();
-				return _audioCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public int VideoCount
-		{
-			get
-			{
-				if (_fileLists != null && _videoCount < 0)
-					GetMode();
-				return _videoCount;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
 		/// Gets a comma-separated list of types found in the files to be archived
 		/// (e.g. Text, Video, etc.).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private string GetMode()
 		{
-			_imageCount = 0;
-			_audioCount = 0;
-			_videoCount = 0;
-			return GetMode(_fileLists.SelectMany(f => f.Value.Item1));
+			if (_modes == null)
+				ExtractInformationFromFiles();
+
+			if (IsMetadataPropertySet(MetadataProperties.DatasetExtent) && !_modes.Contains(kModeDataset))
+				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
+
+			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, _modes);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1543,60 +1588,16 @@ namespace SIL.Archiving
 		/// Gets a comma-separated list of types found in the files to be archived
 		/// (e.g. Text, Video, etc.).
 		/// </summary>
+		/// <remarks>This version with parameter is public to facilitate testing.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public string GetMode(IEnumerable<string> files)
 		{
 			if (files == null)
 				return null;
 
-			var list = new HashSet<string>();
+			ExtractInformationFromFiles(files);
 
-			AddModesToSet(list, files);
-
-			if (_metsPropertiesSet.HasFlag(MetsProperties.DatasetExtent) && !list.Contains(kModeDataset))
-				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
-
-			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, list);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void AddModesToSet(HashSet<string> list, IEnumerable<string> files)
-		{
-			foreach (var file in files)
-			{
-				if (FileUtils.GetIsZipFile(file))
-				{
-					using (var zipFile = new ZipFile(file))
-						AddModesToSet(list, zipFile.EntryFileNames);
-					continue;
-				}
-
-				if (FileUtils.GetIsAudio(file))
-				{
-					_audioCount++;
-					list.Add(kModeSpeech);
-				}
-				if (FileUtils.GetIsVideo(file))
-				{
-					_videoCount++;
-					list.Add(kModeVideo);
-				}
-				if (FileUtils.GetIsText(file))
-					list.Add(kModeText);
-				if (FileUtils.GetIsImage(file))
-				{
-					_imageCount++;
-					list.Add(ImagesArePhotographs ? kModePhotograph : kModeGraphic);
-				}
-				if (FileUtils.GetIsMusicalNotation(file))
-					list.Add(kModeMusicalNotation);
-				if (FileUtils.GetIsDataset(file))
-					list.Add(kModeDataset);
-				if (FileUtils.GetIsSoftwareOrFont(file))
-					list.Add(kModeSoftwareOrFont);
-				if (FileUtils.GetIsPresentation(file))
-					list.Add(kModePresentation);
-			}
+			return GetMode();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1637,7 +1638,7 @@ namespace SIL.Archiving
 		{
 			try
 			{
-				RampPackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
+				PackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
 
 				using (_worker = new BackgroundWorker())
 				{
@@ -1666,9 +1667,9 @@ namespace SIL.Archiving
 				_worker = null;
 			}
 
-			if (!File.Exists(RampPackagePath))
+			if (!File.Exists(PackagePath))
 			{
-				ReportError(null, string.Format("Failed to make the RAMP package: {0}", RampPackagePath));
+				ReportError(null, string.Format("Failed to make the RAMP package: {0}", PackagePath));
 				return false;
 			}
 
@@ -1747,7 +1748,7 @@ namespace SIL.Archiving
 					zip.AddFiles(filesToCopyAndZip.Values, @"\");
 					zip.AddFile(_metsFilePath, string.Empty);
 					zip.SaveProgress += HandleZipSaveProgress;
-					zip.Save(RampPackagePath);
+					zip.Save(PackagePath);
 
 					if (!_cancelProcess && IncrementProgressBarAction != null)
 						Thread.Sleep(800);
@@ -1823,11 +1824,11 @@ namespace SIL.Archiving
 		{
 			var exeFile = GetExeFileLocation();
 			if (exeFile == null)
-				throw new DirectoryNotFoundException("The RAMP directory was not found.");
+				return null;
 
 			var dir = Path.GetDirectoryName(exeFile);
 			if (dir == null)
-				throw new DirectoryNotFoundException("The RAMP directory was not found.");
+				return null;
 
 			// on Linux the exe and data directory are not in the same directory
 			if (!Directory.Exists(Path.Combine(dir, "data")))
@@ -1837,22 +1838,14 @@ namespace SIL.Archiving
 					dir = Path.Combine(dir, "share");
 			}
 
-			// get the data directory
-			dir = Path.Combine(dir, "data");
+			// get the data/options directory
+			dir = Path.Combine(dir, "data", "options");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
-
-			// get the options directory
-			dir = Path.Combine(dir, "options");
-			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+				return null;
 
 			// get the languages.yaml file
 			var langFile = Path.Combine(dir, "languages.yaml");
-			if (!File.Exists(langFile))
-				throw new FileNotFoundException(string.Format("The file {0} was not found.", langFile));
-
-			return langFile;
+			return !File.Exists(langFile) ? null : langFile;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1869,15 +1862,19 @@ namespace SIL.Archiving
 				_languageList = new Dictionary<string, string>();
 				var langFile = GetLanguageFileLocation();
 
-				foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
+				if (langFile != null)
 				{
 					const int start = 9;
-					var end = fileLine.IndexOf('"', start);
-					if (end > start)
+
+					foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
 					{
-						var parts = fileLine.Substring(start, end - start).Split(':');
-						if (parts.Length == 2)
-							_languageList[parts[0]] = parts[1];
+						var end = fileLine.IndexOf('"', start);
+						if (end > start)
+						{
+							var parts = fileLine.Substring(start, end - start).Split(':');
+							if (parts.Length == 2)
+								_languageList[parts[0]] = parts[1];
+						}
 					}
 				}
 			}
@@ -1894,11 +1891,8 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public string GetLanguageName(string iso3Code)
 		{
+			// LT-15003: prevent crash while looking up language name if RAMP not installed
 			var langs = GetLanguageList();
-
-			if (langs == null)
-				throw new Exception("The language list for RAMP was not retrieved.");
-
 			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
 		}
 		#endregion

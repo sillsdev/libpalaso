@@ -1,51 +1,193 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using L10NSharp;
+using SIL.Archiving.Generic;
+using SIL.Archiving.IMDI.Schema;
+using SIL.Archiving.Properties;
 
 namespace SIL.Archiving.IMDI
 {
 	/// <summary>Implements archiving for IMDI repositories</summary>
 	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
 	{
-		private readonly string _corpusName;
-		private IMDIPackage _imdiData;
+		private readonly IMDIPackage _imdiData;
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 
-		/// <summary>Constructor</summary>
-		/// <param name="appName"></param>
-		/// <param name="corpusName"></param>
-		/// <param name="title"></param>
-		/// <param name="id"></param>
-		/// <param name="outputFolder"></param>
-		public IMDIArchivingDlgViewModel(string appName, string corpusName, string title, string id, string outputFolder) : base(appName, title, id)
+		#region Properties
+		/// ------------------------------------------------------------------------------------
+		internal override string ArchiveType
 		{
-			_corpusName = corpusName;
-			_outputFolder = outputFolder;
+			get
+			{
+				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIArchiveType", "IMDI",
+					"This is the abbreviation for Isle Metadata Initiative (http://www.mpi.nl/imdi/). " +
+						"Typically this probably does not need to be localized.");
+			}
 		}
 
-		/// <summary>Initialization</summary>
+		/// ------------------------------------------------------------------------------------
+		public override string NameOfProgramToLaunch
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(PathToProgramToLaunch))
+					return null;
+				string exe = Path.GetFileNameWithoutExtension(PathToProgramToLaunch);
+				string dir = Path.GetDirectoryName(PathToProgramToLaunch);
+				if (!string.IsNullOrEmpty(dir))
+				{
+					dir = Path.GetFileNameWithoutExtension(dir);
+					if (dir.Length > 0 && exe.ToLowerInvariant().Contains(dir.ToLowerInvariant()))
+						return dir;
+				}
+				return exe;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string InformativeText
+		{
+			get
+			{
+				string programInfo = string.IsNullOrEmpty(NameOfProgramToLaunch) ?
+					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText",
+					"The {0} package will be created in {1}.",
+					"Parameter 0 is 'IMDI'; " +
+					"Parameter 1 is the path where the package is created."),
+					ArchiveType, PackagePath)
+					:
+					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIProgramInfoText",
+					"This tool will help you use {0} to archive your {1} data. When the {1} package has been " +
+					"created, you can launch {0} and enter any additional information before doing the actual submission.",
+					"Parameter 0 is the name of the program that will be launched to further prepare the IMDI data for submission; " +
+					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.)"), NameOfProgramToLaunch, AppName);
+				return string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIOverviewText",
+					"{0} ({1}) is a metadata standard to describe multi-media and multi-modal language " +
+					"resources. The standard provides interoperability for browsable and searchable " +
+					"corpus structures and resource descriptions.",
+					"Parameter 0  is 'Isle Metadata Initiative' (the first occurrence will be turned into a hyperlink); " +
+					"Parameter 1 is 'IMDI'"),
+					ArchiveInfoHyperlinkText, ArchiveType) +
+					" " + _appSpecificArchivalProcessInfo +
+					" " + programInfo;
+			}
+		}
+
+		/// <summary></summary>
+		public override string ArchiveInfoHyperlinkText
+		{
+			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IsleMetadataInitiative",
+				"Isle Metadata Initiative", "Typically this probably does not need to be localized."); }
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override string ArchiveInfoUrl
+		{
+			get { return Settings.Default.IMDIWebSite; }
+		}
+		#endregion
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Constructor</summary>
+		/// <param name="appName">The application name</param>
+		/// <param name="title">Title of the submission.</param>
+		/// <param name="id">Identifier for the package being created. Used as the CORPUS name.</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
+		/// <param name="corpus">Indicates whether this is for an entire project corpus or a
+		/// single session</param>
+		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
+		/// which files should be archived (this is deferred to allow display of progress message)</param>
+		/// <param name="outputFolder">Base folder where IMDI file structure is to be created</param>
+		/// ------------------------------------------------------------------------------------
+		public IMDIArchivingDlgViewModel(string appName, string title, string id,
+			string appSpecificArchivalProcessInfo, bool corpus,
+			Action<ArchivingDlgViewModel> setFilesToArchive, string outputFolder)
+			: base(appName, title, id, appSpecificArchivalProcessInfo, setFilesToArchive)
+		{
+			_outputFolder = outputFolder;
+
+			PackagePath = Path.Combine(_outputFolder, NormalizeDirectoryName(title));
+
+			_imdiData = new IMDIPackage(corpus, PackagePath)
+			{
+				Title = _titles[_id],
+				Name = _id
+			};
+		}
+
+		/// ------------------------------------------------------------------------------------
 		protected override bool DoArchiveSpecificInitialization()
 		{
-			_imdiData = new IMDIPackage
-			{
-				Title = _title,
-				Name = _corpusName
-			};
-
+			// no-op
 			return true;
 		}
 
-		/// <summary>Launch Arbil or Lamus</summary>
-		public override bool LaunchArchivingProgram()
+		/// ------------------------------------------------------------------------------------
+		public override int CalculateMaxProgressBarValue()
 		{
-			throw new NotImplementedException();
+			// One for processing each list and one for copying each file
+			return _fileLists.Count + _fileLists.SelectMany(kvp => kvp.Value.Item1).Count();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Sets a description for the specified session in a single language
+		/// </summary>
+		/// <param name="sessionId"></param>
+		/// <param name="description">The abstract description</param>
+		/// <param name="iso3LanguageCode">ISO 639-3 3-letter language code</param>
+		/// ------------------------------------------------------------------------------------
+		public void SetSessionDescription(string sessionId, string description, string iso3LanguageCode)
+		{
+			if (description == null)
+				throw new ArgumentNullException("description");
+			if (iso3LanguageCode == null)
+				throw new ArgumentNullException("iso3LanguageCode");
+			if (iso3LanguageCode.Length != 3)
+			{
+				var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ISO3CodeRequired",
+					"ISO 639-3 3-letter language code required.",
+					"Message displayed when an invalid language code is given.");
+				throw new ArgumentException(msg, "iso3LanguageCode");
+			}
+
+			_imdiData.AddDescription(sessionId, new LanguageString { Value = description, Iso3LanguageId = iso3LanguageCode });
+		}
+
+		/// <summary></summary>
+		/// <param name="descriptions"></param>
+		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
+		{
+			foreach (var desc in descriptions)
+				_imdiData.AddDescription(new LanguageString(desc.Value, desc.Key));
+		}
+
+		/// <summary></summary>
+		/// <returns></returns>
+		public override string GetMetadata()
+		{
+			return _imdiData.BaseImdiFile.ToString();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Launch Arbil or Lamus or whatever</summary>
+		/// ------------------------------------------------------------------------------------
+		internal override void LaunchArchivingProgram()
+		{
+			LaunchArchivingProgram(null);
 		}
 
 		/// <summary></summary>
 		public override bool CreatePackage()
 		{
-			throw new NotImplementedException();
+			_imdiData.SetMissingInformation();
+			return _imdiData.CreateIMDIPackage();
 		}
 
 		/// <summary>Only Latin characters, URL compatible</summary>
@@ -82,18 +224,39 @@ namespace SIL.Archiving.IMDI
 
 				if (string.IsNullOrEmpty(_corpusDirectoryName))
 				{
-					var test = NormalizeDirectoryName(_corpusName);
+					var test = NormalizeDirectoryName(_id);
 					var i = 1;
 
 					while (Directory.Exists(Path.Combine(_outputFolder, test)))
 					{
-						test = NormalizeDirectoryName(_corpusName) + "_" + i.ToString("000");
+						test = NormalizeDirectoryName(_id) + "_" + i.ToString("000");
 						i++;
 					}
 					_corpusDirectoryName = test;
 				}
 				return _corpusDirectoryName;
 			}
+		}
+
+		/// <summary></summary>
+		/// <param name="session"></param>
+		public void AddSession(Session session)
+		{
+			_imdiData.Sessions.Add(session);
+		}
+
+		/// <summary></summary>
+		/// <param name="iso3LanguageId"></param>
+		public void AddDocumentLanguage(string iso3LanguageId)
+		{
+			_imdiData.MetadataIso3LanguageIds.Add(iso3LanguageId);
+		}
+
+		/// <summary></summary>
+		/// <param name="iso3LanguageId"></param>
+		public void AddSubjectLanguage(string iso3LanguageId)
+		{
+			_imdiData.ContentIso3LanguageIds.Add(iso3LanguageId);
 		}
 	}
 }

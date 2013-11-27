@@ -15,6 +15,7 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		[Platform(Exclude = "Linux", Reason="Test tries to create directory under /var/lib where user doesn't have write permissions by default")]
 		public void DefaultInitializer_HasCorrectPath()
 		{
 			var repo = GlobalWritingSystemRepository.Initialize(OnMigration);

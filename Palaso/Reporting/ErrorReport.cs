@@ -375,15 +375,40 @@ namespace Palaso.Reporting
 
 		public static string GetOperatingSystemLabel()
 		{
+			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc");
+				startInfo.RedirectStandardOutput = true;
+				startInfo.UseShellExecute = false;
+				var proc = new Process { StartInfo = startInfo };
+				try
+				{
+					proc.Start();
+					proc.WaitForExit(500);
+					if(proc.ExitCode == 0)
+					{
+						var si = proc.StandardOutput.ReadLine();
+						var sr = proc.StandardOutput.ReadLine();
+						var sc = proc.StandardOutput.ReadLine();
+						return String.Format("{0} {1} {2}", si, sr, sc);
+					}
+				}
+				catch(Exception)
+				{ /*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */ }
+			}
+			else
+			{
 			var list = new List<Version>();
 			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
 			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
 			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
 			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
+			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
 			foreach (var version in list)
 			{
 				if(version.Match(System.Environment.OSVersion))
 					return version.Label + " " + Environment.OSVersion.ServicePack;
+			}
 			}
 			return System.Environment.OSVersion.VersionString;
 		}

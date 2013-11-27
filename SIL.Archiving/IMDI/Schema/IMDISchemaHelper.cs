@@ -1,37 +1,27 @@
-﻿using System.IO;
-using System.Xml.Serialization;
-
+﻿
 namespace SIL.Archiving.IMDI.Schema
 {
 	/// <summary>Functions to simplify access to IMDI objects</summary>
 	public static class IMDISchemaHelper
 	{
-		/// <summary>Creates a new String_Type object and sets the Value</summary>
+		/// <summary>Creates a new Vocabulary_Type object and sets the Value</summary>
 		/// <param name="value"></param>
+		/// <param name="isClosedVocabulary"></param>
+		/// <param name="link"></param>
 		/// <returns></returns>
-		public static String_Type SetString(string value)
+		public static VocabularyType SetVocabulary(string value, bool isClosedVocabulary, string link)
 		{
-			return value == null ? null : new String_Type { Value = value };
-		}
+			if (value == null)
+				return null;
 
-		/// <summary>Creates the IMDI xml file from an object</summary>
-		/// <param name="itemType"></param>
-		/// <param name="itemToWrite"></param>
-		/// <param name="fileName"></param>
-		public static void WriteImdiFile(Metatranscript_Value_Type itemType, object itemToWrite, string fileName)
-		{
-			// the IMDI file is always built from a METATRANSCRIPT_Type object
-			var wrapper = new METATRANSCRIPT_Type
+			return new VocabularyType
 			{
-				Type = itemType,
-				Items = new[] {itemToWrite}
+				Value = value,
+				Type = isClosedVocabulary
+					? VocabularyTypeValueType.ClosedVocabulary
+					: VocabularyTypeValueType.OpenVocabulary,
+				Link = link
 			};
-
-			XmlSerializer serializer = new XmlSerializer(typeof(METATRANSCRIPT_Type));
-			TextWriter writer = new StreamWriter(fileName);
-			serializer.Serialize(writer, wrapper);
-			writer.Close();
 		}
-
 	}
 }

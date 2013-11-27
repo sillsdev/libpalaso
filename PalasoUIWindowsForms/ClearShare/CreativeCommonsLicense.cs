@@ -27,7 +27,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override string ToString()
 		{
-			return Abbreviation;  //by-nc-sa
+			return Token;  //by-nc-sa
 		}
 
 		private bool _commercialUseAllowed;
@@ -58,7 +58,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
-		public string kDefaultVersion = "3.0";
+		public const string kDefaultVersion = "4.0";
 
 		/// <summary>
 		/// at the moment, we only use the license url, but in future we could add other custom provisions, like "ok to crop" (if they're allowed by cc?)
@@ -69,6 +69,21 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
 
 			return FromLicenseUrl(metadataProperties["license"]);
+		}
+
+		/// <summary>
+		/// Create a CCL from a string produced by the Token method of a CCL.
+		/// It will have the current default Version.
+		/// Other values are not guaranteed to work, though at present they will.
+		/// Enhance: Possibly we should try to verify that the token is a valid CCL one?
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		public static LicenseInfo FromToken(string token)
+		{
+			var result = new CreativeCommonsLicense();
+			result.Url = MakeUrlFromTokenAndVersion(token, kDefaultVersion);
+			return result;
 		}
 
 
@@ -100,13 +115,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			get
 			{
-				var url = Abbreviation;
-
-				url += "/";
-
-				if(!string.IsNullOrEmpty(Version))
-					url+=Version+"/";
-				return "http://creativecommons.org/licenses/" + url;
+				return MakeUrlFromTokenAndVersion(Token, Version);
 			}
 			set
 			{
@@ -136,32 +145,45 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		}
 
-		private string Abbreviation
+		private static string MakeUrlFromTokenAndVersion(string token, string version)
+		{
+			var url = token + "/";
+
+			if (!string.IsNullOrEmpty(version))
+				url += version + "/";
+			return "http://creativecommons.org/licenses/" + url;
+		}
+
+
+		/// <summary>
+		/// A string form used for serialization
+		/// </summary>
+		public override string Token
 		{
 			get
 			{
-				var url = "";
+				var token = "";
 				if (AttributionRequired)
-					url += "by-";
+					token += "by-";
 				if (!CommercialUseAllowed)
-					url += "nc-";
+					token += "nc-";
 				switch (DerivativeRule)
 				{
 					case DerivativeRules.NoDerivatives:
-						url += "nd";
+						token += "nd";
 						break;
 					case DerivativeRules.DerivativesWithShareAndShareAlike:
-						url += "sa";
+						token += "sa";
 						break;
 					case DerivativeRules.Derivatives:
 						break;
 					default:
 						throw new ArgumentOutOfRangeException("derivativeRule");
 				}
-				url = url.TrimEnd(new char[] {'-'});
-				if (url == "")
-					url = "srr"; //some rights reserved
-				return url;
+				token = token.TrimEnd(new char[] {'-'});
+				if (token == "")
+					token = "srr"; //some rights reserved
+				return token;
 			}
 		}
 

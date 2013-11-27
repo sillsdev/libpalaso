@@ -11,8 +11,10 @@
 		public const string ActorSex = "Actor-Sex.xml";
 		public const string Boolean = "Boolean.xml";
 		public const string ContentChannel = "Content-Channel.xml";
+		public const string ContentEventStructure = "Content-EventStructure.xml";
 		public const string ContentGenre = "Content-Genre.xml";
 		public const string ContentInteractivity = "Content-Interactivity.xml";
+		public const string ContentInvolvement = "Content-Involvement.xml";
 		public const string ContentModalities = "Content-Modalities.xml";
 		public const string ContentPlanningType = "Content-PlanningType.xml";
 		public const string ContentSocialContext = "Content-SocialContext.xml";
@@ -43,5 +45,13 @@
 		public const string WrittenResourceSubTypePrimaryText = "WrittenResource-SubType-PrimaryText.xml";
 		public const string WrittenResourceType = "WrittenResource-Type.xml";
 // ReSharper restore CSharpWarnings::CS1591
+
+		/// <summary>Returns the value for the Link attribute</summary>
+		/// <param name="listName"></param>
+		/// <returns></returns>
+		public static string Link(string listName)
+		{
+			return "http://www.mpi.nl/IMDI/Schema/" + listName;
+		}
 	}
 }

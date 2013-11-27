@@ -1,5 +1,7 @@
 ﻿
+using System;
 using System.Linq;
+using L10NSharp;
 using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI.Lists
@@ -15,13 +17,33 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <summary>This is provided because the XSD uses the term "LanguageId"</summary>
 		public string Id { get { return Value;  } }
 
-		/// <summary>Convert to a Language_Type object</summary>
-		public Language_Type ToLanguageType()
+		/// <summary>Convert to a LanguageType object</summary>
+		public LanguageType ToLanguageType()
 		{
-			return new Language_Type
+			return new LanguageType
 			{
-				Id = new LanguageId_Type { Value = Id },
-				Name = new[] { new LanguageName_Type { Value = Text } },
+				Id = Id,
+				Name = new[] { new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) } },
+			};
+		}
+
+		/// <summary>Convert to a SimpleLanguageType object</summary>
+		public SimpleLanguageType ToSimpleLanguageType()
+		{
+			return new SimpleLanguageType
+			{
+				Id = Id,
+				Name = new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) }
+			};
+		}
+
+		/// <summary>Convert to a SimpleLanguageType object</summary>
+		public SubjectLanguageType ToSubjectLanguageType()
+		{
+			return new SubjectLanguageType
+			{
+				Id = Id,
+				Name = new LanguageNameType { Value = Text, Link = ListType.Link(ListType.MPILanguages) }
 			};
 		}
 	}
@@ -35,10 +57,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <returns></returns>
 		public static LanguageList GetList()
 		{
-			if (_instance == null)
-				_instance = new LanguageList();
-
-			return _instance;
+			return _instance ?? (_instance = new LanguageList());
 		}
 
 		/// ---------------------------------------------------------------------------------------
@@ -54,7 +73,14 @@ namespace SIL.Archiving.IMDI.Lists
 		/// -------------------------------------------------------------------------------------------
 		public static LanguageItem FindByISO3Code(string iso3Code)
 		{
-			return (LanguageItem)(GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code)));
+			var item = GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code));
+
+			// return language item if found
+			if (item != null) return (LanguageItem) item;
+
+			// if not found, throw exception
+			var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.InvalidLanguageCode", "Invalid ISO 639-3 code: {0}");
+			throw new ArgumentException(string.Format(msg, iso3Code), "iso3Code");
 		}
 
 		/// -------------------------------------------------------------------------------------------

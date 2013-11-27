@@ -196,7 +196,7 @@ namespace Palaso.WritingSystems
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
 		{
-			WritingSystemDefinition ws = CreateNew();
+			var ws = (WritingSystemDefinition)CreateNew();
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			if (File.Exists(filePath))
 			{
@@ -227,11 +227,6 @@ namespace Palaso.WritingSystems
 				}
 		}
 
-//        /// <summary>
-//        /// useful for unit tests
-//        /// </summary>
-//        public bool DontAddDefaultDefinitions { get; set; }
-//
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
@@ -245,9 +240,14 @@ namespace Palaso.WritingSystems
 			}
 		}
 
-		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
+		private IWritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
 		{
 			return AllWritingSystems.FirstOrDefault(ws => ws.Bcp47Tag == bcp47Tag);
+		}
+
+		internal void SaveDefinition(IWritingSystemDefinition ws)
+		{
+			SaveDefinition((WritingSystemDefinition)ws);
 		}
 
 		public void SaveDefinition(WritingSystemDefinition ws)
@@ -300,7 +300,7 @@ namespace Palaso.WritingSystems
 			//it'll keep coming back!
 			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Contains(identifier))
 			{
-				WritingSystemDefinition ws = Get(identifier);
+				var ws = Get(identifier);
 				SaveDefinition(ws);
 			}
 
@@ -349,28 +349,18 @@ namespace Palaso.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			var allDefs = new List<WritingSystemDefinition>();
-			foreach (var ws in AllWritingSystems)
-			{
-				if (CanSet(ws))
-				{
-					allDefs.Add(ws);
-				}
-			}
+			var allDefs = AllWritingSystems.Where(CanSet).ToList();
 			foreach (var ws in allDefs)
 			{
 				SaveDefinition(ws);
-				if (!ws.Modified)
-				{
-					OnChangeNotifySharedStore(ws);
-				}
+				OnChangeNotifySharedStore(ws);
 			}
 
 
 			LoadIdChangeMapFromExistingWritingSystems();
 		}
 
-		public override void Set(WritingSystemDefinition ws)
+		public override void Set(IWritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{

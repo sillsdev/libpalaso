@@ -104,10 +104,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
 	{
-		public WritingSystemDefinition Definition { get; set; }
+		public IWritingSystemDefinition Definition { get; set; }
 		protected static Font kExistingItemFont = new Font(SystemFonts.MessageBoxFont.Name, 11);
 
-		public WritingSystemDefinitionTreeItem(WritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
+		public WritingSystemDefinitionTreeItem(IWritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
 			: base(definition.ListLabel, clickAction)
 		{
 			Definition = definition;

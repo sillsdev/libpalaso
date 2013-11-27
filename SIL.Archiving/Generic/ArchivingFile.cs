@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
+using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
 {
@@ -13,6 +13,10 @@ namespace SIL.Archiving.Generic
 		string MimeType { get; }
 		/// <summary />
 		string GeneralType { get; }
+		/// <summary />
+		LanguageStringCollection Descriptions { get; }
+		/// <summary />
+		IAccessProtocol AccessProtocol { get; set; }
 	}
 
 	/// <summary>A file to add to the archive</summary>
@@ -21,6 +25,11 @@ namespace SIL.Archiving.Generic
 		protected readonly string _fullName;
 		protected string _fileSize; // in KB
 		protected string _mimeType;
+		protected LanguageStringCollection _descriptions;
+		protected IAccessProtocol _accessProtocol;
+
+		/// <summary>If this file contains information about another file, put the name of the other file here</summary>
+		public string DescribesAnotherFile;
 
 		/// <summary>Constructor</summary>
 		/// <param name="fullFileNameAndPath"></param>
@@ -31,6 +40,7 @@ namespace SIL.Archiving.Generic
 				throw new FileNotFoundException(fullFileNameAndPath);
 
 			_fullName = fullFileNameAndPath;
+			_descriptions = new LanguageStringCollection();
 		}
 
 		/// <summary>Returns the file size in KB as a string</summary>
@@ -72,6 +82,18 @@ namespace SIL.Archiving.Generic
 		public string GeneralType
 		{
 			get { return GetTypeDescription(); }
+		}
+
+		/// <summary />
+		public LanguageStringCollection Descriptions
+		{
+			get { return _descriptions; }
+		}
+
+		public IAccessProtocol AccessProtocol
+		{
+			get { return _accessProtocol; }
+			set { _accessProtocol = value; }
 		}
 
 		/// <summary>Return type strings consistent with the requirements of the archiving format</summary>
