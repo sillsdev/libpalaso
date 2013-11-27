@@ -1,0 +1,22 @@
+<Combine name="EmailTest" fileversion="2.0">
+  <Configurations active="Debug|Any CPU">
+	<Configuration name="Debug|Any CPU" ctype="CombineConfiguration">
+	  <Entry build="True" name="EmailTest" configuration="Debug|Any CPU" />
+	</Configuration>
+	<Configuration name="Release|Any CPU" ctype="CombineConfiguration">
+	  <Entry build="True" name="EmailTest" configuration="Release|Any CPU" />
+	</Configuration>
+	<Configuration name="Mono Debug|Any CPU" ctype="CombineConfiguration">
+	  <Entry build="True" name="EmailTest" configuration="Mono Debug|Any CPU" />
+	</Configuration>
+	<Configuration name="Mono Release|Any CPU" ctype="CombineConfiguration">
+	  <Entry build="True" name="EmailTest" configuration="Mono Release|Any CPU" />
+	</Configuration>
+  </Configurations>
+  <StartMode startupentry="EmailTest" single="True">
+	<Execute type="None" entry="EmailTest" />
+  </StartMode>
+  <Entries>
+	<Entry filename="EmailTest.csproj" />
+  </Entries>
+</Combine>

@@ -1,4 +1,4 @@
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	partial class SuperToolTipWindowData
 	{

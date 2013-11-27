@@ -5,20 +5,22 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Enchant;
+using Palaso.i18n;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.HotSpot;
 using Palaso.Spelling;
-using Palaso.UI.WindowsForms.i8n;
+using Palaso.UI.WindowsForms.i18n;
 
 namespace Palaso.UI.WindowsForms.Spelling
 {
-	[ProvideProperty("LanguageForSpellChecking", typeof (TextBoxBase))]
-	public class TextBoxSpellChecker: IExtenderProvider, IComponent
+	[ProvideProperty("LanguageForSpellChecking", typeof(TextBoxBase))]
+	public class TextBoxSpellChecker : IExtenderProvider, IComponent
 	{
 		private readonly Dictionary<Control, string> _extendees;
-		private readonly HotSpotProvider hotSpotProvider;
-		private ISite site;
-		private readonly Broker broker;
-		private readonly Dictionary<string, Dictionary> dictionaries;
+		private readonly HotSpotProvider _hotSpotProvider;
+		private ISite _site;
+		private readonly Broker _broker;
+		private readonly Dictionary<string, Dictionary> _dictionaries;
 
 		[DebuggerStepThrough]
 		public TextBoxSpellChecker()
@@ -28,7 +30,7 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 			try
 			{
-				broker = new Broker();
+				_broker = new Broker();
 				brokerSuccessfullyCreated = true;
 			}
 			catch
@@ -37,11 +39,11 @@ namespace Palaso.UI.WindowsForms.Spelling
 				// probably because Enchant isn't installed on this machine
 			}
 
-			if(brokerSuccessfullyCreated)
+			if (brokerSuccessfullyCreated)
 			{
-				hotSpotProvider = new HotSpotProvider();
-				hotSpotProvider.RetrieveHotSpots += CheckSpelling;
-				dictionaries = new Dictionary<string, Dictionary>();
+				_hotSpotProvider = new HotSpotProvider();
+				_hotSpotProvider.RetrieveHotSpots += CheckSpelling;
+				_dictionaries = new Dictionary<string, Dictionary>();
 			}
 		}
 
@@ -49,18 +51,36 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 		private void AddToDictionary(string language, string s)
 		{
-			dictionaries[language].Add(s);
-			hotSpotProvider.RefreshAll();
+			_dictionaries[language].Add(s);
+			_hotSpotProvider.RefreshAll();
 		}
 
 		private IEnumerable<string> GetSuggestions(string language, string text)
 		{
-			return dictionaries[language].Suggest(text);
+			try
+			{
+				return _dictionaries[language].Suggest(text);
+			}
+			catch (Exception error)
+			{
+				//the actual error messages are always worthless, talking about corrupted memory
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
+			}
+			return new List<string>();
 		}
 
 		private bool IsWordSpelledCorrectly(string language, string s)
 		{
-			return dictionaries[language].Check(s);
+			try
+			{
+				return _dictionaries[language].Check(s);
+			}
+			catch (Exception error)
+			{
+				//the actual error messages are always worthless, talking about corrupted memory
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
+			}
+			return true;//review
 		}
 
 		#endregion
@@ -80,13 +100,13 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 		public ISite Site
 		{
-			get { return site; }
-			set { site = value; }
+			get { return _site; }
+			set { _site = value; }
 		}
 
 		public void Dispose()
 		{
-			hotSpotProvider.Dispose();
+			_hotSpotProvider.Dispose();
 			_extendees.Clear();
 			if (Disposed != null)
 			{
@@ -118,8 +138,8 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 		private void OnAddToDictionary(object sender, EventArgs e)
 		{
-			ToolStripMenuItem item = (ToolStripMenuItem) sender;
-			HotSpot.HotSpot hotSpot = (HotSpot.HotSpot) item.Tag;
+			ToolStripMenuItem item = (ToolStripMenuItem)sender;
+			HotSpot.HotSpot hotSpot = (HotSpot.HotSpot)item.Tag;
 
 			string language = GetLanguageForSpellChecking(hotSpot.Control);
 			AddToDictionary(language, hotSpot.Text);
@@ -127,8 +147,8 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 		private static void OnChooseSuggestedSpelling(object sender, EventArgs e)
 		{
-			ToolStripMenuItem item = (ToolStripMenuItem) sender;
-			ReplaceText((HotSpot.HotSpot) item.Tag, item.Text);
+			ToolStripMenuItem item = (ToolStripMenuItem)sender;
+			ReplaceText((HotSpot.HotSpot)item.Tag, item.Text);
 		}
 
 		private static void ReplaceText(HotSpot.HotSpot area, string text)
@@ -183,14 +203,14 @@ namespace Palaso.UI.WindowsForms.Spelling
 
 		private void OnMouseEnterHotSpot(object sender, EventArgs e)
 		{
-			HotSpot.HotSpot hotSpot = (HotSpot.HotSpot) sender;
+			HotSpot.HotSpot hotSpot = (HotSpot.HotSpot)sender;
 			string language = GetLanguageForSpellChecking(hotSpot.Control);
 			hotSpot.Control.ContextMenuStrip = GetSuggestionContextMenu(language, hotSpot);
 		}
 
 		private static void OnMouseLeaveHotSpot(object sender, EventArgs e)
 		{
-			((HotSpot.HotSpot) sender).Control.ContextMenuStrip = null;
+			((HotSpot.HotSpot)sender).Control.ContextMenuStrip = null;
 		}
 
 		[DefaultValue("")]
@@ -212,38 +232,49 @@ namespace Palaso.UI.WindowsForms.Spelling
 			return string.Empty;
 		}
 
-		public void SetLanguageForSpellChecking(Control c, string value)
+		public void SetLanguageForSpellChecking(Control control, string language)
 		{
-			if (c == null)
+			if (control == null)
 			{
 				throw new ArgumentNullException();
 			}
-			if (!CanExtend(c))
+			if (!CanExtend(control))
 			{
 				throw new ArgumentException("Control must be derived from TextBoxBase");
 			}
-			if (String.IsNullOrEmpty(value))
+			if (String.IsNullOrEmpty(language))
 			{
-				if (hotSpotProvider != null)
+				if (_hotSpotProvider != null)
 				{
-					hotSpotProvider.SetEnableHotSpots(c, false);
+					_hotSpotProvider.SetEnableHotSpots(control, false);
 				}
-				_extendees.Remove(c);
+				_extendees.Remove(control);
 			}
 			else
 			{
-				if (broker != null)
+				if (_broker != null)
 				{
-					if (broker.DictionaryExists(value))
+					try
 					{
-						if (!dictionaries.ContainsKey(value))
+						if (_broker.DictionaryExists(language))
 						{
-							dictionaries.Add(value, broker.RequestDictionary(value));
+							if (!_dictionaries.ContainsKey(language))
+							{
+								_dictionaries.Add(language, _broker.RequestDictionary(language));
+
+							}
+							_hotSpotProvider.SetEnableHotSpots(control, true);
 						}
-						hotSpotProvider.SetEnableHotSpots(c, true);
+					}
+					catch (Exception error)
+					{
+						//the actual error messages are always worthless, talking about corrupted memory
+						//ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
+
+						//The number of false errors here is so high that for now, let's not bother to scare the user
 					}
 				}
-				_extendees[c] = value;
+				_extendees[control] = language;
 			}
 		}
 	}

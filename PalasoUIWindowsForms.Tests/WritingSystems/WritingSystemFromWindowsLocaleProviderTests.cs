@@ -1,48 +1,58 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 
-namespace PalasoUIWindowsForms.Tests
+namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
 	[TestFixture]
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
-		[SetUp]
-		public void Setup()
-		{
 
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-
-		}
 		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
+#if MONO
+		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
+#endif
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
-			IWritingSystemProvider provider =
-				new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
-			IEnumerator<WritingSystemDefinition> enumerator = provider.ActiveOSLanguages.GetEnumerator();
-			enumerator.MoveNext();
-			Assert.IsNotNull(enumerator.Current);
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
+			Assert.IsNotNull(provider.First());
+		}
+
+		/// <summary>
+		/// This is only really testing something if your computer happens to have multiple
+		/// keyboards set up for a language.
+		/// </summary>
+		[Test]
+		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
+#if MONO
+		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
+#endif
+		public void GetEnumerator_IfHaveMultipleSystemKeyboardsForSameLanguage_OnlyReturnsOneForEachLanguage()
+		{
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
+			Assert.IsNotNull(provider.First());
+			foreach (var group in provider.GroupBy(d=>d.Bcp47Tag))
+			{
+				Assert.AreEqual(1, group.Count());
+			}
 		}
 
 //        [Test]
 //        public void GetGoodPropertiesOutOfCulture()
 //        {
-//            IWritingSystemProvider provider =
+//            IEnumerable<WritingSystemDefinition> provider =
 //                new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
-//            foreach (WritingSystemDefinition language in provider.ActiveOSLanguages)
+//            foreach (WritingSystemDefinition language in provider.WritingSystems)
 //            {
-////                if (language.ISO == "eng")
+////                if (language.Language == "eng")
 ////                {
 ////                    Assert.AreEqual("Latn",language.Script);
-////                    Assert.AreEqual("en-Latn", language.RFC4646);
+////                    Assert.AreEqual("en-Latn", language.RFC5646);
 ////                }
 //            }
 //        }

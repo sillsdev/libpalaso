@@ -1,4 +1,4 @@
-namespace Palaso.UI.Widgets
+namespace Palaso.UI.WindowsForms.Widgets
 {
 	partial class ControlListBox
 	{

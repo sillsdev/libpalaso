@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -9,122 +10,107 @@ namespace Palaso.BuildTasks.MakePot
 {
 	public class MakePot: Task
 	{
-		Dictionary<string, List<string>> _entries = new Dictionary<string, List<string>>();
-		private string _projectId;
-		private string _msdIdBugsTo;
-		private string _outputFile;
-		private ITaskItem[] _csharpFiles;
-		private ITaskItem[] _xmlFiles;
-		private string _xpathToStrings;
+		readonly Dictionary<string, List<string>> _entries = new Dictionary<string, List<string>>();
 
+		public ITaskItem[] CSharpFiles { get; set; }
 
-		public ITaskItem[] CSharpFiles
-		{
-			get
-			{
-				return _csharpFiles;
-			}
-			set
-			{
-				_csharpFiles = value;
-			}
-		}
-
-		public ITaskItem[] XmlFiles
-		{
-			get
-			{
-				return _xmlFiles;
-			}
-			set
-			{
-				_xmlFiles = value;
-			}
-		}
+		public ITaskItem[] XmlFiles { get; set; }
 
 		[Required]
-		public string ProjectId
-		{
-			get { return _projectId; }
-			set { _projectId = value; }
-		}
+		public string ProjectId { get; set; }
 
-		public string MsdIdBugsTo
-		{
-			get { return _msdIdBugsTo; }
-			set { _msdIdBugsTo = value; }
-		}
+		public string MsdIdBugsTo { get; set; }
 
 		[Required]
-		public string OutputFile
-		{
-			get { return _outputFile; }
-			set { _outputFile = value; }
-		}
+		public string OutputFile { get; set; }
 
-		public string XpathToStrings
+		public string XpathToStrings { get; set; }
+
+		private readonly Regex _pattern;
+
+		public MakePot()
 		{
-			get { return _xpathToStrings; }
-			set { _xpathToStrings = value; }
+			_pattern = new Regex(@"(Text\s*=\s*""(~)?|StringCatalog\.Get(Formatted)?\(""(~)?|""~)(?<key>([^""\\]|\\.)*)""(\s*,\s*""(?<note>([^""\\]|\\.)*)"")?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		}
 
 		public override bool Execute()
 		{
-			using (StreamWriter writer = File.CreateText(_outputFile))
+			using (StreamWriter writer = File.CreateText(OutputFile))
 			{
-				if (_xmlFiles != null)
+				writer.NewLine = "\n";
+				if (XmlFiles != null)
 				{
-					foreach (ITaskItem file in _xmlFiles)
+					foreach (ITaskItem file in XmlFiles)
 					{
 						ProcessXmlFile(file);
 					}
 				}
-				if (_csharpFiles != null)
+				if (CSharpFiles != null)
 				{
-					foreach (ITaskItem file in _csharpFiles)
+					foreach (ITaskItem file in CSharpFiles)
 					{
 						ProcessSrcFile(file.ItemSpec);
 					}
 				}
 
-				WritePotHeader(writer);
+				WritePotFile(writer);
 
-				foreach (KeyValuePair<string, List<string>> pair in _entries)
-				{
-					WriteEntry(pair.Key, pair.Value, writer);
-				}
-
-				this.Log.LogMessage(MessageImportance.High, "MakePot wrote " + _entries.Count + " strings to " + OutputFile);
+				LogMessage(MessageImportance.High, "MakePot wrote " + _entries.Count + " strings to " + OutputFile);
 			}
 			return true;
 		}
 
-		private void WritePotHeader(StreamWriter writer)
+		internal void WritePotFile(TextWriter writer)
 		{
-			writer.WriteLine("msgid \"\"");
-			writer.WriteLine("msgstr \"\"");
-			writer.WriteLine("\"Project-Id-Version: {0}\n\"", ProjectId);
-			writer.WriteLine("\"Report-Msgid-Bugs-To: {0}\n\"", MsdIdBugsTo);
+			WritePotHeader(writer);
 
-			writer.WriteLine("\"POT-Creation-Date: {0}\n\"", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("\"PO-Revision-Date: {0}\n\"", DateTime.UtcNow.ToString("s"));
-			writer.WriteLine("\"Last-Translator: \n\"");
-			writer.WriteLine("\"Language-Team: \n\"");
-			writer.WriteLine("\"MIME-Version: 1.0\n\"");
-			writer.WriteLine("\"Content-Type: text/plain; charset=UTF-8\n\"");
-			writer.WriteLine("\"Content-Transfer-Encoding: 8bit\n\"");
+			foreach (KeyValuePair<string, List<string>> pair in _entries)
+			{
+				WriteEntry(pair.Key, pair.Value, writer);
+			}
 		}
 
+		private void WritePotHeader(TextWriter writer)
+		{
+			/* Note:
+			 * Since the Transifex upgrade to 1.0 circa 2010-12 the pot file is now required to have
+			 * a po header that passes 'msgfmt -c'.
+			 * POEdit does not expect a header in the pot file and doesn't read one if present.  The
+			 * user is invited to enter the data afresh for the po file which replaces any data we have
+			 * provided.  To preserve the original data from the pot we also include the header info
+			 * as a comment.
+			 */
+			writer.WriteLine(@"msgid """"");
+			writer.WriteLine(@"msgstr """"");
+			writer.WriteLine(@"""Project-Id-Version: " + ProjectId + @"\n""");
+			writer.WriteLine(@"""POT-Creation-Date: " + DateTime.UtcNow.ToString("s") + @"\n""");
+			writer.WriteLine(@"""PO-Revision-Date: \n""");
+			writer.WriteLine(@"""Last-Translator: \n""");
+			writer.WriteLine(@"""Language-Team: \n""");
+			writer.WriteLine(@"""Plural-Forms: \n""");
+			writer.WriteLine(@"""MIME-Version: 1.0\n""");
+			writer.WriteLine(@"""Content-Type: text/plain; charset=UTF-8\n""");
+			writer.WriteLine(@"""Content-Transfer-Encoding: 8bit\n""");
+			writer.WriteLine();
+
+			/* As noted above the commented version below isn't read by POEdit, however it is preserved in the comments */
+			writer.WriteLine("# Project-Id-Version: {0}", ProjectId);
+			writer.WriteLine("# Report-Msgid-Bugs-To: {0}", MsdIdBugsTo);
+			writer.WriteLine("# POT-Creation-Date: {0}", DateTime.UtcNow.ToString("s"));
+			writer.WriteLine("# Content-Type: text/plain; charset=UTF-8");
+			writer.WriteLine();
+
+		}
 
 		private void ProcessXmlFile(ITaskItem  fileSpec)
 		{
 			if (string.IsNullOrEmpty(XpathToStrings))
 			{
-				this.Log.LogError("You must define XPathToStrings if you include anything in XPathFiles");
+				LogError("You must define XPathToStrings if you include anything in XPathFiles");
 				return;
 			}
-			this.Log.LogMessage("Processing {0}", fileSpec.ItemSpec);
-			XmlDocument doc = new XmlDocument();
+			LogMessage("Processing {0}", fileSpec.ItemSpec);
+			var doc = new XmlDocument();
 			doc.Load(fileSpec.ItemSpec);
 			foreach (XmlNode node in doc.SelectNodes(XpathToStrings))
 			{
@@ -132,52 +118,108 @@ namespace Palaso.BuildTasks.MakePot
 			}
 		}
 
+		private void LogMessage(string message, params object[] args)
+		{
+			LogMessage(MessageImportance.Normal, message, args);
+		}
+
+		private void LogMessage(MessageImportance importance, string message, params object[] args)
+		{
+			try
+			{
+				if (Log != null)
+					Log.LogMessage(importance.ToString(), message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
+		private void LogError(string message, params object[] args)
+		{
+			try
+			{
+				Log.LogError(message, args);
+			}
+			catch (InvalidOperationException)
+			{
+				// Swallow exceptions for testing
+			}
+		}
+
 		private void AddStringInstance(string stringToTranslate, string commentsForTranslator)
 		{
 			if (!_entries.ContainsKey(stringToTranslate)) //first time we've encountered this string?
 			{
-				this.Log.LogMessage(MessageImportance.Low, "Found '{0}'", stringToTranslate);
+				LogMessage(MessageImportance.Low, "Found '{0}'", stringToTranslate);
 				_entries.Add(stringToTranslate, new List<string>());
 			}
 			_entries[stringToTranslate].Add(commentsForTranslator);//add this reference
 		}
 
-		private void ProcessSrcFile(string filePath)
+		internal void ProcessSrcFile(string filePath)
 		{
-			this.Log.LogMessage("Processing {0}", filePath);
+			LogMessage("Processing {0}", filePath);
 			string contents = File.ReadAllText(filePath);
-			System.Text.RegularExpressions.Regex pattern =
-				new System.Text.RegularExpressions.Regex(@"""~([^""]*)""\s*(,\s*""(.*)"")?", System.Text.RegularExpressions.RegexOptions.Compiled);
 
-			foreach (System.Text.RegularExpressions.Match match in pattern.Matches(contents))
+			foreach (Match match in MatchesInCSharpString(contents))
 			{
-				string str = match.Groups[1].Value;
+				string str = UnescapeString(match.Groups["key"].Value);
+				if (String.IsNullOrEmpty(str))
+				{
+					continue;
+				}
 				if (!_entries.ContainsKey(str)) //first time we've encountered this string?
 				{
-					this.Log.LogMessage(MessageImportance.Low, "Found '{0}'", str);
+					this.LogMessage(MessageImportance.Low, "Found '{0}'", str);
 					_entries.Add(str, new List<string>());
 				}
-				string comments = "#; " + filePath;
-				if (match.Groups.Count >= 3 && match.Groups[3].Length > 0)
+				string comments = "#: " + filePath;
+
+				//catch the second parameter from calls like this:
+				//            StringCataGet("~Note", "The label for the field showing a note.");
+
+				if (!String.IsNullOrEmpty(match.Groups["note"].Value))
 				{
-					string comment = match.Groups[3].Value;
-					this.Log.LogMessage(MessageImportance.Low, "  with comment '{0}'", comment);
+					string comment = match.Groups["note"].Value;
+					this.LogMessage(MessageImportance.Low, "  with comment '{0}'", comment);
 					comments += System.Environment.NewLine + "#. " + comment;
 				}
 				_entries[str].Add(comments);//add this reference
 			}
 		}
 
-		private void WriteEntry(string key, List<string> comments, StreamWriter writer)
+		internal MatchCollection MatchesInCSharpString(string contents)
+		{
+			return _pattern.Matches(contents);
+		}
+
+		private static void WriteEntry(string key, IEnumerable<string> comments, TextWriter writer)
 		{
 			writer.WriteLine("");
-			foreach (string s in comments)
+			foreach (var s in comments)
 			{
 				writer.WriteLine(s);
 			}
-			key = key.Replace("\"", "\\\"");
+			key = EscapeString(key);
 			writer.WriteLine("msgid \"" + key + "\"");
 			writer.WriteLine("msgstr \"\"");
+		}
+
+		public static string EscapeString(string s)
+		{
+			string result = s.Replace("\\", "\\\\"); // This must be first
+			result = result.Replace("\"", "\\\"");
+			return result;
+		}
+
+		public static string UnescapeString(string s)
+		{
+			string result = s.Replace("\\'", "'");
+			result = result.Replace("\\\"", "\"");
+			result = result.Replace("\\\\", "\\");
+			return result;
 		}
 	}
 }

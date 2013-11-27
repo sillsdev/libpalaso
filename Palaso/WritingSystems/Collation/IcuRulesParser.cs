@@ -20,8 +20,8 @@ namespace Palaso.WritingSystems.Collation
 		private Debugger _debugger;
 		private bool _useDebugger;
 
-		// You will notice that the xml tags used don't always match my parser/rule variable name.  We have
-		// the creators of ldml and icu to thank for that.  Collation in ldml is based off of icu and is pretty
+		// You will notice that the xml tags used don't always match my parser/rule variable name.
+		// Collation in ldml is based off of icu and is pretty
 		// much a straight conversion of icu operators into xml tags.  Unfortunately, ICU refers to some constructs
 		// with one name (which I used for my variable names), but ldml uses a different name for the actual
 		// xml tag.
@@ -116,16 +116,6 @@ namespace Palaso.WritingSystems.Collation
 
 		private Parser _someWhiteSpace;
 		private Parser _optionalWhiteSpace;
-		private Parser _octalDigit;
-		private Parser _hexDigitExpect;
-		private Parser _hex4Group;
-		private Parser _singleCharacterEscape;
-		private Parser _hex4Escape;
-		private Parser _hex8Escape;
-		private Parser _hex2Escape;
-		private Parser _hexXEscape;
-		private Parser _octalEscape;
-		private Parser _controlEscape;
 		private Parser _escapeSequence;
 		private Parser _singleQuoteLiteral;
 		private Parser _quotedStringCharacter;
@@ -160,6 +150,9 @@ namespace Palaso.WritingSystems.Collation
 		private Parser _optionHiraganaQ;
 		private Parser _optionNumeric;
 		private Parser _optionVariableTop;
+		private Parser _optionSuppressContractions;
+		private Parser _optionOptimize;
+		private Parser _characterSet;
 		private Rule _option;
 		private Rule _icuRules;
 
@@ -170,34 +163,27 @@ namespace Palaso.WritingSystems.Collation
 			_someWhiteSpace = Ops.OneOrMore(Prims.WhiteSpace);
 			_optionalWhiteSpace = Ops.ZeroOrMore(Prims.WhiteSpace);
 
-			// Valid escaping formats (from ICU source code u_unescape):
-			// \uhhhh - exactly 4 hex digits to specify character
-			// \Uhhhhhhhh - exactly 8 hex digits to specify character
-			// \x{hhhhhhhh} - 1 to 8 hex digits to specify character
-			// \xhh - 1 or 2 hex digits to specify character
-			// \ooo - 1 to 3 octal digits to specify character
-			// \cX - masked control character - take value of X and bitwise AND with 0x1F
-			// \a - U+0007
-			// \b - U+0008
-			// \t - U+0009
-			// \n - U+000A
-			// \v - U+000B
-			// \f - U+000C
-			// \r - U+000D
-			// Any other character following '\' means that literal character (e.g. '\<' ::= '<', '\\' ::= '\')
-			_octalDigit = Prims.Range('0', '7');
-			_hexDigitExpect = Ops.Expect("icu0001", "Invalid hexadecimal character in escape sequence.", Prims.HexDigit);
-			_hex4Group = Ops.Sequence(_hexDigitExpect, _hexDigitExpect, _hexDigitExpect, _hexDigitExpect);
-			_singleCharacterEscape = Prims.AnyChar - Ops.Choice('u', 'U', 'x', _octalDigit, 'c');
-			_hex4Escape = Ops.Sequence('u', _hex4Group);
-			_hex8Escape = Ops.Sequence('U', _hex4Group, _hex4Group);
-			_hexXEscape = Ops.Sequence('x', '{', _hexDigitExpect, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit,
-												 !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, !Prims.HexDigit, '}');
-			_hex2Escape = Ops.Sequence('x', _hexDigitExpect, !Prims.HexDigit);
-			_octalEscape = Ops.Sequence(_octalDigit, !_octalDigit, !_octalDigit);
-			_controlEscape = Ops.Sequence('c', Prims.AnyChar);
-			_escapeSequence = Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.",
-				_singleCharacterEscape | _hex4Escape | _hex8Escape | _hexXEscape | _hex2Escape | _octalEscape | _controlEscape));
+			// Valid escaping formats (from http://www.icu-project.org/userguide/Collate_Customization.html )
+			//
+			// Most of the characters can be used as parts of rules.
+			// However, whitespace characters will be skipped over,
+			// and all ASCII characters that are not digits or letters
+			// are considered to be part of syntax. In order to use
+			// these characters in rules, they need to be escaped.
+			// Escaping can be done in several ways:
+			// * Single characters can be escaped using backslash \ (U+005C).
+			// * Strings can be escaped by putting them between single quotes 'like this'.
+			// * Single quote can be quoted using two single quotes ''.
+			// because Unicode escape sequences are allowed in LDML we need to handle those also,
+			// escapeSequence ::= '\' U[A-F0-9]{8} | u[A-F0-9]{4} | anyChar
+			_escapeSequence = Ops.Choice(new Parser[] {
+									Ops.Sequence('\\', Ops.Sequence('U', Prims.HexDigit, Prims.HexDigit, Prims.HexDigit,
+													   Prims.HexDigit, Prims.HexDigit, Prims.HexDigit, Prims.HexDigit,
+													   Prims.HexDigit)),
+									Ops.Sequence('\\', Ops.Sequence('u', Prims.HexDigit, Prims.HexDigit, Prims.HexDigit,
+													   Prims.HexDigit)),
+									Ops.Sequence('\\', Ops.Expect("icu0002", "Invalid escape sequence.", Prims.AnyChar))
+							  });
 
 			// singleQuoteLiteral ::= "''"
 			// quotedStringCharacter ::= AllChars - "'"
@@ -310,8 +296,12 @@ namespace Palaso.WritingSystems.Collation
 			// optionStrength ::= 'strength' WS ('1' | '2' | '3' | '4' | 'I' | 'i' | '5')
 			// optionHiraganaQ ::= 'hiraganaQ' WS optionOnOff
 			// optionNumeric ::= 'numeric' WS optionOnOff
+			// characterSet ::= '[' (AnyChar - ']')* ']'
+			// optionSuppressContractions ::= 'suppress' WS 'contractions' WS characterSet
+			// optionOptimize ::= 'optimize' WS characterSet
 			// option ::= '[' WS? (optionAlternate | optionBackwards | optionNormalization | optionCaseLevel
-			//            optionCaseFirst | optionStrength | optionHiraganaQ | optionNumeric) WS? ']'
+			//            | optionCaseFirst | optionStrength | optionHiraganaQ | optionNumeric
+			//            | optionSuppressContractions | optionOptimize) WS? ']'
 			_optionOnOff = Ops.Choice("on", "off");
 			_optionAlternate = Ops.Sequence("alternate", _someWhiteSpace, Ops.Choice("non-ignorable", "shifted"));
 			_optionBackwards = Ops.Sequence("backwards", _someWhiteSpace, Ops.Choice('1', '2'));
@@ -321,9 +311,14 @@ namespace Palaso.WritingSystems.Collation
 			_optionStrength = Ops.Sequence("strength", _someWhiteSpace, Ops.Choice('1', '2', '3', '4', 'I', 'i', '5'));
 			_optionHiraganaQ = Ops.Sequence("hiraganaQ", _someWhiteSpace, _optionOnOff);
 			_optionNumeric = Ops.Sequence("numeric", _someWhiteSpace, _optionOnOff);
+			_characterSet = Ops.Sequence('[', Ops.ZeroOrMore(Prims.AnyChar - ']'), ']');
+			_optionSuppressContractions = Ops.Sequence("suppress", _someWhiteSpace, "contractions", _someWhiteSpace,
+				_characterSet);
+			_optionOptimize = Ops.Sequence("optimize", _someWhiteSpace, _characterSet);
 			_option = new Rule("option", Ops.Sequence('[', _optionalWhiteSpace, _optionAlternate |
 				_optionBackwards | _optionNormalization | _optionCaseLevel | _optionCaseFirst |
-				_optionStrength | _optionHiraganaQ | _optionNumeric, _optionalWhiteSpace, ']'));
+				_optionStrength | _optionHiraganaQ | _optionNumeric | _optionSuppressContractions |
+				_optionOptimize, _optionalWhiteSpace, ']'));
 
 			// I don't know if ICU requires all options first (it's unclear), but I am. :)
 			// icuRules ::= WS? (option WS?)* (oneRule WS?)* EOF
@@ -346,13 +341,7 @@ namespace Palaso.WritingSystems.Collation
 
 		private void AssignSemanticActions()
 		{
-			_singleCharacterEscape.Act += OnSingleCharacterEscape;
-			_hex4Escape.Act += OnHexEscape;
-			_hex8Escape.Act += OnHexEscape;
-			_hex2Escape.Act += OnHexEscape;
-			_hexXEscape.Act += OnHexEscape;
-			_octalEscape.Act += OnOctalEscape;
-			_controlEscape.Act += OnControlEscape;
+			_escapeSequence.Act += OnEscapeSequence;
 			_singleQuoteLiteral.Act += OnSingleQuoteLiteral;
 			_quotedStringCharacter.Act += OnDataCharacter;
 			_normalCharacter.Act += OnDataCharacter;
@@ -377,6 +366,9 @@ namespace Palaso.WritingSystems.Collation
 			_optionHiraganaQ.Act += OnOptionHiraganaQ;
 			_optionNumeric.Act += OnOptionNormal;
 			_optionVariableTop.Act += OnOptionVariableTop;
+			_characterSet.Act += OnCharacterSet;
+			_optionSuppressContractions.Act += OnOptionSuppressContractions;
+			_optionOptimize.Act += OnOptionOptimize;
 			_icuRules.Act += OnIcuRules;
 		}
 
@@ -449,10 +441,28 @@ namespace Palaso.WritingSystems.Collation
 				}
 			}
 
+			// adds node at end of children
 			public void AppendChild(IcuDataObject ido)
 			{
 				Debug.Assert(_nodeType == XmlNodeType.Element);
+				Debug.Assert(ido != null);
 				_children.Add(ido);
+			}
+
+			// inserts child node in correct sort order
+			public void InsertChild(IcuDataObject ido)
+			{
+				Debug.Assert(_nodeType == XmlNodeType.Element);
+				Debug.Assert(ido != null);
+				int i;
+				for (i=0; i < _children.Count; ++i)
+				{
+					if (ido.CompareTo(_children[i]) < 0)
+					{
+						break;
+					}
+				}
+				_children.Insert(i, ido);
 			}
 
 			public void Write(XmlWriter writer)
@@ -471,7 +481,7 @@ namespace Palaso.WritingSystems.Collation
 						writer.WriteAttributeString(_name, _value);
 						break;
 					case XmlNodeType.Text:
-						LdmlAdaptor.WriteLdmlText(writer, _value);
+						LdmlDataMapper.WriteLdmlText(writer, _value);
 						break;
 					default:
 						Debug.Assert(false, "Unhandled Icu Data Object type");
@@ -483,10 +493,8 @@ namespace Palaso.WritingSystems.Collation
 
 			public int CompareTo(IcuDataObject other)
 			{
-				Dictionary<XmlNodeType, int> _nodeTypeStrength = new Dictionary<XmlNodeType, int>(3);
-				_nodeTypeStrength[XmlNodeType.Attribute] = 1;
-				_nodeTypeStrength[XmlNodeType.Element] = 2;
-				_nodeTypeStrength[XmlNodeType.Text] = 3;
+				var _nodeTypeStrength = new Dictionary<XmlNodeType, int>
+					{{XmlNodeType.Attribute, 1}, {XmlNodeType.Element, 2}, {XmlNodeType.Text, 3}};
 				int result = _nodeTypeStrength[_nodeType].CompareTo(_nodeTypeStrength[other._nodeType]);
 				if (result != 0)
 				{
@@ -511,7 +519,8 @@ namespace Palaso.WritingSystems.Collation
 		private Stack<string> _currentOperators;
 		private StringBuilder _currentIndirectPosition;
 		private Queue<IcuDataObject> _attributesForReset;
-		private List<IcuDataObject> _optionAttributes;
+		private List<IcuDataObject> _optionElements;
+		private string _currentCharacterSet;
 
 		private void InitializeDataObjects()
 		{
@@ -521,7 +530,8 @@ namespace Palaso.WritingSystems.Collation
 			_currentOperators = new Stack<string>();
 			_currentIndirectPosition = new StringBuilder();
 			_attributesForReset = new Queue<IcuDataObject>();
-			_optionAttributes = new List<IcuDataObject>();
+			_optionElements = new List<IcuDataObject>();
+			_currentCharacterSet = null;
 		}
 
 		private void ClearDataObjects()
@@ -532,6 +542,8 @@ namespace Palaso.WritingSystems.Collation
 			_currentOperators = null;
 			_currentIndirectPosition = null;
 			_attributesForReset = null;
+			_optionElements = null;
+			_currentCharacterSet = null;
 		}
 
 		private void AddXmlNodeWithData(string name)
@@ -628,65 +640,16 @@ namespace Palaso.WritingSystems.Collation
 			_attributesForReset.Enqueue(attr);
 		}
 
-		private void OnSingleCharacterEscape(object sender, ActionEventArgs args)
+		private void OnEscapeSequence(object sender, ActionEventArgs args)
 		{
-			Debug.Assert(args.Value.Length == 1);
-			Dictionary<char, char> substitutes = new Dictionary<char, char>(7);
-			substitutes['a'] = '\u0007';
-			substitutes['b'] = '\u0008';
-			substitutes['t'] = '\u0009';
-			substitutes['n'] = '\u000A';
-			substitutes['v'] = '\u000B';
-			substitutes['f'] = '\u000C';
-			substitutes['r'] = '\u000D';
-			char newChar = args.Value[0];
-			if (substitutes.ContainsKey(newChar))
+			Debug.Assert(args.Value[0] == '\\');
+			if(args.Value.Length == 2)
 			{
-				newChar = substitutes[newChar];
+				_currentDataString.Append(args.Value[1]); //drop the backslash and just insert the escaped character
 			}
-			_currentDataString.Append(newChar.ToString());
-		}
-
-		private void OnHexEscape(object sender, ActionEventArgs args)
-		{
-			Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 11);
-			string hex = args.Value.Substring(1);
-			if (hex[0] == '{')
+			else if (args.Value.Length == 6 || args.Value.Length == 10)//put unicode escapes into text unmolested
 			{
-				hex = hex.Substring(1, hex.Length - 2);
-			}
-			AddCharacterFromCode(Int32.Parse(hex, NumberStyles.AllowHexSpecifier));
-		}
-
-		private void OnOctalEscape(object sender, ActionEventArgs args)
-		{
-			Debug.Assert(args.Value.Length >= 2 && args.Value.Length <= 4);
-			// There is no octal number style, so we have to do it manually.
-			int code = 0;
-			for (int i=0; i < args.Value.Length; i++)
-			{
-				code = code * 8 + Int32.Parse(args.Value.Substring(i, 1));
-			}
-			AddCharacterFromCode(code);
-		}
-
-		private void OnControlEscape(object sender, ActionEventArgs args)
-		{
-			Debug.Assert(args.Value.Length == 2);
-			AddCharacterFromCode(args.Value[1] & 0x1F);
-		}
-
-		private void AddCharacterFromCode(int code)
-		{
-			try
-			{
-				_currentDataString.Append(Char.ConvertFromUtf32(code));
-			}
-			catch (ArgumentOutOfRangeException e)
-			{
-				string message =
-					string.Format("Unable to parse ICU: Invalid character code (U+{0:X}) in escape sequence.", code);
-				throw new ApplicationException(message, e);
+				_currentDataString.Append(args.Value);
 			}
 		}
 
@@ -749,7 +712,7 @@ namespace Palaso.WritingSystems.Collation
 			Match match = regex.Match(args.Value);
 			Debug.Assert(match.Success);
 			IcuDataObject attr = IcuDataObject.CreateAttribute(match.Groups[1].Value, match.Groups[2].Value);
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionBackwards(object sender, ActionEventArgs args)
@@ -767,7 +730,7 @@ namespace Palaso.WritingSystems.Collation
 					Debug.Assert(false, "Unhandled backwards option.");
 					break;
 			}
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionStrength(object sender, ActionEventArgs args)
@@ -796,14 +759,14 @@ namespace Palaso.WritingSystems.Collation
 					Debug.Assert(false, "Unhandled strength option.");
 					break;
 			}
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionHiraganaQ(object sender, ActionEventArgs args)
 		{
 			IcuDataObject attr = IcuDataObject.CreateAttribute("hiraganaQuaternary");
 			attr.Value = args.Value.EndsWith("on") ? "on" : "off";
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
 		}
 
 		private void OnOptionVariableTop(object sender, ActionEventArgs args)
@@ -831,7 +794,31 @@ namespace Palaso.WritingSystems.Collation
 				}
 			}
 			attr.Value = escapedValue;
-			_optionAttributes.Add(attr);
+			AddSettingsAttribute(attr);
+		}
+
+		private void OnCharacterSet(object sender, ActionEventArgs args)
+		{
+			Debug.Assert(_currentCharacterSet == null);
+			_currentCharacterSet = args.Value;
+		}
+
+		private void OnOptionSuppressContractions(object sender, ActionEventArgs args)
+		{
+			Debug.Assert(_currentCharacterSet != null);
+			var element = IcuDataObject.CreateElement("suppress_contractions");
+			element.AppendChild(IcuDataObject.CreateText(_currentCharacterSet));
+			_optionElements.Add(element);
+			_currentCharacterSet = null;
+		}
+
+		private void OnOptionOptimize(object sender, ActionEventArgs args)
+		{
+			Debug.Assert(_currentCharacterSet != null);
+			var element = IcuDataObject.CreateElement("optimize");
+			element.AppendChild(IcuDataObject.CreateText(_currentCharacterSet));
+			_optionElements.Add(element);
+			_currentCharacterSet = null;
 		}
 
 		// Use this to optimize successive difference elements into one element
@@ -914,6 +901,25 @@ namespace Palaso.WritingSystems.Collation
 			//}
 		}
 
+		private void AddSettingsAttribute(IcuDataObject attr)
+		{
+			IcuDataObject settings = null;
+			foreach (var option in _optionElements)
+			{
+				if (option.Name == "settings")
+				{
+					settings = option;
+					break;
+				}
+			}
+			if (settings == null)
+			{
+				settings = IcuDataObject.CreateElement("settings");
+				_optionElements.Insert(0, settings);
+			}
+			settings.InsertChild(attr);
+		}
+
 		private void OnIcuRules(object sender, ActionEventArgs args)
 		{
 			OptimizeNodes();
@@ -923,26 +929,18 @@ namespace Palaso.WritingSystems.Collation
 				return;
 			}
 			PreserveNonIcuSettings();
-			// add the settings element, if needed.
-			if (_optionAttributes.Count > 0)
+			// add any the option elements, if needed.
+			if (_optionElements.Count > 0)
 			{
-				_optionAttributes.Sort();
-				_writer.WriteStartElement("settings");
-				foreach (IcuDataObject attr in _optionAttributes)
-				{
-					attr.Write(_writer);
-				}
-				_writer.WriteEndElement();
+				_optionElements.Sort();
+				_optionElements.ForEach(e => e.Write(_writer));
 			}
 			if (_currentNodes.Count == 0)
 			{
 				return;
 			}
 			_writer.WriteStartElement("rules");
-			foreach (IcuDataObject node in _currentNodes)
-			{
-				node.Write(_writer);
-			}
+			_currentNodes.ForEach(n => n.Write(_writer));
 			_writer.WriteEndElement();
 		}
 	}

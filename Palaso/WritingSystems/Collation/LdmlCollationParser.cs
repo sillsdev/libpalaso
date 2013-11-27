@@ -3,13 +3,37 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
+using System.Text;
+using Palaso.Xml;
 
 namespace Palaso.WritingSystems.Collation
 {
 	public class LdmlCollationParser
 	{
 		private const string NewLine = "\r\n";
+		private static readonly Regex UnicodeEscape4Digit = new Regex(@"\\[u]([0-9A-F]{4})", RegexOptions.IgnoreCase);
+		private static readonly Regex UnicodeEscape8Digit = new Regex(@"\\[U]([0-9A-F]{8})", RegexOptions.IgnoreCase);
+
+		/// <summary>
+		/// This method will replace any unicode escapes in rules with their actual unicode characters
+		/// and return the resulting string.
+		/// Method created since IcuRulesCoallator does not appear to interpret unicode escapes.
+		/// </summary>
+		/// <param name="rules"></param>
+		public static string ReplaceUnicodeEscapesForICU(string rules)
+		{
+			if(!string.IsNullOrEmpty(rules))
+			{
+				//replace all unicode escapes in the rules string with the unicode character they represent.
+				rules = UnicodeEscape8Digit.Replace(rules, match => ((char)int.Parse(match.Groups[1].Value,
+				  NumberStyles.HexNumber)).ToString());
+				rules = UnicodeEscape4Digit.Replace(rules, match => ((char)int.Parse(match.Groups[1].Value,
+				   NumberStyles.HexNumber)).ToString());
+			}
+			return rules;
+		}
 
 		public static string GetIcuRulesFromCollationNode(string collationXml)
 		{
@@ -26,12 +50,20 @@ namespace Palaso.WritingSystems.Collation
 			int variableTopPositionIfNotUsed = 0;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
-				if (XmlHelpers.FindElement(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuSettingsFromSettingsNode(collationReader, out variableTop);
 					variableTopPositionIfNotUsed = icuRules.Length;
 				}
-				if (XmlHelpers.FindElement(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "suppress_contractions", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuOptionFromNode(collationReader);
+				}
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "optimize", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuOptionFromNode(collationReader);
+				}
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
 				{
 					icuRules += GetIcuRulesFromRulesNode(collationReader, ref variableTop);
 				}
@@ -63,15 +95,16 @@ namespace Palaso.WritingSystems.Collation
 			XmlReaderSettings readerSettings = new XmlReaderSettings();
 			readerSettings.CloseInput = true;
 			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+			readerSettings.IgnoreWhitespace = true;
 			rules = null;
 			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
 				// simple rules can't deal with any non-default settings
-				if (XmlHelpers.FindElement(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
 				{
 					return false;
 				}
-				if (!XmlHelpers.FindElement(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
+				if (!XmlHelpers.FindNextElementInSequence(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
 				{
 					rules = string.Empty;
 					return true;
@@ -112,14 +145,14 @@ namespace Palaso.WritingSystems.Collation
 				switch (reader.Name)
 				{
 					case "p":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + NewLine + EscapeForIcu(GetTextData(reader));
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + NewLine + GetTextData(reader);
 						break;
 					case "s":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + EscapeForIcu(GetTextData(reader));
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetTextData(reader);
 						break;
 					case "t":
 						BeginSimpleGroupIfNeeded(ref inGroup, ref simpleRules);
-						simpleRules += " " + EscapeForIcu(GetTextData(reader));
+						simpleRules += " " + GetTextData(reader);
 						break;
 					case "pc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
@@ -159,37 +192,57 @@ namespace Palaso.WritingSystems.Collation
 				return;
 			}
 			inGroup = true;
-			rules = rules.Insert(rules.Length - 1, "(");
+			int lastIndexOfNewLine = rules.LastIndexOf(NewLine) + NewLine.Length;
+			int lastIndexOfSpace = rules.LastIndexOf(" ") + " ".Length;
+			int mostRecentPossiblepositionForABracket = Math.Max(lastIndexOfNewLine, lastIndexOfSpace);
+			rules = rules.Insert(mostRecentPossiblepositionForABracket, "(");
 			return;
 		}
 
+		/// <summary>
+		/// This method will escape necessary characters while avoiding escaping characters that are already escaped
+		/// and leave unicode escape sequences alone.
+		/// </summary>
+		/// <param name="unescapedData"></param>
+		/// <returns></returns>
 		private static string EscapeForIcu(string unescapedData)
 		{
+			const int longEscapeLen = 10; //length of a \UFFFFFFFF escape
+			const int shortEscLen = 6;    //length of a \uFFFF escape
 			string result = string.Empty;
 			for (int i = 0; i < unescapedData.Length; i++)
 			{
-				result += EscapeForIcu(Char.ConvertToUtf32(unescapedData, i));
-				if (Char.IsSurrogate(unescapedData, i))
+				//if we are looking at an backslash check if the following character needs escaping, if it does
+				//we do not need to escape it again
+				if (unescapedData[i] == '\\' && i + 1 < unescapedData.Length
+					&& NeedsEscaping(Char.ConvertToUtf32(unescapedData, i + 1), "" + unescapedData[i + 1]))
 				{
-					i++;
+					result += unescapedData[i++];//add the backslash and advance
+					result += unescapedData[i]; //add the already escaped character
+				}//handle long unicode escapes
+				else if (i + longEscapeLen <= unescapedData.Length &&
+						 UnicodeEscape8Digit.IsMatch(unescapedData.Substring(i, longEscapeLen)))
+				{
+					result += unescapedData.Substring(i, longEscapeLen);
+					i += longEscapeLen - 1;
+				}//handle short unicode escapes
+				else if (i + shortEscLen <= unescapedData.Length &&
+						 UnicodeEscape4Digit.IsMatch(unescapedData.Substring(i, shortEscLen)))
+				{
+					result += unescapedData.Substring(i, shortEscLen);
+					i += shortEscLen - 1;
+				}
+				else
+				{
+					//handle everything else
+					result += EscapeForIcu(Char.ConvertToUtf32(unescapedData, i));
+					if (Char.IsSurrogate(unescapedData, i))
+					{
+						i++;
+					}
 				}
 			}
 			return result;
-		}
-
-		private static string BuildSimpleRulesFromConcatenatedData(string op, string data)
-		{
-			string rule = string.Empty;
-			for (int i = 0; i < data.Length; i++)
-			{
-				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i));
-				rule += op + icuData;
-				if (Char.IsSurrogate(data, i))
-				{
-					i++;
-				}
-			}
-			return rule;
 		}
 
 		private static string EscapeForIcu(int code)
@@ -199,22 +252,41 @@ namespace Palaso.WritingSystems.Collation
 			// ICU only requires escaping all whitespace and any ASCII character that is not a letter or digit
 			// Honestly, there shouldn't be any whitespace that is a surrogate, but we're checking
 			// to maintain the highest compatibility with future Unicode code points.
-			if ((code < 0x7F && !Char.IsLetterOrDigit(ch, 0)) || Char.IsWhiteSpace(ch, 0))
+			if (NeedsEscaping(code, ch))
 			{
-				if (Char.IsSurrogate(ch, 0))
-				{
-					result = "\\U" + code.ToString("X8");
-				}
-				else
-				{
-					result = "\\u" + code.ToString("X4");
-				}
+				result = "\\" + ch;
 			}
 			else
 			{
 				result = ch;
 			}
 			return result;
+		}
+
+		private static bool NeedsEscaping(int code, string ch)
+		{
+			return (code < 0x7F && !Char.IsLetterOrDigit(ch, 0)) || Char.IsWhiteSpace(ch, 0);
+		}
+
+		private static string BuildSimpleRulesFromConcatenatedData(string op, string data)
+		{
+			string rule = string.Empty;
+			bool surrogate = false;
+			for (int i = 0; i < data.Length; i++)
+			{
+				if (surrogate)
+				{
+					rule += data[i];
+					surrogate = false;
+					continue;
+				}
+				rule += op + data[i];
+				if (Char.IsSurrogate(data, i))
+				{
+					surrogate = true;
+				}
+			}
+			return rule;
 		}
 
 		private static string GetIcuSettingsFromSettingsNode(XmlReader reader, out string variableTop)
@@ -275,6 +347,22 @@ namespace Palaso.WritingSystems.Collation
 					continue;
 				}
 				result += Char.ConvertFromUtf32(int.Parse(hexCode, NumberStyles.AllowHexSpecifier));
+			}
+			return result;
+		}
+
+		private static string GetIcuOptionFromNode(XmlReader reader)
+		{
+			Debug.Assert(reader.NodeType == XmlNodeType.Element);
+			string result;
+			switch (reader.Name)
+			{
+				case "suppress_contractions":
+				case "optimize":
+					result = String.Format(NewLine + "[{0} {1}]", reader.Name.Replace('_', ' '), reader.ReadElementString());
+					break;
+				default:
+					throw new ApplicationException(String.Format("Invalid LDML collation option element: {0}", reader.Name));
 			}
 			return result;
 		}
@@ -455,17 +543,17 @@ namespace Palaso.WritingSystems.Collation
 		private static string BuildRuleFromConcatenatedData(string op, XmlReader reader, ref string variableTop)
 		{
 			string data = GetTextData(reader);
-			string rule = string.Empty;
+			StringBuilder rule = new StringBuilder(20 * data.Length);
 			for (int i=0; i < data.Length; i++)
 			{
 				string icuData = EscapeForIcu(Char.ConvertToUtf32(data, i));
-				rule += String.Format(" {0} {1}{2}", op, icuData, GetVariableTopString(icuData, ref variableTop));
+				rule.AppendFormat(" {0} {1}{2}", op, icuData, GetVariableTopString(icuData, ref variableTop));
 				if (Char.IsSurrogate(data, i))
 				{
 					i++;
 				}
 			}
-			return rule;
+			return rule.ToString();
 		}
 
 		private static string GetVariableTopString(string icuData, ref string variableTop)

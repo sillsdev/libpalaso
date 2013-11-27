@@ -434,27 +434,59 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
-		public void VariableTop_ProducesCorrectSettingsNode()
+		public void VariableTop_ProducesCorrectIcu()
 		{
 			_collationXml = "<settings variableTop=\"u41\" /><rules><reset>A</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
 			Assert.AreEqual("& A < [variable top]", icu);
 		}
 
+		[Test]
+		public void SuppressContractions_ProducesCorrectIcu()
+		{
+			_collationXml = "<suppress_contractions>[abc]</suppress_contractions><rules />";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("[suppress contractions [abc]]", icu);
+		}
+
+		[Test]
+		public void Optimize_ProducesCorrectIcu()
+		{
+			_collationXml = "<optimize>[abc]</optimize><rules />";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("[optimize [abc]]", icu);
+		}
 
 		[Test]
 		public void IcuEscapableCharacter_ProducesCorrectEscapeSequence()
 		{
 			_collationXml = "<rules><reset>(</reset></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("& \\u0028", icu);
+			Assert.AreEqual("& \\(", icu);
 		}
 
-		[Test, ExpectedException(typeof(ApplicationException))]
+		[Test]
+		public void IcuEscapedCharacter_ProducesCorrectEscapeSequence()
+		{
+			_collationXml = "<rules><reset>\\(</reset></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& \\(", icu);
+		}
+
+		[Test]
+		public void IcuUnicodeEscapes_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset>\\u0062</reset><p>\\U00000061</p></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& \\u0062 < \\U00000061", icu);
+		}
+
+		[Test]
 		public void InvalidLdml_Throws()
 		{
 			_collationXml = "<rules><m>a</m></rules>";
-			LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.Throws<ApplicationException>(
+				() => LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml));
 		}
 
 		[Test]
@@ -462,7 +494,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			// certainly some of this actually doesn't form semantically vaild ICU, but it should be syntactically correct
 			string icuExpected = "[strength 3]\r\n[alternate shifted]\r\n[backwards 2]\r\n& [before 1] [first regular] < b < A < cde\r\n"
-				+ "& gh << p < K | Q / \\u003C < [last variable] << 4 < [variable top] < 9";
+				+ "& gh << p < K | Q / \\< < [last variable] << 4 < [variable top] < 9";
 			string xml = "<settings strength=\"tertiary\" alternate=\"shifted\" backwards=\"on\" variableTop=\"u34\" />"
 				+ "<rules><reset before=\"primary\"><first_non_ignorable /></reset>"
 				+ "<pc>bA</pc><p>cde</p><reset>gh</reset><s>p</s>"
@@ -480,6 +512,15 @@ namespace Palaso.Tests.WritingSystems.Collation
 			string simple;
 			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
 			Assert.AreEqual(string.Empty, simple);
+		}
+
+		[Test]
+		public void WhiteSpace_IsIgnored()
+		{
+			_collationXml = "<rules>\r\n<reset before=\"primary\">\r\n<first_non_ignorable />\r\n</reset>\r\n<p>a</p>\r\n<sc>bcd</sc>\r\n</rules>";
+			string simple;
+			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
+			Assert.AreEqual("a b c d", simple);
 		}
 
 		[Test]
@@ -553,6 +594,15 @@ namespace Palaso.Tests.WritingSystems.Collation
 									  + "<x><t>B</t><extend>C</extend></x></rules>";
 			string simple;
 			Assert.IsFalse(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
+		}
+
+		[Test]
+		public void CharacterEscapedForIcu_NotEscapedInSimpleRules()
+		{
+			_collationXml = "<rules><reset before=\"primary\"><first_non_ignorable /></reset><p>=</p><p>b</p></rules>";
+			string simple;
+			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
+			Assert.AreEqual("=\r\nb", simple);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="TestStamping" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
 	<SourceFolder>c:\wesay\src</SourceFolder>
 	<CSharpFiles>c:\wesay\src</CSharpFiles>
@@ -8,6 +8,14 @@
 	<CSharpFiles Include="c:\wesay\src\**\*.cs"/>
 	<XmlFiles Include="c:\wesay\common\**\*.WeSayConfig"/>
   </ItemGroup>
+  <!--
+  <UsingTask AssemblyFile="c:\dev\palaso\output\debug\Palaso.BuildTasks.dll" TaskName="StampAssemblies" />
+  <Target Name="TestStamping">
+	<ItemGroup>
+	  <AssemblyInfoFiles Include="..\**\assemblyinfo.cs"/>
+	</ItemGroup>
+	<StampAssemblies Version="*.*.3.4" InputAssemblyPaths="@(AssemblyInfoFiles)" />
+  </Target>
 
   <Target Name="Build">
    <CallTarget Targets ="MakePotFilesTest"/>
@@ -39,5 +47,26 @@
 	  <Output TaskParameter="OutputFileName" ItemName="Compile" />
 	</MakeWixForDirTree>
   </Target>
+
+  <UsingTask AssemblyFile="..\output\Debug\Palaso.BuildTasks.dll" TaskName="Split" />
+  <Target Name="SplitTest">
+	<Split Input="1234:abcd"
+			 Delimiter=":"
+			 OutputSubString="0"
+		   >
+	  <Output TaskParameter="ReturnValue" PropertyName="Version" />
+	</Split>
+	<Message Text="Version: $(Version)" />
+  </Target>
+  -->
+
+  <UsingTask AssemblyFile="..\output\Debug\Palaso.BuildTasks.dll" TaskName="FileUpdate" />
+  <Target Name="FileUpdateTest">
+  <FileUpdate File="FileUpdateSample.txt"
+			  Regex="Property_ProductVersion = \&quot;.*\&quot;"
+			  ReplacementText ="Property_ProductVersion = &quot;999&quot;" />
+
+  </Target>
+
 
 </Project>

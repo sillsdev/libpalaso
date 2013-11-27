@@ -1,0 +1,184 @@
+<mockup version="1.0" skin="sketch">
+  <controls>
+	<control controlID="9" controlTypeID="com.balsamiq.mockups::TitleWindow" x="79" y="136" w="504" h="480" zOrder="0" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<topheight>26</topheight>
+		<text>New%20WeSay%20Project...</text>
+		<bottomheight>0</bottomheight>
+	  </controlProperties>
+	</control>
+	<control controlID="10" controlTypeID="com.balsamiq.mockups::Label" x="144" y="518" w="-1" h="-1" zOrder="1" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Copy%20initial%20Fonts%2C%20Sorting%2C%20and%20Keyboard%20from%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="11" controlTypeID="com.balsamiq.mockups::Label" x="144" y="340" w="-1" h="-1" zOrder="2" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Find%20language%20in%20Ethnologue%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="12" controlTypeID="com.balsamiq.mockups::List" x="144" y="369" w="404" h="124" zOrder="3" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Name%09Code%0AEdolo%20%20%20%20%20%20%20etr%0AEdomite%09xdm%0AEdopi%20%20%20%09dbf</text>
+		<hasHeader>true</hasHeader>
+		<verticalScrollbar>true</verticalScrollbar>
+		<selectedIndex>0</selectedIndex>
+	  </controlProperties>
+	</control>
+	<control controlID="13" controlTypeID="com.balsamiq.mockups::TextInput" x="328" y="340" w="220" h="-1" zOrder="4" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>edo</text>
+	  </controlProperties>
+	</control>
+	<control controlID="17" controlTypeID="com.balsamiq.mockups::Link" x="144" y="493" w="-1" h="-1" zOrder="5" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>If%20you%20can%27t%20find%20the%20language...</text>
+		<size>9</size>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="21" controlTypeID="com.balsamiq.mockups::Label" x="109" y="182" w="92" h="27" zOrder="6" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Step%202%20of%203</text>
+	  </controlProperties>
+	</control>
+	<control controlID="22" controlTypeID="com.balsamiq.mockups::Label" x="109" y="203" w="323" h="27" zOrder="7" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Identify%20the%20Language%20Writing%20System</text>
+	  </controlProperties>
+	</control>
+	<control controlID="23" controlTypeID="com.balsamiq.mockups::RadioButton" x="109" y="261" w="-1" h="-1" zOrder="8" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Use%20one%20already%20on%20this%20computer%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="24" controlTypeID="com.balsamiq.mockups::RadioButton" x="109" y="289" w="-1" h="-1" zOrder="9" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Import%20from%20LDML%20file</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="25" controlTypeID="com.balsamiq.mockups::RadioButton" x="109" y="314" w="-1" h="-1" zOrder="10" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Create%20new</text>
+		<state>selected</state>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="26" controlTypeID="com.balsamiq.mockups::Button" x="491" y="564" w="-1" h="-1" zOrder="11" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Next</text>
+	  </controlProperties>
+	</control>
+	<control controlID="27" controlTypeID="com.balsamiq.mockups::ComboBox" x="455" y="518" w="93" h="-1" zOrder="12" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>None</text>
+	  </controlProperties>
+	</control>
+	<control controlID="28" controlTypeID="com.balsamiq.mockups::ComboBox" x="360" y="261" w="187" h="-1" zOrder="13" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text/>
+		<state>disabled</state>
+	  </controlProperties>
+	</control>
+	<control controlID="29" controlTypeID="com.balsamiq.mockups::Button" x="455" y="289" w="93" h="-1" zOrder="14" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Locate...</text>
+		<state>disabled</state>
+	  </controlProperties>
+	</control>
+	<control controlID="30" controlTypeID="com.balsamiq.mockups::TitleWindow" x="620" y="136" w="504" h="480" zOrder="15" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<topheight>26</topheight>
+		<text>New%20WeSay%20Project...</text>
+		<bottomheight>0</bottomheight>
+	  </controlProperties>
+	</control>
+	<control controlID="31" controlTypeID="com.balsamiq.mockups::Label" x="685" y="518" w="-1" h="-1" zOrder="16" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Copy%20initial%20Fonts%2C%20Sorting%2C%20and%20Keyboard%20from%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="32" controlTypeID="com.balsamiq.mockups::Label" x="685" y="340" w="-1" h="-1" zOrder="17" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Find%20language%20in%20Ethnologue%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="33" controlTypeID="com.balsamiq.mockups::List" x="685" y="369" w="404" h="124" zOrder="18" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Name%09Code%0ANorthern%20Tarahumara%09thh%0ANorthern%20Tepehuan%09ntp%0ANorthern%20Thai%09nod%0ANorthern%20Tiwa%09twf</text>
+		<hasHeader>true</hasHeader>
+		<verticalScrollbar>true</verticalScrollbar>
+		<selectedIndex>2</selectedIndex>
+	  </controlProperties>
+	</control>
+	<control controlID="34" controlTypeID="com.balsamiq.mockups::TextInput" x="869" y="340" w="220" h="-1" zOrder="19" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>northern%20t</text>
+	  </controlProperties>
+	</control>
+	<control controlID="35" controlTypeID="com.balsamiq.mockups::Link" x="685" y="493" w="-1" h="-1" zOrder="20" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>If%20you%20can%27t%20find%20the%20language...</text>
+		<size>9</size>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="36" controlTypeID="com.balsamiq.mockups::Label" x="650" y="182" w="92" h="27" zOrder="21" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Step%202%20of%203</text>
+	  </controlProperties>
+	</control>
+	<control controlID="37" controlTypeID="com.balsamiq.mockups::Label" x="650" y="203" w="323" h="27" zOrder="22" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Identify%20the%20Language%20Writing%20System</text>
+	  </controlProperties>
+	</control>
+	<control controlID="38" controlTypeID="com.balsamiq.mockups::RadioButton" x="650" y="261" w="-1" h="-1" zOrder="23" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Use%20one%20already%20on%20this%20computer%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="39" controlTypeID="com.balsamiq.mockups::RadioButton" x="650" y="289" w="-1" h="-1" zOrder="24" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Import%20from%20LDML%20file</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="40" controlTypeID="com.balsamiq.mockups::RadioButton" x="650" y="314" w="-1" h="-1" zOrder="25" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Create%20new</text>
+		<state>selected</state>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="41" controlTypeID="com.balsamiq.mockups::Button" x="1032" y="564" w="-1" h="-1" zOrder="26" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Next</text>
+	  </controlProperties>
+	</control>
+	<control controlID="42" controlTypeID="com.balsamiq.mockups::ComboBox" x="996" y="518" w="93" h="-1" zOrder="27" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Thai</text>
+	  </controlProperties>
+	</control>
+	<control controlID="43" controlTypeID="com.balsamiq.mockups::ComboBox" x="901" y="261" w="187" h="-1" zOrder="28" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text/>
+		<state>disabled</state>
+	  </controlProperties>
+	</control>
+	<control controlID="44" controlTypeID="com.balsamiq.mockups::Button" x="996" y="289" w="93" h="-1" zOrder="29" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Locate...</text>
+		<state>disabled</state>
+	  </controlProperties>
+	</control>
+  </controls>
+</mockup>

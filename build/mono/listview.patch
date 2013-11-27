@@ -1,0 +1,130 @@
+Index: class/Managed.Windows.Forms/System.Windows.Forms/Control.cs
+===================================================================
+--- class/Managed.Windows.Forms/System.Windows.Forms/Control.cs	(revision 114651)
++++ class/Managed.Windows.Forms/System.Windows.Forms/Control.cs	(working copy)
+@@ -982,7 +982,7 @@
+
+			#endregion // ControlCollection Interface Methods
+
+-			private class ControlCollectionEnumerator : IEnumerator
++			internal class ControlCollectionEnumerator : IEnumerator
+			{
+				private ArrayList list;
+				int position = -1;
+Index: class/Managed.Windows.Forms/System.Windows.Forms/ListView.cs
+===================================================================
+--- class/Managed.Windows.Forms/System.Windows.Forms/ListView.cs	(revision 114651)
++++ class/Managed.Windows.Forms/System.Windows.Forms/ListView.cs	(working copy)
+@@ -968,7 +968,8 @@
+					throw new ArgumentOutOfRangeException ("value");
+
+				tile_size = value;
+-				Redraw (true);
++				if (view == View.Tile)
++					Redraw (true);
+			}
+		}
+ #endif
+@@ -1160,7 +1161,6 @@
+				CalculateListView (this.alignment);
+
+			Refresh ();
+-			Update ();
+		}
+
+		void InvalidateSelection ()
+@@ -1574,9 +1574,6 @@
+			if (old_location.X == x && old_location.Y == y)
+				return;
+
+-			Size item_size = ItemSize;
+-			Rectangle old_rect = new Rectangle (GetItemLocation (index), item_size);
+-
+			items_location [index] = new Point (x, y);
+			items_matrix_location [index] = new ItemMatrixLocation (row, col);
+
+@@ -1584,10 +1581,6 @@
+			// Initial position matches item's position in ListViewItemCollection
+			//
+			reordered_items_indices [index] = index;
+-
+-			// Invalidate both previous and new bounds
+-			item_control.Invalidate (old_rect);
+-			item_control.Invalidate (new Rectangle (GetItemLocation (index), item_size));
+		}
+
+ #if NET_2_0
+@@ -1846,7 +1839,9 @@
+					ListViewItem item = items [i];
+					item.Layout ();
+					item.DisplayIndex = display_index;
++#if NET_2_0
+					item.SetPosition (new Point (x, y));
++#endif
+				}
+
+
+@@ -1977,7 +1972,9 @@
+				{
+					display_index = i;
+					SetItemLocation (i, 0, y, 0, 0);
++#if NET_2_0
+					item.SetPosition (new Point (0, y));
++#endif
+					y += item_height;
+				}
+ #if NET_2_0
+@@ -3263,7 +3260,7 @@
+
+		private void ListView_SizeChanged (object sender, EventArgs e)
+		{
+-			CalculateListView (alignment);
++			Redraw (true);
+		}
+
+		private void SetFocusedItem (int display_index)
+@@ -3521,7 +3518,7 @@
+ #if NET_2_0
+		protected internal virtual void OnCacheVirtualItems (CacheVirtualItemsEventArgs e)
+		{
+-			EventHandler eh = (EventHandler)Events [CacheVirtualItemsEvent];
++			CacheVirtualItemsEventHandler eh = (CacheVirtualItemsEventHandler)Events [CacheVirtualItemsEvent];
+			if (eh != null)
+				eh (this, e);
+		}
+@@ -3603,11 +3600,8 @@
+		public void ArrangeIcons (ListViewAlignment value)
+		{
+			// Icons are arranged only if view is set to LargeIcon or SmallIcon
+-			if (view == View.LargeIcon || view == View.SmallIcon) {
+-				this.CalculateListView (value);
+-				// we have done the calculations already
+-				this.Redraw (false);
+-			}
++			if (view == View.LargeIcon || view == View.SmallIcon)
++				Redraw (true);
+		}
+
+ #if NET_2_0
+@@ -3651,7 +3645,7 @@
+
+		public void EnsureVisible (int index)
+		{
+-			if (index < 0 || index >= items.Count || scrollable == false)
++			if (index < 0 || index >= items.Count || scrollable == false || updating)
+				return;
+
+			Rectangle view_rect = item_control.ClientRectangle;
+@@ -5203,8 +5197,10 @@
+				if (owner != null && owner.VirtualMode)
+					throw new InvalidOperationException ();
+ #endif
+-
+-				return list.GetEnumerator ();
++
++				// This enumerator makes a copy of the collection so
++				// it can be deleted from in a foreach
++				return new Control.ControlCollection.ControlCollectionEnumerator (list);
+			}
+
+			int IList.Add (object item)

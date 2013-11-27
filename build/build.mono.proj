@@ -1,0 +1,99 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<RootDir>$(teamcity_build_checkoutDir)</RootDir>
+	</PropertyGroup>
+
+	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="NUnitTeamCity" AssemblyFile="$(agent_home_dir)/plugins/dotnetPlugin/bin/JetBrains.BuildServer.MSBuildLoggers.dll" />
+
+	<PropertyGroup>
+		<Solution>Palaso VS2010.sln</Solution>
+		<ApplicationName>PalasoLibrary</ApplicationName>
+		<ApplicationNameLC>libpalaso</ApplicationNameLC>
+		<Configuration>ReleaseMono</Configuration>
+	</PropertyGroup>
+
+	<Import Project="$(RootDir)/build/build.common.proj" />
+
+	<PropertyGroup>
+		<OutputDir>$(RootDir)/output/$(Configuration)</OutputDir>
+	</PropertyGroup>
+
+	<Target Name="Build">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="SetAssemblyVersion"/>
+		<CallTarget Targets="Compile"/>
+		<Message Text="Build Complete"/>
+	</Target>
+
+	<ItemGroup>
+		<ExistingObjectFiles
+			Include="$(RootDir)/**/obj/**/*;$(RootDir)/output/$(Configuration)/**/*"
+			Exclude="$(RootDir)/.hg/**/*"
+		/>
+	</ItemGroup>
+	<Target Name="Clean">
+		<Delete Files="@(ExistingObjectFiles)" />
+	</Target>
+
+	<Target Name="Compile">
+		<MSBuild
+			Projects="$(RootDir)\$(Solution)"
+			Targets="Build"
+			Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<Target Name="Test" DependsOnTargets="Build">
+		<CreateItem Include="$(RootDir)/output/$(Configuration)/*.Tests.dll">
+			<Output ItemName="TestAssemblies" TaskParameter="Include" />
+		</CreateItem>
+		<NUnitTeamCity
+			Assemblies="@(TestAssemblies)"
+			ExcludeCategory="SkipOnTeamCity;KnownMonoIssue"
+			NUnitVersion="NUnit-2.5.5" />
+	</Target>
+
+	<!-- Source Package -->
+	<ItemGroup>
+		<ExistingPackageFiles Include="$(OutputDir)/$(ApplicationNameLC)*.tar.gz" />
+		<ExistingPackageFiles Include="$(OutputDir)/$(ApplicationNameLC)-*" />
+		<ExistingPackageBuildFiles Include="$(OutputDir)/Package/**/*" />
+		<ExistingPackageBuildFiles Include="$(OutputDir)/Package/**" />
+	</ItemGroup>
+	<Target Name="PackageClean">
+		<Delete Files="@(ExistingPackageFiles)" />
+		<Delete Files="@(ExistingPackageBuildFiles)" />
+	</Target>
+	<ItemGroup>
+		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/**/irrKlang.NET2.0.dll;$(RootDir)/**/obj/**/*;$(RootDir)/**/bin/**/*;$(RootDir)/**/test-results/**/*;$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*" />
+	</ItemGroup>
+	<Target Name="SourcePackage" DependsOnTargets="PackageClean;SetAssemblyVersion">
+		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version).tar.gz">
+			<Output TaskParameter="Value" PropertyName="SourcePackageFileName" />
+		</CreateProperty>
+		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version)">
+			<Output TaskParameter="Value" PropertyName="TarBaseDir" />
+		</CreateProperty>
+		<Message Text="Archive source to '$(SourcePackageFileName)'" />
+		<Archive
+			Command="Tar"
+			InputFilePaths="@(Source)"
+			OutputFileName="$(SourcePackageFileName)"
+			BasePath="$(RootDir)"
+			WorkingDir="$(RootDir)"
+		/>
+		<MakeDir Directories="$(TarBaseDir)" />
+		<Exec
+			Command="tar -xzf $(SourcePackageFileName)"
+			WorkingDirectory="$(TarBaseDir)"
+		/>
+		<Exec
+			Command="tar -czf $(SourcePackageFileName) $(ApplicationNameLC)-$(Version)"
+			WorkingDirectory="$(OutputDir)"
+		/>
+	</Target>
+
+</Project>
