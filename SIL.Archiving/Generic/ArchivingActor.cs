@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.Extensions;
@@ -19,8 +18,11 @@ namespace SIL.Archiving.Generic
 		/// <summary>If needed but not given, Name will be used</summary>
 		public string FullName;
 
+		/// <summary></summary>
+		public string Age;
+
 		/// <summary>Languages this actor knows</summary>
-		public HashSet<string> Iso3LanguageIds;
+		public HashSet<string> Iso3LanguageCodes;
 
 		/// <summary>The primary language for this actor</summary>
 		public string PrimaryLanguageIso3Code
@@ -29,7 +31,7 @@ namespace SIL.Archiving.Generic
 			set
 			{
 				_primaryLanguageIso3Code = value;
-				Iso3LanguageIds.Add(_primaryLanguageIso3Code);
+				Iso3LanguageCodes.Add(_primaryLanguageIso3Code);
 			}
 		}
 
@@ -40,7 +42,7 @@ namespace SIL.Archiving.Generic
 			set
 			{
 				_motherTongueLanguageIso3Code = value;
-				Iso3LanguageIds.Add(_motherTongueLanguageIso3Code);
+				Iso3LanguageCodes.Add(_motherTongueLanguageIso3Code);
 			}
 		}
 
@@ -50,20 +52,20 @@ namespace SIL.Archiving.Generic
 		/// <summary>Default constructor</summary>
 		public ArchivingActor()
 		{
-			Iso3LanguageIds = new HashSet<string>();
+			Iso3LanguageCodes = new HashSet<string>();
 			Files = new List<IArchivingFile>();
 		}
 
-		/// <summary />
-		public void SetBirthDate(string date)
+		/// <summary>Value can be either DateTime (birth date), int (birth year), or string</summary>
+		public object BirthDate
 		{
-			_birthDate = date;
-		}
-
-		/// <summary />
-		public void SetBirthDate(DateTime date)
-		{
-			_birthDate = date.ToISO8601DateOnlyString();
+			set
+			{
+				if (value is DateTime)
+					_birthDate = ((DateTime) value).ToISO8601DateOnlyString();
+				else
+					_birthDate = value.ToString();
+			}
 		}
 
 		/// <summary />
@@ -89,6 +91,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary />
 		public string Education;
+
+		/// <summary />
+		public string Occupation;
 
 		/// <summary>Compare 2 ArchivingActor objects. They are identical if they have the same FullName</summary>
 		public int CompareTo(object obj)

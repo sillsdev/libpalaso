@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
 {
 	/// <summary>Collects the data needed to produce an archive package to upload</summary>
-	public abstract class ArchivingPackage : ArchivingGenericObject
+	public abstract class ArchivingPackage : IArchivingGenericObject
 	{
 		/// <summary>This is the languages for descriptions, a language of wider communication</summary>
 		public HashSet<string> MetadataIso3LanguageIds;
@@ -12,7 +14,7 @@ namespace SIL.Archiving.Generic
 		public HashSet<string> ContentIso3LanguageIds;
 
 		/// <summary>Sessions to include in this package</summary>
-		public List<ArchivingSession> Sessions;
+		public List<IArchivingSession> Sessions;
 
 		/// <summary>Information about the funding for this project</summary>
 		public ArchivingProject FundingProject;
@@ -25,8 +27,35 @@ namespace SIL.Archiving.Generic
 		{
 			MetadataIso3LanguageIds = new HashSet<string>();
 			ContentIso3LanguageIds = new HashSet<string>();
-			Sessions = new List<ArchivingSession>();
+			Sessions = new List<IArchivingSession>();
 			Contacts = new ArchivingContactCollection();
 		}
+
+		/// <summary></summary>
+		public string Title { get; set; }
+
+		/// <summary></summary>
+		public string Name { get; set; }
+
+		/// <summary></summary>
+		public void AddDescription(LanguageString description)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary></summary>
+		public DateTime DateCreatedFirst { get; set; }
+
+		/// <summary></summary>
+		public DateTime DateCreatedLast { get; set; }
+
+		/// <summary></summary>
+		public DateTime DateModified { get; set; }
+
+		/// <summary></summary>
+		public IAccessProtocol AccessProtocol { get; set; }
+
+		/// <summary></summary>
+		public ArchivingLocation Location { get; set; }
 	}
 }

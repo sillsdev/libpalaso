@@ -84,7 +84,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="Generic\AccessProtocol\IAccessProtocol.cs" />
-	<Compile Include="Generic\AccessProtocol\AILCAAccessProtocol.cs" />
+	<Compile Include="Generic\AccessProtocol\FURCSAccessProtocol.cs" />
 	<Compile Include="Generic\AccessProtocol\AILLAAccessProtocol.cs" />
 	<Compile Include="Generic\ArchivingActor.cs" />
 	<Compile Include="Generic\ArchivingContact.cs" />
@@ -105,20 +105,23 @@
 	<Compile Include="Generic\FileMimeType.cs" />
 	<Compile Include="Generic\LanguageString.cs" />
 	<Compile Include="Generic\SimpleObjects.cs" />
-	<Compile Include="Generic\AccessProtocol\ELARAccessProtocol.cs" />
 	<Compile Include="IMDI\IMDIArchivingDlgViewModel.cs" />
 	<Compile Include="IMDI\IMDIContributor.cs" />
 	<Compile Include="IMDI\IMDIPackage.cs" />
 	<Compile Include="IMDI\IMDIFile.cs" />
 	<Compile Include="IMDI\IMDISession.cs" />
+	<Compile Include="IMDI\Lists\BooleanEnum.cs" />
 	<Compile Include="IMDI\Lists\ItemListBase.cs" />
 	<Compile Include="IMDI\Lists\LanguageList.cs" />
 	<Compile Include="IMDI\Lists\ListConstructor.cs" />
 	<Compile Include="IMDI\Lists\ListType.cs" />
+	<Compile Include="IMDI\Schema\IMDIDescription.cs" />
 	<Compile Include="IMDI\Schema\IMDIExtensions.cs" />
+	<Compile Include="IMDI\Schema\IMDIInterfaces.cs" />
 	<Compile Include="IMDI\Schema\IMDI_3_0.cs" />
 	<Compile Include="IMDI\Schema\IMDISchemaHelper.cs" />
 	<Compile Include="Generic\AccessProtocol\TLAAccessProtocol.cs" />
+	<Compile Include="IMDI\Schema\IMDI_3_0_NotUsed.cs" />
 	<Compile Include="RampArchivingDlgViewModel.cs" />
 	<Compile Include="JSONUtils.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />

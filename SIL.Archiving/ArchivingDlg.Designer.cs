@@ -92,7 +92,7 @@
 			this._buttonLaunchRamp.Name = "_buttonLaunchRamp";
 			this._buttonLaunchRamp.Size = new System.Drawing.Size(110, 26);
 			this._buttonLaunchRamp.TabIndex = 1;
-			this._buttonLaunchRamp.Text = "&2) Launch RAMP";
+			this._buttonLaunchRamp.Text = "&2) Launch {0}";
 			this._buttonLaunchRamp.UseVisualStyleBackColor = true;
 			//
 			// _buttonCancel
@@ -194,7 +194,7 @@
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-			this.Text = "{0}: Archive with RAMP (SIL Only)";
+			this.Text = "{0}: Archive using {1}";
 			this._tableLayoutPanel.ResumeLayout(false);
 			this._tableLayoutPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.locExtender)).EndInit();
