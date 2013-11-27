@@ -31,7 +31,7 @@ using Spart.Parsers;
 using Spart.Parsers.Primitives;
 using Spart.Scanners;
 
-namespace Spart.Tests.Actions.Actors
+namespace Palaso.Tests.Spart.Actions.Actors
 {
 	[TestFixture]
 	public class AppendActorTest

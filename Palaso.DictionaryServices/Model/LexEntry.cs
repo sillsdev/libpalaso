@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
+using Palaso.Code;
 using Palaso.Data;
-using Palaso.I8N;
+using Palaso.i18n;
 using Palaso.Lift;
 using Palaso.Reporting;
 using Palaso.Text;
-//using Palaso.UI.WindowsForms.i8n;
+//using Palaso.UI.WindowsForms.i18n;
 
 namespace Palaso.DictionaryServices.Model
 {
@@ -17,7 +19,7 @@ namespace Palaso.DictionaryServices.Model
 	/// some languages/dictionaries, these will be indistinguishable from "words".
 	/// In others, words are made up of lexical entries.
 	/// </summary>
-	public class LexEntry: PalasoDataObject
+	public class LexEntry: PalasoDataObject, IClonableGeneric<LexEntry>
 	{
 		private MultiText _lexicalForm;
 		private Guid _guid;
@@ -33,6 +35,12 @@ namespace Palaso.DictionaryServices.Model
 		private int _orderInFile;
 
 		private BindingList<LexSense> _senses;
+		//NB: to help with possible confusion: as of wesay 0.9 (oct 2010), wesay doesn't use these lists (it just shoves them in embedded xml), but SOLID does
+		private  BindingList<LexVariant> _variants;
+		private  BindingList<LexNote> _notes;
+		private BindingList<LexPhonetic> _pronunciations;
+		private BindingList<LexEtymology> _etymologies;
+
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
 		private bool _isBeingDeleted;
@@ -86,11 +94,75 @@ namespace Palaso.DictionaryServices.Model
 			}
 			_lexicalForm = new MultiText(this);
 			_senses = new BindingList<LexSense>();
+			_variants = new BindingList<LexVariant>();
+			_notes = new BindingList<LexNote>();
+			_pronunciations = new BindingList<LexPhonetic>();
+			_etymologies = new BindingList<LexEtymology>();
+
 			CreationTime = creationTime;
 
 			WireUpEvents();
 
 			ModifiedTimeIsLocked = false;
+		}
+
+		public LexEntry Clone()
+		{
+			var clone = new LexEntry();
+			clone._lexicalForm = (MultiText) _lexicalForm.Clone();
+			//_lexicalForm and Guid must have been set before _id is set
+			if(_id != null)
+			{
+				clone.GetOrCreateId(false);
+			}
+			clone.OrderForRoundTripping = _orderForRoundTripping;
+			clone._orderInFile = _orderInFile;
+			foreach (var senseToClone in _senses)
+			{
+				clone._senses.Add(senseToClone.Clone());
+			}
+			foreach (var lexVariantToClone in Variants)
+			{
+				clone.Variants.Add((LexVariant) lexVariantToClone.Clone());
+			}
+			foreach (var lexNoteToClone in Notes)
+			{
+				clone.Notes.Add((LexNote) lexNoteToClone.Clone());
+			}
+			foreach (var pronunciationToClone in _pronunciations)
+			{
+				clone._pronunciations.Add((LexPhonetic) pronunciationToClone.Clone());
+			}
+			foreach (var etymologyToClone in _etymologies)
+			{
+				clone._etymologies.Add((LexEtymology)etymologyToClone.Clone());
+			}
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(object other)
+		{
+			if (!(other is LexEntry)) return false;
+			return Equals((LexEntry) other);
+		}
+
+		public bool Equals(LexEntry other)
+		{
+			if (other == null) return false;
+			if (!_lexicalForm.Equals(other._lexicalForm)) return false;
+			if (!_orderForRoundTripping.Equals(other._orderForRoundTripping)) return false;
+			if (!_orderInFile.Equals(other._orderInFile)) return false;
+			if (!_senses.SequenceEqual(other._senses)) return false;
+			if (!_variants.SequenceEqual(other._variants)) return false;
+			if (!_notes.SequenceEqual(other._notes)) return false;
+			if (!_pronunciations.SequenceEqual(other._pronunciations)) return false;
+			if (!_etymologies.SequenceEqual(other._etymologies)) return false;
+			if (!base.Equals(other)) return false;
+			return true;
 		}
 
 		public override string ToString()
@@ -113,6 +185,14 @@ namespace Palaso.DictionaryServices.Model
 			base.WireUpEvents();
 			WireUpChild(_lexicalForm);
 			WireUpList(_senses, "senses");
+			WireUpList(_variants, "variants");
+		}
+
+		public IEnumerable<string> PropertiesInUse
+		{
+			get {
+				return base.PropertiesInUse.Concat(Senses.SelectMany(sense => sense.PropertiesInUse));
+			}
 		}
 
 		public override void SomethingWasModified(string propertyModified)
@@ -158,6 +238,8 @@ namespace Palaso.DictionaryServices.Model
 
 			return _id;
 		}
+
+
 
 		/// <summary>
 		///
@@ -214,6 +296,7 @@ namespace Palaso.DictionaryServices.Model
 													 value.Minute,
 													 value.Second,
 													 value.Kind);
+					_isDirty = true;
 				}
 			}
 		}
@@ -221,6 +304,37 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexSense> Senses
 		{
 			get { return _senses; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexVariant> Variants
+		{
+			get { return _variants; }
+		}
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
+		/// </summary>
+		public IList<LexNote> Notes
+		{
+			get { return _notes; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexPhonetic> Pronunciations
+		{
+			get { return _pronunciations; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
+		/// </summary>
+		public IList<LexEtymology> Etymologies
+		{
+			get { return _etymologies; }
 		}
 
 		/// <summary>
@@ -279,6 +393,7 @@ namespace Palaso.DictionaryServices.Model
 			{
 				sense.CleanUpAfterEditting();
 			}
+			//enhance if ever WeSay does variants, we may need to add this kind of cleanup
 			CleanUpEmptyObjects();
 		}
 
@@ -447,6 +562,9 @@ namespace Palaso.DictionaryServices.Model
 		public bool IsDirty
 		{
 			get { return _isDirty; }
+			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
+			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this setable.
+			set { _isDirty = value; }
 		}
 
 		public LanguageForm GetHeadWord(string writingSystemId)
@@ -498,6 +616,24 @@ namespace Palaso.DictionaryServices.Model
 				formForLogging="(unknown)";
 			}
 			return formForLogging;
+		}
+		/// <summary>
+		/// used by SILCAWL list
+		/// </summary>
+		public string GetSomeMeaningToUseInAbsenseOfHeadWord(string writingSystemId)
+		{
+			var s = Senses.FirstOrDefault();
+			if(s==null)
+				return "?NoMeaning?";
+			var gloss=s.Gloss.GetExactAlternative(writingSystemId);
+			if (string.IsNullOrEmpty(gloss))
+			{
+				var def = s.Definition.GetExactAlternative(writingSystemId);
+				if(string.IsNullOrEmpty(def))
+					return "?NoGlossOrDef?";
+				return def;
+			}
+			return gloss;
 		}
 	}
 }

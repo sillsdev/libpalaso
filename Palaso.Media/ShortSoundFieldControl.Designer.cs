@@ -30,7 +30,6 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShortSoundFieldControl));
-			this._timer = new System.Windows.Forms.Timer(this.components);
 			this._playButton = new System.Windows.Forms.Button();
 			this._deleteButton = new System.Windows.Forms.Button();
 			this._recordButton = new System.Windows.Forms.Button();
@@ -39,11 +38,6 @@
 			this._poorMansWaveform = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
-			//
-			// _timer
-			//
-			this._timer.Interval = 200;
-			this._timer.Tick += new System.EventHandler(this.timer1_Tick);
 			//
 			// _playButton
 			//
@@ -157,7 +151,6 @@
 
 		private System.Windows.Forms.Button _playButton;
 		private System.Windows.Forms.Button _recordButton;
-		private System.Windows.Forms.Timer _timer;
 		private System.Windows.Forms.Button _deleteButton;
 		private System.Windows.Forms.Label _hint;
 		private System.Windows.Forms.ToolTip toolTip1;

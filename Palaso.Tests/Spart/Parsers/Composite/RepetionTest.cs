@@ -30,7 +30,7 @@ using Spart.Parsers;
 using Spart.Parsers.Composite;
 using Spart.Scanners;
 
-namespace Spart.Tests.Parsers.Composite
+namespace Palaso.Tests.Spart.Parsers.Composite
 {
 	[TestFixture]
 	public class RepetionTest
@@ -56,17 +56,19 @@ namespace Spart.Tests.Parsers.Composite
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void Constructor2()
 		{
-			RepetitionParser rp = new RepetitionParser(null, 0, 1);
+			RepetitionParser rp;
+			Assert.Throws<ArgumentNullException>(
+				() => rp = new RepetitionParser(null, 0, 1));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentOutOfRangeException))]
 		public void Constructor3()
 		{
-			RepetitionParser rp = new RepetitionParser(Parser, 1, 0);
+			RepetitionParser rp;
+			Assert.Throws<ArgumentOutOfRangeException>(
+				() => rp = new RepetitionParser(Parser, 1, 0));
 		}
 
 		[Test]

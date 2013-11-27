@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using LiftIO.Parsing;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
+using Palaso.Lift.Parsing;
 using Palaso.TestUtilities;
 
 namespace Palaso.DictionaryServices.Tests.Lift
@@ -52,22 +52,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		private void AssertHasAtLeastOneMatch(string xpath)
 		{
-			AssertThatXmlIn.String(_stringBuilder.ToString()).
-				HasAtLeastOneMatchForXpath(xpath);
-
-//            XmlDocument doc = new XmlDocument();
-//            doc.LoadXml(_stringBuilder.ToString());
-//            XmlNode node = doc.SelectSingleNode(xpath);
-//            if (node == null)
-//            {
-//                XmlWriterSettings settings = new XmlWriterSettings();
-//                settings.Indent = true;
-//                settings.ConformanceLevel = ConformanceLevel.Fragment;
-//                XmlWriter writer = XmlWriter.Create(Console.Out, settings);
-//                doc.WriteContentTo(writer);
-//                writer.Flush();
-//            }
-//            Assert.IsNotNull(node, "Not matched: " + xpath);
+			AssertThatXmlIn.String(_stringBuilder.ToString()).HasAtLeastOneMatchForXpath(xpath);
 		}
 
 		[Test]
@@ -317,6 +302,29 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			_liftWriter.End();
 			AssertHasAtLeastOneMatch("//entry/variant/trait[@name='dialects' and @ value='Ratburi']");
 			AssertHasAtLeastOneMatch("//entry/variant[@ref='2']/form/text[text()='glob']");
+		}
+
+		[Test]
+		public void TwoVariants()
+		{
+			LexEntry e = MakeSimpleEntry();
+			string xml1 =
+				@"
+				 <variant>
+					<form lang='und-fonipa'><text>boo</text></form>
+				  </variant>";
+			String xml2 =
+				@"<variant>
+					<form lang='und-fonipa'><text>baa</text></form>
+				  </variant>";
+
+			_builder.MergeInVariant(e, MakeBasicLiftMultiText(), xml1);
+			_builder.MergeInVariant(e, MakeBasicLiftMultiText(), xml2);
+			_builder.FinishEntry(e);
+			_liftWriter.Add(e);
+			_liftWriter.End();
+			AssertThatXmlIn.String(_stringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//entry/variant/form/text[text()='baa']",1);
+			AssertThatXmlIn.String(_stringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//entry/variant/form/text[text()='boo']", 1);
 		}
 
 		[Test]

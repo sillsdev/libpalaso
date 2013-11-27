@@ -1,4 +1,4 @@
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	partial class dlgSuperToolTipEditor
 	{
@@ -29,47 +29,47 @@ namespace Elsehemy
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper3 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper4 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper5 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper6 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper14 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper8 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper7 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper12 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper9 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper10 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper11 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper13 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper18 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper15 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper17 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper16 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper32 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper19 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper20 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper22 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper21 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper24 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper23 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper31 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper25 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper26 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper27 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper28 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper29 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper30 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper33 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper34 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper41 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper36 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper35 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper40 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper37 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper38 = new Elsehemy.SuperToolTipInfoWrapper();
-			Elsehemy.SuperToolTipInfoWrapper superToolTipInfoWrapper39 = new Elsehemy.SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper3 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper4 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper5 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper6 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper14 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper8 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper7 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper12 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper9 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper10 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper11 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper13 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper18 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper15 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper17 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper16 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper32 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper19 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper20 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper22 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper21 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper24 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper23 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper31 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper25 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper26 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper27 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper28 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper29 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper30 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper33 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper34 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper41 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper36 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper35 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper40 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper37 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper38 = new SuperToolTipInfoWrapper();
+			SuperToolTipInfoWrapper superToolTipInfoWrapper39 = new SuperToolTipInfoWrapper();
 			this.dlgColorPicker = new System.Windows.Forms.ColorDialog();
 			this.tltpHelper = new System.Windows.Forms.ToolTip(this.components);
 			this.btnFooterFont = new System.Windows.Forms.Button();
@@ -115,7 +115,7 @@ namespace Elsehemy
 			this.btnBrowseBodyImage = new System.Windows.Forms.Button();
 			this.picBodyImage = new System.Windows.Forms.PictureBox();
 			this.btnClearBodyImage = new System.Windows.Forms.Button();
-			this.superToolTip1 = new Elsehemy.SuperToolTip(this.components);
+			this.superToolTip1 = new SuperToolTip(this.components);
 			this.grpFooter.SuspendLayout();
 			this.grpFooterText.SuspendLayout();
 			this.grpFooterImage.SuspendLayout();

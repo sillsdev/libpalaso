@@ -6,10 +6,10 @@ namespace Palaso.Data
 
 	public class DelegateQuery<T> : IQuery<T> where T: class, new()
 	{
-		public delegate IEnumerable<IDictionary<string, object>> DelegateMethod<T>(T item) where T : class, new();
-		DelegateMethod<T> _method;
+		public delegate IEnumerable<IDictionary<string, object>> DelegateMethod(T item);
+		DelegateMethod _method;
 
-		public DelegateQuery(DelegateMethod<T> method)
+		public DelegateQuery(DelegateMethod method)
 		{
 			_method = method;
 		}

@@ -68,31 +68,31 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void CanExtend_CalledAfterDisposed_Throws()
 		{
 			HotSpotProvider hotSpotProvider = new HotSpotProvider();
 			hotSpotProvider.Dispose();
 			using (TextBox textBox = new TextBox())
 			{
-				hotSpotProvider.CanExtend(textBox);
+				Assert.Throws<ObjectDisposedException>(() =>
+ hotSpotProvider.CanExtend(textBox));
 			}
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void GetEnableHotSpots_Null_Throws()
 		{
-			_hotSpotProvider.GetEnableHotSpots(null);
+			Assert.Throws<ArgumentNullException>(() =>
+_hotSpotProvider.GetEnableHotSpots(null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
 		public void GetEnableHotSpots_ComboBox_Throws()
 		{
 			using (ComboBox comboBox = new ComboBox())
 			{
-				_hotSpotProvider.GetEnableHotSpots(comboBox);
+				Assert.Throws<ArgumentException>(() =>
+_hotSpotProvider.GetEnableHotSpots(comboBox));
 			}
 		}
 
@@ -116,14 +116,14 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void GetEnableHotSpots_CalledAfterDisposed_Throws()
 		{
 			HotSpotProvider hotSpotProvider = new HotSpotProvider();
 			hotSpotProvider.Dispose();
 			using (TextBox textBox = new TextBox())
 			{
-				hotSpotProvider.GetEnableHotSpots(textBox);
+				Assert.Throws<ObjectDisposedException>(() =>
+hotSpotProvider.GetEnableHotSpots(textBox));
 			}
 		}
 
@@ -138,19 +138,19 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void SetEnableHotSpots_NullControl_EmptyString()
 		{
-			_hotSpotProvider.SetEnableHotSpots(null, true);
+			Assert.Throws<ArgumentNullException>(() =>
+_hotSpotProvider.SetEnableHotSpots(null, true));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
 		public void SetEnableHotSpots_ComboBox_Throws()
 		{
 			using (ComboBox comboBox = new ComboBox())
 			{
-				_hotSpotProvider.SetEnableHotSpots(comboBox, true);
+				Assert.Throws<ArgumentException>(() =>
+_hotSpotProvider.SetEnableHotSpots(comboBox, true));
 			}
 		}
 
@@ -166,14 +166,14 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void SetEnableHotSpots_CalledAfterDisposed_Throws()
 		{
 			HotSpotProvider hotSpotProvider = new HotSpotProvider();
 			hotSpotProvider.Dispose();
 			using (TextBox textBox = new TextBox())
 			{
-				hotSpotProvider.SetEnableHotSpots(textBox, false);
+				Assert.Throws<ObjectDisposedException>(() =>
+hotSpotProvider.SetEnableHotSpots(textBox, false));
 			}
 		}
 
@@ -202,21 +202,22 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void GetSite_CalledAfterDisposed_Throws()
 		{
 			HotSpotProvider hotSpotProvider = new HotSpotProvider();
 			hotSpotProvider.Dispose();
-			ISite site = hotSpotProvider.Site;
+			ISite x;
+			Assert.Throws<ObjectDisposedException>(() =>
+				 x = hotSpotProvider.Site);
 		}
 
 		[Test]
-		[ExpectedException(typeof (ObjectDisposedException))]
 		public void SetSite_CalledAfterDisposed_Throws()
 		{
 			HotSpotProvider hotSpotProvider = new HotSpotProvider();
 			hotSpotProvider.Dispose();
-			hotSpotProvider.Site = null;
+			Assert.Throws<ObjectDisposedException>(() =>
+			hotSpotProvider.Site = null);
 		}
 
 		[Test]

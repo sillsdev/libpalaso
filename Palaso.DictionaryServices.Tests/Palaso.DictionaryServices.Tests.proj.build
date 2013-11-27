@@ -58,12 +58,13 @@
 				<include name="Palaso.dll" />
 				<include name="Palaso.Lift.dll" />
 				<include name="Palaso.DictionaryServices.dll" />
-				<include name="Nunit.Framework.dll" />
+				<include name="nunit.framework.dll" />
 				<include name="Palaso.Tests.dll" />
 				<include name="Palaso.TestUtilities.dll" />
 				<include name="System.dll" />
 				<include name="System.Core.dll" />
 				<include name="System.Data.dll" />
+				<include name="System.Drawing.dll" />
 				<include name="System.Xml.Linq.dll" />
 			</references>
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">

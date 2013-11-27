@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using LiftIO.Parsing;
-using LiftIO.Validation;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Lift.Parsing;
+using Palaso.Lift.Validation;
 using Palaso.Progress;
 using Palaso.Reporting;
 
@@ -28,6 +28,13 @@ namespace Palaso.DictionaryServices.Lift
 			_idsOfSingleOptionFields = namesOfSingleOptionFields;
 		}
 
+
+		/// <summary>
+		/// Subscribe to this event in order to do something (or do something to an entry) as soon as it has been parsed in.
+		/// WeSay uses this to populate definitions from glosses.
+		/// </summary>
+		public event EventHandler AfterEntryRead;
+
 		public void Read(string filePath, MemoryDataMapper<LexEntry> dataMapper)
 		{
 			const string status = "Loading entries";
@@ -36,6 +43,7 @@ namespace Palaso.DictionaryServices.Lift
 
 			using (LexEntryFromLiftBuilder builder = new LexEntryFromLiftBuilder(dataMapper, _semanticDomainsList))
 			{
+				builder.AfterEntryRead += new EventHandler<LexEntryFromLiftBuilder.EntryEvent>(OnAfterEntryRead);
 				builder.ExpectedOptionTraits = _idsOfSingleOptionFields;
 
 				LiftParser<PalasoDataObject, LexEntry, LexSense, LexExampleSentence> parser =
@@ -61,6 +69,8 @@ namespace Palaso.DictionaryServices.Lift
 				//                        }
 				catch (Exception)
 				{
+					_progressState.StatusLabel = "Looking for error in file...";
+
 					//our parser failed.  Hopefully, because of bad lift. Validate it now  to
 					//see if that's the problem.
 					Validator.CheckLiftWithPossibleThrow(filePath);
@@ -71,10 +81,21 @@ namespace Palaso.DictionaryServices.Lift
 			}
 		}
 
-		private void parser_ParsingWarning(object sender,
-										   LiftParser
-												   <PalasoDataObject, LexEntry, LexSense,
-												   LexExampleSentence>.ErrorArgs e)
+		/// <summary>
+		/// this just passes on the event to our client, who can't directly access the LexEntryFromLiftBuilder
+		/// </summary>
+		private void OnAfterEntryRead(object sender, LexEntryFromLiftBuilder.EntryEvent e)
+		{
+			if(AfterEntryRead !=null)
+			{
+				AfterEntryRead.Invoke(sender, e);
+			}
+		}
+
+		private void parser_ParsingWarning(
+			object sender,
+			LiftParser<PalasoDataObject, LexEntry, LexSense, LexExampleSentence>.ErrorArgs e
+		)
 		{
 			_progressState.ExceptionThatWasEncountered = e.Exception;
 		}

@@ -14,7 +14,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 		[Test, Ignore("Only works if there is an ipa keyboard installed")]
 		public void GetSuggestions_HasNormalLacksIpa_IpaSuggestedWhichCopiesAllRelevantFields()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "Edolo", "edo", true);
+			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "edo", true);
 			etr.DefaultFontName = "font";
 			etr.DefaultFontSize = 33;
 			var list = new List<WritingSystemDefinition>(new[] {etr });
@@ -23,7 +23,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 
 			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
 
-			Assert.AreEqual("etr", ipa.ISO);
+			Assert.AreEqual("etr", ipa.Language);
 			Assert.AreEqual("fonipa", ipa.Variant);
 			Assert.AreEqual("Edolo", ipa.LanguageName);
 			Assert.IsTrue(string.IsNullOrEmpty(ipa.NativeName));
@@ -34,11 +34,11 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			Assert.IsTrue(ipa.Keyboard.ToLower().Contains("ipa"));
 		}
 
-		[Test]
+		[Test] // ok
 		public void GetSuggestions_HasNormalAndIPA_DoesNotIncludeItemToCreateIPA()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "Edolo", "edo", false);
-			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa","Edolo", "edo", false);
+			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
+			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa", "edo", false);
 			var list = new List<WritingSystemDefinition>(new[] { etr, etrIpa });
 			var suggestor = new WritingSystemSuggestor();
 			var suggestions = suggestor.GetSuggestions(etr, list);
@@ -46,14 +46,32 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 			Assert.IsFalse(suggestions.Any(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Variant == "fonipa"));
 		}
 
+		[Test]
+		public void OtherKnownWritingSystems_TokPisinDoesNotAlreadyExist_HasTokPisin()
+		{
+			var suggestor = new WritingSystemSuggestor();
+
+			var existingWritingSystems = new List<WritingSystemDefinition>();
+			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws=>ws.Label == "Tok Pisin"), Is.True);
+		}
+
+		[Test]
+		public void OtherKnownWritingSystems_TokPisinAlreadyExists_DoesNotHaveTokPisin()
+		{
+			var suggestor = new WritingSystemSuggestor();
+
+			var existingWritingSystems = new List<WritingSystemDefinition>{WritingSystemDefinition.Parse("tpi")};
+			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws => ws.Label == "Tok Pisin"), Is.False);
+		}
+
 
 		/// <summary>
 		/// For English, it's very unlikely that they'll want to add IPA, in a app like wesay
 		/// </summary>
-		[Test]
+		[Test, Category("KnownMonoIssue")]
 		public void GetSuggestions_MajorWorlLanguage_SuggestsOnlyIfSuppressSuggesstionsForMajorWorldLanguagesIsFalse()
 		{
-			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "English", "eng", false);
+			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);
 			var list = new List<WritingSystemDefinition>(new[] { english });
 			var suggestor = new WritingSystemSuggestor();
 			suggestor.SuppressSuggestionsForMajorWorldLanguages =false;
