@@ -115,6 +115,7 @@
 	<Compile Include="IMDI\Lists\LanguageList.cs" />
 	<Compile Include="IMDI\Lists\ListConstructor.cs" />
 	<Compile Include="IMDI\Lists\ListType.cs" />
+	<Compile Include="IMDI\Schema\IMDIDescription.cs" />
 	<Compile Include="IMDI\Schema\IMDIExtensions.cs" />
 	<Compile Include="IMDI\Schema\IMDIInterfaces.cs" />
 	<Compile Include="IMDI\Schema\IMDI_3_0.cs" />

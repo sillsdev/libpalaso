@@ -18,7 +18,7 @@
 //        // Test_Corpus\Test_Session.imdi (session meta data file)
 //        // Test_Corpus\Test_Session\Contributors (directory - contains files pertaining to contributers/actors)
 //        // Test_Corpus\Test_Session\Files*.* (session files)
-//        // Test_Corpus\Test_Session\Contributors\Files*.* (contributor/actor files)
+//        // Test_Corpus\Contributors\Files*.* (contributor/actor files)
 
 //        /// <summary>Add a file for this session</summary>
 //        /// <param name="file"></param>
