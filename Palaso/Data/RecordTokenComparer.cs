@@ -26,11 +26,18 @@ namespace Palaso.Data
 			int result = 0;
 			foreach (SortDefinition definition in _sortDefinitions)
 			{
-				result = definition.Comparer.Compare(GetFieldValue(x, definition),
-													 GetFieldValue(y, definition));
+				var xValue = GetFieldValue(x, definition);
+				var yValue = GetFieldValue(y, definition);
+				result = definition.Comparer.Compare(xValue, yValue);
 				if (result != 0)
 				{
 					return result;
+				}
+				if (xValue != null && xValue.GetHashCode() != yValue.GetHashCode())
+				{
+					// bugfix WS-33997.  Khmer (invariant culture) strings when compared return "same",
+					// when in fact they are different strings.  In this case, use an ordinal compare.
+					return string.CompareOrdinal(xValue.ToString(), yValue.ToString());
 				}
 			}
 			result = x.Id.CompareTo(y.Id);

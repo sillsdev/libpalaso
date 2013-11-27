@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	public class SuperToolTipInfo
 	{
@@ -94,7 +91,7 @@ namespace Elsehemy
 
 		[NotifyParentProperty(true)]
 		[DefaultValue("")]
-		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+		[Editor("MultilineStringEditor","UITypeEditor")]
 		public string BodyText
 		{
 			get { return _bodyText; }
@@ -152,7 +149,7 @@ namespace Elsehemy
 
 		[NotifyParentProperty(true)]
 		[DefaultValue("")]
-		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+		[Editor("MultilineStringEditor", "UITypeEditor")]
 		public string HeaderText
 		{
 			get { return _headerText; }
@@ -210,7 +207,7 @@ namespace Elsehemy
 
 		[NotifyParentProperty(true)]
 		[DefaultValue("")]
-		[Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
+		[Editor("MultilineStringEditor", "UITypeEditor")]
 		public string FooterText
 		{
 			get { return _footerText; }

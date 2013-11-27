@@ -254,12 +254,10 @@ namespace Palaso.UI.WindowsForms.HotSpot
 				const int WM_KEYUP = 0x0101;
 				const int WM_CHAR = 0x0102;
 
-				base.WndProc(ref m);
-
 				switch (m.Msg)
 				{
-
 					case WM_PAINT:
+						base.WndProc(ref m);
 						OnWmPaint();
 						break;
 					case WM_SETFOCUS:
@@ -276,15 +274,32 @@ namespace Palaso.UI.WindowsForms.HotSpot
 					case WM_KEYDOWN:
 					case WM_CHAR:
 					case WM_KEYUP:
+						base.WndProc(ref m);
 						_control.Invalidate();
 						// if we don't invalidate, then we end up with artifacts from the wave when it is removed
 						break;
 					case WM_MOUSEMOVE: // Only need to process if a mouse button is down:
+						base.WndProc(ref m);
 						if (!m.WParam.Equals(IntPtr.Zero))
 						{
 							_control.Invalidate();
 							// if we don't invalidate, then we end up with artifacts from the wave when it is removed
 						}
+						break;
+#if MONO
+					case 0x286:	//IME_CHAR
+					case 0x10F:	//IME_COMPOSITION
+						//These two messages cause an extra character to be drawn by mono
+						//At this time (Oct 9 2009) we are not sure wether this is a bug with mono
+						//or with our code and we will need to do further testing (also under windows)
+						//For the time being it fixes an annoying bug (Ws-15007) where 4 characters
+						//were being displayed for each keystroke.
+						//See WS-15008 for a full description of the problem and a roadmap for fixing it
+//						//base.WndProc(ref m);
+					break;
+#endif
+					default:
+						base.WndProc(ref m);
 						break;
 				}
 			}

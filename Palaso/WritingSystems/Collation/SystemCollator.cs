@@ -29,7 +29,32 @@ namespace Palaso.WritingSystems.Collation
 
 		public int Compare(string x, string y)
 		{
-			return _cultureInfo.CompareInfo.Compare(x, y);
+			int order = _cultureInfo.CompareInfo.Compare(x, y);
+
+			if (order != 0)
+			{
+				return order;
+			}
+			if (_cultureInfo == CultureInfo.InvariantCulture)
+			{
+				// bugfix WS-33997.  Khmer (invariant culture) strings when compared return "same",
+				// when in fact they are different strings.  In this case, use an ordinal compare.
+				if (x != null && x.GetHashCode() == y.GetHashCode())
+				{
+					return 0;
+				}
+				return String.CompareOrdinal(x, y);
+			}
+			return 0;
+
+
+
+
+		}
+
+		public int Compare(object x, object y)
+		{
+			return Compare((string)x, (string)y);
 		}
 
 		private static CultureInfo GetCultureInfoFromWritingSystemId(string cultureId)

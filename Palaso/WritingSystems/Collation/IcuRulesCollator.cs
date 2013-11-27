@@ -10,7 +10,7 @@ namespace Palaso.WritingSystems.Collation
 		{
 			try
 			{
-				this._collator = new Icu.Collation.RuleBasedCollator(rules);
+				this._collator = new Icu.Collation.RuleBasedCollator(LdmlCollationParser.ReplaceUnicodeEscapesForICU(rules));
 			}
 			catch (DllNotFoundException e)
 			{
@@ -55,6 +55,11 @@ namespace Palaso.WritingSystems.Collation
 		public int Compare(string string1, string string2)
 		{
 			return _collator.Compare(string1, string2);
+		}
+
+		public int Compare(object x, object y)
+		{
+			return Compare((string) x, (string) y);
 		}
 	}
 }

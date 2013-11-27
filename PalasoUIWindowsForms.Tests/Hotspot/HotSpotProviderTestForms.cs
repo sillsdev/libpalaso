@@ -9,6 +9,7 @@ namespace PalasoUIWindowsForms.Tests.Hotspot
 {
 	[TestFixture]
 	[Category("MouseSensitive")] // do not move your mouse with these tests
+	[Category("SkipOnTeamCity")]
 	public class HotSpotProviderTestForms
 	{
 		private class ClickableTextBox : TextBox

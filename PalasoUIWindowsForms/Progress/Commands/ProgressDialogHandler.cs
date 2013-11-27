@@ -2,43 +2,85 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Palaso.Progress;
+using Palaso.Reporting;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
-namespace Palaso.UI.WindowsForms.Progress
+namespace Palaso.UI.WindowsForms.Progress.Commands
 {
+	/// <summary>
+	/// This class can be used to display a ProgressDialog with multiple steps which are handled in a background thread.
+	/// </summary>
 	public class ProgressDialogHandler
 	{
-		private ProgressDialog _progressDialog;
-		private readonly System.Windows.Forms.Form _parentForm;
-		private readonly AsyncCommand _currentCommand;
-		public event EventHandler Finished;
+		#region Delegates
 
-		public ProgressDialogHandler(System.Windows.Forms.Form parentForm, BasicCommand  command)
+		/// <summary>
+		/// A delegate for a method which takes an exception as its only parmeter
+		/// </summary>
+		public delegate void ExceptionMethodInvoker(Exception e);
+
+		#endregion
+
+		private readonly AsyncCommand _currentCommand;
+		private readonly Form _parentForm;
+		private ProgressDialog _progressDialog;
+
+		/// <summary>
+		/// This constructor will immediately show the ProgressDialog in a non-modal fashion.
+		/// </summary>
+		/// <param name="parentForm">The parent, or owning form for the ProgressDialog</param>
+		/// <param name="command">The AsyncCommand c</param>
+		public ProgressDialogHandler(Form parentForm, BasicCommand command)
+			: this(parentForm, command, "From Handler for: " + command.GetType())
+		{
+		}
+
+		/// <summary>
+		/// This constructor will immediately show the ProgressDialog in a non-modal fashion.
+		/// </summary>
+		/// <param name="parentForm">The parent, or owning form for the ProgressDialog</param>
+		/// <param name="command">The AsyncCommand c</param>
+		/// <param name="progressTitleText">The title to use on the ProgressDialog</param>
+		public ProgressDialogHandler(Form parentForm, BasicCommand command, string progressTitleText)
+			: this(parentForm, command, progressTitleText, false)
+		{
+		}
+
+		/// <summary>
+		/// This constructor provides the option of making the ProgressDialog modal.
+		/// </summary>
+		/// <param name="parentForm">The parent, or owning form for the ProgressDialog</param>
+		/// <param name="command">The AsyncCommand c</param>
+		/// <param name="progressTitleText">The title to use on the ProgressDialog</param>
+		/// <param name="showModally">true if you want to use this modally, false otherwise. If you pass true, you must use ShowModal later to show the ProgressDialog</param>
+		public ProgressDialogHandler(Form parentForm, BasicCommand command, string progressTitleText, bool showModally)
 		{
 			_parentForm = parentForm;
 			_currentCommand = command;
-			command.InitializeCallback = new InitializeProgressCallback(InitializeProgress);
-			command.ProgressCallback = new ProgressCallback(UpdateProgress);
-			command.PrimaryStatusTextCallback = new StatusCallback(UpdateStatus1);
-			command.SecondaryStatusTextCallback = new StatusCallback(UpdateOverview);
+			command.InitializeCallback = InitializeProgress;
+			command.ProgressCallback = UpdateProgress;
+			command.PrimaryStatusTextCallback = UpdateStatus1;
+			command.SecondaryStatusTextCallback = UpdateOverview;
 
-			_currentCommand.BeginCancel += new EventHandler(OnCommand_BeginCancel);
-			_currentCommand.EnabledChanged += new EventHandler(OnCommand_EnabledChanged);
-			_currentCommand.Error += new ErrorEventHandler(OnCommand_Error);
-			_currentCommand.Finish += new EventHandler(OnCommand_Finish);
+			_currentCommand.BeginCancel += OnCommand_BeginCancel;
+			_currentCommand.EnabledChanged += OnCommand_EnabledChanged;
+			_currentCommand.Error += OnCommand_Error;
+			_currentCommand.Finish += OnCommand_Finish;
 
-			_progressDialog = new ProgressDialog();
-			_progressDialog.Text = "From Handler for"+command.GetType().ToString();
-			_progressDialog.CancelRequested += new EventHandler(_progressDialog_Cancelled);
-			_progressDialog.Owner = parentForm ;
+			_progressDialog = new ProgressDialog
+								{
+									Text = progressTitleText
+								};
+			_progressDialog.CancelRequested += _progressDialog_Cancelled;
+			_progressDialog.Owner = parentForm;
 			_progressDialog.CanCancel = true;
-			//we don't yet have any actual background-safe stuff, but this dialog
-			//doesn't seem to work (no progress) if it's called modally
-			//_progressDialog.ShowDialog();
-			//_progressDialog.DelayShow() <-- this one makes it come up only if the command turns out to be slow
-			_progressDialog.Show();
-
+			//To use this progress in a modal way you need to call ShowModal after you have setup the ProgressDialogState
+			if (!showModally)
+			{
+				//if it is not modal then we can show the dialog and it won't inhibit the rest of the setup and calling.
+				_progressDialog.Show();
+			}
 		}
 
 		/// <summary>
@@ -47,20 +89,34 @@ namespace Palaso.UI.WindowsForms.Progress
 		/// </summary>
 		public bool TestEverythingClosedUp
 		{
-			get
+			get { return _progressDialog == null || _progressDialog.Visible == false; }
+		}
+
+		public event EventHandler Finished;
+
+		/// <summary>
+		/// To be called when this handler was construced with showModally set to true.
+		/// <param name="state"></param>
+		/// </summary>
+		public void ShowModal(ProgressDialogProgressState state)
+		{
+			Debug.Assert(_progressDialog != null, @"If this is null then the behavior of this class has changed, and this method needs to.");
+			if (state == null)
 			{
-				return _progressDialog == null || _progressDialog.Visible == false;
+				throw new ArgumentNullException(@"state",
+												@"State must be set to a ProgressDialogState object which is related to this handler.");
 			}
+			_currentCommand.BeginInvoke(state);
+			_progressDialog.ShowDialog();
 		}
 
 		public void InitializeProgress(int minimum, int maximum)
 		{
-
 			if (NeedInvoke())
 			{
 				_parentForm.BeginInvoke(
 					new InitializeProgressCallback(InitializeProgressCore),
-					new object[] { minimum, maximum });
+					new object[] {minimum, maximum});
 			}
 			else
 			{
@@ -74,7 +130,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			{
 				_parentForm.BeginInvoke(
 					new ProgressCallback(UpdateProgressCore),
-					new object[] { progress });
+					new object[] {progress});
 			}
 			else
 			{
@@ -91,7 +147,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			{
 				_parentForm.BeginInvoke(
 					new StatusCallback(UpdateStatusCore),
-					new object[] { statusText });
+					new object[] {statusText});
 			}
 			else
 			{
@@ -111,7 +167,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			{
 				_parentForm.BeginInvoke(
 					new StatusCallback(UpdateOverviewCore),
-					new object[] { text });
+					new object[] {text});
 			}
 			else
 			{
@@ -150,11 +206,11 @@ namespace Palaso.UI.WindowsForms.Progress
 			_progressDialog = null;
 			if (Finished != null)
 			{
-				Finished.BeginInvoke(this, null, null, null);//jh changed this from Invoke()
-			   // Finished.Invoke(this, null);//jh changed this from Invoke()
+				Finished.BeginInvoke(this, null, null, null); //jh changed this from Invoke()
+				// Finished.Invoke(this, null);//jh changed this from Invoke()
 			}
 
-		   /* if (ParentFormIsClosing)
+			/* if (ParentFormIsClosing)
 			{
 				_parentForm.Close();
 			}
@@ -173,21 +229,17 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		private void FinishWithUnspecifiedError()
 		{
-			Palaso.Reporting.ErrorReport.NotifyUserOfProblem("An error occurred while processing your request.");
+			ErrorReport.NotifyUserOfProblem("An error occurred while processing your request.");
 			Finish();
 		}
 
-		/// <summary>
-		/// A delegate for a method which takes an exception as its only parmeter
-		/// </summary>
-		public delegate void ExceptionMethodInvoker(Exception e);
 		public event EventHandler Cancelled;
 
 		private void _progressDialog_Cancelled(object sender, EventArgs e)
 		{
 			if (Cancelled != null)
 			{
-				Cancelled.Invoke(this, null);//REVIEW jh wesay
+				Cancelled.Invoke(this, null); //REVIEW jh wesay
 			}
 			_currentCommand.Cancel();
 		}
@@ -198,7 +250,6 @@ namespace Palaso.UI.WindowsForms.Progress
 
 			_progressDialog.Close();
 		}
-
 
 
 		private void OnCommand_BeginCancel(object sender, EventArgs e)
@@ -226,10 +277,9 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 			else
 			{
-
 				if (_parentForm != null && NeedInvoke())
 				{
-					_parentForm.BeginInvoke(new ProgressDialogHandler.ExceptionMethodInvoker(Finish), new object[] { e.Exception });
+					_parentForm.BeginInvoke(new ExceptionMethodInvoker(Finish), new object[] {e.Exception});
 				}
 				else
 				{
@@ -245,7 +295,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			{
 				Debug.WriteLine("ProgressDialogHandler: begin(Finish)");
 				_parentForm.Invoke(new MethodInvoker(Finish));
-			   // _parentForm.BeginInvoke(new MethodInvoker(Finish));
+				// _parentForm.BeginInvoke(new MethodInvoker(Finish));
 				Debug.WriteLine("ProgressDialogHandler: end(Finish)");
 			}
 			else
@@ -255,8 +305,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			}
 
 			// trying disable a weird bug
-		  //  _currentCommand.Finish -= new EventHandler(OnCommand_Finish);
-
+			//  _currentCommand.Finish -= new EventHandler(OnCommand_Finish);
 		}
 
 		public void CloseByCancellingThenCloseParent()

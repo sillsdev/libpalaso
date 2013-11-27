@@ -1,5 +1,0 @@
-hg purge
-hg pull
-hg update -C $1
-shift
-$@

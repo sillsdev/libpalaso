@@ -76,6 +76,11 @@ namespace Palaso.WritingSystems.Collation
 			return _collator.Compare(string1, string2);
 		}
 
+		public int Compare(object x, object y)
+		{
+			return Compare((string)x, (string)y);
+		}
+
 		private class SimpleCollationRuleParser
 		{
 			private Rule _collationElement;

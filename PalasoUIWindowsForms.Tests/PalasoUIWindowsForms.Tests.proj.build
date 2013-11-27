@@ -34,6 +34,7 @@
 				<include name="**/*.cs" />
 			</sources>
 			<references basedir="${project.output.dir}">
+				<include name="Moq.dll" />
 				<include name="System.Data.dll" />
 				<include name="System.Drawing.dll" />
 				<include name="System.Windows.Forms.dll" />
@@ -41,7 +42,8 @@
 				<include name="Palaso.dll" />
 				<include name="PalasoReporting.dll" />
 				<include name="nunit.framework.dll" />
-			</references>
+		<include name="Palaso.TestUtilities.dll" />
+	  </references>
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">
 				<include name="${build.namespace.dir}/**/*.resources" />
 			</resources>

@@ -20,7 +20,10 @@ namespace Palaso.Data
 
 		public override string ToString()
 		{
-			return (string) AdaptedRecordToken[_fieldToShow];
+			var s = (string) AdaptedRecordToken[_fieldToShow];
+			if(s==null)
+				return string.Empty; //WinForms things that expect a string can give pretty useless errors when given null (e.g. list view)
+			return s;
 		}
 	}
 }

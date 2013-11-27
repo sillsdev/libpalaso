@@ -1,41 +1,92 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Net;
 using System.Text;
-using System.Web;
-using System.Windows.Forms;
 
 namespace Palaso.Reporting
 {
 	public class UsageReporter
 	{
-		private static string s_appNameToUseInDialogs;
-		private static string s_appNameToUseInReporting;
-		private static ReportingSettings s_settings;
+		private  string _appNameToUseInDialogs;
+		private  string _appNameToUseInReporting;
+		private  ReportingSettings _settings;
+		private  AnalyticsEventSender _analytics;
+		private string _realPreviousVersion;
+		private string _mostRecentArea;
+
+		private static UsageReporter s_singleton;
+		private Exception _mostRecentException;
+
+		[Obsolete("Better to use the version which explicitly sets the reportAsDeveloper flag")]
+		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode)
+		{
+#if DEBUG
+			Init(settings,domain,googleAnalyticsAccountCode, true);
+#else
+			Init(settings,domain,googleAnalyticsAccountCode, false);
+#endif
+		}
+
+			/// <summary>
+			///
+			/// </summary>
+			/// <example>
+			/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
+			///#if DEBUG
+			///                true
+			///#else
+			///                false
+			///#endif
+			///                );
+			/// </example>
+			/// <param name="settings"></param>
+			/// <param name="domain"></param>
+			/// <param name="googleAnalyticsAccountCode"></param>
+			/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
+			/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
+			public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
+			{
+				s_singleton = new UsageReporter();
+				s_singleton._settings = settings;
+				s_singleton._realPreviousVersion = settings.PreviousVersion;
+				s_singleton._settings.Launches++;
+				s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
+				settings.PreviousVersion = ErrorReport.VersionNumberString;
+				settings.PreviousLaunchDate = DateTime.Now.Date;
+			}
 
 		/// <summary>
-		/// call this each time the application is launched
+		/// A unique guid for this machine, which is the same for all palaso apps (because we store it in special palaso text file in appdata)
 		/// </summary>
-		public static void RecordLaunch()
+		public static Guid UserGuid
 		{
-		   GetUserIdentifierIfNeeded();
-
-		   //MakeLaunchDateSafe();
-
-//            int launchCount = 1 + int.Parse(RegistryAccess.GetStringRegistryValue("launches", "0"));
-//            RegistryAccess.SetStringRegistryValue("launches", launchCount.ToString());
-			if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
+			get
 			{
-				s_settings.LastLaunchDate = DateTime.UtcNow.Date;
-				s_settings.Launches++;
-				//ReportingSetting.Default.Save();
-				AttemptHttpReport();
+				try
+				{
+					string guid;
+					if (GetAllApplicationValuesForThisUser().TryGetValue("guid", out guid))
+						return new Guid(guid);
+					else
+					{
+						Debug.Fail("Why wasn't there a guid already in the values for this user?");
+					}
+				}
+				catch (Exception)
+				{
+					//ah well.  Debug mode only, we tell the programmer. Otherwise, we're giving a random guid
+					Debug.Fail("couldn't parse the user indentifier into a guid");
+				}
+				return new Guid(); //outside of debug mode, we guarantee some guid is returned... it's only for reporting after all
 			}
 		}
 
-		private static void GetUserIdentifierIfNeeded( )
+/*        private static void GetUserIdentifierIfNeeded( )
 		{
+			Guard.AgainstNull(_settings, "Client must set the settings with AppReportSettings");
+
 			//nb, this tries to share the id between applications that might want it,
 			//so the user doesn't have to be asked again.
 
@@ -43,36 +94,39 @@ namespace Palaso.Reporting
 			Directory.CreateDirectory(dir);
 			string path = Path.Combine(dir, "UserIdentifier.txt");
 		   // ReportingSetting.Default.Identifier = "";
-			if (!s_settings.HaveShowRegistrationDialog)
+			if (!_settings.HaveShowRegistrationDialog)
 			{
-					s_settings.HaveShowRegistrationDialog = true;
+					_settings.HaveShowRegistrationDialog = true;
 					UserRegistrationDialog dlg = new UserRegistrationDialog();
 					if (File.Exists(path))
 					{
-						s_settings.UserIdentifier = File.ReadAllText(path);
+						_settings.UserIdentifier = File.ReadAllText(path);
 					}
 					dlg.ShowDialog();
-					s_settings.UserIdentifier = dlg.EmailAddress;
-					s_settings.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
+					_settings.UserIdentifier = dlg.EmailAddress;
+					_settings.OkToPingBasicUsageData= dlg.OkToCollectBasicStats;
 
-					//ReportingSetting.Default.Save();
-					File.WriteAllText(path, s_settings.UserIdentifier);
+					//NB: the current system requires that the caller do the saving
+					//of the other settings.
+
+					File.WriteAllText(path, _settings.UserIdentifier);
 			}
 
 		}
+		*/
 
 		/// <summary>
 		/// cover an apparent bug in the generated code when you do a get but the datetime is null
 		/// </summary>
-		private static void MakeLaunchDateSafe( )
+		private void MakeLaunchDateSafe( )
 		{
 			try
 			{
-				DateTime dummy = s_settings.LastLaunchDate;
+				DateTime dummy = _settings.PreviousLaunchDate;
 			}
 			catch
 			{
-				s_settings.LastLaunchDate = default(DateTime);
+				_settings.PreviousLaunchDate = default(DateTime);
 			}
 		}
 /*
@@ -92,32 +146,49 @@ namespace Palaso.Reporting
 		}
 */
 
-		public static ReportingSettings AppReportingSettings
+		/// <summary>
+		/// The deal here is, Cambell changed this so that it is the responsibility of
+		/// the client to set this, and then save the settings.
+		/// E.g., in the Settings.Designer.cs, add
+		///
+		///     [UserScopedSetting()]
+		///		[DebuggerNonUserCode()]
+		///		public Palaso.Reporting.ReportingSettings Reporting
+		///		{
+		///			get { return ((Palaso.Reporting.ReportingSettings)(this["Reporting"])); }
+		///			set { this["Reporting"] = value; }
+		///		}
+		/// </summary>
+
+/*		public static ReportingSettings AppReportingSettings
 		{
 			get
 			{
-				return s_settings;
+				return _settings;
 			}
 			set
 			{
-				s_settings = value;
+				_settings = value;
 			}
 		}
+	*/
 
+		//TODO: I think this would fit better in ErrorReport
 		public static string AppNameToUseInDialogs
 		{
 			get
 			{
-				if (!String.IsNullOrEmpty(s_appNameToUseInReporting))
+
+				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
 				{
-				 return s_appNameToUseInDialogs;
+				 return s_singleton._appNameToUseInDialogs;
 
 				}
-				return Application.ProductName;
+				return EntryAssembly.ProductName;
 			}
 			set
 			{
-				s_appNameToUseInDialogs = value;
+				s_singleton._appNameToUseInDialogs = value;
 			}
 		}
 
@@ -125,15 +196,15 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				if (!String.IsNullOrEmpty(s_appNameToUseInReporting))
+				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
 				{
-					 return s_appNameToUseInReporting;
+					 return s_singleton._appNameToUseInReporting;
 				}
-				return Application.ProductName;
+				return EntryAssembly.ProductName;
 			}
 			set
 			{
-				s_appNameToUseInReporting = value;
+				s_singleton._appNameToUseInReporting = value;
 			}
 		}
 
@@ -143,132 +214,212 @@ namespace Palaso.Reporting
 		public static void ResetSettingsForTests()
 		{
 		   // RegistryAccess.SetStringRegistryValue("launches", "0");
-			if (s_settings == null)
+			if (s_singleton != null && s_singleton._settings == null)
 			{
-				s_settings = new ReportingSettings();
+				s_singleton._settings = new ReportingSettings();
 			}
 
-			s_settings.Launches=0;
-			MakeLaunchDateSafe();
+			s_singleton._settings.Launches = 0;
+			s_singleton.MakeLaunchDateSafe();
 		}
 
-
 		/// <summary>
-		/// if you call this every time the application starts, it will send reports on those intervals
-		/// (e.g. {1, 10}) that are listed in the intervals parameter.  It will get version number and name out of the application.
+		/// store and retrieve values which are the same for all apps using this usage libary
 		/// </summary>
-		public static void DoTrivialUsageReport(string emailAddress, string topMessage, int[] intervals)
+		/// <returns></returns>
+		public static Dictionary<string, string> GetAllApplicationValuesForThisUser()
 		{
-			MakeLaunchDateSafe();
-
-			//avoid asking the user more than once on the special reporting days
-			if (DateTime.UtcNow.Date != s_settings.LastLaunchDate.Date)
+			var values = new Dictionary<string, string>();
+			try
 			{
-				foreach (int launch in intervals)
+				var path = System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+				path = Path.Combine(path, "Palaso");
+				if (!Directory.Exists(path))
 				{
-					if (launch == s_settings.Launches)
+					Directory.CreateDirectory(path);
+				}
+				path = Path.Combine(path, "usage.txt");
+				if (!File.Exists(path))
+				{
+					//enhance: guid is our only value at this time, and we don't have a way to add more values or write them out
+
+					//Make a single guid which connects all reports from this user, so that we can make sense of them even
+					//if/when their IP address changes
+					File.WriteAllText(path, @"guid==" + Guid.NewGuid().ToString());
+				}
+				foreach (var line in File.ReadAllLines(path))
+				{
+					var parts = line.Split(new string[] {"=="}, 2, StringSplitOptions.RemoveEmptyEntries);
+					if (parts.Length == 2)
 					{
-						SendReport(emailAddress, topMessage);
-						break;
+						values.Add(parts[0].Trim(), parts[1].Trim());
 					}
 				}
 			}
+			catch (Exception error)
+			{
+				Debug.Fail(error.Message);// don't do anything to a non-debug user, though.
+			}
+			return values;
 		}
 
-		private static void SendReport(string emailAddress, string topMessage)
+		/// <summary>
+		///  Reports upgrades, launches, etc., and allows for later calls to notify analytics of navigation and events
+		/// </summary>
+
+		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
-			// Set the Application label to the name of the app
-			Assembly assembly = Assembly.GetEntryAssembly();
-			string version = Application.ProductVersion;
-			if (assembly != null)
-			{
-				object[] attributes = assembly.GetCustomAttributes(typeof (AssemblyFileVersionAttribute), false);
-				version = (attributes != null && attributes.Length > 0)
-							  ?
-						  ((AssemblyFileVersionAttribute) attributes[0]).Version
-							  : Application.ProductVersion;
-			}
+				var osLabel = ErrorReport.GetOperatingSystemLabel();
 
+				_analytics = new AnalyticsEventSender(domain, googleAnalyticsAccountCode, UserGuid, _settings.FirstLaunchDate, _settings.PreviousLaunchDate, _settings.Launches, reportAsDeveloper, SaveCookie, null/*COOKIE TODO*/);
 
-			if (!AttemptHttpReport())
-			{
-				using (UsageEmailDialog d = new UsageEmailDialog())
+				if (DateTime.UtcNow.Date != _settings.PreviousLaunchDate.Date)
 				{
-					d.TopLineText = topMessage;
-					d.EmailMessage.To.Add(emailAddress);
-					d.EmailMessage.Subject =
-						string.Format("{0} {1} Report {2} Launches",
-									  UsageReporter.AppNameToUseInReporting,
-									  version,
-									  s_settings.Launches);
-					d.EmailMessage.Body =
-						string.Format("app={0} version={1} launches={2}",
-									  UsageReporter.AppNameToUseInReporting,
-									  version,
-									  s_settings.Launches);
-					d.ShowDialog();
+					SendNavigationNotice("{0}/launch/version{1}", osLabel, ErrorReport.VersionNumberString);
 				}
-			}
+
+				//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
+				//(i.e., how many people are return vistors, etc.)
+
+				if (string.IsNullOrEmpty(_realPreviousVersion))
+				{
+					SendNavigationNotice("{0}/firstApparentLaunchForAnyVersionOnMachine" + "/" + ErrorReport.VersionNumberString, osLabel);
+				}
+				else if (_realPreviousVersion != ErrorReport.VersionNumberString)
+				{
+					SendNavigationNotice("{0}/versionChange/version{1}-previousVersion{2}", osLabel, ErrorReport.VersionNumberString, _realPreviousVersion);
+				}
 		}
 
-
-		public static bool AttemptHttpReport()
+		private void SaveCookie(Cookie cookie)
 		{
+			//ErrorReportSettings.Default.AnalyticsCookie = cookie; /*TODO: how to serialize the cookie?*/
+			ErrorReportSettings.Default.Save();
+		}
+
+		/// <summary>
+		/// Send an navigation notice to Google Analytics, if BeginGoogleAnalytics was previously called
+		/// Record a visit to part of the application, just as if it  were a page.
+		/// Leave it up to this method to insert things like the fact that you are in DEBUG mode, or what version is being used, etc.
+		/// </summary>
+		/// <example>SendNavigationNotice("aboutBox"), SendNavigationNotice("dictionary/browseView")</example>
+		public static void SendNavigationNotice(string programArea, params object[] args)
+		{
+			if (s_singleton == null)
+				return;
+
+			if (!s_singleton._settings.OkToPingBasicUsageData)
+				return;
 			try
 			{
-				if(!s_settings.OkToPingBasicUsageData)
-					return false;
+				if (s_singleton._analytics == null)
+				{
+					//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+					//so we don't act like it is an error.
+					Debug.WriteLine("Got Navigation notice but google analytics wasn't enabled");
+					return;
+				}
 
-				Dictionary<string, string> parameters = new Dictionary<string, string>();
-				parameters.Add("app", UsageReporter.AppNameToUseInReporting);
-				parameters.Add("version", ErrorReport.VersionNumberString);
-				parameters.Add("launches", s_settings.Launches.ToString());
+				//var uri = new Uri(programArea);
 
-				string result = HttpPost("http://www.wesay.org/usage/post.php", parameters);
-				return result == "OK";
+
+				var area = string.Format(programArea, args);
+				Debug.WriteLine("SendNavigationNotice(" + area + ")");
+				s_singleton._analytics.SendNavigationNotice(area);
+				s_singleton._mostRecentArea = area;
 			}
-			catch(Exception)
+			catch (Exception e)
 			{
-				Reporting.Logger.WriteMinorEvent("Http Report Failed");
-				return false;
+#if DEBUG
+				throw;
+#endif
 			}
 		}
 
-		private static string HttpPost(string uri, Dictionary<string, string> parameters)
+		/// <summary>
+		/// Send an event to Google Analytics, if BeginGoogleAnalytics was previously called
+		/// </summary>
+		/// <param name="programArea">DictionaryBrowse</param>
+		/// <param name="action">       DeleteWord                   Error</param>
+		/// <param name="optionalLabel">Some Exception Message</param>
+		/// <param name="optionalInteger">some integer that makes sense for this event</param>
+		/// <example>SendEvent("dictionary/browseView", "Command", "DeleteWord", "","")</example>
+		/// <example>SendEvent("dictionary/browseView", "Error", "DeleteWord", "some error message we got","")</example>
+		public static void SendEvent(string programArea, string category, string action, string optionalLabel, int optionalInteger)
+				{
+					if (s_singleton == null)
+						return;
+
+			if (!s_singleton._settings.OkToPingBasicUsageData)
+						return;
+ try
+			{
+				if (s_singleton._analytics == null)
+				{
+					//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+					//so we don't act like it is an error.
+					Debug.WriteLine("Got SendEvent notice but google analytics wasn't enabled");
+					return;
+				}
+				Debug.WriteLine(string.Format("SendEvent(cat={0},action={1},label={2},value={3}",category,action,optionalLabel,optionalInteger));
+				s_singleton._analytics.SendEvent(programArea, category, action, optionalLabel, optionalInteger);
+			}
+			catch (Exception e)
+			{
+#if DEBUG
+				throw;
+#endif
+			}
+				}
+
+		/// <summary>
+		/// Send an error to Google Analytics, if BeginGoogleAnalytics was previously called
+		/// </summary>
+		public static void ReportException(bool wasFatal, string theCommandOrOtherContext, Exception error, string messageUserSaw)
 		{
-			StringBuilder parameterBuilder = new StringBuilder();
-			foreach (KeyValuePair<string, string> pair in parameters)
+
+			if (s_singleton == null)
+				return;
+
+			if (error!=null && s_singleton._mostRecentException == error)
+				return; //it's hard to avoid getting here twice with all the various paths
+
+			s_singleton._mostRecentException = error;
+
+			var sb = new StringBuilder();
+			if (!string.IsNullOrEmpty(messageUserSaw))
+				sb.Append(messageUserSaw + "|");
+			if (error != null)
+				sb.Append(error.Message + "|");
+			if(s_singleton._mostRecentArea!=null)
+				sb.Append(s_singleton._mostRecentArea + "|");
+			if (!string.IsNullOrEmpty(theCommandOrOtherContext))
+				sb.Append(theCommandOrOtherContext + "|");
+			if (wasFatal)
+				sb.Append(" fatal |");
+			if (error != null)
 			{
-				parameterBuilder.Append(HttpUtility.UrlEncode(pair.Key));
-				parameterBuilder.Append("=");
-				parameterBuilder.Append(HttpUtility.UrlEncode(pair.Value));
-				parameterBuilder.Append("&");
+				if(error.InnerException!=null)
+					sb.Append("Inner: "+error.InnerException.Message + "|");
+				sb.Append(error.StackTrace);
 			}
-			//trim off the last "&"
-			if (parameterBuilder.Length > 0)
-			{
-				parameterBuilder.Remove(parameterBuilder.Length - 1, 1);
-			}
+			// Maximum URI length is about 2000 (probably 2083 to be exact), so truncate this info if ncessary.
+			// A lot of characters (such as spaces) are going to be replaced with % codes, and there is a pretty hefty
+			// wad of additional stuff that goes into the URL besides this stuff, so cap it at 1000 and hope for the best.
+			if (sb.Length > 1000)
+				sb.Length = 1000;
 
-			System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
-		   // req.Proxy = new System.Net.WebProxy(ProxyString, true);
+			SendEvent(s_singleton._mostRecentArea, "error", sb.ToString(), ErrorReport.VersionNumberString, 0);
+		}
 
-			req.ContentType = "application/x-www-form-urlencoded";
-			req.Method = "POST";
-			req.Timeout = 1000;
+		public static void ReportException(Exception error)
+		{
+			ReportException(false, null, error, null);
+		}
 
-			byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameterBuilder.ToString());
-			req.ContentLength = bytes.Length;
-
-			System.IO.Stream os = req.GetRequestStream();
-			os.Write(bytes, 0, bytes.Length);
-			os.Close();
-
-			System.Net.WebResponse resp = req.GetResponse();
-			if (resp == null) return null;
-
-			System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-			return sr.ReadToEnd().Trim();
+		public static void ReportExceptionString(string messageUserSaw)
+		{
+			ReportException(false, null, null, messageUserSaw);
 		}
 	}
 }

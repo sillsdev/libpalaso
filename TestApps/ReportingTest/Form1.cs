@@ -19,7 +19,7 @@ namespace TestApp
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "hello");
+			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem connecting to the Internet.\r\nWarning: This machine does not have a live network connection.\r\nConnection attempt failed.");
 		}
 
 		private void button2_Click(object sender, EventArgs e)
@@ -37,18 +37,22 @@ namespace TestApp
 
 		private void _keyman7TestBox_Enter(object sender, EventArgs e)
 		{
-			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].Name;
+#if WANT_PORT
+			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].ShortName;
 			KeyboardController.ActivateKeyboard(name);
+#endif
 		}
 
 		private void _keyman6TestBox_Enter(object sender, EventArgs e)
 		{
+#if WANT_PORT
 			if(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6))
 			{
-				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].Name;
+				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].ShortName;
 				KeyboardController.ActivateKeyboard(name);
 			}
 			MessageBox.Show("keyman 6 not available");
+#endif
 		}
 
 		private void OnExceptionWithPolicyClick(object sender, EventArgs e)
@@ -83,31 +87,46 @@ namespace TestApp
 
 		private void button7_Click(object sender, EventArgs e)
 		{
-			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"
-			x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-x
-xx
-x
-x
-x
+			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"Should see 11 lines or a scroll following:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
 the end.");
 		}
+
+		private void button9_Click(object sender, EventArgs e)
+		{
+			var bldr = new StringBuilder("Should be 100 lines with VScrollbar." + Environment.NewLine);
+
+			for (int i = 1; i <= 100; i++)
+				bldr.AppendLine("Line " + i);
+
+			ErrorReport.NotifyUserOfProblem(bldr.ToString());
+		}
+
 
 		private void _probWithExitButton_Click(object sender, EventArgs e)
 		{
 			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Foobar", DialogResult.No,
 															 "Notice, you can click Foobar.");
+		}
+
+		private void button8_Click(object sender, EventArgs e)
+		{
+			ErrorReport.NotifyUserOfProblem(new ApplicationException("testing"),
+											"Bloom was appalled by the irony of that text.");
+		}
+
+		private void button10_Click(object sender, EventArgs e)
+		{
+			throw new ApplicationException("test");
 		}
 	}
 }
