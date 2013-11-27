@@ -1,18 +1,35 @@
 #if !MONO
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Keyboarding;
+using Palaso.Code;
 using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Keyboarding.Windows;
+using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")] // TeamCity builds don't seem to be able to see any installed keyboards.
 	public class WindowsKeyboardControllerTests
 	{
 		private Form _window;
+
+		[TestFixtureSetUp]
+		public void FixtureSetup()
+		{
+			KeyboardController.Initialize();
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			KeyboardController.Shutdown();
+		}
 
 		[SetUp]
 		public void Setup()
@@ -23,7 +40,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		private void RequiresWindow()
 		{
 			_window = new Form();
-			TextBox box = new TextBox();
+			var box = new TextBox();
 			box.Dock = DockStyle.Fill;
 			_window.Controls.Add(box);
 
@@ -46,15 +63,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Category("Windows IME")]
 		public void GetAllKeyboards_GivesSeveral()
 		{
-			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.All);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
+			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
+			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
 		[Test]
 		public void ActivateKeyboard_BogusName_RaisesMessageBox()
 		{
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => KeyboardController.ActivateKeyboard("foobar")
+				() => Keyboard.Controller.SetKeyboard("foobar")
 			);
 		}
 
@@ -62,190 +79,221 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
 		{
 			// the keyboardName for this test and above need to be different
-			string keyboardName = "This should never be the same as the name of an installed keyboard";
+			const string keyboardName = "This should never be the same as the name of an installed keyboard";
 			try
 			{
-				KeyboardController.ActivateKeyboard(keyboardName);
+				Keyboard.Controller.SetKeyboard(keyboardName);
 				Assert.Fail("Should have thrown exception but didn't.");
 			}
 			catch (ErrorReport.ProblemNotificationSentToUserException)
 			{
 
 			}
-			KeyboardController.ActivateKeyboard(keyboardName);
+			Assert.DoesNotThrow(() => Keyboard.Controller.SetKeyboard(keyboardName));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboard_ReportsItWasActivated()
+		public void ActivateKeyboard_BogusNameWithLocale_DoesntThrow()
 		{
-			RequiresWindowsIME();
-			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.Windows);
-			Assert.Greater(keyboards.Count, 0, "This test requires that the Windows IME has at least one language installed.");
-			KeyboardDescriptor d = keyboards[0];
-			KeyboardController.ActivateKeyboard(d.KeyboardName);
-			Assert.AreEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
+			// REVIEW: Should this show an error?
+			Assert.DoesNotThrow(
+				() => Keyboard.Controller.SetKeyboard("foobar", "en-US")
+			);
+		}
+
+		IKeyboardDefinition FirstInactiveKeyboard
+		{
+			get
+			{
+				var keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(x => x.Type == KeyboardType.System);
+				Assert.Greater(keyboards.Count(), 0, "This test requires that the Windows IME has at least one language installed.");
+				var d = keyboards.FirstOrDefault(x => x != Keyboard.Controller.ActiveKeyboard);
+				if (d == null)
+					return keyboards.First(); // Some tests have some value even if it is an active keyboard.
+				return d;
+			}
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
+		[Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboardUsingId_ReportsItWasActivated()
+		{
+			var d = FirstInactiveKeyboard;
+			Keyboard.Controller.SetKeyboard(d.Id);
+			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
+		}
+
+		[Test]
+		[Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboardUsingLayoutAndLocale_ReportsItWasActivated()
+		{
+			var d = FirstInactiveKeyboard;
+			Keyboard.Controller.SetKeyboard(d.Layout, d.Locale);
+			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
+		}
+
+		[Test]
+		[Category("Windows IME")]
+		public void WindowsIME_ActivateKeyboardUsingKeyboard_ReportsItWasActivated()
+		{
+			var d = FirstInactiveKeyboard;
+			Keyboard.Controller.SetKeyboard(d);
+			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
+		}
+
+		[Test]
+		[Category("Windows IME")]
 		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
 		{
-			RequiresWindowsIME();
-			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.Windows);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
-			KeyboardDescriptor d = keyboards[1];
-			KeyboardController.ActivateKeyboard(d.KeyboardName);
-			KeyboardController.DeactivateKeyboard();
-			Assert.AreNotEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
+			var keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(x => x.Type == KeyboardType.System);
+			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
+			var d = GetNonDefaultKeyboard(keyboards.ToList());
+			d.Activate();
+			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
+			Keyboard.Controller.ActivateDefaultKeyboard();
+			Assert.AreNotEqual(d, Keyboard.Controller.ActiveKeyboard);
+		}
+
+		private static IKeyboardDefinition GetNonDefaultKeyboard(IList<IKeyboardDefinition> keyboards)
+		{
+			// The default language is not necessarily the first one, so we have to make sure
+			// that we don't select the default one.
+			var defaultKeyboard =
+			Keyboard.Controller.GetKeyboard(InputLanguage.DefaultInputLanguage.LayoutName,
+			InputLanguage.DefaultInputLanguage.Culture.Name);
+			int index = keyboards.Count - 1;
+			while (index >= 0)
+			{
+				if (!keyboards[index].Equals(defaultKeyboard))
+					break;
+				index--;
+			}
+			if (index < 0)
+				Assert.Fail("Could not find a non-default keyboard !?");
+
+			return keyboards[index];
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
+		[Category("Windows IME")]
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
-			RequiresWindowsIME();
-			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.Windows);
-			Assert.Greater(keyboards.Count, 1, "This test requires that the Windows IME has at least two languages installed.");
-			foreach (KeyboardDescriptor keyboard in keyboards)
-			{
-				Assert.AreEqual(Engines.Windows, keyboard.KeyboardingEngine);
-			}
+			var keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(x => x.Type == KeyboardType.System);
+			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
+
+			Assert.That(keyboards.Select(keyboard => ((KeyboardDescription)keyboard).Engine), Is.All.TypeOf<WinKeyboardAdaptor>());
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboard_KeyboardDescriptorHasNoId_SetsKeyboardByName()
+		public void CheckWindowsAssumptions()
 		{
-			RequiresWindowsIME();
-			KeyboardDescriptor availableKeyboard = KeyboardController.GetAvailableKeyboards(Engines.Windows)[0];
-			KeyboardDescriptor keyboardWithNoId = new KeyboardDescriptor(availableKeyboard.KeyboardName, Engines.Windows, "");
-			KeyboardController.ActivateKeyboard(keyboardWithNoId);
-			Assert.AreEqual(availableKeyboard.KeyboardName, KeyboardController.GetActiveKeyboardDescriptor().KeyboardName);
+			// For Windows we expect to have exactly one keyboard adaptor. If we implement
+			// additional ones, e.g. for Keyman, we might need to change some methods, e.g.
+			// ActivateDefaultKeyboard, DefaultForWritingSystem and CreateKeyboardDefinition.
+			Assert.That(KeyboardController.Adaptors.Length, Is.EqualTo(1));
+			Assert.That(KeyboardController.Adaptors.Select(adaptor => adaptor.Type),
+				Has.All.EqualTo(KeyboardType.System));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboard_KeyboardDescriptorHasMalformedId_SetsKeyboardByName()
+		public void ActivateDefaultKeyboard_ActivatesDefaultInputLanguage()
 		{
-			RequiresWindowsIME();
-			KeyboardDescriptor availableKeyboard = KeyboardController.GetAvailableKeyboards(Engines.Windows)[0];
-			KeyboardDescriptor keyboardWithGarbledId = new KeyboardDescriptor(availableKeyboard.KeyboardName, Engines.Windows, "Garb123led");
-			KeyboardController.ActivateKeyboard(keyboardWithGarbledId);
-			Assert.AreEqual(availableKeyboard.KeyboardName, KeyboardController.GetActiveKeyboardDescriptor().KeyboardName);
+			Keyboard.Controller.ActivateDefaultKeyboard();
+			Assert.That(WinKeyboardAdaptor.GetInputLanguage(Keyboard.Controller.ActiveKeyboard),
+				Is.EqualTo(InputLanguage.DefaultInputLanguage));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboard_KeyboardIsFromUnknownEngine_SetsByName()
+		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
-			RequiresWindowsIME();
-			KeyboardDescriptor availableKeyboard = KeyboardController.GetAvailableKeyboards(Engines.Windows)[0];
-			KeyboardDescriptor keyboardFromUnknownEngine = new KeyboardDescriptor(availableKeyboard.KeyboardName, Engines.Unknown, "");
-			KeyboardController.ActivateKeyboard(keyboardFromUnknownEngine);
-			Assert.AreEqual(availableKeyboard.KeyboardName, KeyboardController.GetActiveKeyboardDescriptor().KeyboardName);
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			Assert.That(keyboard, Is.Not.Null);
+			Assert.That(keyboard, Is.TypeOf<WinKeyboardDescription>());
+			Assert.That((keyboard as KeyboardDescription).InputLanguage, Is.Not.Null);
 		}
 
-
+		// TODO: Remove or implement
+#if WANT_PORT
 		[Test]
-		[NUnit.Framework.Category("Keyman6")]
+		[Category("Keyman6")]
+		[Platform(Exclude = "Linux", Reason = "Keyman not supported on Linux")]
 		public void Keyman6_GetKeyboards_GivesAtLeastOneAndOnlyKeyman6Ones()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				return; // doesn't need to run on Unix
-			}
 			RequiresKeyman6();
-			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.Keyman6);
+			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6);
 			Assert.Greater(keyboards.Count, 0);
-			foreach (KeyboardDescriptor keyboard in keyboards)
+			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
 			{
-				Assert.AreEqual(Engines.Keyman6, keyboard.KeyboardingEngine);
+				Assert.AreEqual(KeyboardController.Engines.Keyman6, keyboard.engine);
 			}
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman6")]
+		[Category("Keyman6")]
+		[Platform(Exclude = "Linux", Reason = "Doesn't need to run on Linux")]
 		public void Keyman6_ActivateKeyboard_ReportsItWasActivated()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				return; // doesn't need to run on Unix
-			}
 			RequiresKeyman6();
 			RequiresWindow();
-			KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(Engines.Keyman6)[0];
-			Application.DoEvents();//required
-			KeyboardController.ActivateKeyboard(d.KeyboardName);
-			Application.DoEvents();//required
-			Assert.AreEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
+			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
+			Application.DoEvents(); //required
+			Keyboard.Controller.SetKeyboard(d.ShortName);
+			Application.DoEvents(); //required
+			Assert.AreEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman6")]
+		[Category("Keyman6")]
+		[Platform(Exclude = "Linux", Reason = "Doesn't need to run on Linux")]
 		public void Keyman6_DeActivateKeyboard_RevertsToDefault()
 		{
-			if(Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				return; // doesn't need to run on Unix
-			}
-
 			RequiresKeyman6();
-			KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(Engines.Keyman6)[0];
-			KeyboardController.ActivateKeyboard(d.KeyboardName);
+			var d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0];
+			Keyboard.Controller.SetKeyboard(d.ShortName);
 			Application.DoEvents();//required
 			KeyboardController.DeactivateKeyboard();
 			Application.DoEvents();//required
-			Assert.AreNotEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
+			Assert.AreNotEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman7")]
+		[Category("Keyman7")]
+		[Platform(Exclude = "Linux", Reason = "Doesn't need to run on Linux")]
 		public void Keyman7_ActivateKeyboard_ReportsItWasActivated()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				return; // doesn't need to run on Unix
-			}
 			RequiresKeyman7();
-			KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(Engines.Keyman7)[0];
-			KeyboardController.ActivateKeyboard(d.KeyboardName);
+			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
+			Keyboard.Controller.SetKeyboard(d.ShortName);
 			Application.DoEvents();//required
-			Assert.AreEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
+			Assert.AreEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 
 		[Test]
-		[NUnit.Framework.Category("Keyman7")]
+		[Category("Keyman7")]
+		[Platform(Exclude = "Linux", Reason = "Doesn't need to run on Linux")]
 		public void Keyman7_DeActivateKeyboard_RevertsToDefault()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				return; // doesn't need to run on Unix
-			}
 			RequiresKeyman7();
-			KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(Engines.Keyman7)[0];
-			KeyboardController.ActivateKeyboard(d.KeyboardName);
+			KeyboardController.KeyboardDescriptor d = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0];
+			Keyboard.Controller.SetKeyboard(d.ShortName);
 			Application.DoEvents();//required
 			KeyboardController.DeactivateKeyboard();
 			Application.DoEvents();//required
-			Assert.AreNotEqual(d.KeyboardName, KeyboardController.GetActiveKeyboard());
+			Assert.AreNotEqual(d.ShortName, KeyboardController.GetActiveKeyboard());
 		}
 
 		[Test]
-		[NUnit.Framework.Category("Keyman7")]
+		[Category("Keyman7")]
+		[Platform(Exclude = "Linux", Reason = "Doesn't need to run on Linux")]
 		public void Keyman7_GetKeyboards_GivesAtLeastOneAndOnlyKeyman7Ones()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				return; // doesn't need to run on Unix
-			}
 			RequiresKeyman7();
-			List<KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(Engines.Keyman7);
+			List<KeyboardController.KeyboardDescriptor> keyboards = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7);
 			Assert.Greater(keyboards.Count, 0);
-			foreach (KeyboardDescriptor keyboard in keyboards)
+			foreach (KeyboardController.KeyboardDescriptor keyboard in keyboards)
 			{
-				Assert.AreEqual(Engines.Keyman7, keyboard.KeyboardingEngine);
+				Assert.AreEqual(KeyboardController.Engines.Keyman7, keyboard.engine);
 			}
 		}
 
@@ -255,28 +303,21 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Test]
 		public void NoKeyman7_GetKeyboards_DoesNotCrash()
 		{
-		   KeyboardController.GetAvailableKeyboards(Engines.Keyman7);
-		}
-
-
-		private static void RequiresWindowsIME()
-		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(Engines.Windows),
-						  "Windows IME Not available");
+		   KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7);
 		}
 
 		private static void RequiresKeyman6()
 		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(Engines.Keyman6),
+			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6),
 						  "Keyman 6 Not available");
 
 		}
 		private static void RequiresKeyman7()
 		{
-			Assert.IsTrue(KeyboardController.EngineAvailable(Engines.Keyman7),
+			Assert.IsTrue(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman7),
 						  "Keyman 7 Not available");
 		}
-
+#endif
 	}
 }
 #endif

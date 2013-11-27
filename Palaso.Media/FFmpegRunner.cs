@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
+using Palaso.Progress;
 
 namespace Palaso.Media
 {
@@ -22,7 +22,7 @@ namespace Palaso.Media
 		/// <returns></returns>
 		static internal string LocateAndRememberFFmpeg()
 		{
-			if (string.Empty == _sFFmpegLocation) //NO! string.empty means we looked and didn't find: string.IsNullOrEmpty(s_ffmpegLocation))
+			if (null != _sFFmpegLocation) //NO! string.empty means we looked and didn't find: string.IsNullOrEmpty(s_ffmpegLocation))
 				return _sFFmpegLocation;
 			_sFFmpegLocation = LocateFFmpeg();
 			return _sFFmpegLocation;
@@ -41,13 +41,18 @@ namespace Palaso.Media
 		{
 			//on linux, we can safely assume the package has included the needed dependency
 #if MONO
-						return "ffmpeg";
+			if (File.Exists("/usr/bin/ffmpeg"))
+				return "/usr/bin/ffmpeg";
+			else if (File.Exists("/usr/bin/avconv"))
+				return "/usr/bin/avconv";	// the new name of ffmpeg on Linux
+			else
+				return null;
 #endif
 
 #if !MONO
 			string withApplicationDirectory = GetPathToBundledFFmpeg();
 
-			if (File.Exists(withApplicationDirectory))
+			if (!string.IsNullOrEmpty(withApplicationDirectory) && File.Exists(withApplicationDirectory))
 				return withApplicationDirectory;
 
 			//nb: this is sensitive to whether we are compiled against win32 or not,
@@ -85,7 +90,14 @@ namespace Palaso.Media
 
 		private static string GetPathToBundledFFmpeg()
 		{
-			return FileLocator.DirectoryOfApplicationOrSolution.CombineForPath("ffmpeg", "ffmpeg.exe");
+			try
+			{
+				 return FileLocator.GetFileDistributedWithApplication("ffmpeg", "ffmpeg.exe");
+			}
+			catch (Exception)
+			{
+				return string.Empty;
+			}
 		}
 
 
@@ -137,22 +149,25 @@ namespace Palaso.Media
 		/// </summary>
 		/// <param name="inputPath"></param>
 		/// <param name="outputPath"></param>
+		/// <param name="channels">1 for mono, 2 for stereo</param>
 		/// <param name="progress"></param>
 		/// <returns>log of the run</returns>
-		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, IProgress progress)
+		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
 			if(string.IsNullOrEmpty(LocateFFmpeg()))
 			{
 				return new ExecutionResult(){StandardError = "Could not locate FFMpeg"};
 			}
 
-			var arguments = "-i \"" + inputPath + "\" -vn -acodec libmp3lame \"" + outputPath + "\"";
+			var arguments = string.Format("-i \"{0}\" -vn -acodec libmp3lame -ac {1} \"{2}\"", inputPath, channels, outputPath);
 			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
 														arguments,
 														Environment.CurrentDirectory,
 														60*10, //10 minutes
 														progress
 				);
+
+			progress.WriteVerbose(result.StandardOutput);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
@@ -166,6 +181,328 @@ namespace Palaso.Media
 										};
 				return doctoredResult;
 			}
+			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="channels">1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ExtractOggAudio(string inputPath, string outputPath, int channels, IProgress progress)
+		{
+			if(string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult(){StandardError = "Could not locate FFMpeg"};
+			}
+
+			var arguments = string.Format("-i \"{0}\" -vn -acodec vorbis -ac {1} \"{2}\"", inputPath, channels, outputPath);
+			progress.WriteMessage("ffmpeg " + arguments);
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60*10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				var doctoredResult = new ExecutionResult
+										{
+											ExitCode = 0,
+											StandardOutput = result.StandardOutput,
+											StandardError = string.Empty
+										};
+				return doctoredResult;
+			}
+			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is responsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ExtractBestQualityWavAudio(string inputPath, string outputPath, int channels, IProgress progress)
+		{
+			return ExtractAudio(inputPath, outputPath, "copy", 0, channels, progress);
+		}
+
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is responsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="bitsPerSample">e.g. 8, 16, 24, 32</param>
+		/// <param name="sampleRate">e.g. 22050, 44100, 4800</param>
+		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ExtractPcmAudio(string inputPath, string outputPath,
+			int bitsPerSample, int sampleRate, int channels, IProgress progress)
+		{
+			var audioCodec = "copy";
+
+			switch (bitsPerSample)
+			{
+				case 8: audioCodec = "pcm_s8"; break;
+				case 16: audioCodec = "pcm_s16le"; break;
+				case 24: audioCodec = "pcm_s24le"; break;
+				case 32: audioCodec = "pcm_s32le"; break;
+			}
+
+			return ExtractAudio(inputPath, outputPath, audioCodec, sampleRate, channels, progress);
+		}
+
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is responsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="audioCodec">e.g. copy, pcm_s16le, pcm_s32le, etc.</param>
+		/// <param name="sampleRate">e.g. 22050, 44100, 4800. Use 0 to use ffmpeg's default</param>
+		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		private static ExecutionResult ExtractAudio(string inputPath, string outputPath,
+			string audioCodec, int sampleRate, int channels, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			var sampleRateArg = "";
+			if (sampleRate > 0)
+				sampleRateArg = string.Format("-ar {0}", sampleRate);
+
+			//TODO: this will output whatever mp3 or wav or whatever is in the video... might not be wav at all!
+			var channelsArg = "";
+			if (channels > 0)
+				channelsArg = string.Format(" -ac {0}", channels);
+
+			var arguments = string.Format("-i \"{0}\" -vn -acodec {1}  {2} {3} \"{4}\"",
+				inputPath, audioCodec, sampleRateArg, channelsArg, outputPath);
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				var doctoredResult = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+				return doctoredResult;
+			}
+			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Creates an audio file, using the received one as the bases, with the specified number
+		/// of channels. For example, this can be used to convert a 2-channel audio file to a
+		/// single channel audio file.
+		/// </summary>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ChangeNumberOfAudioChannels(string inputPath,
+			string outputPath, int channels, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+				return new ExecutionResult { StandardError = "Could not locate FFMpeg" };
+
+			var arguments = string.Format("-i \"{0}\" -vn -ac {1} \"{2}\"",
+				inputPath, channels, outputPath);
+
+			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+							arguments,
+							Environment.CurrentDirectory,
+							60 * 10, //10 minutes
+							progress);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small") && File.Exists(outputPath))
+			{
+				var doctoredResult = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+
+				return doctoredResult;
+			}
+
+			// ffmpeg always outputs config info to standarderror
+			if (result.StandardError.ToLower().Contains("error"))
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts to low-quality, mono mp3
+		/// </summary>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult MakeLowQualityCompressedAudio(string inputPath, string outputPath, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			var arguments = "-i \"" + inputPath + "\" -acodec libmp3lame -ac 1 -ar 8000 \"" + outputPath + "\"";
+
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			 progress.WriteVerbose(result.StandardOutput);
+
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				result = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+			}
+			if (result.StandardError.ToLower().Contains("error")
+				|| result.StandardError.ToLower().Contains("unable to")
+				|| result.StandardError.ToLower().Contains("invalid")
+				|| result.StandardError.ToLower().Contains("could not")
+				) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts to low-quality, small video
+		/// </summary>
+		/// <param name="maxSeconds">0 if you don't want to truncate at all</param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult MakeLowQualitySmallVideo(string inputPath, string outputPath, int maxSeconds, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			// isn't working: var arguments = "-i \"" + inputPath + "\" -vcodec mpeg4 -s 160x120 -b 800  -acodec libmp3lame -ar 22050 -ab 32k -ac 1 \"" + outputPath + "\"";
+			var arguments = "-i \"" + inputPath +
+							"\" -vcodec mpeg4 -s 160x120 -b 800 -acodec libmp3lame -ar 22050 -ab 32k -ac 1 ";
+			if (maxSeconds > 0)
+				arguments += " -t " + maxSeconds + " ";
+			arguments += "\""+ outputPath + "\"";
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				result = new ExecutionResult
+				{
+					ExitCode = 0,
+					StandardOutput = result.StandardOutput,
+					StandardError = string.Empty
+				};
+
+			}
+			if (result.StandardError.ToLower().Contains("error") //ffmpeg always outputs config info to standarderror
+				|| result.StandardError.ToLower().Contains("unable to")
+				|| result.StandardError.ToLower().Contains("invalid")
+				|| result.StandardError.ToLower().Contains("could not"))
+				progress.WriteWarning(result.StandardError);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts to low-quality, small picture
+		/// </summary>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult MakeLowQualitySmallPicture(string inputPath, string outputPath, IProgress progress)
+		{
+			if (string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
+			}
+
+			//enhance: how to lower the quality?
+
+			var arguments = "-i \"" + inputPath + "\" -f image2  -s 176x144 \"" + outputPath + "\"";
+
+			progress.WriteMessage("ffmpeg " + arguments);
+
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60 * 10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+		 if(result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
 			return result;
 		}
 	}

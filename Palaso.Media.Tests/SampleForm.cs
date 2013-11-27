@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using Palaso.Media.Tests.Properties;
 
 namespace Palaso.Media.Tests
 {
 	public partial class Form1 : Form
 	{
-		private readonly AudioIrrKlangSession _recorder;
+		private readonly ISimpleAudioSession _recorder;
 		private string _path;
 
 		public Form1()
@@ -18,7 +21,34 @@ namespace Palaso.Media.Tests
 			soundFieldControl1.Path = Path.GetTempFileName().Replace(".tmp",".wav");
 //            UpdateScreen();
 //            timer1.Enabled = true;
+
+
+	/*didn't work       var map = new ColorMap[1];
+			map[0] =new ColorMap();
+			map[0].OldColor = Color.Black;
+			map[0].NewColor = Color.Red;
+			bitmapButton1.ImageAttributes.SetGamma(.2f);
+			bitmapButton1.ImageAttributes.SetBrushRemapTable(map);
+	 */
 		}
+
+	  /*  protected override void OnPaint(PaintEventArgs e)
+		{
+			base.OnPaint(e);
+
+
+			Image image = new Bitmap(@"C:\dev\HearThis\artwork\test.bmp");
+
+			var attrs = new ImageAttributes();
+			var map = new ColorMap[1];
+			map[0] = new ColorMap();
+			map[0].OldColor = Color.Red;
+			map[0].NewColor = Color.Blue;
+
+			attrs.SetBrushRemapTable(map);
+		   e.Graphics.DrawImage(image, new Rectangle(20, 100, 200, 200), 0, 0, 48, 48, GraphicsUnit.Pixel, attrs);
+		}
+		*/
 
 		private void shortSoundFieldControl1_Load(object sender, EventArgs e)
 		{

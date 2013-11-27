@@ -26,6 +26,14 @@ namespace Palaso.i18n
 			Init();
 			SetupUIFont(labelFontName, labelFontSizeInPoints );
 		}
+
+		private enum State
+		{
+			InMsgId,
+			InMsgStr,
+			Reset
+		} ;
+
 		public StringCatalog(string pathToPoFile, string labelFontName, float labelFontSizeInPoints)
 		{
 			Init();
@@ -34,41 +42,57 @@ namespace Palaso.i18n
 			{
 				using (var reader = File.OpenText(pathToPoFile))
 				{
-					string id = null;
+					string id = "";
+					string message = "";
 					string line = reader.ReadLine();
+					var state = State.Reset;
+
 					while (line != null)
 					{
-						if (line.StartsWith("msgid"))
+						switch (state)
 						{
-							id = GetStringBetweenQuotes(line).Trim();
-						}
-						else if (line.StartsWith("msgstr") && !string.IsNullOrEmpty(id))
-						{
-							string s = GetStringBetweenQuotes(line);
-							if (s.Length > 0)
-							{
-								_catalog.Add(id, s);
-							}
-							//id = null;
-						}
-							//handle multi-line messages
-						else if (line.StartsWith("\"") && !string.IsNullOrEmpty(id))
-						{
-							string s = GetStringBetweenQuotes(line);
-							if (s.Length > 0)
-							{
-								if (!_catalog.ContainsKey(id))
+							case State.Reset:
+								if (line.StartsWith("msgid"))
 								{
-									_catalog.Add(id, string.Empty);
+									state = State.InMsgId;
+									id = GetStringBetweenQuotes(line);
 								}
-								_catalog[id] = _catalog[id] + s;
-							}
-						}
-						else
-						{
-							id = null;
+								break;
+
+							case State.InMsgId:
+								if (line.StartsWith("msgstr"))
+								{
+									state = State.InMsgStr;
+									message = GetStringBetweenQuotes(line);
+								}
+								else if (line.StartsWith("\""))
+								{
+									id += GetStringBetweenQuotes(line);
+								}
+								break;
+
+							case State.InMsgStr:
+								if (string.IsNullOrEmpty(line))
+								{
+									state = State.Reset;
+									if (!(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(message) || _catalog.ContainsKey(id)))
+									{
+										_catalog.Add(id.Trim(), message.Trim());
+									}
+									id = "";
+									message = "";
+								}
+								else if (line.StartsWith("\""))
+								{
+									message += GetStringBetweenQuotes(line);
+								}
+								break;
 						}
 						line = reader.ReadLine();
+					}
+					if (!(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(message) || _catalog.ContainsKey(id)))
+					{
+						_catalog.Add(id, message);
 					}
 				}
 			}
@@ -185,10 +209,11 @@ namespace Palaso.i18n
 				{
 					return _catalog[id];
 				}
-				id = id.Replace("&&", "&");
-				if (_catalog.ContainsKey(id))
+				//REVIEW: What's this about?  It was   id = id.Replace("&&", "&");  which was removing the && we need when it gets to the UI
+				var idWithSingleAmpersand  =id.Replace("&&", "&");
+				if (_catalog.ContainsKey(idWithSingleAmpersand))
 				{
-					return _catalog[id];
+					return _catalog[idWithSingleAmpersand];
 				}
 				return id;
 			}
@@ -209,15 +234,11 @@ namespace Palaso.i18n
 				_font = value;
 			}
 		}
+
+		// Font resizing is deprecated - obsolete API DG 2011-12
 		public static Font ModifyFontForLocalization(Font incoming)
 		{
-			float sBaseFontSizeInPoints = (float)8.25;
-			float points = incoming.SizeInPoints + (StringCatalog.LabelFont.SizeInPoints- sBaseFontSizeInPoints);
-			//float points = incoming.SizeInPoints * (StringCatalog.LabelFont.SizeInPoints / sBaseFontSizeInPoints);
-			// 0 < points <= System.Single.MaxValue must be true or Font will throw
-			points = Math.Max(Single.Epsilon, Math.Min(Single.MaxValue, points));
-			return new Font(StringCatalog.LabelFont.Name, points, incoming.Style);
-
+			return incoming;
 		}
 	}
 }

@@ -119,6 +119,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			if (SelectedIndex == _model.CurrentIndex)
 				return;
+			// Some views have more indexes than we do, so do nothing if we can't do anything useful.
+			// review: shouldn't these controls have their own model.
+			if (_model.CurrentIndex >= Items.Count)
+				return;
 			_changingSelection = true;
 			try
 			{

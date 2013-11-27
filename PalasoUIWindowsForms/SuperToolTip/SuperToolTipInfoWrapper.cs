@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 
-namespace Elsehemy
+namespace Palaso.UI.WindowsForms.SuperToolTip
 {
 	/// <summary>
 	/// Class to wrap SuperToolTipInfo with a Boolean variable to use the

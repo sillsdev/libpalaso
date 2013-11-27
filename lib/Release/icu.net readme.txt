@@ -1,0 +1,4 @@
+icu.net is a wrapper around the icu dlls (icuin40.dll, icuuc40.dll, icudt40.dll).
+The ICU dlls can be quite large. The versions here have been built with the minimum support for collation (which is all that icu.net provides now), the UCA tables but no locales
+
+These can be replaced with versions that are full or not included at all. If they are not included then when you try to construct a class in icu.net, you will get a DllNotFoundException.

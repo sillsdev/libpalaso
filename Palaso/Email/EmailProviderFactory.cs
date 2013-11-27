@@ -13,7 +13,13 @@ namespace Palaso.Email
 			{
 				if (ThunderbirdIsDefault())
 				{
+					Console.WriteLine("Using Thunderbird provider");
 					return new ThunderbirdEmailProvider();
+				}
+				if (File.Exists("/usr/bin/xdg-email"))
+				{
+					Console.WriteLine("Using xdg-email provider");
+					return new LinuxEmailProvider();
 				}
 				return new MailToEmailProvider();
 			}
@@ -22,7 +28,7 @@ namespace Palaso.Email
 
 		public static IEmailProvider AlternateEmailProvider()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			if (Environment.OSVersion.Platform == PlatformID.Unix && !ThunderbirdIsDefault() && !File.Exists("/usr/bin/xdg-email"))
 			{
 				return null;
 			}

@@ -3,11 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Palaso.Code;
 
 namespace Palaso.Xml
 {
 	public static class XmlNodeExtensions
 	{
+		/// <summary>
+		/// this is safe to use with foreach, unlike SelectNodes
+		/// </summary>
+		public static XmlNodeList SafeSelectNodesWithParms(this XmlNode node, string path, params object[] args)
+		{
+			var x = node.SelectNodes(string.Format(path, args));
+			if (x == null)
+				return new NullXMlNodeList();
+			return x;
+		}
 
 		/// <summary>
 		/// this is safe to use with foreach, unlike SelectNodes
@@ -25,10 +36,15 @@ namespace Palaso.Xml
 		/// </summary>
 		public static XmlNodeList SafeSelectNodes(this XmlNode node, string path)
 		{
+			Guard.AgainstNull(node, "SafeSelectNodes(node,"+path+"): node was null");
+			//REVIEW JH(jh): this will put pfx in front of every element in the path, but in html, that actually makes the queries fail.
 			const string prefix = "pfx";
 			XmlNamespaceManager nsmgr = GetNsmgr(node, prefix);
-			string prefixedPath = GetPrefixedPath(path, prefix);
-			var x= node.SelectNodes(prefixedPath, nsmgr);
+			if(nsmgr!=null)// skip this pfx business if there is no namespace anyhow (as in html5)
+			{
+				path = GetPrefixedPath(path, prefix);
+			}
+			var x= node.SelectNodes(path, nsmgr);
 
 			if (x == null)
 				return new NullXMlNodeList();
@@ -64,36 +80,74 @@ namespace Palaso.Xml
 
 		#region HonorDefaultNamespace  // from http://stackoverflow.com/questions/585812/using-xpath-with-default-namespace-in-c/2054877#2054877
 
+		public const string DefaultNamespacePrefix = "pfx";
+
+		/// <summary>
+		/// This is for doing selections in xhtml, where there is a default namespace, which makes
+		/// normal selects fail.  This tries to set a namespace and inject prefix into the xpath.
+		/// </summary>
 		public static XmlNode SelectSingleNodeHonoringDefaultNS(this XmlNode node, string path)
 		{
-			const string prefix = "pfx";
-			XmlNamespaceManager nsmgr = GetNsmgr(node, prefix);
-			string prefixedPath = GetPrefixedPath(path, prefix);
-			return node.SelectSingleNode(prefixedPath, nsmgr);
+
+			XmlNamespaceManager nsmgr = GetNsmgr(node, DefaultNamespacePrefix);
+			if(nsmgr!=null)
+				path = GetPrefixedPath(path, DefaultNamespacePrefix);
+			return node.SelectSingleNode(path, nsmgr);
 		}
 
 
 		private static XmlNamespaceManager GetNsmgr(XmlNode node, string prefix)
 		{
+			Guard.AgainstNull(node, "GetNsmgr(node, prefix): node was null");
 			string namespaceUri;
 			XmlNameTable nameTable;
-			if (node is XmlDocument)
+			try
 			{
-				nameTable = ((XmlDocument)node).NameTable;
-				namespaceUri = ((XmlDocument)node).DocumentElement.NamespaceURI;
+				if (node is XmlDocument)
+				{
+					nameTable = ((XmlDocument) node).NameTable;
+					Guard.AgainstNull(((XmlDocument) node).DocumentElement, "((XmlDocument) node).DocumentElement");
+					namespaceUri = ((XmlDocument) node).DocumentElement.NamespaceURI;
+				}
+				else
+				{
+					Guard.AgainstNull(node.OwnerDocument, "node.OwnerDocument");
+					nameTable = node.OwnerDocument.NameTable;
+					namespaceUri = node.NamespaceURI;
+				}
+				if(string.IsNullOrEmpty(namespaceUri))
+				{
+					return null;
+				}
+				XmlNamespaceManager nsmgr = new XmlNamespaceManager(nameTable);
+				nsmgr.AddNamespace(prefix, namespaceUri);
+				return nsmgr;
+
 			}
-			else
+			catch (Exception error)
 			{
-				nameTable = node.OwnerDocument.NameTable;
-				namespaceUri = node.NamespaceURI;
+				throw new ApplicationException("Could not create a namespace manager for the following node:\r\n"+node.OuterXml,error);
 			}
-			XmlNamespaceManager nsmgr = new XmlNamespaceManager(nameTable);
-			nsmgr.AddNamespace(prefix, namespaceUri);
-			return nsmgr;
 		}
 
+
+		// review: I (CP) think that this method changes the syntax of xpath to account for the use of a default namespace
+		// such that for example:
+		//  xpath = a/b
+		//  xml = <a xmlns="MyNameSpace"><b></a>
+		// would match when it should not.  The xpath should be:
+		//  xpath = MyNameSpace:a/MyNameSpace:b
+		// bug: The code below currently doesn't allow for a / in a literal string which should not have pfx: prepended.
 		private static string GetPrefixedPath(string xPath, string prefix)
 		{
+			//the code I purloined from stackoverflow didn't cope with axes and the double colon (ancestor::)
+			//Rather than re-write it, I just get the axes out of the way, then put them back after we insert the prefix
+			var axes = new List<string>(new[] {"ancestor","ancestor-or-self","attribute","child","descendant","descendant-or-self","following","following-sibling","namespace","parent","preceding","preceding-sibling","self" });
+			foreach (var axis in axes)
+			{
+				xPath = xPath.Replace(axis+"::", "#"+axis);
+			}
+
 			char[] validLeadCharacters = "@/".ToCharArray();
 			char[] quoteChars = "\'\"".ToCharArray();
 
@@ -108,7 +162,15 @@ namespace Palaso.Xml
 												? x
 												: prefix + ":" + x).ToArray());
 
+			foreach (var axis in axes)
+			{
+				if (result.Contains(axis + "-"))//don't match on, e.g., "following" if what we have is "following-sibling"
+					continue;
+				result = result.Replace(prefix + ":#"+axis, axis+"::" + prefix + ":");
+			}
+
 			result = result.Replace(prefix + ":text()", "text()");//remove the pfx from the text()
+			result = result.Replace(prefix + ":node()", "node()");
 			return result;
 		}
 

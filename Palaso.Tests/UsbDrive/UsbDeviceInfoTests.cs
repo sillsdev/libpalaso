@@ -9,85 +9,140 @@ namespace Palaso.Tests.UsbDrive
 	[TestFixture]
 	public class UsbDeviceInfoTests
 	{
-		private struct driveParamsForTests
+		private struct DriveParamsForTests
 		{
-			public ulong driveSize;
-			public DirectoryInfo path;
+			public ulong DriveSize;
+			public DirectoryInfo Path;
 		}
 
-		private driveParamsForTests drive0;
-		private driveParamsForTests drive1;
+		private DriveParamsForTests _drive0;
+		private DriveParamsForTests _drive1;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
 #if MONO
-			drive0.driveSize = 256850432;
-			drive0.path = new DirectoryInfo("/media/Kingston");
-			drive1.driveSize = 1032724480;
-			drive1.path = new DirectoryInfo("/media/PAXERIT");
+			_drive0.DriveSize = 256850432;
+			_drive0.Path = new DirectoryInfo("/media/Kingston");
+			_drive1.DriveSize = 1032724480;
+			_drive1.Path = new DirectoryInfo("/media/PAXERIT");
 #else
-			drive0.driveSize = 256770048;
-			drive0.path = new DirectoryInfo("E:\\");
-			drive1.driveSize = 1032454144;
-			drive1.path = new DirectoryInfo("J:\\");
+			_drive0.DriveSize = 256770048;
+			_drive0.Path = new DirectoryInfo("E:\\");
+			_drive1.DriveSize = 1032454144;
+			_drive1.Path = new DirectoryInfo("J:\\");
 #endif
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
-		public void GetDrives_1DrivesArePluggedIn_DrivesAreReturned()
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void GetDrives_1Drive_DrivesAreReturned()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(1, usbDrives.Count);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void IsReady_1Drive_True()
+		{
+			var drives = UsbDriveInfo.GetDrives();
+			Assert.That(drives[0].IsReady, Is.True);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void RootDirectory_1Drive_MatchesMountPath()
+		{
+			var drives = UsbDriveInfo.GetDrives();
+			// TODO The below is a platform specific expectation.  Fix for windows
+			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/"));
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void TotalSize_1Drive_GreaterThan1000()
+		{
+			var drives = UsbDriveInfo.GetDrives();
+			Assert.That(drives[0].TotalSize, Is.GreaterThan(1000));
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void GetDrives_2DrivesArePluggedIn_DrivesAreReturned()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.AreEqual(2, usbDrives.Count);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void GetDrives_3DrivesArePluggedIn_DrivesAreReturned()
+		{
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.AreEqual(3, usbDrives.Count);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.AreEqual(drive0.driveSize, usbDrives[0].TotalSize);
-			Assert.AreEqual(drive1.driveSize, usbDrives[1].TotalSize);
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.AreEqual(_drive0.DriveSize, usbDrives[0].TotalSize);
+			Assert.AreEqual(_drive1.DriveSize, usbDrives[1].TotalSize);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.AreEqual(drive0.path.FullName, usbDrives[0].RootDirectory.FullName);
-			Assert.AreEqual(drive1.path.FullName, usbDrives[1].RootDirectory.FullName);
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.AreEqual(_drive0.Path.FullName, usbDrives[0].RootDirectory.FullName);
+			Assert.AreEqual(_drive1.Path.FullName, usbDrives[1].RootDirectory.FullName);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void IsReady_2DrivesAreMounted_ReturnsTrue()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void IsReady_3DrivesAreMounted_ReturnsTrue()
+		{
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.IsTrue(usbDrives[0].IsReady);
+			Assert.IsTrue(usbDrives[1].IsReady);
+			Assert.IsTrue(usbDrives[2].IsReady);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void IsReady_2DrivesAreNotMounted_ReturnsFalse()
 		{
-			List<UsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			Assert.IsFalse(usbDrives[0].IsReady);
 			Assert.IsFalse(usbDrives[1].IsReady);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("RequiresUSB")]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
 		public void RootDirectory_2DrivesAreNotMounted_Throws()
 		{
 			var usbDrives = UsbDriveInfo.GetDrives();
@@ -96,7 +151,7 @@ namespace Palaso.Tests.UsbDrive
 					{
 						string s = usbDrives[0].RootDirectory.FullName;
 					}
-			);
+				);
 		}
 	}
 }

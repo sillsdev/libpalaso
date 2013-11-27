@@ -264,7 +264,7 @@ namespace Palaso.Tests.Data
 		public void CreateItem_ReturnsUniqueItem()
 		{
 			SetState();
-			Assert.AreNotEqual(Item, DataMapperUnderTest.CreateItem());
+			Assert.AreNotSame(Item, DataMapperUnderTest.CreateItem());
 		}
 
 		[Test]
@@ -467,7 +467,7 @@ namespace Palaso.Tests.Data
 		public void CreateItem_ReturnsUniqueItem()
 		{
 			SetState();
-			Assert.AreNotEqual(Item, DataMapperUnderTest.CreateItem());
+			Assert.AreNotSame(Item, DataMapperUnderTest.CreateItem());
 		}
 
 		[Test]
