@@ -268,13 +268,19 @@ namespace SIL.Archiving
 
 				foreach (var kvp in _fileLists)
 				{
-					if (kvp.Key != string.Empty)
-						OnDisplayMessage(kvp.Key, MessageType.Indented);
+					string msg = FileGroupDisplayMessage(kvp.Key);
+					if (msg != string.Empty)
+						OnDisplayMessage(msg, MessageType.Indented);
 
 					foreach (var file in kvp.Value.Item1)
 						OnDisplayMessage(Path.GetFileName(file), MessageType.Bullet);
 				}
 			}
+		}
+
+		protected virtual string FileGroupDisplayMessage(string groupKey)
+		{
+			return groupKey;
 		}
 		#endregion
 
