@@ -12,8 +12,6 @@ namespace Palaso.Data
 		private readonly List<RecordToken<T>> _results;
 		private readonly IDataMapper<T> _dataMapper;
 
-		public IDataMapper<T> DataMapper { get { return _dataMapper; } }
-
 		public ResultSet(IDataMapper<T> dataMapper, params IEnumerable<RecordToken<T>>[] results)
 		{
 			if (dataMapper == null)

@@ -3,7 +3,6 @@ using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
-using Palaso.Lift.Options;
 using Palaso.Progress;
 using Palaso.Tests.Data;
 using Palaso.TestUtilities;
@@ -60,7 +59,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		public static LiftDataMapper CreateDataMapper(string filePath)
@@ -70,26 +69,17 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			);
 		}
 
-		/* NOMORELOCKING
-		 [Test]
-		[ExpectedException(typeof(IOException))]
-		public void Constructor_FileIsWriteableAfterRepositoryIsCreated_Throws()
-		{
-			using (File.OpenWrite(_persistedFilePath))
-			{
-			}
-		}
-		*/
-
 		[Test]
-		[ExpectedException(typeof(IOException))]
 		public void Constructor_FileIsNotWriteableWhenRepositoryIsCreated_Throws()
 		{
 			using (File.OpenWrite(_persistedFilePath))
 			{
-				using(LiftDataMapper dataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath))
-				{
-				}
+//                using(LiftDataMapper dataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath))
+//                {
+//                }
+				Assert.Throws<IOException>(() =>
+										   CreateDataMapper(_persistedFilePath));
+
 			}
 		}
 
@@ -105,6 +95,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			Assert.AreEqual(2, dom.ChildNodes.Count);
 			Assert.AreEqual("lift", dom.ChildNodes[1].Name);
 			Assert.AreEqual(0, dom.ChildNodes[1].ChildNodes.Count);
+			File.Delete(nonExistentFileToBeCreated);
 		}
 
 		[Test]
@@ -118,31 +109,9 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			doc.Load(emptyFileToBeFilled);
 			XmlNode root = doc.DocumentElement;
 			Assert.AreEqual("lift", root.Name);
+			File.Delete(emptyFileToBeFilled);
 		}
 
-		/* NOMORELOCKING
-		  [Test]
-		   [ExpectedException(typeof(IOException))]
-		   public void LiftIsLocked_ReturnsTrue()
-		   {
-			   Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
-			   FileStream streamForPermissionChecking = null;
-			   try
-			   {
-				   streamForPermissionChecking = new FileStream(_persistedFilePath, FileMode.Open, FileAccess.Write);
-			   }
-			   finally
-			   {
-				   //This is in case the exception is not thrown
-				   if (streamForPermissionChecking != null)
-				   {
-					   streamForPermissionChecking.Close();
-					   streamForPermissionChecking.Dispose();
-				   }
-
-			   }
-		   }
-		*/
 		[Test]
 		public void UnlockedLiftFile_ConstructorDoesNotThrow()
 		{
@@ -185,7 +154,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void  LastModified_IsSetToMostRecentItemInPersistedDatasLastModifiedTime_v()
@@ -199,29 +168,6 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
-		/* NOMORELOCKING
-	 [Test]
-		   [ExpectedException(typeof(IOException))]
-		   public void LiftIsLocked_ReturnsTrue()
-		   {
-			   Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
-			   FileStream streamForPermissionChecking = null;
-			   try
-			   {
-				   streamForPermissionChecking = new FileStream(_persistedFilePath, FileMode.Open, FileAccess.Write);
-			   }
-			   finally
-			   {
-				   //This is in case the exception is not thrown
-				   if (streamForPermissionChecking != null)
-				   {
-					   streamForPermissionChecking.Close();
-					   streamForPermissionChecking.Dispose();
-				   }
-
-			   }
-		   }
-	 */
 	}
 
 	[TestFixture]
@@ -248,7 +194,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -257,30 +203,6 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
-		/* NOMORELOCKING
-		 [Test]
-		 [ExpectedException(typeof(IOException))]
-		 public void LiftIsLocked_ReturnsTrue()
-		 {
-			 SetState();
-			 Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
-			 FileStream streamForPermissionChecking = null;
-			 try
-			 {
-				 streamForPermissionChecking = new FileStream(_persistedFilePath, FileMode.Open, FileAccess.Write);
-			 }
-			 finally
-			 {
-				 //This is in case the exception is not thrown
-				 if (streamForPermissionChecking != null)
-				 {
-					 streamForPermissionChecking.Close();
-					 streamForPermissionChecking.Dispose();
-				 }
-
-			 }
-		 }
-		 */
 	}
 
 	[TestFixture]
@@ -302,7 +224,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -311,30 +233,6 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
-		/* NOMORELOCKING
-		 [Test]
-			  [ExpectedException(typeof(IOException))]
-			  public void LiftIsLocked_ReturnsTrue()
-			  {
-				  SetState();
-				  Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
-				  FileStream streamForPermissionChecking = null;
-				  try
-				  {
-					  streamForPermissionChecking = new FileStream(_persistedFilePath, FileMode.Open, FileAccess.Write);
-				  }
-				  finally
-				  {
-					  //This is in case the exception is not thrown
-					  if (streamForPermissionChecking != null)
-					  {
-						  streamForPermissionChecking.Close();
-						  streamForPermissionChecking.Dispose();
-					  }
-
-				  }
-			  }
-		 */
 	}
 
 	[TestFixture]
@@ -355,7 +253,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -364,30 +262,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
-		/* NOMORELOCKING
-			   [Test]
-				[ExpectedException(typeof(IOException))]
-				public void LiftIsLocked_ReturnsTrue()
-				{
-					SetState();
-					Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
-					FileStream streamForPermissionChecking = null;
-					try
-					{
-						streamForPermissionChecking = new FileStream(_persistedFilePath, FileMode.Open, FileAccess.Write);
-					}
-					finally
-					{
-						//This is in case the exception is not thrown
-						if (streamForPermissionChecking != null)
-						{
-							streamForPermissionChecking.Close();
-							streamForPermissionChecking.Dispose();
-						}
 
-					}
-				}
-			   */
 	}
 
 	[TestFixture]
@@ -409,7 +284,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		protected override void RepopulateRepositoryFromPersistedData()
@@ -418,30 +293,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
-		/* NOMORELOCKING
-				 [Test]
-				[ExpectedException(typeof(IOException))]
-				public void LiftIsLocked_ReturnsTrue()
-				{
-					SetState();
-					Assert.IsTrue(((LiftDataMapper) DataMapperUnderTest).IsLiftFileLocked);
-					FileStream streamForPermissionChecking = null;
-					try
-					{
-						streamForPermissionChecking = new FileStream(_persistedFilePath, FileMode.Open, FileAccess.Write);
-					}
-					finally
-					{
-						//This is in case the exception is not thrown
-						if(streamForPermissionChecking != null)
-						{
-							streamForPermissionChecking.Close();
-							streamForPermissionChecking.Dispose();
-						}
 
-					}
-				}
-				 */
 	}
 
 	[TestFixture]
@@ -466,11 +318,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		[ExpectedException(typeof(IOException))]
 		public void LockedFile_Throws()
 		{
 			Assert.IsTrue(_fileStream.CanWrite);
-			LiftDataMapper liftDataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			Assert.Throws<IOException>(() =>
+				LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath));
 		}
 	}
 }

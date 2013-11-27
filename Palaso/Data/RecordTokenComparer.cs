@@ -6,7 +6,7 @@ namespace Palaso.Data
 	public sealed class RecordTokenComparer<T>: IComparer<RecordToken<T>> where T : class, new()
 	{
 		private readonly IEnumerable<SortDefinition> _sortDefinitions;
-		public RecordTokenComparer(IEnumerable<SortDefinition> sortDefinitions)
+		public RecordTokenComparer(params SortDefinition[] sortDefinitions)
 		{
 			if (sortDefinitions == null)
 			{
@@ -19,12 +19,6 @@ namespace Palaso.Data
 			_sortDefinitions = sortDefinitions;
 		}
 
-		public RecordTokenComparer(SortDefinition sortDefinitions):
-			this(new List<SortDefinition>{sortDefinitions})
-		{
-
-		}
-
 		#region IComparer<RecordToken> Members
 
 		public int Compare(RecordToken<T> x, RecordToken<T> y)
@@ -32,11 +26,18 @@ namespace Palaso.Data
 			int result = 0;
 			foreach (SortDefinition definition in _sortDefinitions)
 			{
-				result = definition.Comparer.Compare(GetFieldValue(x, definition),
-													 GetFieldValue(y, definition));
+				var xValue = GetFieldValue(x, definition);
+				var yValue = GetFieldValue(y, definition);
+				result = definition.Comparer.Compare(xValue, yValue);
 				if (result != 0)
 				{
 					return result;
+				}
+				if (xValue != null && xValue.GetHashCode() != yValue.GetHashCode())
+				{
+					// bugfix WS-33997.  Khmer (invariant culture) strings when compared return "same",
+					// when in fact they are different strings.  In this case, use an ordinal compare.
+					return string.CompareOrdinal(xValue.ToString(), yValue.ToString());
 				}
 			}
 			result = x.Id.CompareTo(y.Id);

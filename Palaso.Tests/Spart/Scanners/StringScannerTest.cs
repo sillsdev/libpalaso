@@ -25,13 +25,11 @@
 ///
 
 using System;
+using Spart.Scanners;
+using NUnit.Framework;
 
-namespace Spart.Tests.Scanners
+namespace Palaso.Tests.Spart.Scanners
 {
-	using Spart.Scanners;
-	using Spart.Parsers;
-	using NUnit.Framework;
-
 	[TestFixture]
 	public class StringScannerTest
 	{
@@ -136,13 +134,13 @@ namespace Spart.Tests.Scanners
 		}
 
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void Read_AtEnd_Throws()
 		{
 			StringScanner scanner = new StringScanner(Text);
 			scanner.Seek(Text.Length);
 			Assert.IsTrue(scanner.AtEnd);
-			scanner.Read();
+			Assert.Throws<InvalidOperationException>(
+				() => scanner.Read());
 		}
 
 		[Test]

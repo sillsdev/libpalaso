@@ -1,9 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Palaso.Data
 {
+	public interface IQuery<T> where T: class, new()
+	{
+		IEnumerable<IDictionary<string, object>> GetResults(T item);
+	}
+
 	public interface IDataMapper<T>: IDisposable where T : class, new()
 	{
 		DateTime LastModified { get; }
@@ -22,5 +26,6 @@ namespace Palaso.Data
 		void SaveItems(IEnumerable<T> items);
 
 		ResultSet<T> GetItemsMatching(IQuery<T> query);
+
 	}
 }

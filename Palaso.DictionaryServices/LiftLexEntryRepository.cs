@@ -5,7 +5,7 @@ using Palaso.Code;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
-using Palaso.DictionaryServices.Queries;
+using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.UiBindings;
 using Palaso.Progress;
@@ -40,7 +40,7 @@ namespace Palaso.DictionaryServices
 		//public event EventHandler<EntryEventArgs> AfterEntryAdded;  I (JH) don't know how to tell the difference between new and modified
 
 
-		readonly ResultSetCacheManager<LexEntry> _caches;
+		readonly ResultSetCacheManager<LexEntry> _caches = new ResultSetCacheManager<LexEntry>();
 
 		//hack to prevent sending nested Save calls, which was causing a bug when
 		//the exporter caused an item to get a new id, which led eventually to the list thinking it was modified, etc...
@@ -62,7 +62,6 @@ namespace Palaso.DictionaryServices
 			_constructionStackTrace = new StackTrace();
 #endif
 			_decoratedDataMapper = new LiftDataMapper(path, null, new string[] {}, new ProgressState());
-			_caches = new ResultSetCacheManager<LexEntry>(_decoratedDataMapper);
 			_disposed = false;
 		}
 
@@ -265,9 +264,33 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			HeadwordQuery headWordQuery = new HeadwordQuery(writingSystemDefinition);
+			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.Id);
+			if (_caches[cacheName] == null)
+			{
+				var headWordQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entryToQuery)
+						{
+							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+							string headWord = entryToQuery.VirtualHeadWord[writingSystemDefinition.Id];
+							if (String.IsNullOrEmpty(headWord))
+							{
+								headWord = null;
+							}
+							tokenFieldsAndValues.Add("Form",headWord);
+							return new[] { tokenFieldsAndValues };
+						});
 
-			ResultSet<LexEntry> resultsFromCache = GetResultsFromCache(headWordQuery);
+				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(headWordQuery);
+				var sortOrder = new SortDefinition[4];
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+				sortOrder[1] = new SortDefinition("OrderForRoundTripping", Comparer<int>.Default);
+				sortOrder[2] = new SortDefinition("OrderInFile", Comparer<int>.Default);
+				sortOrder[3] = new SortDefinition("CreationTime", Comparer<DateTime>.Default);
+
+				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, headWordQuery));
+				// _caches.Add(headWordQuery, /* itemsMatching */ results); // review cp Refactor caches to this signature.
+			}
+			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
 
 			string previousHeadWord = null;
 			int homographNumber = 1;
@@ -328,8 +351,44 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			LexicalFormOrAlternativeQuery lexicalFormOrAlternativeQuery = new LexicalFormOrAlternativeQuery(writingSystemDefinition);
-			return GetResultsFromCache(lexicalFormOrAlternativeQuery);
+			string cacheName = String.Format("sortedByLexicalFormOrAlternative_{0}", writingSystemDefinition.Id);
+			if (_caches[cacheName] == null)
+			{
+				var lexicalFormWithAlternativeQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entryToQuery)
+						{
+							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.Id];
+							string writingSystemOfForm = writingSystemDefinition.Id;
+							if (lexicalform == "")
+							{
+								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.Id);
+								foreach (LanguageForm form in entryToQuery.LexicalForm.Forms)
+								{
+									if(form.Form == lexicalform)
+									{
+										writingSystemOfForm = form.WritingSystemId;
+									}
+								}
+								if (lexicalform == "")
+								{
+									lexicalform = null;
+								}
+							}
+							tokenFieldsAndValues.Add("Form", lexicalform);
+							tokenFieldsAndValues.Add("WritingSystem", writingSystemOfForm);
+							return new[] { tokenFieldsAndValues };
+						});
+				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(lexicalFormWithAlternativeQuery);
+
+				var sortOrder = new SortDefinition[1];
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+
+				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, lexicalFormWithAlternativeQuery));
+			}
+			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
+
+			return resultsFromCache;
 		}
 
 		/// <summary>
@@ -344,33 +403,78 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			LexicalFormQuery lexicalFormQuery = new LexicalFormQuery(writingSystemDefinition);
+			string cacheName = String.Format("sortedByLexicalForm_{0}", writingSystemDefinition.Id);
+			if (_caches[cacheName] == null)
+			{
+				var lexicalFormQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entryToQuery)
+						{
+							var tokenFieldsAndValues = new Dictionary<string, object>();
+							string headWord = entryToQuery.LexicalForm[writingSystemDefinition.Id];
+							if (String.IsNullOrEmpty(headWord)){
+								headWord = null;
+							}
+							tokenFieldsAndValues.Add("Form", headWord);
+							return new[] { tokenFieldsAndValues };
+						});
+				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(lexicalFormQuery);
 
-			return GetResultsFromCache(lexicalFormQuery);
+				var sortOrder = new SortDefinition[1];
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+
+				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, lexicalFormQuery));
+			}
+			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
+
+			return resultsFromCache;
 		}
 
 		private ResultSet<LexEntry> GetAllEntriesSortedByGuid()
 		{
-			GuidQuery guidQuery = new GuidQuery();
-			return GetResultsFromCache(guidQuery);
-		}
-
-		private ResultSet<LexEntry> GetResultsFromCache(IQuery<LexEntry> query)
-		{
-			if (_caches[query.UniqueLabel] == null)
+			string cacheName = String.Format("sortedByGuid");
+			if (_caches[cacheName] == null)
 			{
-				ResultSet<LexEntry> results = _decoratedDataMapper.GetItemsMatching(query);
-				_caches.Add(query,results);
+				var guidQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entryToQuery)
+						{
+							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+							tokenFieldsAndValues.Add("Guid", entryToQuery.Guid);
+							return new[] { tokenFieldsAndValues };
+						});
+				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(guidQuery);
+
+				var sortOrder = new SortDefinition[1];
+				sortOrder[0] = new SortDefinition("Guid", Comparer<Guid>.Default);
+
+				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, guidQuery));
 			}
-			ResultSet<LexEntry> resultsFromCache = _caches[query.UniqueLabel].GetResultSet();
+			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
 
 			return resultsFromCache;
 		}
 
 		private ResultSet<LexEntry> GetAllEntriesSortedById()
 		{
-			IdQuery idQuery = new IdQuery();
-			return GetResultsFromCache(idQuery);
+			string cacheName = String.Format("sortedById");
+			if (_caches[cacheName] == null)
+			{
+				var IdQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entryToQuery)
+						{
+							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+							tokenFieldsAndValues.Add("Id", entryToQuery.Id);
+							return new[] { tokenFieldsAndValues };
+						});
+				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(IdQuery);
+
+				var sortOrder = new SortDefinition[1];
+				sortOrder[0] = new SortDefinition("Id", Comparer<string>.Default);
+
+				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, IdQuery));
+			}
+			ResultSet<LexEntry> resultsFromCache = _caches[cacheName].GetResultSet();
+
+			return resultsFromCache;
 		}
 
 		/// <summary>
@@ -386,15 +490,88 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			IQuery<LexEntry> definitionQuery = new DefinitionQuery(writingSystemDefinition);
-			IQuery<LexEntry> glossQuery = new GlossQuery(writingSystemDefinition);
-			KeyMap glossToFormMap = new KeyMap(){{"Gloss","Form"}};
-			IQuery<LexEntry> definitionOrGlossQuery = definitionQuery.GetAlternative(glossQuery.RemapKeys(glossToFormMap));
 
-			KeyMap formToGlossMap = new KeyMap() { {"Form", "Gloss"} };
-			IQuery<LexEntry> glossOrDefinitionQuery = glossQuery.GetAlternative(definitionQuery.RemapKeys(formToGlossMap));
-			IQuery<LexEntry> finalQuery = (definitionOrGlossQuery.Merge(glossOrDefinitionQuery.RemapKeys(glossToFormMap))).StripDuplicates();
-			return GetResultsFromCache(finalQuery);
+			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.Id);
+			if (_caches[cacheName] == null)
+			{
+				var definitionQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entryToQuery)
+						{
+							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
+
+							int senseNumber = 0;
+							foreach (LexSense sense in entryToQuery.Senses)
+							{
+								var rawDefinition = sense.Definition[writingSystemDefinition.Id];
+								var definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
+
+								var rawGloss = sense.Gloss[writingSystemDefinition.Id];
+								var glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
+
+								var definitionAndGlosses = MergeListsWhileExcludingDoublesAndEmptyStrings(definitions, glosses);
+
+
+								if(definitionAndGlosses.Count == 0)
+								{
+									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+									tokenFieldsAndValues.Add("Form", null);
+									tokenFieldsAndValues.Add("Sense", senseNumber);
+									fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+								}
+								else
+								{
+									foreach (string definition in definitionAndGlosses)
+									{
+										IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+										tokenFieldsAndValues.Add("Form", definition);
+										tokenFieldsAndValues.Add("Sense", senseNumber);
+										fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+									}
+								}
+
+								senseNumber++;
+							}
+							return fieldsandValuesForRecordTokens;
+						});
+				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(definitionQuery);
+
+				var sortOrder = new SortDefinition[2];
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+				sortOrder[1] = new SortDefinition("Sense", Comparer<int>.Default);
+				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, definitionQuery));
+			}
+			return _caches[cacheName].GetResultSet();
+		}
+
+		private static List<string> MergeListsWhileExcludingDoublesAndEmptyStrings(IEnumerable<string> list1, IEnumerable<string> list2)
+		{
+			var mergedList = new List<string>();
+			foreach (string definitionElement in list1)
+			{
+				if((!mergedList.Contains(definitionElement)) && (definitionElement != ""))
+				{
+					mergedList.Add(definitionElement);
+				}
+			}
+			foreach (string glossElement in list2)
+			{
+				if (!mergedList.Contains(glossElement) && (glossElement != ""))
+				{
+					mergedList.Add(glossElement);
+				}
+			}
+			return mergedList;
+		}
+
+		private static List<string> GetTrimmedElementsSeperatedBySemiColon(string text)
+		{
+			var textElements = new List<string>();
+			foreach (string textElement in text.Split(new[] { ';' }))
+			{
+				string textElementTrimmed = textElement.Trim();
+				textElements.Add(textElementTrimmed);
+			}
+			return textElements;
 		}
 
 		/// <summary>
@@ -404,11 +581,73 @@ namespace Palaso.DictionaryServices
 		/// </summary>
 		/// <param name="fieldName"></param>
 		/// <returns></returns>
-		public ResultSet<LexEntry> GetEntriesWithSemanticDomainSortedBySemanticDomain()
+		public ResultSet<LexEntry> GetEntriesWithSemanticDomainSortedBySemanticDomain(
+			string fieldName)
 		{
-			SemanticDomainQuery semanticDomainQuery = new SemanticDomainQuery();
-			return GetResultsFromCache(semanticDomainQuery);
+			if (fieldName == null)
+			{
+				throw new ArgumentNullException("fieldName");
+			}
+
+			string cachename = String.Format("Semanticdomains_{0}", fieldName);
+
+			if (_caches[cachename] == null)
+			{
+				var semanticDomainsQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entry)
+						{
+							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
+							foreach (LexSense sense in entry.Senses)
+							{
+								foreach (KeyValuePair<string, IPalasoDataObjectProperty> pair in sense.Properties)
+								{
+									if (pair.Key == fieldName)
+									{
+										var semanticDomains = (OptionRefCollection) pair.Value;
+										foreach (string semanticDomain in semanticDomains.Keys)
+										{
+											IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+											string domain = semanticDomain;
+											if (String.IsNullOrEmpty(semanticDomain))
+											{
+												domain = null;
+											}
+											if (CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(fieldsandValuesForRecordTokens, domain))
+											{
+												continue; //This is to avoid duplicates
+											}
+											tokenFieldsAndValues.Add("SemanticDomain", domain);
+											fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+										}
+									}
+								}
+							}
+							return fieldsandValuesForRecordTokens;
+						}
+					);
+				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(semanticDomainsQuery);
+				var sortDefinition = new SortDefinition[2];
+				sortDefinition[0] = new SortDefinition("SemanticDomain", StringComparer.InvariantCulture);
+				sortDefinition[1] = new SortDefinition("Sense", Comparer<int>.Default);
+				var cache =
+					new ResultSetCache<LexEntry>(this, sortDefinition, itemsMatchingQuery, semanticDomainsQuery);
+				_caches.Add(cachename, cache);
+			}
+			return _caches[cachename].GetResultSet();
 		}
+
+		private static bool CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(IEnumerable<IDictionary<string, object>> fieldsandValuesForRecordTokens, string domain)
+		{
+			foreach (var tokenInfo in fieldsandValuesForRecordTokens)
+			{
+				if((string)tokenInfo["SemanticDomain"] == domain)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 
 		private ResultSet<LexEntry> GetAllEntriesWithGlossesSortedByLexicalForm(WritingSystemDefinition lexicalUnitWritingSystemDefinition)
 		{
@@ -416,10 +655,57 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("lexicalUnitWritingSystemDefinition");
 			}
-			IQuery<LexEntry> lexicalFormQuery = new LexicalFormQuery(lexicalUnitWritingSystemDefinition);
-			IQuery<LexEntry> allGlossesQuery = new AllGlossesQuery();
-			IQuery<LexEntry> lexicalFormWithGlossesQuery = lexicalFormQuery.JoinInner(allGlossesQuery);
-			return GetResultsFromCache(lexicalFormWithGlossesQuery);
+			string cachename = String.Format("GlossesSortedByLexicalForm_{0}", lexicalUnitWritingSystemDefinition);
+			if (_caches[cachename] == null)
+			{
+				var MatchingGlossQuery = new DelegateQuery<LexEntry>(
+					delegate(LexEntry entry)
+						{
+							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
+							int senseNumber = 0;
+							foreach (LexSense sense in entry.Senses)
+							{
+								foreach (LanguageForm form in sense.Gloss.Forms)
+								{
+									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
+									string lexicalForm = entry.LexicalForm[lexicalUnitWritingSystemDefinition.Id];
+									if (String.IsNullOrEmpty(lexicalForm))
+									{
+										lexicalForm = null;
+									}
+									tokenFieldsAndValues.Add("Form", lexicalForm);
+
+									string gloss = form.Form;
+									if (String.IsNullOrEmpty(gloss))
+									{
+										gloss = null;
+									}
+									tokenFieldsAndValues.Add("Gloss", gloss);
+
+									string glossWritingSystem = form.WritingSystemId;
+									if (String.IsNullOrEmpty(glossWritingSystem))
+									{
+										glossWritingSystem = null;
+									}
+									tokenFieldsAndValues.Add("GlossWritingSystem", glossWritingSystem);
+									tokenFieldsAndValues.Add("SenseNumber", senseNumber);
+									fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+								}
+								senseNumber++;
+							}
+							return fieldsandValuesForRecordTokens;
+						}
+					);
+				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(MatchingGlossQuery);
+				var sortDefinition = new SortDefinition[4];
+				sortDefinition[0] = new SortDefinition("Form", lexicalUnitWritingSystemDefinition.Collator);
+				sortDefinition[1] = new SortDefinition("Gloss", StringComparer.InvariantCulture);
+				sortDefinition[2] = new SortDefinition("GlossWritingSystem", StringComparer.InvariantCulture);
+				sortDefinition[3] = new SortDefinition("SenseNumber", Comparer<int>.Default);
+				var cache = new ResultSetCache<LexEntry>(this, sortDefinition, itemsMatchingQuery, MatchingGlossQuery);
+				_caches.Add(cachename, cache);
+			}
+			return _caches[cachename].GetResultSet();
 		}
 
 		/// <summary>

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Palaso.Data;
 
@@ -6,12 +5,10 @@ namespace Palaso.Data
 {
 	public class ResultSetCacheManager<T> where T:class, new()
 	{
-		private IDataMapper<T> _associatedDataMapper;
 		Dictionary<string, ResultSetCache<T>> labelToResultSetCacheMap = new Dictionary<string, ResultSetCache<T>>();
 
-		public ResultSetCacheManager(IDataMapper<T> associatedDataMapper)
+		public ResultSetCacheManager()
 		{
-			_associatedDataMapper = associatedDataMapper;
 		}
 
 		public ResultSetCache<T> this[string cacheLabel]
@@ -29,12 +26,6 @@ namespace Palaso.Data
 		public void Add(string cacheLabel, ResultSetCache<T> cacheToAdd)
 		{
 			labelToResultSetCacheMap.Add(cacheLabel, cacheToAdd);
-		}
-
-		public void Add(IQuery<T> query , ResultSet<T> resultSetToCache)
-		{
-			ResultSetCache<T>  cacheToAdd = new ResultSetCache<T>(_associatedDataMapper, resultSetToCache, query);
-			labelToResultSetCacheMap.Add(query.UniqueLabel, cacheToAdd);
 		}
 
 		public void Remove(string cacheLabel)

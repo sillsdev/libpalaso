@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Elsehemy;
+using Palaso.UI.WindowsForms.SuperToolTip;
 
 namespace WritingSystemSetup.Tests
 {

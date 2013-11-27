@@ -6,11 +6,11 @@ namespace Palaso.Data
 {
 	public class ResultSetCache<T> where T : class, new()
 	{
-		private SortedListAllowsDuplicates<RecordToken<T>> _sortedTokens = null;
+		private SortedDictionary<RecordToken<T>, object> _sortedTokens = null;
 		private List<IQuery<T>> _cachedQueries = new List<IQuery<T>>();
 		private readonly IDataMapper<T> _dataMapperQueried;
 
-		public ResultSetCache(IDataMapper<T> dataMapperQueried, IEnumerable<SortDefinition> sortDefinitions)
+		public ResultSetCache(IDataMapper<T> dataMapperQueried, SortDefinition[] sortDefinitions)
 		{
 			if (dataMapperQueried == null)
 			{
@@ -20,12 +20,12 @@ namespace Palaso.Data
 
 			if (sortDefinitions == null)
 			{
-				_sortedTokens = new SortedListAllowsDuplicates<RecordToken<T>>(); //sort by RepositoryId
+				_sortedTokens = new SortedDictionary<RecordToken<T>, object>(); //sort by RepositoryId
 			}
 			else
 			{
 				RecordTokenComparer<T> comparerForSorting = new RecordTokenComparer<T>(sortDefinitions);
-				_sortedTokens = new SortedListAllowsDuplicates<RecordToken<T>>(comparerForSorting);
+				_sortedTokens = new SortedDictionary<RecordToken<T>, object>(comparerForSorting);
 			}
 		}
 
@@ -35,17 +35,11 @@ namespace Palaso.Data
 			Add(resultSetToCache, queryToCache);
 		}
 
-		public ResultSetCache(IDataMapper<T> dataMapperQueried, ResultSet<T> resultSetToCache, IQuery<T> queryToCache)
-			: this(dataMapperQueried, queryToCache.SortDefinitions)
-		{
-			Add(resultSetToCache, queryToCache);
-		}
-
 		private void SortNewResultSetIntoCachedResultSet(ResultSet<T> resultSetToCache)
 		{
 			foreach (RecordToken<T> token in resultSetToCache)
 			{
-				_sortedTokens.Add(token);
+					_sortedTokens.Add(token, null);
 			}
 		}
 
@@ -65,12 +59,12 @@ namespace Palaso.Data
 
 		public ResultSet<T> GetResultSet()
 		{
-			ResultSet<T> cachedResults = new ResultSet<T>(_dataMapperQueried, _sortedTokens);
+			ResultSet<T> cachedResults = new ResultSet<T>(_dataMapperQueried, _sortedTokens.Keys);
 			return cachedResults;
 		}
 
 		/// <summary>
-		/// Call this method every time a cached item changes. This method verifies that the item you are trying to update exists in the repository.
+		/// Call this method every time a cached item changes. This method verifies that the item you are trying to update exists int he repository.
 		/// </summary>
 		/// <param name="item"></param>
 		public void UpdateItemInCache(T item)
@@ -88,7 +82,10 @@ namespace Palaso.Data
 
 			foreach (RecordToken<T> token in itemsQueryResults)
 			{
-					_sortedTokens.Add(token);
+				if(!_sortedTokens.ContainsKey(token))
+				{
+					_sortedTokens.Add(token, null);
+				}
 			}
 		}
 
@@ -107,17 +104,17 @@ namespace Palaso.Data
 
 		private void RemoveOldTokensWithId(RepositoryId itemId)
 		{
-			List<RecordToken<T>> oldTokensToDelete = new List<RecordToken<T>>();
-			foreach (RecordToken<T> token in _sortedTokens)
+			List<KeyValuePair<RecordToken<T>, object>> oldTokensToDelete = new List<KeyValuePair<RecordToken<T>, object>>();
+			foreach (KeyValuePair<RecordToken<T>, object> token in _sortedTokens)
 			{
-				if (token.Id == itemId)
+				if (token.Key.Id == itemId)
 				{
 					oldTokensToDelete.Add(token);
 				}
 			}
-			foreach (RecordToken<T> token in oldTokensToDelete)
+			foreach (KeyValuePair<RecordToken<T>, object> pair in oldTokensToDelete)
 			{
-				_sortedTokens.Remove(token);
+				_sortedTokens.Remove(pair.Key);
 			}
 		}
 

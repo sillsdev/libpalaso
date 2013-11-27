@@ -107,7 +107,7 @@ namespace Palaso.Data
 			if (!objectToIdHashtable.ContainsKey(item))
 			{
 				throw new ArgumentOutOfRangeException("item",
-													  "The item must exist in the repository before it can be saved.");
+													  "The item must be created (with CreateItem) before it can be saved.");
 			}
 			DateTime timeOfSave = PreciseDateTime.UtcNow;
 			LastModified = timeOfSave;
@@ -148,26 +148,7 @@ namespace Palaso.Data
 					results.Add(new RecordToken<T>(this, result, GetId(item)));
 				}
 			}
-			return GetSortedRecordTokens(query, results);
-		}
-
-		private ResultSet<T> GetSortedRecordTokens(IQuery<T> query, List<RecordToken<T>> results)
-		{
-			SortedListAllowsDuplicates<RecordToken<T>> sortedRecordTokens;
-			if (query.SortDefinitions == null)
-			{
-				sortedRecordTokens = new SortedListAllowsDuplicates<RecordToken<T>>(); //sort by RepositoryId
-			}
-			else
-			{
-				RecordTokenComparer<T> comparerForSorting = new RecordTokenComparer<T>(query.SortDefinitions);
-				sortedRecordTokens = new SortedListAllowsDuplicates<RecordToken<T>>(comparerForSorting);
-			}
-			foreach (RecordToken<T> recordtoken in results)
-			{
-				sortedRecordTokens.Add(recordtoken);
-			}
-			return new ResultSet<T>(this, sortedRecordTokens);
+			return new ResultSet<T>(this, results);
 		}
 
 		public virtual int CountAllItems()
