@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using LiftIO.Parsing;
 using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
@@ -9,6 +8,7 @@ using Palaso.Lift;
 using Palaso.Lift.Options;
 
 using NUnit.Framework;
+using Palaso.Lift.Parsing;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {

@@ -24,7 +24,7 @@ namespace Palaso.Code
 		/// </example>
 		public static void Against(bool assertion, string message)
 		{
-			if(assertion == false)
+			if (assertion == false)
 				return;
 			throw new InvalidOperationException(message);
 		}
@@ -32,6 +32,13 @@ namespace Palaso.Code
 		public static void AgainstNull(object value, string valueName)
 		{
 			if (value == null)
+				throw new ArgumentNullException(valueName);
+		}
+
+
+		public static void AgainstNullOrEmptyString(string value, string valueName)
+		{
+			if (string.IsNullOrEmpty(value))
 				throw new ArgumentNullException(valueName);
 		}
 
@@ -54,9 +61,10 @@ namespace Palaso.Code
 		{
 			if (assertion == false)
 				return;
-			throw (TException)Activator.CreateInstance(typeof (TException), message);
+			throw (TException)Activator.CreateInstance(typeof(TException), message);
 		}
 
+		[Obsolete("Use Detect.Reentry instead")]
 		public static GuardAgainstReentry AgainstReEntry(GuardAgainstReentry guard)
 		{
 			if (guard != null)
@@ -67,6 +75,7 @@ namespace Palaso.Code
 			return new GuardAgainstReentry();
 		}
 
+		[Obsolete("Use Detect.Reentry instead")]
 		public static GuardAgainstReentry AgainstReEntryExpected(GuardAgainstReentry guard)
 		{
 			if (guard != null)

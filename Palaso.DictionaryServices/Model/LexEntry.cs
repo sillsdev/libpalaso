@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
+using Palaso.Code;
 using Palaso.Data;
 using Palaso.i18n;
 using Palaso.Lift;
@@ -17,7 +19,7 @@ namespace Palaso.DictionaryServices.Model
 	/// some languages/dictionaries, these will be indistinguishable from "words".
 	/// In others, words are made up of lexical entries.
 	/// </summary>
-	public class LexEntry: PalasoDataObject
+	public class LexEntry: PalasoDataObject, IClonableGeneric<LexEntry>
 	{
 		private MultiText _lexicalForm;
 		private Guid _guid;
@@ -104,6 +106,65 @@ namespace Palaso.DictionaryServices.Model
 			ModifiedTimeIsLocked = false;
 		}
 
+		public LexEntry Clone()
+		{
+			var clone = new LexEntry();
+			clone._lexicalForm = (MultiText) _lexicalForm.Clone();
+			//_lexicalForm and Guid must have been set before _id is set
+			if(_id != null)
+			{
+				clone.GetOrCreateId(false);
+			}
+			clone.OrderForRoundTripping = _orderForRoundTripping;
+			clone._orderInFile = _orderInFile;
+			foreach (var senseToClone in _senses)
+			{
+				clone._senses.Add(senseToClone.Clone());
+			}
+			foreach (var lexVariantToClone in Variants)
+			{
+				clone.Variants.Add((LexVariant) lexVariantToClone.Clone());
+			}
+			foreach (var lexNoteToClone in Notes)
+			{
+				clone.Notes.Add((LexNote) lexNoteToClone.Clone());
+			}
+			foreach (var pronunciationToClone in _pronunciations)
+			{
+				clone._pronunciations.Add((LexPhonetic) pronunciationToClone.Clone());
+			}
+			foreach (var etymologyToClone in _etymologies)
+			{
+				clone._etymologies.Add((LexEtymology)etymologyToClone.Clone());
+			}
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(object other)
+		{
+			if (!(other is LexEntry)) return false;
+			return Equals((LexEntry) other);
+		}
+
+		public bool Equals(LexEntry other)
+		{
+			if (other == null) return false;
+			if (!_lexicalForm.Equals(other._lexicalForm)) return false;
+			if (!_orderForRoundTripping.Equals(other._orderForRoundTripping)) return false;
+			if (!_orderInFile.Equals(other._orderInFile)) return false;
+			if (!_senses.SequenceEqual(other._senses)) return false;
+			if (!_variants.SequenceEqual(other._variants)) return false;
+			if (!_notes.SequenceEqual(other._notes)) return false;
+			if (!_pronunciations.SequenceEqual(other._pronunciations)) return false;
+			if (!_etymologies.SequenceEqual(other._etymologies)) return false;
+			if (!base.Equals(other)) return false;
+			return true;
+		}
+
 		public override string ToString()
 		{
 			//hack
@@ -125,6 +186,13 @@ namespace Palaso.DictionaryServices.Model
 			WireUpChild(_lexicalForm);
 			WireUpList(_senses, "senses");
 			WireUpList(_variants, "variants");
+		}
+
+		public IEnumerable<string> PropertiesInUse
+		{
+			get {
+				return base.PropertiesInUse.Concat(Senses.SelectMany(sense => sense.PropertiesInUse));
+			}
 		}
 
 		public override void SomethingWasModified(string propertyModified)
@@ -170,6 +238,8 @@ namespace Palaso.DictionaryServices.Model
 
 			return _id;
 		}
+
+
 
 		/// <summary>
 		///
@@ -546,6 +616,24 @@ namespace Palaso.DictionaryServices.Model
 				formForLogging="(unknown)";
 			}
 			return formForLogging;
+		}
+		/// <summary>
+		/// used by SILCAWL list
+		/// </summary>
+		public string GetSomeMeaningToUseInAbsenseOfHeadWord(string writingSystemId)
+		{
+			var s = Senses.FirstOrDefault();
+			if(s==null)
+				return "?NoMeaning?";
+			var gloss=s.Gloss.GetExactAlternative(writingSystemId);
+			if (string.IsNullOrEmpty(gloss))
+			{
+				var def = s.Definition.GetExactAlternative(writingSystemId);
+				if(string.IsNullOrEmpty(def))
+					return "?NoGlossOrDef?";
+				return def;
+			}
+			return gloss;
 		}
 	}
 }

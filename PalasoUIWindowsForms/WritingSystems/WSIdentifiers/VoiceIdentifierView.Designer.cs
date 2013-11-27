@@ -44,7 +44,7 @@
 			this.betterLabel1.Size = new System.Drawing.Size(221, 65);
 			this.betterLabel1.TabIndex = 0;
 			this.betterLabel1.TabStop = false;
-			this.betterLabel1.Text = "In applications which support this option, fields with this writing system will b" +
+			this.betterLabel1.Text = "In applications which support this option, fields with this input system will b" +
 				"e able to play and record voice.";
 			//
 			// VoiceIdentifierView

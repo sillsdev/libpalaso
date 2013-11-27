@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using LiftIO.Migration;
-using LiftIO.Validation;
+using Palaso.Lift.Validation;
 using Palaso.Progress;
 using Palaso.Reporting;
 

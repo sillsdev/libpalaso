@@ -16,7 +16,18 @@
 			if (disposing && (components != null))
 			{
 				components.Dispose();
+				if (_textBrush != null)
+				{
+					_textBrush.Dispose();
+					_textBrush = null;
+				}
+				if(_backgroundBrush!=null)
+				{
+					_backgroundBrush.Dispose();
+					_backgroundBrush = null;
+				}
 			}
+
 			base.Dispose(disposing);
 		}
 
@@ -32,13 +43,14 @@
 			//
 			// BetterLabel
 			//
-			this.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-																| System.Windows.Forms.AnchorStyles.Right)));
 			this.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.Multiline = true;
 			this.ReadOnly = true;
 			this.Size = new System.Drawing.Size(100, 20);
 			this.TabStop = false;
+			this.BackColorChanged += new System.EventHandler(this.BetterLabel_BackColorChanged);
+			this.ForeColorChanged += new System.EventHandler(this.BetterLabel_ForeColorChanged);
+			this.SizeChanged += new System.EventHandler(this.BetterLabel_SizeChanged);
 			this.TextChanged += new System.EventHandler(this.BetterLabel_TextChanged);
 			this.ParentChanged += new System.EventHandler(this.BetterLabel_ParentChanged);
 			this.ResumeLayout(false);

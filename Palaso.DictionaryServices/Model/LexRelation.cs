@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
+using Palaso.Text;
 using Palaso.UiBindings;
 
 namespace Palaso.DictionaryServices.Model
@@ -47,7 +50,7 @@ namespace Palaso.DictionaryServices.Model
 		}
 	}
 
-	public class LexRelation: IParentable,
+	public class LexRelation: IPalasoDataObjectProperty,
 							  IValueHolder<string>,
 							  IReferenceContainer,
 							  IReportEmptiness,
@@ -199,9 +202,41 @@ namespace Palaso.DictionaryServices.Model
 		public List<LexField> Fields { get; private set; }
 
 		#endregion
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new LexRelation(_fieldId, _targetId, null);
+			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
+			clone.Traits.AddRange(Traits.Select(t => t.Clone()));
+			clone.Fields.AddRange(Fields.Select(f => (LexField)f.Clone()));
+			return clone;
+		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals((LexRelation) other);
+		}
+
+		public override bool Equals(object other)
+		{
+			if (!(other is IPalasoDataObjectProperty)) return false;
+			return Equals((IPalasoDataObjectProperty)other);
+		}
+
+		public bool Equals(LexRelation other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!EmbeddedXmlElements.SequenceEqual(other.EmbeddedXmlElements)) return false;
+			if ((_fieldId != null && !_fieldId.Equals(other._fieldId)) || (other._fieldId != null && !other._fieldId.Equals(_fieldId))) return false;
+			if ((_targetId != null && !_targetId.Equals(other._targetId)) || (other._targetId != null && !other._targetId.Equals(_targetId))) return false;
+			if (!Traits.SequenceEqual(other.Traits)) return false;
+			if (!Fields.SequenceEqual(other.Fields)) return false;
+			return true;
+		}
 	}
 
-	public class LexRelationCollection: IParentable, IReportEmptiness
+	public class LexRelationCollection: IPalasoDataObjectProperty, IReportEmptiness
 	{
 		private PalasoDataObject _parent;
 		private List<LexRelation> _relations = new List<LexRelation>();
@@ -296,5 +331,32 @@ namespace Palaso.DictionaryServices.Model
 		}
 
 		#endregion
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new LexRelationCollection();
+			clone._relations = new List<LexRelation>(_relations);
+			return clone;
+		}
+
+		public virtual bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals((object)other);
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (obj == null) return false;
+			if (obj.GetType() != typeof(LexRelationCollection)) return false;
+			return Equals((LexRelationCollection)obj);
+		}
+
+		public bool Equals(LexRelationCollection other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!_relations.SequenceEqual(other._relations)) return false;
+			return true;
+		}
 	}
 }

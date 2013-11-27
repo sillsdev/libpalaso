@@ -5,12 +5,13 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Widgets;
 using Palaso.i18n;
 
 
 namespace Palaso.UI.WindowsForms.i18n
 {
-	[Designer(typeof (LocalizationHelperDesigner))]
+	[Designer("LocalizationHelperDesigner, PalsoUIWindowsFormsDesign")]
 	[ToolboxItem(true)]
 	[ProvideProperty("ParentFo", typeof (Form))]
 	public partial class LocalizationHelper: Component, ISupportInitialize, IExtenderProvider
@@ -79,7 +80,15 @@ namespace Palaso.UI.WindowsForms.i18n
 			var hints = control as ILocalizableControl;
 			if (hints==null || hints.ShouldModifyFont)
 			{
-				control.Font = StringCatalog.ModifyFontForLocalization(control.Font);
+				if (control is LinkLabel && ((LinkLabel)control).UseMnemonic == false)
+				{
+					//then that link is for user data, and shouldn't be localized (this came up in Chorus AnnotationEditorView)
+				}
+				else
+				{
+					var font = StringCatalog.ModifyFontForLocalization(control.Font);
+					control.Font = font;
+				}
 			}
 			_alreadyChanging = false;
 		}
@@ -110,8 +119,21 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void OnControlAdded(object sender, ControlEventArgs e)
 		{
-			WireToControl(e.Control);
-			WireToChildren(e.Control);
+			WireToControlAndChildren(e.Control);
+		}
+
+		private void WireToControlAndChildren(Control control)
+		{
+			if (control is ILocalizableControl)
+			{
+				((ILocalizableControl) control).BeginWiring();
+			}
+			WireToControl(control);
+			WireToChildren(control);
+			if (control is ILocalizableControl)
+			{
+				((ILocalizableControl) control).EndWiring();
+			}
 		}
 
 		private void OnControlRemoved(object sender, ControlEventArgs e)
@@ -132,6 +154,7 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void WireToChildren(Control control)
 		{
+			control.SuspendLayout();
 			Debug.Assert(control != null);
 			//Debug.WriteLine("Wiring to children of " + control.Name);
 			control.ControlAdded += OnControlAdded;
@@ -139,9 +162,9 @@ namespace Palaso.UI.WindowsForms.i18n
 			control.Disposed += OnControlDisposed;
 			foreach (Control child in control.Controls)
 			{
-				WireToControl(child);
-				WireToChildren(child);
+				WireToControlAndChildren(child);
 			}
+			control.ResumeLayout();
 		}
 
 		private void WireToControl(Control control)
@@ -164,6 +187,7 @@ namespace Palaso.UI.WindowsForms.i18n
 
 		private void UnwireFromChildren(Control control)
 		{
+			control.SuspendLayout();
 			Debug.Assert(control != null);
 			control.ControlAdded -= OnControlAdded;
 			control.ControlRemoved -= OnControlRemoved;
@@ -174,6 +198,7 @@ namespace Palaso.UI.WindowsForms.i18n
 				UnwireFromControl(child);
 				UnwireFromChildren(child);
 			}
+			control.ResumeLayout();
 		}
 
 		private void UnwireFromControl(Control control)
@@ -194,12 +219,15 @@ namespace Palaso.UI.WindowsForms.i18n
 		private static bool IsAllowedControl(Control control)
 		{
 			return control is Label ||
+				   control is BetterLabel ||
 				   control is GroupBox ||
 				   control is ButtonBase ||
 				   control is IButtonControl ||
 				   control is TabControl ||
 				   control is TabPage ||
-				   control is Form;
+				   control is Form ||
+				   control is BetterLabel ||
+				   control is ILocalizableControl;
 		}
 
 		#region ISupportInitialize Members
@@ -288,20 +316,5 @@ namespace Palaso.UI.WindowsForms.i18n
 		}
 	}
 
-	/// <summary>
-	///   Designer object used to set the Parent property.
-	/// </summary>
-	internal class LocalizationHelperDesigner: ComponentDesigner
-	{
-		///   <summary>
-		///   Sets the Parent property to "this" -
-		///   the Form/UserControl where the component is being dropped.
-		///   </summary>
-		[Obsolete]
-		public override void OnSetComponentDefaults()
-		{
-			LocalizationHelper rp = (LocalizationHelper) Component;
-			rp.Parent = (Control) Component.Site.Container.Components[0];
-		}
-	}
+
 }
