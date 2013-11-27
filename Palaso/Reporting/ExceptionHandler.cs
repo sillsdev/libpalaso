@@ -51,6 +51,28 @@ namespace Palaso.Reporting
 			else{throw new InvalidOperationException("An ExceptionHandler has already been set.");}
 		}
 
+		/// <summary>
+		/// Get all the types we can load from the assembly.
+		/// In case we can't load a particular type (e.g., TextBoxSpellChecker, because the
+		/// application doesn't use it and is not installing Enchant.dll), just skip it.
+		/// </summary>
+		/// <returns>The types loaded.</returns>
+		/// <param name="assembly">Assembly.</param>
+		internal static Type[] GetLoadableTypes(Assembly assembly)
+		{
+			Type[] types;
+			try
+			{
+				types = assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				types = e.Types.Where(t => t != null).ToArray();
+			}
+
+			return types;
+		}
+
 		internal static T GetObjectFromPalasoUiWindowsForms<T>() where T : class
 		{
 			const string palasoUiWindowsFormsAssemblyName = "PalasoUIWindowsForms";
@@ -70,7 +92,21 @@ namespace Palaso.Reporting
 					// Not sure exactly what the author of that comment had in mind (perhaps to look for an explicit type name),
 					// but now that this method is called from two different places, it might be harder to do this.
 					var interfaceToFind = typeof(T);
-					var typeImplementingInterface = toInitializeAssembly.GetTypes().FirstOrDefault(interfaceToFind.IsAssignableFrom);
+					var typeImplementingInterface = GetLoadableTypes(toInitializeAssembly).FirstOrDefault(
+						t =>
+						{
+						try
+						{
+							// Even though we supposedly filtered all the types we can't load,
+							// we STILL get an exception here when Enchant.dll is missing.
+							// (Nor is just this check enough...GetTypes() indeed throws also.
+							return interfaceToFind.IsAssignableFrom(t);
+						}
+						catch(System.TypeLoadException)
+						{
+							return false;
+						}
+						});
 					if (typeImplementingInterface != null)
 					{
 						var winFormsExceptionHandlerConstructor = typeImplementingInterface.GetConstructor(Type.EmptyTypes);

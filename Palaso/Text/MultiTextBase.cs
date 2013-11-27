@@ -297,14 +297,14 @@ namespace Palaso.Text
 
 		public void SetAlternative(string writingSystemId, string form)
 		{
-			Debug.Assert(writingSystemId != null && writingSystemId.Length > 0, "The writing system id was empty.");
+			Debug.Assert(!string.IsNullOrEmpty(writingSystemId), "The writing system id was empty.");
 			Debug.Assert(writingSystemId.Trim() == writingSystemId,
 						 "The writing system id had leading or trailing whitespace");
 
 			//enhance: check to see if there has actually been a change
 
 			LanguageForm alt = Find(writingSystemId);
-			if (form == null || form.Length == 0) // we don't use space to store empty strings.
+			if (string.IsNullOrEmpty(form)) // we don't use space to store empty strings.
 			{
 				if (alt != null && !alt.IsStarred)
 				{

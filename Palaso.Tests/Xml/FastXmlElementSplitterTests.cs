@@ -15,6 +15,19 @@ namespace Palaso.Tests.Xml
 	[TestFixture]
 	public class FastXmlElementSplitterTests
 	{
+		private int _oldBufLen;
+		[SetUp]
+		public void Setup()
+		{
+			// Run these tests with a very small buffer, to give the AsyncFileReader a real workout.
+			_oldBufLen = AsyncFileReader.kbufLen;
+			AsyncFileReader.kbufLen = 10;
+		}
+		[TearDown]
+		public void TearDown()
+		{
+			AsyncFileReader.kbufLen = _oldBufLen;
+		}
 		[Test]
 		public void Null_Pathname_Throws()
 		{
@@ -467,6 +480,46 @@ namespace Palaso.Tests.Xml
 			Assert.Throws<ArgumentException>(()=>CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.ASCII), @"Failed to detect bad ASCII file");
 			Assert.Throws<ArgumentException>(() => CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.UTF8), @"Failed to detect bad UTF8 file");
 		}
+
+		[Test]
+		public void SplitterHandlesComments()
+		{
+			const string hasRecordsInput =
+	@"<?xml version='1.0' encoding='utf-8'?>
+					<lift version='0.13' producer='WeSay 1.0.0.0'>
+						<header>
+							<range
+								id='translation-type'
+								href='file://C:ranges' />
+								<!-- The parts of speech are duplicated -->
+							<range
+								id='from-part-of-speech'
+								href='file://C:/Users' />
+						</header>
+						<!-- First pesky comment -->
+						<entry id='everybody' guid='dded1f95-e382-11de-8a39-0800200c9add'/>
+						<!-- Another pesky comment -->
+						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
+						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
+
+						<!-- everthing above this line was being merged, but not this -->
+						<entry id='lostBoy' guid='bbed1f95-e382-11de-8a39-0800200c9a66' />
+					</lift>";
+
+			CheckGoodFile(hasRecordsInput, 5, "header", "entry");
+		}
+
+		// This test may be uncommented to try the splitter on some particular file which causes problems.
+		//[Test]
+		//public void SplitterParsesProblemFile()
+		//{
+		//	using (var fastXmlElementSplitter = new FastXmlElementSplitter(@"D:\DownLoads\y.lift"))
+		//	{
+		//		bool foundOptionalFirstElement;
+		//		fastXmlElementSplitter.GetSecondLevelElementBytes("header", "entry", out foundOptionalFirstElement)
+		//									  .ToList();
+		//	}
+		//}
 
 		private static void CheckGoodFile(string hasRecordsInput, int expectedCount, string firstElementMarker,
 			string recordMarker, Encoding enc = null)

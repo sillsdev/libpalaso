@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.WritingSystems;
 
@@ -11,7 +13,7 @@ namespace Palaso.Tests.WritingSystems
 	public abstract class IWritingSystemRepositoryTests
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
-		private WritingSystemDefinition _writingSystem;
+		private IWritingSystemDefinition _writingSystem;
 		private WritingSystemIdChangedEventArgs _writingSystemIdChangedEventArgs;
 		private WritingSystemDeletedEventArgs _writingSystemDeletedEventArgs;
 		private WritingSystemConflatedEventArgs _writingSystemConflatedEventArgs;
@@ -44,6 +46,9 @@ namespace Palaso.Tests.WritingSystems
 		[TearDown]
 		public virtual void TearDown() { }
 
+// Disabled because linux nunit-test runner can't handle Tests in abastract base class
+// TODO: refactor or fix nunit-runner
+#if !MONO
 		[Test]
 		public void SetTwoDefinitions_CountEquals2()
 		{
@@ -156,7 +161,7 @@ namespace Palaso.Tests.WritingSystems
 			_writingSystem.Language = "two";
 			_writingSystem.DefaultFontName = "one font";
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("two");
+			var ws2 = RepositoryUnderTest.Get("two");
 			Assert.AreEqual("one font", ws2.DefaultFontName);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
@@ -217,7 +222,7 @@ namespace Palaso.Tests.WritingSystems
 
 			IWritingSystemRepository repository = CreateNewStore();
 			int count = 0;
-			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -233,12 +238,12 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 14);
 			repository.Set(ws2);
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -254,12 +259,12 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 16);
 			repository.Set(ws2);
 
 			int count = 0;
-			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (WritingSystemDefinition ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -275,13 +280,13 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Set(ws1);
 
 			IWritingSystemRepository repository = CreateNewStore();
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
 			ws2.DateModified = new DateTime(2008, 1, 14);
 			repository.Set(ws2);
 			repository.LastChecked("en", new DateTime(2008, 1, 16));
 
 			int count = 0;
-			foreach (var ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.WritingSystemDefinitions))
+			foreach (var ws in repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems))
 			{
 				count++;
 			}
@@ -373,7 +378,7 @@ namespace Palaso.Tests.WritingSystems
 		public void MakeDuplicate_ReturnsNewObject()
 		{
 			RepositoryUnderTest.Set(_writingSystem);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(_writingSystem);
+			var ws2 = RepositoryUnderTest.MakeDuplicate(_writingSystem);
 			Assert.AreNotSame(_writingSystem, ws2);
 		}
 
@@ -388,7 +393,7 @@ namespace Palaso.Tests.WritingSystems
 			ws1.VersionDescription = "description of this version";
 			ws1.VersionNumber = "1.0";
 			RepositoryUnderTest.Set(ws1);
-			WritingSystemDefinition ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
+			var ws2 = (WritingSystemDefinition)RepositoryUnderTest.MakeDuplicate(ws1);
 			Assert.AreEqual(ws1.Language, ws2.Language);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
@@ -749,5 +754,228 @@ namespace Palaso.Tests.WritingSystems
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 		}
+
+		[Test]
+		public void LocalKeyboardSettings_RetrievesLocalKeyboardData()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var kbd1 = new DefaultKeyboardDefinition() {Layout = "English", Locale = "en-GB", OperatingSystem = PlatformID.Win32NT};
+			wsEn.LocalKeyboard = kbd1;
+
+			var result = RepositoryUnderTest.LocalKeyboardSettings;
+			var root = XElement.Parse(result);
+			Assert.That(root.Elements("keyboard").Count(), Is.EqualTo(1), "should have local keyboard for en but not fr");
+			var keyboardElt = root.Elements("keyboard").First();
+			Assert.That(keyboardElt.Attribute("layout").Value, Is.EqualTo("English"));
+			Assert.That(keyboardElt.Attribute("locale").Value, Is.EqualTo("en-GB"));
+			Assert.That(keyboardElt.Attribute("ws").Value, Is.EqualTo("en"));
+		}
+
+		[Test]
+		public void SettingLocalKeyboardSettings_UpdatesLocalKeyboardsForExistingWritingSystems()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var kbd1 = new DefaultKeyboardDefinition() {Layout = "English", Locale = "en-GB", OperatingSystem = PlatformID.Win32NT};
+			wsEn.LocalKeyboard = kbd1;
+
+			RepositoryUnderTest.LocalKeyboardSettings =
+@"<keyboards>
+	<keyboard ws='en' layout='English' locale='en-AU'/>
+	<keyboard ws='fr' layout='French-IPA' locale='fr-FR'/>
+</keyboards>";
+			Assert.That(wsEn.LocalKeyboard.Locale, Is.EqualTo("en-AU"));
+			Assert.That(wsFr.LocalKeyboard.Layout, Is.EqualTo("French-IPA"));
+			Assert.That(wsEn.LocalKeyboard.OperatingSystem, Is.EqualTo(Environment.OSVersion.Platform));
+		}
+
+		[Test]
+		public void SettingLocalKeyboardSettings_CausesLocalKeyboardToBeSetOnWritingSystemCreatedLater()
+		{
+			RepositoryUnderTest.LocalKeyboardSettings =
+@"<keyboards>
+	<keyboard ws='en' layout='English' locale='en-AU'/>
+	<keyboard ws='fr' layout='French-IPA' locale='fr-FR'/>
+	<keyboard ws='de' layout='German-IPA' locale='de-DE'/>
+</keyboards>";
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var wsDe = new WritingSystemDefinition("de");
+			wsDe.LocalKeyboard = new DefaultKeyboardDefinition() {Layout = "German", Locale = "de-SW"};
+			RepositoryUnderTest.Set(wsDe);
+
+			Assert.That(wsEn.LocalKeyboard.Locale, Is.EqualTo("en-AU"));
+			Assert.That(wsFr.LocalKeyboard.Layout, Is.EqualTo("French-IPA"));
+			Assert.That(wsEn.LocalKeyboard.OperatingSystem, Is.EqualTo(Environment.OSVersion.Platform));
+			Assert.That(wsDe.LocalKeyboard.Layout, Is.EqualTo("German"), "should not apply local keyboard settings if new WS already has them");
+		}
+
+		[Test]
+		public void SettingLocalKeyboardSettingsToNullOrEmpty_DoesNothing()
+		{
+			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = null);
+			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "");
+			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "   ");
+		}
+
+		[Test]
+		public void GetWsForInputLanguage_GetsMatchingWsByCulture()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var kbdEn = new DefaultKeyboardDefinition() {Layout = "English", Locale = "en-US"};
+			wsEn.LocalKeyboard = kbdEn;
+			var kbdFr = new DefaultKeyboardDefinition() {Layout = "French", Locale = "fr-FR"};
+			wsFr.LocalKeyboard = kbdFr;
+
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsEn, new[] {wsEn, wsFr}), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsFr, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsEn, new[] { wsFr, wsEn }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsFr, new[] { wsFr, wsEn }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsEn, new[] { wsFr, wsEn }), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), null, new[] { wsEn, wsFr }), Is.EqualTo(wsFr));
+		}
+
+		[Test]
+		public void GetWsForInputLanguage_PrefersCurrentCultureIfTwoMatch()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var kbdEn = new DefaultKeyboardDefinition() { Layout = "English", Locale = "en-US" };
+			wsEn.LocalKeyboard = kbdEn;
+			var kbdFr = new DefaultKeyboardDefinition() { Layout = "French", Locale = "en-US" };
+			wsFr.LocalKeyboard = kbdFr;
+
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsFr, new[] { wsEn, wsFr }), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsEn, new[] { wsFr, wsEn }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsFr, new[] { wsFr, wsEn }), Is.EqualTo(wsFr));
+		}
+
+		[Test]
+		public void GetWsForInputLanguage_PrefersCurrentLayoutIfTwoMatch()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var kbdEn = new DefaultKeyboardDefinition() { Layout = "English", Locale = "en-US" };
+			wsEn.LocalKeyboard = kbdEn;
+			var kbdFr = new DefaultKeyboardDefinition() { Layout = "English", Locale = "fr-US" };
+			wsFr.LocalKeyboard = kbdFr;
+
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("de-DE"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("de-DE"), wsFr, new[] { wsEn, wsFr }), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("de-DE"), wsEn, new[] { wsFr, wsEn }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("de-DE"), wsFr, new[] { wsFr, wsEn }), Is.EqualTo(wsFr));
+		}
+
+		[Test]
+		public void GetWsForInputLanguage_CorrectlyPrioritizesLayoutAndCulture()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsEnIpa = new WritingSystemDefinition("en-fonipa");
+			RepositoryUnderTest.Set(wsEnIpa);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var wsDe = new WritingSystemDefinition("de");
+			RepositoryUnderTest.Set(wsDe);
+			var kbdEn = new DefaultKeyboardDefinition() { Layout = "English", Locale = "en-US" };
+			wsEn.LocalKeyboard = kbdEn;
+			var kbdEnIpa = new DefaultKeyboardDefinition() { Layout = "English-IPA", Locale = "en-US" };
+			wsEnIpa.LocalKeyboard = kbdEnIpa;
+			var kbdFr = new DefaultKeyboardDefinition() { Layout = "French", Locale = "fr-FR" };
+			wsFr.LocalKeyboard = kbdFr;
+			var kbdDe = new DefaultKeyboardDefinition() { Layout = "English", Locale = "de-DE" };
+			wsDe.LocalKeyboard = kbdDe;
+
+			var wss = new IWritingSystemDefinition[] {wsEn, wsFr, wsDe, wsEnIpa};
+
+			// Exact match selects correct one, even though there are other matches for layout and/or culture
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("en-US"), wsFr, wss), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English-IPA", new CultureInfo("en-US"), wsEn, wss), Is.EqualTo(wsEnIpa));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("French", new CultureInfo("fr-FR"), wsDe, wss), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("de-DE"), wsEn, wss), Is.EqualTo(wsDe));
+
+			// If there is no exact match, but there are matches by both layout and culture, we prefer layout (even though there is a
+			// culture match for the default WS)
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("fr-FR"), wsFr, wss), Is.EqualTo(wsEn)); // first of two equally good matches
+		}
+
+		[Test]
+		public void GetWsForInputLanguage_PrefersWsCurrentIfEqualMatches()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsEnUS = new WritingSystemDefinition("en-US");
+			RepositoryUnderTest.Set(wsEnUS);
+			var wsEnIpa = new WritingSystemDefinition("en-fonipa");
+			RepositoryUnderTest.Set(wsEnIpa);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var wsDe = new WritingSystemDefinition("de");
+			RepositoryUnderTest.Set(wsDe);
+			var kbdEn = new DefaultKeyboardDefinition() { Layout = "English", Locale = "en-US" };
+			wsEn.LocalKeyboard = kbdEn;
+			var kbdEnIpa = new DefaultKeyboardDefinition() { Layout = "English-IPA", Locale = "en-US" };
+			wsEnIpa.LocalKeyboard = kbdEnIpa;
+			wsEnUS.LocalKeyboard = kbdEn; // exact same keyboard used!
+			var kbdFr = new DefaultKeyboardDefinition() { Layout = "French", Locale = "fr-FR" };
+			wsFr.LocalKeyboard = kbdFr;
+			var kbdDe = new DefaultKeyboardDefinition() { Layout = "English", Locale = "de-DE" };
+			wsDe.LocalKeyboard = kbdDe;
+
+			var wss = new IWritingSystemDefinition[] { wsEn, wsFr, wsDe, wsEnIpa, wsEnUS };
+
+			// Exact matches
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("en-US"), wsFr, wss), Is.EqualTo(wsEn)); // first of 2
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("en-US"), wsEn, wss), Is.EqualTo(wsEn)); // prefer default
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("en-US"), wsEnUS, wss), Is.EqualTo(wsEnUS)); // prefer default
+
+			// Match on Layout only
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("fr-FR"), wsFr, wss), Is.EqualTo(wsEn)); // first of 3
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("fr-FR"), wsEn, wss), Is.EqualTo(wsEn)); // prefer default
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("fr-FR"), wsEnUS, wss), Is.EqualTo(wsEnUS)); // prefer default
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("fr-FR"), wsDe, wss), Is.EqualTo(wsDe)); // prefer default
+
+			// Match on culture only
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("Nonsence", new CultureInfo("en-US"), wsDe, wss), Is.EqualTo(wsEn)); // first of 3
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("Nonsence", new CultureInfo("en-US"), wsEn, wss), Is.EqualTo(wsEn)); // prefer default
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("Nonsence", new CultureInfo("en-US"), wsEnUS, wss), Is.EqualTo(wsEnUS)); // prefer default
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("Nonsence", new CultureInfo("en-US"), wsEnIpa, wss), Is.EqualTo(wsEnIpa)); // prefer default
+		}
+
+		[Test]
+		public void GetWsForInputLanguage_ReturnsCurrentIfNoneMatches()
+		{
+			var wsEn = new WritingSystemDefinition("en");
+			RepositoryUnderTest.Set(wsEn);
+			var wsFr = new WritingSystemDefinition("fr");
+			RepositoryUnderTest.Set(wsFr);
+			var kbdEn = new DefaultKeyboardDefinition() { Layout = "English", Locale = "en-US" };
+			wsEn.LocalKeyboard = kbdEn;
+			var kbdFr = new DefaultKeyboardDefinition() { Layout = "French", Locale = "en-US" };
+			wsFr.LocalKeyboard = kbdFr;
+
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsFr, new[] { wsEn, wsFr }), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsEn, new[] { wsFr, wsEn }), Is.EqualTo(wsEn));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsFr, new[] { wsFr, wsEn }), Is.EqualTo(wsFr));
+			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), null, new[] { wsFr, wsEn }), Is.Null);
+		}
+#endif
 	}
 }

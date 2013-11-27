@@ -41,7 +41,12 @@ namespace Palaso.Media
 		{
 			//on linux, we can safely assume the package has included the needed dependency
 #if MONO
-						return "ffmpeg";
+			if (File.Exists("/usr/bin/ffmpeg"))
+				return "/usr/bin/ffmpeg";
+			else if (File.Exists("/usr/bin/avconv"))
+				return "/usr/bin/avconv";	// the new name of ffmpeg on Linux
+			else
+				return null;
 #endif
 
 #if !MONO
@@ -181,6 +186,51 @@ namespace Palaso.Media
 
 			return result;
 		}
+		/// <summary>
+		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
+		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// </summary>
+		/// <param name="inputPath"></param>
+		/// <param name="outputPath"></param>
+		/// <param name="channels">1 for mono, 2 for stereo</param>
+		/// <param name="progress"></param>
+		/// <returns>log of the run</returns>
+		public static ExecutionResult ExtractOggAudio(string inputPath, string outputPath, int channels, IProgress progress)
+		{
+			if(string.IsNullOrEmpty(LocateFFmpeg()))
+			{
+				return new ExecutionResult(){StandardError = "Could not locate FFMpeg"};
+			}
+
+			var arguments = string.Format("-i \"{0}\" -vn -acodec vorbis -ac {1} \"{2}\"", inputPath, channels, outputPath);
+			progress.WriteMessage("ffmpeg " + arguments);
+			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+														arguments,
+														Environment.CurrentDirectory,
+														60*10, //10 minutes
+														progress
+				);
+
+			progress.WriteVerbose(result.StandardOutput);
+
+			//hide a meaningless error produced by some versions of liblame
+			if (result.StandardError.Contains("lame: output buffer too small")
+				&& File.Exists(outputPath))
+			{
+				var doctoredResult = new ExecutionResult
+										{
+											ExitCode = 0,
+											StandardOutput = result.StandardOutput,
+											StandardError = string.Empty
+										};
+				return doctoredResult;
+			}
+			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
+				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
 
 		/// <summary>
 		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
@@ -253,6 +303,8 @@ namespace Palaso.Media
 
 			var arguments = string.Format("-i \"{0}\" -vn -acodec {1}  {2} {3} \"{4}\"",
 				inputPath, audioCodec, sampleRateArg, channelsArg, outputPath);
+
+			progress.WriteMessage("ffmpeg " + arguments);
 
 			var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
 														arguments,

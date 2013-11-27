@@ -230,6 +230,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 									 "Note: this program works with devices that have a 'WIA' driver, not the old-style 'TWAIN' driver";
 				_messageLabel.Visible = true;
 			}
+			catch (WIA_Version2_MissingException error)
+			{
+				_messageLabel.Text = "Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to downloand and follow the directions at http://vbnet.mvps.org/files/updates/wiaautsdk.zip";
+				_messageLabel.Visible = true;
+			}
 			catch (Exception error)
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));

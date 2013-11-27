@@ -147,7 +147,14 @@ namespace Palaso.UI.WindowsForms.Widgets
 			base.OnClick(e);
 			if(!string.IsNullOrEmpty(URL))
 			{
-				System.Diagnostics.Process.Start(URL);
+				try
+				{
+					System.Diagnostics.Process.Start(URL);
+				}
+				catch(Exception)
+				{
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(string.Format("Could not follow that link to {0}. Your computer is not set up to follow links of that kind, but you can try typing it into your web browser.",URL));
+				}
 			}
 		}
 	}

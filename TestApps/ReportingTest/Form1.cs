@@ -37,18 +37,22 @@ namespace TestApp
 
 		private void _keyman7TestBox_Enter(object sender, EventArgs e)
 		{
+#if WANT_PORT
 			string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman7)[0].ShortName;
 			KeyboardController.ActivateKeyboard(name);
+#endif
 		}
 
 		private void _keyman6TestBox_Enter(object sender, EventArgs e)
 		{
+#if WANT_PORT
 			if(KeyboardController.EngineAvailable(KeyboardController.Engines.Keyman6))
 			{
 				string name = KeyboardController.GetAvailableKeyboards(KeyboardController.Engines.Keyman6)[0].ShortName;
 				KeyboardController.ActivateKeyboard(name);
 			}
 			MessageBox.Show("keyman 6 not available");
+#endif
 		}
 
 		private void OnExceptionWithPolicyClick(object sender, EventArgs e)

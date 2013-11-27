@@ -21,7 +21,7 @@ namespace Palaso.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition : IClonableGeneric<WritingSystemDefinition>
+	public class WritingSystemDefinition : IClonableGeneric<WritingSystemDefinition>, IWritingSystemDefinition, ILegacyWritingSystemDefinition
 	{
 		public enum SortRulesType
 		{
@@ -117,6 +117,7 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		/// <summary>
 		/// Creates a new WritingSystemDefinition
 		/// </summary>
 		/// <param name="language">A valid BCP47 language subtag</param>
@@ -136,6 +137,14 @@ namespace Palaso.WritingSystems
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
 			UpdateIdFromRfcTag();
+		}
+
+		/// <summary>
+		/// Copy constructor from IWritingSystem: useable only if the interface is in fact implemented by this class.
+		/// </summary>
+		/// <param name="ws"></param>
+		internal WritingSystemDefinition(IWritingSystemDefinition ws) : this ((WritingSystemDefinition)ws)
+		{
 		}
 
 		/// <summary>
@@ -159,6 +168,11 @@ namespace Palaso.WritingSystems
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_rfcTag = new RFC5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
+			if (ws._localKeyboard != null)
+				_localKeyboard = ws._localKeyboard.Clone();
+			WindowsLcid = ws.WindowsLcid;
+			foreach (var kbd in ws._knownKeyboards)
+				_knownKeyboards.Add(kbd.Clone());
 			_id = ws._id;
 		}
 
@@ -643,7 +657,7 @@ namespace Palaso.WritingSystems
 		/// <param name="otherWritingsystemIds"></param>
 		/// <returns></returns>
 		public static WritingSystemDefinition CreateCopyWithUniqueId(
-			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
+			IWritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
 			var newWs = writingSystemToCopy.Clone();
 			var lastAppended = String.Empty;
@@ -907,6 +921,38 @@ namespace Palaso.WritingSystems
 			}
 		}
 
+		private IKeyboardDefinition _localKeyboard;
+
+		public string WindowsLcid { get; set; }
+
+		public IKeyboardDefinition LocalKeyboard
+		{
+			get
+			{
+				if (_localKeyboard == null)
+				{
+					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
+					_localKeyboard = (from k in KnownKeyboards where available.Contains(k) select k).FirstOrDefault();
+				}
+				if (_localKeyboard == null)
+				{
+					_localKeyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
+				}
+				return _localKeyboard;
+			}
+			set
+			{
+				_localKeyboard = value;
+				AddKnownKeyboard(value);
+				Modified = true;
+			}
+		}
+
+		internal IKeyboardDefinition RawLocalKeyboard
+		{
+			get { return _localKeyboard; }
+		}
+
 		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
@@ -1116,6 +1162,13 @@ namespace Palaso.WritingSystems
 			if (!_defaultFontSize.Equals(other._defaultFontSize)) return false;
 			if (!SortUsing.Equals(other.SortUsing)) return false;
 			if (!_rightToLeftScript.Equals(other._rightToLeftScript)) return false;
+			if ((_localKeyboard != null  && !_localKeyboard.Equals(other._localKeyboard)) || (_localKeyboard == null && other._localKeyboard != null)) return false;
+			if (WindowsLcid != other.WindowsLcid) return false;
+			if (_knownKeyboards.Count != other._knownKeyboards.Count) return false;
+			for (int i = 0; i < _knownKeyboards.Count; i++)
+			{
+				if (!_knownKeyboards[i].Equals(other._knownKeyboards[i])) return false;
+			}
 			return true;
 		}
 
@@ -1189,6 +1242,38 @@ namespace Palaso.WritingSystems
 					strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag), StringComparison.OrdinalIgnoreCase))
 					continue;
 				yield return privateUseToken;
+			}
+		}
+
+		List<IKeyboardDefinition> _knownKeyboards = new List<IKeyboardDefinition>();
+
+		public IEnumerable<IKeyboardDefinition> KnownKeyboards
+		{
+			get { return _knownKeyboards; }
+		}
+
+		public void AddKnownKeyboard(IKeyboardDefinition newKeyboard)
+		{
+			if (newKeyboard == null)
+				return;
+			// Review JohnT: how should this affect order?
+			// e.g.: last added should be first?
+			// Current algorithm keeps them in the order added, hopefully meaning the most likely one, added first,
+			// remains the default.
+			if (KnownKeyboards.Contains(newKeyboard))
+				return;
+			_knownKeyboards.Add(newKeyboard);
+			Modified = true;
+		}
+
+		/// <summary>
+		/// Returns the available keyboards (known to Keyboard.Controller) that are not KnownKeyboards for this writing system.
+		/// </summary>
+		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards
+		{
+			get
+			{
+				return WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
 			}
 		}
 	}

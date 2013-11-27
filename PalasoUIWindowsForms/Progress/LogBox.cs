@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -38,9 +39,12 @@ namespace Palaso.UI.WindowsForms.Progress
 				{
 					try
 					{
-						Clipboard.SetText(_verboseBox.Text);
-						MessageBox.Show(
-							"Information on what happened has been copied to your clipboard. Please email it to the developers of the program you are using.");
+						if (!string.IsNullOrEmpty(_verboseBox.Text))
+						{
+							Clipboard.SetText(_verboseBox.Text);
+							MessageBox.Show(
+								"Information on what happened has been copied to your clipboard. Please email it to the developers of the program you are using.");
+						}
 					}
 					catch (Exception)
 					{
@@ -72,11 +76,11 @@ namespace Palaso.UI.WindowsForms.Progress
 			_tableLayout.Size = new Size(ClientSize.Width - (_tableLayout.Left + 1),
 				ClientSize.Height - (_tableLayout.Top + 1));
 
-			_verboseBox.Size = _box.Size = _panelBox.Size;
-			_verboseBox.Location = _box.Location = new Point(0, 0);
+			_box.Dock = DockStyle.Fill;
 			_synchronizationContext = SynchronizationContext.Current;
 		}
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public SynchronizationContext SyncContext
 		{
 			get { return _synchronizationContext; }
@@ -145,6 +149,16 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			get { return base.Font; }
 			set { base.Font = _verboseBox.Font = _box.Font = value; }
+		}
+
+		public override string Text
+		{
+			get { return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; }
+		}
+
+		public string Rtf
+		{
+			get { return "Box:" + _box.Rtf + "Verbose:" + _verboseBox.Rtf; }
 		}
 
 		public void ScrollToTop()
@@ -246,6 +260,8 @@ namespace Palaso.UI.WindowsForms.Progress
 				var styleForDelegate = style;
 				SafeInvoke(rtfBox, (() =>
 				{
+#if !MONO // changing the text colour throws exceptions with mono 2011-12-09
+						// so just append plain text
 					if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
 						style = rtfBoxForDelegate.Font.Style;
 
@@ -254,10 +270,13 @@ namespace Palaso.UI.WindowsForms.Progress
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.SelectionColor = color;
 						rtfBoxForDelegate.SelectionFont = fnt;
+#endif
 						rtfBoxForDelegate.AppendText(string.Format(msg + Environment.NewLine, args));
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.ScrollToCaret();
+#if !MONO
 					}
+#endif
 				}));
 			}
 #if !DEBUG
@@ -327,12 +346,16 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public void WriteVerbose(string message, params object[] args)
 		{
+#if MONO
+			_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
+#else
 			SafeInvoke(_verboseBox, (() =>
 			{
 				_verboseBox.SelectionStart = _verboseBox.Text.Length;
 				_verboseBox.SelectionColor = Color.DarkGray;
 				_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
 			}));
+#endif
 		}
 		public static string SafeFormat(string format, params object[] args)
 		{
@@ -354,23 +377,26 @@ namespace Palaso.UI.WindowsForms.Progress
 			_verboseBox.Visible = _showDetailsMenu.Checked;
 			_box.Visible = !_showDetailsMenu.Checked;
 
-#if MONO  //mono (2.0?) doesn't update the size of the box when invisible, apparently
 			if (_showDetailsMenu.Checked)
 			{
-				_verboseBox.Bounds = _box.Bounds;
+				_box.Dock = DockStyle.None;
+				_verboseBox.Dock = DockStyle.Fill;
 			}
 			else
 			{
-				_box.Bounds = _verboseBox.Bounds;
+				_verboseBox.Dock = DockStyle.None;
+				_box.Dock = DockStyle.Fill;
 			}
-#endif
 		}
 
 		private void _copyToClipboardLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 #if MONO
 //at least on Xubuntu, getting some rtf on the clipboard would mean that when you pasted, you'd see rtf
-			Clipboard.SetText(_verboseBox.Text);
+			if (!string.IsNullOrEmpty(_verboseBox.Text))
+			{
+				Clipboard.SetText(_verboseBox.Text);
+			}
 #else
 			var data = new DataObject();
 			data.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);

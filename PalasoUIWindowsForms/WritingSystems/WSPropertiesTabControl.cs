@@ -71,5 +71,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			_identifiersControl.UnwireBeforeClosing();
 		}
+
+		private void _tabControl_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (_tabControl.SelectedTab == _keyboardsPage)
+				_keyboardControl.Focus();
+		}
 	}
 }

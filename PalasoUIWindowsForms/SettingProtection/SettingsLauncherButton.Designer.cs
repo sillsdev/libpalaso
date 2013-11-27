@@ -74,6 +74,7 @@
 			this.betterLinkLabel1.Location = new System.Drawing.Point(23, 3);
 			this.betterLinkLabel1.Multiline = true;
 			this.betterLinkLabel1.Name = "betterLinkLabel1";
+			this.betterLinkLabel1.ReadOnly = true;
 			this.betterLinkLabel1.Size = new System.Drawing.Size(171, 17);
 			this.betterLinkLabel1.TabIndex = 4;
 			this.betterLinkLabel1.TabStop = false;

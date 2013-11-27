@@ -1,5 +1,6 @@
 ﻿#if !MONO
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using Palaso.Reporting;
 using WIA;
@@ -22,6 +23,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{ }
 
 	}
+	   public class WIA_Version2_MissingException : ApplicationException
+	{
+		public WIA_Version2_MissingException()
+			: base()
+		{ }
+
+	}
+
 
 	public class ImageDeviceNotFoundException : ImageDeviceException
 	{
@@ -96,6 +105,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				else
 				{
+					//NB: I spend some hours working on adding this wiaaut.dll via the installer, using wix heat, but it was one problem after another.
+					//Decided eventually that it wasn't worth it at this point; it's easy enough to install by hand.
+					if (ErrorReport.GetOperatingSystemLabel().Contains("XP"))
+					{
+						var comErrorCode = new Win32Exception(((COMException) ex).ErrorCode).ErrorCode;
+
+						if (comErrorCode == 80040154)
+						{
+							throw new WIA_Version2_MissingException();
+						}
+					}
+
 					throw new ImageDeviceException("COM Exception", ex);
 				}
 			}

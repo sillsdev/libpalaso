@@ -15,7 +15,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 		{
 			this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 			InitializeComponent();
-
+			betterLinkLabel1.Click += OnLinkClicked;
 			_helper = new SettingsProtectionHelper(this.Container);
 			_helper.ManageComponent(this);
 		}
@@ -27,7 +27,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 		public Func<DialogResult> LaunchSettingsCallback { get; set; }
 
 
-		private void OnLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		private void OnLinkClicked(object sender, EventArgs e)
 		{
 			_helper.LaunchSettingsIfAppropriate(() =>
 												{

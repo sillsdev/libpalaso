@@ -6,11 +6,12 @@ namespace Palaso.Media
 	{
 		public static ISimpleAudioSession CreateAudioSession(string filePath)
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
+#if MONO
+				//return new AudioGStreamerSession(filePath);
 				return new AudioAlsaSession(filePath);
-			}
+#else
 			return new AudioIrrKlangSession(filePath);
+#endif
 		}
 
 		[Obsolete("This was a unfortunate method name. Use CreateAudioSessionInstead.")]

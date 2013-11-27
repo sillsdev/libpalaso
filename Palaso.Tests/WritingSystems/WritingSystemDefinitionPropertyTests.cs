@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using Palaso.Code;
 using Palaso.Data;
 using Palaso.Tests.Code;
 using Palaso.WritingSystems;
@@ -17,9 +19,9 @@ namespace Palaso.Tests.WritingSystems
 
 		public override string ExceptionList
 		{
-			get { return "|Modified|MarkedForDeletion|StoreID|_collator|"; }
+			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
+			get { return "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|"; }
 		}
-
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
@@ -32,16 +34,60 @@ namespace Palaso.Tests.WritingSystems
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
 								 new ValuesToSet(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),
-								 new ValuesToSet(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de"))
+								 new ValuesToSet(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de")),
+								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition() {Layout="mine"}, new DefaultKeyboardDefinition(){Layout="theirs"})
 							 };
 			}
+		}
+
+		/// <summary>
+		/// The generic test that clone copies everything can't, I believe, handle lists.
+		/// </summary>
+		[Test]
+		public void CloneCopiesKnownKeyboards()
+		{
+			var original = new WritingSystemDefinition();
+			var kbd1 = new DefaultKeyboardDefinition() {Layout = "mine"};
+			var kbd2 = new DefaultKeyboardDefinition() {Layout = "yours"};
+			original.AddKnownKeyboard(kbd1);
+			original.AddKnownKeyboard(kbd2);
+			var copy = original.Clone();
+			Assert.That(copy.KnownKeyboards.Count(), Is.EqualTo(2));
+			Assert.That(copy.KnownKeyboards.First(), Is.EqualTo(kbd1));
+			Assert.That(ReferenceEquals(copy.KnownKeyboards.First(), kbd1), Is.False);
+		}
+
+		/// <summary>
+		/// The generic test that Equals compares everything can't, I believe, handle lists.
+		/// </summary>
+		[Test]
+		public void EqualsComparesKnownKeyboards()
+		{
+			var first = new WritingSystemDefinition();
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "mine" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "yours" };
+			first.AddKnownKeyboard(kbd1);
+			first.AddKnownKeyboard(kbd2);
+			var second = new WritingSystemDefinition();
+			var kbd3 = new DefaultKeyboardDefinition() { Layout = "mine" }; // equal to kbd1
+			var kbd4 = new DefaultKeyboardDefinition() {Layout = "theirs"};
+
+			Assert.That(first.Equals(second), Is.False, "ws with empty known keyboards should not equal one with some");
+			second.AddKnownKeyboard(kbd3);
+			Assert.That(first.Equals(second), Is.False, "ws's with different length known keyboard lits should not be equal");
+			second.AddKnownKeyboard(kbd2.Clone());
+			Assert.That(first.Equals(second), Is.True, "ws's with same known keyboard lists should be equal");
+
+			second = new WritingSystemDefinition();
+			second.AddKnownKeyboard(kbd3);
+			second.AddKnownKeyboard(kbd4);
+			Assert.That(first.Equals(second), Is.False, "ws with same-length lists of different known keyboards should not be equal");
 		}
 	}
 
 	[TestFixture]
 	public class WritingSystemDefinitionPropertyTests
 	{
-
 		[Test]
 		public void FromRFC5646Subtags_AllArgs_SetsOk()
 		{
@@ -398,7 +444,8 @@ namespace Palaso.Tests.WritingSystems
 		public void ModifyingDefinitionSetsModifiedFlag()
 		{
 			// Put any properties to ignore in this string surrounded by "|"
-			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|";
+			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
+			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|WindowsLcid|";
 			// special test values to use for properties that are particular
 			Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
 			Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
@@ -416,6 +463,8 @@ namespace Palaso.Tests.WritingSystems
 			secondValueSpecial.Add("Script", "Latn");
 			firstValueSpecial.Add("DuplicateNumber", 0);
 			secondValueSpecial.Add("DuplicateNumber", 1);
+			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() {Layout="mine"});
+			secondValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() { Layout = "yours" });
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");
 			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
@@ -478,7 +527,10 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesAllNeededMembers()
 		{
 			// Put any fields to ignore in this string surrounded by "|"
-			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|";
+			// _knownKeyboards and _localKeyboard are tested by the similar test in WritingSystemDefintionICloneableGenericTests.
+			// I (JohnT) suspect that this whole test is redundant but am keeping it in case this version
+			// confirms something subtly different.
+			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{
@@ -1540,6 +1592,252 @@ namespace Palaso.Tests.WritingSystems
 			newWs.AddToVariant("garble");
 			newWs.AddToVariant("1901");
 			Assert.That(newWs.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
+		}
+
+		[Test]
+		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() {Layout = "something", Locale="en-US"};
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
+			var controller = new MockKeyboardController();
+			var keyboardList = new List<IKeyboardDefinition>();
+			keyboardList.Add(kbd1);
+			keyboardList.Add(kbd2);
+			controller.AllAvailableKeyboards = keyboardList;
+			Keyboard.Controller = controller;
+
+			var result = ws.OtherAvailableKeyboards;
+
+			Assert.That(result, Has.Member(kbd1));
+			Assert.That(result, Has.Member(kbd2));
+		}
+
+		[Test]
+		public void OtherAvailableKeyboards_OmitsKnownKeyboards()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
+			var kbd3 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" }; // equal to kbd1
+			var controller = new MockKeyboardController();
+			var keyboardList = new List<IKeyboardDefinition>();
+			keyboardList.Add(kbd1);
+			keyboardList.Add(kbd2);
+			controller.AllAvailableKeyboards = keyboardList;
+			Keyboard.Controller = controller;
+			ws.AddKnownKeyboard(kbd3);
+
+			var result = ws.OtherAvailableKeyboards.ToList();
+
+			Assert.That(result, Has.Member(kbd2));
+			Assert.That(result, Has.No.Member(kbd1));
+		}
+
+		class MockKeyboardController : IKeyboardController
+		{
+			/// <summary>
+			/// Tries to get the keyboard with the specified <paramref name="layoutName"/>.
+			/// </summary>
+			/// <returns>
+			/// Returns <c>KeyboardDescription.Zero</c> if no keyboard can be found.
+			/// </returns>
+			public IKeyboardDefinition GetKeyboard(string layoutName)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Tries to get the keyboard for the specified <paramref name="writingSystem"/>.
+			/// </summary>
+			/// <returns>
+			/// Returns <c>KeyboardDescription.Zero</c> if no keyboard can be found.
+			/// </returns>
+			public IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IKeyboardDefinition GetKeyboard(IInputLanguage language)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Sets the keyboard
+			/// </summary>
+			public void SetKeyboard(IKeyboardDefinition keyboard)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void SetKeyboard(string layoutName)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void SetKeyboard(string layoutName, string locale)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void SetKeyboard(IWritingSystemDefinition writingSystem)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void SetKeyboard(IInputLanguage language)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Activates the keyboard of the default input language
+			/// </summary>
+			public void ActivateDefaultKeyboard()
+			{
+				throw new NotImplementedException();
+			}
+
+			public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; set; }
+
+			public IKeyboardDefinition Default;
+			public IWritingSystemDefinition ArgumentPassedToDefault;
+			public void UpdateAvailableKeyboards()
+			{
+				throw new NotImplementedException();
+			}
+
+			public IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+			{
+				ArgumentPassedToDefault = ws;
+				return Default;
+			}
+
+			public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Creates and returns a keyboard definition object based on the layout and locale.
+			/// </summary>
+			/// <remarks>The keyboard controller implementing this method will have to check the
+			/// availability of the keyboard and what engine provides it.</remarks>
+			public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+			{
+				throw new NotImplementedException();
+			}
+
+			/// <summary>
+			/// Gets or sets the currently active keyboard
+			/// </summary>
+			public IKeyboardDefinition ActiveKeyboard { get; set; }
+
+			#region Implementation of IDisposable
+			/// <summary>
+			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+			/// </summary>
+			public void Dispose()
+			{
+				GC.SuppressFinalize(this);
+			}
+			#endregion
+		}
+
+		[Test]
+		public void SettingLocalKeyboard_AddsToKnownKeyboards()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+
+			ws.LocalKeyboard = kbd1;
+
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
+			Assert.That(ws.KnownKeyboards.ToList(), Has.Member(kbd1));
+		}
+
+		/// <summary>
+		/// This incidentally tests that AddKnownKeyboard sets the Modified flag when it DOES change something.
+		/// </summary>
+		[Test]
+		public void AddKnownKeyboard_DoesNotMakeDuplicates()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+
+			ws.AddKnownKeyboard(kbd1);
+			Assert.That(ws.Modified, Is.True);
+			ws.Modified = false;
+			ws.AddKnownKeyboard(kbd2);
+			Assert.That(ws.Modified, Is.False);
+
+			Assert.That(ws.KnownKeyboards.Count(), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void SetLocalKeyboard_ToAlreadyKnownKeyboard_SetsModifiedFlag()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+
+			ws.AddKnownKeyboard(kbd1);
+			ws.LocalKeyboard = kbd2;
+			Assert.That(ws.Modified, Is.True); // worth checking, but it doesn't really prove the point, since it will have also changed KnownKeyboards
+			ws.Modified = false;
+			ws.LocalKeyboard = kbd1; // This time it's already a known keyboard so only the LocalKeyboard setter can be responsibe for setting the flag.
+			Assert.That(ws.Modified, Is.True);
+		}
+
+		[Test]
+		public void AddKnownKeyboard_Null_DoesNothing()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+
+			Assert.DoesNotThrow(() => ws.AddKnownKeyboard(null));
+		}
+
+		[Test]
+		public void LocalKeyboard_DefaultsToFirstKnownAvailable()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-US" };
+			var kbd3 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-US" };
+
+			ws.AddKnownKeyboard(kbd1);
+			ws.AddKnownKeyboard(kbd2);
+
+			var controller = new MockKeyboardController();
+			var keyboardList = new List<IKeyboardDefinition>();
+			keyboardList.Add(kbd3);
+			controller.AllAvailableKeyboards = keyboardList;
+			Keyboard.Controller = controller;
+
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd2));
+		}
+
+		[Test]
+		public void LocalKeyboard_DefersToController_WhenNoKnownAvailable()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+
+			var controller = new MockKeyboardController();
+			var keyboardList = new List<IKeyboardDefinition>();
+			controller.AllAvailableKeyboards = keyboardList;
+			controller.Default = kbd1;
+			Keyboard.Controller = controller;
+
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
+			Assert.That(controller.ArgumentPassedToDefault, Is.EqualTo(ws));
 		}
 	}
 }

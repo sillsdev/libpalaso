@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Palaso.Email;
 using Palaso.Reporting;
@@ -538,9 +539,42 @@ namespace Palaso.UI.WindowsForms.Reporting
 			{
 				_details.Text = String.Format("Please e-mail this to {0} {1}", ErrorReport.EmailAddress, _details.Text);
 			}
+#if MONO
+			try
+			{
+				// Workaround for Xamarin bug #4959. Eberhard had a mono fix for that bug
+				// but it doesn't work with FW (or Palaso) -- he couldn't figure out why not.
+				// This is a dirty hack but at least it works :-)
+				var clipboardAtom = gdk_atom_intern("CLIPBOARD", true);
+				var clipboard = gtk_clipboard_get(clipboardAtom);
+				if (clipboard != IntPtr.Zero)
+				{
+					gtk_clipboard_set_text(clipboard, _details.Text, -1);
+					gtk_clipboard_store(clipboard);
+				}
+			}
+			catch
+			{
+				// ignore any errors - most likely because gtk isn't installed?
+				return false;
+			}
+#else
 			Clipboard.SetDataObject(_details.Text, true);
+#endif
 			 return true;
 		 }
+
+#if MONO
+		// Workaround for Xamarin bug #4959
+		[DllImport("libgdk-x11-2.0")]
+		internal extern static IntPtr gdk_atom_intern(string atomName, bool onlyIfExists);
+		[DllImport("libgtk-x11-2.0")]
+		internal extern static IntPtr gtk_clipboard_get(IntPtr atom);
+		[DllImport("libgtk-x11-2.0")]
+		internal extern static void gtk_clipboard_store(IntPtr clipboard);
+		[DllImport("libgtk-x11-2.0")]
+		internal extern static void gtk_clipboard_set_text(IntPtr clipboard, [MarshalAs(UnmanagedType.LPStr)] string text, int len);
+#endif
 
 		 private bool SendViaEmail()
 		 {
