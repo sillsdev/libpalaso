@@ -137,6 +137,15 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// ------------------------------------------------------------------------------------
+		protected override string FileGroupDisplayMessage(string groupKey)
+		{
+			if (groupKey == string.Empty)
+				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIActorsGroup", "Actors",
+					"This is the heading displayed in the Archive Using IMDI dialog box for the files for the actors/participants");
+			return base.FileGroupDisplayMessage(groupKey);
+		}
+
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets a description for the specified session in a single language
 		/// </summary>
@@ -184,7 +193,7 @@ namespace SIL.Archiving.IMDI
 		/// <summary></summary>
 		public override bool CreatePackage()
 		{
-			throw new NotImplementedException();
+			return _imdiData.CreateIMDIPackage();
 		}
 
 		/// <summary>Only Latin characters, URL compatible</summary>

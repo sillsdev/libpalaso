@@ -50,12 +50,15 @@ namespace SIL.Archiving.IMDI
 		/// <returns></returns>
 		public bool CreateIMDIPackage()
 		{
-			// create the corpus directory
+			// create the base directory
 			_corpusDirInfo = Directory.CreateDirectory(_packagePath);
 
-			// create the session directories
-			//foreach (var session in Sessions)
-			//    session.CreateIMDISession(_corpusDirInfo.FullName);
+			if (_corpus)
+			{
+				// create the session directories
+				//foreach (var session in Sessions)
+				//    session.CreateIMDISession(_corpusDirInfo.FullName);
+			}
 
 			// TODO: Determine if we need to create the package catalogue imdi file (may not be needed)
 
