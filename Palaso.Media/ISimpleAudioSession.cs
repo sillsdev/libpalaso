@@ -1,3 +1,5 @@
+using System;
+
 namespace Palaso.Media
 {
 	public interface ISimpleAudioSession
@@ -15,4 +17,9 @@ namespace Palaso.Media
 		void SaveAsWav(string filePath);
 		void StopPlaying();
 	}
+
+	public interface ISimpleAudioWithEvents
+	{
+		event EventHandler PlaybackStopped;
+}
 }

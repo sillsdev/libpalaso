@@ -1,7 +1,9 @@
 using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
+using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -9,12 +11,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	{
 		private readonly WritingSystemSetupModel _model;
 
-		public WritingSystemSetupDialog()
-		{
-			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore());
-			_writingSystemSetupView.BindToModel(_model);
-		}
+		//public WritingSystemSetupDialog()
+		//{
+		//    InitializeComponent();
+		//    _model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemRepository());
+		//    _writingSystemSetupView.BindToModel(_model);
+		//}
 
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your
@@ -27,7 +29,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
    /* turned out to be hard... so many events are bound to the model, when the dlg
 	* closes we'd need to carefully unsubscribe them alll.
-	* Better to try again with a weak event model*/
+	* Better to try again with a weak event model (JH)
+	* Or perhaps better yet the passive view model
+	*/
 		/// <summary>
 		/// Use this one to keep, say, a picker up to date with any change you make
 		/// while using the dialog.
@@ -40,16 +44,35 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		public WritingSystemSetupDialog(string writingSystemStorePath)
+		// This method really gets in the way of good migration.
+		[Obsolete("Initialize the writing system repository, then call the constructor that takes an IWritingSystemRepository")]
+		public WritingSystemSetupDialog(
+			string writingSystemRepositoryPath,
+			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			WritingSystemLoadProblemHandler loadProblemHandler
+		) : this(LdmlInFolderWritingSystemRepository.Initialize(
+			writingSystemRepositoryPath,
+			migrationHandler,
+			loadProblemHandler
+		))
+		{
+		}
+
+		public WritingSystemSetupDialog(IWritingSystemRepository repository)
 		{
 			InitializeComponent();
-			_model = new WritingSystemSetupModel(new LdmlInFolderWritingSystemStore(writingSystemStorePath));
+			_model = new WritingSystemSetupModel(repository);
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		public DialogResult  ShowDialog(string initiallySelectWritingSystemRfc4646)
+		public IWritingSystemRepository WritingSystems
 		{
-			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemRfc4646);
+			get { return _model.WritingSystems; }
+		}
+
+		public DialogResult ShowDialog(string initiallySelectWritingSystemBcp47)
+		{
+			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemBcp47);
 			return ShowDialog();
 		}
 
@@ -63,10 +86,75 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			catch (ArgumentException exception)
 			{
 				MessageBox.Show (
-					this, exception.Message, "Writing Systems Error",
+					this, exception.Message, "Input Systems Error",
 					MessageBoxButtons.OK, MessageBoxIcon.Exclamation
 				);
 			}
+		}
+
+  internal class DummyWritingSystemHandler
+
+  {
+
+	  public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+
+	  {
+
+	  }
+
+
+
+	  public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+
+	  {
+
+	  }
+
+
+
+  }
+
+		private void _openDirectory_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog openDir = new FolderBrowserDialog();
+
+			openDir.RootFolder = Environment.SpecialFolder.Personal;
+
+			// Set the help text description for the FolderBrowserDialog.
+			openDir.Description =
+			"Select the folder with Writing Systems";
+
+			// Allow the user to create new files via the FolderBrowserDialog.
+			openDir.ShowNewFolderButton = true;
+
+			// Display the openFile dialog.
+			DialogResult result = openDir.ShowDialog();
+
+			if (result == DialogResult.OK)
+			{
+				var newDir = openDir.SelectedPath;
+
+				var repository = LdmlInFolderWritingSystemRepository.Initialize(newDir,
+					DummyWritingSystemHandler.onMigration,
+					DummyWritingSystemHandler.onLoadProblem);
+				var dlg = new WritingSystemSetupDialog(repository);
+
+				dlg.WritingSystemSuggestor.SuggestVoice = true;
+				dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
+				dlg.Text = String.Format("Writing Systems in folder {0}", newDir);
+
+				dlg.Show();
+			}
+		}
+
+		private void _openGlobal_Click(object sender, EventArgs e)
+		{
+			var dlg = new WritingSystemSetupDialog(GlobalWritingSystemRepository.Instance);
+			dlg.WritingSystemSuggestor.SuggestVoice = true;
+			dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
+			dlg.Text = String.Format("Writing Systems for all users of this computer");
+
+			dlg.Show();
 		}
 
 	}

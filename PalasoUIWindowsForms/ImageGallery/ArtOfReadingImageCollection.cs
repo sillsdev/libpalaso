@@ -7,11 +7,7 @@ using System.Linq;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Linq;
-
-#if MONO
-// FIXME: Would prefer that LinqBridge didn't implement ForEach as per standard
-using Palaso.Linq;
-#endif
+using Palaso.Text;
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
@@ -51,10 +47,10 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 		}
 
-		public IEnumerable<object> GetMatchingPictures(string keywords)
+		public IEnumerable<object> GetMatchingPictures(string keywords, out bool foundExactMatches)
 		{
-			keywords = GetCleanedUpSearchString(keywords);
-			return GetMatchingPictures(keywords.SplitTrimmed(' '));
+			keywords = GetCleanedUpSearchString(keywords.ToLowerInvariant());
+			return GetMatchingPictures(keywords.SplitTrimmed(' '), out foundExactMatches);
 		}
 
 		public string GetCleanedUpSearchString(string keywords)
@@ -98,24 +94,60 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			foreach (var macPath in results)
 			{
 				var path = Path.Combine(RootImagePath, ((string) macPath).Replace(':', Path.DirectorySeparatorChar));
-				if (!limitToThoseActuallyAvailable || File.Exists(path))
+				if (!limitToThoseActuallyAvailable)
+					yield return path;
+
+				if (File.Exists(path))
+				{
+					yield return path;
+				}
+				//the index has the original file names, and were tifs.
+
+				//the re-republished versions (which have embedd3ed metadata and watermarks) start with AOR_ and end with png
+				path =
+					Path.GetDirectoryName(path).CombineForPath("AOR_" + Path.GetFileName(path).Replace(".tif", ".png"));
+
+				if(File.Exists(path))
 				{
 					yield return path;
 				}
 			}
 		}
 
-		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords)
+		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords, out bool foundExactMatches)
 		{
-			List<string> pictures = new List<string>();
-			foreach (var key in keywords)
+			var pictures = new List<string>();
+			foundExactMatches = false;
+			foreach (var term in keywords)
 			{
-				List<string> picturesForThisKey = new List<string>();
+				List<string> picturesForThisKey;
 
-				if (_wordToPartialPathIndex.TryGetValue(key, out picturesForThisKey))
+				//first, try for exact matches
+				if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
 				{
 					pictures.AddRange(picturesForThisKey);
+					foundExactMatches = true;
 				}
+				//then look  for approximate matches
+				else
+				{
+					foundExactMatches = false;
+					var kMaxEditDistance = 1;
+					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
+					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
+																										  term,
+																										  ApproximateMatcherOptions.None,
+																										  kMaxEditDistance);
+
+					if (matches != null && matches.Count > 0)
+					{
+						foreach (var keyValuePair in matches)
+						{
+							pictures.AddRange(keyValuePair.Value);
+						}
+					}
+				}
+
 			}
 			var results = new List<object>();
 			pictures.Distinct().ForEach(p => results.Add(p));
@@ -144,11 +176,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		public static string TryToGetRootImageCatalogPath()
 		{
 			//look for the cd/dvd
-			var cdPath = TryToGetPathToCollectionOnCd();
+/* retire this            var cdPath = TryToGetPathToCollectionOnCd();
 			if (!string.IsNullOrEmpty(cdPath))
 				return cdPath;
-
-			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"ArtOfReading", "images");
+*/
+			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", "images");
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
 
@@ -157,7 +189,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				var unixPaths = new[]
 									{
-										@"c:\art of reading\images", @"/usr/share/wesay/ArtOfReading/images",
+										@"c:\art of reading\images", @"/usr/share/SIL/ArtOfReading/images",
 										@"/var/share/ArtOfReading/images"
 									};
 
@@ -169,7 +201,13 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 			else
 			{
-				var winPaths = new[] {@"c:\art of reading\images", @"c:/ArtOfReading/images"};
+				//look for the folder created by the ArtOfReadingFree installer
+				var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
+
+				//the rest of these are for before we had an installer for AOR
+				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading", "images");
+				var appDataNoSpace = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("ArtOfReading", "images");
+				var winPaths = new[] { aorInstallerTarget,  @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
 
 				foreach (var path in winPaths)
 				{
@@ -188,7 +226,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				try
 				{
-					if (drive.VolumeLabel.Contains("Art Of Reading"))
+					if(drive.IsReady && drive.VolumeLabel.Contains("Art Of Reading"))
 						return Path.Combine(drive.RootDirectory.FullName, "images");
 				}
 				catch (Exception)
@@ -220,6 +258,17 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static string TryToGetPathToIndex()
 		{
+			//look for the folder created by the ArtOfReadingFree installer
+			var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
+			var path = aorInstallerTarget.CombineForPath("index.txt");
+			if (File.Exists(path))
+				return path;
+
+			aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "ArtOfReading");
+			path = aorInstallerTarget.CombineForPath("index.txt");
+			if (File.Exists(path))
+				return path;
+
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}
 	}

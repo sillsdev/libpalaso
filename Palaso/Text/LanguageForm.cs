@@ -1,6 +1,7 @@
 using System;
 using System.Xml.Serialization;
 using Palaso.Annotations;
+using Palaso.Code;
 
 
 namespace Palaso.Text
@@ -34,7 +35,6 @@ namespace Palaso.Text
 			_form =  form;
 		}
 
-
 		//[ReflectorProperty("ws", Required = true)]
 		[XmlAttribute("ws")]
 		public string WritingSystemId
@@ -66,26 +66,23 @@ namespace Palaso.Text
 			get { return _parent; }
 		}
 
-		#region IEquatable<LanguageForm> Members
+		public override bool Equals(object other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (other.GetType() != typeof(LanguageForm)) return false;
+			return Equals((LanguageForm)other);
+		}
 
 		public bool Equals(LanguageForm other)
 		{
-			if (IsStarred != other.IsStarred)
-			{
-				return false;
-			}
-			if (WritingSystemId != other.WritingSystemId)
-			{
-				return false;
-			}
-			if(Form != other.Form)
-			{
-				return false;
-			}
+			if(other == null) return false;
+			if (!IsStarred.Equals(other.IsStarred)) return false;
+			if ((WritingSystemId != null && !WritingSystemId.Equals(other.WritingSystemId)) || (other.WritingSystemId != null && !other.WritingSystemId.Equals(WritingSystemId))) return false;
+			if ((Form != null && !Form.Equals(other.Form)) || (other.Form != null && !other.Form.Equals(Form))) return false;
+			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
 			return true;
 		}
-
-		#endregion
 
 		public int CompareTo(LanguageForm other)
 		{
@@ -100,6 +97,15 @@ namespace Palaso.Text
 			}
 			int formOrder = this.Form.CompareTo(other.Form);
 			return formOrder;
+		}
+
+		public override Annotatable Clone()
+		{
+			var clone = new LanguageForm();
+			clone._writingSystemId = _writingSystemId;
+			clone._form = _form;
+			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			return clone;
 		}
 	}
 }

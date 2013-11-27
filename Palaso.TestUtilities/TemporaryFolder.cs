@@ -19,7 +19,7 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempLiftFile(TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(false)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			if (parentFolder != null)
 			{
@@ -27,8 +27,9 @@ namespace Palaso.TestUtilities
 			}
 			else
 			{
-				_path = System.IO.Path.GetTempFileName() + ".lift";
-				//_path = System.IO.Path.GetRandomFileName() + ".lift";
+				var temp = System.IO.Path.GetTempFileName();
+				_path = temp + ".lift";
+				File.Move(temp, _path);
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
@@ -36,7 +37,7 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(false)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder.Combine(fileName);
 
@@ -45,6 +46,7 @@ namespace Palaso.TestUtilities
 		}
 
 		private TempLiftFile()
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 		}
 
@@ -71,11 +73,13 @@ namespace Palaso.TestUtilities
 		/// Create a tempfile within the given parent folder
 		/// </summary>
 		public TempFileFromFolder(TemporaryFolder parentFolder)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
 		}
 
 		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder.Combine(name);
 			File.WriteAllText(_path, contents);
@@ -116,18 +120,25 @@ namespace Palaso.TestUtilities
 		/// </summary>
 		static public TemporaryFolder TrackExisting(string path)
 		{
-			Debug.Assert(Directory.Exists(path));
-			TemporaryFolder f = new TemporaryFolder();
+			Debug.Assert(Directory.Exists(path), @"TrackExisting given non existant folder to track.");
+			var f = new TemporaryFolder(false);
 			f._path = path;
 			return f;
 		}
 
 		[Obsolete("Go ahead and give it a name related to the test.  Makes it easier to track down problems.")]
 		public TemporaryFolder()
-			: this("unnamedTestFolder")
+			: this(System.IO.Path.GetRandomFileName())
 		{
 		}
 
+		/// <summary>
+		/// Private constructor that doesn't create a file. Used when tracking a pre-existing
+		/// directory.
+		/// </summary>
+		private TemporaryFolder(bool ignored)
+		{
+		}
 
 		public TemporaryFolder(string name)
 		{

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.WritingSystems;
@@ -24,7 +25,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public WritingSystemSuggestor()
 		{
-			OtherKnownWritingSystems = new WritingSystemFromWindowsLocaleProvider();
+			OtherKnownWritingSystems =
+				new WritingSystemFromWindowsLocaleProvider().Union(new List<WritingSystemDefinition>
+																	   {WritingSystemDefinition.Parse("tpi")});
 			SuppressSuggestionsForMajorWorldLanguages=true;
 			SuggestIpa=true;
 			SuggestDialects=true;
@@ -38,13 +41,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		/// </summary>
 		public bool SuppressSuggestionsForMajorWorldLanguages { get; set; }
 
-		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
+		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(IWritingSystemDefinition primary, IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
-			if(string.IsNullOrEmpty(primary.ISO639))
+			if(string.IsNullOrEmpty(primary.Language) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				yield break;
 
 			if(SuppressSuggestionsForMajorWorldLanguages
-			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.ISO639))
+			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.Language))
 				yield break;
 
 			if (SuggestIpa && IpaSuggestion.ShouldSuggest(existingWritingSystemsForLanguage))
@@ -64,18 +67,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 			if (SuggestOther)
 			{
-				yield return new OtherSuggestion(primary);
+				yield return new OtherSuggestion(primary, existingWritingSystemsForLanguage);
 			}
 		}
 
 
-		public IEnumerable<IWritingSystemDefinitionSuggestion> GetOtherLanguageSuggestions(IEnumerable<WritingSystemDefinition> existingDefinitions)
+		public IEnumerable<IWritingSystemDefinitionSuggestion> GetOtherLanguageSuggestions(IEnumerable<IWritingSystemDefinition> existingDefinitions)
 		{
 			if (OtherKnownWritingSystems != null)
 			{
 				foreach (WritingSystemDefinition language in OtherKnownWritingSystems)
 				{
-					if (!existingDefinitions.Any(def => def.RFC5646 == language.RFC5646))
+					if (!existingDefinitions.Any(def => def.Bcp47Tag == language.Bcp47Tag))
 						yield return new LanguageSuggestion(language);
 				}
 			}

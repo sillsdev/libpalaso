@@ -104,10 +104,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
 	{
-		public WritingSystemDefinition Definition { get; set; }
+		public IWritingSystemDefinition Definition { get; set; }
 		protected static Font kExistingItemFont = new Font(SystemFonts.MessageBoxFont.Name, 11);
 
-		public WritingSystemDefinitionTreeItem(WritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
+		public WritingSystemDefinitionTreeItem(IWritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
 			: base(definition.ListLabel, clickAction)
 		{
 			Definition = definition;
@@ -165,6 +165,28 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 
 		public WritingSystemCreateUnknownTreeItem(Action<WritingSystemTreeItem> clickAction)
 			: base("Add Language", clickAction)
+		{
+		}
+
+		protected override Color ForeColor
+		{
+			get { return System.Drawing.Color.DarkBlue; }
+		}
+
+		protected override Font Font
+		{
+			get { return kLabelFont; }
+		}
+		public override bool CanSelect
+		{
+			get { return true; }
+		}
+	}
+
+	public class WritingSystemRenameUnlistedLanguageTreeItem : WritingSystemTreeItem
+	{
+		public WritingSystemRenameUnlistedLanguageTreeItem(Action<WritingSystemTreeItem> clickAction)
+			: base("Change to Listed Language", clickAction)
 		{
 		}
 

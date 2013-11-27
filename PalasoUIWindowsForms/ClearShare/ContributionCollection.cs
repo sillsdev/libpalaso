@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Palaso.ClearShare
+namespace Palaso.UI.WindowsForms.ClearShare
 {	/// ----------------------------------------------------------------------------------------
 	public interface IAutoCompleteValueProviderWeird
 	{
+		/// ------------------------------------------------------------------------------------
 		string GetValueForKey(string key);
 	}
 
@@ -13,9 +14,6 @@ namespace Palaso.ClearShare
 	{
 		/// ------------------------------------------------------------------------------------
 		IEnumerable<string> GetValuesForKey(string key);
-
-		/// <summary>Gives [key, (list of unique values)]</summary>
-		Dictionary<string, IEnumerable<string>> GetValueLists();
 	}
 
 	/// ----------------------------------------------------------------------------------------

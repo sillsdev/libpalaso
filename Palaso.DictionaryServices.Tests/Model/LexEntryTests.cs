@@ -1,12 +1,105 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
+using Palaso.Tests.Code;
+using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Model
 {
+	[TestFixture]
+	public class LexEntryClonableGenericTests:IClonableGenericTests<LexEntry>
+	{
+		public override LexEntry CreateNewClonable()
+		{
+			return new LexEntry();
+		}
+
+		public override string ExceptionList
+		{
+			//_guid: should not be identical to the original
+			//_id: relies on guid and should also not be identical to original
+			//_creationTime: we want the creation time of the clone.. not the original
+			//_modificationTime: the clone is brand new. We don't care when the original was last modified.
+			//_isDirty|_isBeingDeleted|_modificationTimeIsLocked: all management stuff that shouldn't need to be cloned
+			//_listEventHelpers: No good way to clone eventhandlers
+			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
+			//EmptyObjectsRemoved: No good way to clone eventhandlers. The parent should be taking care of this rather than the clone() method.
+			get { return "|_guid|_id|_creationTime|_modificationTime|_isDirty|_isBeingDeleted|_modifiedTimeIsLocked|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
+		}
+
+		protected override List<ValuesToSet> DefaultValuesForTypes
+		{
+			get
+			{
+				var sense = new LexSense();
+				sense.AddRelationTarget("rel", "targ");
+				var unequalSense = new LexSense();
+				unequalSense.AddRelationTarget("rel2", "targ2");
+				return new List<ValuesToSet>
+						   {
+							   new ValuesToSet("to be", "!(to be)"),
+							   new ValuesToSet(42, 7),
+							   new ValuesToSet(
+									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null)}},
+									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null)}}),
+							   new ValuesToSet(
+								   new BindingList<LexSense> {sense},
+								   new BindingList<LexSense> {unequalSense}
+								   ),
+							   new ValuesToSet(
+								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
+								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"!", "to", "be"})}}),
+							   new ValuesToSet(new BindingList<LexNote> {new LexNote("note"), new LexNote("music")}, new BindingList<LexNote> {new LexNote("take no note"), new LexNote("heavy metal")}),
+							   new ValuesToSet(
+								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
+								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"not", "to", "be"})}}),
+							   new ValuesToSet(new BindingList<LexEtymology> { new LexEtymology("one", "eins") }, new BindingList<LexEtymology> { new LexEtymology("two", "zwei") }),
+							   new ValuesToSet(true, false),
+							   new ValuesToSet(
+									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
+											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
+									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
+											new KeyValuePair<string, IPalasoDataObjectProperty>("three", new LexNote()),
+											new KeyValuePair<string, IPalasoDataObjectProperty>("four", new LexNote())}))
+						   };
+			}
+		}
+
+		[Test]
+		public void Clone_NewGuidIsCreatedAndNotZeros()
+		{
+			var entry = new LexEntry();
+			var entry2 = entry.Clone();
+			Assert.That(entry.Guid, Is.Not.EqualTo(entry2.Guid));
+			Assert.That(entry.Guid, Is.Not.EqualTo(Guid.Empty));
+		}
+
+		[Test]
+		public void Clone_ClonedEntryHasId_NewIdIsCreatedForNewEntry()
+		{
+			var entry = new LexEntry();
+			entry.LexicalForm.SetAlternative("en","form");
+			entry.GetOrCreateId(true);
+			var entry2 = entry.Clone();
+			Assert.That(entry2.Id, Is.Not.EqualTo(entry.Id));
+			Assert.That(entry2.Id, Is.Not.Null);
+		}
+
+		[Test]
+		public void Clone_ClonedEntryHasNoId_NoIdIsCreatedForNewEntry()
+		{
+			var entry = new LexEntry();
+			var entry2 = entry.Clone();
+			Assert.That(entry.Id, Is.EqualTo(entry2.Id));
+		}
+	}
+
 	[TestFixture]
 	public class LexEntryTests
 	{
@@ -39,6 +132,197 @@ namespace Palaso.DictionaryServices.Tests.Model
 			_entry.EmptyObjectsRemoved += _entry_EmptyObjectsRemoved;
 			_entry.PropertyChanged += _entry_PropertyChanged;
 			_removed = false;
+		}
+
+		[Test]
+		public void ExampleSentencePropertiesInUse_HasPropertyProp1_ReturnsProp1()
+		{
+			var ex = new LexExampleSentence();
+			ex.GetOrCreateProperty<MultiText>("Prop1");
+			Assert.That(ex.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(3));
+		}
+
+		[Test]
+		public void ExampleSentencePropertiesInUse_HasMultipleProperties_ReturnsProperties()
+		{
+			var ex = new LexExampleSentence();
+			ex.GetOrCreateProperty<MultiText>("Prop1");
+			ex.GetOrCreateProperty<MultiText>("Prop2");
+			Assert.That(ex.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(ex.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(ex.PropertiesInUse.Count(), Is.EqualTo(4));
+		}
+
+		[Test]
+		public void LexSensePropertiesInUse_HasPropertyProp1_ReturnsProp1()
+		{
+			var lexSense = new LexSense();
+			lexSense.GetOrCreateProperty<MultiText>("Prop1");
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void LexSensePropertiesInUse_HasMultipleProperties_ReturnsProperties()
+		{
+			var lexSense = new LexSense();
+			lexSense.GetOrCreateProperty<MultiText>("Prop1");
+			lexSense.GetOrCreateProperty<MultiText>("Prop2");
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LexSensePropertiesInUse_SenseAndMulitipleExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
+		{
+			var ex1 = new LexExampleSentence();
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop1");
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop2");
+			var ex2 = new LexExampleSentence();
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop1");
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop2");
+			var lexSense = new LexSense();
+			lexSense.GetOrCreateProperty<MultiText>("Prop1");
+			lexSense.GetOrCreateProperty<MultiText>("Prop2");
+			lexSense.ExampleSentences.Add(ex1);
+			lexSense.ExampleSentences.Add(ex2);
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex1Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex1Prop2"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex2Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Ex2Prop2"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(lexSense.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(lexSense.PropertiesInUse.Count(), Is.EqualTo(10));
+		}
+
+		[Test]
+		public void LexEntryPropertiesInUse_HasPropertyProp1_ReturnsProp1()
+		{
+			var entry = new LexEntry();
+			entry.GetOrCreateProperty<MultiText>("Prop1");
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void LexEntryPropertiesInUse_HasMultipleProperties_ReturnsProperties()
+		{
+			var entry = new LexEntry();
+			entry.GetOrCreateProperty<MultiText>("Prop1");
+			entry.GetOrCreateProperty<MultiText>("Prop2");
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LexEntryPropertiesInUse_EntryandMultipleSensesAndExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
+		{
+			var ex1 = new LexExampleSentence();
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop1");
+			ex1.GetOrCreateProperty<MultiText>("Ex1Prop2");
+
+			var ex2 = new LexExampleSentence();
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop1");
+			ex2.GetOrCreateProperty<MultiText>("Ex2Prop2");
+
+			var ex3 = new LexExampleSentence();
+			ex3.GetOrCreateProperty<MultiText>("Ex3Prop1");
+			ex3.GetOrCreateProperty<MultiText>("Ex3Prop2");
+
+			var lexSense1 = new LexSense();
+			lexSense1.GetOrCreateProperty<MultiText>("Se1Prop1");
+			lexSense1.GetOrCreateProperty<MultiText>("Se1Prop2");
+
+			var lexSense2 = new LexSense();
+			lexSense2.GetOrCreateProperty<MultiText>("Se2Prop1");
+			lexSense2.GetOrCreateProperty<MultiText>("Se2Prop2");
+
+			var entry = new LexEntry();
+			entry.GetOrCreateProperty<MultiText>("Prop1");
+			entry.GetOrCreateProperty<MultiText>("Prop2");
+
+			entry.Senses.Add(lexSense1);
+			entry.Senses.Add(lexSense2);
+			lexSense1.ExampleSentences.Add(ex1);
+			lexSense1.ExampleSentences.Add(ex2);
+			lexSense2.ExampleSentences.Add(ex3);
+
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex1Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex1Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex2Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex2Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex3Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Ex3Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se1Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se1Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se2Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Se2Prop2"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop1"));
+			Assert.That(entry.PropertiesInUse, Contains.Item("Prop2"));
+			Assert.That(entry.PropertiesInUse.Count(), Is.EqualTo(18));
+		}
+
+		[Test]
+		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoGloss_GivesDefinition()
+		{
+			var sense = new LexSense();
+			sense.Definition.SetAlternative("en", "blue");
+			var entry = new LexEntry();
+			entry.Senses.Add(sense);
+			Assert.AreEqual("blue",entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+		}
+
+		[Test]
+		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoSenses_GivesMessage()
+		{
+			var entry = new LexEntry();
+			Assert.AreEqual("?NoMeaning?", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+		}
+
+		[Test]
+		public void GetSomeMeaningToUseInAbsenseOfHeadWord_GlossAndDef_GivesGloss()
+		{
+			var sense = new LexSense();
+			sense.Gloss.SetAlternative("en", "red");
+			sense.Definition.SetAlternative("en", "blue");
+			var entry = new LexEntry();
+			entry.Senses.Add(sense);
+			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+		}
+
+
+		[Test]
+		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoDef_GivesGloss()
+		{
+			var sense = new LexSense();
+			sense.Gloss.SetAlternative("en", "red");
+			var entry = new LexEntry();
+			entry.Senses.Add(sense);
+			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+		}
+		[Test]
+		public void GetSomeMeaningToUseInAbsenseOfHeadWord_MultipleGlosses_GivesRequestedOne()
+		{
+			var sense = new LexSense();
+			sense.Gloss.SetAlternative("en", "man");
+			sense.Gloss.SetAlternative("fr", "homme");
+			var entry = new LexEntry();
+			entry.Senses.Add(sense);
+			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+			Assert.AreEqual("homme", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("fr"));
+		}
+		[Test]
+		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoGlossOrMeaningInLang_GivesMessage()
+		{
+			var sense = new LexSense();
+			sense.Gloss.SetAlternative("en", "man");
+			var entry = new LexEntry();
+			entry.Senses.Add(sense);
+			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+			Assert.AreEqual("?NoGlossOrDef?", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("fr"));
 		}
 
 		[Test]

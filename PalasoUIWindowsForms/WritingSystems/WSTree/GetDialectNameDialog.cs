@@ -16,10 +16,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 			InitializeComponent();
 		}
 
-		public string DialectName { get
-		{
-			return _dialectName.Text;
-		}
+		public string DialectName {
+			get
+				{
+					return _dialectName.Text;
+				}
 		}
 
 		private void _okButton_Click(object sender, EventArgs e)
