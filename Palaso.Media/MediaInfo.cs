@@ -46,6 +46,10 @@ namespace Palaso.Media
 
 		static public MediaInfo GetInfo(string path)
 		{
+			if(!HaveNecessaryComponents)
+			{
+				return new MediaInfo("Could not locate FFMpeg");
+			}
 			var p = new Process();
 			p.StartInfo.FileName = FFmpegRunner.LocateAndRememberFFmpeg();
 			p.StartInfo.Arguments = ( "-i " + "\""+path+"\"");
@@ -149,7 +153,23 @@ namespace Palaso.Media
 
 			private void ExtractBitDepth(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, @", s(\d+),");
+
+				var match = Regex.Match(ffmpegOutput, @"pcm_s(\d+)");
+				if (match.Groups.Count == 2)
+				{
+					var value = match.Groups[1].Value;
+
+					//todo: find out if we will really get s16, s24, s96, etc.
+					int depth;
+					if (int.TryParse(value, out depth))
+					{
+						BitDepth = depth;
+						return;
+					}
+				}
+				//no pcm found, use the myserious "s24, s32" stuff, which may be misleading
+
+				 match = Regex.Match(ffmpegOutput, @", s(\d+),");
 				if (match.Groups.Count == 2)
 				{
 					var value = match.Groups[1].Value;
@@ -214,10 +234,12 @@ namespace Palaso.Media
 
 			private void ExtractEncoding(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, "Video: ([^,]*)");
+				// DG 201303: ffmpeg gives more info like mpeg4 (Simple Profile)
+				// revert match to "Video: ([^,]*)" if that would be useful
+				var match = Regex.Match(ffmpegOutput, "Video: ([^,^(]*)");
 				if (match.Groups.Count == 2)
 				{
-					Encoding = match.Groups[1].Value;
+					Encoding = match.Groups[1].Value.Trim();
 				}
 			}
 

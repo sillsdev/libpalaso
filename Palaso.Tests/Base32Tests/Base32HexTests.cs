@@ -153,12 +153,11 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void Decode_CharacterNotInAlphabet_throws()
 		{
-			Base32Convert.FromBase32HexString("#y======",
-											  Base32FormattingOptions.
-													  InsertTrailingPadding);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("#y======", Base32FormattingOptions.InsertTrailingPadding)
+			);
 		}
 
 		[Test]
@@ -168,21 +167,18 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void Decode_MisplacedPaddingCharacter_throws()
 		{
-			Base32Convert.FromBase32HexString("m=y======",
-											  Base32FormattingOptions.
-													  InsertTrailingPadding);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("m=y======", Base32FormattingOptions.InsertTrailingPadding)
+			);
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Decode_null_throws()
 		{
-			Base32Convert.FromBase32HexString(null,
-											  Base32FormattingOptions.
-													  InsertTrailingPadding);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.FromBase32HexString(null, Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
@@ -217,42 +213,39 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_1_throws()
 		{
-			Base32Convert.FromBase32HexString("1", Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("1", Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_3_throws()
 		{
-			Base32Convert.FromBase32HexString("123",
-											  Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("123",
+											  Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_WrongNumberOfCharacters_6_throws()
 		{
-			Base32Convert.FromBase32HexString("123456",
-											  Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("123456", Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void Decode_WrongNumberOfPaddingCharacters_throws()
 		{
-			Base32Convert.FromBase32HexString("my=====",
-											  Base32FormattingOptions.
-													  InsertTrailingPadding);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("my=====", Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_CharacterNotInAlphabet_throws()
 		{
-			Base32Convert.FromBase32HexString("#y", Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("#y", Base32FormattingOptions.None));
 		}
 
 		[Test]
@@ -262,18 +255,17 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void DecodeOmitPadding_null_throws()
 		{
-			Base32Convert.FromBase32HexString(null, Base32FormattingOptions.None);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.FromBase32HexString(null, Base32FormattingOptions.None));
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentException))]
 		public void DecodeOmitPadding_PaddingCharacter_throws()
 		{
-			Base32Convert.FromBase32HexString("my======",
-											  Base32FormattingOptions.None);
+			Assert.Throws<ArgumentException>(
+				() => Base32Convert.FromBase32HexString("my======", Base32FormattingOptions.None));
 		}
 
 		[Test]
@@ -314,12 +306,10 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
 		public void Encode_null_throws()
 		{
-			Base32Convert.ToBase32HexString(null,
-											Base32FormattingOptions.
-													InsertTrailingPadding);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.ToBase32HexString(null, Base32FormattingOptions.InsertTrailingPadding));
 		}
 
 		[Test]
@@ -340,10 +330,11 @@ namespace Palaso.Tests.Base32Tests
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof (ArgumentNullException))]
+
 		public void EncodeOmitPadding_null_throws()
 		{
-			Base32Convert.ToBase32HexString(null, Base32FormattingOptions.None);
+			Assert.Throws<ArgumentNullException>(
+				() => Base32Convert.ToBase32HexString(null, Base32FormattingOptions.None));
 		}
 
 		[Test]

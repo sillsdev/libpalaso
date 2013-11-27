@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
+using Palaso.IO;
+using Palaso.Xml;
 
 namespace Palaso.TestUtilities
 {
@@ -17,7 +19,7 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempLiftFile(TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(false)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			if (parentFolder != null)
 			{
@@ -25,7 +27,9 @@ namespace Palaso.TestUtilities
 			}
 			else
 			{
-				_path = System.IO.Path.GetRandomFileName() + ".lift";
+				var temp = System.IO.Path.GetTempFileName();
+				_path = temp + ".lift";
+				File.Move(temp, _path);
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
@@ -33,14 +37,16 @@ namespace Palaso.TestUtilities
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(false)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			_path = parentFolder.Combine(fileName);
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
 			File.WriteAllText(_path, liftContents);
 		}
+
 		private TempLiftFile()
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 		}
 
@@ -61,142 +67,42 @@ namespace Palaso.TestUtilities
 	/// This is useful for unit tests.  When it is disposed, it will delete the file.
 	/// </summary>
 	/// <example>using(f = new TemporaryFile(){}</example>
-	public class TempFile : IDisposable
+	public class TempFileFromFolder : TempFile
 	{
-		protected string _path;
-
-		public TempFile()
-		{
-			_path = System.IO.Path.GetTempFileName();
-		}
-
-		internal TempFile(bool dontMakeMeAFile)
-		{
-		}
-
 		/// <summary>
 		/// Create a tempfile within the given parent folder
 		/// </summary>
-		public TempFile(TemporaryFolder parentFolder)
+		public TempFileFromFolder(TemporaryFolder parentFolder)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
-			if (parentFolder != null)
-			{
-				_path = parentFolder.GetPathForNewTempFile(true);
-			}
-			else
-			{
-				_path = System.IO.Path.GetTempFileName();
-			}
-
+			_path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
 		}
 
-
-		public TempFile(string contents)
-			: this()
+		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
+			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
+			_path = parentFolder.Combine(name);
 			File.WriteAllText(_path, contents);
-		}
-
-		public TempFile(string[] contentLines)
-			: this()
-		{
-			File.WriteAllLines(_path, contentLines);
-		}
-
-		public string Path
-		{
-			get { return _path; }
-		}
-		public void Dispose()
-		{
-			File.Delete(_path);
-		}
-
-		public static TempFile CopyOf(string pathToExistingFile)
-		{
-			TempFile t = new TempFile();
-			File.Copy(pathToExistingFile, t.Path, true);
-			return t;
-		}
-
-		private TempFile(string existingPath, bool dummy)
-		{
-			_path = existingPath;
-		}
-
-		/// <summary>
-		/// Create a TempFile based on a pre-existing file, which will be deleted when this is disposed.
-		/// </summary>
-		public static TempFile TrackExisting(string path)
-		{
-			return new TempFile(path, false);
-		}
-
-		public static TempFile CreateAndGetPathButDontMakeTheFile()
-		{
-			TempFile t = new TempFile();
-			File.Delete(t.Path);
-			return t;
 		}
 
 		public static TempFile CreateXmlFileWithContents(string fileName, TemporaryFolder folder, string xmlBody)
 		{
 			string path = folder.Combine(fileName);
-			using (XmlWriter x = XmlWriter.Create(path))
+			using (var reader = XmlReader.Create(new StringReader(xmlBody)))
 			{
-				x.WriteStartDocument();
-				x.WriteRaw(xmlBody);
+				using (var writer = XmlWriter.Create(path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				{
+					writer.WriteStartDocument();
+					writer.WriteNode(reader, false);
+				}
 			}
 			return new TempFile(path, true);
 		}
 
-		/// <summary>
-		/// Use this one when it's important to have a certain file extension
-		/// </summary>
-		/// <param name="extension">with or with out '.', will work the same</param>
-		public static TempFile WithExtension(string extension)
+		public static TempFile CreateAt(string path, string contents)
 		{
-			extension = extension.TrimStart('.');
-			var path = System.IO.Path.GetRandomFileName() + "."+extension;
-			File.Create(path).Close();
-			return TempFile.TrackExisting(path);
-		}
-
-		/// <summary>
-		/// Used to make a real file out of a resource for the purpose of testing
-		/// </summary>
-		/// <param name="resource">e.g., an audio resource</param>
-		/// <param name="extension">with or with out '.', will work the same</param>
-		public static TempFile FromResource(Stream resource, string extension)
-		{
-			var f = TempFile.WithExtension(extension);
-			byte[] buffer = new byte[resource.Length + 1];
-			resource.Read(buffer, 0, (int)resource.Length);
-			File.WriteAllBytes(f.Path, buffer);
-			return f;
-		}
-
-		/// <summary>
-		/// Used to make a real file out of a resource for the purpose of testing
-		/// </summary>
-		/// <param name="resource">e.g., a video resource</param>
-		/// <param name="extension">with or with out '.', will work the same</param>
-		public static TempFile FromResource(byte[] resource, string extension)
-		{
-			var f = TempFile.WithExtension(extension);
-			File.WriteAllBytes(f.Path, resource);
-			return f;
-		}
-
-		/// <summary>
-		/// Used to move a file to a new path
-		/// </summary>
-		/// <param name="resource">e.g., a video resource</param>
-		/// <param name="extension">with or with out '.', will work the same</param>
-		public void MoveTo(string path)
-		{
-			File.Move(Path, path);
-			_path = path;
+			File.WriteAllText(path, contents);
+			return TrackExisting(path);
 		}
 	}
 
@@ -214,18 +120,25 @@ namespace Palaso.TestUtilities
 		/// </summary>
 		static public TemporaryFolder TrackExisting(string path)
 		{
-			Debug.Assert(Directory.Exists(path));
-			TemporaryFolder f = new TemporaryFolder();
+			Debug.Assert(Directory.Exists(path), @"TrackExisting given non existant folder to track.");
+			var f = new TemporaryFolder(false);
 			f._path = path;
 			return f;
 		}
 
 		[Obsolete("Go ahead and give it a name related to the test.  Makes it easier to track down problems.")]
 		public TemporaryFolder()
-			: this("unnamedTestFolder")
+			: this(System.IO.Path.GetRandomFileName())
 		{
 		}
 
+		/// <summary>
+		/// Private constructor that doesn't create a file. Used when tracking a pre-existing
+		/// directory.
+		/// </summary>
+		private TemporaryFolder(bool ignored)
+		{
+		}
 
 		public TemporaryFolder(string name)
 		{

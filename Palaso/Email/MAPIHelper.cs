@@ -1,5 +1,5 @@
 //from http://www.codeproject.com/cs/internet/SendFileToNET.asp
-
+#if !MONO
 using System;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -135,7 +135,7 @@ namespace Palaso.Email
 		void Cleanup(ref MapiMessage msg)
 		{
 			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
-			int ptr = 0;
+			int ptr;
 
 			if (msg.recips != IntPtr.Zero)
 			{
@@ -184,15 +184,21 @@ namespace Palaso.Email
 			"Invalid edit fields [24]", "Invalid recipients [25]", "Not supported [26]"
 		};
 
-		List<MapiRecipDesc> m_recipients	= new List<MapiRecipDesc>();
-		List<string> m_attachments	= new List<string>();
+		readonly List<MapiRecipDesc> m_recipients	= new List<MapiRecipDesc>();
+		readonly List<string> m_attachments	= new List<string>();
 		int m_lastError;
 
 		const int MAPI_LOGON_UI = 0x00000001;
 		const int MAPI_DIALOG = 0x00000008;
 		const int maxAttachments = 20;
 
-		enum HowTo{MAPI_ORIG=0, MAPI_TO, MAPI_CC, MAPI_BCC};
+		enum HowTo
+		{
+			MAPI_ORIG,
+			MAPI_TO,
+			MAPI_CC,
+			MAPI_BCC
+		};
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -234,3 +240,4 @@ namespace Palaso.Email
 		public IntPtr	entryID;
 	}
 }
+#endif

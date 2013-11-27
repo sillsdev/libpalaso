@@ -1,16 +1,20 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
 
 namespace Palaso.DictionaryServices.Model
 {
-	public sealed class LexExampleSentence: PalasoDataObject
+	public sealed class LexExampleSentence: PalasoDataObject, IClonableGeneric<LexExampleSentence>
 	{
-		private readonly MultiText _sentence;
-		private readonly MultiText _translation;
 		private string _translationType;
 
 		//!!What!! Is this done this way so that we don't end up storing
 		//  the data in the object database?
+		//Answer:
+		//This was done to avoid magic strings for property retrieval That way we can say
+		//lexSentence.GetProperty<MultiText>(LexExampleSentence.WellKnownProperties.ExampleSentence) instead of lexSentence.GetProperty<MultiText>("ExampleSentence") --TA 9/24/2012
 		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
 		{
 			public static string ExampleSentence = "ExampleSentence";
@@ -27,9 +31,10 @@ namespace Palaso.DictionaryServices.Model
 
 		public LexExampleSentence(PalasoDataObject parent): base(parent)
 		{
-			_sentence = new MultiText(this);
-			_translation = new MultiText(this);
-
+			var sentence = GetOrCreateProperty<MultiText>(WellKnownProperties.ExampleSentence);
+			sentence.Parent = this;
+			var translation = GetOrCreateProperty<MultiText>(WellKnownProperties.Translation);
+			translation.Parent = this;
 			WireUpEvents();
 		}
 
@@ -39,21 +44,14 @@ namespace Palaso.DictionaryServices.Model
 		/// </summary>
 		public LexExampleSentence(): this(null) {}
 
-		protected override void WireUpEvents()
-		{
-			base.WireUpEvents();
-			WireUpChild(_sentence);
-			WireUpChild(_translation);
-		}
-
 		public MultiText Sentence
 		{
-			get { return _sentence; }
+			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.ExampleSentence); }
 		}
 
 		public MultiText Translation
 		{
-			get { return _translation; }
+			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Translation); }
 		}
 
 		public override bool IsEmpty
@@ -68,6 +66,35 @@ namespace Palaso.DictionaryServices.Model
 		{
 			get { return _translationType; }
 			set { _translationType = value; }
+		}
+
+		public LexExampleSentence Clone()
+		{
+			var clone = new LexExampleSentence();
+			clone._translationType = _translationType;
+			//We clear the properties here because ExampleSentence comes with ExampleSentence and ExampleTranslation properties on construction
+			//and it's just easier to treat them like any other property on clone
+			clone.Properties.Clear();
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is LexExampleSentence)) return false;
+			return Equals((LexExampleSentence)obj);
+		}
+
+		public bool Equals(LexExampleSentence other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (!base.Equals(other)) return false;
+			if ((_translationType != null && !_translationType.Equals(other._translationType)) || (other._translationType != null && !other._translationType.Equals(_translationType))) return false;
+			return true;
 		}
 	}
 }

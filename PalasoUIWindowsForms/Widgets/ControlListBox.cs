@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.WritingSystems;
 
-namespace Palaso.UI.Widgets
+namespace Palaso.UI.WindowsForms.Widgets
 {
 	public partial class ControlListBox : UserControl
 	{

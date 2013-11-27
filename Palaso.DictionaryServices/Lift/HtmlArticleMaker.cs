@@ -56,7 +56,7 @@ namespace Palaso.DictionaryServices.Lift
 				using (XmlReader reader = XmlReader.Create(entryXmlReader))
 				{
 					StringBuilder builder = new StringBuilder();
-					using (XmlWriter writer = XmlWriter.Create(builder))
+					using (XmlWriter writer = XmlWriter.Create(builder)) // Don't forget to use CanonicalXmlSettings CP 2011-01
 					{
 						_transformer.Transform(reader, _tranformArguments, writer);
 						return builder.ToString();
