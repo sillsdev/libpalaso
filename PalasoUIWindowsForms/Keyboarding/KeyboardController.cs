@@ -502,6 +502,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		}
 
 		/// <summary>
+		/// Returns <c>true</c> if KeyboardController.Initialize() got called before.
+		/// </summary>
+		public static bool IsInitialized { get { return Instance != null; }}
+
+		/// <summary>
 		/// Register the control for keyboarding, optionally providing an event handler for
 		/// a keyboarding adapter. If <paramref ref="eventHandler"/> is <c>null</c> the
 		/// default handler will be used.
