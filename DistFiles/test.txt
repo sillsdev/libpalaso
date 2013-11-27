@@ -1,0 +1,34 @@
+ExifTool Version Number         : 8.96
+File Name                       : test.png
+Directory                       : .
+File Size                       : 1250 bytes
+File Modification Date/Time     : 2012:07:09 09:10:25+10:00
+File Permissions                : rw-rw-rw-
+File Type                       : PNG
+MIME Type                       : image/png
+Image Width                     : 10
+Image Height                    : 10
+Bit Depth                       : 8
+Color Type                      : RGB with Alpha
+Compression                     : Deflate/Inflate
+Filter                          : Adaptive
+Interlace                       : Noninterlaced
+SRGB Rendering                  : Perceptual
+Gamma                           : 2.2
+Pixels Per Unit X               : 3779
+Pixels Per Unit Y               : 3779
+Pixel Units                     : Meters
+Exif Byte Order                 : Big-endian (Motorola, MM)
+X Resolution                    : 72
+Y Resolution                    : 72
+Resolution Unit                 : inches
+Y Cb Cr Positioning             : Centered
+Copyright                       : Copyright ?o?
+XMP Toolkit                     : Image::ExifTool 8.96
+Rights                          : Copyright ?o?
+Collection Name                 : ?o?
+Coded Character Set             : UTF8
+Envelope Record Version         : 4
+Copyright Notice                : Copyright ?o?
+Application Record Version      : 4
+Image Size                      : 10x10

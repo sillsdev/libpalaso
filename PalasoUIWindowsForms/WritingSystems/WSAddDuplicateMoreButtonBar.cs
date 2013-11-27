@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	public partial class WSAddDuplicateMoreButtonBar : UserControl
 	{
-		WritingSystemSetupPM _model;
+		WritingSystemSetupModel _model;
 
 		public WSAddDuplicateMoreButtonBar()
 		{
@@ -15,24 +15,34 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			CreateMoreButtonImage();
 		}
 
-		public void BindToModel(WritingSystemSetupPM model)
+		public void BindToModel(WritingSystemSetupModel model)
 		{
 			Debug.Assert(model != null);
 			if (_model != null)
 			{
 				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= OnCurrentItemUpdated;
 			}
 			_model = model;
 			SetButtonStatus();
 			_model.SelectionChanged += ModelSelectionChanged;
+			_model.CurrentItemUpdated += OnCurrentItemUpdated;
 
 			Disposed += OnDisposed;
+		}
+
+		private void OnCurrentItemUpdated(object sender, EventArgs e)
+		{
+			SetButtonStatus();
 		}
 
 		void OnDisposed(object sender, EventArgs e)
 		{
 			if (_model != null)
+			{
 				_model.SelectionChanged -= ModelSelectionChanged;
+				_model.CurrentItemUpdated -= OnCurrentItemUpdated;
+			}
 		}
 
 		private void CreateMoreButtonImage()
@@ -55,7 +65,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			bool enabled = _model.HasCurrentSelection;
 			_exportMenuItem.Enabled = enabled;
-			_duplicateButton.Enabled = enabled;
+			_duplicateMenuItem.Enabled = enabled;
+			if(enabled)
+			{
+				var label = _model.CurrentDefinition == null ? "" : _model.CurrentDefinition.ListLabel;
+				_duplicateMenuItem.Text = string.Format("Add New Language by Copying {0}", label);
+				_deleteMenuItem.Text = string.Format("Delete {0}...", label);
+				_exportMenuItem.Text = string.Format("Save a Copy of the {0} LDML file...", label);
+			}
 			_deleteMenuItem.Enabled = enabled;
 		}
 

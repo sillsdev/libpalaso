@@ -1,78 +1,156 @@
 using System;
-using System.Configuration;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Forms;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 
 namespace Palaso.Reporting
 {
-	public class ExceptionHandler
+	/// ----------------------------------------------------------------------------------------
+	public abstract class ExceptionHandler
 	{
-		private static ExceptionHandler _singleton=null;
+		/// ------------------------------------------------------------------------------------
+		public delegate void CancelExceptionHandlingEventHandler(object sender, CancelExceptionHandlingEventArgs e);
 
+		private readonly HashSet<CancelExceptionHandlingEventHandler> _errorHandlerDelegates =
+			new HashSet<CancelExceptionHandlingEventHandler>();
+
+		private static ExceptionHandler _singleton;
+
+		/// ------------------------------------------------------------------------------------
+		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
+		//Not wanting to break existing applications we have now added this class initializer which will
+		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//ExceptionHandler from there through Reflection. Otherwise we will simply use a console
+		//exception handler
+		/// <summary>
+		/// Initialize the ExceptionHandler. By default, the exceptionhandler will be initialized with a ConsoleExceptionHandler
+		/// unless he entry assembly uses a dependency on PalasoUIWinForms.dll. In that case we default to the WinFormsExceptionHandler
+		/// </summary>
 		public static void Init()
 		{
 			if (_singleton == null)
 			{
-				_singleton = new ExceptionHandler();
+				//If we can't find the WinFormsExceptionHandler we'll use the Console
+				_singleton = GetObjectFromPalasoUiWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
 			}
+			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
 		}
 
-		protected ExceptionHandler()
-		{
-
-			 // Set exception handler. Needs to be done before we create splash screen
-			// (don't understand why, but otherwise some exceptions don't get caught)
-			// Using Application.ThreadException rather than
-			// AppDomain.CurrentDomain.UnhandledException has the advantage that the program
-			// doesn't necessarily ends - we can ignore the exception and continue.
-			Application.ThreadException += new ThreadExceptionEventHandler(HandleTopLevelError);
-
-			// we also want to catch the UnhandledExceptions for all the cases that
-			// ThreadException don't catch, e.g. in the startup.
-			AppDomain.CurrentDomain.UnhandledException +=
-				new UnhandledExceptionEventHandler(HandleUnhandledException);
-		}
-
-		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Catches and displays otherwise unhandled exception, especially those that happen
-		/// during startup of the application before we show our main window.
+		/// Use this method if you want to use an exeption handler besides the default.
+		/// This method should be called only once
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		/// ------------------------------------------------------------------------------------
-		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		/// <param name="handler"></param>
+		public static void Init(ExceptionHandler handler)
 		{
-			if (e.ExceptionObject is Exception)
-				DisplayError(e.ExceptionObject as Exception);
-			else
-				DisplayError(new ApplicationException("Got unknown exception"));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Catches and displays a otherwise unhandled exception.
-		/// </summary>
-		/// <param name="sender">sender</param>
-		/// <param name="eventArgs">Exception</param>
-		/// <remarks>previously <c>AfApp::HandleTopLevelError</c></remarks>
-		/// ------------------------------------------------------------------------------------
-		protected void HandleTopLevelError(object sender, ThreadExceptionEventArgs eventArgs)
-		{
-			if (DisplayError(eventArgs.Exception))
+			if (_singleton == null)
 			{
-				//Are we inside a Application.Run() statement?
-				if (System.Windows.Forms.Application.MessageLoop)
+				_singleton = handler;
+			}
+			else{throw new InvalidOperationException("An ExceptionHandler has already been set.");}
+		}
+
+		/// <summary>
+		/// Get all the types we can load from the assembly.
+		/// In case we can't load a particular type (e.g., TextBoxSpellChecker, because the
+		/// application doesn't use it and is not installing Enchant.dll), just skip it.
+		/// </summary>
+		/// <returns>The types loaded.</returns>
+		/// <param name="assembly">Assembly.</param>
+		internal static Type[] GetLoadableTypes(Assembly assembly)
+		{
+			Type[] types;
+			try
+			{
+				types = assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				types = e.Types.Where(t => t != null).ToArray();
+			}
+
+			return types;
+		}
+
+		internal static T GetObjectFromPalasoUiWindowsForms<T>() where T : class
+		{
+			const string palasoUiWindowsFormsAssemblyName = "PalasoUIWindowsForms";
+
+			var topMostAssembly = Assembly.GetEntryAssembly();
+			if (topMostAssembly != null)
+			{
+				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
+				var palasoUiWindowsFormsInitializeAssemblyName =
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
+				if (palasoUiWindowsFormsInitializeAssemblyName != null)
 				{
-					System.Windows.Forms.Application.Exit();
-				}
-				else
-				{
-					System.Environment.Exit(1); //the 1 here is just non-zero
+					var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
+					//TomB: this comment (presumably an idea for future enhancement) was in both versions of the code from which
+					// this method was created, even though it really only seems to apply to the one that was formerly in
+					// ErrorReport: "Make this go find the actual winFormsErrorReporter as opposed to looking for the interface"
+					// Not sure exactly what the author of that comment had in mind (perhaps to look for an explicit type name),
+					// but now that this method is called from two different places, it might be harder to do this.
+					var interfaceToFind = typeof(T);
+					var typeImplementingInterface = GetLoadableTypes(toInitializeAssembly).FirstOrDefault(
+						t =>
+						{
+						try
+						{
+							// Even though we supposedly filtered all the types we can't load,
+							// we STILL get an exception here when Enchant.dll is missing.
+							// (Nor is just this check enough...GetTypes() indeed throws also.
+							return interfaceToFind.IsAssignableFrom(t);
+						}
+						catch(System.TypeLoadException)
+						{
+							return false;
+						}
+						});
+					if (typeImplementingInterface != null)
+					{
+						var winFormsExceptionHandlerConstructor = typeImplementingInterface.GetConstructor(Type.EmptyTypes);
+						if (winFormsExceptionHandlerConstructor != null)
+						{
+							return winFormsExceptionHandlerConstructor.Invoke(null) as T;
+						}
+					}
 				}
 			}
+			return null;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public static bool Suspend { set; get; }
+
+		/// ------------------------------------------------------------------------------------
+		public static bool AddDelegate(CancelExceptionHandlingEventHandler errorHandlerDelegate)
+		{
+			return (errorHandlerDelegate != null && _singleton != null &&
+				_singleton._errorHandlerDelegates.Add(errorHandlerDelegate));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public static bool RemoveDelegate(CancelExceptionHandlingEventHandler errorHandlerDelegate)
+		{
+			return (_singleton != null && _singleton._errorHandlerDelegates.Remove(errorHandlerDelegate));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		protected bool GetShouldHandleException(object sender, Exception error)
+		{
+			if (Suspend)
+				return false;
+
+			foreach (var errHandler in _errorHandlerDelegates)
+			{
+				var args = new CancelExceptionHandlingEventArgs(error);
+				errHandler(sender, args);
+				if (args.Cancel)
+					return false;
+			}
+
+			return true;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -100,24 +178,7 @@ namespace Palaso.Reporting
 		/// in the &lt;appSettings> section of the .config file (see MSDN for details).
 		/// </remarks>
 		/// ------------------------------------------------------------------------------------
-		protected static bool ShowUI
-		{
-			get
-			{
-				string strShowUI =
-					ConfigurationManager.AppSettings["ShowUI"];
-				bool fShowUI = true;
-				try
-				{
-					if (strShowUI != null)
-						fShowUI = Convert.ToBoolean(strShowUI);
-				}
-				catch
-				{
-				}
-				return fShowUI;
-			}
-		}
+		protected abstract bool ShowUI { get; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -126,83 +187,19 @@ namespace Palaso.Reporting
 		/// <param name="exception">The exception.</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		protected static bool DisplayError(Exception exception)//, Form parent)
+		protected abstract bool DisplayError(Exception exception);
+	}
+
+	/// ----------------------------------------------------------------------------------------
+	public class CancelExceptionHandlingEventArgs : CancelEventArgs
+	{
+		/// ------------------------------------------------------------------------------------
+		public Exception Exception { get; private set; }
+
+		/// ------------------------------------------------------------------------------------
+		public CancelExceptionHandlingEventArgs(Exception error)
 		{
-			try
-			{
-				// To disable displaying a message box, put
-				// <add key="ShowUI" value="False"/>
-				// in the <appSettings> section of the .config file (see MSDN for details).
-				bool showUI = ShowUI;
-
-				if (exception.InnerException != null)
-				{
-					Debug.WriteLine(String.Format("Exception: {0} {1}", exception.Message, exception.InnerException.Message));
-					Logger.WriteEvent("Exception: {0} {1}", exception.Message, exception.InnerException.Message);
-				}
-				else
-				{
-					Debug.WriteLine(String.Format("Exception: {0}", exception.Message));
-					Logger.WriteEvent("Exception: {0}", exception.Message);
-				}
-
-				if (exception is ExternalException
-					&& (uint)(((ExternalException)exception).ErrorCode) == 0x8007000E) // E_OUTOFMEMORY
-				{
-					if (showUI)
-						ExceptionReportingDialog.ReportException(exception);//, parent);
-					else
-					{
-						Trace.Fail("Out of memory");
-						//                        Trace.Assert(false, FwApp.GetResourceString("kstidMiscError"),
-						//                            FwApp.GetResourceString("kstidOutOfMemory"));
-					}
-				}
-				else
-				{
-					Debug.Assert(exception.Message != string.Empty || exception is COMException,
-						"Oops - we got an empty exception description. Change the code to handle that!");
-
-					if (showUI)
-					{
-						// bool fIsLethal = !(exception is Reporting.ConfigurationException);
-						//ErrorReporter.ReportException(exception, parent, fIsLethal);
-						ExceptionReportingDialog.ReportException(exception);
-						return false;
-					}
-					else
-					{
-						//todo: the reporting component should do all this, too
-						/*                       Exception innerE = ExceptionHelper.GetInnerMostException(exception);
-											   string strMessage = "Error: "; // FwApp.GetResourceString("kstidProgError") + FwApp.GetResourceString("kstidFatalError");
-											   string strVersion;
-											   Assembly assembly = Assembly.GetEntryAssembly();
-											   object[] attributes = null;
-											   if (assembly != null)
-												   attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-											   if (attributes != null && attributes.Length > 0)
-												   strVersion = ((AssemblyFileVersionAttribute)attributes[0]).Version;
-											   else
-												   strVersion = Application.ProductVersion;
-											   string strReport = string.Format(
-												   "Got Exception", //"FwApp.GetResourceString("kstidGotException"),
-												   "errors@wesay.org", //"FwApp.GetResourceString("kstidSupportEmail"),
-
-												   exception.Source, strVersion,
-												   ExceptionHelper.GetAllExceptionMessages(exception), innerE.Source,
-												   innerE.TargetSite.Name, ExceptionHelper.GetAllStackTraces(exception));
-											   Trace.Assert(false, strMessage, strReport);
-						*/
-
-						Debug.Fail(exception.Message);
-					}
-				}
-			}
-			catch(Exception e)
-			{
-				Debug.Fail("This errror could be reported normally: ",exception.Message);
-			}
-			return true;
+			Exception = error;
 		}
 	}
 }

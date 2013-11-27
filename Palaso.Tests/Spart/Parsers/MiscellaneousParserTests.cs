@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
-using Spart.Debug;
 using Spart.Parsers;
 using Spart.Parsers.NonTerminal;
 using Spart.Scanners;
 
-namespace Spart.Tests
+namespace Palaso.Tests.Spart.Parsers
 {
 	[TestFixture]
 	public class MiscellaneousParserTests

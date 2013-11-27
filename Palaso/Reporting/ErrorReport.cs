@@ -2,17 +2,66 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Forms;
+using Palaso.Reporting;
+
 
 namespace Palaso.Reporting
 {
+	public interface IErrorReporter
+	{
+		void ReportFatalException(Exception e);
+		ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+										string alternateButton1Label,
+										ErrorResult resultIfAlternateButtonPressed,
+										string message);
+		void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy);
+		void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args);
+		void ReportNonFatalMessageWithStackTrace(string message, params object[] args);
+		void ReportFatalMessageWithStackTrace(string message, object[] args);
+	}
+
+	public enum ErrorResult
+	{
+		None,
+		OK,
+		Cancel,
+		Abort,
+		Retry,
+		Ignore,
+		Yes,
+		No
+	}
+
 	public class ErrorReport
 	{
+		private static IErrorReporter _errorReporter;
+
+		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
+		//Not wanting to break existing applications we have now added this class initializer which will
+		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//WinformsErrorReporter from there through Reflection. otherwise we will simply use a console
+		//error reporter
+		static ErrorReport()
+		{
+			_errorReporter = ExceptionHandler.GetObjectFromPalasoUiWindowsForms<IErrorReporter>() ?? new ConsoleErrorReporter();
+		}
+
+		/// <summary>
+		/// Use this method if you want to override the default IErrorReporter.
+		/// This method should normally be called only once at application startup.
+		/// </summary>
+		public static void SetErrorReporter(IErrorReporter reporter)
+		{
+			_errorReporter = reporter ?? new ConsoleErrorReporter();
+		}
+
 		protected static string s_emailAddress = null;
 		protected static string s_emailSubject = "Exception Report";
 
@@ -26,6 +75,12 @@ namespace Palaso.Reporting
 		private static bool s_justRecordNonFatalMessagesForTesting=false;
 		private static string s_previousNonFatalMessage;
 		private static Exception s_previousNonFatalException;
+
+		public static void Init(string emailAddress)
+		{
+			s_emailAddress = emailAddress;
+			ErrorReport.AddStandardProperties();
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -130,12 +185,15 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				object attr = GetAssemblyAttribute(typeof (AssemblyFileVersionAttribute));
+/*                object attr = GetAssemblyAttribute(typeof (AssemblyFileVersionAttribute));
 				if (attr != null)
 				{
 					return ((AssemblyFileVersionAttribute) attr).Version;
 				}
 				return Application.ProductVersion;
+ */
+				var ver = Assembly.GetEntryAssembly().GetName().Version;
+				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
 			}
 		}
 
@@ -143,17 +201,19 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				string v = VersionNumberString;
-				string build = v.Substring(v.LastIndexOf('.') + 1);
-				string label = "";
-				object attr = GetAssemblyAttribute(typeof (AssemblyProductAttribute));
-				if (attr != null)
-				{
-					label = ((AssemblyProductAttribute) attr).Product + ", ";
-				}
+				var asm = Assembly.GetEntryAssembly();
+				var ver = asm.GetName().Version;
+				var file = asm.CodeBase.Replace("file:", string.Empty);
+				file = file.TrimStart('/');
+				var fi = new FileInfo(file);
 
-				//return "Version 1 Preview, build " + build;
-				return label + "build " + build;
+				return string.Format(
+					"Version {0}.{1}.{2} Built on {3}",
+					ver.Major,
+					ver.Minor,
+					ver.Build,
+					fi.CreationTime.ToString("dd-MMM-yyyy")
+				);
 			}
 		}
 
@@ -202,7 +262,7 @@ namespace Palaso.Reporting
 			public void Dispose()
 			{
 				s_justRecordNonFatalMessagesForTesting= previousJustRecordNonFatalMessagesForTesting;
-				if (s_previousNonFatalMessage == null)
+				if (s_previousNonFatalException == null &&  s_previousNonFatalMessage == null)
 					throw new Exception("Non Fatal Error Report was expected but wasn't generated.");
 				s_previousNonFatalMessage = null;
 			}
@@ -283,12 +343,74 @@ namespace Palaso.Reporting
 			AddProperty("CommandLine", Environment.CommandLine);
 			AddProperty("CurrentDirectory", Environment.CurrentDirectory);
 			AddProperty("MachineName", Environment.MachineName);
-			AddProperty("OSVersion", Environment.OSVersion.ToString());
+			AddProperty("OSVersion", GetOperatingSystemLabel());
 			AddProperty("DotNetVersion", Environment.Version.ToString());
 			AddProperty("WorkingSet", Environment.WorkingSet.ToString());
 			AddProperty("UserDomainName", Environment.UserDomainName);
 			AddProperty("UserName", Environment.UserName);
 			AddProperty("Culture", CultureInfo.CurrentCulture.ToString());
+		}
+
+		class Version
+		{
+			private readonly PlatformID _platform;
+			private readonly int _major;
+			private readonly int _minor;
+			public string Label { get; private set; }
+
+			public Version(PlatformID platform, int minor, int major,  string label)
+			{
+				_platform = platform;
+				_major = major;
+				_minor = minor;
+				Label = label;
+			}
+			public bool Match(OperatingSystem os)
+			{
+				return os.Version.Minor == _minor &&
+					   os.Version.Major == _major &&
+					   os.Platform == _platform;
+			}
+		}
+
+		public static string GetOperatingSystemLabel()
+		{
+			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc");
+				startInfo.RedirectStandardOutput = true;
+				startInfo.UseShellExecute = false;
+				var proc = new Process { StartInfo = startInfo };
+				try
+				{
+					proc.Start();
+					proc.WaitForExit(500);
+					if(proc.ExitCode == 0)
+					{
+						var si = proc.StandardOutput.ReadLine();
+						var sr = proc.StandardOutput.ReadLine();
+						var sc = proc.StandardOutput.ReadLine();
+						return String.Format("{0} {1} {2}", si, sr, sc);
+					}
+				}
+				catch(Exception)
+				{ /*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */ }
+			}
+			else
+			{
+			var list = new List<Version>();
+			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
+			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
+			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
+			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
+			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
+			foreach (var version in list)
+			{
+				if(version.Match(System.Environment.OSVersion))
+					return version.Label + " " + Environment.OSVersion.ServicePack;
+			}
+			}
+			return System.Environment.OSVersion.VersionString;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -311,14 +433,10 @@ namespace Palaso.Reporting
 			return x;
 		}
 
-		public static void ReportFatalException(Exception e)
+		public static void ReportFatalException(Exception error)
 		{
-			ExceptionReportingDialog.ReportException(e, null);
-		}
-
-		public static void ReportFatalException(Exception e, Form parentForm)
-		{
-			ExceptionReportingDialog.ReportException(e, parentForm);
+			UsageReporter.ReportException(true, null, error, null);
+			_errorReporter.ReportFatalException(error);
 		}
 
 		/// <summary>
@@ -330,76 +448,68 @@ namespace Palaso.Reporting
 			NotifyUserOfProblem(new ShowAlwaysPolicy(), message, args);
 		}
 
-		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
+		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
 		{
-			return NotifyUserOfProblem(policy, null, default(DialogResult), messageFmt, args);
+			return NotifyUserOfProblem(policy, null, default(ErrorResult), messageFmt, args);
 		}
 
-		public static DialogResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
+		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
+		{
+			NotifyUserOfProblem(new ShowAlwaysPolicy(), error, messageFmt, args);
+		}
+
+		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
+		{
+			var result = NotifyUserOfProblem(policy, "Details", ErrorResult.Yes, messageFmt, args);
+			if (result == ErrorResult.Yes)
+			{
+				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
+			}
+
+			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
+		}
+
+		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 									string alternateButton1Label,
-									DialogResult resultIfAlternateButtonPressed,
+									ErrorResult resultIfAlternateButtonPressed,
 									string messageFmt,
 									params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
-			if (!policy.ShouldShowMessage(message))
-			{
-				return DialogResult.OK;
-			}
-
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
-				ErrorReport.s_previousNonFatalMessage = message;
-				return DialogResult.OK;
+				s_previousNonFatalMessage = message;
+				return ErrorResult.OK;
 			}
-			else if (ErrorReport.IsOkToInteractWithUser)
-			{
-				var dlg = new ProblemNotificationDialog(message, UsageReporter.AppNameToUseInDialogs + " Problem")
-				{
-					ReoccurenceMessage = policy.ReoccurenceMessage
-
-				};
-				if(!string.IsNullOrEmpty(alternateButton1Label))
-				{
-					dlg.EnableAlternateButton1(alternateButton1Label, resultIfAlternateButtonPressed);
-				}
-				return dlg.ShowDialog();
-			}
-			else
-			{
-				throw new ProblemNotificationSentToUserException(message);
-			}
+			return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
 		}
 
 		/// <summary>
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// </summary>
+		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
+		{
+			_errorReporter.ReportNonFatalExceptionWithMessage(error, message, args);
+		}
+
+		/// <summary>
+		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Use this one only when you don't have an exception (else you're not reporting the exception's message)
+		/// </summary>
 		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
-//            try
-//            {
-//                throw new ApplicationException(string.Format(message, args));
-//            }
-//            catch (Exception e)
-//            {
-//                ReportNonFatalException(e);
-//            }
-			var s = string.Format(message, args);
-			var stack =  new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s,stack, false);
+			_errorReporter.ReportNonFatalMessageWithStackTrace(message, args);
 		}
 		/// <summary>
 		/// Bring up a "green box" that let's them send in a report, then exit.
 		/// </summary>
 		public static void ReportFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			var s = string.Format(message, args);
-			var stack = new System.Diagnostics.StackTrace(true);
-			ExceptionReportingDialog.ReportMessage(s, stack, false);
+			_errorReporter.ReportFatalMessageWithStackTrace(message, args);
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// </summary>
 		public static void ReportNonFatalException(Exception exception)
 		{
@@ -411,29 +521,26 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
 		{
-			if(s_justRecordNonFatalMessagesForTesting)
+			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				ErrorReport.s_previousNonFatalException = exception;
 				return;
 			}
-			 if(policy.ShouldShowErrorReportDialog(exception))
-			{
-				if (ErrorReport.IsOkToInteractWithUser)
-				{
-					   ExceptionReportingDialog.ReportException(exception, null, false);
-				}
-				else
-				{
-					throw new NonFatalExceptionWouldHaveBeenMessageShownToUserException(exception);
-				}
-			}
+			_errorReporter.ReportNonFatalException(exception, policy);
+			 UsageReporter.ReportException(false, null, exception, null);
 		}
 
+		/// <summary>
+		/// this is for interacting with test code which doesn't want to allow an actual UI
+		/// </summary>
 		public class ProblemNotificationSentToUserException : ApplicationException
 		{
 			public ProblemNotificationSentToUserException(string message) : base(message) {}
 		}
 
+		/// <summary>
+		/// this is for interacting with test code which doesn't want to allow an actual UI
+		/// </summary>
 		public class NonFatalExceptionWouldHaveBeenMessageShownToUserException : ApplicationException
 		{
 			public NonFatalExceptionWouldHaveBeenMessageShownToUserException(Exception e)  : base(e.Message, e) { }
@@ -489,6 +596,11 @@ namespace Palaso.Reporting
 		public string ReoccurenceMessage
 		{
 			get { return "This message will not be shown again this session."; }
+		}
+
+		public static void Reset()
+		{
+			_alreadyReportedMessages.Clear();
 		}
 	}
 }

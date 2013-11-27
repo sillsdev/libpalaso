@@ -26,7 +26,7 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using Palaso;
+using Palaso.EventsAndDelegates;
 
 namespace Rhino.Commons
 {
@@ -89,7 +89,7 @@ namespace Rhino.Commons
 	/// </summary>
 	public class DisposableAction : IDisposable
 	{
-		Proc _action;
+		readonly Proc _action;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DisposableAction"/> class.

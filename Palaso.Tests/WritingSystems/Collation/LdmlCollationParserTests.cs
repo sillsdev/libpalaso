@@ -465,11 +465,28 @@ namespace Palaso.Tests.WritingSystems.Collation
 			Assert.AreEqual("& \\(", icu);
 		}
 
-		[Test, ExpectedException(typeof(ApplicationException))]
+		[Test]
+		public void IcuEscapedCharacter_ProducesCorrectEscapeSequence()
+		{
+			_collationXml = "<rules><reset>\\(</reset></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& \\(", icu);
+		}
+
+		[Test]
+		public void IcuUnicodeEscapes_ProducesCorrectSequence()
+		{
+			_collationXml = "<rules><reset>\\u0062</reset><p>\\U00000061</p></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& \\u0062 < \\U00000061", icu);
+		}
+
+		[Test]
 		public void InvalidLdml_Throws()
 		{
 			_collationXml = "<rules><m>a</m></rules>";
-			LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.Throws<ApplicationException>(
+				() => LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml));
 		}
 
 		[Test]
@@ -495,6 +512,15 @@ namespace Palaso.Tests.WritingSystems.Collation
 			string simple;
 			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
 			Assert.AreEqual(string.Empty, simple);
+		}
+
+		[Test]
+		public void WhiteSpace_IsIgnored()
+		{
+			_collationXml = "<rules>\r\n<reset before=\"primary\">\r\n<first_non_ignorable />\r\n</reset>\r\n<p>a</p>\r\n<sc>bcd</sc>\r\n</rules>";
+			string simple;
+			Assert.IsTrue(LdmlCollationParser.TryGetSimpleRulesFromCollationNode(_collationXml, out simple));
+			Assert.AreEqual("a b c d", simple);
 		}
 
 		[Test]

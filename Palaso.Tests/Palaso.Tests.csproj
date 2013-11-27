@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -13,58 +14,154 @@
 	</FileUpgradeFlags>
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
-	<OldToolsVersion>2.0</OldToolsVersion>
+	<OldToolsVersion>3.5</OldToolsVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+	<PublishUrl>publish\</PublishUrl>
+	<Install>true</Install>
+	<InstallFrom>Disk</InstallFrom>
+	<UpdateEnabled>false</UpdateEnabled>
+	<UpdateMode>Foreground</UpdateMode>
+	<UpdateInterval>7</UpdateInterval>
+	<UpdateIntervalUnits>Days</UpdateIntervalUnits>
+	<UpdatePeriodically>false</UpdatePeriodically>
+	<UpdateRequired>false</UpdateRequired>
+	<MapFileExtensions>true</MapFileExtensions>
+	<ApplicationRevision>0</ApplicationRevision>
+	<ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+	<IsWebBootstrapper>false</IsWebBootstrapper>
+	<UseApplicationTrust>false</UseApplicationTrust>
+	<BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\Debug\</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
+	<LangVersion>default</LangVersion>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\Release\</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\Mono Debug\</OutputPath>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mono Release|AnyCPU' ">
-	<OutputPath>..\output\Mono Release\</OutputPath>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<LangVersion>default</LangVersion>
+	<ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+	<OutputPath>bin\x86\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|x86' ">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\DebugMono\</OutputPath>
+	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|x86' ">
+	<OutputPath>bin\x86\ReleaseMono\</OutputPath>
+	<DefineConstants>TRACE;MONO</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+	<Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
+	<Reference Include="System.Core">
+	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
+	</Reference>
 	<Reference Include="System.Data" />
+	<Reference Include="System.Drawing" />
+	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="NDesk.DBus" Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="Annotations\AnnotatableTests.cs" />
 	<Compile Include="Base32Tests\Base32HexTests.cs" />
 	<Compile Include="Base32Tests\Base32Tests.cs" />
 	<Compile Include="Base32Tests\Permuter.cs" />
-	<Compile Include="Extensions\StringExtensions.cs" />
-	<Compile Include="IO\FileUtil.Tests.cs" />
+	<Compile Include="Code\IClonableGenericTests.cs" />
+	<Compile Include="Data\RecordTokenComparerTests.cs" />
+	<Compile Include="Data\DictionaryContentAsserter.cs" />
+	<Compile Include="Data\DictionaryEqualityComparerTests.cs" />
+	<Compile Include="Data\IRepositoryTests.cs" />
+	<Compile Include="Data\MemoryRepositoryTests.cs" />
+	<Compile Include="Data\PreciseDateTimeTests.cs" />
+	<Compile Include="Data\RecordTokenTests.cs" />
+	<Compile Include="Data\ResultSetTests.cs" />
+	<Compile Include="Data\PalasoTestItem.cs" />
+	<Compile Include="Data\TestRepositoryId.cs" />
+	<Compile Include="Extensions\ByteArrayExtensionTests.cs" />
+	<Compile Include="Extensions\DateTimeExtensionTests.cs" />
+	<Compile Include="Extensions\StringExtensionTests.cs" />
+	<Compile Include="i18n\StringCatalogTests.cs" />
+	<Compile Include="IO\DirectoryUtilitiesTests.cs" />
+	<Compile Include="IO\FileLocatorTests.cs" />
+	<Compile Include="IO\FileUtilsTests.cs" />
+	<Compile Include="IO\TempFileTests.cs" />
+	<Compile Include="Migration\DefaultVersionTests.cs" />
+	<Compile Include="Migration\FileMigratorTests.cs" />
+	<Compile Include="Migration\XmlReaderWriterMigratorTests.cs" />
+	<Compile Include="Migration\XPathVersionTests.cs" />
+	<Compile Include="Migration\XslMigratorTests.cs" />
+	<Compile Include="Misc\GuardAgainstReentry.cs" />
+	<Compile Include="Network\RobustNetworkOperation.Tests.cs" />
+	<Compile Include="Progress\CommandLineRunnerTests.cs" />
+	<Compile Include="Progress\MultiProgressTests.cs" />
 	<Compile Include="Progress\Commands\CommandTests.cs" />
 	<Compile Include="Progress\ConsoleProgressTests.cs" />
+	<Compile Include="reporting\AnalyticsEventSenderTests.cs" />
+	<Compile Include="reporting\ErrorReportTests.cs" />
 	<Compile Include="reporting\UsageReporter.Tests.cs" />
 	<Compile Include="SFMReaderTest.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,19 +184,45 @@
 	<Compile Include="Text\ApproximateMatcherTests.cs" />
 	<Compile Include="Text\LanguageFormTest.cs" />
 	<Compile Include="Text\MultiTextBase.Tests.cs" />
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDeviceTests.cs" />
+	<Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisksTests.cs" />
 	<Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />
 	<Compile Include="WritingSystems\Collation\AddSortKeysToXmlTests.cs" />
 	<Compile Include="WritingSystems\Collation\IcuRulesParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\LdmlCollationParserTests.cs" />
 	<Compile Include="WritingSystems\Collation\SimpleRulesCollatorTests.cs" />
+	<Compile Include="WritingSystems\Collation\SortingTests.cs" />
 	<Compile Include="WritingSystems\Collation\SystemCollatorTests.cs" />
-	<Compile Include="WritingSystems\IWritingSystemStore.Tests.cs" />
-	<Compile Include="WritingSystems\LdmlAdaptorTests.cs" />
-	<Compile Include="WritingSystems\LdmlInFolderWritingSystemCollection.Tests.cs" />
-	<Compile Include="WritingSystems\LdmlInStreamWritingSystemCollection.Tests.cs" />
+	<Compile Include="WritingSystems\EthnologueLookupTests.cs" />
+	<Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
+	<Compile Include="WritingSystems\DefaultKeyboardDefinitionTests.cs" />
+	<Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
+	<Compile Include="WritingSystems\Migration\Rfc5646TagCleanerTests.cs" />
+	<Compile Include="WritingSystems\Migration\LdmlAdaptorV0Tests.cs" />
+	<Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
+	<Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetterTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemOrphanFinderTests.cs" />
+	<Compile Include="WritingSystems\RFC5646TagTests.cs" />
+	<Compile Include="WritingSystems\StandardTagsTests.cs" />
+	<Compile Include="WritingSystems\SubTagTests.cs" />
+	<Compile Include="WritingSystems\GlobalWritingSystemRepositoryTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemChangeLogDataMapperTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemChangeLogTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemChangeTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionVariantTests.cs" />
+	<Compile Include="WritingSystems\IWritingSystemRepositoryTests.cs" />
+	<Compile Include="WritingSystems\LdmlDataMapperTests.cs" />
+	<Compile Include="WritingSystems\LdmlInFolderWritingSystemRepositoryTests.cs" />
+	<Compile Include="WritingSystems\LdmlInStreamWritingSystemRepositoryTests.cs" />
 	<Compile Include="WritingSystems\LdmlNodeComparerTests.cs" />
-	<Compile Include="WritingSystems\WritingSystem.Property.Tests.cs" />
-	<Compile Include="XmlHelpers.Tests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionPropertyTests.cs" />
+	<Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
+	<Compile Include="Xml\XmlUtilsTests.cs" />
+	<Compile Include="Xml\XmlWriterExtensionsTests.cs" />
+	<Compile Include="Xml\XmlNodeExtensionsTests.cs" />
+	<Compile Include="Xml\FastXmlElementSplitterTests.cs" />
+	<Compile Include="Xml\XmlHelpers.Tests.cs" />
+	<Compile Include="Progress\StringBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso\Palaso.csproj">
@@ -110,6 +233,23 @@
 	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
 	  <Name>Palaso.TestUtilities</Name>
 	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+	  <Visible>False</Visible>
+	  <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+	  <Install>false</Install>
+	</BootstrapperPackage>
+	<BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+	  <Visible>False</Visible>
+	  <ProductName>.NET Framework 3.5 SP1</ProductName>
+	  <Install>true</Install>
+	</BootstrapperPackage>
+	<BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+	  <Visible>False</Visible>
+	  <ProductName>Windows Installer 3.1</ProductName>
+	  <Install>true</Install>
+	</BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -29,22 +29,19 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this._timer = new System.Windows.Forms.Timer(this.components);
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShortSoundFieldControl));
 			this._playButton = new System.Windows.Forms.Button();
 			this._deleteButton = new System.Windows.Forms.Button();
 			this._recordButton = new System.Windows.Forms.Button();
 			this._hint = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this._poorMansWaveform = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
-			//
-			// _timer
-			//
-			this._timer.Interval = 200;
-			this._timer.Tick += new System.EventHandler(this.timer1_Tick);
 			//
 			// _playButton
 			//
+			this._playButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._playButton.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
 			this._playButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._playButton.Image = global::Palaso.Media.Properties.Resources.play14x16;
@@ -62,11 +59,12 @@
 			// _deleteButton
 			//
 			this._deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this._deleteButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._deleteButton.Enabled = false;
 			this._deleteButton.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
 			this._deleteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._deleteButton.Image = global::Palaso.Media.Properties.Resources.Delete;
-			this._deleteButton.Location = new System.Drawing.Point(287, 0);
+			this._deleteButton.Location = new System.Drawing.Point(204, 0);
 			this._deleteButton.Name = "_deleteButton";
 			this._deleteButton.Size = new System.Drawing.Size(38, 19);
 			this._deleteButton.TabIndex = 1;
@@ -78,6 +76,7 @@
 			//
 			// _recordButton
 			//
+			this._recordButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._recordButton.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
 			this._recordButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._recordButton.Image = global::Palaso.Media.Properties.Resources.record16x16;
@@ -88,7 +87,8 @@
 			this._recordButton.TabIndex = 1;
 			this._recordButton.TabStop = false;
 			this._recordButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.toolTip1.SetToolTip(this._recordButton, "Hold down the mouse button while talking, then release.  Like a walkie-talkie.");
+			this.toolTip1.SetToolTip(this._recordButton, "Hold down the mouse button while talking, then release.  Like a walkie-talkie.  C" +
+					"lick with the shift-key down to select a pre-recorded sound file.");
 			this._recordButton.UseVisualStyleBackColor = false;
 			this._recordButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnRecordDown);
 			this._recordButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnRecordUp);
@@ -113,7 +113,6 @@
 			//
 			// _poorMansWaveform
 			//
-			this._poorMansWaveform.AutoSize = true;
 			this._poorMansWaveform.ForeColor = System.Drawing.SystemColors.ControlDark;
 			this._poorMansWaveform.Location = new System.Drawing.Point(122, 2);
 			this._poorMansWaveform.Name = "_poorMansWaveform";
@@ -121,10 +120,21 @@
 			this._poorMansWaveform.TabIndex = 4;
 			this._poorMansWaveform.Text = "• • • • • • • •";
 			//
+			// label1
+			//
+			this.label1.ForeColor = System.Drawing.Color.DarkRed;
+			this.label1.Location = new System.Drawing.Point(249, 5);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(1244, 14);
+			this.label1.TabIndex = 5;
+			this.label1.Text = resources.GetString("label1.Text");
+			this.label1.Visible = false;
+			//
 			// ShortSoundFieldControl
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this._poorMansWaveform);
 			this.Controls.Add(this._hint);
 			this.Controls.Add(this._playButton);
@@ -141,10 +151,10 @@
 
 		private System.Windows.Forms.Button _playButton;
 		private System.Windows.Forms.Button _recordButton;
-		private System.Windows.Forms.Timer _timer;
 		private System.Windows.Forms.Button _deleteButton;
 		private System.Windows.Forms.Label _hint;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label _poorMansWaveform;
+		private System.Windows.Forms.Label label1;
 	}
 }

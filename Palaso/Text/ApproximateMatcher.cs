@@ -56,11 +56,21 @@ namespace Palaso.Text
 			return FindClosestForms<string>(forms, Self, notNormalizedFormToMatch, options);
 		}
 
+		public static IList<T> FindClosestForms<T>(IEnumerable itemsToSearch,
+												  GetStringDelegate<T> itemFormExtractor,
+												  string notNormalizedFormToMatch,
+												  ApproximateMatcherOptions options)
+		{
+			return FindClosestForms(itemsToSearch, itemFormExtractor, notNormalizedFormToMatch, options, 999);
+		}
+
+
 		// would like to have IEnumerable<T> but IBindingList isn't strong typed
 		public static IList<T> FindClosestForms<T>(IEnumerable itemsToSearch,
 												   GetStringDelegate<T> itemFormExtractor,
 												   string notNormalizedFormToMatch,
-												   ApproximateMatcherOptions options)
+												   ApproximateMatcherOptions options,
+													int maxDistance)
 		{
 			string formToMatch = notNormalizedFormToMatch.Normalize(NormalizationForm.FormD);
 			bool includeNextClosest = (options & ApproximateMatcherOptions.IncludeNextClosestForms) ==
@@ -88,6 +98,9 @@ namespace Palaso.Text
 													form,
 													secondBestEditDistance,
 													includeApproximatePrefixedForms);
+						if(editDistance > maxDistance)
+							continue;
+
 						if (editDistance < bestEditDistance)
 						{
 							if (includeNextClosest && bestEditDistance != int.MaxValue)

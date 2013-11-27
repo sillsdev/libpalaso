@@ -25,11 +25,10 @@
 ///
 
 using System;
+using Spart.Scanners;
 
-namespace Spart.Tests
+namespace Palaso.Tests.Spart
 {
-	using Spart.Scanners;
-
 	public class Provider
 	{
 		public static String Text
