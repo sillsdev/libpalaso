@@ -41,7 +41,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		/// </summary>
 		public bool SuppressSuggestionsForMajorWorldLanguages { get; set; }
 
-		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
+		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(IWritingSystemDefinition primary, IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
 			if(string.IsNullOrEmpty(primary.Language) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				yield break;
@@ -72,7 +72,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 		}
 
 
-		public IEnumerable<IWritingSystemDefinitionSuggestion> GetOtherLanguageSuggestions(IEnumerable<WritingSystemDefinition> existingDefinitions)
+		public IEnumerable<IWritingSystemDefinitionSuggestion> GetOtherLanguageSuggestions(IEnumerable<IWritingSystemDefinition> existingDefinitions)
 		{
 			if (OtherKnownWritingSystems != null)
 			{

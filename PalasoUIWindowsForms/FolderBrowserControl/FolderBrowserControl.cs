@@ -836,7 +836,7 @@ namespace Palaso.UI.WindowsForms.FolderBrowserControl
 		{
 			try
 			{
-				if(!IsSpecialNode(currentFolder))
+				if(!IsSpecialNode(currentFolder) && !string.IsNullOrEmpty(currentFolder.Tag as string))
 				{
 					var folderList = Directory.GetDirectories(currentFolder.Tag.ToString());
 

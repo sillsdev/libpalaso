@@ -79,9 +79,9 @@
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
 	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\NDesk.DBus.dll</HintPath>
+	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\$(Configuration)\NDesk.DBus.dll.config">
+	<None Include="..\lib\commonMono\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
