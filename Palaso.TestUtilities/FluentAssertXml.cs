@@ -88,7 +88,6 @@ namespace Palaso.TestUtilities
 	{
 		protected abstract XmlNode NodeOrDom { get; }
 
-
 		public void HasAtLeastOneMatchForXpath(string xpath, XmlNamespaceManager nameSpaceManager)
 		{
 			XmlNode node = GetNode(xpath, nameSpaceManager);
@@ -168,12 +167,14 @@ namespace Palaso.TestUtilities
 			Assert.IsNull(node, "Should not have matched: " + xpath);
 		}
 
-
-
-
 		private XmlNode GetNode(string xpath)
 		{
+#if MONO
+			// Currently the method XmlNodeExtensions.GetPrefixedPath doesn't allow for / in a literal string
+			return NodeOrDom.SelectSingleNode(xpath);
+#else
 			return NodeOrDom.SelectSingleNodeHonoringDefaultNS(xpath);
+#endif
 		}
 
 		private XmlNode GetNode(string xpath, XmlNamespaceManager nameSpaceManager)

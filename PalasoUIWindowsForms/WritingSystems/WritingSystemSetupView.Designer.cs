@@ -28,19 +28,24 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this._treeView = new Palaso.UI.WindowsForms.WritingSystems.WSTree.WritingSystemTreeView();
-			this._rfc4646 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this._languageName = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this._rfc4646 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._propertiesTabControl = new Palaso.UI.WindowsForms.WritingSystems.WSPropertiesTabControl();
 			this._buttonBar = new Palaso.UI.WindowsForms.WritingSystems.WSAddDuplicateMoreButtonBar();
+			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).BeginInit();
 			this.SuspendLayout();
 			//
 			// splitContainer1
@@ -75,8 +80,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// splitContainer2.Panel2
 			//
-			this.splitContainer2.Panel2.Controls.Add(this._rfc4646);
-			this.splitContainer2.Panel2.Controls.Add(this._languageName);
+			this.splitContainer2.Panel2.Controls.Add(this.tableLayoutPanel1);
 			this.splitContainer2.Panel2.Controls.Add(this._propertiesTabControl);
 			this.splitContainer2.Size = new System.Drawing.Size(841, 422);
 			this.splitContainer2.SplitterDistance = 222;
@@ -94,35 +98,53 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._treeView.Size = new System.Drawing.Size(222, 422);
 			this._treeView.TabIndex = 1;
 			//
-			// _rfc4646
+			// tableLayoutPanel1
 			//
-			this._rfc4646.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this._rfc4646.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._rfc4646.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._rfc4646.Location = new System.Drawing.Point(309, 4);
-			this._rfc4646.Multiline = true;
-			this._rfc4646.Name = "_rfc4646";
-			this._rfc4646.ReadOnly = true;
-			this._rfc4646.Size = new System.Drawing.Size(292, 20);
-			this._rfc4646.TabIndex = 2;
-			this._rfc4646.TabStop = false;
-			this._rfc4646.Text = "foo-CN-variant1-a-extend1-x-wadefile";
-			this._rfc4646.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.66666F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+			this.tableLayoutPanel1.Controls.Add(this._languageName, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this._rfc4646, 1, 0);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 3);
+			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 1;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(603, 27);
+			this.tableLayoutPanel1.TabIndex = 3;
 			//
 			// _languageName
 			//
 			this._languageName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this._languageName.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._languageName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._languageName.Location = new System.Drawing.Point(4, 4);
+			this._languageName.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._languageName.Location = new System.Drawing.Point(3, 3);
 			this._languageName.Multiline = true;
 			this._languageName.Name = "_languageName";
 			this._languageName.ReadOnly = true;
-			this._languageName.Size = new System.Drawing.Size(318, 20);
+			this._languageName.Size = new System.Drawing.Size(395, 21);
 			this._languageName.TabIndex = 1;
 			this._languageName.TabStop = false;
 			this._languageName.Text = "Language Name";
+			//
+			// _rfc4646
+			//
+			this._rfc4646.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this._rfc4646.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._rfc4646.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._rfc4646.Location = new System.Drawing.Point(404, 3);
+			this._rfc4646.Multiline = true;
+			this._rfc4646.Name = "_rfc4646";
+			this._rfc4646.ReadOnly = true;
+			this._rfc4646.Size = new System.Drawing.Size(196, 21);
+			this._rfc4646.TabIndex = 2;
+			this._rfc4646.TabStop = false;
+			this._rfc4646.Text = "foo-CN-variant1-a-extend1-x-wadefile";
+			this._rfc4646.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			//
 			// _propertiesTabControl
 			//
@@ -144,6 +166,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._buttonBar.Size = new System.Drawing.Size(841, 31);
 			this._buttonBar.TabIndex = 0;
 			//
+			// localizationHelper1
+			//
+			this.localizationHelper1.Parent = this;
+			//
 			// WritingSystemSetupView
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -156,8 +182,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer1.ResumeLayout(false);
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
-			this.splitContainer2.Panel2.PerformLayout();
 			this.splitContainer2.ResumeLayout(false);
+			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.localizationHelper1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -171,6 +199,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private Palaso.UI.WindowsForms.WritingSystems.WSTree.WritingSystemTreeView _treeView;
 		private Palaso.UI.WindowsForms.Widgets.BetterLabel _rfc4646;
 		private Palaso.UI.WindowsForms.Widgets.BetterLabel _languageName;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private i18n.LocalizationHelper localizationHelper1;
 
 	}
 }

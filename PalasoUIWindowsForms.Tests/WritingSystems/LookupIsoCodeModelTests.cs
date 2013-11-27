@@ -26,31 +26,38 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			_model = new LookupIsoCodeModel();
 		}
 
-		[Test]
-		public void GetMatchingWritingSystems_NoMatches_Empty()
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog()
 		{
-			Assert.AreEqual(0, _model.GetMatchingWritingSystems("^^^").Count());
+			var dialog = new LookupISOCodeDialog();
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code+" with desired name: "+dialog.SelectedLanguage.DesiredName);
+		}
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialCodeAndCustomName()
+		{
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr", DesiredName = "Etoloooo" };
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 
-		[Test]
-		public void GetMatchingWritingSystems_EmptyString_GetWholeList()
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialCodeOnly()
 		{
-			Assert.Greater(_model.GetMatchingWritingSystems(string.Empty).Count(), 7000);
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr"};
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 
-
-		[Test]
-		public void GetMatchingWritingSystems_UpperCaseGerman_ReturnsGerman()
+		[Test, Ignore("By hand only")]
+		public void LookupISODialog_WithInitialQAACodeAndCustomName()
 		{
-			var matchingWritingSystems = _model.GetMatchingWritingSystems("German").ToArray();
-			Assert.AreEqual("de",matchingWritingSystems[0].Code);
-		}
-
-		[Test]
-		public void GetMatchingWritingSystems_lowerCaseGerman_ReturnsGerman()
-		{
-			var matchingWritingSystems = _model.GetMatchingWritingSystems("german").ToArray();
-			Assert.AreEqual("de", matchingWritingSystems[0].Code);
+			var dialog = new LookupISOCodeDialog();
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "qaa", DesiredName = "Vulcan" };
+			Application.Run(dialog);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 	}
 }

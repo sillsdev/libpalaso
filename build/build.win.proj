@@ -1,9 +1,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<RootDir>$(teamcity_build_checkoutDir)</RootDir>
-	</PropertyGroup>
+	<LargeFilesDir>c:\builddownloads</LargeFilesDir>
+  </PropertyGroup>
 
-	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+  <UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
 	<!-- <UsingTask TaskName="MakeWixForDirTree" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" /> -->
 	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
 	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
@@ -12,17 +13,24 @@
 	<PropertyGroup>
 		<Solution>Palaso.sln</Solution>
 		<ApplicationName>PalasoLibrary</ApplicationName>
-		<Configuration>ReleaseMono</Configuration>
+		<Configuration>Release</Configuration>
 	</PropertyGroup>
 
 	<Import Project="$(RootDir)/build/build.common.proj" />
 
 	<Target Name="Build">
 		<CallTarget Targets="Clean"/>
+	<CallTarget Targets="GatherLargeFiles"/>
 		<CallTarget Targets="SetAssemblyVersion"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
 	</Target>
+
+  <!-- ExifTool is too large to stick in souce control, so we grab it out of the c:\builddownloads directory.
+	  That file may be used in unit tests, and definitely offered up as an artifact to users of palaso -->
+  <Target Name="GatherLargeFiles">
+	<Copy SourceFiles ="$(LargeFilesDir)\exiftool.exe" DestinationFolder="$(RootDir)\DistFiles"></Copy>
+  </Target>
 
 	<ItemGroup>
 		<ExistingObjectFiles

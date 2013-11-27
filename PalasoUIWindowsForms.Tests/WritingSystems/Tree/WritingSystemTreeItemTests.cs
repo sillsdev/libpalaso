@@ -8,7 +8,7 @@ using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
-	[TestFixture]
+	[TestFixture, Ignore("Not Yet")]
 	public class WritingSystemTreeItemTests
 	{
 	   [Test, Ignore("Not Yet")]

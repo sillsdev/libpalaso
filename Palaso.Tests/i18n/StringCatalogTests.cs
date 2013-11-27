@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using NUnit.Framework;
 using Palaso.i18n;
-using Palaso.TestUtilities;
+using Palaso.IO;
 
 namespace Palaso.Tests.i18n
 {
@@ -159,20 +159,20 @@ msgstr 'translated'
 		}
 
 		[Test]
-		public void FontsScaleUp()
+		public void FontsDoNotScaleUp()
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, "Onyx", 30);
 			Font normal = new Font(System.Drawing.FontFamily.GenericSerif, 20);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
-			Assert.AreEqual(41,Math.Floor(localized.SizeInPoints));
+			Assert.AreEqual(20,Math.Floor(localized.SizeInPoints));
 		}
 		[Test]
-		public void FontsChanged()
+		public void FontsDoNotChange()
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSansSerif.Name, 30);
 			Font normal = new Font(FontFamily.GenericSerif, 20);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
-			Assert.AreEqual(FontFamily.GenericSansSerif.Name, localized.FontFamily.Name);
+			Assert.AreEqual(FontFamily.GenericSerif.Name, localized.FontFamily.Name);
 		}
 		[Test]
 		public void ModifyFontForLocation_SmallFont_ValidFont()

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Palaso.Lift;
 
 using NUnit.Framework;
+using Palaso.Tests.Code;
 
 namespace Palaso.Lift.Tests
 {

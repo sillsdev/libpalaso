@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Xml;
 
 namespace Palaso.Xml
@@ -11,6 +8,56 @@ namespace Palaso.Xml
 	///</summary>
 	public class CanonicalXmlSettings
 	{
+		///<summary>
+		/// Return an XmlReaderSettings suitable for use in Chorus applications.
+		///</summary>
+		/// <remarks>
+		/// This formats with:
+		///		CheckCharacters as 'false',
+		///		ProhibitDtd as 'true',
+		///		ValidationType as ValidationType.None,
+		///		CloseInput as 'true',
+		///		IgnoreWhitespace as 'true', and
+		///		ConformanceLevel as 'conformanceLevel' parameter.
+		/// </remarks>
+		/// <param name="conformanceLevel">Document|Fragment</param>
+		///<returns>XmlReaderSettings</returns>
+		public static XmlReaderSettings CreateXmlReaderSettings(ConformanceLevel conformanceLevel)
+		{
+			var settings = new XmlReaderSettings
+			{
+				CheckCharacters = false,
+				ConformanceLevel = conformanceLevel,
+#if NET_4_0 && !__MonoCS__
+				DtdProcessing = DtdProcessing.Parse,
+#else
+				ProhibitDtd = true,
+#endif
+				ValidationType = ValidationType.None,
+				CloseInput = true,
+				IgnoreWhitespace = true
+			};
+			return settings;
+		}
+
+		///<summary>
+		/// Return an XmlReaderSettings suitable for use in Chorus applications.
+		///</summary>
+		/// <remarks>
+		/// This formats with:
+		///		CheckCharacters as 'false',
+		///		ProhibitDtd as 'true',
+		///		ValidationType as ValidationType.None,
+		///		CloseInput as 'true',
+		///		IgnoreWhitespace as 'true', and
+		///		ConformanceLevel as ConformanceLevel.Document.
+		/// </remarks>
+		///<returns>XmlReaderSettings</returns>
+		public static XmlReaderSettings CreateXmlReaderSettings()
+		{
+			return CreateXmlReaderSettings(ConformanceLevel.Document);
+		}
+
 		///<summary>
 		/// Return an XmlWriterSettings suitable for use in Chorus applications.
 		///</summary>

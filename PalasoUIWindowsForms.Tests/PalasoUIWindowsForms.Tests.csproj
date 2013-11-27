@@ -3,7 +3,7 @@
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.30729</ProductVersion>
+	<ProductVersion>9.0.21022</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
 	<ProjectGuid>{6E16866F-FF8D-4136-AD67-36AFE3626432}</ProjectGuid>
 	<OutputType>Library</OutputType>
@@ -15,7 +15,7 @@
 	<UpgradeBackupLocation>
 	</UpgradeBackupLocation>
 	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<PublishUrl>publish\</PublishUrl>
 	<Install>true</Install>
 	<InstallFrom>Disk</InstallFrom>
@@ -31,12 +31,14 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
+	<TargetFrameworkProfile>
+	</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
@@ -45,14 +47,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,7 +64,7 @@
 	<Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\$(Configuration)</OutputPath>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
 	<DefineConstants>TRACE;MONO</DefineConstants>
 	<Optimize>true</Optimize>
 	<DebugType>pdbonly</DebugType>
@@ -70,13 +73,8 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="Moq, Version=4.0.812.4, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
+	<Reference Include="Moq">
 	  <HintPath>..\lib\common\Moq.dll</HintPath>
-	</Reference>
-	<Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.Core">
@@ -87,22 +85,82 @@
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
+	<Reference Include="nunit.framework">
+	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
+	</Reference>
+	<Reference Include="ibusdotnet">
+	  <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
+	</Reference>
+	<Reference Include="NDesk.DBus">
+	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ClearShare\ClearShareUsage.cs" />
+	<Compile Include="ClearShare\ContributionTests.cs" />
+	<Compile Include="ClearShare\ContributorsListControlViewModelTests.cs" />
+	<Compile Include="ClearShare\MetadataEditorControlTests.cs" />
+	<Compile Include="ClearShare\CreativeCommonsLicenseTests.cs" />
+	<Compile Include="ClearShare\LicenseTests.cs" />
+	<Compile Include="ClearShare\MetadataTests.cs" />
+	<Compile Include="ClearShare\OlacSystemTests.cs" />
+	<Compile Include="ClearShare\RoleTests.cs" />
+	<Compile Include="FontTests\FontHelperTests.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
 	<Compile Include="Hotspot\HotSpotProviderTests.cs" />
 	<Compile Include="Hotspot\HotSpotTests.cs" />
 	<Compile Include="ImageGallery\ArtOfReadingImageCollectionTests.cs" />
 	<Compile Include="ImageToolbox\ImageToolboxTests.cs" />
+	<Compile Include="ClearShare\MetaDataDisplayTests.cs" />
+	<Compile Include="ImageToolbox\PalasoImageTests.cs" />
+	<Compile Include="ImageToolbox\TestImages.Designer.cs">
+	  <AutoGen>True</AutoGen>
+	  <DesignTime>True</DesignTime>
+	  <DependentUpon>TestImages.resx</DependentUpon>
+	</Compile>
+	<Compile Include="Keyboarding\FakeKeyboardController.cs" />
+	<Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
+	<Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
+	<Compile Include="Keyboarding\IBusEnvironmentForTest.cs" />
+	<Compile Include="Keyboarding\InputLanguageWrapperTests.cs" />
+	<Compile Include="Keyboarding\KeyboardControllerTests.cs" />
+	<Compile Include="Keyboarding\KeyboardDescriptionTests.cs" />
 	<Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
+	<Compile Include="Keyboarding\XkbKeyboardAdapterTests.cs" />
+	<Compile Include="Keyboarding\XklEngineTests.cs" />
 	<Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
 	<Compile Include="Progress\ProgressDialogTests.cs" />
+	<Compile Include="Progress\ProgressIndicatorTests.cs" />
 	<Compile Include="Progress\TransformWithProgressDialogTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<EmbeddedResource Include="ImageToolbox\TestImages.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>TestImages.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+	<EmbeddedResource Include="SettingsProtection\DialogWithLinkToSettings.resx">
+	  <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+	  <SubType>Designer</SubType>
+	</EmbeddedResource>
+	<EmbeddedResource Include="SettingsProtection\DialogWithSomeSettings.resx">
+	  <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
+	</EmbeddedResource>
 	<EmbeddedResource Include="SuperToolTip\SuperToolTipTestForm.resx">
 	  <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
 	  <SubType>Designer</SubType>
 	</EmbeddedResource>
+	<Compile Include="SettingsProtection\DialogWithLinkToSettings.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SettingsProtection\DialogWithLinkToSettings.Designer.cs">
+	  <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+	</Compile>
+	<Compile Include="SettingsProtection\DialogWithSomeSettings.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Include="SettingsProtection\DialogWithSomeSettings.Designer.cs">
+	  <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
+	</Compile>
+	<Compile Include="SettingsProtection\SettingsProtectionUITests.cs" />
 	<Compile Include="SpellChecking\TextBoxSpellChecker.cs" />
 	<Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
 	  <SubType>Form</SubType>
@@ -115,15 +173,22 @@
 	<Compile Include="WritingSystems\UITests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeItemTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestorTests.cs" />
+	<Compile Include="WritingSystems\WritingSystemDefinitionVariantHelperTests.cs" />
 	<Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
-	<Compile Include="WritingSystems\WindowsForms-SpecificWritingSystemTest.cs" />
 	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
-	<Compile Include="Keyboarding\ScimPanelControllerTests.cs" />
 	<Compile Include="Keyboarding\LinuxKeyboardControllerTests.cs" />
-	<Compile Include="Keyboarding\IBusAdaptorTests.cs" />
 	<Compile Include="WritingSystems\Tree\WritingSystemTreeModelTests.cs" />
+	<Compile Include="ErrorReporting\ErrorReportingTests.cs" />
+	<Compile Include="Progress\LogBox\LogBoxFormForTest.cs" />
+	<Compile Include="Progress\LogBox\LogBoxTests.cs" />
+	<Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />
+	<Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
+	  <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
+	  <Name>Palaso.Tests</Name>
+	</ProjectReference>
 	<ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
 	  <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
 	  <Name>Palaso.TestUtilities</Name>
@@ -158,6 +223,9 @@
 	  <ProductName>Windows Installer 3.1</ProductName>
 	  <Install>true</Install>
 	</BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+	<None Include="Resources\logo.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

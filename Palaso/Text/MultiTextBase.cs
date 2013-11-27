@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml.Serialization;
+using Palaso.Code;
 using Palaso.Text;
 
 namespace Palaso.Text
@@ -42,8 +44,6 @@ namespace Palaso.Text
 		{
 			_forms = new LanguageForm[0];
 		}
-
-
 
 		public void Add(Object objectFromSerializer) {}
 
@@ -297,14 +297,14 @@ namespace Palaso.Text
 
 		public void SetAlternative(string writingSystemId, string form)
 		{
-			Debug.Assert(writingSystemId != null && writingSystemId.Length > 0, "The writing system id was empty.");
+			Debug.Assert(!string.IsNullOrEmpty(writingSystemId), "The writing system id was empty.");
 			Debug.Assert(writingSystemId.Trim() == writingSystemId,
 						 "The writing system id had leading or trailing whitespace");
 
 			//enhance: check to see if there has actually been a change
 
 			LanguageForm alt = Find(writingSystemId);
-			if (form == null || form.Length == 0) // we don't use space to store empty strings.
+			if (string.IsNullOrEmpty(form)) // we don't use space to store empty strings.
 			{
 				if (alt != null && !alt.IsStarred)
 				{
@@ -326,7 +326,7 @@ namespace Palaso.Text
 			NotifyPropertyChanged(writingSystemId);
 		}
 
-		protected void RemoveLanguageForm(LanguageForm languageForm)
+		public void RemoveLanguageForm(LanguageForm languageForm)
 		{
 			Debug.Assert(Forms.Length > 0);
 			LanguageForm[] forms = new LanguageForm[Forms.Length - 1];
@@ -482,19 +482,19 @@ namespace Palaso.Text
 			return true;
 		}
 
+		public override bool Equals(Object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof(MultiTextBase)) return false;
+			return Equals((MultiTextBase)obj);
+		}
+
 		public bool Equals(MultiTextBase other)
 		{
-			if (other.Count != Count)
-			{
-				return false;
-			}
-			foreach (LanguageForm form in other)
-			{
-				if (!ContainsEqualForm(form))
-				{
-					return false;
-				}
-			}
+			if (other == null) return false;
+			if (other.Count != Count) return false;
+			if (!_forms.SequenceEqual(other.Forms)) return false;
 			return true;
 		}
 

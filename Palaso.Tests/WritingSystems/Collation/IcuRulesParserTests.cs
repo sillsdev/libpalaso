@@ -172,6 +172,20 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		public void EscapedUnicode_ProducesCorrectXml()
+		{
+			//Fieldworks issue LT-11999
+			_icuParser.WriteIcuRules(_writer, "&\\U00008000 < \\u0061");
+			string result = Environment_OutputString();
+			AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+				"/rules/reset[text()='\\U00008000']"
+			);
+			AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+				"/rules/reset/following-sibling::p[text()='\\u0061']"
+			);
+		}
+
+		[Test]
 		public void MultiplePrimaryDifferences_ProducesOptimizedXml()
 		{
 			_icuParser.WriteIcuRules(_writer, "&a < b<c");
@@ -715,28 +729,6 @@ namespace Palaso.Tests.WritingSystems.Collation
 		// Most of these escapes aren't actually handled by ICU - it just treats the character
 		// following backslash as a literal.  These tests just check for no other special escape
 		// handling that is invalid.
-		[Test]
-		public void Escape_u_ProducesCorrectCharacter()
-		{
-			_icuParser.WriteIcuRules(_writer, "&\\u0041");
-			string result = Environment_OutputString();
-			AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-				"/rules/reset[text()='u0041']"
-			);
-//            Assert.AreEqual("<rules><reset>u0041</reset></rules>", _xmlText.ToString());
-		}
-
-		[Test]
-		public void Escape_U_ProducesCorrectCharacter()
-		{
-			_icuParser.WriteIcuRules(_writer, "&\\U00000041");
-			string result = Environment_OutputString();
-			AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-				"/rules/reset[text()='U00000041']"
-			);
-//            Assert.AreEqual("<rules><reset>U00000041</reset></rules>", _xmlText.ToString());
-		}
-
 		[Test]
 		public void Escape_x_ProducesCorrectCharacter()
 		{
