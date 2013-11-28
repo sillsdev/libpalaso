@@ -29,6 +29,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	public class IbusKeyboardAdaptor: IKeyboardAdaptor
 	{
 		private IIbusCommunicator IBusCommunicator;
+		private bool m_needIMELocation;
 
 		/// <summary>
 		/// Initializes a new instance of the
@@ -259,7 +260,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			IBusCommunicator.FocusIn();
-			SetImePreeditWindowLocationAndSize(sender as Control);
+			m_needIMELocation = true;
 		}
 
 		private void HandleLostFocus(object sender, EventArgs e)
@@ -312,6 +313,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
 				PassKeyEventToIbus(sender as Control, (char)X11KeyConverter.GetKeySym(key), Control.ModifierKeys);
+
+			if (m_needIMELocation)
+			{
+				SetImePreeditWindowLocationAndSize(sender as Control);
+				m_needIMELocation = false;
+			}
 		}
 
 		/// <summary>
@@ -343,7 +350,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			ResetAndWaitForCommit(sender as Control);
-			SetImePreeditWindowLocationAndSize(sender as Control);
+			m_needIMELocation = true;
 		}
 
 		private void HandleScroll(object sender, ScrollEventArgs e)
