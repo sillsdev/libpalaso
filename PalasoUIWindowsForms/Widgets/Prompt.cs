@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace Palaso.UI.WindowsForms.Widgets
 {
 	[ProvideProperty("Prompt", typeof (Control))]
-	public class Prompt: IExtenderProvider, IComponent
+	public class Prompt: Component, IExtenderProvider
 	{
 		private readonly Dictionary<Control, PromptPainter> _extendees;
 

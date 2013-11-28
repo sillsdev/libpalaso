@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Palaso.Annotations;
+using Palaso.Code;
 using Palaso.UiBindings;
 
 namespace Palaso.Lift.Options
@@ -11,7 +14,7 @@ namespace Palaso.Lift.Options
 	/// with the system.
 	/// </summary>
 	public class OptionRef: Annotatable,
-							IParentable,
+							IPalasoDataObjectProperty,
 							IValueHolder<string>,
 							IReportEmptiness,
 							IReferenceContainer,
@@ -25,6 +28,9 @@ namespace Palaso.Lift.Options
 		/// IParentable gives access to this during explicit construction.
 		/// </summary>
 		private IReceivePropertyChangeNotifications _parent;
+
+		public List<string> EmbeddedXmlElements = new List<string>();
+
 
 		private bool _suspendNotification;
 
@@ -181,6 +187,41 @@ namespace Palaso.Lift.Options
 			OptionRef other = (OptionRef) obj;
 			int order = Key.CompareTo(other.Key);
 			return order;
+		}
+
+		public IPalasoDataObjectProperty Clone()
+		{
+			var clone = new OptionRef(Key);
+			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
+			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			return clone;
+		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals((OptionRef) other);
+		}
+
+		public override string ToString()
+		{
+			return Value;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is OptionRef)) return false;
+			return Equals((OptionRef) obj);
+		}
+
+		public bool Equals(OptionRef other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			if (Key != other.Key) return false;
+			//we are doing a reference comparison here in case it's null
+			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
+			if (!EmbeddedXmlElements.SequenceEqual(other.EmbeddedXmlElements)) return false;
+			return true;
 		}
 	}
 }

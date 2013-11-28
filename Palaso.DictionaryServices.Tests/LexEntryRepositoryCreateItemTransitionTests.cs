@@ -31,7 +31,7 @@ namespace WeSay.LexicalModel.Tests
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		[Test]

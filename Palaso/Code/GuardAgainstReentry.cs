@@ -2,6 +2,7 @@ using System;
 
 namespace Palaso.Code
 {
+	[Obsolete("Use Detect.Reentry instead")]
 	public class GuardAgainstReentry : IDisposable
 	{
 

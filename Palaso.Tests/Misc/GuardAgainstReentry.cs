@@ -82,11 +82,11 @@ namespace Palaso.Tests.Misc
 		}
 
 		[Test]
-		[NUnit.Framework.Category("UsesObsoleteExpectedExceptionAttribute"), ExpectedException(typeof(ApplicationException))]
 		public void GuardAgainstReentry_WithReentry_Throws()
 		{
 			var session = new TestSession();
-			WorkWithReentry(session, 0);
+			Assert.Throws<ApplicationException>(
+				() => WorkWithReentry(session, 0));
 		}
 
 		private void WorkWithReentryExpected(TestSession session, int count)

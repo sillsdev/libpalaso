@@ -1,21 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Palaso.Code;
 using Palaso.Lift;
 using Palaso.Reporting;
 
 namespace Palaso.DictionaryServices.Model
 {
-	public sealed class LexSense: PalasoDataObject
+	public sealed class LexSense: PalasoDataObject, IClonableGeneric<LexSense>
 	{
 		//private readonly SenseGlossMultiText _gloss;
 		private readonly BindingList<LexExampleSentence> _exampleSentences;
+		private readonly BindingList<LexNote> _notes;
+		private readonly BindingList<LexReversal> _reversals;
 		private string _id;
 
 		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
 		{
 			public static string PartOfSpeech = "POS";
 			public static string SemanticDomainDdp4 = "semantic-domain-ddp4";
+			public static string SILCAWL = "SILCAWL";
 
 			public static string Definition = "definition";
 			//the lower case here is defined by LIFT standard
@@ -40,6 +45,8 @@ namespace Palaso.DictionaryServices.Model
 		{
 			//   _gloss = new SenseGlossMultiText(this);
 			_exampleSentences = new BindingList<LexExampleSentence>();
+			_notes = new BindingList<LexNote>();
+			_reversals = new BindingList<LexReversal>();
 			WireUpEvents();
 		}
 
@@ -67,6 +74,13 @@ namespace Palaso.DictionaryServices.Model
 			return _id;
 		}
 
+
+		public void AddRelationTarget(string relationName, string targetId)
+		{
+			LexRelationCollection relations =
+				GetOrCreateProperty<LexRelationCollection>(relationName);
+			relations.Relations.Add(new LexRelation(relationName, targetId, this));
+		}
 		public MultiText Gloss
 		{
 			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Gloss); }
@@ -80,6 +94,18 @@ namespace Palaso.DictionaryServices.Model
 		public IList<LexExampleSentence> ExampleSentences
 		{
 			get { return _exampleSentences; }
+		}
+
+		/// <summary>
+		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
+		/// </summary>
+		public IList<LexNote> Notes
+		{
+			get { return _notes; }
+		}
+		public IList<LexReversal> Reversals
+		{
+			get { return _reversals; }
 		}
 
 		public override bool IsEmpty
@@ -103,6 +129,11 @@ namespace Palaso.DictionaryServices.Model
 		{
 			get { return _id; }
 			set { _id = value; }
+		}
+
+		public IEnumerable<string> PropertiesInUse
+		{
+			get { return base.PropertiesInUse.Concat(ExampleSentences.SelectMany(ex=>ex.PropertiesInUse)); }
 		}
 
 		public override void CleanUpAfterEditting()
@@ -139,6 +170,46 @@ namespace Palaso.DictionaryServices.Model
 				Logger.WriteMinorEvent("Empty example removed");
 				OnEmptyObjectsRemoved();
 			}
+		}
+
+		public LexSense Clone()
+		{
+			var clone = new LexSense();
+			foreach (var exampleSentenceToClone in _exampleSentences)
+			{
+				clone._exampleSentences.Add(exampleSentenceToClone.Clone());
+			}
+			foreach (var note in _notes)
+			{
+				clone._notes.Add((LexNote) note.Clone());
+			}
+			foreach (var lexReversal in Reversals)
+			{
+				clone.Reversals.Add((LexReversal) lexReversal.Clone());
+			}
+			foreach (var keyValuePairToClone in Properties)
+			{
+				clone.AddProperty(keyValuePairToClone.Key, keyValuePairToClone.Value.Clone());
+			}
+			return clone;
+		}
+
+		public override bool Equals(Object obj)
+		{
+			if (!(obj is LexSense)) return false;
+			return Equals((LexSense)obj);
+		}
+
+		public bool Equals(LexSense other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			//The various components may appear in a different order which is fine. So we sort them here so that we can run SequenceEqual (which cares about order) over them.
+			if (!_exampleSentences.SequenceEqual(other._exampleSentences)) return false;
+			if (!_notes.SequenceEqual(other._notes)) return false;
+			if (!Reversals.OrderBy(x=>x).SequenceEqual(other.Reversals.OrderBy(x=>x))) return false;
+			if (!base.Equals(other)) return false;
+			return true;
 		}
 	}
 }
