@@ -36,7 +36,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// Gets the X11 scan code for the passed in X11 key symbol, or -1 if we don't know
 		/// the scan code.
 		/// </summary>
-		internal static int GetScanCode(char keySym)
+		internal static int GetScanCode(int keySym)
 		{
 			if (Instance == null)
 				Instance = new X11KeyConverter();
@@ -48,15 +48,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// the passed in WinForms key. For all other keys an InvalidProgramException will be
 		/// thrown.
 		/// </summary>
-		internal static int GetKeySym(Keys key)
+		internal static int GetKeySym(char key)
 		{
 			// These values are from keysymdef.h
-			if (key >= Keys.F1 && key <= Keys.F24)
+			if ((Keys)key >= Keys.F1 && (Keys)key <= Keys.F24)
 			{
-				return 0xffbe + (key - Keys.F1);
+				return 0xffbe + ((Keys)key - Keys.F1);
 			}
-			switch (key)
+			switch ((Keys)key)
 			{
+				case Keys.Back:
+					return 0xff08; // XK_BackSpace
+				case Keys.Enter:
+					return 0xff0d; // XK_Return
 				case Keys.Home:
 					return 0xff50; // XK_Home
 				case Keys.Left:
@@ -67,11 +71,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					return 0xff53; // XK_Right
 				case Keys.Down:
 					return 0xff54; // XK_Down
+				case Keys.PageUp:
+					return 0xff55; // XK_Page_Up
+				case Keys.PageDown:
+					return 0xff56; // XK_Page_Down
+				case Keys.End:
+					return 0xff57; // XK_End
 				case Keys.Delete:
 					return 0xffff; // XK_Delete
-				default:
-					throw new InvalidProgramException("We don't translate this value yet.");
 			}
+			return (int)key;
 		}
 
 		private X11KeyConverter()
@@ -121,13 +130,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Gets the scan code for the specified keySym.
 		/// </summary>
-		private int Convert(char keySym)
+		private int Convert(int keySym)
 		{
 			EnsureInitialized();
 
 			int scanCode;
 
-			if (KeyMap.TryGetValue((int)keySym, out scanCode))
+			if (KeyMap.TryGetValue(keySym, out scanCode))
 				return scanCode;
 			return -1;
 		}

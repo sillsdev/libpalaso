@@ -59,6 +59,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		/// composition choices.
 		/// </summary>
 		Rectangle SelectionLocationAndHeight { get; }
+
+		/// <summary>
+		/// Called by the IbusKeyboardAdapter to find out if a preedit is active.
+		/// </summary>
+		bool IsPreeditActive { get; }
 		#endregion
 
 		#region IBus events
@@ -79,10 +84,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Interfaces
 		/// Called when the IBus UpdatePreeditText event is raised to update the composition.
 		/// </summary>
 		/// <param name="compositionText">New composition string that will replace the existing
-		/// composition (sub-)string.</param>
-		/// <param name="cursorPos">1-based index in the composition (pre-edit window). The
-		/// composition string will be replaced with <paramref name="compositionText"/> starting
-		/// at this position.</param>
+		/// composition string.</param>
+		/// <param name="cursorPos">0-based position where the cursor should be put after
+		/// updating the composition (pre-edit window). This position is relative to the
+		/// composition/preedit text.</param>
 		/// <param name="compositionText">An IBusText object</param>
 		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
 		void OnUpdatePreeditText(object compositionText, int cursorPos);
