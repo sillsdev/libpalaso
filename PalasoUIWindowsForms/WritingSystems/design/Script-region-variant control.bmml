@@ -1,0 +1,156 @@
+<mockup version="1.0" skin="sketch">
+  <controls>
+	<control controlID="0" controlTypeID="com.balsamiq.mockups::TabBar" x="171" y="100" w="571" h="373" zOrder="2" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Identifiers%2C%20Spelling%2C%20Sorting%2C%20Fonts%2C%20Keyboards</text>
+		<selectedIndex>0</selectedIndex>
+	  </controlProperties>
+	</control>
+	<control controlID="1" controlTypeID="com.balsamiq.mockups::Button" x="470" y="162" w="-1" h="-1" zOrder="3" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Search...</text>
+	  </controlProperties>
+	</control>
+	<control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="209" y="162" w="-1" h="-1" zOrder="4" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Language%20Name%20%26%20Code</text>
+	  </controlProperties>
+	</control>
+	<control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="240" y="187" w="-1" h="-1" zOrder="5" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Name%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="300" y="186" w="-1" h="-1" zOrder="6" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Edelo</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="6" controlTypeID="com.balsamiq.mockups::Label" x="240" y="212" w="-1" h="-1" zOrder="7" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Code%3A</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="73" controlTypeID="__group__" x="39" y="478" w="91" h="28" zOrder="17" locked="false" isInGroup="-1">
+	  <groupChildrenDescriptors>
+		<control controlID="50" controlTypeID="com.balsamiq.mockups::Button" x="0" y="0" w="91" h="-1" zOrder="0" locked="false" isInGroup="54">
+		  <controlProperties>
+			<text>More%20%20%20%20</text>
+		  </controlProperties>
+		</control>
+		<control controlID="51" controlTypeID="com.balsamiq.mockups::Icon" x="60" y="6" w="-1" h="-1" zOrder="1" locked="false" isInGroup="54">
+		  <controlProperties>
+			<icon>DownTriangleIcon%7Cxsmall</icon>
+		  </controlProperties>
+		</control>
+	  </groupChildrenDescriptors>
+	</control>
+	<control controlID="25" controlTypeID="com.balsamiq.mockups::ComboBox" x="271" y="307" w="284" h="-1" zOrder="11" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>None%0AIPA%20Phonetic%20Transcription%0AVoice%20Recording%0AScript/Region/Variant%20From%20Official%20Lists%0ACustom</text>
+	  </controlProperties>
+	</control>
+	<control controlID="27" controlTypeID="com.balsamiq.mockups::Label" x="677" y="64" w="-1" h="-1" zOrder="13" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>etr_ipa</text>
+	  </controlProperties>
+	</control>
+	<control controlID="77" controlTypeID="com.balsamiq.mockups::Icon" x="74" y="491" w="-1" h="-1" zOrder="18" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<icon>DownTriangleIcon%7Cxsmall</icon>
+	  </controlProperties>
+	</control>
+	<control controlID="70" controlTypeID="com.balsamiq.mockups::List" x="22" y="55" w="142" h="408" zOrder="15" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>English%20%28AUS%29%0AEdelo%0A%20%0A%20%0A%20%0ATok%20Pisin</text>
+		<borderStyle>none</borderStyle>
+		<selectedIndex>1</selectedIndex>
+	  </controlProperties>
+	</control>
+	<control controlID="19" controlTypeID="com.balsamiq.mockups::Label" x="209" y="253" w="-1" h="-1" zOrder="9" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Abbrevation%20to%20use%20in%20field%20labels</text>
+	  </controlProperties>
+	</control>
+	<control controlID="20" controlTypeID="com.balsamiq.mockups::TextInput" x="470" y="249" w="65" h="-1" zOrder="10" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>ed</text>
+	  </controlProperties>
+	</control>
+	<control controlID="13" controlTypeID="com.balsamiq.mockups::Label" x="300" y="211" w="-1" h="-1" zOrder="8" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>etr</text>
+		<bold>false</bold>
+	  </controlProperties>
+	</control>
+	<control controlID="69" controlTypeID="com.balsamiq.mockups::Paragraph" x="39" y="100" w="125" h="66" zOrder="16" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Add%20Edelo%20%28Audio%29%0AAdd%20Edelo%20%28IPA%29%0AAdd%20Edelo%20%28Other%29</text>
+		<underline>false</underline>
+		<bold>false</bold>
+		<color>6710886</color>
+	  </controlProperties>
+	</control>
+	<control controlID="23" controlTypeID="com.balsamiq.mockups::Canvas" x="171" y="45" w="570" h="428" zOrder="1" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<backgroundAlpha>0</backgroundAlpha>
+		<color>16777215</color>
+	  </controlProperties>
+	</control>
+	<control controlID="24" controlTypeID="com.balsamiq.mockups::Label" x="185" y="60" w="-1" h="-1" zOrder="12" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<size>16</size>
+		<text>Edelo%28IPA%29</text>
+	  </controlProperties>
+	</control>
+	<control controlID="57" controlTypeID="com.balsamiq.mockups::TitleWindow" x="15" y="12" w="741" h="516" zOrder="0" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<topheight>37</topheight>
+		<bottomheight>0</bottomheight>
+		<text>Set%20Up%20Writing%20Systems</text>
+	  </controlProperties>
+	</control>
+	<control controlID="93" controlTypeID="__group__" x="789" y="138" w="-1" h="-1" zOrder="20" locked="false" isInGroup="-1">
+	  <groupChildrenDescriptors>
+		<control controlID="86" controlTypeID="com.balsamiq.mockups::ComboBox" x="62" y="2" w="391" h="-1" zOrder="0" locked="false" isInGroup="93">
+		  <controlProperties>
+			<text>Custom</text>
+		  </controlProperties>
+		</control>
+		<control controlID="87" controlTypeID="com.balsamiq.mockups::Label" x="62" y="34" w="93" h="25" zOrder="1" locked="false" isInGroup="93">
+		  <controlProperties>
+			<text>RFC464%20code%3A</text>
+		  </controlProperties>
+		</control>
+		<control controlID="88" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="55" h="25" zOrder="2" locked="false" isInGroup="93">
+		  <controlProperties>
+			<text>Special%3A</text>
+		  </controlProperties>
+		</control>
+		<control controlID="89" controlTypeID="com.balsamiq.mockups::Link" x="62" y="65" w="-1" h="-1" zOrder="3" locked="false" isInGroup="93">
+		  <controlProperties>
+			<text>The%20RFC464%20standard%20online</text>
+		  </controlProperties>
+		</control>
+		<control controlID="90" controlTypeID="com.balsamiq.mockups::TextInput" x="155" y="33" w="301" h="-1" zOrder="4" locked="false" isInGroup="93">
+		  <controlProperties>
+			<text>zh-Latn-CN-variant1-a-extend1-x-wadegile</text>
+		  </controlProperties>
+		</control>
+	  </groupChildrenDescriptors>
+	</control>
+	<control controlID="56" controlTypeID="com.balsamiq.mockups::Button" x="664" y="482" w="76" h="-1" zOrder="14" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Close</text>
+	  </controlProperties>
+	</control>
+	<control controlID="78" controlTypeID="com.balsamiq.mockups::Label" x="209" y="305" w="-1" h="-1" zOrder="19" locked="false" isInGroup="-1">
+	  <controlProperties>
+		<text>Special%3A</text>
+	  </controlProperties>
+	</control>
+  </controls>
+</mockup>

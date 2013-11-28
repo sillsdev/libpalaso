@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace Palaso.Xml
@@ -9,7 +12,7 @@ namespace Palaso.Xml
 	/// <summary>
 	/// Summary description for XmlUtils.
 	/// </summary>
-	public class XmlUtils
+	public static class XmlUtils
 	{
 		/// <summary>
 		/// Returns true if value of attrName is 'true' or 'yes' (case ignored)
@@ -20,6 +23,54 @@ namespace Palaso.Xml
 		public static bool GetBooleanAttributeValue(XmlNode node, string attrName)
 		{
 			return GetBooleanAttributeValue(GetOptionalAttributeValue(node, attrName));
+		}
+
+		/// <summary>
+		/// Given bytes that represent an xml element, return the values of requested attributes (if they exist).
+		/// </summary>
+		/// <param name="data">Data that is expected to an xml element.</param>
+		/// <param name="attributes">A set of attributes, the values of which are to be returned.</param>
+		/// <returns>A dictionary </returns>
+		public static Dictionary<string, string> GetAttributes(byte[] data, HashSet<string> attributes)
+		{
+			var results = new Dictionary<string, string>(attributes.Count);
+			using (var reader = XmlReader.Create(new MemoryStream(data), CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Fragment)))
+			{
+				reader.MoveToContent();
+				foreach (var attr in attributes)
+				{
+					results.Add(attr, null);
+					if (reader.MoveToAttribute(attr))
+					{
+						results[attr] = reader.Value;
+					}
+				}
+			}
+			return results;
+		}
+
+		/// <summary>
+		/// Given a string that represents an xml element, return the values of requested attributes (if they exist).
+		/// </summary>
+		/// <param name="data">Data that is expected to an xml element.</param>
+		/// <param name="attributes">A set of attributes, the values of which are to be returned.</param>
+		/// <returns>A dictionary </returns>
+		public static Dictionary<string, string> GetAttributes(string data, HashSet<string> attributes)
+		{
+			var results = new Dictionary<string, string>(attributes.Count);
+			using (var reader = XmlReader.Create(new StringReader(data), CanonicalXmlSettings.CreateXmlReaderSettings(ConformanceLevel.Fragment)))
+			{
+				reader.MoveToContent();
+				foreach (var attr in attributes)
+				{
+					results.Add(attr, null);
+					if (reader.MoveToAttribute(attr))
+					{
+						results[attr] = reader.Value;
+					}
+				}
+			}
+			return results;
 		}
 
 		/// <summary>
@@ -443,7 +494,7 @@ namespace Palaso.Xml
 		{
 			string sOutput = sInput;
 
-			if (sOutput != null && sOutput.Length != 0)
+			if (!string.IsNullOrEmpty(sOutput))
 			{
 				sOutput = sOutput.Replace("&", "&amp;");
 				sOutput = sOutput.Replace("<", "&lt;");
@@ -470,6 +521,246 @@ namespace Palaso.Xml
 				sOutput = sOutput.Replace(">", "&gt;");
 			}
 			return sOutput;
+		}
+
+		 /// <summary>
+		/// lifted from http://www.knowdotnet.com/articles/indentxml.html
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		public static string GetIndendentedXml(string xml)
+	  {
+		 string outXml = string.Empty;
+		 using(MemoryStream ms = new MemoryStream())
+		 // Create a XMLTextWriter that will send its output to a memory stream (file)
+		 using (XmlTextWriter xtw = new XmlTextWriter(ms, Encoding.Unicode))
+		 {
+			 XmlDocument doc = new XmlDocument();
+
+//             try
+//             {
+				 // Load the unformatted XML text string into an instance
+				 // of the XML Document Object Model (DOM)
+				 doc.LoadXml(xml);
+
+				 // Set the formatting property of the XML Text Writer to indented
+				 // the text writer is where the indenting will be performed
+				 xtw.Formatting = Formatting.Indented;
+
+				 // write dom xml to the xmltextwriter
+				 doc.WriteContentTo(xtw);
+				 // Flush the contents of the text writer
+				 // to the memory stream, which is simply a memory file
+				 xtw.Flush();
+
+				 // set to start of the memory stream (file)
+				 ms.Seek(0, SeekOrigin.Begin);
+				 // create a reader to read the contents of
+				 // the memory stream (file)
+				 StreamReader sr = new StreamReader(ms);
+				 // return the formatted string to caller
+				 return sr.ReadToEnd();
+//             }
+//             catch (Exception ex)
+//             {
+//                 return ex.Message;
+//             }
+		 }
+	  }
+
+		//todo: what's the diff between this one and the next?
+		static public XmlElement GetOrCreateElementPredicate(XmlDocument dom, XmlElement parent, string predicate, string name)
+		{
+			XmlElement element = (XmlElement)parent.SelectSingleNodeHonoringDefaultNS("/" + predicate);
+			if (element == null)
+			{
+				element = parent.OwnerDocument.CreateElement(name, parent.NamespaceURI);
+				parent.AppendChild(element);
+			}
+			return element;
+		}
+
+		static public XmlElement GetOrCreateElement(XmlDocument dom, string parentPath, string name)
+		{
+			XmlElement element = (XmlElement)dom.SelectSingleNodeHonoringDefaultNS(parentPath + "/" + name);
+			if (element == null)
+			{
+				XmlElement parent = (XmlElement)dom.SelectSingleNodeHonoringDefaultNS(parentPath);
+				if (parent == null)
+					return null;
+				element = parent.OwnerDocument.CreateElement(name, parent.NamespaceURI);
+				parent.AppendChild(element);
+			}
+			return element;
+		}
+
+		public static string GetStringAttribute(XmlNode form, string attr)
+		{
+			try
+			{
+				return form.Attributes[attr].Value;
+			}
+			catch (NullReferenceException)
+			{
+				throw new XmlFormatException(string.Format("Expected a {0} attribute on {1}.", attr, form.OuterXml));
+			}
+		}
+
+		public static string GetOptionalAttributeString(XmlNode xmlNode, string attributeName)
+		{
+			XmlAttribute attr = xmlNode.Attributes[attributeName];
+			if (attr == null)
+				return null;
+			return attr.Value;
+		}
+
+		public static XmlNode GetDocumentNodeFromRawXml(string outerXml, XmlNode nodeMaker)
+		{
+			if (string.IsNullOrEmpty(outerXml))
+			{
+				throw new ArgumentException();
+			}
+			XmlDocument doc = nodeMaker as XmlDocument;
+			if (doc == null)
+			{
+				doc = nodeMaker.OwnerDocument;
+			}
+			using (StringReader sr = new StringReader(outerXml))
+			{
+				using (XmlReader r = XmlReader.Create(sr))
+				{
+					r.Read();
+					return doc.ReadNode(r);
+				}
+			}
+		}
+
+		public static string GetXmlForShowingInHtml(string xml)
+		{
+			var s = Palaso.Xml.XmlUtils.GetIndendentedXml(xml).Replace("<", "&lt;");
+			s = s.Replace("\r\n", "<br/>");
+			s = s.Replace("  ", "&nbsp;&nbsp;");
+			return s;
+		}
+
+
+		public static string GetTitleOfHtml(XmlDocument dom, string defaultIfMissing)
+		{
+			var title = dom.SelectSingleNode("//head/title");
+			if (title != null && !string.IsNullOrEmpty(title.InnerText) && !string.IsNullOrEmpty(title.InnerText.Trim()))
+			{
+				return title.InnerText.Trim();
+			}
+			return defaultIfMissing;
+		}
+
+		/// <summary>
+		/// Write a node out containing the XML in dataToWrite, pretty-printed according to the rules of writer, except
+		/// that we suppress indentation for children of nodes whose names are listed in suppressIndentingChildren,
+		/// and also for "mixed" nodes (where some children are text).
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="dataToWrite"></param>
+		/// <param name="suppressIndentingChildren"></param>
+		public static void WriteNode(XmlWriter writer, string dataToWrite, HashSet<string> suppressIndentingChildren)
+		{
+			XElement element = XDocument.Parse(dataToWrite).Root;
+			WriteNode(writer, element, suppressIndentingChildren);
+		}
+
+		/// <summary>
+		/// Write a node out containing the XML in dataToWrite, pretty-printed according to the rules of writer, except
+		/// that we suppress indentation for children of nodes whose names are listed in suppressIndentingChildren,
+		/// and also for "mixed" nodes (where some children are text).
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="dataToWrite"></param>
+		/// <param name="suppressIndentingChildren"></param>
+		public static void WriteNode(XmlWriter writer, XElement dataToWrite, HashSet<string> suppressIndentingChildren)
+		{
+			if (dataToWrite == null)
+				return;
+			WriteElementTo(writer, dataToWrite, suppressIndentingChildren);
+		}
+
+		/// <summary>
+		/// Recursively write an element to the writer, suppressing indentation of children when required.
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="element"></param>
+		/// <param name="suppressIndentingChildren"></param>
+		private static void WriteElementTo(XmlWriter writer, XElement element, HashSet<string> suppressIndentingChildren)
+		{
+			writer.WriteStartElement(element.Name.LocalName);
+			foreach (var attr in element.Attributes())
+				writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+			// The writer automatically suppresses indenting children for any element that it detects has text children.
+			// However, it won't do this for the first child if that is an element, even if it later encounters text children.
+			// Also, there may be a parent where text including white space is significant, yet it is possible for the
+			// WHOLE content to be an element. For example, a <text> or <AStr> element may consist entirely of a <span>.
+			// In such cases there is NO way to tell from the content that it should not be indented, so all we can do
+			// is pass a list of such elements.
+			bool suppressIndenting = suppressIndentingChildren.Contains(element.Name.LocalName) || element.Nodes().Any(x => x is XText);
+			// In either case, we implement the suppression by making the first child a fake text element.
+			// Calling this method, even with an empty string, has proved to be enough to make the writer treat the parent
+			// as "mixed" which prevents indenting its children.
+			if (suppressIndenting)
+				writer.WriteString("");
+			foreach (var child in element.Nodes())
+			{
+				var xElement = child as XElement;
+				if (xElement != null)
+					WriteElementTo(writer, xElement, suppressIndentingChildren);
+				else
+					child.WriteTo(writer); // defaults are fine for everything else.
+			}
+			writer.WriteEndElement();
+		}
+
+		/// <summary>
+		/// Remove illegal XML characters from a string.
+		/// </summary>
+		public static string SanitizeString(string s)
+		{
+			if (string.IsNullOrEmpty(s))
+			{
+				return s;
+			}
+
+			StringBuilder buffer = new StringBuilder(s.Length);
+
+			for (int i = 0; i < s.Length; i++)
+			{
+				int code;
+				try
+				{
+					code = Char.ConvertToUtf32(s, i);
+				}
+				catch (ArgumentException)
+				{
+					continue;
+				}
+				if (IsLegalXmlChar(code))
+					buffer.Append(Char.ConvertFromUtf32(code));
+				if (Char.IsSurrogatePair(s, i))
+					i++;
+			}
+
+			return buffer.ToString();
+		}
+
+		/// <summary>
+		/// Whether a given character is allowed by XML 1.0.
+		/// </summary>
+		private static bool IsLegalXmlChar(int codePoint)
+		{
+			return (codePoint == 0x9 ||
+				codePoint == 0xA ||
+				codePoint == 0xD ||
+				(codePoint >= 0x20 && codePoint <= 0xD7FF) ||
+				(codePoint >= 0xE000 && codePoint <= 0xFFFD) ||
+				(codePoint >= 0x10000/* && character <= 0x10FFFF*/) //it's impossible to get a code point bigger than 0x10FFFF because Char.ConvertToUtf32 would have thrown an exception
+			);
 		}
 	}
 }

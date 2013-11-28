@@ -20,11 +20,23 @@
 			</fileset>
 		</copy>
 
-		<resgen todir="${build.namespace.dir}" usesourcepath="true">
-			<resources>
-				<include name="${build.namespace.dir}/**/*.resx" />
-			</resources>
-		</resgen>
+				<foreach item="Folder" property="build.namespace.dir.current">
+						<in>
+								<items>
+										<include name="${build.namespace.dir}/**" />
+										<exclude name="${build.namespace.dir}/Resources" />
+										<exclude name="${build.namespace.dir}/artwork" />
+								</items>
+						</in>
+						<do>
+								<echo message="Resource compiling ${build.namespace.dir.current}" />
+								<resgen todir="${build.namespace.dir.current}" usesourcepath="true">
+										<resources>
+												<include name="${build.namespace.dir.current}/*.resx" />
+										</resources>
+								</resgen>
+						</do>
+				</foreach>
 
 		<csc target="library"
 			output="${project.output.dir}/Palaso.Media.dll"
@@ -41,6 +53,7 @@
 				<include name="**/*.cs" />
 			</sources>
 			<references basedir="${project.output.dir}">
+				<include name="Palaso.dll" />
 				<include name="System.Drawing.dll" />
 				<include name="System.Windows.Forms.dll" />
 				<include name="irrKlang.NET2.0.dll" />

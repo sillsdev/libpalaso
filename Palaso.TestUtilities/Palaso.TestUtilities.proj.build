@@ -36,6 +36,7 @@
 				<warning number="618,672"/>
 				<warning number="1584" />
 				<warning number="1570" />
+				<warning number="1591" />
 				<warning number="1699" if="${runtime.version=='2.0'}"/>
 			</nowarn>
 			<sources basedir=".">
@@ -45,6 +46,7 @@
 				<include name="nunit.framework.dll" />
 				<include name="System.dll" />
 				<include name="System.Xml.dll" />
+				<include name="Palaso.dll" />
 			</references>
 			<!--
 			<resources prefix="${build.namespace}" basedir="${build.namespace.dir}" dynamicprefix="true">

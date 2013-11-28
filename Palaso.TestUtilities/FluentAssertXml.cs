@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using NUnit.Framework;
+using Palaso.Xml;
 
 namespace Palaso.TestUtilities
 {
@@ -87,7 +88,6 @@ namespace Palaso.TestUtilities
 	{
 		protected abstract XmlNode NodeOrDom { get; }
 
-
 		public void HasAtLeastOneMatchForXpath(string xpath, XmlNamespaceManager nameSpaceManager)
 		{
 			XmlNode node = GetNode(xpath, nameSpaceManager);
@@ -99,6 +99,9 @@ namespace Palaso.TestUtilities
 			Assert.IsNotNull(node, "Not matched: " + xpath);
 		}
 
+		/// <summary>
+		/// Will honor default namespace
+		/// </summary>
 		public  void HasAtLeastOneMatchForXpath(string xpath)
 		{
 			XmlNode node = GetNode(xpath);
@@ -108,6 +111,26 @@ namespace Palaso.TestUtilities
 				PrintNodeToConsole(NodeOrDom);
 			}
 			Assert.IsNotNull(node, "Not matched: " + xpath);
+		}
+
+		/// <summary>
+		/// Will honor default namespace
+		/// </summary>
+		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count)
+		{
+			var nodes = NodeOrDom.SafeSelectNodes(xpath);
+			if (nodes==null)
+			{
+				Console.WriteLine("Expected {0} but got 0 matches for {1}",count,  xpath);
+				PrintNodeToConsole(NodeOrDom);
+				Assert.AreEqual(count,0);
+			}
+			else if (nodes.Count != count)
+			{
+				Console.WriteLine("Expected {0} but got {1} matches for {2}",count, nodes.Count, xpath);
+				PrintNodeToConsole(NodeOrDom);
+				Assert.AreEqual(count, nodes.Count, "matches for "+xpath);
+			}
 		}
 
 		public static void PrintNodeToConsole(XmlNode node)
@@ -144,12 +167,14 @@ namespace Palaso.TestUtilities
 			Assert.IsNull(node, "Should not have matched: " + xpath);
 		}
 
-
-
-
 		private XmlNode GetNode(string xpath)
 		{
+#if MONO
+			// Currently the method XmlNodeExtensions.GetPrefixedPath doesn't allow for / in a literal string
 			return NodeOrDom.SelectSingleNode(xpath);
+#else
+			return NodeOrDom.SelectSingleNodeHonoringDefaultNS(xpath);
+#endif
 		}
 
 		private XmlNode GetNode(string xpath, XmlNamespaceManager nameSpaceManager)

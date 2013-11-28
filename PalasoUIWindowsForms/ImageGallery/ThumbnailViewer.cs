@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using Palaso.UI.WindowsForms.ImageGallery;
@@ -15,7 +17,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		private BackgroundWorker _thumbnailWorker = new BackgroundWorker();
 
 		public event EventHandler OnLoadComplete;
-
 
 		public string SelectedPath
 		{
@@ -50,17 +51,33 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		private void SetThumbnail(Image image)
 		{
 			if (Disposing) return;
+			if (IsDisposed)
+				return;
+			if (!IsHandleCreated)
+				return;
 
 			if (this.InvokeRequired)
 			{
 				SetThumbnailDelegate d = new SetThumbnailDelegate(SetThumbnail);
-				this.Invoke(d, new object[] { image });
+
+				if (IsDisposed || _thumbnailWorker == null || !IsHandleCreated)
+						return;
+				this.Invoke(d, new object[] {image});
 			}
 			else
 			{
-				LargeImageList.Images.Add(image); //Images[i].repl
-				int index = LargeImageList.Images.Count - 1;
-				Items[index - 1].ImageIndex = index;
+				 lock (this)
+				{
+					if (LargeImageList == null)
+					{
+						Debug.Fail("(Only seeing this in the debug version) Thumbnail viewer worker still woking after the form was closed.");
+						return;
+					}
+					LargeImageList.Images.Add(image); //Images[i].repl
+
+					int index = LargeImageList.Images.Count - 1;
+					Items[index - 1].ImageIndex = index;
+				}
 			}
 		}
 
@@ -120,6 +137,9 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 			foreach (string fileName in fileList)
 			{
+				if (IsDisposed || _thumbnailWorker ==null)
+					return;
+
 				if (_thumbnailWorker.CancellationPending)
 				{
 					e.Cancel = true;
@@ -177,6 +197,39 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		public CaptionMethodDelegate CaptionMethod
 		{
 			get; set;
+		}
+
+		public void Closing()
+		{
+			if (_thumbnailWorker != null)
+			{
+				_thumbnailWorker.CancelAsync();
+				var stopTime = DateTime.Now.AddSeconds(5);
+				//NB: had a lot of trouble getting the thumbnailer to shut down before we dispose, until I added this.
+				while(_thumbnailWorker.IsBusy && DateTime.Now < stopTime )
+				{
+					Application.DoEvents();
+				}
+				_thumbnailWorker = null;
+			}
+		}
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (_thumbnailWorker != null)
+			{
+				_thumbnailWorker = null;
+			}
+
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

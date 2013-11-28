@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using Spart.Parsers;
 using Spart.Scanners;
 
-namespace Spart.Tests.Parsers.Primitives
+namespace Palaso.Tests.Spart.Parsers.Primitives
 {
 	[TestFixture]
 	public class EndParserTests

@@ -707,27 +707,25 @@ namespace Palaso.Tests
 			test.ReadNextText();
 			Assert.AreEqual("tag2", test.ReadNextTag());
 		}
+
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void ReadNextTextThenReadInitialText_Throw()
 		{
-			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
-					@"\tag1 some text\tag2"));
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(@"\tag1 some text\tag2"));
 			SFMReader test = new SFMReader(stream);
-
 			test.ReadNextText();
-			test.ReadInitialText();
+
+			Assert.Throws<InvalidOperationException>(
+				() => test.ReadInitialText());
 		}
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void ReadNextTagThenReadInitialText_Throw()
 		{
-			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
-					@"\tag1 some text\tag2"));
+			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(@"\tag1 some text\tag2"));
 			SFMReader test = new SFMReader(stream);
-
 			test.ReadNextTag();
-			test.ReadInitialText();
+			Assert.Throws<InvalidOperationException>(
+				() => test.ReadInitialText());
 		}
 		[Test]
 		public void UsfmMode_TagTerminiatedByAsterisk()

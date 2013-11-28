@@ -1,3 +1,4 @@
+using L10NSharp;
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
 	partial class LookupISOCodeDialog
@@ -28,108 +29,93 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.listView1 = new System.Windows.Forms.ListView ();
-			this.columnHeader1 = new System.Windows.Forms.ColumnHeader ();
-			this.columnHeader2 = new System.Windows.Forms.ColumnHeader ();
-			this._okButton = new System.Windows.Forms.Button ();
-			this._aboutLink = new System.Windows.Forms.LinkLabel ();
-			this._aboutLink639_1 = new System.Windows.Forms.LinkLabel ();
-			this.SuspendLayout ();
-			//
-			// listView1
-			//
-			this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)));
-			this.listView1.Columns.AddRange (new System.Windows.Forms.ColumnHeader [] {
-			this.columnHeader1,
-			this.columnHeader2});
-			this.listView1.FullRowSelect = true;
-			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point (0, -1);
-			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size (292, 241);
-			this.listView1.TabIndex = 0;
-			this.listView1.UseCompatibleStateImageBehavior = false;
-			this.listView1.View = System.Windows.Forms.View.Details;
-			this.listView1.VirtualMode = true;
-			this.listView1.SearchForVirtualItem += new System.Windows.Forms.SearchForVirtualItemEventHandler (this.listView1_SearchForVirtualItem);
-			this.listView1.SelectedIndexChanged += new System.EventHandler (this.listView1_SelectedIndexChanged);
-			this.listView1.DoubleClick += new System.EventHandler (this.listView1_DoubleClick);
-			this.listView1.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler (this.listView1_RetrieveVirtualItem);
-			//
-			// columnHeader1
-			//
-			this.columnHeader1.Text = "Name";
-			this.columnHeader1.Width = 163;
-			//
-			// columnHeader2
-			//
-			this.columnHeader2.Text = "Code";
+			this.components = new System.ComponentModel.Container();
+			this._okButton = new System.Windows.Forms.Button();
+			this._cancelButton = new System.Windows.Forms.Button();
+			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._lookupISOControl = new Palaso.UI.WindowsForms.WritingSystems.LookupISOControl();
+			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
+			this.SuspendLayout();
 			//
 			// _okButton
 			//
-			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._okButton.Location = new System.Drawing.Point (205, 274);
+			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._L10NSharpExtender.SetLocalizableToolTip(this._okButton, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
+			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
+			this._okButton.Location = new System.Drawing.Point(453, 311);
 			this._okButton.Name = "_okButton";
-			this._okButton.Size = new System.Drawing.Size (75, 23);
+			this._okButton.Size = new System.Drawing.Size(96, 23);
 			this._okButton.TabIndex = 1;
 			this._okButton.Text = "&OK";
 			this._okButton.UseVisualStyleBackColor = true;
-			this._okButton.Click += new System.EventHandler (this._okButton_Click);
+			this._okButton.Click += new System.EventHandler(this._okButton_Click);
 			//
-			// _aboutLink
+			// _cancelButton
 			//
-			this._aboutLink.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutLink.AutoSize = true;
-			this._aboutLink.Location = new System.Drawing.Point (12, 287);
-			this._aboutLink.Name = "_aboutLink";
-			this._aboutLink.Size = new System.Drawing.Size (119, 13);
-			this._aboutLink.TabIndex = 2;
-			this._aboutLink.TabStop = true;
-			this._aboutLink.Text = "About ISO 639-3 Codes";
-			this._aboutLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler (this._aboutLink_LinkClicked);
+			this._cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this._cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._cancelButton, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._cancelButton, null);
+			this._L10NSharpExtender.SetLocalizingId(this._cancelButton, "Common.CancelButton");
+			this._cancelButton.Location = new System.Drawing.Point(568, 311);
+			this._cancelButton.Name = "_cancelButton";
+			this._cancelButton.Size = new System.Drawing.Size(98, 23);
+			this._cancelButton.TabIndex = 2;
+			this._cancelButton.Text = "&Cancel";
+			this._cancelButton.UseVisualStyleBackColor = true;
+			this._cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
 			//
-			// _aboutLink639_1
+			// _L10NSharpExtender
 			//
-			this._aboutLink639_1.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._aboutLink639_1.AutoSize = true;
-			this._aboutLink639_1.Location = new System.Drawing.Point (12, 259);
-			this._aboutLink639_1.Name = "_aboutLink639_1";
-			this._aboutLink639_1.Size = new System.Drawing.Size (119, 13);
-			this._aboutLink639_1.TabIndex = 3;
-			this._aboutLink639_1.TabStop = true;
-			this._aboutLink639_1.Text = "About ISO 639-1 Codes";
-			this._aboutLink639_1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler (this._aboutLink639_1_LinkClicked);
+			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
+			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
+			//
+			// _lookupISOControl
+			//
+			this._lookupISOControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			| System.Windows.Forms.AnchorStyles.Left)
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this._lookupISOControl.ISOCode = "";
+			this._L10NSharpExtender.SetLocalizableToolTip(this._lookupISOControl, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._lookupISOControl, null);
+			this._L10NSharpExtender.SetLocalizingId(this._lookupISOControl, "LanguageLookup.LookupISOControl");
+			this._lookupISOControl.Location = new System.Drawing.Point(21, 16);
+			this._lookupISOControl.Name = "_lookupISOControl";
+			this._lookupISOControl.Size = new System.Drawing.Size(645, 289);
+			this._lookupISOControl.TabIndex = 0;
+			this._lookupISOControl.ReadinessChanged += new System.EventHandler(this._lookupISOControl_Changed);
+			this._lookupISOControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
 			//
 			// LookupISOCodeDialog
 			//
 			this.AcceptButton = this._okButton;
-			this.AutoScaleDimensions = new System.Drawing.SizeF (6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size (292, 309);
-			this.Controls.Add (this._aboutLink639_1);
-			this.Controls.Add (this._aboutLink);
-			this.Controls.Add (this._okButton);
-			this.Controls.Add (this.listView1);
+			this.CancelButton = this._cancelButton;
+			this.ClientSize = new System.Drawing.Size(686, 349);
+			this.Controls.Add(this._lookupISOControl);
+			this.Controls.Add(this._cancelButton);
+			this.Controls.Add(this._okButton);
+			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
+			this._L10NSharpExtender.SetLocalizationComment(this, null);
+			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LanguageLookupDialogWindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "LookupISOCodeDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.Text = "Lookup ISO Code...";
-			this.Load += new System.EventHandler (this.LookupISOCodeDialog_Load);
-			this.ResumeLayout (false);
-			this.PerformLayout ();
+			this.Text = "Lookup Language Code...";
+			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
+			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.ListView listView1;
-		private System.Windows.Forms.ColumnHeader columnHeader1;
-		private System.Windows.Forms.ColumnHeader columnHeader2;
 		private System.Windows.Forms.Button _okButton;
-		private System.Windows.Forms.LinkLabel _aboutLink;
-		private System.Windows.Forms.LinkLabel _aboutLink639_1;
+		private System.Windows.Forms.Button _cancelButton;
+		private LookupISOControl _lookupISOControl;
+		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }
