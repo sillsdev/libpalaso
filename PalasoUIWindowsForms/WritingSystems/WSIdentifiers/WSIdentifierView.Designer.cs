@@ -54,6 +54,7 @@
 			this._abbreviation.Size = new System.Drawing.Size(46, 20);
 			this._abbreviation.TabIndex = 12;
 			this.toolTip1.SetToolTip(this._abbreviation, "Abbreviation to use in field labels");
+			this._abbreviation.TextChanged += new System.EventHandler(this._abbreviation_TextChanged);
 			//
 			// _detailPanel
 			//
@@ -67,8 +68,8 @@
 			this.betterLabel5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel5.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.betterLabel5.Location = new System.Drawing.Point(22, 59);
+			this.betterLabel5.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel5.Location = new System.Drawing.Point(13, 59);
 			this.betterLabel5.Multiline = true;
 			this.betterLabel5.Name = "betterLabel5";
 			this.betterLabel5.ReadOnly = true;
@@ -82,8 +83,8 @@
 			this.betterLabel4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel4.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLabel4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.betterLabel4.Location = new System.Drawing.Point(22, 22);
+			this.betterLabel4.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel4.Location = new System.Drawing.Point(13, 22);
 			this.betterLabel4.Multiline = true;
 			this.betterLabel4.Name = "betterLabel4";
 			this.betterLabel4.ReadOnly = true;
@@ -103,6 +104,7 @@
 			this.Controls.Add(this.betterLabel4);
 			this.Name = "WSIdentifierView";
 			this.Size = new System.Drawing.Size(381, 229);
+			this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

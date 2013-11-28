@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,48 +10,63 @@
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace>Palaso.DictionaryServices.Tests</RootNamespace>
 	<AssemblyName>Palaso.DictionaryServices.Tests</AssemblyName>
-	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
+	<FileUpgradeFlags>
+	</FileUpgradeFlags>
+	<OldToolsVersion>3.5</OldToolsVersion>
+	<UpgradeBackupLocation />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
-	<OutputPath>..\output\Debug\</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>DEBUG;TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 	<DebugType>pdbonly</DebugType>
 	<Optimize>true</Optimize>
-	<OutputPath>..\output\Release\</OutputPath>
+	<OutputPath>..\output\Release</OutputPath>
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
+	<PlatformTarget>x86</PlatformTarget>
+	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>..\output\DebugMono</OutputPath>
+	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
+	<OutputPath>..\output\ReleaseMono</OutputPath>
+	<DefineConstants>TRACE;MONO</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<ErrorReport>prompt</ErrorReport>
+	<TargetFrameworkProfile></TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="LiftIO, Version=1.1.32.0, Culture=neutral, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\net2.0\LiftIO.dll</HintPath>
-	</Reference>
-	<Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+	<Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
 	</Reference>
 	<Reference Include="System" />
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+	<Reference Include="System.Core" />
 	<Reference Include="System.Drawing" />
 	<Reference Include="System.Windows.Forms" />
-	<Reference Include="System.Xml.Linq">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
-	<Reference Include="System.Data.DataSetExtensions">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="System.Data.DataSetExtensions" />
 	<Reference Include="System.Data" />
 	<Reference Include="System.Xml" />
   </ItemGroup>
@@ -65,16 +80,29 @@
 	<Compile Include="LexEntryRepositoryEventTests.cs" />
 	<Compile Include="LexEntryRepositoryStateUnitializedTests.cs" />
 	<Compile Include="LexEntryRepositoryTests.cs" />
+	<Compile Include="Lift\EmbeddedXmlCollectionTests.cs" />
+	<Compile Include="Lift\FlagStateTests.cs" />
 	<Compile Include="Lift\HtmlArticalMakerTests.cs">
 	</Compile>
 	<Compile Include="Lift\LexEntryFromLiftBuilderTests.cs" />
-	<Compile Include="Lift\LiftExportTests.cs" />
+	<Compile Include="Lift\LiftWriterTests.cs" />
 	<Compile Include="Lift\LiftPreparer.Tests.cs" />
 	<Compile Include="Lift\LiftRepositoryTests.cs" />
 	<Compile Include="Lift\LiftRoundTripTests.cs" />
+	<Compile Include="Lift\PictureRefTests.cs" />
+	<Compile Include="Model\LexEtymologyTests.cs" />
+	<Compile Include="Model\LexExampleSentenceTests.cs" />
+	<Compile Include="Model\LexTraitTests.cs" />
+	<Compile Include="Model\LexNoteTests.cs" />
+	<Compile Include="Model\LexPhoneticTests.cs" />
+	<Compile Include="Model\LexReversalTests.cs" />
+	<Compile Include="Model\LexSenseTests.cs" />
 	<Compile Include="Model\LexEntryTests.cs" />
 	<Compile Include="Model\LexRelationTests.cs" />
+	<Compile Include="Model\LexVariantTests.cs" />
+	<Compile Include="Processors\EntrySplitterTests.cs" />
 	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="Processors\MergeHomographsTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.DictionaryServices\Palaso.DictionaryServices.csproj">

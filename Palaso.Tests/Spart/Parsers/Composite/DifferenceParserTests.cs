@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using Spart.Actions;
 using Spart.Parsers;
@@ -6,7 +5,7 @@ using Spart.Parsers.Composite;
 using Spart.Parsers.Primitives;
 using Spart.Scanners;
 
-namespace Spart.Tests.Parsers.Composite
+namespace Palaso.Tests.Spart.Parsers.Composite
 {
 	[TestFixture]
 	public class DifferenceParserTests

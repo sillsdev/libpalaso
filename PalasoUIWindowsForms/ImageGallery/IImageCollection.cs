@@ -7,7 +7,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 	public interface IImageCollection
 	{
-		IEnumerable<object> GetMatchingPictures(string keywords);
+		IEnumerable<object> GetMatchingPictures(string keywords, out bool foundExactMatches);
 
 		/// <summary>
 		/// The imageTOken here could be a path or whatever, the client doesn't need to know or care

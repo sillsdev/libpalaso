@@ -8,7 +8,7 @@
 	<CSharpFiles Include="c:\wesay\src\**\*.cs"/>
 	<XmlFiles Include="c:\wesay\common\**\*.WeSayConfig"/>
   </ItemGroup>
-
+  <!--
   <UsingTask AssemblyFile="c:\dev\palaso\output\debug\Palaso.BuildTasks.dll" TaskName="StampAssemblies" />
   <Target Name="TestStamping">
 	<ItemGroup>
@@ -57,6 +57,15 @@
 	  <Output TaskParameter="ReturnValue" PropertyName="Version" />
 	</Split>
 	<Message Text="Version: $(Version)" />
+  </Target>
+  -->
+
+  <UsingTask AssemblyFile="..\output\Debug\Palaso.BuildTasks.dll" TaskName="FileUpdate" />
+  <Target Name="FileUpdateTest">
+  <FileUpdate File="FileUpdateSample.txt"
+			  Regex="Property_ProductVersion = \&quot;.*\&quot;"
+			  ReplacementText ="Property_ProductVersion = &quot;999&quot;" />
+
   </Target>
 
 

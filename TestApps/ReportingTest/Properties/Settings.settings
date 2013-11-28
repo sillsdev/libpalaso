@@ -1,7 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-	<Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TestApp.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+	<Setting Name="NeedsUpgrade" Provider="Palaso.Settings.CrossPlatformSettingsProvider" Type="System.Boolean" Scope="User">
+	  <Value Profile="(Default)">True</Value>
+	</Setting>
+	<Setting Name="ReportingSettings" Provider="Palaso.Settings.CrossPlatformSettingsProvider" Type="Palaso.Reporting.ReportingSettings" Scope="User">
+	  <Value Profile="(Default)" />
+	</Setting>
+  </Settings>
 </SettingsFile>
