@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml;
+using Palaso.IO;
 using Palaso.Migration;
 
 using NUnit.Framework;
@@ -15,7 +13,7 @@ namespace Palaso.Tests.Migration
 	public class XmlReaderWriterMigratorTests
 	{
 
-		class MigratorForTest : XmlReaderWriterMigrator
+		class MigratorForTest : XmlReaderWriterMigrationStrategy
 		{
 			public MigratorForTest(int fromVersion, int toVersion) : base(fromVersion, toVersion)
 			{

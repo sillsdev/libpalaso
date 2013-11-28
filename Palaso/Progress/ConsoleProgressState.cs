@@ -2,7 +2,7 @@ using System;
 
 namespace Palaso.Progress
 {
-	public class ConsoleProgress : ProgressState
+	public class ConsoleProgressState : ProgressState
 	{
 		public override string StatusLabel
 		{

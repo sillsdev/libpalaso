@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
 using System.Linq;
 
-namespace Palaso.UI.WindowsForms.WritingSystems
+namespace Palaso.UI.WindowsForms.WritingSystems.WSTree
 {
 	/// <summary>
 	/// This is the Presentation Model (e.g., logic, no UI) for the list
@@ -55,12 +51,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (currentDefinition == null)
 				return null;
 
-//            System.Func<WritingSystemTreeItem, IEnumerable<WritingSystemTreeItem>> getAll =
-//                item => item.Children.Concat(new[] {item});
-
-			IEnumerable<WritingSystemTreeItem> parentsAndChildren = (from item in items
-								  where item is WritingSystemDefinitionTreeItem
-								   select item.Children.Concat(new[] { item })).SelectMany(i => i);
+			IEnumerable<WritingSystemTreeItem> parentsAndChildren = items.SelectMany(i => i.Children).Concat(items);
 
 			return (from item in parentsAndChildren
 				   where item is WritingSystemDefinitionTreeItem
@@ -91,14 +82,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void AddExistingDefinitionsAndSuggestions(List<WritingSystemTreeItem> items)
 		{
-			var x = new List<WritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
+			var x = new List<IWritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
 
-			var systemsOfSameLanguage = x.GroupBy(def=>def.ISO);
+			var systemsOfSameLanguage = x.GroupBy(def=>def.LanguageName);
 
 			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{
 				WritingSystemTreeItem parent;
-				WritingSystemDefinition itemToUseForSuggestions;
+				IWritingSystemDefinition itemToUseForSuggestions;
 				if (OneWritingSystemIsASuitableParent(defsOfSameLanguage))
 				{
 					var primaryDefinition = ChooseMainDefinitionOfLanguage(defsOfSameLanguage);
@@ -126,11 +117,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 						parent.Children.Add(treeItem);
 					}
 				}
+
+				if (itemToUseForSuggestions.Language == "qaa")
+				{
+					var treeItem = new WritingSystemRenameUnlistedLanguageTreeItem(item => _setupModel.RenameIsoCode(itemToUseForSuggestions));
+					parent.Children.Add(treeItem);
+				}
+
 				items.Add(parent);
 			}
 		}
 
-		private WritingSystemTreeItem MakeExistingDefinitionItem(WritingSystemDefinition definition)
+		private WritingSystemTreeItem MakeExistingDefinitionItem(IWritingSystemDefinition definition)
 		{
 			var item = new WritingSystemDefinitionTreeItem(definition, OnClickExistingDefinition);
 			item.Selected = item.Definition == _setupModel.CurrentDefinition;
@@ -142,21 +140,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_setupModel.SetCurrentDefinition(((WritingSystemDefinitionTreeItem)treeItem).Definition);
 		}
 
-		private WritingSystemDefinition ChooseMainDefinitionOfLanguage(IEnumerable<WritingSystemDefinition> definitions)
+		private IWritingSystemDefinition ChooseMainDefinitionOfLanguage(IEnumerable<IWritingSystemDefinition> definitions)
 		{
 			var x = definitions.OrderBy(def => GetSpecificityScore(def));
 			return x.First();
 		}
 
-		private bool OneWritingSystemIsASuitableParent(IEnumerable<WritingSystemDefinition> definitions)
+		private bool OneWritingSystemIsASuitableParent(IEnumerable<IWritingSystemDefinition> definitions)
 		{
 			if (definitions.Count() == 1)
 				return true;
-			var x = definitions.OrderBy(ws => GetSpecificityScore(ws)).ToArray();
+			var x = definitions.OrderBy<IWritingSystemDefinition, int>(GetSpecificityScore).ToArray();
 			return GetSpecificityScore(x[0]) != GetSpecificityScore(x[1]);
 		}
 
-		private int GetSpecificityScore(WritingSystemDefinition definition)
+		private int GetSpecificityScore(IWritingSystemDefinition definition)
 		{
 			int score = 0;
 			if(!string.IsNullOrEmpty(definition.Region))

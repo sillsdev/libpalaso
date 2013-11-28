@@ -37,6 +37,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this._rightToLeftCheckBox = new System.Windows.Forms.CheckBox();
+			this._promptForFontTestArea = new Palaso.UI.WindowsForms.Widgets.Prompt();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -99,7 +100,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			// label1
 			//
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(-3, 0);
+			this.label1.Location = new System.Drawing.Point(3, 0);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(302, 16);
 			this.label1.TabIndex = 0;
@@ -116,7 +117,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// label3
 			//
-			this.label3.Location = new System.Drawing.Point(-3, 30);
+			this.label3.Location = new System.Drawing.Point(3, 30);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(478, 14);
 			this.label3.TabIndex = 1;
@@ -133,9 +134,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._testArea.Name = "_testArea";
 			this._testArea.Size = new System.Drawing.Size(478, 95);
 			this._testArea.TabIndex = 2;
-			this._testArea.Text = "Use this area to type something to test out your font.";
-			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
+			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			//
 			// splitContainer1
 			//
@@ -219,5 +219,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.SplitContainer splitContainer2;
 		private System.Windows.Forms.CheckBox _rightToLeftCheckBox;
+		private Widgets.Prompt _promptForFontTestArea;
 	}
 }
