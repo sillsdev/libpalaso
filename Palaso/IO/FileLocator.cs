@@ -447,7 +447,7 @@ namespace Palaso.IO
 
 		#endregion
 
-		public void AddPath(string path)
+		public virtual void AddPath(string path)
 		{
 			_searchPaths.Add(path);
 		}
