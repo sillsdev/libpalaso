@@ -161,9 +161,9 @@ namespace SIL.Archiving.Tests
 			var desc1 = new LanguageString { Iso3LanguageId = "eng", Value = "First description"};
 			var desc2 = new LanguageString { Iso3LanguageId = "eng", Value = "Second description" };
 
-			var obj = new IMDIMajorObject();
-			obj.AddDescription(desc1);
-			obj.AddDescription(desc2);
+			var obj = new Corpus();
+			obj.Description.Add(desc1);
+			obj.Description.Add(desc2);
 
 			Assert.AreEqual(1, obj.Description.Count);
 			Assert.AreEqual("First description", obj.Description.First().Value);
