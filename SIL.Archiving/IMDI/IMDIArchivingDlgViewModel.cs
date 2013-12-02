@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using L10NSharp;
 using SIL.Archiving.Generic;
-using SIL.Archiving.IMDI.Schema;
 using SIL.Archiving.Properties;
 
 namespace SIL.Archiving.IMDI
@@ -13,7 +13,8 @@ namespace SIL.Archiving.IMDI
 	/// <summary>Implements archiving for IMDI repositories</summary>
 	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
 	{
-		private readonly IMDIPackage _imdiData;
+		private IMDIPackage _imdiData;
+		private readonly bool _corpus;
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 
@@ -77,7 +78,6 @@ namespace SIL.Archiving.IMDI
 			}
 		}
 
-		/// <summary></summary>
 		public override string ArchiveInfoHyperlinkText
 		{
 			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IsleMetadataInitiative",
@@ -94,8 +94,8 @@ namespace SIL.Archiving.IMDI
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
 		/// <param name="appName">The application name</param>
-		/// <param name="title">Title of the submission.</param>
-		/// <param name="id">Identifier for the package being created. Used as the CORPUS name.</param>
+		/// <param name="title">Title of the submission</param>
+		/// <param name="id">Identifier (used as filename) for the package being created</param>
 		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
 		/// additional information that will be displayed to the user in the dialog to explain
 		/// any application-specific details about the archival process.</param>
@@ -110,11 +110,12 @@ namespace SIL.Archiving.IMDI
 			Action<ArchivingDlgViewModel> setFilesToArchive, string outputFolder)
 			: base(appName, title, id, appSpecificArchivalProcessInfo, setFilesToArchive)
 		{
+			_corpus = corpus;
 			_outputFolder = outputFolder;
 
-			PackagePath = Path.Combine(_outputFolder, NormalizeDirectoryName(title));
+			PackagePath = Path.Combine(_outputFolder, NormalizeDirectoryName(id));
 
-			_imdiData = new IMDIPackage(corpus, PackagePath)
+			_imdiData = new IMDIPackage(_corpus, PackagePath)
 			{
 				Title = _titles[_id],
 				Name = _id
@@ -136,28 +137,34 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// ------------------------------------------------------------------------------------
+		protected override string FileGroupDisplayMessage(string groupKey)
+		{
+			if (groupKey == string.Empty)
+				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIActorsGroup", "Actors",
+					"This is the heading displayed in the Archive Using IMDI dialog box for the files for the actors/participants");
+			return base.FileGroupDisplayMessage(groupKey);
+		}
+
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets a description for the specified session in a single language
 		/// </summary>
 		/// <param name="sessionId"></param>
 		/// <param name="description">The abstract description</param>
-		/// <param name="iso3LanguageCode">ISO 639-3 3-letter language code</param>
+		/// <param name="language">ISO 639-2 3-letter language code</param>
 		/// ------------------------------------------------------------------------------------
-		public void SetSessionDescription(string sessionId, string description, string iso3LanguageCode)
+		public void SetSessionDescription(string sessionId, string description, string language)
 		{
 			if (description == null)
 				throw new ArgumentNullException("description");
-			if (iso3LanguageCode == null)
-				throw new ArgumentNullException("iso3LanguageCode");
-			if (iso3LanguageCode.Length != 3)
-			{
-				var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ISO3CodeRequired",
-					"ISO 639-3 3-letter language code required.",
-					"Message displayed when an invalid language code is given.");
-				throw new ArgumentException(msg, "iso3LanguageCode");
-			}
+			if (language == null)
+				throw new ArgumentNullException("language");
+			if (language.Length != 3)
+				throw new ArgumentException("ISO 639-2 3-letter language code required.", "language");
 
-			_imdiData.AddDescription(sessionId, new LanguageString { Value = description, Iso3LanguageId = iso3LanguageCode });
+			PreventDuplicateMetadataProperty(sessionId, MetadataProperties.AbstractDescription);
+
+			throw new NotImplementedException("Need to add description element to session IMDI package");
 		}
 
 		/// <summary></summary>
@@ -186,7 +193,6 @@ namespace SIL.Archiving.IMDI
 		/// <summary></summary>
 		public override bool CreatePackage()
 		{
-			_imdiData.SetMissingInformation();
 			return _imdiData.CreateIMDIPackage();
 		}
 
@@ -236,27 +242,6 @@ namespace SIL.Archiving.IMDI
 				}
 				return _corpusDirectoryName;
 			}
-		}
-
-		/// <summary></summary>
-		/// <param name="session"></param>
-		public void AddSession(Session session)
-		{
-			_imdiData.Sessions.Add(session);
-		}
-
-		/// <summary></summary>
-		/// <param name="iso3LanguageId"></param>
-		public void AddDocumentLanguage(string iso3LanguageId)
-		{
-			_imdiData.MetadataIso3LanguageIds.Add(iso3LanguageId);
-		}
-
-		/// <summary></summary>
-		/// <param name="iso3LanguageId"></param>
-		public void AddSubjectLanguage(string iso3LanguageId)
-		{
-			_imdiData.ContentIso3LanguageIds.Add(iso3LanguageId);
 		}
 	}
 }
