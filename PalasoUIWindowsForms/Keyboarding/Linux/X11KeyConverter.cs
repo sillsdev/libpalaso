@@ -48,14 +48,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// the passed in WinForms key. For all other keys an InvalidProgramException will be
 		/// thrown.
 		/// </summary>
-		internal static int GetKeySym(char key)
+		internal static int GetKeySym(Keys key)
 		{
 			// These values are from keysymdef.h
-			if ((Keys)key >= Keys.F1 && (Keys)key <= Keys.F24)
+			if (key >= Keys.F1 && key <= Keys.F24)
 			{
-				return 0xffbe + ((Keys)key - Keys.F1);
+				return 0xffbe + (key - Keys.F1);
 			}
-			switch ((Keys)key)
+			switch (key)
 			{
 				case Keys.Back:
 					return 0xff08; // XK_BackSpace
