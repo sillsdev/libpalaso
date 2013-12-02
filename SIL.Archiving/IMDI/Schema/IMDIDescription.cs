@@ -74,6 +74,12 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			// additional constructor code can go here
 		}
+
+		/// <summary>Adds a description (in a particular language)</summary>
+		public void Add(LanguageString description)
+		{
+			Add(description.ToIMDIDescriptionType());
+		}
 	}
 
 }

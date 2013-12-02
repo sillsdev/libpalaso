@@ -36,9 +36,9 @@ namespace SIL.Archiving.IMDI
 		}
 
 #region Properties
-		private IMDIMajorObject BaseMajorObject
+		private IIMDIMajorObject BaseMajorObject
 		{
-			get { return (IMDIMajorObject)BaseImdiFile.Items[0]; }
+			get { return (IIMDIMajorObject)BaseImdiFile.Items[0]; }
 		}
 
 #endregion
@@ -76,7 +76,7 @@ namespace SIL.Archiving.IMDI
 
 				// add the session file links
 				foreach (var fileName in sessionFiles)
-					corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName });
+					corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
 
 				// Create the package catalogue imdi file
 				//FundingProject
@@ -96,7 +96,7 @@ namespace SIL.Archiving.IMDI
 					catalogue.SubjectLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSubjectLanguageType());
 
 				var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
-				corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name);
+				corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\","/");
 
 				//  Create the corpus imdi file
 				BaseImdiFile.WriteImdiFile(_packagePath, Name);
@@ -116,7 +116,7 @@ namespace SIL.Archiving.IMDI
 					throw new InvalidOperationException(string.Format("A description for language {0} has already been set", itm.LanguageId));
 			}
 
-			BaseMajorObject.AddDescription(description);
+			BaseMajorObject.Description.Add(description);
 		}
 
 		/// <summary>Add a description of the package/corpus</summary>
