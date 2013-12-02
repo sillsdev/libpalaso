@@ -57,7 +57,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (cancel && m_SelectionStart > -1)
 			{
 				var preeditStart = m_SelectionStart + m_SelectionLength;
-				m_TextBox.Text = RemoveChars(m_TextBox.Text, preeditStart, preeditStart, m_PreeditLength);
+				m_TextBox.Text = RemoveChars(m_TextBox.Text, preeditStart, m_PreeditLength);
 				m_TextBox.SelectionStart = m_SelectionStart;
 				m_TextBox.SelectionLength = m_SelectionLength;
 				retVal = true;
@@ -75,16 +75,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		/// <returns>The new string.</returns>
 		/// <param name="text">Text.</param>
-		/// <param name="preeditStartPos">Position inside of <paramref name="text"/> where the
-		/// temporary preedit characters start.</param>
-		/// <param name="removePos">Position where to start removing characters. This position
-		/// is relative to the entire <paramref name="text"/>.</param>
+		/// <param name="removePos">Position inside of <paramref name="text"/> where the
+		/// temporary preedit characters start and where we should start to remove the
+		/// characters.</param>
 		/// <param name="preeditTextLen">Length of the preedit text part.</param>
-		private static string RemoveChars(string text, int preeditStartPos, int removePos, int preeditTextLen)
+		private static string RemoveChars(string text, int removePos, int preeditTextLen)
 		{
 			var toRemove = preeditTextLen;
-			if (removePos - preeditStartPos >= preeditTextLen)
-				toRemove = preeditTextLen - removePos + preeditStartPos;
 			if (removePos + toRemove > text.Length)
 				toRemove = Math.Max(text.Length - removePos, 0);
 			if (toRemove > 0)
@@ -128,7 +125,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (insertPos < 0)
 				insertPos = 0;
 			toRemove += countBackspace;
-			var boxText = RemoveChars(m_TextBox.Text, insertPos, insertPos, toRemove);
+			var boxText = RemoveChars(m_TextBox.Text, insertPos, toRemove);
 
 			m_TextBox.Text = boxText.Insert(insertPos, text);
 			m_TextBox.SelectionStart = insertPos + text.Length;
@@ -191,10 +188,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// Called when the IBus UpdatePreeditText event is raised to update the composition.
 		/// </summary>
 		/// <param name="obj">New composition string that will replace the existing
-		/// composition (sub-)string.</param>
-		/// <param name="cursorPos">1-based index in the composition (pre-edit) window. The
-		/// composition string will be replaced with <paramref name="obj"/> starting
-		/// at this position.</param>
+		/// composition string.</param>
+		/// <param name="cursorPos">0-based position where the cursor should be put after
+		/// updating the composition (pre-edit window). This position is relative to the
+		/// composition/preedit text.</param>
 		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
 		public void OnUpdatePreeditText(object obj, int cursorPos)
 		{
@@ -212,14 +209,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			var compositionText = text.Text;
 
-			// Chinese Pinyin keyboard for some reason passes 0 (instead of 1) as the cursorPos
-			// of the first character it inserts, i.e. it uses a 0-based cursorPos instead of
-			// 1-based which other ibus keyboards seems to use. This would be a problem if it
-			// later would try to add additional characters at a higher index. Fortunately it
-			// always replaces the entire compositionText starting from the beginning.
-			if (cursorPos == 0)
-				cursorPos++;
-
 			if (m_SelectionStart == -1 || m_SelectionStart + m_SelectionLength > m_TextBox.Text.Length)
 			{
 				// Remember selection in textbox prior to inserting composition text.
@@ -227,21 +216,20 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				m_SelectionLength = m_TextBox.SelectionLength;
 			}
 
-			var insertPos = m_SelectionStart + m_SelectionLength + cursorPos - 1;
 			var preeditStart = m_SelectionStart + m_SelectionLength;
-			m_TextBox.SelectionStart = insertPos;
+			m_TextBox.SelectionStart = preeditStart;
 			m_TextBox.SelectionLength = 0;
-			// Remove the previous composition text starting at insertPos
-			m_TextBox.Text = RemoveChars(m_TextBox.Text, preeditStart, insertPos, m_PreeditLength);
-			if (insertPos >= m_TextBox.Text.Length)
+			// Remove the previous composition text starting at preeditStart
+			m_TextBox.Text = RemoveChars(m_TextBox.Text, preeditStart, m_PreeditLength);
+			if (preeditStart >= m_TextBox.Text.Length)
 			{
-				insertPos = m_TextBox.Text.Length;
+				preeditStart = m_TextBox.Text.Length;
 				m_TextBox.AppendText(compositionText);
 			}
 			else
-				m_TextBox.Text = m_TextBox.Text.Insert(insertPos, compositionText);
+				m_TextBox.Text = m_TextBox.Text.Insert(preeditStart, compositionText);
 
-			m_PreeditLength = cursorPos + compositionText.Length - 1;
+			m_PreeditLength = compositionText.Length;
 			if (m_SelectionLength > 0)
 			{
 				// We want to keep the range selection. It gets deleted in the CommitTextHandler.
@@ -251,7 +239,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			else
 			{
-				m_TextBox.SelectionStart = insertPos + compositionText.Length;
+				m_TextBox.SelectionStart = m_SelectionStart + cursorPos;
 				m_TextBox.SelectionLength = 0;
 			}
 		}
@@ -383,6 +371,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				var posScreen = m_TextBox.PointToScreen(posInTextBox);
 				return new Rectangle(posScreen, new Size(0, m_TextBox.Font.Height));
 			}
+		}
+
+		/// <summary>
+		/// Called by the IbusKeyboardAdapter to find out if a preedit is active.
+		/// </summary>
+		public bool IsPreeditActive
+		{
+			get { return m_SelectionStart > -1; }
 		}
 		#endregion
 	}

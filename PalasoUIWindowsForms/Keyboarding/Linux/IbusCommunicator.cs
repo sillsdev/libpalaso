@@ -12,7 +12,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// <summary>Normal implementation of IIbusCommunicator</summary>
 	internal class IbusCommunicator : IIbusCommunicator
 	{
-#region protected fields
+		// see https://github.com/ibus/ibus/blob/1.4.y/src/ibustypes.h for ibus modifier values
+		private enum IbusModifiers
+		{
+			Shift = 1 << 0,
+			ShiftLock = 1 << 1,
+			Control = 1 << 2,
+		}
+
+		#region protected fields
 
 		/// <summary>
 		/// stores Dbus Connection to ibus
@@ -22,12 +30,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// the input Context created
 		/// </summary>
-		protected InputContext m_inputContext;
+		protected IInputContext m_inputContext;
 
 		/// <summary>
 		/// Ibus helper class
 		/// </summary>
-		protected IBusDotNet.InputBusWrapper m_ibus;
+		protected InputBus m_ibus;
 
 		#endregion
 
@@ -50,45 +58,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 									m_connection = null;
 								};
 
-			m_ibus = new IBusDotNet.InputBusWrapper(m_connection);
+			m_ibus = new InputBus(m_connection);
 		}
 
-		/// <summary>
-		/// Wrap an ibus with protection incase DBus connection is dropped.
-		/// </summary>
-		protected void ProtectedIBusInvoke(Action action)
-		{
-			try
-			{
-				action();
-			}
-			catch(NDesk.DBus.DBusConectionErrorException)
-			{
-				m_ibus = null;
-				m_inputContext = null;
-				NotifyUserOfIBusConnectionDropped();
-			}
-			catch(System.NullReferenceException)
-			{
-			}
-		}
-
-		/// <summary>
-		/// Inform users of IBus problem.
-		/// </summary>
-		protected void NotifyUserOfIBusConnectionDropped()
-		{
-			MessageBox.Show(Form.ActiveForm, "Please restart IBus and the application.", "IBus connection has stopped.");
-		}
-
-#region Disposable stuff
-#if DEBUG
+		#region Disposable stuff
+		#if DEBUG
 		/// <summary/>
 		~IbusCommunicator()
 		{
 			Dispose(false);
 		}
-#endif
+		#endif
 
 		/// <summary/>
 		public bool IsDisposed
@@ -118,6 +98,52 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			IsDisposed = true;
 		}
 		#endregion
+
+		/// <summary>
+		/// Wrap an ibus with protection incase DBus connection is dropped.
+		/// </summary>
+		protected void ProtectedIBusInvoke(Action action)
+		{
+			try
+			{
+				action();
+			}
+			catch(NDesk.DBus.DBusConectionErrorException)
+			{
+				m_ibus = null;
+				m_inputContext = null;
+				NotifyUserOfIBusConnectionDropped();
+			}
+			catch(System.NullReferenceException)
+			{
+			}
+		}
+
+		/// <summary>
+		/// Inform users of IBus problem.
+		/// </summary>
+		protected void NotifyUserOfIBusConnectionDropped()
+		{
+			MessageBox.Show(Form.ActiveForm, "Please restart IBus and the application.", "IBus connection has stopped.");
+		}
+
+		private int ConvertToIbusModifiers(Keys modifierKeys, char charUserTyped)
+		{
+			int ibusModifiers = 0;
+			if ((modifierKeys & Keys.Shift) != 0)
+				ibusModifiers |= (int)IbusModifiers.Shift;
+			if ((modifierKeys & Keys.Control) != 0)
+				ibusModifiers |= (int)IbusModifiers.Control;
+			// modifierKeys don't contain CapsLock and Control.IsKeyLocked(Keys.CapsLock)
+			// doesn't work on mono. So we guess the caps state by unicode value and the shift
+			// state. This is far from ideal.
+			if ((char.IsUpper(charUserTyped) && (modifierKeys & Keys.Shift) == 0) ||
+				(char.IsLower(charUserTyped) && (modifierKeys & Keys.Shift) != 0))
+				ibusModifiers |= (int)IbusModifiers.ShiftLock;
+
+			return ibusModifiers;
+		}
+
 
 #region IIBusCommunicator Implementation
 
@@ -194,7 +220,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				if (!m_inputContext.IsEnabled())
 					return false;
 
-				return m_inputContext.ProcessKeyEvent((uint)keySym, (uint)scanCode, (uint)state);
+				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
+
+				return m_inputContext.ProcessKeyEvent(keySym, scanCode, modifiers);
 			}
 			catch(NDesk.DBus.DBusConectionErrorException)
 			{
@@ -226,7 +254,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <remarks>One input context per application is sufficient.</remarks>
 		public void CreateInputContext()
 		{
-			m_inputContext = m_ibus.InputBus.CreateInputContext("IbusCommunicator");
+			m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
 
 			ProtectedIBusInvoke(() =>
 			{
@@ -251,7 +279,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// focused.</exception>
 		public string GetFocusedInputContext()
 		{
-			return m_ibus.InputBus.CurrentInputContext();
+			return m_ibus.CurrentInputContext();
 		}
 
 		/// <summary></summary>

@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Keyboarding;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
 {
@@ -10,6 +12,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public WSPropertiesTabControl()
 		{
 			InitializeComponent();
+
+			if (!KeyboardController.IsInitialized)
+			{
+				// Client applications should call KeyboardController.Initialize(), otherwise
+				// we can't display anything on the keyboard tab. Therefore we remove that
+				// tab.
+				Debug.WriteLine("KeyboardController isn't initialized. Removing Keyboard tab.");
+				Debug.WriteLine("Please call KeyboardController.Initialize() if you require the keyboarding functionality!");
+				_tabControl.Controls.Remove(_keyboardsPage);
+			}
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)

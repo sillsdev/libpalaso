@@ -35,13 +35,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		[TestCase("abc", 0, 1, /* Input: */ "e", 1,/* expected: */ "aebc", 0, 1, TestName="UpdatePreedit_ExistingText_RangeSelection")]
 		[TestCase("abc", 0, 3, /* Input: */ "e", 1,/* expected: */ "abce", 0, 3, TestName="UpdatePreedit_ReplaceAll")]
-
-		// Chinese Pinyin ibus keyboard for some reason uses a 0-based index
-		[TestCase("b", 1, 0, /* Input: */ "\u4FDD\u989D", 0, /* expected: */ "b\u4FDD\u989D", 3, 0, TestName="UpdatePreedit_CursorPos0")]
+		[TestCase("b", 1, 0, /* Input: */ "\u4FDD\u989D", 0, /* expected: */ "b\u4FDD\u989D", 1, 0, TestName="UpdatePreedit_CursorPos0")]
 		[TestCase("b", 0, 1, /* Input: */ "\u4FDD\u989D", 0, /* expected: */ "b\u4FDD\u989D", 0, 1, TestName="UpdatePreedit_CursorPos0_RangeSelection")]
 		public void UpdatePreedit(
 			string text, int selectionStart, int selectionLength,
-			string composition, int insertPos,
+			string composition, int cursorPos,
 			string expectedText, int expectedSelectionStart, int expectedSelectionLength)
 		{
 			// Setup
@@ -50,7 +48,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			m_TextBox.SelectionLength = selectionLength;
 
 			// Exercise
-			m_Handler.OnUpdatePreeditText(new IBusText(composition), insertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(composition), cursorPos);
 
 			// Verify
 			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
@@ -65,21 +63,21 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		// This test tests the scenario where the textbox has one character, b. The user
 		// positions the IP in front of the b and then types a and e with ibus (e.g. Danish keyboard).
 		// This test simulates typing the e.
-		[TestCase("b", 0, 0, "a", 1, /* Input: */ "e", 2, /* expected: */ "aeb", 2, 0, TestName="UpdatePreedit_ExistingText_InsertSecondChar")]
+		[TestCase("b", 0, 0, "a", 1, /* Input: */ "\u00E6", 1, /* expected: */ "\u00E6b", 1, 0, TestName="UpdatePreedit_ExistingText_InsertSecondChar")]
 		public void UpdatePreedit_SecondUpdatePreedit(
 			string text, int selectionStart, int selectionLength,
-			string firstComposition, int firstInsertPos,
-			string composition, int insertPos,
+			string firstComposition, int firstCursorPos,
+			string composition, int cursorPos,
 			string expectedText, int expectedSelectionStart, int expectedSelectionLength)
 		{
 			// Setup
 			m_TextBox.Text = text;
 			m_TextBox.SelectionStart = selectionStart;
 			m_TextBox.SelectionLength = selectionLength;
-			m_Handler.OnUpdatePreeditText(new IBusText(firstComposition), firstInsertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(firstComposition), firstCursorPos);
 
 			// Exercise
-			m_Handler.OnUpdatePreeditText(new IBusText(composition), insertPos);
+			m_Handler.OnUpdatePreeditText(new IBusText(composition), cursorPos);
 
 			// Verify
 			Assert.That(m_TextBox.Text, Is.EqualTo(expectedText));
@@ -121,7 +119,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		// This test tests the scenario where the textbox has one character, b. The user
 		// positions the IP in front of the b and then types a and e with ibus (e.g. Danish keyboard).
 		// This test simulates the commit after typing the e.
-		[TestCase("ab", 0, 0, "e", 2, /* Input: */ "\u00E6", /* expected: */ "\u00E6b", 1, 0, TestName="Commit_ExistingText_InsertSecondChar")]
+		[TestCase("ab", 0, 1, "\u00E6", 1, /* Input: */ "\u00E6", /* expected: */ "\u00E6b", 1, 0, TestName="Commit_ExistingText_InsertSecondChar")]
 
 		[TestCase("abc", 0, 1, "e", 1,/* Input: */ "e", /* expected: */ "ebc", 1, 0, TestName="Commit_ExistingText_RangeSelection")]
 		[TestCase("abc", 0, 3, "e", 1,/* Input: */ "e", /* expected: */ "e",   1, 0, TestName="Commit_ReplaceAll")]

@@ -32,7 +32,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 			public void FocusIn()
 			{
-				GlobalCachedInputContext.InputContext = new Mock<InputContext>().Object;
+				GlobalCachedInputContext.InputContext = new Mock<IInputContext>().Object;
 			}
 
 			public void FocusOut()

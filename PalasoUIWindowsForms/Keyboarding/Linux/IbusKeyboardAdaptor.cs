@@ -6,6 +6,9 @@
 // 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
 // </copyright>
 // --------------------------------------------------------------------------------------------
+using System.Runtime.InteropServices;
+
+
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -29,6 +32,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	public class IbusKeyboardAdaptor: IKeyboardAdaptor
 	{
 		private IIbusCommunicator IBusCommunicator;
+		private bool m_needIMELocation;
 
 		/// <summary>
 		/// Initializes a new instance of the
@@ -66,15 +70,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private IEnumerable<IBusEngineDesc> GetIBusKeyboards()
+		private IBusEngineDesc[] GetIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
-				yield break;
+				return new IBusEngineDesc[0];
 
-			var ibusWrapper = new IBusDotNet.InputBusWrapper(IBusCommunicator.Connection);
-			object[] engines = ibusWrapper.InputBus.ListActiveEngines();
-			foreach (var engine in engines)
-				yield return IBusEngineDescFactory.GetEngineDesc(engine);
+			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
+			return ibusWrapper.ListActiveEngines();
 		}
 
 		private bool SetIMEKeyboard(IbusKeyboardDescription keyboard)
@@ -188,6 +190,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				e.Control.MouseDown += HandleMouseDown;
 				e.Control.PreviewKeyDown += HandlePreviewKeyDown;
 				e.Control.KeyPress += HandleKeyPress;
+				e.Control.KeyDown += HandleKeyDown;
+
+				var scrollableControl = e.Control as ScrollableControl;
+				if (scrollableControl != null)
+					scrollableControl.Scroll += HandleScroll;
 			}
 		}
 
@@ -200,6 +207,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				e.Control.MouseDown -= HandleMouseDown;
 				e.Control.PreviewKeyDown -= HandlePreviewKeyDown;
 				e.Control.KeyPress -= HandleKeyPress;
+				e.Control.KeyDown -= HandleKeyDown;
+
+				var scrollableControl = e.Control as ScrollableControl;
+				if (scrollableControl != null)
+					scrollableControl.Scroll -= HandleScroll;
 
 				var eventHandler = GetEventHandlerForControl(e.Control);
 				if (eventHandler != null)
@@ -216,33 +228,38 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 		#endregion
 
+		private bool PassKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
+		{
+			var keySym = X11KeyConverter.GetKeySym(keyChar);
+			return PassKeyEventToIbus(control, keySym, modifierKeys);
+		}
+
 		private bool PassKeyEventToIbus(Control control, char keyChar, Keys modifierKeys)
+		{
+			if (keyChar == 0x7f) // we get this for Ctrl-Backspace
+				keyChar = '\b';
+
+			return PassKeyEventToIbus(control, (int)keyChar, modifierKeys);
+		}
+
+		private bool PassKeyEventToIbus(Control control, int keySym, Keys modifierKeys)
 		{
 			if (!IBusCommunicator.Connected)
 				return false;
 
-			// modifierKeys don't contain CapsLock and Control.IsKeyLocked(Keys.CapsLock)
-			// doesn't work on mono. So we guess the caps state by unicode value and the shift
-			// state. This is far from ideal.
-			if (char.IsUpper(keyChar) && (modifierKeys & Keys.Shift) == 0)
-				modifierKeys |= Keys.CapsLock;
-			else if (char.IsLower(keyChar) && (modifierKeys & Keys.Shift) != 0)
-				modifierKeys |= Keys.CapsLock;
-
-			int scancode = X11KeyConverter.GetScanCode(keyChar);
+			int scancode = X11KeyConverter.GetScanCode(keySym);
 			if (scancode > -1)
 			{
-				if (IBusCommunicator.ProcessKeyEvent(keyChar, scancode, modifierKeys))
+				if (IBusCommunicator.ProcessKeyEvent(keySym, scancode, modifierKeys))
 				{
 					return true;
 				}
 			}
+
 			// If ProcessKeyEvent doesn't consume the key, we need to kill any preedits and
-			// sync before continuing processing the keypress. If it's a backspace we return
-			// true because it is consumed by removing the pre-edit. For other characters we
-			// return false so that the control can process the character.
-			if (ResetAndWaitForCommit(control) && keyChar == '\b')
-				return true;
+			// sync before continuing processing the keypress. We return false so that the
+			// control can process the character.
+			ResetAndWaitForCommit(control);
 			return false;
 		}
 
@@ -253,7 +270,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			IBusCommunicator.FocusIn();
-			SetImePreeditWindowLocationAndSize(sender as Control);
+			m_needIMELocation = true;
 		}
 
 		private void HandleLostFocus(object sender, EventArgs e)
@@ -283,6 +300,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (eventHandler == null)
 				return;
 
+			if (m_needIMELocation)
+			{
+				SetImePreeditWindowLocationAndSize(sender as Control);
+				m_needIMELocation = false;
+			}
+
 			var key = e.KeyCode;
 			switch (key)
 			{
@@ -296,16 +319,40 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.Left:
 				case Keys.Right:
 				case Keys.Delete:
-					// pass cursor keys to ibus
-					PassKeyEventToIbus(sender as Control, (char)X11KeyConverter.GetKeySym(key), Control.ModifierKeys);
-					return;
-				case Keys.Back:
-					// we'll get a WM_CHAR for this and have ibus handle it then
+				case Keys.PageUp:
+				case Keys.PageDown:
+				case Keys.Home:
+				case Keys.End:
+					PassKeyEventToIbus(sender as Control, key, e.Modifiers);
 					return;
 			}
 			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
-				PassKeyEventToIbus(sender as Control, (char)X11KeyConverter.GetKeySym(key), Control.ModifierKeys);
+				PassKeyEventToIbus(sender as Control, key, e.Modifiers);
+		}
+
+		/// <summary>
+		/// Handles a key down. While a preedit is active we don't want the control to handle
+		/// any of the keys that IBus deals with.
+		/// </summary>
+		private void HandleKeyDown (object sender, KeyEventArgs e)
+		{
+			switch (e.KeyCode)
+			{
+				case Keys.Up:
+				case Keys.Down:
+				case Keys.Left:
+				case Keys.Right:
+				case Keys.Delete:
+				case Keys.PageUp:
+				case Keys.PageDown:
+				case Keys.Home:
+				case Keys.End:
+					var eventHandler = GetEventHandlerForControl(sender as Control);
+					if (eventHandler != null)
+						e.Handled = eventHandler.IsPreeditActive;
+					break;
+			}
 		}
 
 		/// <summary>
@@ -337,8 +384,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			ResetAndWaitForCommit(sender as Control);
+			m_needIMELocation = true;
+		}
+
+		private void HandleScroll(object sender, ScrollEventArgs e)
+		{
+			if (!IBusCommunicator.Connected)
+				return;
+
 			SetImePreeditWindowLocationAndSize(sender as Control);
 		}
+
 		#endregion
 
 		#region IKeyboardAdaptor implementation
