@@ -377,7 +377,8 @@ namespace SIL.Archiving
 		/// Sets an abstract/description for this resource in a single language
 		/// </summary>
 		/// <param name="description">The abstract description</param>
-		/// <param name="language">ISO 639-2 3-letter language code</param>
+		/// <param name="language">ISO 639-2 3-letter language code (can be left empty if
+		/// language is not known)</param>
 		/// ------------------------------------------------------------------------------------
 		public void SetAbstract(string description, string language)
 		{
