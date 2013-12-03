@@ -5,22 +5,7 @@ using SIL.Archiving.Generic.AccessProtocol;
 namespace SIL.Archiving.Generic
 {
 	/// <summary>A file to add to the archive</summary>
-	public interface IArchivingFile
-	{
-		/// <summary />
-		string FileSize { get; }
-		/// <summary />
-		string MimeType { get; }
-		/// <summary />
-		string GeneralType { get; }
-		/// <summary />
-		LanguageStringCollection Descriptions { get; }
-		/// <summary />
-		IAccessProtocol AccessProtocol { get; set; }
-	}
-
-	/// <summary>A file to add to the archive</summary>
-	public abstract class ArchivingFile : IArchivingFile
+	public class ArchivingFile
 	{
 		protected readonly string _fullName;
 		protected string _fileSize; // in KB
@@ -33,7 +18,7 @@ namespace SIL.Archiving.Generic
 
 		/// <summary>Constructor</summary>
 		/// <param name="fullFileNameAndPath"></param>
-		protected ArchivingFile(string fullFileNameAndPath)
+		public ArchivingFile(string fullFileNameAndPath)
 		{
 			// check if the path is correct
 			if (!File.Exists(fullFileNameAndPath))
@@ -41,6 +26,13 @@ namespace SIL.Archiving.Generic
 
 			_fullName = fullFileNameAndPath;
 			_descriptions = new LanguageStringCollection();
+		}
+
+		/// <summary>Constructor</summary>
+		public ArchivingFile(ArchivingFile file) : this(file.FullName)
+		{
+			DescribesAnotherFile = file.DescribesAnotherFile;
+			AccessProtocol = file.AccessProtocol;
 		}
 
 		/// <summary>Returns the file size in KB as a string</summary>
@@ -90,6 +82,7 @@ namespace SIL.Archiving.Generic
 			get { return _descriptions; }
 		}
 
+		/// <summary />
 		public IAccessProtocol AccessProtocol
 		{
 			get { return _accessProtocol; }
@@ -97,7 +90,10 @@ namespace SIL.Archiving.Generic
 		}
 
 		/// <summary>Return type strings consistent with the requirements of the archiving format</summary>
-		protected abstract string GetTypeDescription();
+		public virtual string GetTypeDescription()
+		{
+			throw new NotImplementedException("GetTypeDescription");
+		}
 
 		/// <summary>Full path and file name</summary>
 		public string FullName

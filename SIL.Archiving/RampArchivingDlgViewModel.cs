@@ -14,6 +14,7 @@ using Ionic.Zip;
 using L10NSharp;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
+using SIL.Archiving.Generic;
 using SIL.Archiving.Properties;
 using Timer = System.Threading.Timer;
 
@@ -1904,6 +1905,12 @@ namespace SIL.Archiving
 
 			CleanUp();
 			CleanUpTempRampPackage();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		public override IArchivingSession AddSession(string sessionId)
+		{
+			throw new NotImplementedException();
 		}
 
 		#region Clean-up methods

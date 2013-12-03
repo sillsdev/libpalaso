@@ -109,7 +109,6 @@
 	<Compile Include="IMDI\IMDIContributor.cs" />
 	<Compile Include="IMDI\IMDIPackage.cs" />
 	<Compile Include="IMDI\IMDIFile.cs" />
-	<Compile Include="IMDI\IMDISession.cs" />
 	<Compile Include="IMDI\Lists\BooleanEnum.cs" />
 	<Compile Include="IMDI\Lists\ItemListBase.cs" />
 	<Compile Include="IMDI\Lists\LanguageList.cs" />

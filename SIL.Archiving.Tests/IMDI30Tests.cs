@@ -84,7 +84,7 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(actrIn.Name, actrOut.FullName);
 			Assert.AreEqual(actrIn.Name, actrOut.Name[0]);
 			Assert.AreEqual(actrIn.Gender, actrOut.Sex.Value);
-			Assert.AreEqual(actrIn.Occupation, actrOut.FamilySocialRole.Value);
+			Assert.AreEqual(actrIn.Occupation, actrOut.Keys.Key.Find(k => k.Name == "Occupation").Value);
 			Assert.AreEqual(actrIn.GetBirthDate(), actrOut.BirthDate);
 			Assert.AreEqual(actrIn.Age, actrOut.Age);
 

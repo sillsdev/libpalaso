@@ -44,16 +44,10 @@ namespace SIL.Archiving.Generic
 		}
 
 		/// <summary></summary>
-		public DateTime DateCreatedFirst { get; set; }
-
-		/// <summary></summary>
-		public DateTime DateCreatedLast { get; set; }
-
-		/// <summary></summary>
-		public DateTime DateModified { get; set; }
-
-		/// <summary></summary>
 		public IAccessProtocol AccessProtocol { get; set; }
+
+		/// <summary></summary>
+		public string AccessCode { get; set; }
 
 		/// <summary></summary>
 		public ArchivingLocation Location { get; set; }
