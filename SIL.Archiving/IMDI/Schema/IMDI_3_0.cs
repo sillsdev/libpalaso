@@ -194,6 +194,9 @@ namespace SIL.Archiving.IMDI.Schema
 			// check required fields
 			ArbilCheckSession(s);
 
+			// set access codes
+			SetFileAccessCode(s);
+
 			// normalize session name
 			var sessionDirectoryName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(s.Name);
 
@@ -250,26 +253,29 @@ namespace SIL.Archiving.IMDI.Schema
 			session.MDGroup.Content.CheckRequiredFields();
 		}
 
-		// **************** do we need these? ****************
+		/// <summary>Set the access code on session files if not set already.</summary>
+		private void SetFileAccessCode(Session session)
+		{
+			if (string.IsNullOrEmpty(session.AccessCode)) return;
 
-		/// <remarks/>
-		[XmlIgnore]
-		public string History { get; set; }
+			foreach (var file in session.Resources.MediaFile)
+			{
+				if (file.Access == null)
+					file.Access = new AccessType();
 
-		/// <remarks/>
-		[XmlIgnore]
-		[XmlAttributeAttribute("History", DataType = "anyURI")]
-		public string History1 { get; set; }
+				if (string.IsNullOrEmpty(file.Access.Availability))
+					file.Access.Availability = session.AccessCode;
+			}
 
-		/// <remarks/>
-		[XmlIgnore]
-		[XmlAttributeAttribute]
-		public string Profile { get; set; }
+			foreach (var file in session.Resources.WrittenResource)
+			{
+				if (file.Access == null)
+					file.Access = new AccessType();
 
-		/// <remarks/>
-		[XmlIgnore]
-		[XmlAttributeAttribute]
-		public string ArchiveHandle { get; set; }
+				if (string.IsNullOrEmpty(file.Access.Availability))
+					file.Access.Availability = session.AccessCode;
+			}
+		}
 	}
 
 	/// <remarks/>
@@ -1155,10 +1161,11 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary>Default constructor</summary>
 		public ActorType()
 		{
+			Keys = new KeysType();
 		}
 
 		/// <summary></summary>
-		public ActorType(ArchivingActor actor)
+		public ActorType(ArchivingActor actor) : this()
 		{
 			Name = new[] {actor.GetName()};
 			FullName = actor.GetFullName();
@@ -1200,7 +1207,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 			// Occupation
 			if (!string.IsNullOrEmpty(actor.Occupation))
-				FamilySocialRole = actor.Occupation.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
+				Keys.Key.Add(new KeyType { Name = "Occupation", Value = actor.Occupation });
 		}
 
 		/// <remarks/>
@@ -1266,6 +1273,9 @@ namespace SIL.Archiving.IMDI.Schema
 			Languages.Language.Add(language);
 		}
 
+		/// <remarks/>
+		public KeysType Keys { get; set; }
+
 		// TODO: Do we need this method?
 		/// <remarks/>
 		public ArchivingActor ToArchivingActor()
@@ -1301,31 +1311,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 			return actr;
 		}
-
-		//*********************************************************************
-		// these possibly will not be used
-
-		/// <remarks/>
-		public VocabularyType Role { get; set; }
-
-		/// <remarks/>
-		public VocabularyType FamilySocialRole { get; set; }
-
-		/// <remarks/>
-		public VocabularyType EthnicGroup { get; set; }
-
-		/// <remarks/>
-		public BooleanType Anonymized { get; set; }
-
-		/// <remarks/>
-		public ContactType Contact { get; set; }
-
-		/// <remarks/>
-		public KeysType Keys { get; set; }
-
-		/// <remarks/>
-		[XmlAttributeAttribute]
-		public string ResourceRef { get; set; }
 	}
 
 	/// <remarks/>
@@ -1419,11 +1404,6 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlAttribute]
 		public string ResourceRefs { get; set; }
-
-		// **************** do we need these? ****************
-
-		///// <remarks/>
-		//public TimePositionRange_Type TimePosition { get; set; }
 	}
 
 	/// <remarks/>
@@ -1564,11 +1544,6 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlAttribute]
 		public string ResourceId { get; set; }
-
-		// **************** do we need these? ****************
-
-		///// <remarks/>
-		//public NotUsed.TimePositionRange_Type TimePosition { get; set; }
 	}
 
 	/// <remarks/>
@@ -1602,22 +1577,22 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description { get; set; }
 
-		/// <remarks/>
+		/// <summary>Set session date with DateTime object</summary>
 		public void SetDate(DateTime date)
 		{
 			Date = date.ToISO8601DateOnlyString();
 		}
 
-		/// <remarks/>
+		/// <summary>Set session date with a string. Can be a date range</summary>
 		public void SetDate(string date)
 		{
 			Date = date;
 		}
 
-		/// <remarks/>
-		public void SetDate(int date)
+		/// <summary>Set session date with just the year</summary>
+		public void SetDate(int year)
 		{
-			Date = date.ToString(CultureInfo.InvariantCulture);
+			Date = year.ToString(CultureInfo.InvariantCulture);
 		}
 
 		/// <remarks/>
@@ -1665,32 +1640,48 @@ namespace SIL.Archiving.IMDI.Schema
 			MDGroup.Actors.Actor.Add(new ActorType(actor));
 		}
 
-		// **************** do we need these? ****************
-
-		///// <remarks/>
-		//public SessionReferences References { get; set; }
-
-		///// <remarks/>
-		//[XmlElementAttribute("ExternalResourceReference")]
-		//public NotUsed.ExternalResourceReference_Type[] ExternalResourceReference { get; set; }
-
-		// Don't know which of the following we really need:
-
-		/// <remarks/>
-		[XmlIgnore]
-		public DateTime DateCreatedFirst { get; set; }
-		/// <remarks/>
-		[XmlIgnore]
-		public DateTime DateCreatedLast { get; set; }
-		/// <remarks/>
-		[XmlIgnore]
-		public DateTime DateModified { get; set; }
-		/// <remarks/>
+		/// <remarks>Not used yet</remarks>
 		[XmlIgnore]
 		public IAccessProtocol AccessProtocol { get; set; }
+
+		/// <remarks>The access level code for this object, applied to resource files and actors</remarks>
+		[XmlIgnore]
+		public string AccessCode { get; set; }
+
+		/// <remarks/>
+		public void AddKeyValuePair(string key, string value)
+		{
+			MDGroup.Keys.Key.Add(new KeyType { Name = key, Value = value });
+		}
+
+		/// <remarks/>
+		public string Genre
+		{
+			get
+			{
+				return MDGroup.Content.Genre == null ? null : MDGroup.Content.Genre.Value;
+			}
+			set
+			{
+				MDGroup.Content.Genre = value.ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
+			}
+		}
+
+		/// <remarks/>
+		public void AddFile(ArchivingFile file)
+		{
+			IMDIFile imdiFile = new IMDIFile(file);
+			var dirName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(Name);
+
+			if (imdiFile.IsMediaFile)
+				Resources.MediaFile.Add(imdiFile.ToMediaFileType(dirName));
+			else
+				Resources.WrittenResource.Add(imdiFile.ToWrittenResourceType(dirName));
+		}
+
 		/// <remarks/>
 		[XmlIgnore]
-		public List<IArchivingFile> Files { get; set; }
+		public List<ArchivingFile> Files { get; set; }
 	}
 
 	/// <remarks/>
@@ -1722,16 +1713,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public AnonymsType Anonyms { get; set; }
-
-		// **************** do we need these? ****************
-
-		///// <remarks/>
-		//[XmlElementAttribute("LexiconResource")]
-		//public NotUsed.LexiconResource_Type[] LexiconResource { get; set; }
-
-		///// <remarks/>
-		//[XmlElementAttribute("LexiconComponent")]
-		//public NotUsed.LexiconComponent_Type[] LexiconComponent { get; set; }
 	}
 
 	/// <remarks/>

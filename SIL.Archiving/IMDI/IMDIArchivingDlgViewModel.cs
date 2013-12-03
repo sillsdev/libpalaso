@@ -247,11 +247,20 @@ namespace SIL.Archiving.IMDI
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="session"></param>
-		public void AddSession(Session session)
+		/// <summary>Adds a new session and returns it</summary>
+		/// <param name="sessionId"></param>
+		public override IArchivingSession AddSession(string sessionId)
 		{
+			// look for existing session
+			foreach (var sess in _imdiData.Sessions.Where(sess => sess.Name == sessionId))
+				return sess;
+
+			// if not found, add a new session
+			Session session = new Session {Name = sessionId};
+
 			_imdiData.Sessions.Add(session);
+
+			return session;
 		}
 
 		/// <summary></summary>

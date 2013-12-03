@@ -17,8 +17,13 @@ namespace SIL.Archiving.IMDI
 		{
 		}
 
+		/// <summary>Constructor</summary>
+		public IMDIFile(ArchivingFile file) : base(file)
+		{
+		}
+
 		/// <summary>Description used in the meta data</summary>
-		protected override string GetTypeDescription()
+		public override string GetTypeDescription()
 		{
 			if (string.IsNullOrEmpty(_generalType))
 			{
@@ -87,10 +92,10 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// <summary>Convert to MediaFile_Type for IMDI meta data file</summary>
-		public MediaFileType ToMediaFileType(string sessionDirectoryName, string directorySeparator)
+		public MediaFileType ToMediaFileType(string sessionDirectoryName)
 		{
 			var mediaFile = new MediaFileType();
-			SetResourceProperties(mediaFile, sessionDirectoryName, directorySeparator);
+			SetResourceProperties(mediaFile, sessionDirectoryName);
 
 			mediaFile.Quality = new QualityType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = "Unspecified" };
 
@@ -98,16 +103,15 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// <summary>Convert to WrittenResource_Type for IMDI meta data file</summary>
-		public WrittenResourceType ToWrittenResourceType(string sessionDirectoryName, string directorySeparator)
+		public WrittenResourceType ToWrittenResourceType(string sessionDirectoryName)
 		{
 			var written = new WrittenResourceType();
-			SetResourceProperties(written, sessionDirectoryName, directorySeparator);
+			SetResourceProperties(written, sessionDirectoryName);
 
 			if (!string.IsNullOrEmpty(DescribesAnotherFile))
 				written.MediaResourceLink = new ResourceLinkType {
 					Value = ResourceLink(sessionDirectoryName,
-					directorySeparator,
-					IMDIArchivingDlgViewModel.NormalizeFileName(DescribesAnotherFile))
+					IMDIArchivingDlgViewModel.NormalizeFileName((new FileInfo(DescribesAnotherFile)).Name ))
 				};
 
 			return written;
@@ -115,24 +119,22 @@ namespace SIL.Archiving.IMDI
 
 		/// <summary>Properly format the full name of the resource in the metadata file</summary>
 		/// <param name="sessionDirectoryName"></param>
-		/// <param name="directorySeparator"></param>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		private static string ResourceLink(string sessionDirectoryName, string directorySeparator, string fileName)
+		private static string ResourceLink(string sessionDirectoryName, string fileName)
 		{
-			if (string.IsNullOrEmpty(sessionDirectoryName) || string.IsNullOrEmpty(directorySeparator))
+			if (string.IsNullOrEmpty(sessionDirectoryName))
 				return fileName;
 
-			return sessionDirectoryName + directorySeparator + fileName;
+			return sessionDirectoryName + "/" + fileName;
 		}
 
 		/// <summary>Sets values common to both media and written resources</summary>
 		/// <param name="resource"></param>
 		/// <param name="sessionDirectoryName"></param>
-		/// <param name="directorySeparator"></param>
-		private void SetResourceProperties(IIMDISessionFile resource, string sessionDirectoryName, string directorySeparator)
+		private void SetResourceProperties(IIMDISessionFile resource, string sessionDirectoryName)
 		{
-			resource.ResourceLink = new ResourceLinkType { Value = ResourceLink(sessionDirectoryName, directorySeparator, NormalizedName) };
+			resource.ResourceLink = new ResourceLinkType { Value = ResourceLink(sessionDirectoryName, NormalizedName) };
 			resource.Format.SetValue(MimeType, false, ListType.Link(ListType.MediaFileFormat));
 			resource.Type.SetValue(GeneralType, true, ListType.Link(ListType.MediaFileType));
 			resource.Size = FileSize;
@@ -142,8 +144,7 @@ namespace SIL.Archiving.IMDI
 
 			if (AccessProtocol != null)
 			{
-				resource.Access = new AccessType();
-				resource.Access.Availability = AccessProtocol.GetAccessCode();
+				resource.Access = new AccessType {Availability = AccessProtocol.GetAccessCode()};
 			}
 		}
 	}

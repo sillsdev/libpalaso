@@ -47,13 +47,13 @@ namespace SIL.Archiving.Generic
 		}
 
 		/// <summary>Files associated with this actor</summary>
-		public List<IArchivingFile> Files;
+		public List<ArchivingFile> Files;
 
 		/// <summary>Default constructor</summary>
 		public ArchivingActor()
 		{
 			Iso3LanguageCodes = new HashSet<string>();
-			Files = new List<IArchivingFile>();
+			Files = new List<ArchivingFile>();
 		}
 
 		/// <summary>Value can be either DateTime (birth date), int (birth year), or string</summary>

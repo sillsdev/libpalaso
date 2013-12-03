@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using L10NSharp;
+using SIL.Archiving.Generic;
 
 namespace SIL.Archiving
 {
@@ -533,5 +534,9 @@ namespace SIL.Archiving
 		{
 			get { return (Type.GetType("Mono.Runtime") != null); }
 		}
+
+		/// <summary></summary>
+		/// <param name="sessionId"></param>
+		public abstract IArchivingSession AddSession(string sessionId);
 	}
 }
