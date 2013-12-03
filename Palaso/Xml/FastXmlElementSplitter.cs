@@ -16,31 +16,25 @@ namespace Palaso.Xml
 	/// This version works entirely with byte arrays, except for the GetSecondLevelElementStrings
 	/// methods, which should only be used for testing or small files.
 	///
-	/// Enhance JohnT: This version still uses twice as much memory as necessary, in that it
-	/// loads the whole file into an array as well as making a byte array for each chunk.
-	/// It could be enhanced so that we never load the whole file.
-	/// One approach would be to replace every occurrence of _inputBytes[x] with a method call,
-	/// InputByte(n). Then we write an implementation of that which reads a chunk of the file
-	/// into a buffer. It can answer immediately if the current index is in the buffer, otherwise, reload it.
-	/// If we kept two buffers we would scarcely ever read the same section of the file twice.
-	///
-	/// Enhance JohnT: this is now smart enough to match markers. It could easily be enhanced
-	/// to make the recordMarker parameter optional, and return all second-level elements of any type.
 	///</summary>
 	public class FastXmlElementSplitter : IDisposable
 	{
-		private readonly static Encoding EncUtf8 = Encoding.UTF8;
+		internal readonly static Encoding EncUtf8 = Encoding.UTF8;
 		private readonly static byte _openingAngleBracket = EncUtf8.GetBytes("<")[0];
 		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
 		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
 		private readonly static byte _hyphen = EncUtf8.GetBytes("-")[0];
-		private static AsyncFileReader _input;
 		private static byte[] cdataStart = EncUtf8.GetBytes("![CDATA[");
 		private static byte[] cdataEnd = EncUtf8.GetBytes("]]>");
 		private static byte[] startComment = EncUtf8.GetBytes("!--");
 		private static byte[] endComment = EncUtf8.GetBytes("-->");
 
-		private readonly string _pathname;
+		private ByteAccessor _input;
+
+		/// <summary>
+		/// The value of this boolean will only be set after calls are made to get the elements
+		/// </summary>
+		private bool _foundOptionalFirstElement;
 
 		/// <summary>
 		/// Characters that may follow a marker and indicate the end of it (for a successful match).
@@ -55,6 +49,7 @@ namespace Palaso.Xml
 											EncUtf8.GetBytes("/")[0]
 									};
 
+		private int _endOfHeadingOffset = -1; // saved initial offset so heading can be retrieved.
 		private int _currentOffset; // Position in the file as we work through it.
 		// index of the angle bracket of the final, closing top-level marker.
 		// In the special case where the top-level marker has no children or close tag (<top/>),
@@ -71,7 +66,38 @@ namespace Palaso.Xml
 
 			if (!File.Exists(pathname)) throw new FileNotFoundException("File was not found.", "pathname");
 
-			_pathname = pathname;
+			_input = new AsyncFileReader(pathname);
+		}
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="bytes">Content of XML to be split - could be extracted bytes from splitting a file</param>
+		public FastXmlElementSplitter(byte[] bytes)
+		{
+			if (bytes == null || bytes.Length == 0) throw new ArgumentException("Null or empty byte array", "bytes");
+
+			_input = new ByteArrayReader(bytes);
+		}
+
+		/// <summary>
+		/// Gets the bytes from the start of the data to the first subelement
+		/// </summary>
+		public byte[] GetHeader()
+		{
+			if (_endOfHeadingOffset == -1)
+				InitializeOffsets();
+			return _input.SubArray(0, _endOfHeadingOffset);
+		}
+
+		/// <summary>
+		/// Gets the bytes from the end of the last subelement to the end of the data
+		/// </summary>
+		public byte[] GetTrailer()
+		{
+			if (_endOfHeadingOffset == -1)
+				InitializeOffsets();
+			return _input.SubArray(_endOfRecordsOffset, _input.Length - _endOfRecordsOffset);
 		}
 
 		///<summary>
@@ -98,6 +124,15 @@ namespace Palaso.Xml
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string recordMarker)
 		{
 			return GetSecondLevelElementBytes(null, recordMarker);
+		}
+
+		/// <summary>
+		/// Gets all second level elements that are in input file
+		/// </summary>
+		/// <returns>Enumeration of SecondaryElements containing element name and bytes for each element</returns>
+		public IEnumerable<SecondaryElement> GetSecondLevelElements()
+		{
+			return GetSecondLevelElementBytesInternal(null, null);
 		}
 
 		///<summary>
@@ -135,29 +170,9 @@ namespace Palaso.Xml
 		public List<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker,
 			out bool foundOptionalFirstElement)
 		{
-			var results = new List<byte[]>(GetSecondLevelElementBytes(firstElementMarker, recordMarker));
-			foundOptionalFirstElement = false;
-			if (results.Count == 0 || string.IsNullOrEmpty(firstElementMarker))
-				return results;
-			var first = results[0];
-			int i = 0;
-			// advance to marker
-			for (; i < first.Length; i++)
-			{
-				var c = Convert.ToChar(first[i]);
-				if (!Char.IsWhiteSpace(c) && c != '<')
-					break;
-			}
-			// Set foundOptionalFirstElement if the marker matches and is terminated.
-			if (i + firstElementMarker.Length + 1 > first.Length)
-				return results;
-			for (int j = 0; j < firstElementMarker.Length; j++)
-			{
-				if (first[i + j] != firstElementMarker[j])
-					return results; // no match, didn't get first element
-			}
-			foundOptionalFirstElement = Terminators.Contains(first[i + firstElementMarker.Length]);
-			return results;
+			var result = GetSecondLevelElementBytesInternal(firstElementMarker, recordMarker).Select(t => t.Bytes).ToList();
+			foundOptionalFirstElement = _foundOptionalFirstElement;
+			return result;
 		}
 
 
@@ -167,15 +182,27 @@ namespace Palaso.Xml
 		public IEnumerable<byte[]> GetSecondLevelElementBytes(string firstElementMarker, string recordMarker)
 		{
 			if (string.IsNullOrEmpty(recordMarker)) throw new ArgumentException("Null or empty string", "recordMarker");
-			_input = new AsyncFileReader(_pathname);
+			return GetSecondLevelElementBytesInternal(firstElementMarker, recordMarker).Select(t => t.Bytes);
+		}
+
+		/// <summary>
+		/// Gets all second level elements
+		/// </summary>
+		/// <param name="firstElementMarker">if provided, first element will be checked to see if it matches this marker</param>
+		/// <param name="recordMarker">if provided, all second level elements besides the first must match this marker</param>
+		/// <returns>Enumeration of tuples containing marker name and bytes for all second level elements</returns>
+		private IEnumerable<SecondaryElement> GetSecondLevelElementBytesInternal(string firstElementMarker, string recordMarker)
+		{
+			_foundOptionalFirstElement = false;
 			InitializeOffsets();
-			var recordMarkerAsBytes = FormatRecordMarker(recordMarker);
+			var recordMarkerAsBytes = recordMarker != null ? FormatRecordMarker(recordMarker) : null;
 			if (firstElementMarker != null && _currentOffset < _endOfRecordsOffset)
 			{
 				var firstElementMarkerAsBytes = FormatRecordMarker(firstElementMarker);
 				if (MatchMarker(firstElementMarkerAsBytes))
 				{
-					yield return MakeElement(firstElementMarkerAsBytes);
+					_foundOptionalFirstElement = true;
+					yield return new SecondaryElement(firstElementMarker, MakeElement(firstElementMarkerAsBytes));
 					AdvanceToOpenAngleBracket();
 				}
 			}
@@ -183,18 +210,20 @@ namespace Palaso.Xml
 			// We've processed the special first element if any and should be at the first record marker (or end of file)
 			while (_currentOffset < _endOfRecordsOffset)
 			{
-				if (!MatchMarker(recordMarkerAsBytes))
+				if (recordMarker == null)
+				{
+					recordMarkerAsBytes = GetOpeningMarker();
+				}
+				else if (!MatchMarker(recordMarkerAsBytes))
 				{
 					var msg = string.Format("Can't find{0} main record with element name '{1}'",
 						firstElementMarker == null ? "" : string.Format(" optional element name '{0}' or", firstElementMarker),
 						recordMarker);
 					throw new ArgumentException(msg);
 				}
-				yield return MakeElement(recordMarkerAsBytes);
+				yield return new SecondaryElement(recordMarker ?? EncUtf8.GetString(recordMarkerAsBytes), MakeElement(recordMarkerAsBytes));
 				AdvanceToOpenAngleBracket();
 			}
-			_input.Close();
-			_input = null;
 		}
 
 		/// <summary>
@@ -266,6 +295,18 @@ namespace Palaso.Xml
 		}
 
 		/// <summary>
+		/// Get the next opening element name
+		/// </summary>
+		/// <returns>element name as a byte array</returns>
+		byte[] GetOpeningMarker()
+		{
+			int curpos = _currentOffset;
+			while (!Terminators.Contains(_input[curpos]))
+				curpos++;
+			return _input.SubArray(_currentOffset, curpos - _currentOffset);
+		}
+
+		/// <summary>
 		/// Return true if the bytes starting at _currentPosition match the specified marker.
 		/// The following character must not be part of a marker name.
 		///
@@ -302,9 +343,10 @@ namespace Palaso.Xml
 		/// </summary>
 		public IEnumerable<string> GetSecondLevelElementStrings(string firstElementMarker, string recordMarker, out bool foundOptionalFirstElement)
 		{
-			return new List<string>(
-				GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
-					.Select(byteResult => EncUtf8.GetString(byteResult)));
+			// tempting to call the internal method and avoid the list, but need to create the list to make sure the flag is set correctly
+			// before we return.
+			return GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
+					.Select(byteResult => EncUtf8.GetString(byteResult));
 		}
 
 		/// <summary>
@@ -315,6 +357,13 @@ namespace Palaso.Xml
 		/// </summary>
 		private void InitializeOffsets()
 		{
+			// just reset current record if initialize was already done
+			if (_endOfHeadingOffset != -1)
+			{
+				_currentOffset = _endOfHeadingOffset + 1;
+				return;
+			}
+
 			// Find offset for end of records.
 			_endOfRecordsOffset = -1;
 			for (var i = _input.Length - 1; i >= 0; --i)
@@ -367,6 +416,7 @@ namespace Palaso.Xml
 			// Find the NEXT open bracket after the root. This should be the first second-level element.
 			AdvanceToOpenAngleBracket();
 			// It's OK for this to be equal to _endOfRecordsOffset. Just means a basically empty file, with no second-level elements.
+			_endOfHeadingOffset = _currentOffset - 1;
 		}
 
 		/// <summary>
@@ -478,6 +528,17 @@ namespace Palaso.Xml
 	}
 
 	/// <summary>
+	/// An abstraction of the methods needed to either access a file or a byte array in similar ways.
+	/// </summary>
+	internal interface ByteAccessor
+	{
+		void Close();
+		byte this[int index] { get; }
+		int Length { get; }
+		byte[] SubArray(int start, int count);
+	}
+
+	/// <summary>
 	/// Class responsible to manage access to the content of a file. The interface is mostly a subset of byte array,
 	/// and in general it replaces input = File.ReadAllBytes(pathname) with input = new AsyncFileReader(pathname),
 	/// and input can be used much like the array. One difference is that the AsyncFileReader should be closed.
@@ -485,7 +546,7 @@ namespace Palaso.Xml
 	/// Also, if the file is mainly accessed sequentially, some of the data reading will be overlapped with
 	/// processing it, at least for a large file.
 	/// </summary>
-	internal class AsyncFileReader
+	internal class AsyncFileReader : ByteAccessor
 	{
 		private string _pathname;
 		// MS doc says this is the smallest buffer that will produce real async reads.
@@ -638,5 +699,59 @@ namespace Palaso.Xml
 		public byte[] Data; // bytes we read from the file
 		public int Offset; // from start of whole file (or beyond end, if we haven't started loading buffer)
 		public IAsyncResult Token; // from BeginRead; should be passed to EndRead when we need the data.
+	}
+
+	class ByteArrayReader : ByteAccessor
+	{
+		byte[] _bytes;
+
+		public ByteArrayReader(byte[] bytes)
+		{
+			_bytes = bytes;
+		}
+
+		#region ByteAccessor Members
+
+		public void Close()
+		{
+			// nothing to do
+		}
+
+		public byte this[int index]
+		{
+			get { return _bytes[index]; }
+		}
+
+		public int Length
+		{
+			get { return _bytes.Length; }
+		}
+
+		public byte[] SubArray(int start, int count)
+		{
+			var result = new byte[count];
+			Array.Copy(_bytes, start, result, 0, count);
+			return result;
+		}
+
+		#endregion
+	}
+
+	public class SecondaryElement
+	{
+		public string Name { get; private set; }
+
+		public byte[] Bytes { get; private set; }
+
+		public SecondaryElement(string name, byte[] bytes)
+		{
+			Name = name;
+			Bytes = bytes;
+		}
+
+		public string BytesAsString
+		{
+			get { return FastXmlElementSplitter.EncUtf8.GetString(Bytes); }
+		}
 	}
 }
