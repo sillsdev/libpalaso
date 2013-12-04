@@ -251,6 +251,39 @@ namespace SIL.Archiving.IMDI.Schema
 				session.MDGroup.Project.Add(new Project());
 
 			session.MDGroup.Content.CheckRequiredFields();
+
+			foreach (var actor in session.MDGroup.Actors.Actor)
+			{
+				if (actor.Role == null)
+					actor.Role = string.Empty.ToVocabularyType(false, ListType.Link(ListType.ActorRole));
+
+				if (actor.FamilySocialRole == null)
+					actor.FamilySocialRole = string.Empty.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
+
+				if (actor.Anonymized == null)
+					actor.Anonymized = new BooleanType { Link = ListType.Link(ListType.Boolean) };
+			}
+
+			foreach (var file in session.Resources.WrittenResource)
+			{
+				if (file.SubType == null)
+					file.SubType = new VocabularyType { Link = ListType.Link(ListType.WrittenResourceSubType) };
+
+				if (file.Validation == null)
+					file.Validation = new ValidationType
+					{
+						Type = new VocabularyType{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ValidationType) },
+						Methodology = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ValidationMethodology) },
+						Level = new IntegerType { Value = "Unspecified" },
+						Description = new DescriptionTypeCollection { new LanguageString() }
+					};
+
+				if (file.Derivation == null)
+					file.Derivation = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.WrittenResourceDerivation) };
+
+				if (file.Anonymized == null)
+					file.Anonymized = new BooleanType { Link = ListType.Link(ListType.Boolean) };
+			}
 		}
 
 		/// <summary>Set the access code on session files if not set already.</summary>
@@ -613,11 +646,10 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public LocationType()
 		{
-			Continent = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary };
-			Country = new VocabularyType();
+			Continent = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.Continents) };
+			Country = new VocabularyType { Link = ListType.Link(ListType.Countries) };
+			Region = new List<string>();
 		}
-
-		private List<string> _regionField;
 
 		/// <remarks/>
 		public VocabularyType Continent { get; set; }
@@ -625,7 +657,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks>Closed vocabulary</remarks>
 		public void SetContinent(string continent)
 		{
-			ClosedIMDIItemList continentList = ListConstructor.GetClosedList(ListType.Continents);
+			var continentList = ListConstructor.GetClosedList(ListType.Continents);
 			Continent = continentList.FindByValue(continent).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.Continents));
 		}
 
@@ -640,11 +672,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[XmlElementAttribute("Region")]
-		public List<string> Region
-		{
-			get { return _regionField ?? (_regionField = new List<string>()); }
-			set { _regionField = value; }
-		}
+		public List<string> Region { get; set; }
 
 		/// <remarks/>
 		public string Address { get; set; }
@@ -1162,6 +1190,10 @@ namespace SIL.Archiving.IMDI.Schema
 		public ActorType()
 		{
 			Keys = new KeysType();
+			Code = string.Empty;
+			EthnicGroup = string.Empty;
+			Age = string.Empty;
+			BirthDate = string.Empty;
 		}
 
 		/// <summary></summary>
@@ -1211,6 +1243,9 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public VocabularyType Role { get; set; }
+
+		/// <remarks/>
 		[XmlElementAttribute("Name")]
 		public string[] Name { get; set; }
 
@@ -1219,6 +1254,20 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public string Code { get; set; }
+
+		/// <remarks/>
+		public VocabularyType FamilySocialRole { get; set; }
+
+		/// <remarks/>
+		[XmlElement("Languages")]
+		public LanguagesType Languages
+		{
+			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
+			set { _languagesField = value; }
+		}
+
+		/// <remarks/>
+		public string EthnicGroup { get; set; }
 
 		/// <remarks/>
 		public string Age { get; set; }
@@ -1251,13 +1300,6 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public string Education { get; set; }
 
-		/// <remarks/>
-		[XmlElement("Languages")]
-		public LanguagesType Languages
-		{
-			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
-			set { _languagesField = value; }
-		}
 
 		/// <summary>Adds a language, setting some attributes also</summary>
 		/// <param name="iso3Code"></param>
@@ -1274,7 +1316,17 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public BooleanType Anonymized { get; set; }
+
+		/// <remarks/>
+		public ContactType Contact { get; set; }
+
+		/// <remarks/>
 		public KeysType Keys { get; set; }
+
+		/// <remarks/>
+		[XmlAttributeAttribute]
+		public string ResourceRef { get; set; }
 
 		// TODO: Do we need this method?
 		/// <remarks/>
@@ -1434,8 +1486,14 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ValidationType : IMDIDescription
+	public class ValidationType
 	{
+		/// <remarks/>
+		public ValidationType()
+		{
+			Description = new DescriptionTypeCollection();
+		}
+
 		/// <remarks/>
 		public VocabularyType Type { get; set; }
 
@@ -1444,15 +1502,28 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public IntegerType Level { get; set; }
+
+		/// <remarks/>
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class WrittenResourceType : IMDIDescription, IIMDISessionFile
+	public class WrittenResourceType : IIMDISessionFile
 	{
-		private string _dateField;
+		/// <remarks/>
+		public WrittenResourceType()
+		{
+			Description = new DescriptionTypeCollection();
+			Keys = new KeysType();
+			Date = "Unspecified";
+			CharacterEncoding = string.Empty;
+			ContentEncoding = String.Empty;
+			LanguageId = string.Empty;
+		}
 
 		/// <remarks/>
 		public ResourceLinkType ResourceLink { get; set; }
@@ -1461,14 +1532,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public ResourceLinkType MediaResourceLink { get; set; }
 
 		/// <remarks/>
-		public string Date {
-			get {
-				return _dateField;
-			}
-			set {
-				_dateField = value;
-			}
-		}
+		public string Date { get; set; }
 
 		/// <remarks/>
 		public VocabularyType Type { get; set; }
@@ -1495,7 +1559,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public string ContentEncoding { get; set; }
 
 		/// <remarks/>
-		public VocabularyType LanguageId { get; set; }
+		public string LanguageId { get; set; }
 
 		/// <remarks/>
 		public BooleanType Anonymized { get; set; }
@@ -1504,19 +1568,42 @@ namespace SIL.Archiving.IMDI.Schema
 		public AccessType Access { get; set; }
 
 		/// <remarks/>
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description { get; set; }
+
+		/// <remarks/>
 		public KeysType Keys { get; set; }
 
 		/// <remarks/>
 		[XmlAttribute]
 		public string ResourceId { get; set; }
+
+		/// <remarks/>
+		public void AddDescription(LanguageString description)
+		{
+			Description.Add(description);
+		}
+
+		/// <remarks/>
+		[XmlIgnore]
+		public string FullPathAndFileName { get; set; }
 	}
 
 	/// <remarks/>
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class MediaFileType : IMDIDescription, IIMDISessionFile
+	public class MediaFileType : IIMDISessionFile
 	{
+		/// <remarks/>
+		public MediaFileType()
+		{
+			RecordingConditions = string.Empty;
+			TimePosition = new TimePositionRangeType();
+			Description = new DescriptionTypeCollection();
+			Keys = new KeysType();
+		}
+
 		/// <remarks/>
 		public ResourceLinkType ResourceLink { get; set; }
 
@@ -1536,7 +1623,14 @@ namespace SIL.Archiving.IMDI.Schema
 		public string RecordingConditions { get; set; }
 
 		/// <remarks/>
+		public TimePositionRangeType TimePosition { get; set; }
+
+		/// <remarks/>
 		public AccessType Access { get; set; }
+
+		/// <remarks/>
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description { get; set; }
 
 		/// <remarks/>
 		public KeysType Keys { get; set; }
@@ -1544,6 +1638,16 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlAttribute]
 		public string ResourceId { get; set; }
+
+		/// <remarks/>
+		public void AddDescription(LanguageString description)
+		{
+			Description.Add(description);
+		}
+
+		/// <remarks/>
+		[XmlIgnore]
+		public string FullPathAndFileName { get; set; }
 	}
 
 	/// <remarks/>
@@ -1552,13 +1656,13 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Session : IIMDIMajorObject, IArchivingSession
 	{
-		private SessionResources _resourcesField;
-
 		/// <remarks/>
 		public Session()
 		{
 			Description = new DescriptionTypeCollection();
 			MDGroup = new MDGroupType();
+			Resources = new SessionResources();
+			References = new SessionTypeReferences();
 		}
 
 		/// <summary>Name of object</summary>
@@ -1599,11 +1703,10 @@ namespace SIL.Archiving.IMDI.Schema
 		public MDGroupType MDGroup { get; set; }
 
 		/// <remarks/>
-		public SessionResources Resources
-		{
-			get { return _resourcesField ?? (_resourcesField = new SessionResources()); }
-			set { _resourcesField = value; }
-		}
+		public SessionResources Resources { get; set; }
+
+		/// <remarks/>
+		public SessionTypeReferences References { get; set; }
 
 		/// <remarks/>
 		[XmlIgnore]
@@ -1638,6 +1741,10 @@ namespace SIL.Archiving.IMDI.Schema
 		public void AddActor(ArchivingActor actor)
 		{
 			MDGroup.Actors.Actor.Add(new ActorType(actor));
+
+			// actor files
+			foreach (var file in actor.Files)
+				AddFile(new IMDIFile(file), "Contributors");
 		}
 
 		/// <remarks>Not used yet</remarks>
@@ -1655,6 +1762,28 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public void AddFile(ArchivingFile file)
+		{
+			AddFile(new IMDIFile(file), IMDIArchivingDlgViewModel.NormalizeDirectoryName(Name));
+		}
+
+		/// <summary></summary>
+		/// <param name="imdiFile"></param>
+		/// <param name="directoryName">The sub-directory name in the imdi package directory</param>
+		private void AddFile(IMDIFile imdiFile, string directoryName)
+		{
+			if (imdiFile.IsMediaFile)
+				Resources.MediaFile.Add(imdiFile.ToMediaFileType(directoryName));
+			else
+				Resources.WrittenResource.Add(imdiFile.ToWrittenResourceType(directoryName));
+		}
+
+		/// <remarks/>
+		[XmlIgnore]
+		public List<ArchivingFile> Files { get; set; }
+
+		/// <remarks/>
+		[XmlIgnore]
 		public string Genre
 		{
 			get
@@ -1666,22 +1795,6 @@ namespace SIL.Archiving.IMDI.Schema
 				MDGroup.Content.Genre = value.ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
 			}
 		}
-
-		/// <remarks/>
-		public void AddFile(ArchivingFile file)
-		{
-			IMDIFile imdiFile = new IMDIFile(file);
-			var dirName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(Name);
-
-			if (imdiFile.IsMediaFile)
-				Resources.MediaFile.Add(imdiFile.ToMediaFileType(dirName));
-			else
-				Resources.WrittenResource.Add(imdiFile.ToWrittenResourceType(dirName));
-		}
-
-		/// <remarks/>
-		[XmlIgnore]
-		public List<ArchivingFile> Files { get; set; }
 	}
 
 	/// <remarks/>
@@ -1757,5 +1870,42 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlEnumAttribute("CORPUS.Profile")]
 		CORPUSProfile,
 		// ReSharper restore InconsistentNaming
+	}
+
+	/// <remarks/>
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(Namespace = "http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class TimePositionRangeType
+	{
+		/// <remarks/>
+		public TimePositionRangeType()
+		{
+			Start = "Unspecified";
+			End = "Unspecified";
+		}
+
+		/// <remarks/>
+		public string Start { get; set; }
+
+		/// <remarks/>
+		public string End { get; set; }
+	}
+
+	/// <remarks/>
+	[SerializableAttribute]
+	[DebuggerStepThroughAttribute]
+	[XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.mpi.nl/IMDI/Schema/IMDI")]
+	public class SessionTypeReferences
+	{
+		/// <remarks/>
+		public SessionTypeReferences()
+		{
+			Description = new DescriptionTypeCollection();
+		}
+
+		/// <remarks/>
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description { get; set; }
 	}
 }

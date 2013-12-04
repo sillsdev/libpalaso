@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
 using SIL.Archiving.Properties;
+using System.Windows.Forms;
 
 namespace SIL.Archiving.IMDI
 {
@@ -16,6 +19,7 @@ namespace SIL.Archiving.IMDI
 		private readonly IMDIPackage _imdiData;
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
+		private bool _workerException;
 
 		#region Properties
 		/// ------------------------------------------------------------------------------------
@@ -192,12 +196,225 @@ namespace SIL.Archiving.IMDI
 			LaunchArchivingProgram(null);
 		}
 
+#region Create IMDI package in worker thread
+
 		/// <summary></summary>
 		public override bool CreatePackage()
 		{
-			_imdiData.SetMissingInformation();
-			return _imdiData.CreateIMDIPackage();
+			IsBusy = true;
+
+			// check for missing data that is required by Arbil
+			var success = _imdiData.SetMissingInformation();
+
+			// write the xml files
+			if (success)
+				success = _imdiData.CreateIMDIPackage();
+
+			// copy the content files
+			if (success)
+				success = CreateIMDIPackage();
+
+			CleanUp();
+
+			if (success)
+			{
+				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
+					"Ready to hand the package to IMDI program"), MessageType.Success);
+			}
+
+			IsBusy = false;
+			return success;
 		}
+
+		/// <summary></summary>
+		public bool CreateIMDIPackage()
+		{
+			try
+			{
+				using (_worker = new BackgroundWorker())
+				{
+					_cancelProcess = false;
+					_workerException = false;
+					_worker.ProgressChanged += HandleBackgroundWorkerProgressChanged;
+					_worker.WorkerReportsProgress = true;
+					_worker.WorkerSupportsCancellation = true;
+					_worker.DoWork += CreateIMDIPackageInWorkerThread;
+					_worker.RunWorkerAsync();
+
+					while (_worker.IsBusy)
+						Application.DoEvents();
+				}
+			}
+			catch (Exception e)
+			{
+				ReportError(e, LocalizationManager.GetString(
+					"DialogBoxes.ArchivingDlg.CreatingIMDIPackageErrorMsg",
+					"There was a problem starting process to create IMDI package."));
+
+				return false;
+			}
+			finally
+			{
+				_worker = null;
+			}
+
+			return !_cancelProcess && !_workerException;
+		}
+
+		public override void Cancel()
+		{
+			base.Cancel();
+
+			CleanUp();
+		}
+
+		/// <summary></summary>
+		void HandleBackgroundWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			if (e.UserState == null || _cancelProcess)
+				return;
+
+			if (e.UserState is KeyValuePair<Exception, string>)
+			{
+				var kvp = (KeyValuePair<Exception, string>)e.UserState;
+				ReportError(kvp.Key, kvp.Value);
+				return;
+			}
+
+			if (!string.IsNullOrEmpty(e.UserState as string))
+			{
+				if (e.ProgressPercentage == 0)
+				{
+					DisplayMessage(e.UserState.ToString(), MessageType.Success);
+					return;
+				}
+
+				DisplayMessage(e.UserState.ToString(), MessageType.Detail);
+			}
+
+			if (IncrementProgressBarAction != null)
+				IncrementProgressBarAction();
+		}
+
+		private void CreateIMDIPackageInWorkerThread(object sender, DoWorkEventArgs e)
+
+		{
+			try
+			{
+				var outputDirectory = Path.Combine(_imdiData.PackagePath, NormalizeDirectoryName(_imdiData.Name));
+
+				if (Thread.CurrentThread.Name == null)
+					Thread.CurrentThread.Name = "CreateIMDIPackageInWorkerThread";
+
+				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PreparingFilesMsg",
+					"Analyzing component files"));
+
+				var filesToCopy = new Dictionary<string, string>();
+
+				// get files from each session
+				foreach (var sess in _imdiData.Sessions)
+				{
+					Session session = (Session) sess;
+
+					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
+						session.Name);
+
+					// list.Key is the session name, if missing assume it is a Contributor file
+					var sessionDirName = NormalizeDirectoryName(session.Name);
+
+					// create sub directory
+					var fullSessionDirName = Path.Combine(outputDirectory, sessionDirName);
+					Directory.CreateDirectory(fullSessionDirName);
+
+					// get files to copy
+					foreach (var file in session.Resources.MediaFile)
+					{
+						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
+						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
+					}
+
+					foreach (var file in session.Resources.WrittenResource)
+					{
+						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
+						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
+					}
+
+					if (_cancelProcess)
+						return;
+				}
+
+				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
+					"Copying files"));
+
+
+				// ****************************************************************************************************
+				//foreach (var list in _fileLists)
+				//{
+				//    _worker.ReportProgress(1 /* actual value ignored, progress just increments */,
+				//        string.IsNullOrEmpty(list.Key) ? _id : list.Key);
+
+				//    // list.Key is the session name, if missing assume it is a Contributor file
+				//    var sessionDirName = NormalizeDirectoryName(string.IsNullOrEmpty(list.Key) ? "Contributors" : list.Key);
+
+				//    // create sub directory
+				//    var fullSessionDirName = Path.Combine(outputDirectory, sessionDirName);
+				//    Directory.CreateDirectory(fullSessionDirName);
+
+				//    // copy the files
+				//    foreach (var file in list.Value.Item1)
+				//    {
+				//        var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file));
+				//        filesToCopy[file] = Path.Combine(fullSessionDirName, newFileName);
+				//    }
+				//    if (_cancelProcess)
+				//        return;
+				//}
+
+				//_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
+				//    "Copying files"));
+
+				foreach (var fileToCopy in filesToCopy)
+				{
+					if (_cancelProcess)
+						return;
+					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
+						Path.GetFileName(fileToCopy.Key));
+					if (FileCopyOverride != null)
+					{
+						try
+						{
+							if (FileCopyOverride(this, fileToCopy.Key, fileToCopy.Value))
+							{
+								if (!File.Exists(fileToCopy.Value))
+									throw new FileNotFoundException("Calling application claimed to copy file but didn't", fileToCopy.Value);
+								continue;
+							}
+						}
+						catch (Exception error)
+						{
+							var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromRAMP",
+								"File excluded from RAMP package: " + fileToCopy.Value);
+							ReportError(error, msg);
+						}
+					}
+					// Don't use File.Copy because it's asynchronous.
+					CopyFile(fileToCopy.Key, fileToCopy.Value);
+				}
+
+				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInRAMPMsg",
+					"Saving files in RAMP package"));
+			}
+			catch (Exception exception)
+			{
+				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
+					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingIMDIArchiveErrorMsg",
+						"There was an error attempting to create the IMDI package.")));
+
+				_workerException = true;
+			}
+		}
+
+#endregion
 
 		/// <summary>Only Latin characters, URL compatible</summary>
 		protected override StringBuilder DoArchiveSpecificFilenameNormalization(string key, string fileName)

@@ -21,5 +21,8 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <summary></summary>
 		AccessType Access { get; set; }
+
+		/// <summary></summary>
+		string FullPathAndFileName { get; set; }
 	}
 }

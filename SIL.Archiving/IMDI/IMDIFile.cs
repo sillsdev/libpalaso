@@ -113,6 +113,8 @@ namespace SIL.Archiving.IMDI
 					Value = ResourceLink(sessionDirectoryName,
 					IMDIArchivingDlgViewModel.NormalizeFileName((new FileInfo(DescribesAnotherFile)).Name ))
 				};
+			else
+				written.MediaResourceLink = new ResourceLinkType { Value = string.Empty };
 
 			return written;
 		}
@@ -135,12 +137,27 @@ namespace SIL.Archiving.IMDI
 		private void SetResourceProperties(IIMDISessionFile resource, string sessionDirectoryName)
 		{
 			resource.ResourceLink = new ResourceLinkType { Value = ResourceLink(sessionDirectoryName, NormalizedName) };
-			resource.Format.SetValue(MimeType, false, ListType.Link(ListType.MediaFileFormat));
-			resource.Type.SetValue(GeneralType, true, ListType.Link(ListType.MediaFileType));
+
+			if (IsMediaFile)
+			{
+				resource.Format = MimeType.ToVocabularyType(true, ListType.Link(ListType.MediaFileFormat));
+				resource.Type = GeneralType.ToVocabularyType(false, ListType.Link(ListType.MediaFileType));
+			}
+			else
+			{
+				resource.Format = MimeType.ToVocabularyType(false, ListType.Link(ListType.WrittenResourceFormat));
+				resource.Type = GeneralType.ToVocabularyType(false, ListType.Link(ListType.WrittenResourceType));
+			}
 			resource.Size = FileSize;
 
 			foreach (var description in Descriptions)
 				resource.Description.Add(description.ToIMDIDescriptionType());
+
+			resource.FullPathAndFileName = FullName;
+
+			// Description is required
+			if (resource.Description.Count == 0)
+				resource.Description.Add(new LanguageString());
 
 			if (AccessProtocol != null)
 			{
