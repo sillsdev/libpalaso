@@ -52,6 +52,69 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
+		public void GetKeyboard_FromNewPalasoId_ExistingKeyboardReturnsKeyboard()
+		{
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+
+			Assert.That(Keyboard.Controller.GetKeyboard("en-US_foo"), Is.EqualTo(keyboard));
+		}
+
+		[Test]
+		public void GetKeyboard_FromNewPalasoId_NonExistingKeyboard()
+		{
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+
+			Assert.That(Keyboard.Controller.GetKeyboard("en-US_glop"), Is.EqualTo(KeyboardDescription.Zero));
+		}
+
+		[Test]
+		public void GetKeyboard_FromOldParatextId_ExistingKeyboardReturnsKeyboard()
+		{
+			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "az-Latn-AZ"); // This is the case of a keyboard that the old Palaso system was incapable of supporting.
+			KeyboardController.Manager.RegisterKeyboard(keyboardFooBoo);
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+
+			Assert.That(Keyboard.Controller.GetKeyboard("foo|en-US"), Is.EqualTo(keyboard));
+			Assert.That(Keyboard.Controller.GetKeyboard("foo|az-Latn-AZ"), Is.EqualTo(keyboardFooBoo));
+		}
+
+		[Test]
+		public void GetKeyboard_FromOldParatextId_NonExistingKeyboard()
+		{
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+
+			Assert.That(Keyboard.Controller.GetKeyboard("glop|en-US"), Is.EqualTo(KeyboardDescription.Zero));
+		}
+
+		[Test]
+		public void GetKeyboard_FromOldPalasoId_ExistingKeyboardReturnsKeyboard()
+		{
+			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "az-Latn-AZ"); // This demonstrates the case of a keyboard that the old Palaso system was incapable of supporting. There's no way to reference this keyboard, or is there???
+			KeyboardController.Manager.RegisterKeyboard(keyboardFooBoo);
+			var keyboardFooF = Keyboard.Controller.CreateKeyboardDefinition("foo-az", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboardFooF);
+			var keyboardFoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboardFoo);
+
+			Assert.That(Keyboard.Controller.GetKeyboard("foo-az-en-US"), Is.EqualTo(keyboardFooF));
+			Assert.That(Keyboard.Controller.GetKeyboard("foo-en-US"), Is.EqualTo(keyboardFoo));
+			Assert.That(Keyboard.Controller.GetKeyboard("foo-az-Latn-AZ"), Is.EqualTo(keyboardFooBoo));
+		}
+
+		[Test]
+		public void GetKeyboard_FromOldPalasoId_NonExistingKeyboard()
+		{
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+
+			Assert.That(Keyboard.Controller.GetKeyboard("glop-en-US"), Is.EqualTo(KeyboardDescription.Zero));
+		}
+
+		[Test]
 		public void GetKeyboard_FromInputLanguage_NonExistingKeyboard()
 		{
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");

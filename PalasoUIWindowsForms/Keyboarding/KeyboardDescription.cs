@@ -8,9 +8,7 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.Diagnostics;
-using Palaso.Code;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
