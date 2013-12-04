@@ -228,15 +228,25 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 		#endregion
 
+		private bool PassKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
+		{
+			var keySym = X11KeyConverter.GetKeySym(keyChar);
+			return PassKeyEventToIbus(control, keySym, modifierKeys);
+		}
+
 		private bool PassKeyEventToIbus(Control control, char keyChar, Keys modifierKeys)
+		{
+			if (keyChar == 0x7f) // we get this for Ctrl-Backspace
+				keyChar = '\b';
+
+			return PassKeyEventToIbus(control, (int)keyChar, modifierKeys);
+		}
+
+		private bool PassKeyEventToIbus(Control control, int keySym, Keys modifierKeys)
 		{
 			if (!IBusCommunicator.Connected)
 				return false;
 
-			if (keyChar == 0x7f) // we get this for Ctrl-Backspace
-				keyChar = '\b';
-
-			var keySym = X11KeyConverter.GetKeySym(keyChar);
 			int scancode = X11KeyConverter.GetScanCode(keySym);
 			if (scancode > -1)
 			{
@@ -313,12 +323,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.PageDown:
 				case Keys.Home:
 				case Keys.End:
-					PassKeyEventToIbus(sender as Control, (char)key, e.Modifiers);
+					PassKeyEventToIbus(sender as Control, key, e.Modifiers);
 					return;
 			}
 			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
-				PassKeyEventToIbus(sender as Control, (char)key, e.Modifiers);
+				PassKeyEventToIbus(sender as Control, key, e.Modifiers);
 		}
 
 		/// <summary>
