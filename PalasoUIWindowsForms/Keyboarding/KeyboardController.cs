@@ -173,8 +173,29 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (string.IsNullOrEmpty(layoutNameWithLocale))
 					return KeyboardDescription.Zero;
 
-				return Keyboards.Contains(layoutNameWithLocale) ?
-					Keyboards[layoutNameWithLocale] : KeyboardDescription.Zero;
+				if (Keyboards.Contains(layoutNameWithLocale))
+					return Keyboards[layoutNameWithLocale];
+
+				var parts = layoutNameWithLocale.Split('|');
+				if (parts.Length == 2)
+				{
+					// This is the way Paratext stored IDs in 7.4-7.5 while there was a temporary bug-fix in place)
+					return GetKeyboard(parts[0], parts[1]);
+				}
+
+				// Handle old Palaso IDs
+				parts = layoutNameWithLocale.Split('-');
+				if (parts.Length > 1)
+				{
+					for (int i = 1; i < parts.Length; i++)
+					{
+						var kb = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
+						if (!kb.Equals(KeyboardDescription.Zero))
+							return kb;
+					}
+				}
+
+				return KeyboardDescription.Zero;
 			}
 
 			public IKeyboardDefinition GetKeyboard(string layoutName, string locale)

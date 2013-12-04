@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Palaso.WritingSystems
 {
@@ -15,7 +13,7 @@ namespace Palaso.WritingSystems
 		/// </summary>
 		private IKeyboardDefinition TrivialKeyboard
 		{
-			get { return TrivialKeyboard; }
+			get { return new DefaultKeyboardDefinition(); }
 		}
 		/// <summary>
 		/// Tries to get the keyboard with the specified <paramref name="layoutName"/>.
