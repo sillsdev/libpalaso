@@ -41,6 +41,11 @@ namespace SIL.Archiving.IMDI
 			get { return (IIMDIMajorObject)BaseImdiFile.Items[0]; }
 		}
 
+		/// <summary>The path where the corpus imdi file and corpus directory will be created</summary>
+		public string PackagePath
+		{
+			get { return _packagePath;  }
+		}
 #endregion
 
 		// **** Corpus Layout ****
@@ -68,39 +73,33 @@ namespace SIL.Archiving.IMDI
 				sessionFiles.Add(sessImdi.WriteImdiFile(_packagePath, Name));
 			}
 
+			if (!_corpus) return true;
 
+			var corpus = (Corpus) BaseMajorObject;
 
-			if (_corpus)
+			// add the session file links
+			foreach (var fileName in sessionFiles)
+				corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
+
+			// Create the package catalogue imdi file
+			var catalogue = new Catalogue
 			{
-				var corpus = (Corpus) BaseMajorObject;
+				Name = Name + " Catalogue",
+				Title = Title,
+				Date = DateTime.Today.ToISO8601DateOnlyString(),
+			};
 
-				// add the session file links
-				foreach (var fileName in sessionFiles)
-					corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
+			foreach (var iso3Id in MetadataIso3LanguageIds)
+				catalogue.DocumentLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSimpleLanguageType());
 
-				// Create the package catalogue imdi file
-				//FundingProject
-				//Location
-				//AccessProtocol
-				var catalogue = new Catalogue
-				{
-					Name = Name + " Catalogue",
-					Title = Title,
-					Date = DateTime.Today.ToISO8601DateOnlyString(),
-				};
+			foreach (var iso3Id in ContentIso3LanguageIds)
+				catalogue.SubjectLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSubjectLanguageType());
 
-				foreach (var iso3Id in MetadataIso3LanguageIds)
-					catalogue.DocumentLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSimpleLanguageType());
+			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
+			corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\","/");
 
-				foreach (var iso3Id in ContentIso3LanguageIds)
-					catalogue.SubjectLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSubjectLanguageType());
-
-				var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
-				corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\","/");
-
-				//  Create the corpus imdi file
-				BaseImdiFile.WriteImdiFile(_packagePath, Name);
-			}
+			//  Create the corpus imdi file
+			BaseImdiFile.WriteImdiFile(_packagePath, Name);
 
 			return true;
 		}
@@ -144,13 +143,15 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// <summary></summary>
-		public void SetMissingInformation()
+		public bool SetMissingInformation()
 		{
 			if (string.IsNullOrEmpty(BaseMajorObject.Name))
 				BaseMajorObject.Name = Name;
 
 			if (string.IsNullOrEmpty(BaseMajorObject.Title))
 				BaseMajorObject.Title = Title;
+
+			return true;
 		}
 	}
 }
