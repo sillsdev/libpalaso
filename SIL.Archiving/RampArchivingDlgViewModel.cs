@@ -1730,8 +1730,9 @@ namespace SIL.Archiving
 						}
 						catch (Exception error)
 						{
-							var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromRAMP",
-								"File excluded from RAMP package: " + fileToCopy.Value);
+							var msg = string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
+								"File excluded from {0} package: ", "Parameter is the type of archive (e.g., RAMP/IMDI)"), NameOfProgramToLaunch) +
+								fileToCopy.Value;
 							ReportError(error, msg);
 						}
 					}
@@ -1739,8 +1740,8 @@ namespace SIL.Archiving
 					CopyFile(fileToCopy.Key, fileToCopy.Value);
 				}
 
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInRAMPMsg",
-					"Saving files in RAMP package"));
+				_worker.ReportProgress(0, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
+					"Saving files in {0} package", "Parameter is the type of archive (e.g., RAMP/IMDI)"), NameOfProgramToLaunch));
 
 				using (var zip = new ZipFile())
 				{
