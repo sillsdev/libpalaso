@@ -319,23 +319,22 @@ namespace SIL.Archiving.IMDI
 					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
 						session.Name);
 
+					// list.Key is the session name, if missing assume it is a Contributor file
+					var sessionDirName = NormalizeDirectoryName(session.Name);
+
+					// create sub directory
+					var fullSessionDirName = Path.Combine(outputDirectory, sessionDirName);
+					Directory.CreateDirectory(fullSessionDirName);
+
 					// get files to copy
 					foreach (var file in session.Resources.MediaFile)
 					{
-						// create sub directory
-						var fullSessionDirName = Path.Combine(outputDirectory, NormalizeDirectoryName(file.OutputDirectory));
-						Directory.CreateDirectory(fullSessionDirName);
-
 						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
 						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
 					}
 
 					foreach (var file in session.Resources.WrittenResource)
 					{
-						// create sub directory
-						var fullSessionDirName = Path.Combine(outputDirectory, NormalizeDirectoryName(file.OutputDirectory));
-						Directory.CreateDirectory(fullSessionDirName);
-
 						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
 						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
 					}
@@ -347,7 +346,33 @@ namespace SIL.Archiving.IMDI
 				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
 					"Copying files"));
 
-				// copy the files now
+
+				// ****************************************************************************************************
+				//foreach (var list in _fileLists)
+				//{
+				//    _worker.ReportProgress(1 /* actual value ignored, progress just increments */,
+				//        string.IsNullOrEmpty(list.Key) ? _id : list.Key);
+
+				//    // list.Key is the session name, if missing assume it is a Contributor file
+				//    var sessionDirName = NormalizeDirectoryName(string.IsNullOrEmpty(list.Key) ? "Contributors" : list.Key);
+
+				//    // create sub directory
+				//    var fullSessionDirName = Path.Combine(outputDirectory, sessionDirName);
+				//    Directory.CreateDirectory(fullSessionDirName);
+
+				//    // copy the files
+				//    foreach (var file in list.Value.Item1)
+				//    {
+				//        var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file));
+				//        filesToCopy[file] = Path.Combine(fullSessionDirName, newFileName);
+				//    }
+				//    if (_cancelProcess)
+				//        return;
+				//}
+
+				//_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
+				//    "Copying files"));
+
 				foreach (var fileToCopy in filesToCopy)
 				{
 					if (_cancelProcess)
@@ -367,8 +392,9 @@ namespace SIL.Archiving.IMDI
 						}
 						catch (Exception error)
 						{
-							var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromIMDI",
-								"File excluded from IMDI package: " + fileToCopy.Value);
+							var msg = string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
+								"File excluded from {0} package: ", "Parameter is the type of archive (e.g., RAMP/IMDI)"), ArchiveType) +
+								fileToCopy.Value;
 							ReportError(error, msg);
 						}
 					}
@@ -376,14 +402,14 @@ namespace SIL.Archiving.IMDI
 					CopyFile(fileToCopy.Key, fileToCopy.Value);
 				}
 
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInIMDIMsg",
-					"Saving files in IMDI package"));
+				_worker.ReportProgress(0, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
+					"Saving files in {0} package", "Parameter is the type of archive (e.g., RAMP/IMDI)"), ArchiveType));
 			}
 			catch (Exception exception)
 			{
 				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingIMDIArchiveErrorMsg",
-						"There was an error attempting to create the IMDI package.")));
+					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg",
+						"There was an error attempting to create the {0} package.", "Parameter is the type of archive (e.g., IMDI)"), ArchiveType)));
 
 				_workerException = true;
 			}
