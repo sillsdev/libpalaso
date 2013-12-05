@@ -137,10 +137,11 @@ namespace SIL.Archiving.IMDI
 		private void SetResourceProperties(IIMDISessionFile resource, string sessionDirectoryName)
 		{
 			resource.ResourceLink = new ResourceLinkType { Value = ResourceLink(sessionDirectoryName, NormalizedName) };
+			resource.OutputDirectory = sessionDirectoryName;
 
 			if (IsMediaFile)
 			{
-				resource.Format = MimeType.ToVocabularyType(true, ListType.Link(ListType.MediaFileFormat));
+				resource.Format = MimeType.ToVocabularyType(false, ListType.Link(ListType.MediaFileFormat));
 				resource.Type = GeneralType.ToVocabularyType(false, ListType.Link(ListType.MediaFileType));
 			}
 			else

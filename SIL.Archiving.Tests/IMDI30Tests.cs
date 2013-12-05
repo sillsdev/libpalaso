@@ -72,12 +72,12 @@ namespace SIL.Archiving.Tests
 				Gender = "Male",
 				BirthDate = 1964,
 				Occupation = "Nerf Herder",
-				MotherTongueLanguageIso3Code = motherTongueIso3,
-				PrimaryLanguageIso3Code = primaryLanguageIso3
+				MotherTongueLanguage = new ArchivingLanguage(motherTongueIso3),
+				PrimaryLanguage = new ArchivingLanguage(primaryLanguageIso3)
 			};
 
 			// additional languages
-			actrIn.Iso3LanguageCodes.Add(additionalLanguageIso3);
+			actrIn.Iso3Languages.Add(new ArchivingLanguage(additionalLanguageIso3));
 
 			var actrOut = new ActorType(actrIn);
 

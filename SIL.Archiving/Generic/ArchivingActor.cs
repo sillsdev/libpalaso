@@ -8,8 +8,8 @@ namespace SIL.Archiving.Generic
 	/// <summary>An Actor is someone who has contributed to the content as a speaker or writer</summary>
 	public class ArchivingActor : IComparable
 	{
-		private string _primaryLanguageIso3Code;
-		private string _motherTongueLanguageIso3Code;
+		private ArchivingLanguage _primaryLanguage;
+		private ArchivingLanguage _motherTongueLanguage;
 		private string _birthDate;
 
 		/// <summary>If needed but not given, FullName will be used</summary>
@@ -22,38 +22,42 @@ namespace SIL.Archiving.Generic
 		public string Age;
 
 		/// <summary>Languages this actor knows</summary>
-		public HashSet<string> Iso3LanguageCodes;
+		public ArchivingLanguageCollection Iso3Languages;
 
 		/// <summary>The primary language for this actor</summary>
-		public string PrimaryLanguageIso3Code
+		public ArchivingLanguage PrimaryLanguage
 		{
-			get { return _primaryLanguageIso3Code;  }
+			get { return _primaryLanguage;  }
 			set
 			{
-				_primaryLanguageIso3Code = value;
-				Iso3LanguageCodes.Add(_primaryLanguageIso3Code);
+				_primaryLanguage = value;
+				Iso3Languages.Add(_primaryLanguage);
 			}
 		}
 
 		/// <summary>The mother tongue language for this actor</summary>
-		public string MotherTongueLanguageIso3Code
+		public ArchivingLanguage MotherTongueLanguage
 		{
-			get { return _motherTongueLanguageIso3Code; }
+			get { return _motherTongueLanguage; }
 			set
 			{
-				_motherTongueLanguageIso3Code = value;
-				Iso3LanguageCodes.Add(_motherTongueLanguageIso3Code);
+				_motherTongueLanguage = value;
+				Iso3Languages.Add(_motherTongueLanguage);
 			}
 		}
 
 		/// <summary>Files associated with this actor</summary>
 		public List<ArchivingFile> Files;
 
+		/// <summary></summary>
+		public List<KeyValuePair<string, string>> Keys;
+
 		/// <summary>Default constructor</summary>
 		public ArchivingActor()
 		{
-			Iso3LanguageCodes = new HashSet<string>();
+			Iso3Languages = new ArchivingLanguageCollection();
 			Files = new List<ArchivingFile>();
+			Keys = new List<KeyValuePair<string, string>>();
 		}
 
 		/// <summary>Value can be either DateTime (birth date), int (birth year), or string</summary>
@@ -94,6 +98,12 @@ namespace SIL.Archiving.Generic
 
 		/// <summary />
 		public string Occupation;
+
+		/// <summary />
+		public void AddKeyValuePair(string key, string value)
+		{
+			Keys.Add(new KeyValuePair<string, string>(key, value));
+		}
 
 		/// <summary>Compare 2 ArchivingActor objects. They are identical if they have the same FullName</summary>
 		public int CompareTo(object obj)
