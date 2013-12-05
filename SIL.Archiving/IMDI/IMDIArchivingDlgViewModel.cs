@@ -367,8 +367,9 @@ namespace SIL.Archiving.IMDI
 						}
 						catch (Exception error)
 						{
-							var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromIMDI",
-								"File excluded from IMDI package: " + fileToCopy.Value);
+							var msg = string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
+								"File excluded from {0} package: ", "Parameter is the type of archive (e.g., RAMP/IMDI)"), ArchiveType) +
+								fileToCopy.Value;
 							ReportError(error, msg);
 						}
 					}
@@ -376,14 +377,14 @@ namespace SIL.Archiving.IMDI
 					CopyFile(fileToCopy.Key, fileToCopy.Value);
 				}
 
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInIMDIMsg",
-					"Saving files in IMDI package"));
+				_worker.ReportProgress(0, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
+					"Saving files in {0} package", "Parameter is the type of archive (e.g., RAMP/IMDI)"), ArchiveType));
 			}
 			catch (Exception exception)
 			{
 				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingIMDIArchiveErrorMsg",
-						"There was an error attempting to create the IMDI package.")));
+					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg",
+						"There was an error attempting to create the {0} package.", "Parameter is the type of archive (e.g., IMDI)"), ArchiveType)));
 
 				_workerException = true;
 			}
