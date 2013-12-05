@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SIL.Archiving.Generic
 {
@@ -7,6 +8,9 @@ namespace SIL.Archiving.Generic
 	{
 		/// <summary></summary>
 		void AddFile(ArchivingFile file);
+
+		/// <summary></summary>
+		List<string> Files { get; }
 
 		/// <summary>Set session date with DateTime object</summary>
 		void SetDate(DateTime date);

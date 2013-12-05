@@ -24,5 +24,8 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <summary></summary>
 		string FullPathAndFileName { get; set; }
+
+		/// <summary></summary>
+		string OutputDirectory { get; set; }
 	}
 }

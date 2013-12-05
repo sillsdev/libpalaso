@@ -90,10 +90,10 @@ namespace SIL.Archiving.IMDI
 			};
 
 			foreach (var iso3Id in MetadataIso3LanguageIds)
-				catalogue.DocumentLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSimpleLanguageType());
+				catalogue.DocumentLanguages.Language.Add(LanguageList.Find(new ArchivingLanguage(iso3Id)).ToSimpleLanguageType());
 
 			foreach (var iso3Id in ContentIso3LanguageIds)
-				catalogue.SubjectLanguages.Language.Add(LanguageList.FindByISO3Code(iso3Id).ToSubjectLanguageType());
+				catalogue.SubjectLanguages.Language.Add(LanguageList.Find(new ArchivingLanguage(iso3Id)).ToSubjectLanguageType());
 
 			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
 			corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\","/");

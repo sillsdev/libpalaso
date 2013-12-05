@@ -89,6 +89,7 @@
 	<Compile Include="Generic\ArchivingActor.cs" />
 	<Compile Include="Generic\ArchivingContact.cs" />
 	<Compile Include="Generic\ArchivingFile.cs" />
+	<Compile Include="ArchivingLanguage.cs" />
 	<Compile Include="Generic\ArchivingPackage.cs" />
 	<Compile Include="ArchivingDlg.cs">
 	  <SubType>Form</SubType>
@@ -98,7 +99,6 @@
 	</Compile>
 	<Compile Include="ArchivingDlgViewModel.cs" />
 	<Compile Include="ArchivingEnumerations.cs" />
-	<Compile Include="ArchivingLanguage.cs" />
 	<Compile Include="Extensions.cs" />
 	<Compile Include="Generic\ArchivingSession.cs" />
 	<Compile Include="Generic\GenericObject.cs" />

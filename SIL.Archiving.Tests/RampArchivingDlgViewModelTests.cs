@@ -9,6 +9,7 @@ using Palaso.IO;
 using Palaso.Reporting;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.ClearShare;
+using SIL.Archiving.Generic;
 
 namespace SIL.Archiving.Tests
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -262,6 +263,9 @@ namespace SIL.Archiving.IMDI.Schema
 
 				if (actor.Anonymized == null)
 					actor.Anonymized = new BooleanType { Link = ListType.Link(ListType.Boolean) };
+
+				if (actor.Sex == null)
+					actor.Sex = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ActorSex) };
 			}
 
 			foreach (var file in session.Resources.WrittenResource)
@@ -283,6 +287,15 @@ namespace SIL.Archiving.IMDI.Schema
 
 				if (file.Anonymized == null)
 					file.Anonymized = new BooleanType { Link = ListType.Link(ListType.Boolean) };
+
+				if (file.Access == null)
+					file.Access = new AccessType();
+			}
+
+			foreach (var file in session.Resources.MediaFile)
+			{
+				if (file.Access == null)
+					file.Access = new AccessType();
 			}
 		}
 
@@ -963,19 +976,15 @@ namespace SIL.Archiving.IMDI.Schema
 		public DescriptionTypeCollection Description { get; set; }
 
 		/// <summary>Adds a language, setting some attributes also</summary>
-		/// <param name="iso3Code"></param>
-		/// <param name="dominantLanguage"></param>
-		/// <param name="sourceLanguage"></param>
-		/// <param name="targetLanguage"></param>
-		public void AddLanguage(string iso3Code, BooleanEnum dominantLanguage, BooleanEnum sourceLanguage, BooleanEnum targetLanguage)
+		public void AddLanguage(ArchivingLanguage language, BooleanEnum dominantLanguage, BooleanEnum sourceLanguage, BooleanEnum targetLanguage)
 		{
-			var language = LanguageList.FindByISO3Code(iso3Code).ToLanguageType();
-			if (language == null) return;
+			var imdiLanguage = LanguageList.Find(language).ToLanguageType();
+			if (imdiLanguage == null) return;
 
-			language.Dominant = new BooleanType { Value = dominantLanguage };
-			language.SourceLanguage = new BooleanType { Value = sourceLanguage };
-			language.TargetLanguage = new BooleanType { Value = targetLanguage };
-			Languages.Language.Add(language);
+			imdiLanguage.Dominant = new BooleanType { Value = dominantLanguage };
+			imdiLanguage.SourceLanguage = new BooleanType { Value = sourceLanguage };
+			imdiLanguage.TargetLanguage = new BooleanType { Value = targetLanguage };
+			Languages.Language.Add(imdiLanguage);
 		}
 
 		/// <remarks/>
@@ -1113,19 +1122,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <param name="iso3CodeOrEnglishName"></param>
 		public static LanguageType GetLanguage(string iso3CodeOrEnglishName)
 		{
-			LanguageType langType;
-
-			try
-			{
-				langType = LanguageList.FindByISO3Code(iso3CodeOrEnglishName).ToLanguageType();
-			}
-			catch (ArgumentException)
-			{
-				// not found by iso3 code, try by name
-				langType = LanguageList.FindByEnglishName(iso3CodeOrEnglishName).ToLanguageType();
-			}
-
-			return langType;
+			return LanguageList.Find(new ArchivingLanguage(iso3CodeOrEnglishName, iso3CodeOrEnglishName)).ToLanguageType();
 		}
 	}
 
@@ -1182,7 +1179,7 @@ namespace SIL.Archiving.IMDI.Schema
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	public class ActorType : IMDIDescription
+	public class ActorType
 	{
 		private LanguagesType _languagesField;
 
@@ -1193,7 +1190,9 @@ namespace SIL.Archiving.IMDI.Schema
 			Code = string.Empty;
 			EthnicGroup = string.Empty;
 			Age = string.Empty;
-			BirthDate = string.Empty;
+			BirthDate = "Unspecified";
+			Description = new DescriptionTypeCollection();
+			Education = string.Empty;
 		}
 
 		/// <summary></summary>
@@ -1206,22 +1205,25 @@ namespace SIL.Archiving.IMDI.Schema
 				Age = actor.Age;
 
 			// languages
-			bool hasPrimary = !string.IsNullOrEmpty(actor.PrimaryLanguageIso3Code);
-			bool hasMother = !string.IsNullOrEmpty(actor.MotherTongueLanguageIso3Code);
+			bool hasPrimary = (actor.PrimaryLanguage != null);
+			bool hasMother = (actor.MotherTongueLanguage != null);
 
-			foreach (var langIso3 in actor.Iso3LanguageCodes)
+			foreach (var lang in actor.Iso3Languages)
 			{
 				BooleanEnum isPrimary = (hasPrimary)
-					? (actor.PrimaryLanguageIso3Code == langIso3) ? BooleanEnum.@true : BooleanEnum.@false
+					? (actor.PrimaryLanguage == lang) ? BooleanEnum.@true : BooleanEnum.@false
 					: BooleanEnum.Unspecified;
 
 				BooleanEnum isMother = (hasMother)
-					? (actor.MotherTongueLanguageIso3Code == langIso3) ? BooleanEnum.@true : BooleanEnum.@false
+					? (actor.MotherTongueLanguage == lang) ? BooleanEnum.@true : BooleanEnum.@false
 					: BooleanEnum.Unspecified;
 
-				AddLanguage(langIso3, isPrimary, isMother);
+				AddLanguage(lang, isPrimary, isMother);
 			}
 
+			// keys
+			foreach (var kvp in actor.Keys)
+				Keys.Key.Add(new KeyType { Name = kvp.Key, Value = kvp.Value });
 
 			// BirthDate (can be just year)
 			var birthDate = actor.GetBirthDate();
@@ -1302,17 +1304,14 @@ namespace SIL.Archiving.IMDI.Schema
 
 
 		/// <summary>Adds a language, setting some attributes also</summary>
-		/// <param name="iso3Code"></param>
-		/// <param name="primaryLanguage"></param>
-		/// <param name="motherTongue"></param>
-		public void AddLanguage(string iso3Code, BooleanEnum primaryLanguage, BooleanEnum motherTongue)
+		public void AddLanguage(ArchivingLanguage language, BooleanEnum primaryLanguage, BooleanEnum motherTongue)
 		{
-			var language = LanguageList.FindByISO3Code(iso3Code).ToLanguageType();
-			if (language == null) return;
+			var imdiLanguage = LanguageList.Find(language).ToLanguageType();
+			if (imdiLanguage == null) return;
 
-			language.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = ListType.Link(ListType.Boolean) };
-			language.MotherTongue = new BooleanType { Value = motherTongue, Link = ListType.Link(ListType.Boolean) };
-			Languages.Language.Add(language);
+			imdiLanguage.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = ListType.Link(ListType.Boolean) };
+			imdiLanguage.MotherTongue = new BooleanType { Value = motherTongue, Link = ListType.Link(ListType.Boolean) };
+			Languages.Language.Add(imdiLanguage);
 		}
 
 		/// <remarks/>
@@ -1323,6 +1322,10 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public KeysType Keys { get; set; }
+
+		/// <remarks/>
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description { get; set; }
 
 		/// <remarks/>
 		[XmlAttributeAttribute]
@@ -1351,14 +1354,14 @@ namespace SIL.Archiving.IMDI.Schema
 			foreach (LanguageType lang in Languages.Language)
 			{
 				var iso3 = lang.Id.Substring(lang.Id.Length - 3);
-
-				actr.Iso3LanguageCodes.Add(iso3);
+				var archLanguage = new ArchivingLanguage(iso3, lang.Name[0].Value);
+				actr.Iso3Languages.Add(archLanguage);
 
 				if (lang.PrimaryLanguage.Value == BooleanEnum.@true)
-					actr.PrimaryLanguageIso3Code = iso3;
+					actr.PrimaryLanguage = archLanguage;
 
 				if (lang.MotherTongue.Value == BooleanEnum.@true)
-					actr.MotherTongueLanguageIso3Code = iso3;
+					actr.MotherTongueLanguage = archLanguage;
 			}
 
 			return actr;
@@ -1587,6 +1590,10 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlIgnore]
 		public string FullPathAndFileName { get; set; }
+
+		/// <remarks/>
+		[XmlIgnore]
+		public string OutputDirectory { get; set; }
 	}
 
 	/// <remarks/>
@@ -1648,6 +1655,10 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlIgnore]
 		public string FullPathAndFileName { get; set; }
+
+		/// <remarks/>
+		[XmlIgnore]
+		public string OutputDirectory { get; set; }
 	}
 
 	/// <remarks/>
@@ -1780,7 +1791,17 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		[XmlIgnore]
-		public List<ArchivingFile> Files { get; set; }
+		public List<string> Files
+		{
+			get
+			{
+				var files = Resources.MediaFile.Select(file => file.FullPathAndFileName).ToList();
+
+				files.AddRange(Resources.WrittenResource.Select(file => file.FullPathAndFileName));
+
+				return files;
+			}
+		}
 
 		/// <remarks/>
 		[XmlIgnore]
